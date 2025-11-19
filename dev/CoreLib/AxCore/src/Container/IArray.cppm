@@ -6,6 +6,7 @@ import <algorithm>;
 export import AxCore.BasicType;
 export import AxCore.ByteOrder;
 export import AxCore.Span;
+export import AxCore.Math;
 
 import AxCore.Allocator;
 import AxCore.MemoryUtil;
@@ -38,8 +39,8 @@ public:
 	constexpr void clearAndFree();
 	
 protected:
-	virtual	MemoryBlock	onMalloc(Int reqSize) = 0;
-	virtual	void		onFree	(T* p) = 0;
+	virtual	MemoryBlock<T>	onMalloc(Int reqSize) = 0;
+	virtual	void			onFree	(T* p) = 0;
 	
 private:
 	struct NormalStorage {
@@ -55,7 +56,7 @@ private:
 		i8 _capacity; // will be negative
 		i8 _size;
 		T _data[0];
-		static constexpr Int kExtraCapacity = std::min<Int>(0u, (AX_SIZE_OF(NormalStorage) - AX_ALIGN_OF(T)) / AX_SIZE_OF(T));
+		static constexpr Int kExtraCapacity = Math::max<Int>(0u, (AX_SIZE_OF(NormalStorage) - AX_ALIGN_OF(T)) / AX_SIZE_OF(T));
 		constexpr Int        capacity() const { return -_capacity + kExtraCapacity; }
 		constexpr void       setCapacity(Int v);
 	};
@@ -80,7 +81,7 @@ private:
 	};
 
 	Storage _storage;
-	constexpr void _reserve(Int newCapacity);
+	constexpr void _reserve(Int reqCapacity);
 };
 
 template <class T> AX_INLINE
@@ -91,15 +92,18 @@ constexpr void IArray<T>::reserve(Int newCapacity) {
 }
 
 template <class T> inline
-constexpr void IArray<T>::_reserve(Int newCapacity) {
-	auto  memoryBlock  = onMalloc(newCapacity);
+constexpr void IArray<T>::_reserve(Int reqCapacity) {
+	auto  memoryBlock  = onMalloc(reqCapacity);
+	auto  newCapacity  = memoryBlock.size();  
 	auto  oldSize = size();
 	auto* oldData = data();
 	auto* newData = reinterpret_cast<T*>(memoryBlock.data());
 	if (newData != oldData) {
 		if (oldData) {
 			RawArrayUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
-			onFree(oldData);
+			if (!_storage.isSmall()) {
+				onFree(oldData);
+			}
 		}
 		memoryBlock.detach();
 	}

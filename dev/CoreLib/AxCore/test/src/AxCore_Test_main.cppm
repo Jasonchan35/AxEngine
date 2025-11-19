@@ -9,7 +9,7 @@ namespace ax {
 	int my_main() {
 		StrView sz = "testing"_sv;
 
-		Array<Int, 127>	arr;
+		Array<Int, 16>	arr;
 
 		for (Int i = 0; i < 127; i++) {
 			arr.append(i);

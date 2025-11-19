@@ -249,7 +249,7 @@
 	<!-- ax::IAray<*>::Storage -->
 	<Type Name="ax::IArray&lt;*&gt;::Storage">
 		<DisplayString Condition="_small._capacity &lt; 0">
-			size={_small._size} small-capacity={-_small._capacity + _small.kExtraCapacity}
+			size={_small._size} small-capacity={-_small._capacity + SmallStorage::kExtraCapacity}
 		</DisplayString>
 		<DisplayString Condition="_small._capacity &gt;= 0">
 			size={_normal._size} normal-capacity={
@@ -271,7 +271,7 @@
 			<Item Name="size" Condition="_small._capacity &lt;  0">_small._size</Item>
 			<Item Name="size" Condition="_small._capacity &gt;= 0">_normal._size</Item>
 
-			<Item Name="capacity" Condition="_small._capacity &lt;  0">-_small._capacity + _small.kExtraCapacity</Item>
+			<Item Name="capacity" Condition="_small._capacity &lt;  0">-_small._capacity + SmallStorage::kExtraCapacity</Item>
 			<Item Name="capacity" Condition="_small._capacity &gt;= 0">
 				(
 				  (((uint8_t*)&amp;_normal._capacity)[0] &lt;&lt; 56)
@@ -284,7 +284,7 @@
 				+ (((uint8_t*)&amp;_normal._capacity)[7]            )
 				)
 			</Item>
-			<Item Name="small.kExtraCapacity">_small.kExtraCapacity</Item>
+			<Item Name="_small.kExtraCapacity">SmallStorage::kExtraCapacity</Item>
 		</Expand>
 	</Type>
 
@@ -292,15 +292,20 @@
 	<Type Name="ax::IArray&lt;*&gt;">
 		<Expand>
 			<Item Name="_storage">_storage</Item>
-			<ArrayItems Condition="_storage._small._capacity &lt; 0">
-				<Size>_storage._small._size</Size>
-				<ValuePointer>&amp;_storage._small._data[0]</ValuePointer>
-			</ArrayItems>
+			<Synthetic Name="Elements">
+				<DisplayString> </DisplayString>
+				<Expand>
+					<ArrayItems Condition="_storage._small._capacity &lt; 0">
+						<Size>_storage._small._size</Size>
+						<ValuePointer>&amp;_storage._small._data[0]</ValuePointer>
+					</ArrayItems>
 
-			<ArrayItems Condition="_storage._small._capacity &gt;= 0">
-				<Size>_storage._normal._size</Size>
-				<ValuePointer>_storage._normal._data</ValuePointer>
-			</ArrayItems>
+					<ArrayItems Condition="_storage._small._capacity &gt;= 0">
+						<Size>_storage._normal._size</Size>
+						<ValuePointer>_storage._normal._data</ValuePointer>
+					</ArrayItems>
+				</Expand>
+			</Synthetic>
 		</Expand>
 	</Type>
 

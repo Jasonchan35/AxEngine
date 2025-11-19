@@ -1,64 +1,71 @@
 ﻿export module AxCore.Allocator;
 
 import <cstdlib>;
+import <format>;
+import <iostream>;
 
 #include "AxBase.h"
 export import AxCore.BasicType;
 
 export namespace ax {
 
-class Allocator;
-
+template<class T>
 class MemoryBlock : public NonCopyable {
 	friend class Allocator;
 protected:
-	void* _data	= nullptr;
 	Allocator* _allocator = nullptr;
+	T*  _data	= nullptr;
+	Int _size	= 0;
 public:
-	MemoryBlock() = default;
-	MemoryBlock(const MemoryBlock&) = delete;
-	MemoryBlock(MemoryBlock&& r) : _data(r._data), _allocator(r._allocator) {
+	constexpr MemoryBlock() = default;
+	constexpr MemoryBlock(const MemoryBlock&) = delete;
+	constexpr MemoryBlock(MemoryBlock&& r) noexcept : _data(r._data), _allocator(r._allocator) {
 		r._data = nullptr;
-	} 
-	~MemoryBlock() { dealloc(); }
-
-	void detach() { _data = nullptr; _allocator = nullptr; }
-	
-	void* data() const { return _data; }
-	
-	void alloc(Int size) {
-		dealloc();
-		_data = ::malloc(size);
 	}
-	void dealloc();
+	constexpr MemoryBlock(Allocator* allocator, T* data, Int size ) noexcept : _allocator(allocator), _data(data), _size(size) {}
+	constexpr ~MemoryBlock() noexcept { dealloc(); }
+
+	constexpr T* data() const noexcept { return _data; }
+	constexpr Int size() const noexcept { return _size; }
+	constexpr Allocator* allocator() const noexcept { return _allocator; }
+	
+	constexpr void detach() noexcept { _data = nullptr; _allocator = nullptr; _size = 0; }
+	constexpr void dealloc();
 };
 
 class Allocator {
 public:
 
-	MemoryBlock alloc(Int size, Int alignment) { return onAlloc(size, alignment); }
-	void dealloc(MemoryBlock & block) { return onDealloc(block); }
+	template<class T>
+	MemoryBlock<T> alloc(Int size, Int alignment = AX_ALIGN_OF(T)) {
+		auto block = onAlloc(size * AX_SIZE_OF(T), alignment);
+		T* data = reinterpret_cast<T*>(block.data());
+		block.detach();
+		return MemoryBlock<T>(this, data, size);
+	}
+	void dealloc(void* p) { return onDealloc(p); }
 	
 protected:
-	virtual MemoryBlock onAlloc(Int size, Int alignment) {
-		MemoryBlock block;
-		block._allocator = this;
-		block._data = ::_aligned_malloc(size, alignment);
-		return block;
+	virtual MemoryBlock<u8> onAlloc(Int size, Int alignment) {
+		void* data = ::_aligned_malloc(size, alignment);
+		// std::cout << std::format("onAlloc size={} data={}\n", size, data);
+		return MemoryBlock<u8>(this, reinterpret_cast<u8*>(data), size);
 	}
 
-	virtual void onDealloc(MemoryBlock & block) {
-		if (!block._data) return;
-		
-		::free(block._data);
-		block._data = nullptr;
+	virtual void onDealloc(void* data) {
+		if (!data) return;
+		// std::cout << std::format("onDealloc data={}\n", data);
+		::_aligned_free(data);
 	}
 };
 
-void MemoryBlock::dealloc() {
+template<class T> inline
+constexpr void MemoryBlock<T>::dealloc() {
 	if (!_data) return;
 	if (!_allocator) throw Error_Allocator(AX_SRC_LOC);
-	_allocator->dealloc(*this);
+	_allocator->dealloc(_data);
+	_data = nullptr;
+	_size = 0;
 }
 
 Allocator*	ax_default_allocator();
