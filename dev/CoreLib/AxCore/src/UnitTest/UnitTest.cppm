@@ -1,6 +1,7 @@
 ﻿export module AxCore.UnitTest;
 
-import AxCore.Base;
+#include "AxBase.h"
+import AxCore.String;
 
 export namespace ax {
 

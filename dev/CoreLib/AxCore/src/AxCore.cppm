@@ -1,6 +1,7 @@
 ﻿export module AxCore;
 
-export import AxCore.Base;
+export import AxCore.BasicType;
 export import AxCore.StrView;
-export import AxCore.UnitTest;
+export import AxCore.Array;
+
 

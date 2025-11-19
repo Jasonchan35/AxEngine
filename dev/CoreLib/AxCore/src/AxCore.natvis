@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010"> 	
+
+<!--
+	Reference Document 
+	https://msdn.microsoft.com/en-us/library/jj620914.aspx
+	
+	Expression[,<FormatSpecifier> ]
+	https://msdn.microsoft.com/en-us/library/windows/hardware/dn936815(v=vs.85).aspx
+-->
+	<!-- ax::Tuple1_<*,*> -->
+	<Type Name="ax::Vec1_&lt;*,*&gt;">
+		<DisplayString>x={x}</DisplayString>
+	</Type>
+
+	<!-- ax::Tuple2_<*,*> -->
+	<Type Name="ax::Tuple2_&lt;*,*&gt;">
+		<DisplayString>x={x}, y={y}</DisplayString>
+	</Type>
+
+	<!-- ax::Tuple3_<*,*> -->
+	<Type Name="ax::Tuple3_&lt;*,*&gt;">
+		<DisplayString>x={x}, y={y}, z={z}</DisplayString>
+	</Type>
+
+	<!-- ax::Tuple4_<*.*> -->
+	<Type Name="ax::Tuple4_&lt;*,*&gt;">
+		<DisplayString>x={x}, y={y}, z={z}, w={w}</DisplayString>
+	</Type>
+
+	<!-- Margin2_<T> -->
+	<Type Name="ax::Margin2_&lt;*&gt;">
+		<DisplayString>top={top}, right={right}, bottom={bottom}, left={left}</DisplayString>
+	</Type>
+	<!-- Rect2<T> -->
+	<Type Name="ax::Rect2_&lt;*&gt;">
+		<DisplayString>x={x}, y={y}, w={w}, h={h}</DisplayString>
+	</Type>
+	<!-- ColorR<T> -->
+	<Type Name="ax::ColorR_&lt;*&gt;">
+		<DisplayString>r={r}</DisplayString>
+	</Type>
+
+	<!-- ColorRG_<T> -->
+	<Type Name="ax::ColorRGBA_&lt;*&gt;">
+		<DisplayString>r={r}, g={g}</DisplayString>
+	</Type>
+
+	<!-- ColorRGB_<T> -->
+	<Type Name="ax::ColorRGBA_&lt;*&gt;">
+		<DisplayString>r={r}, g={g}, b={b}</DisplayString>
+	</Type>
+
+	<!-- ColorRGBA_<T> -->
+	<Type Name="ax::ColorRGBA_&lt;*&gt;">
+		<DisplayString>r={r}, g={g}, b={b}, a={a}</DisplayString>
+	</Type>
+
+	<Type Name="ax::Debug::Natvis_Hex::L4">
+		<DisplayString Condition="((c &amp; 0x0f) == 0x00)">0</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x01)">1</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x02)">2</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x03)">3</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x04)">4</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x05)">5</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x06)">6</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x07)">7</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x08)">8</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x09)">9</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0a)">A</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0b)">B</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0c)">C</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0d)">D</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0e)">E</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0f)">F</DisplayString>
+	</Type>
+
+	<Type Name="ax::Debug::Natvis_Hex::H4">
+		<DisplayString Condition="((c >> 4) == 0x00)">0</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x01)">1</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x02)">2</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x03)">3</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x04)">4</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x05)">5</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x06)">6</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x07)">7</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x08)">8</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x09)">9</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0a)">A</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0b)">B</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0c)">C</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0d)">D</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0e)">E</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0f)">F</DisplayString>
+	</Type>
+
+
+	<Type Name="ax::Debug::Natvis_Hex::l4">
+		<DisplayString Condition="((c &amp; 0x0f) == 0x00)">0</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x01)">1</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x02)">2</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x03)">3</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x04)">4</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x05)">5</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x06)">6</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x07)">7</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x08)">8</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x09)">9</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0a)">a</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0b)">b</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0c)">c</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0d)">d</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0e)">e</DisplayString>
+		<DisplayString Condition="((c &amp; 0x0f) == 0x0f)">f</DisplayString>
+	</Type>
+
+	<Type Name="ax::Debug::Natvis_Hex::h4">
+		<DisplayString Condition="((c >> 4) == 0x00)">0</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x01)">1</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x02)">2</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x03)">3</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x04)">4</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x05)">5</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x06)">6</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x07)">7</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x08)">8</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x09)">9</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0a)">a</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0b)">b</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0c)">c</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0d)">d</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0e)">e</DisplayString>
+		<DisplayString Condition="((c >> 4) == 0x0f)">f</DisplayString>
+	</Type>
+
+	<Type Name="ax::Uuid;">
+		<DisplayString>
+			[Uuid]
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 0 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 0 )}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 1 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 1 )}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 2 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 2 )}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 3 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 3 )}-
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 4 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 4 )}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 5 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 5 )}-
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 6 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 6 )}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 7 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 7 )}-
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 8 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 8 )}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 9 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 9 )}-
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 10)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 10)}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 11)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 11)}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 12)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 12)}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 13)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 13)}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 14)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 14)}
+			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 15)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 15)}
+		</DisplayString>
+		<Expand>
+			<Item Name="first ">value.first,x</Item>
+			<Item Name="second">value.second,x</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::AxCore::AtomicInt_<T> -->
+	<Type Name="ax::AxCore::AtomicInt_&lt;*&gt;">
+		<DisplayString>{_v}</DisplayString>
+		<Expand>
+			<ExpandedItem>_v</ExpandedItem>
+		</Expand>
+	</Type>
+
+	<!-- ax::AxCore::PtrBase<T> -->
+	<Type Name="ax::AxCore::PtrBase&lt;*&gt;">
+		<DisplayString>{(void*)_p}</DisplayString>
+		<Expand>
+			<Item Name="_p">_p</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::SPtr<T> -->
+	<Type Name="ax::SPtr&lt;*&gt;">
+		<DisplayString Condition="_p != nullptr">SPtr refCount={_p->_refCount}</DisplayString>
+		<DisplayString>SPtr is NULL</DisplayString>
+		<Expand>
+			<Item Name="_p">_p</Item>
+		</Expand>
+	</Type>
+
+	<!-- MutStrView_<char> -->
+	<Type Name="ax::MutStrView_&lt;char&gt;">
+		<AlternativeType Name="ax::MutStrView_&lt;char const&gt;"/>
+		<DisplayString>StrView size={_size} {_data, [_size]s8}</DisplayString>
+		<StringView>_data, [_size]s8</StringView>
+		<Expand>
+			<Item Name="size">_size</Item>
+		</Expand>
+	</Type>
+
+	<!-- MutStrView_<wchar_t> -->
+	<Type Name="ax::MutStrView_&lt;wchar_t&gt;">
+		<AlternativeType Name="ax::MutStrView_&lt;wchar_t const&gt;"/>
+		<AlternativeType Name="ax::MutStrView_&lt;char16_t&gt;"/>
+		<AlternativeType Name="ax::MutStrView_&lt;char16_t const&gt;"/>
+		<DisplayString>StrView size={_size} {_data, [_size]su}</DisplayString>
+		<StringView>_data, [_size]su</StringView>
+		<Expand>
+			<Item Name="size">_size</Item>
+		</Expand>
+	</Type>
+
+	<!-- MutStrView_<char32_t> -->
+	<Type Name="ax::MutStrView_&lt;char32_t&gt;">
+		<AlternativeType Name="ax::MutStrView_&lt;char32_t const&gt;"/>
+		<DisplayString>StrView size={_size} {_data, [_size]s32}</DisplayString>
+		<StringView>_data, [_size]s32</StringView>
+		<Expand>
+			<Item Name="size">_size</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="ax::JsonReader">
+		<DisplayString>line={_lineNumber} token={_token} </DisplayString>
+	</Type>
+
+	<!-- ax::LinkedList<*> -->
+	<Type Name="ax::LinkedList&lt;*&gt;">
+		<DisplayString>size={_size}</DisplayString>
+		<Expand>
+			<LinkedListItems>
+				<Size>_size</Size>
+				<HeadPointer>_head</HeadPointer>
+				<NextPointer>_listNode_next</NextPointer>
+				<ValueNode>this</ValueNode>
+			</LinkedListItems>
+		</Expand>
+	</Type>
+
+	<!-- ax::ExLinkedList::List<*> -->
+	<Type Name="ax::ExLinkedList::List&lt;*&gt;">
+		<DisplayString>size={_size}</DisplayString>
+		<Expand>
+			<LinkedListItems>
+				<Size>_size</Size>
+				<HeadPointer>_head</HeadPointer>
+				<NextPointer>listNode_next</NextPointer>
+				<ValueNode>this</ValueNode>
+			</LinkedListItems>
+		</Expand>
+	</Type>
+
+	<!-- ax::ExHashMap::Node<*,*,*> -->
+	<Type Name="ax::ExHashMap::Node&lt;*,*&gt;">
+		<DisplayString>Key={mapNode_key}: Value={((Node_T*)this)->value}</DisplayString>
+		<Expand>
+			<Item Name="Key"  >mapNode_key</Item>
+			<Item Name="Value">((Node_T*)this)->value</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::ExHashMap::Map<*,*> -->
+	<Type Name="ax::ExHashMap::Map&lt;*&gt;">
+		<DisplayString>size={_list._size}</DisplayString>
+		<Expand>
+			<LinkedListItems>
+				<Size>_list._size</Size>
+				<HeadPointer>_list._head</HeadPointer>
+				<NextPointer>((OrderedListNode*)this)->listNode_next</NextPointer>
+				<ValueNode>this</ValueNode>
+			</LinkedListItems>
+		</Expand>
+	</Type>
+
+	<!-- ax::Dict<*,*> -->
+	<Type Name="ax::Dict&lt;*,* &gt;">
+		<DisplayString>size={_map._list._size}</DisplayString>
+		<Expand>
+			<LinkedListItems>
+				<Size>_map._list._size</Size>
+				<HeadPointer>_map._list._head</HeadPointer>
+				<NextPointer>((OrderedListNode*)this)->listNode_next</NextPointer>
+				<ValueNode>(Node_T*)this</ValueNode>
+			</LinkedListItems>
+		</Expand>
+	</Type>
+
+	<!-- ax::MutSpan<*> -->
+	<Type Name="ax::MutSpan&lt;*&gt;">
+		<DisplayString>Span size={_size}</DisplayString>
+		<Expand> 
+			<Item Name="_data">_data</Item>
+			<Item Name="_size">_size</Item> 
+			<ArrayItems> 
+			  <Size>_size</Size> 
+			  <ValuePointer>_data</ValuePointer> 
+			</ArrayItems> 
+		</Expand> 	
+	</Type>
+	
+	<!-- FixedArray<*,*> -->
+	<Type Name="ax::FixedArray&lt;*,*&gt;">
+		<DisplayString>size={_size}</DisplayString>
+		<Expand>
+			<Item Name="_data">_data</Item>
+			<Item Name="_size">kSize</Item>
+			<ArrayItems>
+				<Size>kSize</Size>
+				<ValuePointer>_data</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<!-- AllocBlockBase -->
+	<Type Name="ax::AllocBlockBase">
+		<DisplayString>AllocBlockBase</DisplayString>
+		<Expand>
+			<Item Name="header">(AllocBlockBase::Header*)((char*)this + _offsetToHeader)</Item>
+			<Item Name="footer">
+				(AllocBlockBase::Footer*)(
+					(char*)this
+					+ _offsetToHeader
+					+ sizeof(AllocBlockBase::Header)
+					+ ((AllocBlockBase::Header*)((char*)this + _offsetToHeader))->_dataSize
+				)
+			</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::IAray<*>::Storage -->
+	<Type Name="ax::IArray&lt;*&gt;::Storage">
+		<DisplayString Condition="_small._capacity &lt; 0">
+			size={_small._size} small-capacity={-_small._capacity + _small.kExtraCapacity}
+		</DisplayString>
+		<DisplayString Condition="_small._capacity &gt;= 0">
+			size={_normal._size} normal-capacity={
+			(
+				  (((uint8_t*)&amp;_normal._capacity)[0] &lt;&lt; 56)
+				+ (((uint8_t*)&amp;_normal._capacity)[1] &lt;&lt; 48)
+				+ (((uint8_t*)&amp;_normal._capacity)[2] &lt;&lt; 40)
+				+ (((uint8_t*)&amp;_normal._capacity)[3] &lt;&lt; 32)
+				+ (((uint8_t*)&amp;_normal._capacity)[4] &lt;&lt; 24)
+				+ (((uint8_t*)&amp;_normal._capacity)[5] &lt;&lt; 16)
+				+ (((uint8_t*)&amp;_normal._capacity)[6] &lt;&lt; 8 )
+				+ (((uint8_t*)&amp;_normal._capacity)[7]            )
+			)}
+		</DisplayString>
+		<Expand>
+			<Item Name="data" Condition="_small._capacity &lt;  0">_small._data</Item>
+			<Item Name="data" Condition="_small._capacity &gt;= 0">_normal._data</Item>
+
+			<Item Name="size" Condition="_small._capacity &lt;  0">_small._size</Item>
+			<Item Name="size" Condition="_small._capacity &gt;= 0">_normal._size</Item>
+
+			<Item Name="capacity" Condition="_small._capacity &lt;  0">-_small._capacity + _small.kExtraCapacity</Item>
+			<Item Name="capacity" Condition="_small._capacity &gt;= 0">
+				(
+				  (((uint8_t*)&amp;_normal._capacity)[0] &lt;&lt; 56)
+				+ (((uint8_t*)&amp;_normal._capacity)[1] &lt;&lt; 48)
+				+ (((uint8_t*)&amp;_normal._capacity)[2] &lt;&lt; 40)
+				+ (((uint8_t*)&amp;_normal._capacity)[3] &lt;&lt; 32)
+				+ (((uint8_t*)&amp;_normal._capacity)[4] &lt;&lt; 24)
+				+ (((uint8_t*)&amp;_normal._capacity)[5] &lt;&lt; 16)
+				+ (((uint8_t*)&amp;_normal._capacity)[6] &lt;&lt; 8 )
+				+ (((uint8_t*)&amp;_normal._capacity)[7]            )
+				)
+			</Item>
+			<Item Name="samll extra capacity" Condition="_small._capacity &lt;  0">_small.kExtraCapacity</Item>
+
+		</Expand>
+	</Type>
+
+	<!-- ax::IArray<*> -->
+	<Type Name="ax::IArray&lt;*&gt;">
+		<Expand>
+			<Item Name="_storage">_storage</Item>
+			<ArrayItems Condition="_storage._small._capacity &lt; 0">
+				<Size>_storage._small._size</Size>
+				<ValuePointer>_storage._small._data</ValuePointer>
+			</ArrayItems>
+
+			<ArrayItems Condition="_storage._small._capacity &gt;=  0">
+				<Size>_storage._normal._size</Size>
+				<ValuePointer>_storage._normal._data</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<!-- ax::PersistString_ -->
+	<Type Name="ax::PersistString_&lt; char &gt;">
+		<DisplayString>{_value->_data, [_value->_size]s8}</DisplayString>
+	</Type>
+	<Type Name="ax::PersistString_&lt; wchar_T &gt;">
+		<DisplayString>{_value->_data, [_value->_size]su}</DisplayString>
+	</Type>
+	<Type Name="ax::PersistString_&lt; char32_t &gt;">
+		<DisplayString>{_value->_data, [_value->_size]s32}</DisplayString>
+	</Type>
+
+	<!-- ax::NameId_<char,*> -->
+	<Type Name="ax::NameId_&lt; *, * &gt;">
+		<DisplayString  Condition="_id == -1">NameId({_name})</DisplayString>
+		<DisplayString                       >NameId({_name},{_id})</DisplayString>
+	</Type>
+
+</AutoVisualizer>
