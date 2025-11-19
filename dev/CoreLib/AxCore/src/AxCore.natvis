@@ -23,7 +23,7 @@
 		<DisplayString>x={x}, y={y}, z={z}</DisplayString>
 	</Type>
 
-	<!-- ax::Tuple4_<*.*> -->
+	<!-- ax::Tuple4_<*,*> -->
 	<Type Name="ax::Tuple4_&lt;*,*&gt;">
 		<DisplayString>x={x}, y={y}, z={z}, w={w}</DisplayString>
 	</Type>
@@ -74,7 +74,7 @@
 		<DisplayString Condition="((c &amp; 0x0f) == 0x0e)">E</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x0f)">F</DisplayString>
 	</Type>
-
+ 
 	<Type Name="ax::Debug::Natvis_Hex::H4">
 		<DisplayString Condition="((c >> 4) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c >> 4) == 0x01)">1</DisplayString>
@@ -94,7 +94,7 @@
 		<DisplayString Condition="((c >> 4) == 0x0f)">F</DisplayString>
 	</Type>
 
-
+	
 	<Type Name="ax::Debug::Natvis_Hex::l4">
 		<DisplayString Condition="((c &amp; 0x0f) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x01)">1</DisplayString>
@@ -220,67 +220,6 @@
 		<DisplayString>line={_lineNumber} token={_token} </DisplayString>
 	</Type>
 
-	<!-- ax::LinkedList<*> -->
-	<Type Name="ax::LinkedList&lt;*&gt;">
-		<DisplayString>size={_size}</DisplayString>
-		<Expand>
-			<LinkedListItems>
-				<Size>_size</Size>
-				<HeadPointer>_head</HeadPointer>
-				<NextPointer>_listNode_next</NextPointer>
-				<ValueNode>this</ValueNode>
-			</LinkedListItems>
-		</Expand>
-	</Type>
-
-	<!-- ax::ExLinkedList::List<*> -->
-	<Type Name="ax::ExLinkedList::List&lt;*&gt;">
-		<DisplayString>size={_size}</DisplayString>
-		<Expand>
-			<LinkedListItems>
-				<Size>_size</Size>
-				<HeadPointer>_head</HeadPointer>
-				<NextPointer>listNode_next</NextPointer>
-				<ValueNode>this</ValueNode>
-			</LinkedListItems>
-		</Expand>
-	</Type>
-
-	<!-- ax::ExHashMap::Node<*,*,*> -->
-	<Type Name="ax::ExHashMap::Node&lt;*,*&gt;">
-		<DisplayString>Key={mapNode_key}: Value={((Node_T*)this)->value}</DisplayString>
-		<Expand>
-			<Item Name="Key"  >mapNode_key</Item>
-			<Item Name="Value">((Node_T*)this)->value</Item>
-		</Expand>
-	</Type>
-
-	<!-- ax::ExHashMap::Map<*,*> -->
-	<Type Name="ax::ExHashMap::Map&lt;*&gt;">
-		<DisplayString>size={_list._size}</DisplayString>
-		<Expand>
-			<LinkedListItems>
-				<Size>_list._size</Size>
-				<HeadPointer>_list._head</HeadPointer>
-				<NextPointer>((OrderedListNode*)this)->listNode_next</NextPointer>
-				<ValueNode>this</ValueNode>
-			</LinkedListItems>
-		</Expand>
-	</Type>
-
-	<!-- ax::Dict<*,*> -->
-	<Type Name="ax::Dict&lt;*,* &gt;">
-		<DisplayString>size={_map._list._size}</DisplayString>
-		<Expand>
-			<LinkedListItems>
-				<Size>_map._list._size</Size>
-				<HeadPointer>_map._list._head</HeadPointer>
-				<NextPointer>((OrderedListNode*)this)->listNode_next</NextPointer>
-				<ValueNode>(Node_T*)this</ValueNode>
-			</LinkedListItems>
-		</Expand>
-	</Type>
-
 	<!-- ax::MutSpan<*> -->
 	<Type Name="ax::MutSpan&lt;*&gt;">
 		<DisplayString>Span size={_size}</DisplayString>
@@ -307,22 +246,6 @@
 		</Expand>
 	</Type>
 
-	<!-- AllocBlockBase -->
-	<Type Name="ax::AllocBlockBase">
-		<DisplayString>AllocBlockBase</DisplayString>
-		<Expand>
-			<Item Name="header">(AllocBlockBase::Header*)((char*)this + _offsetToHeader)</Item>
-			<Item Name="footer">
-				(AllocBlockBase::Footer*)(
-					(char*)this
-					+ _offsetToHeader
-					+ sizeof(AllocBlockBase::Header)
-					+ ((AllocBlockBase::Header*)((char*)this + _offsetToHeader))->_dataSize
-				)
-			</Item>
-		</Expand>
-	</Type>
-
 	<!-- ax::IAray<*>::Storage -->
 	<Type Name="ax::IArray&lt;*&gt;::Storage">
 		<DisplayString Condition="_small._capacity &lt; 0">
@@ -342,7 +265,7 @@
 			)}
 		</DisplayString>
 		<Expand>
-			<Item Name="data" Condition="_small._capacity &lt;  0">_small._data</Item>
+			<Item Name="data" Condition="_small._capacity &lt;  0">&amp;_small._data[0]</Item>
 			<Item Name="data" Condition="_small._capacity &gt;= 0">_normal._data</Item>
 
 			<Item Name="size" Condition="_small._capacity &lt;  0">_small._size</Item>
@@ -361,8 +284,7 @@
 				+ (((uint8_t*)&amp;_normal._capacity)[7]            )
 				)
 			</Item>
-			<Item Name="samll extra capacity" Condition="_small._capacity &lt;  0">_small.kExtraCapacity</Item>
-
+			<Item Name="small.kExtraCapacity">_small.kExtraCapacity</Item>
 		</Expand>
 	</Type>
 
@@ -372,10 +294,10 @@
 			<Item Name="_storage">_storage</Item>
 			<ArrayItems Condition="_storage._small._capacity &lt; 0">
 				<Size>_storage._small._size</Size>
-				<ValuePointer>_storage._small._data</ValuePointer>
+				<ValuePointer>&amp;_storage._small._data[0]</ValuePointer>
 			</ArrayItems>
 
-			<ArrayItems Condition="_storage._small._capacity &gt;=  0">
+			<ArrayItems Condition="_storage._small._capacity &gt;= 0">
 				<Size>_storage._normal._size</Size>
 				<ValuePointer>_storage._normal._data</ValuePointer>
 			</ArrayItems>
