@@ -37,8 +37,8 @@ class Allocator {
 public:
 
 	template<class T>
-	MemoryBlock<T> alloc(Int size, Int alignment = AX_ALIGN_OF(T)) {
-		auto block = onAlloc(size * AX_SIZE_OF(T), alignment);
+	MemoryBlock<T> alloc(Int size, Int alignment = ax_alignof<T>) {
+		auto block = onAlloc(size * ax_sizeof<T>, alignment);
 		T* data = reinterpret_cast<T*>(block.data());
 		block.detach();
 		return MemoryBlock<T>(this, data, size);

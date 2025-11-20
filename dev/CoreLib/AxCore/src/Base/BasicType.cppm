@@ -161,6 +161,9 @@ constexpr DST ax_safe_cast(const SRC& src) {
 constexpr inline Int	ax_safe_cast_Int(size_t src) { return ax_safe_cast<Int>(src); }
 constexpr inline size_t ax_safe_cast_size_t(Int src) { return ax_safe_cast<size_t>(src); }
 
+template<class T> constexpr Int ax_sizeof  = ax_safe_cast<Int>(sizeof(T)); 
+template<class T> constexpr Int ax_alignof = ax_safe_cast<Int>(alignof(T));
+
 template<class T, class... Args > AX_INLINE
 T* ax_call_constructor(T* p, Args&&... args ) {
 	return ::new(p) T(AX_FORWARD(args)...);

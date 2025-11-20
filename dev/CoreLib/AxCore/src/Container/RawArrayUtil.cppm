@@ -46,7 +46,7 @@ void RawArrayUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	}
 
 	if (std::is_trivially_copy_assignable_v<T>) {
- 		MemoryUtil::Copy(dst, src, n * AX_SIZE_OF(T));
+ 		MemoryUtil::Copy(dst, src, n * ax_sizeof<T>);
 	}else{
 		auto s = src;
 		auto e = src + n ;

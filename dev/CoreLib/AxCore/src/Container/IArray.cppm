@@ -57,7 +57,7 @@ private:
 		u8 _size;
 		T  _data[0];
 		static constexpr u8  kMask = 0x80;
-		static constexpr Int kExtraCapacity = Math::max<Int>(0u, (AX_SIZE_OF(NormalStorage) - AX_ALIGN_OF(T)) / AX_SIZE_OF(T));
+		static constexpr Int kExtraCapacity = Math::max<Int>(0u, (ax_sizeof<NormalStorage> - ax_alignof<T>) / ax_sizeof<T>);
 		constexpr Int        capacity() const { return kExtraCapacity + Int(_capacity & ~kMask); }
 		constexpr void       setCapacity(Int v);
 	};

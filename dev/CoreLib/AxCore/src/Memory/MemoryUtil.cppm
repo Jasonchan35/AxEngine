@@ -45,7 +45,7 @@ void MemoryUtil::Copy(void* dst, const void* src, Int len) {
 		return;
 	}
 	using Block = u64;
-	const Int w = AX_SIZE_OF(Block);
+	const Int w = ax_sizeof<Block>;
 	auto n = len / w;
 	auto r = len % w;
 	auto j = n*w;

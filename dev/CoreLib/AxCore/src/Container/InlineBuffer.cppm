@@ -14,7 +14,7 @@ protected:
 	AX_INLINE			T*		inlineBufPtr	() 		 { return reinterpret_cast<	     T*>(_inlineBuf); }
 	AX_INLINE	const 	T*		inlineBufPtr	() const { return reinterpret_cast<const T*>(_inlineBuf); }
 	
-	Byte	_inlineBuf[AX_SIZE_OF(T) * BUF_SIZE];
+	Byte	_inlineBuf[ax_sizeof<T> * BUF_SIZE];
 };
 
 template< class T >
