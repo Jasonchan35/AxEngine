@@ -22,12 +22,12 @@ public:
 	virtual	~Array() override { Base::clearAndFree(); }
 	
 protected:
-	virtual	MemoryBlock<T>	onMalloc(Int reqSize) override;
-	virtual	void			onFree	(T* p) override;
+	virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
+	virtual	void			onStorageFree	(T* p) override;
 };
 
 template <class T, Int BUF_SIZE> inline
-MemoryBlock<T> Array<T, BUF_SIZE>::onMalloc(Int reqSize) {
+MemoryBlock<T> Array<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	if (reqSize <= BUF_SIZE) {
 		return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE);
 	}
@@ -42,7 +42,7 @@ MemoryBlock<T> Array<T, BUF_SIZE>::onMalloc(Int reqSize) {
 }
 
 template <class T, Int BUF_SIZE> inline
-void Array<T, BUF_SIZE>::onFree(T* p) {
+void Array<T, BUF_SIZE>::onStorageFree(T* p) {
 	if (p == inlineBufPtr()) return;
 	auto* allocator = ax_default_allocator();
 	allocator->dealloc(p);	

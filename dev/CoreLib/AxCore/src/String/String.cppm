@@ -44,12 +44,12 @@ public:
 	virtual	~String_() override { Base::clearAndFree(); }
 
 protected:
-	virtual	MemoryBlock<T>	onMalloc(Int reqSize) override;
-	virtual	void			onFree	(T* p) override;
+	virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
+	virtual	void			onStorageFree	(T* p) override;
 };
 
 template <CharType T, Int BUF_SIZE> inline
-MemoryBlock<T> String_<T, BUF_SIZE>::onMalloc(Int reqSize) {
+MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	if (reqSize <= BUF_SIZE) {
 		return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE);
 	}
@@ -64,7 +64,7 @@ MemoryBlock<T> String_<T, BUF_SIZE>::onMalloc(Int reqSize) {
 }
 
 template <CharType T, Int BUF_SIZE> inline
-void String_<T, BUF_SIZE>::onFree(T* p) {
+void String_<T, BUF_SIZE>::onStorageFree(T* p) {
 	auto* d = inlineBufPtr(); 
 	if (p == d) return;
 	auto* allocator = ax_default_allocator();
