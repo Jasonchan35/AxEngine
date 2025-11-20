@@ -53,16 +53,19 @@ private:
 	};
 
 	struct SmallStorage {
-		i8 _capacity; // will be negative
-		i8 _size;
-		T _data[0];
+		u8 _capacity; // will be negative
+		u8 _size;
+		T  _data[0];
+		static constexpr u8  kMask = 0x80;
 		static constexpr Int kExtraCapacity = Math::max<Int>(0u, (AX_SIZE_OF(NormalStorage) - AX_ALIGN_OF(T)) / AX_SIZE_OF(T));
-		constexpr Int        capacity() const { return -_capacity + kExtraCapacity; }
+		constexpr Int        capacity() const { return kExtraCapacity + Int(_capacity & ~kMask); }
 		constexpr void       setCapacity(Int v);
 	};
 
 	union Storage {
 	public:
+		static constexpr bool kEnableSmallBuffer = IArray::kEnableSmallBufferOptimization;
+
 		SmallStorage  _small;
 		NormalStorage _normal;
 
@@ -190,8 +193,8 @@ constexpr void IArray<T>::Storage::setData(T* data, Int cap) {
 template <class T>
 constexpr void IArray<T>::SmallStorage::setCapacity(Int v) {
 	if constexpr (kEnableSmallBufferOptimization) {
-		if (v > i8_max) throw Error_InvalidSize(AX_SRC_LOC);
-		_capacity = -static_cast<i8>(v);
+		if (v < 0 || v > i8_max) throw Error_InvalidSize(AX_SRC_LOC);
+		_capacity = static_cast<u8>(v) | kMask;
 	} else {
 		AX_ASSERT(false);
 	}
@@ -199,8 +202,9 @@ constexpr void IArray<T>::SmallStorage::setCapacity(Int v) {
 
 template <class T> inline
 constexpr void IArray<T>::NormalStorage::setCapacity(Int v) {
+	if (v < 0) throw Error_InvalidSize(AX_SRC_LOC);
 	if constexpr (kEnableSmallBufferOptimization) {
-		_capacity = ByteOrder::BigEndian::fromHost(v);
+		_capacity = ByteOrder::BigEndian::fromHost( v);
 	} else {
 		_capacity = v;
 	}
@@ -217,14 +221,14 @@ constexpr Int IArray<T>::NormalStorage::capacity() const {
 
 template <class T> AX_INLINE
 constexpr IArray<T>::Storage::Storage(T* data, Int initCap) {
-	if (! kEnableSmallBufferOptimization || initCap > i8_max) {
-		_normal.setCapacity(initCap);
-		_normal._size = 0;
-		_normal._data = data;
-	} else {
+	if (kEnableSmallBufferOptimization && initCap <= i8_max) {
 		_small.setCapacity(initCap);
 		_small._size = 0;
 		// AX_ASSERT(_small._data == data);
+	} else {
+		_normal.setCapacity(initCap);
+		_normal._size = 0;
+		_normal._data = data;
 	}
 }
 
@@ -240,7 +244,7 @@ constexpr IArray<T>::Storage::~Storage() {
 template <class T> inline
 constexpr bool IArray<T>::Storage::isSmall() const {
 	if constexpr (kEnableSmallBufferOptimization) {
-		return _small._capacity < 0;
+		return (_small._capacity & SmallStorage::kMask) != 0;
 	} else {
 		return false;
 	}
