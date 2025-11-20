@@ -8,6 +8,7 @@ import <cstdint>;
 import <type_traits>;
 import <cassert>;
 import <exception>;
+import <source_location>;
 
 export namespace ax {
 
@@ -79,35 +80,42 @@ template<class T> constexpr bool ax_type_is_char = std::is_same_v<std::remove_cv
 template<class T> concept CharType = ax_type_is_char<T>;
 
 template<class T> requires std::is_const_v<T>
-class InternalStrLit_ {
+class StrLit_ {
+	using This = StrLit_;
 public:
-	InternalStrLit_() = default;
+	StrLit_() = default;
 	
 	template<Int N>
-	inline constexpr InternalStrLit_(T (&sz)[N])
+	inline constexpr StrLit_(T (&sz)[N])
 	: _data(sz), _size(N > 0 ? N-1 : 0) {}
+
+	static constexpr StrLit_ s_from_c_str(T* sz) { return StrLit_(sz, sz ? std::strlen(sz) : 0); }
 	
 protected:
+	inline constexpr StrLit_(T* sz, Int size) : _data(sz), _size(size) {}
+	
 	T* _data = nullptr;
 	Int _size = 0;
 };
 
-using InternalStrLit = InternalStrLit_<const CharA>;
+using StrLit = StrLit_<const CharA>;
+
+class NoInit {};
 
 struct SrcLoc {
-	SrcLoc() = default;
-	SrcLoc(InternalStrLit file, int line) : _file(file), _line(line) {}
+	constexpr SrcLoc(NoInit) {}
+	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) : _loc(loc) {};
 
-	InternalStrLit file() const { return _file; }
-	int line() const { return _line; }
-	
+	constexpr StrLit file() const { return StrLit::s_from_c_str(_loc.file_name()); }
+	constexpr StrLit function() const { return StrLit::s_from_c_str(_loc.function_name()); }
+	constexpr Int    line() const { return _loc.line(); }
+	constexpr Int    column() const { return _loc.column(); }
 protected:
-	InternalStrLit _file;
-	int _line  = 0;
+	std::source_location _loc;
 };
 
 export inline
-void ax_assert(const SrcLoc & srcLoc, bool expr, InternalStrLit exprStr) {
+void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc()) {
 	if (expr) return;
 	assert(false);
 } 
@@ -124,7 +132,7 @@ protected:
 #define AX_SIMPLE_ERROR(ERROR_TYPE) \
 	class ERROR_TYPE : public Error { \
 	public: \
-	ERROR_TYPE(const SrcLoc& srcLoc) : Error(srcLoc) {} \
+	ERROR_TYPE(const SrcLoc& srcLoc = SrcLoc()) : Error(srcLoc) {} \
 	}; \
 //------
 AX_SIMPLE_ERROR(Error_IndexOutOfRange)
@@ -145,7 +153,7 @@ template<class DST, class SRC> AX_INLINE
 constexpr DST ax_safe_cast(const SRC& src) {
 	DST dst;
 	if (!ax_try_safe_cast(dst, src)) {
-		throw Error_ValueCast(AX_SRC_LOC);
+		throw Error_ValueCast(SrcLoc());
 	}
 	return dst;
 }

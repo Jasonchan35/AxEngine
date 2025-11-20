@@ -26,10 +26,12 @@ protected:
 
 public:
 	using CharType = T;
-	MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
+	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
 
-	bool inBound(Int i) const noexcept { return (i >= 0 && i < _size); } 
-	const T & at(Int i) const { if (!inBound(i)) throw Error(AX_SRC_LOC); return _data[i]; }
+	constexpr bool inBound(Int i) const noexcept { return (i >= 0 && i < _size); } 
+	constexpr T & at(Int i) { if (!inBound(i)) throw Error_IndexOutOfRange(); return _data[i]; }
+	constexpr T & operator[](Int i) { return at(i); }
+	
 };
 
 inline StrView8 operator ""_sv8(const Char8* sz, size_t size) { return StrView8(sz, size); }

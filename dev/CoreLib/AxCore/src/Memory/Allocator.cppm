@@ -62,7 +62,7 @@ protected:
 template<class T> inline
 constexpr void MemoryBlock<T>::dealloc() {
 	if (!_data) return;
-	if (!_allocator) throw Error_Allocator(AX_SRC_LOC);
+	if (!_allocator) throw Error_Allocator();
 	_allocator->dealloc(_data);
 	_data = nullptr;
 	_size = 0;

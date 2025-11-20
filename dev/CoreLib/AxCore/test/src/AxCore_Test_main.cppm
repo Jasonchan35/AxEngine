@@ -1,14 +1,29 @@
 
-#include <cstdio>
+#include "AxCore.h"
 
 import AxCore;
 import AxCore.UnitTest;
+import <cstdio>;
+import <iostream>;
 
 namespace ax {
 
-	int my_main() {
-		StrView sz = "testing"_sv;
+	void func(const SrcLoc& loc = SrcLoc()) {
+		std::cout << "loc";
+	}
 
+	int my_main() {
+		StrView sv = "testing"_sv;
+
+		try {
+			auto c = sv[100];
+			AX_UNUSED(c);
+		} catch (Error& err) {
+			std::cout << err.what() << std::endl;
+		}
+
+		func();
+		
 		using Data = u8;
 		Array<Data, 5>	arr;
 

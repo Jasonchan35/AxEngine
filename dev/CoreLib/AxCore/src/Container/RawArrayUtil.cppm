@@ -42,7 +42,7 @@ template <class T> AX_INLINE
 void RawArrayUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	if( n <= 0 ) return;
 	if (MemoryUtil::isOverlapped(dst, n, src, n)) {
-		throw Error_BufferOverlapped(AX_SRC_LOC);
+		throw Error_BufferOverlapped();
 	}
 
 	if (std::is_trivially_copy_assignable_v<T>) {

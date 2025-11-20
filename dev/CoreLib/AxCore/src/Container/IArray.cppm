@@ -116,7 +116,7 @@ constexpr void IArray<T>::_reserve(Int reqCapacity) {
 template <class T>
 template <class ... Args> inline
 constexpr void IArray<T>::resize(Int newSize, Args&&... args) {
-	if (newSize < 0) throw Error_InvalidSize(AX_SRC_LOC);
+	if (newSize < 0) throw Error_InvalidSize();
 	auto oldSize = size();
 	auto* oldData = data();
 	if (newSize == oldSize) return;
@@ -193,7 +193,7 @@ constexpr void IArray<T>::Storage::setData(T* data, Int cap) {
 template <class T>
 constexpr void IArray<T>::SmallStorage::setCapacity(Int v) {
 	if constexpr (kEnableSmallBufferOptimization) {
-		if (v < 0 || v > i8_max) throw Error_InvalidSize(AX_SRC_LOC);
+		if (v < 0 || v > i8_max) throw Error_InvalidSize();
 		_capacity = static_cast<u8>(v) | kMask;
 	} else {
 		AX_ASSERT(false);
@@ -202,7 +202,7 @@ constexpr void IArray<T>::SmallStorage::setCapacity(Int v) {
 
 template <class T> inline
 constexpr void IArray<T>::NormalStorage::setCapacity(Int v) {
-	if (v < 0) throw Error_InvalidSize(AX_SRC_LOC);
+	if (v < 0) throw Error_InvalidSize();
 	if constexpr (kEnableSmallBufferOptimization) {
 		_capacity = ByteOrder::BigEndian::fromHost( v);
 	} else {

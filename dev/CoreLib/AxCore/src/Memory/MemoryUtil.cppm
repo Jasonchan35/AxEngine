@@ -37,7 +37,7 @@ void MemoryUtil::Copy(void* dst, const void* src, Int len) {
 	if( len <= 0 ) return;
 
 	if (isOverlapped(static_cast<const char*>(dst), len, static_cast<const char*>(src), len)) {
-		throw Error_BufferOverlapped(AX_SRC_LOC);
+		throw Error_BufferOverlapped();
 	}
 
 	if (len > k_size_to_use_system_memcpy) {
