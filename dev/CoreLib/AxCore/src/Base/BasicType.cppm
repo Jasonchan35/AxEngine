@@ -58,15 +58,15 @@ using f32  = float;
 using f64  = double;
 using f128 = long double;
 
-using CharA  = char;
+// using CharA  = char;
 using Char8  = char8_t;
 using Char16 = char16_t;
 using Char32 = char32_t;
 using CharW  = wchar_t;
 using Char   = Char8; // char8_t is a distinct type from char, so don't have to worry mix with u8/i8
 
-inline const Char8* ax_char_pointer(const CharA* p) {
-	static_assert(sizeof(Char8) == sizeof(CharA));
+AX_INLINE const Char8* ax_char8_from_charA_pointer(const char* p) {
+	static_assert(sizeof(Char8) == sizeof(char));
 	return reinterpret_cast<const Char8*>(p);
 }
 
@@ -74,34 +74,52 @@ using Int  = i64;
 using UInt = u64;
 using Byte = u8;
 
-template<class T> constexpr bool ax_type_is_char = std::is_same_v<std::remove_cv_t<T>, CharA>
-												|| std::is_same_v<std::remove_cv_t<T>, CharW>
-												|| std::is_same_v<std::remove_cv_t<T>, Char8>
-												|| std::is_same_v<std::remove_cv_t<T>, Char16>
-												|| std::is_same_v<std::remove_cv_t<T>, Char32>;
+template<class T> constexpr bool ax_type_is_char =	std::is_same_v<std::remove_cv_t<T>, char>
+												 ||	std::is_same_v<std::remove_cv_t<T>, CharW>
+												 || std::is_same_v<std::remove_cv_t<T>, Char8>
+												 || std::is_same_v<std::remove_cv_t<T>, Char16>
+												 || std::is_same_v<std::remove_cv_t<T>, Char32>;
 
 template<class T> concept CharType = ax_type_is_char<T>;
+
+template<class T, class R>
+constexpr bool ax_same_size_char_type = (sizeof(T) == sizeof(R) && ax_type_is_char<R> && ax_type_is_char<T>);
+
+template<class DST, class SRC> requires	ax_same_size_char_type<DST, SRC>
+constexpr DST* ax_cast_char_type_pointer(SRC* s) { return reinterpret_cast<DST*>(s); }
+
+template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
+	if (!sz) return 0;
+	Int i = 0;
+	for (; *sz; ++sz, ++i) {}
+	return i;
+}
 
 template<class T> requires std::is_const_v<T>
 class StrLit_ {
 	using This = StrLit_;
 public:
 	StrLit_() = default;
-	
-	template<Int N>
-	inline constexpr StrLit_(T (&sz)[N])
-	: _data(sz), _size(N > 0 ? N-1 : 0) {}
 
-	static constexpr StrLit_ s_from_c_str(T* sz) { return StrLit_(sz, sz ? std::strlen(sz) : 0); }
+	template<class R> requires ax_same_size_char_type<T,R>
+	AX_INLINE constexpr StrLit_(R* sz, Int size) : _data(ax_cast_char_type_pointer<T>(sz)), _size(size) {}
 	
+	template<class R, Int N> requires ax_same_size_char_type<T,R>
+	AX_INLINE constexpr StrLit_(R (&sz)[N]) : _data(ax_cast_char_type_pointer<T>(sz)), _size(N > 0 ? N-1 : 0) {}
+	
+	template<class R> requires ax_same_size_char_type<T,R>
+	AX_INLINE static constexpr StrLit_ s_from_c_str(R* sz) { return StrLit_(reinterpret_cast<T*>(sz), sz ? ax_strlen(sz) : 0); }
+	
+	AX_INLINE constexpr const T* c_str() const { return _size ? _data : &_empty_c_str; }
+
 protected:
-	inline constexpr StrLit_(T* sz, Int size) : _data(sz), _size(size) {}
+	static constexpr T _empty_c_str = 0;	
 	
-	T* _data = nullptr;
+	T*  _data = nullptr;
 	Int _size = 0;
 };
 
-using StrLit = StrLit_<const CharA>;
+using StrLit = StrLit_<const Char>;
 
 class NoInit {};
 
@@ -109,10 +127,11 @@ struct SrcLoc {
 	constexpr SrcLoc(NoInit) {}
 	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) : _loc(loc) {};
 
+	constexpr Int    column() const { return _loc.column(); }
+	constexpr Int    line() const { return _loc.line(); }
 	constexpr StrLit file() const { return StrLit::s_from_c_str(_loc.file_name()); }
 	constexpr StrLit function() const { return StrLit::s_from_c_str(_loc.function_name()); }
-	constexpr Int    line() const { return _loc.line(); }
-	constexpr Int    column() const { return _loc.column(); }
+	
 protected:
 	std::source_location _loc;
 };

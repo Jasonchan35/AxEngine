@@ -29,6 +29,6 @@ public:
 };
 
 inline StrView8 operator ""_sv8(const Char8* sz, size_t size) { return StrView8(sz, size); }
-inline StrView  operator ""_sv(const char* sz, size_t size) { return StrView(ax_char_pointer(sz), size); }
+inline StrView  operator ""_sv(const char* sz, size_t size) { return StrView(ax_char8_from_charA_pointer(sz), size); }
 
 } // namespace
