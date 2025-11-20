@@ -26,9 +26,13 @@ public:
 	using CharType = T;
 	constexpr MutStrView_() = default;
 	constexpr MutStrView_(T* data, Int size) noexcept : Base(data, size) {}
-};
 
-inline StrView8 operator ""_sv8(const Char8* sz, size_t size) { return StrView8(sz, size); }
-inline StrView  operator ""_sv(const char* sz, size_t size) { return StrView(ax_char8_from_charA_pointer(sz), size); }
+	template<class R> requires ax_same_size_char_type<T,R>
+	AX_INLINE constexpr MutStrView_(R* sz, Int size) : Base(ax_cast_char_type_pointer<T>(sz), size) {}
+	
+	template<class R, Int N> requires ax_same_size_char_type<T,R>
+	AX_INLINE constexpr MutStrView_(R (&sz)[N]) : Base(ax_cast_char_type_pointer<T>(sz), N > 0 ? N-1 : 0) {}
+		
+};
 
 } // namespace

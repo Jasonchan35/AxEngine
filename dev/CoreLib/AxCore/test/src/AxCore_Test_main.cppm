@@ -8,12 +8,11 @@ import <iostream>;
 
 namespace ax {
 
-	void func(const SrcLoc& loc = SrcLoc()) {
-		std::cout << "loc";
-	}
+	void test_string() {
+		auto sv = StrView("testing");
+		auto str = String("abcde");
 
-	int my_main() {
-		StrView sv = "testing"_sv;
+		std::cout << "sizeof(String) = " << ax_sizeof<String> << std::endl;
 
 		for (auto& c : sv) {
 			std::cout << char(c) << std::endl;
@@ -26,8 +25,9 @@ namespace ax {
 		} catch (Error& err) {
 			std::cout << err.what() << std::endl;
 		}
+	}
 
-		func();
+	void test_array() {
 		
 		using Data = u16;
 		Array<Data, 5>	arr;
@@ -47,11 +47,12 @@ namespace ax {
 		std::cout << std::endl;
 		
 		printf("AxCore_Test_main");
-		return 0;
 	}
 	
 } // namespace
 
 int main() {
-	return ax::my_main();
+//	ax::test_array();
+	ax::test_string();
+	return 0;
 }

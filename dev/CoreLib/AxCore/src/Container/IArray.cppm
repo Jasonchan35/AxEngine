@@ -15,7 +15,12 @@ import AxCore.RawArrayUtil;
 
 export namespace ax {
 
-template<class T>
+enum class EArrayMode {
+	Array,
+	String,
+};
+
+template<class T, EArrayMode ArrayMode = EArrayMode::Array>
 class IArray : public NonCopyable {
 protected:
 	static constexpr bool kEnableSmallBufferOptimization = true;
@@ -99,17 +104,23 @@ private:
 	constexpr void _reserve(Int reqCapacity);
 };
 
-template <class T> AX_INLINE
-constexpr void IArray<T>::reserve(Int newCapacity) {
+template <class T, EArrayMode ArrayMode> AX_INLINE
+constexpr void IArray<T, ArrayMode>::reserve(Int newCapacity) {
 	auto oldCap = capacity();
 	if (newCapacity <= oldCap) return;
 	_reserve(newCapacity);
 }
 
-template <class T> inline
-constexpr void IArray<T>::_reserve(Int reqCapacity) {
+template <class T, EArrayMode ArrayMode> inline
+constexpr void IArray<T, ArrayMode>::_reserve(Int reqCapacity) {
+	if constexpr (ArrayMode == EArrayMode::String) {
+		reqCapacity++; // +1 for null  terminator
+	}
+	
 	auto  memoryBlock  = onMalloc(reqCapacity);
-	auto  newCapacity  = memoryBlock.size();  
+	auto  newCapacity  = memoryBlock.size();
+	if (newCapacity < reqCapacity) throw Error_Allocator();
+	
 	auto  oldSize = size();
 	auto* oldData = data();
 	auto* newData = reinterpret_cast<T*>(memoryBlock.data());
@@ -122,12 +133,16 @@ constexpr void IArray<T>::_reserve(Int reqCapacity) {
 		}
 		memoryBlock.detach();
 	}
+	
+	if constexpr (ArrayMode == EArrayMode::String) {
+		newCapacity--;
+	}	
 	_storage.setData(newData, newCapacity);
 }
 
-template <class T>
+template <class T, EArrayMode ArrayMode>
 template <class ... Args> inline
-constexpr void IArray<T>::resize(Int newSize, Args&&... args) {
+constexpr void IArray<T, ArrayMode>::resize(Int newSize, Args&&... args) {
 	if (newSize < 0) throw Error_InvalidSize();
 	auto oldSize = size();
 	auto* oldData = data();
@@ -141,42 +156,48 @@ constexpr void IArray<T>::resize(Int newSize, Args&&... args) {
 		RawArrayUtil::constructor(data() + oldSize, newSize - oldSize, AX_FORWARD(args)...);
 	}
 	_storage.setSize(newSize);
+
+	if constexpr (ArrayMode == EArrayMode::String) {
+		data()[newSize] = 0;
+	}
 }
 
-template <class T>
-constexpr void IArray<T>::append(const T& item) {
+template <class T, EArrayMode ArrayMode>
+constexpr void IArray<T, ArrayMode>::append(const T& item) {
 	auto oldSize = size();
 	reserve(oldSize + 1);
 	ax_call_constructor<T>(data() + oldSize, item);
 	_storage.setSize(oldSize + 1);
 }
 
-template <class T>
-constexpr void IArray<T>::append(T && item) {
+template <class T, EArrayMode ArrayMode>
+constexpr void IArray<T, ArrayMode>::append(T && item) {
 	auto oldSize = size();
 	reserve(oldSize + 1);
 	ax_call_constructor<T>(data() + oldSize, AX_FORWARD(item));
 	_storage.setSize(oldSize + 1);
 }
 
-template <class T> inline
-constexpr void IArray<T>::clear() {
+template <class T, EArrayMode ArrayMode> inline
+constexpr void IArray<T, ArrayMode>::clear() {
 	RawArrayUtil::destructor(data(), size());
 	_storage.setSize(0);
 }
 
-template <class T> inline
-constexpr void IArray<T>::clearAndFree() {
+template <class T, EArrayMode ArrayMode> inline
+constexpr void IArray<T, ArrayMode>::clearAndFree() {
 	clear();
 	auto* oldData = data();
 	if (oldData) {
-		onFree(oldData);
+		if (!_storage.isSmall()) {
+			onFree(oldData);
+		}
 		_storage.setData(nullptr, 0);
 	}	
 }
 
-template <class T> inline
-constexpr Int IArray<T>::Storage::capacity() const {
+template <class T, EArrayMode ArrayMode> inline
+constexpr Int IArray<T, ArrayMode>::Storage::capacity() const {
 	if constexpr (kEnableSmallBufferOptimization) {
 		return isSmall() ? _small.capacity() : _normal.capacity();
 	} else {
@@ -184,8 +205,8 @@ constexpr Int IArray<T>::Storage::capacity() const {
 	}
 }
 
-template <class T> inline
-constexpr void IArray<T>::Storage::setSize(Int v) {
+template <class T, EArrayMode ArrayMode> inline
+constexpr void IArray<T, ArrayMode>::Storage::setSize(Int v) {
 	if (isSmall()) {
 		AX_ASSERT(v <= i8_max);
 		_small._size = static_cast<i8>(v);
@@ -194,16 +215,16 @@ constexpr void IArray<T>::Storage::setSize(Int v) {
 	}
 }
 
-template <class T> inline
-constexpr void IArray<T>::Storage::setData(T* data, Int cap) {
+template <class T, EArrayMode ArrayMode> inline
+constexpr void IArray<T, ArrayMode>::Storage::setData(T* data, Int cap) {
 	auto oldSize = size();
 	_normal._size = oldSize;
 	_normal._data = data;
 	_normal.setCapacity(cap);
 }
 
-template <class T>
-constexpr void IArray<T>::SmallStorage::setCapacity(Int v) {
+template <class T, EArrayMode ArrayMode>
+constexpr void IArray<T, ArrayMode>::SmallStorage::setCapacity(Int v) {
 	if constexpr (kEnableSmallBufferOptimization) {
 		if (v < 0 || v > i8_max) throw Error_InvalidSize();
 		_capacity = static_cast<u8>(v) | kMask;
@@ -212,8 +233,8 @@ constexpr void IArray<T>::SmallStorage::setCapacity(Int v) {
 	}
 }
 
-template <class T> inline
-constexpr void IArray<T>::NormalStorage::setCapacity(Int v) {
+template <class T, EArrayMode ArrayMode> inline
+constexpr void IArray<T, ArrayMode>::NormalStorage::setCapacity(Int v) {
 	if (v < 0) throw Error_InvalidSize();
 	if constexpr (kEnableSmallBufferOptimization) {
 		_capacity = ByteOrder::BigEndian::fromHost( v);
@@ -222,8 +243,8 @@ constexpr void IArray<T>::NormalStorage::setCapacity(Int v) {
 	}
 }
 
-template <class T> inline
-constexpr Int IArray<T>::NormalStorage::capacity() const {
+template <class T, EArrayMode ArrayMode> inline
+constexpr Int IArray<T, ArrayMode>::NormalStorage::capacity() const {
 	if constexpr (kEnableSmallBufferOptimization) {
 		return ByteOrder::BigEndian::toHost(_capacity);
 	} else {
@@ -231,8 +252,8 @@ constexpr Int IArray<T>::NormalStorage::capacity() const {
 	}
 }
 
-template <class T> AX_INLINE
-constexpr IArray<T>::Storage::Storage(T* data, Int initCap) {
+template <class T, EArrayMode ArrayMode> AX_INLINE
+constexpr IArray<T, ArrayMode>::Storage::Storage(T* data, Int initCap) {
 	if (kEnableSmallBufferOptimization && initCap <= i8_max) {
 		_small.setCapacity(initCap);
 		_small._size = 0;
@@ -244,8 +265,8 @@ constexpr IArray<T>::Storage::Storage(T* data, Int initCap) {
 	}
 }
 
-template <class T> inline
-constexpr IArray<T>::Storage::~Storage() {
+template <class T, EArrayMode ArrayMode> inline
+constexpr IArray<T, ArrayMode>::Storage::~Storage() {
 	if constexpr (kEnableSmallBufferOptimization) {
 		AX_ASSERT_MSG(isSmall() || _normal._data == nullptr, "IArray data is not freed");
 	} else {
@@ -253,8 +274,8 @@ constexpr IArray<T>::Storage::~Storage() {
 	}
 }
 
-template <class T> inline
-constexpr bool IArray<T>::Storage::isSmall() const {
+template <class T, EArrayMode ArrayMode> inline
+constexpr bool IArray<T, ArrayMode>::Storage::isSmall() const {
 	if constexpr (kEnableSmallBufferOptimization) {
 		return (_small._capacity & SmallStorage::kMask) != 0;
 	} else {

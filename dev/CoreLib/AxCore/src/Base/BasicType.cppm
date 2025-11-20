@@ -65,11 +65,6 @@ using Char32 = char32_t;
 using CharW  = wchar_t;
 using Char   = Char8; // char8_t is a distinct type from char, so don't have to worry mix with u8/i8
 
-AX_INLINE const Char8* ax_char8_from_charA_pointer(const char* p) {
-	static_assert(sizeof(Char8) == sizeof(char));
-	return reinterpret_cast<const Char8*>(p);
-}
-
 using Int  = i64;
 using UInt = u64;
 using Byte = u8;

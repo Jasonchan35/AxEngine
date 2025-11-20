@@ -33,7 +33,7 @@ MemoryBlock<T> Array<T, BUF_SIZE>::onMalloc(Int reqSize) {
 	}
 	
 	Int newCapacity = reqSize;
-	if (reqSize < 2048) {
+	if (newCapacity < 2048) {
 		newCapacity = Math::nextPow2_half(reqSize);
 	}
 	
@@ -47,5 +47,6 @@ void Array<T, BUF_SIZE>::onFree(T* p) {
 	auto* allocator = ax_default_allocator();
 	allocator->dealloc(p);	
 }
+
 } // namespace
 
