@@ -3,9 +3,10 @@ export module AxCore.BasicType;
 #include "AX_DETECT_PLATFORM.h"
 #include "AX_MACRO.h"
 
+export import <type_traits>;
+export import <cstdint>;
+
 import <stdexcept>;
-import <cstdint>;
-import <type_traits>;
 import <cassert>;
 import <exception>;
 import <source_location>;

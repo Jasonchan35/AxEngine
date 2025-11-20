@@ -1,15 +1,28 @@
 ﻿export module AxCore.Span;
 
 #include "AxBase.h"
+
 export import AxCore.BasicType;
 export import AxCore.Range;
 
+import AxCore.MemoryUtil;
+
 export namespace ax {
+
+template<class T> class MutSpan;
+template<class T> using Span = MutSpan<const T>;
+
+using    ByteSpan	=    Span<Byte>;
+using MutByteSpan	= MutSpan<Byte>;
+
+using    IntSpan	=    Span<Int>;
+using MutIntSpan	= MutSpan<Int>;
 
 template<class T>
 class MutSpan { // copyable
 	using This = MutSpan;
 	using CSpan = MutSpan<const T>;
+	using MutByte =	typename std::conditional_t<std::is_const_v<T>, const Byte, Byte>;	
 public:
 
 	constexpr MutSpan() = default;
@@ -24,7 +37,9 @@ public:
 
 	AX_INLINE constexpr bool inBound(Int      i) const { return i >= 0 && i < _size; }
 	AX_INLINE constexpr bool inBound(IntRange r) const { return IntRange(0, _size).contains(r); }
-	
+
+	AX_INLINE constexpr bool isOverlapped(CSpan rhs) const { return MemoryUtil::isOverlapped(_data, _size, rhs.data(), rhs.size()); }
+
 	AX_INLINE constexpr       T& operator[](Int i)       { return get(i); }
 	AX_INLINE constexpr const T& operator[](Int i) const { return get(i); }
 
@@ -49,7 +64,17 @@ public:
 	AX_INLINE constexpr       T* data()       { return _data; }
 	AX_INLINE constexpr const T* data() const { return _data; }
 	AX_INLINE constexpr Int      size() const { return _size; }
+	AX_INLINE constexpr Int	     sizeInBytes() const { return _size * ax_sizeof<T>; }
 
+	AX_INLINE	constexpr static MutSpan	s_fromMutByteSpan	(MutSpan<MutByte>	from)	{ return MutSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
+	AX_INLINE	constexpr static CSpan		s_fromByteSpan		(ByteSpan			from)	{ return   CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
+
+	AX_INLINE	constexpr void				fromMutByteSpan		(MutSpan<MutByte>	from)	{ *this = s_fromMutByteSpan(from); }
+	AX_INLINE	constexpr void				fromByteSpan		(ByteSpan			from)	{ *this = s_fromByteSpan(from); }
+
+	AX_INLINE	constexpr MutSpan<MutByte>	toMutByteSpan		() const { return MutSpan<MutByte>(reinterpret_cast<   MutByte*>(_data), sizeInBytes()); }
+	AX_INLINE	constexpr    Span<Byte>		toByteSpan			() const { return MutSpan<MutByte>(reinterpret_cast<const Byte*>(_data), sizeInBytes()); }
+	
 	//            +--------------------------------------------+
 	//            |         |                      |           |
 	//            +--------------------------------------------+

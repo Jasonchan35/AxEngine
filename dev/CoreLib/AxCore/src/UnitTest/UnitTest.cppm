@@ -1,20 +1,31 @@
 ﻿export module AxCore.UnitTest;
 
 #include "AxBase.h"
-import AxCore.String;
+export import AxCore.String;
+export import AxCore.Debug;
 
 export namespace ax {
 
-	class UnitTestClass : public NonCopyable {
-	public:
-	};
+struct UnitTestRequest : public NonCopyable {
+	// JsonValue	options;
+};
+
+class UnitTestProgram : public NonCopyable {
+public:
+	UnitTestProgram();
+
+	UnitTestRequest testRequest;
 	
-	class UnitTestProject : public NonCopyable {
-	public:
-		virtual ~UnitTestProject() = default;
-		virtual void onRun()  = 0;
-		int run();
-		int waitKeyPress();
-	};
+	static UnitTestProgram* s_get();
+	
+	virtual      ~UnitTestProgram() = default;
+	virtual void onRun() = 0;
+	int          run();
+	int          waitKeyPress();
+};
+
+struct UnitTestCase : public NonCopyable {
+	static UnitTestRequest& s_testRequest() { return UnitTestProgram::s_get()->testRequest; }
+};
 
 } // namespace

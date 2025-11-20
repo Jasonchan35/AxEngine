@@ -11,7 +11,6 @@ export import AxCore.Span;
 
 export import AxCore.Allocator;
 export import AxCore.MemoryUtil;
-export import AxCore.RawArrayUtil;
 
 export namespace ax {
 
@@ -98,7 +97,7 @@ constexpr void IArrayStorage<T>::_storageRreserveImpl(Int reqCapacity) {
 	auto* newData = reinterpret_cast<T*>(memoryBlock.data());
 	if (newData != oldData) {
 		if (oldData) {
-			RawArrayUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
+			MemoryUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
 			if (!_storage.isSmall()) {
 				onStorageFree(oldData);
 			}
@@ -119,18 +118,18 @@ constexpr void IArrayStorage<T>::_storageResize(Int newSize, Args&&... args) {
 	if( newSize <  oldSize ) {
 		auto dst = oldData + newSize;
 		auto n   = oldSize  - newSize;
-		RawArrayUtil::destructor(dst, n);
+		MemoryUtil::destructor(dst, n);
 	}else{
 		_storageReserve(newSize);
 		auto* newData = _storage.data();
-		RawArrayUtil::constructor(newData + oldSize, newSize - oldSize, AX_FORWARD(args)...);
+		MemoryUtil::constructor(newData + oldSize, newSize - oldSize, AX_FORWARD(args)...);
 	}
 	_storage.setSize(newSize);
 }
 
 template <class T> AX_INLINE
 constexpr void IArrayStorage<T>::_storageClear() {
-	RawArrayUtil::destructor(_storage.data(), _storage.size());
+	MemoryUtil::destructor(_storage.data(), _storage.size());
 	_storage.setSize(0);
 }
 
