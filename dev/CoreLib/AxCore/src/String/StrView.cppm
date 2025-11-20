@@ -1,8 +1,8 @@
 ﻿export module AxCore.StrView;
 
-#include "Base/AX_MACRO.h"
-
+#include "AxBase.h"
 export import AxCore.BasicType;
+export import AxCore.Span;
 
 export namespace ax {
 
@@ -16,22 +16,16 @@ using StrViewW  = StrView_<CharW >;
 using StrView   = StrView_<Char  >;
 
 template <CharType T>
-class MutStrView_ {
-	//Copyable
+class MutStrView_ : public MutSpan<T> { //Copyable
 	using This = MutStrView_;
-
+	using Base = MutSpan<T>;
 protected:
-	T*  _data = nullptr;
-	Int _size = 0;
-
+	using Base::_data;
+	using Base::_size;	
 public:
 	using CharType = T;
-	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
-
-	constexpr bool inBound(Int i) const noexcept { return (i >= 0 && i < _size); } 
-	constexpr T & at(Int i) { if (!inBound(i)) throw Error_IndexOutOfRange(); return _data[i]; }
-	constexpr T & operator[](Int i) { return at(i); }
-	
+	constexpr MutStrView_() = default;
+	constexpr MutStrView_(T* data, Int size) noexcept : Base(data, size) {}
 };
 
 inline StrView8 operator ""_sv8(const Char8* sz, size_t size) { return StrView8(sz, size); }

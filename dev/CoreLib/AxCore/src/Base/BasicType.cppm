@@ -20,6 +20,9 @@ public:
 	void operator=(const NonCopyable& s) = delete;
 };
 
+template<class T> AX_INLINE constexpr T* ax_const_cast(const T* v) { return const_cast<T*>(v); }
+template<class T> AX_INLINE constexpr T& ax_const_cast(const T& v) { return const_cast<T&>(v); }
+
 using u8  = std::uint8_t;
 using u16 = std::uint16_t;
 using u32 = std::uint32_t;
@@ -60,7 +63,7 @@ using Char8  = char8_t;
 using Char16 = char16_t;
 using Char32 = char32_t;
 using CharW  = wchar_t;
-using Char   = Char8; 
+using Char   = Char8; // char8_t is a distinct type from char, so don't have to worry mix with u8/i8
 
 inline const Char8* ax_char_pointer(const CharA* p) {
 	static_assert(sizeof(Char8) == sizeof(CharA));
@@ -125,8 +128,11 @@ public:
 	Error() = default;
 	Error(const SrcLoc& srcLoc) : _srcLoc(srcLoc) {}
 
+	virtual char const* what() const override { return _what.c_str(); }
+	
 protected:
 	SrcLoc _srcLoc;
+	std::string _what;
 };
 
 #define AX_SIMPLE_ERROR(ERROR_TYPE) \

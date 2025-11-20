@@ -31,15 +31,12 @@ protected:
 	using Base::_data;
 	using Base::_size;
 public:
-	using View = MutZStrView_<const T>;
+	using CView = MutZStrView_<const T>;
 
 	AX_INLINE constexpr MutZStrView_() = default;
 	AX_INLINE constexpr MutZStrView_(T* sz, Int size) { Base::setPtr(sz, size); }
-
-	template<Int N>
-	AX_INLINE constexpr MutZStrView_(T (&sz)[N]) { Base::setPtr(sz, N > 0 ? N-1 : 0); }
 	
-	View		constView() const { return View(_data, _size); }
+	CView		constView() const { return CView(_data, _size); }
 
 	const T*	c_str() const { return _size ? _data : &_kZero; }
 

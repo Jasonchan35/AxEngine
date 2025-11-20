@@ -7,6 +7,7 @@ export import AxCore.BasicType;
 export import AxCore.ByteOrder;
 export import AxCore.Span;
 export import AxCore.Math;
+export import AxCore.Span;
 
 import AxCore.Allocator;
 import AxCore.MemoryUtil;
@@ -23,6 +24,9 @@ protected:
 	virtual ~IArray() = default;
 	
 public:
+	MutSpan<T> toMutSpan() { return MutSpan<T>(data(), size()); }
+	operator MutSpan<T>()  { return toMutSpan(); }
+	
 	constexpr T*  data() { return _storage.data(); }
 	constexpr Int size() const { return _storage.size(); }
 	constexpr Int capacity() const { return _storage.capacity(); }
@@ -37,7 +41,15 @@ public:
 
 	constexpr void clear();
 	constexpr void clearAndFree();
+
+	using  Iter	= T*;
+	using CIter	= const T*;
 	
+	constexpr  Iter	begin	()			{ return data(); }
+	constexpr CIter	begin	() const	{ return data(); }
+	constexpr  Iter	end		()			{ return data() + size(); }
+	constexpr CIter	end		() const	{ return data() + size(); }
+		
 protected:
 	virtual	MemoryBlock<T>	onMalloc(Int reqSize) = 0;
 	virtual	void			onFree	(T* p) = 0;
