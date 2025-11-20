@@ -91,7 +91,7 @@ public:
 	AX_INLINE constexpr bool	endsWith	(CView r,  bool ignoreCase = false) const { return getStrView().endsWith  (r,  ignoreCase); }
 	AX_INLINE constexpr bool	matchWildcard(CView wildcard, bool ignoreCase) const  { return getStrView().matchWildcard(wildcard, ignoreCase); }
 	//-----------------------------------	
-	void append(StrView view);
+	void append(CView view);
 
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -111,7 +111,7 @@ protected:
 };
 
 template <class T> inline
-void IString_<T>::append(StrView view) {
+void IString_<T>::append(CView view) {
 	if (isOverlapped(view)) {
 		throw Error_BufferOverlapped();
 	}

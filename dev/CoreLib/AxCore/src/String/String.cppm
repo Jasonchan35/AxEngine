@@ -9,7 +9,7 @@ import AxCore.InlineBuffer;
 
 export namespace ax {
 
-template<CharType T, Int BUF_SIZE = 24> class String_;
+template<CharType T, Int BUF_SIZE = 0> class String_;
 using String   = String_<Char  >;
 using StringW  = String_<CharW >;
 using String8  = String_<Char8 >;
@@ -22,7 +22,7 @@ template<Int N> using String8_N  = String_<Char8 , N>;
 template<Int N> using String16_N = String_<Char16, N>;
 template<Int N> using String32_N = String_<Char32, N>;
 
-template<class T> using TempString_ = String_<T, 200>;
+template<class T> using TempString_ = String_<T, 512>; // long enough to hold file path
 using TempString	= TempString_< Char   >;
 using TempStringW	= TempString_< CharW  >;
 using TempString16	= TempString_< Char16 >;
@@ -39,7 +39,7 @@ public:
 	using View = StrView_<T>;
 	
 	String_() : Base(inlineBufPtr(), BUF_SIZE) {}
-	String_(View view) : String_() {}
+	String_(View view) : String_() { Base::append(view); }
 
 	virtual	~String_() override { Base::clearAndFree(); }
 
@@ -55,8 +55,12 @@ MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	}
 	
 	Int newCapacity = reqSize;
+
+	constexpr Int kMinByteSize = 64;
+	newCapacity = Math::max(newCapacity, kMinByteSize / ax_sizeof<T>);
+
 	if (newCapacity < 2048) {
-		newCapacity = Math::nextPow2_half(reqSize);
+		newCapacity = Math::nextPow2_half(newCapacity);
 	}
 	
 	auto* allocator = ax_default_allocator();

@@ -9,8 +9,9 @@ import AxCore.InlineBuffer;
 
 export namespace ax {
 
-template <class T, Int BUF_SIZE = 0>
-class Array;
+template <class T, Int BUF_SIZE = 0> class Array;
+using ByteArray = Array<Byte>;
+using IntArray  = Array<Int>;
 
 template <class T, Int BUF_SIZE>
 class Array : public IArray<T>, InlineBuffer<T, BUF_SIZE> {
@@ -33,8 +34,12 @@ MemoryBlock<T> Array<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	}
 	
 	Int newCapacity = reqSize;
+
+	constexpr Int kMinByteSize = 64;
+	newCapacity = Math::max(newCapacity, kMinByteSize / ax_sizeof<T>);
+
 	if (newCapacity < 2048) {
-		newCapacity = Math::nextPow2_half(reqSize);
+		newCapacity = Math::nextPow2_half(newCapacity);
 	}
 	
 	auto* allocator = ax_default_allocator();
