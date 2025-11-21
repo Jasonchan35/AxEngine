@@ -30,7 +30,7 @@ using TempString32	= TempString_< Char32 >;
 
 
 template<CharType T, Int BUF_SIZE> 
-class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null  terminator
+class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator
 {
 	using Base = IString_<T>;
 	using BaseInlineBuffer = InlineBuffer<T, BUF_SIZE + 1>;
@@ -60,7 +60,7 @@ MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 		return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE);
 	}
 	
-	Int newCapacity = reqSize;
+	Int newCapacity = reqSize + 1; // +1 for null terminator
 
 	constexpr Int kMinByteSize = 64;
 	newCapacity = Math::max(newCapacity, kMinByteSize / ax_sizeof<T>);
@@ -70,7 +70,9 @@ MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	}
 	
 	auto* allocator = ax_default_allocator();
-	return allocator->alloc<T>(newCapacity);
+	auto buf = allocator->alloc<T>(newCapacity);
+	buf.size--; // -1 for null terminator
+	return buf;
 }
 
 template <CharType T, Int BUF_SIZE> inline

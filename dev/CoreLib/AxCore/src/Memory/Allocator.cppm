@@ -11,25 +11,30 @@ export namespace ax {
 
 template<class T>
 class MemoryBlock : public NonCopyable {
-	friend class Allocator;
-protected:
-	Allocator* _allocator = nullptr;
-	T*  _data	= nullptr;
-	Int _size	= 0;
 public:
+	class Allocator* allocator = nullptr;
+	T*  data	= nullptr;
+	Int size	= 0;
+
 	constexpr MemoryBlock() = default;
 	constexpr MemoryBlock(const MemoryBlock&) = delete;
-	constexpr MemoryBlock(MemoryBlock&& r) noexcept : _data(r._data), _allocator(r._allocator) {
-		r._data = nullptr;
-	}
-	constexpr MemoryBlock(Allocator* allocator, T* data, Int size) noexcept : _allocator(allocator), _data(data), _size(size) {}
-	constexpr ~MemoryBlock() noexcept { dealloc(); }
 
-	constexpr T* data() const noexcept { return _data; }
-	constexpr Int size() const noexcept { return _size; }
-	constexpr Allocator* allocator() const noexcept { return _allocator; }
+	constexpr MemoryBlock(MemoryBlock&& r) noexcept
+		: data(r.data)
+		, allocator(r.allocator) {
+		r.data = nullptr;
+		r.size = 0;
+	}
+
+	constexpr MemoryBlock(Allocator* allocator_, T* data_, Int size_) noexcept
+		: allocator(allocator_)
+		, data(data_)
+		, size(size_) {
+	}
 	
-	constexpr void detach() noexcept { _data = nullptr; _allocator = nullptr; _size = 0; }
+	constexpr ~MemoryBlock() noexcept { dealloc(); }
+	
+	constexpr void detach() noexcept { data = nullptr; allocator = nullptr; size = 0; }
 	constexpr void dealloc();
 };
 
@@ -39,7 +44,7 @@ public:
 	template<class T>
 	MemoryBlock<T> alloc(Int size, Int alignment = ax_alignof<T>) {
 		auto block = onAlloc(size * ax_sizeof<T>, alignment);
-		T* data = reinterpret_cast<T*>(block.data());
+		T* data = reinterpret_cast<T*>(block.data);
 		block.detach();
 		return MemoryBlock<T>(this, data, size);
 	}
@@ -61,11 +66,10 @@ protected:
 
 template<class T> inline
 constexpr void MemoryBlock<T>::dealloc() {
-	if (!_data) return;
-	if (!_allocator) throw Error_Allocator();
-	_allocator->dealloc(_data);
-	_data = nullptr;
-	_size = 0;
+	if (!data || !allocator) return;
+	allocator->dealloc(data);
+	data = nullptr;
+	size = 0;
 }
 
 Allocator*	ax_default_allocator();

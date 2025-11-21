@@ -37,6 +37,7 @@ protected:
 
 	constexpr void _storageClear();
 	constexpr void _storageClearAndFree();
+	constexpr void _storageResetToLocalBuf();
 
 	
 	struct NormalStorage {
@@ -94,12 +95,11 @@ void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 	auto srcData = rhs._storage.data();
 	auto srcSize = rhs._storage.size();
 	
-	if (rhs._storage.isDataFromAllocator()) {
+	if (rhs._storage.isAllocData()) {
 		_storageClearAndFree();
-		// takeover the data directly
-		_storage.setData(rhs._storage.data(), rhs._storage.capacity());
+		_storage.setAllocData(rhs._storage.data(), rhs._storage.capacity());
 		_storage.setSize(srcSize);
-		rhs._storage.reset();
+		rhs._storageResetToLocalBuf();
 	} else {
 		_storageClear();
 		_storageReserve(srcSize);
@@ -121,12 +121,12 @@ constexpr bool IArrayStorage<T>::_storageReserve(Int newCapacity) {
 template <class T> inline
 constexpr void IArrayStorage<T>::_storageRreserveImpl(Int reqCapacity) {
 	auto  memoryBlock  = onStorageMalloc(reqCapacity);
-	auto  newCapacity  = memoryBlock.size();
+	auto  newCapacity  = memoryBlock.size;
 	if (newCapacity < reqCapacity) throw Error_Allocator();
 	
 	auto  oldSize = _storage.size();
 	auto* oldData = _storage.data();
-	auto* newData = reinterpret_cast<T*>(memoryBlock.data());
+	auto* newData = reinterpret_cast<T*>(memoryBlock.data);
 	if (newData != oldData) {
 		if (oldData) {
 			MemoryUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
@@ -168,14 +168,17 @@ constexpr void IArrayStorage<T>::_storageClear() {
 template <class T> inline
 constexpr void IArrayStorage<T>::_storageClearAndFree() {
 	_storageClear();
-	if (auto* oldData = _storage.data()) {
-		if (_storage.isAllocData()) {
-			onStorageFree(oldData);
-		}
-		auto block = onStorageLocalBuf();
-		if (block.allocator()) throw Error_Allocator();
-		_storage.resetToLocalBuf(block.data(), block.size());
+	if (_storage.isAllocData()) {
+		onStorageFree(_storage.data());
 	}
+	_storageResetToLocalBuf();
+}
+
+template <class T>
+constexpr void IArrayStorage<T>::_storageResetToLocalBuf() {
+	auto block = onStorageLocalBuf();
+	if (block.allocator) throw Error_Allocator();
+	_storage.resetToLocalBuf(block.data, block.size);
 }
 
 template <class T> AX_INLINE
@@ -239,11 +242,7 @@ constexpr void IArrayStorage<T>::Storage::resetToLocalBuf(T* data, Int initCap) 
 
 template <class T> AX_INLINE
 constexpr IArrayStorage<T>::Storage::~Storage() {
-	if constexpr (kSmallBufferOptimization) {
-		AX_ASSERT_MSG(isSmall() || _normal._data == nullptr, "IArray data is not freed");
-	} else {
-		AX_ASSERT_MSG(_normal._data == nullptr, "IArray data is not freed");
-	}
+	AX_ASSERT_MSG(!isAllocData(), " Allocated buffer not freed yet, please call _storageClearAndFree in destructor");
 }
 
 } // namespace

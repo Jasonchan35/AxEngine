@@ -40,8 +40,8 @@ public:
 	constexpr void reserve(Int newCapacity) { Base::_storageReserve(newCapacity); }
 	
 	template<class... Args>
-	constexpr void resize(Int newSize, Args&&... args) { Base::_storageResize(newSize, AX_FORWARD(args)...); }
-	
+	constexpr void resize(Int newSize, Args&&... args);
+
 	template<class R>
 	AX_INLINE constexpr bool	isOverlapped(StrView_<R> r) const	{ return getByteSpan().isOverlapped(r.toByteSpan()); }
 	AX_INLINE constexpr	bool	inBound(Int i) const				{ return i >= 0 && i < size(); }
@@ -92,7 +92,8 @@ public:
 	AX_INLINE constexpr bool matchWildcard(CView wildcard, bool ignoreCase) const  { return getStrView().matchWildcard(wildcard, ignoreCase); }
 	
 	//-----------------------------------
-	void operator=(IString_<T>&& rhs);
+	AX_INLINE void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
+	AX_INLINE void move(IString_<T> && rhs);
 	
 	void                     append(CView view);
 	void                     appendChar(const T& ch) { append(CView(&ch, 1)); }
@@ -113,6 +114,21 @@ protected:
 	#endif
 	}
 };
+
+template <class T>
+template <class ... Args> AX_INLINE
+constexpr void IString_<T>::resize(Int newSize, Args&&... args) {
+	Base::_storageResize(newSize, AX_FORWARD(args)...);
+	if (newSize > 0)
+		data()[newSize] = 0; // null terminator
+}
+
+template <class T> inline
+void IString_<T>::move(IString_<T> && rhs) {
+	Base::_storageMove(std::move(rhs));
+	auto s = size();
+	if (s > 0) data()[s] = 0; // _storageMove may copy without null terminator
+}
 
 template <class T> inline
 void IString_<T>::append(CView view) {
