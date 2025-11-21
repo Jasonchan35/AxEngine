@@ -17,10 +17,12 @@ struct Test_String : public UnitTestCase {
 		String32 str32( U"Testing");
 		StringW  strW ( L"Testing");
 
-		Array<Int> test;
-		test.append(1);
-		test.append(2);
-		test.append(3);
+		Array<Int,10> arr;
+		for (Int i : IntRange(0,2)) {
+			arr.append(i);
+		}
+
+		auto buf = Fmt_<char>("format test");
 	}
 };
 

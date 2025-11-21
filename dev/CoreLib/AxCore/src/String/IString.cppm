@@ -79,19 +79,23 @@ public:
 	AX_INLINE constexpr MView	extractFromPrefix(CView prefix, bool ignoreCase = false)		{ return getMutStrView().extractFromPrefix(prefix, ignoreCase); }
 	AX_INLINE constexpr CView	extractFromPrefix(CView prefix, bool ignoreCase = false) const	{ return    getStrView().extractFromPrefix(prefix, ignoreCase); }
 	//----------------------------------	
-	AX_INLINE constexpr bool	operator==	(CView r) const	{ return equals(r); }
-	AX_INLINE constexpr bool	operator!=	(CView r) const	{ return !equals(r); }
-	AX_INLINE constexpr bool	operator<	(CView r) const	{ return compare(r) <  0; }
-	AX_INLINE constexpr bool	operator<=	(CView r) const	{ return compare(r) <= 0; }
-	AX_INLINE constexpr bool	operator>	(CView r) const	{ return compare(r) >  0; }
-	AX_INLINE constexpr bool	operator>=	(CView r) const	{ return compare(r) >= 0; }
-	AX_INLINE constexpr Int		compare		(CView r,  bool ignoreCase = false) const { return getStrView().compare	  (r,  ignoreCase); }
-	AX_INLINE constexpr bool	equals		(CView r,  bool ignoreCase = false) const { return getStrView().equals    (r,  ignoreCase); }
-	AX_INLINE constexpr bool	startsWith	(CView r,  bool ignoreCase = false) const { return getStrView().startsWith(r,  ignoreCase); }
-	AX_INLINE constexpr bool	endsWith	(CView r,  bool ignoreCase = false) const { return getStrView().endsWith  (r,  ignoreCase); }
-	AX_INLINE constexpr bool	matchWildcard(CView wildcard, bool ignoreCase) const  { return getStrView().matchWildcard(wildcard, ignoreCase); }
-	//-----------------------------------	
-	void append(CView view);
+	AX_INLINE constexpr bool operator==	(CView r) const	{ return equals(r); }
+	AX_INLINE constexpr bool operator!=	(CView r) const	{ return !equals(r); }
+	AX_INLINE constexpr bool operator<	(CView r) const	{ return compare(r) <  0; }
+	AX_INLINE constexpr bool operator<=	(CView r) const	{ return compare(r) <= 0; }
+	AX_INLINE constexpr bool operator>	(CView r) const	{ return compare(r) >  0; }
+	AX_INLINE constexpr bool operator>=	(CView r) const	{ return compare(r) >= 0; }
+	AX_INLINE constexpr Int  compare		(CView r,  bool ignoreCase = false) const { return getStrView().compare	  (r,  ignoreCase); }
+	AX_INLINE constexpr bool equals		(CView r,  bool ignoreCase = false) const { return getStrView().equals    (r,  ignoreCase); }
+	AX_INLINE constexpr bool startsWith	(CView r,  bool ignoreCase = false) const { return getStrView().startsWith(r,  ignoreCase); }
+	AX_INLINE constexpr bool endsWith	(CView r,  bool ignoreCase = false) const { return getStrView().endsWith  (r,  ignoreCase); }
+	AX_INLINE constexpr bool matchWildcard(CView wildcard, bool ignoreCase) const  { return getStrView().matchWildcard(wildcard, ignoreCase); }
+	
+	//-----------------------------------
+	void operator=(IString_<T>&& rhs);
+	
+	void                     append(CView view);
+	void                     appendChar(const T& ch) { append(CView(&ch, 1)); }
 
 	using  Iter	= T*;
 	using CIter	= const T*;

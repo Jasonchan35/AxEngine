@@ -25,9 +25,9 @@ public:
 
 	AX_INLINE constexpr explicit operator bool() const { return size > 0; }
 
-	AX_INLINE constexpr const T& end() const { return start + size; }
+	AX_INLINE constexpr T endValue() const { return start + size; }
 	
-	AX_INLINE constexpr void setMin(const T& newMin) { auto e = end(); start = newMin; setEnd(e); }
+	AX_INLINE constexpr void setMin(const T& newMin) { auto e = endValue(); start = newMin; setEnd(e); }
 	AX_INLINE constexpr void setEnd(const T& newEnd) { size = newEnd - start; }
 
 	AX_INLINE constexpr void trimStart(const T& n) { T t = Math::max0(size - n); start -= t; size += t; }
@@ -59,7 +59,7 @@ public:
 	};
 
 	Iter begin()	{ return Iter(start); }
-	Iter end()		{ return Iter(end()); }
+	Iter end()		{ return Iter(endValue()); }
 
 private:
 	AX_INLINE

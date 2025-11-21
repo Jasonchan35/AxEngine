@@ -22,7 +22,7 @@ public:
 	constexpr MemoryBlock(MemoryBlock&& r) noexcept : _data(r._data), _allocator(r._allocator) {
 		r._data = nullptr;
 	}
-	constexpr MemoryBlock(Allocator* allocator, T* data, Int size ) noexcept : _allocator(allocator), _data(data), _size(size) {}
+	constexpr MemoryBlock(Allocator* allocator, T* data, Int size) noexcept : _allocator(allocator), _data(data), _size(size) {}
 	constexpr ~MemoryBlock() noexcept { dealloc(); }
 
 	constexpr T* data() const noexcept { return _data; }

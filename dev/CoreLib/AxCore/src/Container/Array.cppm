@@ -23,8 +23,9 @@ public:
 	virtual	~Array() override { Base::clearAndFree(); }
 	
 protected:
+	virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
 	virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
-	virtual	void			onStorageFree	(T* p) override;
+	virtual	void			onStorageFree(T* p) override;
 };
 
 template <class T, Int BUF_SIZE> inline

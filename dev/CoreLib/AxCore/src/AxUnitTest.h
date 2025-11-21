@@ -1,5 +1,6 @@
 #pragma once
 
+import AxCore.Fmt;
 import AxCore.Debug;
 import AxCore.UnitTest;
 

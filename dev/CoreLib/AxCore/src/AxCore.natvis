@@ -216,79 +216,42 @@
 
 	<!-- ax::IArayStorage<*>::Storage -->
 	<Type Name="ax::IArrayStorage&lt;*&gt;::Storage">
-		<DisplayString Condition="!kSmallBufferOptimization">
-			size={_normal._size} capacity={_normal._capacity}
-		</DisplayString>
-		<DisplayString Condition="_small._capacity &amp; 0x80">
-			size={(int)_small._size} small-capacity={SmallStorage::kExtraCapacity + (_small._capacity &amp; 0x7F)}
-		</DisplayString>
-		<DisplayString Condition="kSmallBufferOptimization &amp;&amp; ~_small._capacity &amp; 0x80">
-			size={_normal._size} normal-capacity={
-			(
-				  (((uint8_t*)&amp;_normal._capacity)[0] &lt;&lt; 56)
-				+ (((uint8_t*)&amp;_normal._capacity)[1] &lt;&lt; 48)
-				+ (((uint8_t*)&amp;_normal._capacity)[2] &lt;&lt; 40)
-				+ (((uint8_t*)&amp;_normal._capacity)[3] &lt;&lt; 32)
-				+ (((uint8_t*)&amp;_normal._capacity)[4] &lt;&lt; 24)
-				+ (((uint8_t*)&amp;_normal._capacity)[5] &lt;&lt; 16)
-				+ (((uint8_t*)&amp;_normal._capacity)[6] &lt;&lt; 8 )
-				+ (((uint8_t*)&amp;_normal._capacity)[7]            )
-			)}
-		</DisplayString>
+		<DisplayString Condition=" _small._isSmall">size={_small._size } small-capacity={_small._capacity}</DisplayString>
+		<DisplayString Condition="!_small._isSmall">size={_normal._size} capacity={_normal._capacity}</DisplayString>
 		<Expand>
-			<Item Name="data" Condition=" _small._capacity &amp; 0x80">&amp;_small._data[0]</Item>
-			<Item Name="data" Condition="~_small._capacity &amp; 0x80">_normal._data</Item>
+			<Item Name="data" Condition=" _small._isSmall">&amp;_small._data[0]</Item>
+			<Item Name="data" Condition="!_small._isSmall">_normal._data</Item>
 
 			<Item Name="size" Condition=" _small._capacity &amp; 0x80">_small._size</Item>
 			<Item Name="size" Condition="~_small._capacity &amp; 0x80">_normal._size</Item>
 
-			<Item Name="capacity" Condition="!kSmallBufferOptimization">_normal._capacity</Item>
-			<Item Name="capacity" Condition=" _small._capacity &amp; 0x80">SmallStorage::kExtraCapacity + (_small._capacity &amp; 0x7F)</Item>
-			<Item Name="capacity" Condition="kSmallBufferOptimization &amp;&amp; ~_small._capacity &amp; 0x80">
-				( (((uint8_t*)&amp;_normal._capacity)[0] &lt;&lt; 56)
-				+ (((uint8_t*)&amp;_normal._capacity)[1] &lt;&lt; 48)
-				+ (((uint8_t*)&amp;_normal._capacity)[2] &lt;&lt; 40)
-				+ (((uint8_t*)&amp;_normal._capacity)[3] &lt;&lt; 32)
-				+ (((uint8_t*)&amp;_normal._capacity)[4] &lt;&lt; 24)
-				+ (((uint8_t*)&amp;_normal._capacity)[5] &lt;&lt; 16)
-				+ (((uint8_t*)&amp;_normal._capacity)[6] &lt;&lt; 8 )
-				+ (((uint8_t*)&amp;_normal._capacity)[7]            ))
-			</Item>
-			<Item Name="SmallStorage::kExtraCapacity">SmallStorage::kExtraCapacity</Item>
+			<Item Name="capacity" Condition=" _small._isSmall"> _small._capacity</Item>
+			<Item Name="capacity" Condition="!_small._isSmall">_normal._capacity</Item>
+
+			<Item Name="kSmallExtraCapacity">Storage::kSmallExtraCapacity</Item>
+			<Item Name="kSmallDataOffset">kSmallDataOffset</Item>
 		</Expand>
 	</Type>
 
 	<!-- ax::IArray<*> -->
 	<Type Name="ax::IArray&lt;*&gt;">
-		<DisplayString Condition="!kSmallBufferOptimization">
+		<DisplayString Condition=" _storage._small._isSmall">
+			size={_storage._small._size} cap={_storage._small._capacity} data={&amp;_storage._small._data[0], [_storage._small._size]na}
+		</DisplayString>
+		<DisplayString Condition="!_storage._small._isSmall">
 			size={_storage._normal._size} cap={_storage._normal._capacity} data={_storage._normal._data, [_storage._normal._size]na}
-		</DisplayString>
-		<DisplayString Condition="_storage._small._capacity &amp; 0x80">
-			size={(int)_storage._small._size} cap={Base::SmallStorage::kExtraCapacity}+{_storage._small._capacity &amp; 0x7F} data={&amp;_storage._small._data[0], [_storage._small._size]na}
-		</DisplayString>
-		<DisplayString Condition="kSmallBufferOptimization &amp;&amp; ~_storage._small._capacity &amp; 0x80">
-			size={_storage._normal._size} cap={
-				( (((uint8_t*)&amp;_storage._normal._capacity)[0] &lt;&lt; 56)
-				+ (((uint8_t*)&amp;_storage._normal._capacity)[1] &lt;&lt; 48)
-				+ (((uint8_t*)&amp;_storage._normal._capacity)[2] &lt;&lt; 40)
-				+ (((uint8_t*)&amp;_storage._normal._capacity)[3] &lt;&lt; 32)
-				+ (((uint8_t*)&amp;_storage._normal._capacity)[4] &lt;&lt; 24)
-				+ (((uint8_t*)&amp;_storage._normal._capacity)[5] &lt;&lt; 16)
-				+ (((uint8_t*)&amp;_storage._normal._capacity)[6] &lt;&lt; 8 )
-				+ (((uint8_t*)&amp;_storage._normal._capacity)[7]            ))
-			} {_storage._normal._data, [_storage._normal._size]na}
 		</DisplayString>
 		<Expand>
 			<Item Name="_storage">_storage</Item>
 			<Synthetic Name="Elements">
 				<DisplayString> </DisplayString>
 				<Expand>
-					<ArrayItems Condition="_storage._small._capacity &amp; 0x80">
+					<ArrayItems Condition="_storage._small._isSmall">
 						<Size>_storage._small._size</Size>
 						<ValuePointer>&amp;_storage._small._data[0]</ValuePointer>
 					</ArrayItems>
 
-					<ArrayItems Condition="~_storage._small._capacity &amp; 0x80">
+					<ArrayItems Condition="!_storage._small._isSmall">
 						<Size>_storage._normal._size</Size>
 						<ValuePointer>_storage._normal._data</ValuePointer>
 					</ArrayItems>
@@ -308,17 +271,17 @@
 
 	<!-- ax::IString_<*> -->
 	<Type Name="ax::IString_&lt;*&gt;">
-		<DisplayString Condition="_storage._small._capacity &amp; 0x80">
-			size={(int)_storage._small._size} cap={Base::SmallStorage::kExtraCapacity}+{_storage._small._capacity &amp; 0x7F} {&amp;_storage._small._data[0], [_storage._small._size]na}
+		<DisplayString Condition="_storage._small._isSmall">
+			size={_storage._small._size }/{_storage._small._capacity } {&amp;_storage._small._data[0], [_storage._small._size]na}
 		</DisplayString>
-		<DisplayString Condition="~_storage._small._capacity &amp; 0x80">
-			size={_storage._normal._size} cap={_storage._normal._capacity} {_storage._normal._data, [_storage._normal._size]na}
+		<DisplayString Condition="!_storage._small._isSmall">
+			size={_storage._normal._size}/{_storage._normal._capacity} {_storage._normal._data, [_storage._normal._size]na}
 		</DisplayString>
 
-		<StringView  Condition="_storage._small._capacity &amp; 0x80">
+		<StringView  Condition="_storage._small._isSmall">
 			&amp;_storage._small._data[0], [_storage._small._size]na
 		</StringView>
-		<StringView  Condition="~_storage._small._capacity &amp; 0x80">
+		<StringView  Condition="!_storage._small._isSmall">
 			_storage._normal._data, [_storage._normal._size]na
 		</StringView>
 		<Expand>

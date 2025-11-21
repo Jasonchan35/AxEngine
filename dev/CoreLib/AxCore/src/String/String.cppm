@@ -38,12 +38,18 @@ class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null
 public:
 	using View = StrView_<T>;
 	
-	String_() : Base(inlineBufPtr(), BUF_SIZE) {}
-	String_(View view) : String_() { Base::append(view); }
+	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
+	AX_INLINE constexpr String_(View view) : String_() { Base::append(view); }
+	
+	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+
+	      IString_<T>& asIString()			{ return *this; }
+	const IString_<T>& asIString() const	{ return *this; }
 
 	virtual	~String_() override { Base::clearAndFree(); }
 
 protected:
+	virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
 	virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
 	virtual	void			onStorageFree	(T* p) override;
 };
