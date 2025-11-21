@@ -13,10 +13,14 @@ struct MemoryUtil {
 
 	static const Int k_size_to_use_system_memcpy = 2048;
 
+	static void rawCopy(void* dst, const void* src, Int len);
+	
 	template <class A, class B>
 	static bool isOverlapped(const A* a, Int a_size, const B* b, Int b_size);
-	static void copy(void* dst, const void* src, Int len);
 
+	template<class T>
+	static void copy(T* dst, const T* src, Int n);
+	
 	template< class T, class... Args>
 	static void constructor( T* p, Int n, Args&&... args);
 
@@ -37,8 +41,8 @@ void MemoryUtil::_copyLoop(T* dst, const T* src, Int len) {
 }
 
 AX_INLINE
-void MemoryUtil::copy(void* dst, const void* src, Int len) {
-	if( len <= 0 ) return;
+void MemoryUtil::rawCopy(void* dst, const void* src, Int len) {
+	if (len <= 0) { AX_ASSERT(false); return; }
 
 	if (isOverlapped(static_cast<const char*>(dst), len, static_cast<const char*>(src), len)) {
 		throw Error_BufferOverlapped();
@@ -86,6 +90,24 @@ void MemoryUtil::destructor(T* p, Int n) {
 }
 
 template <class T> AX_INLINE
+void MemoryUtil::copy(T* dst, const T* src, Int n) {
+	if (n <= 0) return;
+	if (MemoryUtil::isOverlapped(dst, n, src, n)) {
+		throw Error_BufferOverlapped();
+	}
+
+	if (std::is_trivially_copy_assignable_v<T>) {
+		MemoryUtil::rawCopy(dst, src, n * ax_sizeof<T>);
+	}else{
+		auto s = src;
+		auto e = src + n ;
+		for( ; s<e; ++s, ++dst ) {
+			*dst = *s;
+		}
+	}
+}
+
+template <class T> AX_INLINE
 void MemoryUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	if( n <= 0 ) return;
 	if (MemoryUtil::isOverlapped(dst, n, src, n)) {
@@ -93,7 +115,7 @@ void MemoryUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	}
 
 	if (std::is_trivially_copy_assignable_v<T>) {
-		MemoryUtil::copy(dst, src, n * ax_sizeof<T>);
+		MemoryUtil::rawCopy(dst, src, n * ax_sizeof<T>);
 	}else{
 		auto s = src;
 		auto e = src + n ;

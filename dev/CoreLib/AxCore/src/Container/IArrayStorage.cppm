@@ -41,10 +41,10 @@ protected:
 
 	
 	struct NormalStorage {
-		u64                  _isSmall     : 1; // share between normal and small storage
-		u64                  _capacity    : 63;
-		u64                  _isAllocData : 1;
-		u64                  _size        : 63;
+		u64                  _isSmall         : 1; // share between normal and small storage
+		u64                  _capacity        : 63;
+		u64                  _isAllocatedData : 1;
+		u64                  _size            : 63;
 		T*                   _data;
 		static constexpr u64 kCapacityMax = u64_max >> 1;
 		constexpr void       setCapacity(Int v);
@@ -61,12 +61,13 @@ protected:
 	
 	union Storage {
 	public:
-		static constexpr bool kSmallBufferOptimization = IArrayStorage::kSmallBufferOptimization;
-		static constexpr Int  kSmallDataOffset    = offsetof(SmallStorage, _data);
-		static constexpr Int  kSmallExtraCapacity = Math::max0<Int>(ax_sizeof<NormalStorage> - kSmallDataOffset);
-
 		SmallStorage  _small;
 		NormalStorage _normal;
+
+		static constexpr bool kSmallBufferOptimization = IArrayStorage::kSmallBufferOptimization;
+		static constexpr Int  kSmallDataOffset    = offsetof(SmallStorage, _data);
+		static constexpr Int  kSmallExtraCapacity = Math::max0<Int>(ax_sizeof<NormalStorage> - kSmallDataOffset) / ax_sizeof<T>;
+
 
 		constexpr Storage(T* data, Int initCap) { resetToLocalBuf(data, initCap); }
 		constexpr ~Storage();
@@ -74,7 +75,7 @@ protected:
 		constexpr void resetToLocalBuf(T* data, Int initCap);
 		
 		constexpr bool isSmall() const { return _normal._isSmall; }
-		constexpr bool isAllocData() const { return !_normal._isSmall && _normal._isAllocData; }
+		constexpr bool isAllocatedData() const { return !_normal._isSmall && _normal._isAllocatedData; }
 		constexpr Int capacity() const;
 
 		constexpr const T* data() const { return isSmall() ? _small._data : _normal._data; }
@@ -82,7 +83,7 @@ protected:
 		constexpr Int      size() const { return isSmall() ? _small._size : _normal._size; }
 
 		constexpr void setSize(Int v);
-		constexpr void setAllocData(T* data, Int cap);
+		constexpr void setAllocDataPtr(T* data, Int cap);
 	};
 
 	Storage _storage;
@@ -95,9 +96,9 @@ void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 	auto srcData = rhs._storage.data();
 	auto srcSize = rhs._storage.size();
 	
-	if (rhs._storage.isAllocData()) {
+	if (rhs._storage.isAllocatedData()) { // move buffer if is allocated data
 		_storageClearAndFree();
-		_storage.setAllocData(rhs._storage.data(), rhs._storage.capacity());
+		_storage.setAllocDataPtr(rhs._storage.data(), rhs._storage.capacity());
 		_storage.setSize(srcSize);
 		rhs._storageResetToLocalBuf();
 	} else {
@@ -137,7 +138,7 @@ constexpr void IArrayStorage<T>::_storageRreserveImpl(Int reqCapacity) {
 		memoryBlock.detach();
 	}
 	
-	_storage.setAllocData(newData, newCapacity);
+	_storage.setAllocDataPtr(newData, newCapacity);
 }
 
 template <class T>
@@ -168,10 +169,10 @@ constexpr void IArrayStorage<T>::_storageClear() {
 template <class T> inline
 constexpr void IArrayStorage<T>::_storageClearAndFree() {
 	_storageClear();
-	if (_storage.isAllocData()) {
+	if (_storage.isAllocatedData()) {
 		onStorageFree(_storage.data());
+		_storageResetToLocalBuf();
 	}
-	_storageResetToLocalBuf();
 }
 
 template <class T>
@@ -201,11 +202,11 @@ constexpr void IArrayStorage<T>::Storage::setSize(Int v) {
 }
 
 template <class T> AX_INLINE
-constexpr void IArrayStorage<T>::Storage::setAllocData(T* data, Int cap) {
+constexpr void IArrayStorage<T>::Storage::setAllocDataPtr(T* data, Int cap) {
 	auto oldSize = size();
 	_normal._size = oldSize;
 	_normal._data = data;
-	_normal._isAllocData = true;
+	_normal._isAllocatedData = true;
 	_normal.setCapacity(cap);
 }
 
@@ -235,14 +236,14 @@ constexpr void IArrayStorage<T>::Storage::resetToLocalBuf(T* data, Int initCap) 
 	} else {
 		_normal.setCapacity(initCap);
 		_normal._size = 0;
-		_normal._isAllocData = false;
+		_normal._isAllocatedData = false;
 		_normal._data = data;
 	}
 }
 
 template <class T> AX_INLINE
 constexpr IArrayStorage<T>::Storage::~Storage() {
-	AX_ASSERT_MSG(!isAllocData(), " Allocated buffer not freed yet, please call _storageClearAndFree in destructor");
+	AX_ASSERT_MSG(!isAllocatedData(), " Allocated data not freed yet, please call _storageClearAndFree in destructor");
 }
 
 } // namespace

@@ -37,8 +37,8 @@ public:
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 
-	constexpr void reserve(Int newCapacity) { Base::_storageReserve(newCapacity); }
-	
+	constexpr void reserve(Int newCapacity);
+
 	template<class... Args>
 	constexpr void resize(Int newSize, Args&&... args);
 
@@ -107,6 +107,7 @@ public:
 	constexpr CIter	end		() const	{ return data() + size(); }
 
 protected:
+	AX_INLINE void  _setNullTerminator();
 	AX_INLINE void	_checkBound			( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
 	AX_INLINE void	_debug_checkBound	( Int i ) const {
 	#ifdef _DEBUG
@@ -115,33 +116,40 @@ protected:
 	}
 };
 
+template <class T> AX_INLINE
+constexpr void IString_<T>::reserve(Int newCapacity) {
+	Base::_storageReserve(newCapacity);
+}
+
 template <class T>
 template <class ... Args> AX_INLINE
 constexpr void IString_<T>::resize(Int newSize, Args&&... args) {
 	Base::_storageResize(newSize, AX_FORWARD(args)...);
-	if (newSize > 0)
-		data()[newSize] = 0; // null terminator
+	_setNullTerminator();
 }
 
 template <class T> inline
 void IString_<T>::move(IString_<T> && rhs) {
 	Base::_storageMove(std::move(rhs));
-	auto s = size();
-	if (s > 0) data()[s] = 0; // _storageMove may copy without null terminator
+	_setNullTerminator(); // _storageMove may copy without null terminator
 }
 
 template <class T> inline
 void IString_<T>::append(CView view) {
-	if (isOverlapped(view)) {
-		throw Error_BufferOverlapped();
-	}
+	if (isOverlapped(view)) throw Error_BufferOverlapped();
+	
+	auto oldSize = size();
+	auto newSize = oldSize + view.size();
+	reserve(newSize);
+	MemoryUtil::copy(data() + oldSize, view.data(), view.size());
+	_storage.setSize(newSize);
+	_setNullTerminator();
+}
 
-	auto old_size   = size();
-	auto total_size = view.size();
-
-	resize( old_size + total_size );
-	auto* dst = data() + old_size;
-	MemoryUtil::copy(dst, view.data(), view.sizeInBytes());
+template <class T> AX_INLINE
+void IString_<T>::_setNullTerminator() {
+	auto s = size();
+	if (s > 0) data()[s] = 0;
 }
 
 } // namespace

@@ -56,19 +56,7 @@ protected:
 
 template <CharType T, Int BUF_SIZE> inline
 MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
-	if (reqSize <= BUF_SIZE) {
-		return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE);
-	}
-	
 	Int newCapacity = reqSize + 1; // +1 for null terminator
-
-	constexpr Int kMinByteSize = 64;
-	newCapacity = Math::max(newCapacity, kMinByteSize / ax_sizeof<T>);
-
-	if (newCapacity < 2048) {
-		newCapacity = Math::nextPow2_half(newCapacity);
-	}
-	
 	auto* allocator = ax_default_allocator();
 	auto buf = allocator->alloc<T>(newCapacity);
 	buf.size--; // -1 for null terminator

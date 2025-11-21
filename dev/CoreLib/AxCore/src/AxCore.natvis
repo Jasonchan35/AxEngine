@@ -228,8 +228,8 @@
 			<Item Name="capacity" Condition=" _small._isSmall"> _small._capacity</Item>
 			<Item Name="capacity" Condition="!_small._isSmall">_normal._capacity</Item>
 
-			<Item Name="kSmallExtraCapacity">Storage::kSmallExtraCapacity</Item>
-			<Item Name="kSmallDataOffset">kSmallDataOffset</Item>
+			<Item Name="kSmallExtraCapacity">kSmallExtraCapacity</Item>
+			<Item Name="kSmallDataOffset"   >kSmallDataOffset</Item>
 		</Expand>
 	</Type>
 

@@ -4,6 +4,8 @@ import <cstdlib>;
 import <format>;
 import <iostream>;
 
+import AxCore.Math;
+
 #include "AxBase.h"
 export import AxCore.BasicType;
 
@@ -42,11 +44,15 @@ class Allocator {
 public:
 
 	template<class T>
-	MemoryBlock<T> alloc(Int size, Int alignment = ax_alignof<T>) {
-		auto block = onAlloc(size * ax_sizeof<T>, alignment);
+	MemoryBlock<T> alloc(Int reqSize, Int alignment = ax_alignof<T>) {
+		constexpr Int kMinByteSize = 64;
+		reqSize = Math::max(reqSize, kMinByteSize / ax_sizeof<T>);
+		reqSize = Math::nextPow2_half(reqSize);
+		
+		auto block = onAlloc(reqSize * ax_sizeof<T>, alignment);
 		T* data = reinterpret_cast<T*>(block.data);
 		block.detach();
-		return MemoryBlock<T>(this, data, size);
+		return MemoryBlock<T>(this, data, reqSize);
 	}
 	void dealloc(void* p) { return onDealloc(p); }
 	

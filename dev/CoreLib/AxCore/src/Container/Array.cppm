@@ -30,19 +30,7 @@ protected:
 
 template <class T, Int BUF_SIZE> inline
 MemoryBlock<T> Array<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
-	if (reqSize <= BUF_SIZE) {
-		return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE);
-	}
-	
 	Int newCapacity = reqSize;
-
-	constexpr Int kMinByteSize = 64;
-	newCapacity = Math::max(newCapacity, kMinByteSize / ax_sizeof<T>);
-
-	if (newCapacity < 2048) {
-		newCapacity = Math::nextPow2_half(newCapacity);
-	}
-	
 	auto* allocator = ax_default_allocator();
 	return allocator->alloc<T>(newCapacity);
 }
