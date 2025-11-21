@@ -9,28 +9,38 @@ import AxCore.InlineBuffer;
 
 export namespace ax {
 
-template<CharType T, Int BUF_SIZE = 0> class String_;
-using String   = String_<Char  >;
-using StringW  = String_<CharW >;
-using String8  = String_<Char8 >;
-using String16 = String_<Char16>;
-using String32 = String_<Char32>;
+template<class T> inline
+constexpr Int String_DefaultBufSize = []() {
+	Int size = 0;
+	Int s = ax_sizeof<Int> / ax_sizeof<T>;
+	Int padding = s > 0 ? s - 1 : 0;; // -1 for null terminator
+	return size + padding;
+}();
 
-template<Int N> using String_N   = String_<Char  , N>;
-template<Int N> using StringW_N  = String_<CharW , N>;
-template<Int N> using String8_N  = String_<Char8 , N>;
-template<Int N> using String16_N = String_<Char16, N>;
-template<Int N> using String32_N = String_<Char32, N>;
+template<CharType T, Int BUF_SIZE = String_DefaultBufSize<T>>
+class StringT_;
+using String   = StringT_<Char  >;
+using StringW  = StringT_<CharW >;
+using String8  = StringT_<Char8 >;
+using String16 = StringT_<Char16>;
+using String32 = StringT_<Char32>;
 
-template<class T> using TempString_ = String_<T, 512>; // long enough to hold file path
-using TempString	= TempString_< Char   >;
-using TempStringW	= TempString_< CharW  >;
-using TempString16	= TempString_< Char16 >;
-using TempString32	= TempString_< Char32 >;
+template<Int N> using String_   = StringT_<Char  , N>;
+template<Int N> using StringW_  = StringT_<CharW , N>;
+template<Int N> using String8_  = StringT_<Char8 , N>;
+template<Int N> using String16_ = StringT_<Char16, N>;
+template<Int N> using String32_ = StringT_<Char32, N>;
+
+template <CharType T>
+using TempString_  = StringT_<T, 512>; // long enough to hold file path
+using TempString   = TempString_<Char>;
+using TempStringW  = TempString_<CharW>;
+using TempString16 = TempString_<Char16>;
+using TempString32 = TempString_<Char32>;
 
 
 template<CharType T, Int BUF_SIZE> 
-class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator
+class StringT_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator
 {
 	using Base = IString_<T>;
 	using BaseInlineBuffer = InlineBuffer<T, BUF_SIZE + 1>;
@@ -38,15 +48,15 @@ class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null
 public:
 	using View = StrView_<T>;
 	
-	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
-	AX_INLINE constexpr String_(View view) : String_() { Base::append(view); }
+	AX_INLINE constexpr StringT_() : Base(inlineBufPtr(), BUF_SIZE) {}
+	AX_INLINE constexpr StringT_(View view) : StringT_() { Base::append(view); }
 	
-	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+	AX_INLINE constexpr StringT_(StringT_ && rhs) : StringT_() { Base::operator=(std::move(rhs.asIString())); }
 
 	      IString_<T>& asIString()			{ return *this; }
 	const IString_<T>& asIString() const	{ return *this; }
 
-	virtual	~String_() override { Base::clearAndFree(); }
+	virtual	~StringT_() override { Base::clearAndFree(); }
 
 protected:
 	virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
@@ -55,7 +65,7 @@ protected:
 };
 
 template <CharType T, Int BUF_SIZE> inline
-MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
+MemoryBlock<T> StringT_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize + 1; // +1 for null terminator
 	auto* allocator = ax_default_allocator();
 	auto buf = allocator->alloc<T>(newCapacity);
@@ -64,7 +74,7 @@ MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 }
 
 template <CharType T, Int BUF_SIZE> inline
-void String_<T, BUF_SIZE>::onStorageFree(T* p) {
+void StringT_<T, BUF_SIZE>::onStorageFree(T* p) {
 	auto* d = inlineBufPtr(); 
 	if (p == d) return;
 	auto* allocator = ax_default_allocator();

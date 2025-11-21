@@ -50,8 +50,8 @@ inline void FmtTo_(IString_<CH>& outStr, const Fmt_FormatString<CH, ARGS...>& fo
 }
 
 template<class CH, class... ARGS> inline
-String_<CH> Fmt_(const Fmt_FormatString<CH, ARGS...>& formatString, ARGS&&... args) {
-	String_<CH> outStr;
+StringT_<CH> Fmt_(const Fmt_FormatString<CH, ARGS...>& formatString, ARGS&&... args) {
+	StringT_<CH> outStr;
 	FmtTo_(outStr, AX_FORWARD(formatString), AX_FORWARD(args)...);
 	return outStr;
 }
