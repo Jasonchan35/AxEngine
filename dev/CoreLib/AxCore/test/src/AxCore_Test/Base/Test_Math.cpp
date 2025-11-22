@@ -2,7 +2,7 @@
 
 namespace ax {
 
-struct Test_Math : public UnitTestCase {
+struct TestCase_Math : public UnitTestCase {
 	void test1() {
 		Math::nextPow2(10);
 	}
@@ -14,4 +14,4 @@ struct Test_Math : public UnitTestCase {
 
 } // namespace
 
-void Test_Math() { ax::Test_Math().run(); }
+void Test_Math() { ax::TestCase_Math().run(); }

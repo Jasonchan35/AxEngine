@@ -15,10 +15,10 @@ export namespace ax {
 
 class NonCopyable {
 public:
-	NonCopyable()                        = default;
-	NonCopyable(NonCopyable&& r)         = default;
-	NonCopyable(const NonCopyable& s)    = delete;
-	void operator=(const NonCopyable& s) = delete;
+	constexpr NonCopyable()                        = default;
+	constexpr NonCopyable(NonCopyable&& r)         = default;
+	constexpr NonCopyable(const NonCopyable& s)    = delete;
+	constexpr void operator=(const NonCopyable& s) = delete;
 };
 
 template<class T> AX_INLINE constexpr T* ax_const_cast(const T* v) { return const_cast<T*>(v); }
@@ -59,18 +59,18 @@ using f32  = float;
 using f64  = double;
 using f128 = long double;
 
-// using CharA  = char;
+using CharA  = char;
 using Char8  = char8_t;
 using Char16 = char16_t;
 using Char32 = char32_t;
 using CharW  = wchar_t;
-using Char   = Char8; // char8_t is a distinct type from char, so don't have to worry mix with u8/i8
+using Char   = CharA;
 
 using Int  = i64;
 using UInt = u64;
 using Byte = u8;
 
-template<class T> constexpr bool ax_type_is_char =	std::is_same_v<std::remove_cv_t<T>, char>
+template<class T> constexpr bool ax_type_is_char =	std::is_same_v<std::remove_cv_t<T>, CharA>
 												 ||	std::is_same_v<std::remove_cv_t<T>, CharW>
 												 || std::is_same_v<std::remove_cv_t<T>, Char8>
 												 || std::is_same_v<std::remove_cv_t<T>, Char16>
@@ -78,16 +78,10 @@ template<class T> constexpr bool ax_type_is_char =	std::is_same_v<std::remove_cv
 
 template<class T> concept CharType = ax_type_is_char<T>;
 
-template<class T, class R>
-constexpr bool ax_same_size_char_type = (sizeof(T) == sizeof(R) && ax_type_is_char<R> && ax_type_is_char<T>);
-
-template<class DST, class SRC> requires	ax_same_size_char_type<DST, SRC>
-constexpr DST* ax_cast_char_type_pointer(SRC* s) { return reinterpret_cast<DST*>(s); }
-
 template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	if (!sz) return 0;
 	Int i = 0;
-	for (; *sz; ++sz, ++i) {}
+	for (; *sz; ++sz, ++i) { /* nothing */ }
 	return i;
 }
 
@@ -97,14 +91,12 @@ class StrLit_ {
 public:
 	StrLit_() = default;
 
-	template<class R> requires ax_same_size_char_type<T,R>
-	AX_INLINE constexpr StrLit_(R* sz, Int size) : _data(ax_cast_char_type_pointer<T>(sz)), _size(size) {}
+	AX_INLINE constexpr StrLit_(T* sz, Int size) : _data(sz), _size(size) {}
 	
-	template<class R, Int N> requires ax_same_size_char_type<T,R>
-	AX_INLINE constexpr StrLit_(R (&sz)[N]) : _data(ax_cast_char_type_pointer<T>(sz)), _size(N > 0 ? N-1 : 0) {}
+	template<Int N>
+	AX_INLINE constexpr StrLit_(T (&sz)[N]) : _data(sz), _size(N > 0 ? N-1 : 0) {}
 	
-	template<class R> requires ax_same_size_char_type<T,R>
-	AX_INLINE static constexpr StrLit_ s_from_c_str(R* sz) { return StrLit_(reinterpret_cast<T*>(sz), sz ? ax_strlen(sz) : 0); }
+	AX_INLINE static constexpr StrLit_ s_from_c_str(T* sz) { return StrLit_(sz, sz ? ax_strlen(sz) : 0); }
 	
 	AX_INLINE constexpr const T* c_str() const { return _size ? _data : &_empty_c_str; }
 
@@ -161,6 +153,7 @@ AX_SIMPLE_ERROR(Error_InvalidSize)
 AX_SIMPLE_ERROR(Error_BufferOverlapped)
 AX_SIMPLE_ERROR(Error_ValueCast)
 AX_SIMPLE_ERROR(Error_Allocator)
+AX_SIMPLE_ERROR(Error_Format)
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {

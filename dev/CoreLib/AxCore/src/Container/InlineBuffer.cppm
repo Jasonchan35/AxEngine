@@ -10,10 +10,9 @@ template< class T, Int BUF_SIZE >
 class InlineBuffer : public NonCopyable {
 protected:
 	static constexpr	Int	kInlineBufSize = BUF_SIZE;
+	AX_INLINE constexpr			T*		inlineBufPtr	() 		 { return reinterpret_cast<	     T*>(_inlineBuf); }
+	AX_INLINE constexpr	const 	T*		inlineBufPtr	() const { return reinterpret_cast<const T*>(_inlineBuf); }
 
-	AX_INLINE			T*		inlineBufPtr	() 		 { return reinterpret_cast<	     T*>(_inlineBuf); }
-	AX_INLINE	const 	T*		inlineBufPtr	() const { return reinterpret_cast<const T*>(_inlineBuf); }
-	
 	Byte	_inlineBuf[ax_sizeof<T> * BUF_SIZE];
 };
 
@@ -21,8 +20,8 @@ template< class T >
 class InlineBuffer<T,0> : public NonCopyable {
 protected:
 	static constexpr	Int	kInlineBufSize = 0;
-	AX_INLINE 			T*		inlineBufPtr	() 		 { return nullptr; }
-	AX_INLINE 	const	T*		inlineBufPtr	() const { return nullptr; }
+	AX_INLINE constexpr	T*		inlineBufPtr	() 		 { return nullptr; }
+	AX_INLINE constexpr	const	T*		inlineBufPtr	() const { return nullptr; }
 };
 
 } // namespace

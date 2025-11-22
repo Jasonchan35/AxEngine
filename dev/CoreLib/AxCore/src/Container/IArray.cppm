@@ -11,15 +11,15 @@ class IArray : public IArrayStorage<T> {
 	using Base = IArrayStorage<T>;
 	using Base::_storage;
 protected:
-	IArray(T* data, Int initCap) : Base(data, initCap) {}
+	constexpr IArray(T* data, Int initCap) : Base(data, initCap) {}
 	
 public:
 	constexpr T*  data() { return _storage.data(); }
 	constexpr Int size() const { return _storage.size(); }
 	constexpr Int capacity() const { return _storage.capacity(); }
 
-	MutSpan<T> toMutSpan() { return MutSpan<T>(data(), size()); }
-	operator MutSpan<T>()  { return toMutSpan(); }
+	constexpr MutSpan<T> toMutSpan() { return MutSpan<T>(data(), size()); }
+	constexpr operator MutSpan<T>()  { return toMutSpan(); }
 
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }

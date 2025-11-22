@@ -9,6 +9,7 @@ export namespace ax {
 
 template<class T> class IString_;
 using IString   = IString_<Char>;
+using IStringA  = IString_<CharA>;
 using IStringW  = IString_<CharW>;
 using IString8  = IString_<Char8>;
 using IString16 = IString_<Char16>;
@@ -19,13 +20,15 @@ class IString_ : public IArrayStorage<T> {
 	using Base = IArrayStorage<T>;
 	using Base::_storage;	
 protected:
-	IString_(T* data, Int initCap) : Base(data, initCap) {}
+	constexpr IString_(T* data, Int initCap) : Base(data, initCap) {}
 public:
 	using CharType = T;
 	using CView    = StrView_<T>;
 	using MView    = MutStrView_<T>;
 	using ZView    = ZStrView_<T>;
 	using MutByte  = std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
+
+	const T* c_str() const { return getZStrView().c_str(); }
 	
 	constexpr explicit operator bool() const { return size() != 0; }
 	constexpr       T* data()			{ return _storage.data(); }
@@ -92,11 +95,11 @@ public:
 	AX_INLINE constexpr bool matchWildcard(CView wildcard, bool ignoreCase) const  { return getStrView().matchWildcard(wildcard, ignoreCase); }
 	
 	//-----------------------------------
-	AX_INLINE void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
-	AX_INLINE void move(IString_<T> && rhs);
+	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
+	AX_INLINE constexpr void move(IString_<T> && rhs);
 	
-	void                     append(CView view);
-	void                     appendChar(const T& ch) { append(CView(&ch, 1)); }
+	constexpr void append(CView view);
+	constexpr void appendChar(const T& ch) { append(CView(&ch, 1)); }
 
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -107,9 +110,9 @@ public:
 	constexpr CIter	end		() const	{ return data() + size(); }
 
 protected:
-	AX_INLINE void  _setNullTerminator();
-	AX_INLINE void	_checkBound			( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
-	AX_INLINE void	_debug_checkBound	( Int i ) const {
+	AX_INLINE constexpr void _setNullTerminator();
+	AX_INLINE constexpr void _checkBound		( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
+	AX_INLINE constexpr void _debug_checkBound	( Int i ) const {
 	#ifdef _DEBUG
 		_checkBound(i);
 	#endif
@@ -129,13 +132,13 @@ constexpr void IString_<T>::resize(Int newSize, Args&&... args) {
 }
 
 template <class T> inline
-void IString_<T>::move(IString_<T> && rhs) {
+constexpr void IString_<T>::move(IString_<T> && rhs) {
 	Base::_storageMove(std::move(rhs));
 	_setNullTerminator(); // _storageMove may copy without null terminator
 }
 
 template <class T> inline
-void IString_<T>::append(CView view) {
+constexpr void IString_<T>::append(CView view) {
 	if (isOverlapped(view)) throw Error_BufferOverlapped();
 	
 	auto oldSize = size();
@@ -147,7 +150,7 @@ void IString_<T>::append(CView view) {
 }
 
 template <class T> AX_INLINE
-void IString_<T>::_setNullTerminator() {
+constexpr void IString_<T>::_setNullTerminator() {
 	auto s = size();
 	if (s > 0) data()[s] = 0;
 }

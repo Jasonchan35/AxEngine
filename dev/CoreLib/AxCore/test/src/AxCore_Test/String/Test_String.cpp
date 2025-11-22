@@ -1,9 +1,8 @@
 #include "AxUnitTest.h"
-#include "Base/AX_MACRO.h"
 
 namespace ax {
 
-struct Test_String : public UnitTestCase {
+struct TestCase_String : public UnitTestCase {
 
 	void run() {
 		StrView   view  (  "Testing");
@@ -26,19 +25,12 @@ struct Test_String : public UnitTestCase {
 
 		Int total_size = size_str + size_str8 + size_str16 + size_str32 + size_strW;
 		AX_UNUSED(total_size);
-
-		// Array<Int,10> arr;
-		// for (Int i : IntRange(0,2)) {
-		// 	arr.append(i);
-		// }
-
-//		auto buf = Fmt_<char>("format test");
 	}
 };
 
 } // namespace
 
 void Test_String() {
-	ax::Test_String().run();
+	ax::TestCase_String().run();
 }
 

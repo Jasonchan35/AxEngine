@@ -22,7 +22,9 @@
 	#define AX_LANG_CPP_20	1
 #endif
 
-
+#if __cplusplus >= 202302L
+	#define AX_LANG_CPP_23	1
+#endif
 
 #if AX_COMPILER_CLANG
 	#define AX_TYPE_HAS_SIZE_T		0  //linux 

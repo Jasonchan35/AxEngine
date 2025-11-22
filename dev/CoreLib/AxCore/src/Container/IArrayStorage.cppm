@@ -20,15 +20,15 @@ class IArrayStorage : public NonCopyable {
 protected:
 	static constexpr bool kSmallBufferOptimization = true;
 
-	IArrayStorage(T* data, Int initCap) : _storage(data, initCap) {}
-	virtual ~IArrayStorage() = default;
+	constexpr IArrayStorage(T* data, Int initCap) : _storage(data, initCap) {}
+	constexpr virtual ~IArrayStorage() = default;
 
 protected:
-	virtual MemoryBlock<T>	onStorageLocalBuf() = 0;
-	virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) = 0;
-	virtual	void			onStorageFree(T* p) = 0;
+	constexpr virtual MemoryBlock<T>	onStorageLocalBuf() = 0;
+	constexpr virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) = 0;
+	constexpr virtual	void			onStorageFree(T* p) = 0;
 
-	void           _storageMove(IArrayStorage<T>&& rhs);
+	constexpr void _storageMove(IArrayStorage<T>&& rhs);
 	constexpr bool _storageReserve(Int newCapacity);
 	constexpr void _storageRreserveImpl(Int reqCapacity);
 	
@@ -90,7 +90,7 @@ protected:
 };
 
 template< class T > inline
-void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
+constexpr void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 	if (this == &rhs) { AX_ASSERT(false); return; }
 
 	auto srcData = rhs._storage.data();

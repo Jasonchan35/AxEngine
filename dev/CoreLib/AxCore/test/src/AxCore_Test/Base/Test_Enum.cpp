@@ -2,13 +2,15 @@
 
 namespace ax {
 
-struct Test_Enum : public UnitTestCase {
-	
+struct TestCase_Enum : public UnitTestCase {
+	void run() {
+		
+	}
 };
 
 } // namespace
 
 void Test_Enum() {
-	
+	ax::TestCase_Enum().run();
 }
 

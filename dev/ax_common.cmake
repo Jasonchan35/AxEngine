@@ -30,23 +30,24 @@ function(ax_add_all_subdirectory_recurse src_path)
 endfunction()
 
 function(ax_dump_cmake_variables)
-    get_cmake_property(_variableNames VARIABLES)
-    list (SORT _variableNames)
-    foreach (_variableName ${_variableNames})
-        if (ARGV0)
-            unset(MATCHED)
-            string(REGEX MATCH ${ARGV0} MATCHED ${_variableName})
-            if (NOT MATCHED)
-                continue()
-            endif()
-        endif()
-        message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach()
+	get_cmake_property(_variableNames VARIABLES)
+	list (SORT _variableNames)
+	foreach (_variableName ${_variableNames})
+		if (ARGV0)
+			unset(MATCHED)
+			string(REGEX MATCH ${ARGV0} MATCHED ${_variableName})
+			if (NOT MATCHED)
+				continue()
+			endif()
+		endif()
+		message(STATUS "${_variableName}=${${_variableName}}")
+	endforeach()
 endfunction()
 
 function(ax_set_warning_level target_name)
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		# message("ax_set_warning_level MSVC")
+		target_compile_options(${target_name} PRIVATE /utf-8) 	# execution_character_set - otherwise std::format wouldn't check format in compile time for "char"
 		target_compile_options(${target_name} PRIVATE /WX)    	#warning treated as error
 		target_compile_options(${target_name} PRIVATE /W4)   	#warning level 4
 		target_compile_options(${target_name} PRIVATE /we6244)  #warning C6244: local declaration of <variable> hides previous declaration
@@ -237,7 +238,6 @@ function(ax_target_set_common_properties target_name)
 	ax_target_set_header_only_common_properties(${target_name})
 
 	ax_set_warning_level(${target_name})
-
 	set_target_properties(${target_name} PROPERTIES
 							UNITY_BUILD ON
 							UNITY_BUILD_MODE BATCH

@@ -24,6 +24,10 @@
 	#define AX_LANG_CPP_20	1
 #endif
 
+#if _MSVC_LANG >= 202302L
+	#define AX_LANG_CPP_23	1
+#endif
+
 #define AX_TYPE_HAS_SIZE_T		0
 #define AX_TYPE_HAS_SSIZE_T		0
 #define AX_TYPE_HAS_LONGLONG	0

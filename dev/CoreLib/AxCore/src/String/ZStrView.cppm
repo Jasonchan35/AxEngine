@@ -32,7 +32,7 @@ public:
 	using CView = MutZStrView_<const T>;
 
 	AX_INLINE constexpr MutZStrView_() = default;
-	AX_INLINE constexpr MutZStrView_(T* sz, Int size) { Base::setPtr(sz, size); }
+	AX_INLINE constexpr MutZStrView_(T* sz, Int size) : Base(sz, size) {}
 	
 	constexpr CView	constView() const { return CView(_data, _size); }
 

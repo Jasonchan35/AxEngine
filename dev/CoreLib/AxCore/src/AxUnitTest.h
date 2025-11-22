@@ -1,6 +1,8 @@
 #pragma once
 
-import AxCore.Fmt;
+#include "AxBase.h"
+
+import AxCore.Format;
 import AxCore.Debug;
 import AxCore.UnitTest;
 

@@ -1,8 +1,12 @@
 ﻿export module AxCore.String;
 
 #include "AxBase.h"
+import <format>;
+
 export import AxCore.IString;
 export import AxCore.Array;
+export import AxCore.Format;
+
 import AxCore.Allocator;
 import AxCore.MemoryUtil;
 import AxCore.InlineBuffer;
@@ -18,54 +22,74 @@ constexpr Int String_DefaultBufSize = []() {
 }();
 
 template<CharType T, Int BUF_SIZE = String_DefaultBufSize<T>>
-class StringT_;
-using String   = StringT_<Char  >;
-using StringW  = StringT_<CharW >;
-using String8  = StringT_<Char8 >;
-using String16 = StringT_<Char16>;
-using String32 = StringT_<Char32>;
+class String_;
+using String   = String_<Char  >;
+using StringA  = String_<CharA >;
+using StringW  = String_<CharW >;
+using String8  = String_<Char8 >;
+using String16 = String_<Char16>;
+using String32 = String_<Char32>;
 
-template<Int N> using String_   = StringT_<Char  , N>;
-template<Int N> using StringW_  = StringT_<CharW , N>;
-template<Int N> using String8_  = StringT_<Char8 , N>;
-template<Int N> using String16_ = StringT_<Char16, N>;
-template<Int N> using String32_ = StringT_<Char32, N>;
+template<Int N> using String_N   = String_<Char  , N>;
+template<Int N> using StringA_N  = String_<CharA , N>;
+template<Int N> using StringW_N  = String_<CharW , N>;
+template<Int N> using String8_N  = String_<Char8 , N>;
+template<Int N> using String16_N = String_<Char16, N>;
+template<Int N> using String32_N = String_<Char32, N>;
 
 template <CharType T>
-using TempString_  = StringT_<T, 512>; // long enough to hold file path
+using TempString_  = String_<T, 512>; // long enough to hold file path
 using TempString   = TempString_<Char>;
+using TempStringA  = TempString_<CharA>;
 using TempStringW  = TempString_<CharW>;
 using TempString16 = TempString_<Char16>;
 using TempString32 = TempString_<Char32>;
 
-
 template<CharType T, Int BUF_SIZE> 
-class StringT_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator
+class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator
 {
+	using This = String_;
 	using Base = IString_<T>;
 	using BaseInlineBuffer = InlineBuffer<T, BUF_SIZE + 1>;
 	using BaseInlineBuffer::inlineBufPtr;
 public:
 	using View = StrView_<T>;
 	
-	AX_INLINE constexpr StringT_() : Base(inlineBufPtr(), BUF_SIZE) {}
-	AX_INLINE constexpr StringT_(View view) : StringT_() { Base::append(view); }
+	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
+	AX_INLINE constexpr String_(View view) : String_() { Base::append(view); }
 	
-	AX_INLINE constexpr StringT_(StringT_ && rhs) : StringT_() { Base::operator=(std::move(rhs.asIString())); }
+	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
 
-	      IString_<T>& asIString()			{ return *this; }
-	const IString_<T>& asIString() const	{ return *this; }
+	constexpr       IString_<T>& asIString()		{ return *this; }
+	constexpr const IString_<T>& asIString() const	{ return *this; }
 
-	virtual	~StringT_() override { Base::clearAndFree(); }
+	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
+	template <class... ARGS>
+	static constexpr [[nodiscard]] This s_format(const FmtFormatString_<T, ARGS...>& fmt, ARGS&&... args) {
+		This str;
+		ax_format_to(str.asIString(), fmt, AX_FORWARD(args)...);
+		return str;
+	}
+	
 protected:
-	virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
-	virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
-	virtual	void			onStorageFree	(T* p) override;
+	constexpr virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
+	constexpr virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
+	constexpr virtual	void			onStorageFree	(T* p) override;
 };
 
+template<class... ARGS> AX_INLINE
+constexpr StringA ax_format(const std::format_string<ARGS...>& fmt, ARGS&&... args) {
+	return StringA::s_format(fmt, AX_FORWARD(args)...);
+}
+
+template<class... ARGS> AX_INLINE
+constexpr StringW ax_format(const std::wformat_string<ARGS...>& fmt, ARGS&&... args) {
+	return StringW::s_format(fmt, AX_FORWARD(args)...);
+}
+
 template <CharType T, Int BUF_SIZE> inline
-MemoryBlock<T> StringT_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
+constexpr MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize + 1; // +1 for null terminator
 	auto* allocator = ax_default_allocator();
 	auto buf = allocator->alloc<T>(newCapacity);
@@ -74,7 +98,7 @@ MemoryBlock<T> StringT_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 }
 
 template <CharType T, Int BUF_SIZE> inline
-void StringT_<T, BUF_SIZE>::onStorageFree(T* p) {
+constexpr void String_<T, BUF_SIZE>::onStorageFree(T* p) {
 	auto* d = inlineBufPtr(); 
 	if (p == d) return;
 	auto* allocator = ax_default_allocator();

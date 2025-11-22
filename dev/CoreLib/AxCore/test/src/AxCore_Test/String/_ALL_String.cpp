@@ -3,5 +3,6 @@
 #include "AxUnitTest.h"
 
 void AxCore_Test_String() {
+    AX_TEST_FUNC(Test_Format)
     AX_TEST_FUNC(Test_String)
 }
