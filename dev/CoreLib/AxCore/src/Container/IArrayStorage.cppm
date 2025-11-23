@@ -74,8 +74,8 @@ protected:
 
 		constexpr void resetToLocalBuf(T* data, Int initCap);
 		
-		constexpr bool isSmall() const { return _normal._isSmall; }
-		constexpr bool isAllocatedData() const { return !_normal._isSmall && _normal._isAllocatedData; }
+		constexpr bool isSmall() const { return _small._isSmall; }
+		constexpr bool isAllocatedData() const { return !isSmall() && _normal._isAllocatedData; }
 		constexpr Int capacity() const;
 
 		constexpr const T* data() const { return isSmall() ? _small._data : _normal._data; }

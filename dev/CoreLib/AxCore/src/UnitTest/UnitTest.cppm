@@ -28,4 +28,21 @@ struct UnitTestCase : public NonCopyable {
 	static UnitTestRequest& s_testRequest() { return UnitTestProgram::s_get()->testRequest; }
 };
 
+inline
+bool UnitTest_Validate(const SrcLoc& loc, bool success, const char* expr_str) {
+	bool verbose = true;
+
+	if (success && !verbose)
+		return success;
+
+	const int kBufSize = 4096;
+	char buf[kBufSize + 1];
+	snprintf(buf, kBufSize, "%s %s\n", (success ? "[ OK ]" : "[FAIL]"), expr_str);
+	::ax::Debug::_internal_log(buf);
+	if (!success) {
+		::ax::Debug::_internal_assert("", expr_str, loc, buf);
+	}
+	return success;
+}
+
 } // namespace

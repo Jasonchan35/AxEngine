@@ -65,27 +65,30 @@ public:
 
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
-	template <class... ARGS>
-	static constexpr [[nodiscard]] This s_format(const FmtFormatString_<T, ARGS...>& fmt, ARGS&&... args) {
-		This str;
-		ax_format_to(str.asIString(), fmt, AX_FORWARD(args)...);
-		return str;
+	template <class... ARGS> AX_INLINE
+	static AX_NODISCARD This s_format(FormatString_<T, ARGS...> && fmt, ARGS&&... args) {
+		This str; ax_format_to(str.asIString(), AX_FORWARD(fmt), AX_FORWARD(args)...); return str;
 	}
-	
+
 protected:
 	constexpr virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
 	constexpr virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
 	constexpr virtual	void			onStorageFree	(T* p) override;
 };
 
+// template<class T, class... ARGS> AX_INLINE String_<T> ax_format_(const StrView_<T>& fmt, ARGS&&... args) { return String_<T>::s_format_(fmt, AX_FORWARD(args)...); }
+// template<class T, class... ARGS> AX_INLINE String_<T> ax_format_(const IString_<T>& fmt, ARGS&&... args) { return String_<T>::s_format_(fmt, AX_FORWARD(args)...); }
+// template<         class... ARGS> AX_INLINE StringA ax_format(const  std::format_string<ARGS...>& fmt, ARGS&&... args) { return StringA::s_format(fmt, AX_FORWARD(args)...); }
+// template<         class... ARGS> AX_INLINE StringW ax_format(const std::wformat_string<ARGS...>& fmt, ARGS&&... args) { return StringW::s_format(fmt, AX_FORWARD(args)...); }
+
 template<class... ARGS> AX_INLINE
-constexpr StringA ax_format(const std::format_string<ARGS...>& fmt, ARGS&&... args) {
-	return StringA::s_format(fmt, AX_FORWARD(args)...);
+String_<char> ax_format(FormatString_<char, ARGS...> && fmt, ARGS&&... args) {
+	return String_<char>::s_format(AX_FORWARD(fmt), AX_FORWARD(args)...);
 }
 
 template<class... ARGS> AX_INLINE
-constexpr StringW ax_format(const std::wformat_string<ARGS...>& fmt, ARGS&&... args) {
-	return StringW::s_format(fmt, AX_FORWARD(args)...);
+String_<wchar_t> ax_format(FormatString_<wchar_t, ARGS...> && fmt, ARGS&&... args) {
+	return String_<wchar_t>::s_format(AX_FORWARD(fmt), AX_FORWARD(args)...);
 }
 
 template <CharType T, Int BUF_SIZE> inline

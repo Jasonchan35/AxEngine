@@ -40,8 +40,8 @@ public:
 	AX_INLINE constexpr void operator|=(const This& r)	{ *this = _union(r); }
 	AX_INLINE constexpr void operator&=(const This& r)	{ *this = _intersect(r); }
 
-	[[nodiscard]] constexpr This mul(const T& m) { return Range_(start * m, size * m); }
-	[[nodiscard]] constexpr This div(const T& m) { return Range_(start / m, size / m); }
+	AX_NODISCARD constexpr This mul(const T& m) { return Range_(start * m, size * m); }
+	AX_NODISCARD constexpr This div(const T& m) { return Range_(start / m, size / m); }
 
 	class Iter {
 	public:

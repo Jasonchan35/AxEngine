@@ -27,8 +27,9 @@ public:
 	using MView    = MutStrView_<T>;
 	using ZView    = ZStrView_<T>;
 	using MutByte  = std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
+	using std_string_view = std::basic_string_view<std::remove_cv_t<T>>;
 
-	const T* c_str() const { return getZStrView().c_str(); }
+	const T* c_str() const { return zview().c_str(); }
 	
 	constexpr explicit operator bool() const { return size() != 0; }
 	constexpr       T* data()			{ return _storage.data(); }
@@ -60,27 +61,34 @@ public:
 	AX_INLINE constexpr 		T&	unsafe_back	(Int i)				{ return unsafe_at( size()-i-1 ); }
 	AX_INLINE constexpr const	T&	unsafe_back	(Int i)  const		{ return unsafe_at( size()-i-1 ); }
 	
-	AX_INLINE constexpr MView getMutStrView()		{ return MView(data(), size()); }
-	AX_INLINE constexpr CView getStrView() const	{ return CView(data(), size()); }
-	AX_INLINE constexpr ZView getZStrView() const	{ return ZView(data(), size()); }
+	AX_INLINE constexpr MView mview() noexcept			{ return MView(data(), size()); }
+	AX_INLINE constexpr CView view() const noexcept		{ return CView(data(), size()); }
+	AX_INLINE constexpr ZView zview() const noexcept	{ return ZView(data(), size()); }
 
-	AX_INLINE constexpr MutSpan<T> getMutSpan()		{ return getMutStrView().mutSpan(); }
-	AX_INLINE constexpr Span<T>    getSpan() const	{ return getStrView().span(); }
+	AX_INLINE constexpr operator MView() const noexcept	{ return mview(); }
+	AX_INLINE constexpr operator CView() const noexcept	{ return view(); }
+	AX_INLINE constexpr operator ZView() const noexcept	{ return zview(); }
 
-	AX_INLINE constexpr MutSpan<MutByte> getMutByteSpan()		{ return getMutStrView().toMutByteSpan(); }
-	AX_INLINE constexpr Span<MutByte>    getByteSpan() const	{ return getStrView().toByteSpan(); }
+	// AX_INLINE constexpr std_string_view to_std_string_view() const noexcept { return std_string_view(data(), size()); }
+	// AX_INLINE constexpr operator std_string_view() const noexcept { return to_std_string_view(); }
+	
+	AX_INLINE constexpr MutSpan<T> getMutSpan()	 noexcept	{ return mview().mutSpan(); }
+	AX_INLINE constexpr Span<T>    getSpan() const noexcept	{ return view().span(); }
 
+	AX_INLINE constexpr MutSpan<MutByte> getMutByteSpan()		{ return mview().toMutByteSpan(); }
+	AX_INLINE constexpr Span<MutByte>    getByteSpan() const	{ return view().toByteSpan(); }
+	
 	//------- CView wrapper ---------------
-	AX_INLINE constexpr MView	slice		(Int offset, Int size)			{ return getMutStrView().slice(offset, size); }
-	AX_INLINE constexpr CView	slice		(Int offset, Int size) const	{ return    getStrView().slice(offset, size); }
-	AX_INLINE constexpr MView	sliceFrom	(Int offset) 					{ return getMutStrView().sliceFrom(offset); }
-	AX_INLINE constexpr CView	sliceFrom	(Int offset) const				{ return    getStrView().sliceFrom(offset); }
-	AX_INLINE constexpr MView	sliceBack	(Int offset)					{ return getMutStrView().sliceBack(offset); }
-	AX_INLINE constexpr CView	sliceBack	(Int offset) const				{ return    getStrView().sliceBack(offset); }
-	AX_INLINE constexpr MView	sliceTill	(Int n)							{ return getMutStrView().sliceTill(n); }	
-	AX_INLINE constexpr CView	sliceTill	(Int n) const					{ return    getStrView().sliceTill(n); }
-	AX_INLINE constexpr MView	extractFromPrefix(CView prefix, bool ignoreCase = false)		{ return getMutStrView().extractFromPrefix(prefix, ignoreCase); }
-	AX_INLINE constexpr CView	extractFromPrefix(CView prefix, bool ignoreCase = false) const	{ return    getStrView().extractFromPrefix(prefix, ignoreCase); }
+	AX_INLINE constexpr MView	slice		(Int offset, Int size)			{ return mview().slice(offset, size); }
+	AX_INLINE constexpr CView	slice		(Int offset, Int size) const	{ return  view().slice(offset, size); }
+	AX_INLINE constexpr MView	sliceFrom	(Int offset) 					{ return mview().sliceFrom(offset); }
+	AX_INLINE constexpr CView	sliceFrom	(Int offset) const				{ return  view().sliceFrom(offset); }
+	AX_INLINE constexpr MView	sliceBack	(Int offset)					{ return mview().sliceBack(offset); }
+	AX_INLINE constexpr CView	sliceBack	(Int offset) const				{ return  view().sliceBack(offset); }
+	AX_INLINE constexpr MView	sliceTill	(Int n)							{ return mview().sliceTill(n); }	
+	AX_INLINE constexpr CView	sliceTill	(Int n) const					{ return  view().sliceTill(n); }
+	AX_INLINE constexpr MView	extractFromPrefix(CView prefix, bool ignoreCase = false)		{ return mview().extractFromPrefix(prefix, ignoreCase); }
+	AX_INLINE constexpr CView	extractFromPrefix(CView prefix, bool ignoreCase = false) const	{ return  view().extractFromPrefix(prefix, ignoreCase); }
 	//----------------------------------	
 	AX_INLINE constexpr bool operator==	(CView r) const	{ return equals(r); }
 	AX_INLINE constexpr bool operator!=	(CView r) const	{ return !equals(r); }
@@ -88,11 +96,11 @@ public:
 	AX_INLINE constexpr bool operator<=	(CView r) const	{ return compare(r) <= 0; }
 	AX_INLINE constexpr bool operator>	(CView r) const	{ return compare(r) >  0; }
 	AX_INLINE constexpr bool operator>=	(CView r) const	{ return compare(r) >= 0; }
-	AX_INLINE constexpr Int  compare		(CView r,  bool ignoreCase = false) const { return getStrView().compare	  (r,  ignoreCase); }
-	AX_INLINE constexpr bool equals		(CView r,  bool ignoreCase = false) const { return getStrView().equals    (r,  ignoreCase); }
-	AX_INLINE constexpr bool startsWith	(CView r,  bool ignoreCase = false) const { return getStrView().startsWith(r,  ignoreCase); }
-	AX_INLINE constexpr bool endsWith	(CView r,  bool ignoreCase = false) const { return getStrView().endsWith  (r,  ignoreCase); }
-	AX_INLINE constexpr bool matchWildcard(CView wildcard, bool ignoreCase) const  { return getStrView().matchWildcard(wildcard, ignoreCase); }
+	AX_INLINE constexpr Int  compare		(CView r,  bool ignoreCase = false) const { return view().compare	  (r,  ignoreCase); }
+	AX_INLINE constexpr bool equals		(CView r,  bool ignoreCase = false) const { return view().equals    (r,  ignoreCase); }
+	AX_INLINE constexpr bool startsWith	(CView r,  bool ignoreCase = false) const { return view().startsWith(r,  ignoreCase); }
+	AX_INLINE constexpr bool endsWith	(CView r,  bool ignoreCase = false) const { return view().endsWith  (r,  ignoreCase); }
+	AX_INLINE constexpr bool matchWildcard(CView wildcard, bool ignoreCase) const  { return view().matchWildcard(wildcard, ignoreCase); }
 	
 	//-----------------------------------
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(std::move(rhs)); }

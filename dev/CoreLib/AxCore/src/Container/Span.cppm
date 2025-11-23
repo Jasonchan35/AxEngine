@@ -21,8 +21,9 @@ using MutIntSpan	= MutSpan<Int>;
 template<class T>
 class MutSpan { // copyable
 	using This = MutSpan;
+	using MutByte =	typename std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
+	using MSpan = MutSpan<T>;
 	using CSpan = MutSpan<const T>;
-	using MutByte =	typename std::conditional_t<std::is_const_v<T>, const Byte, Byte>;	
 public:
 
 	constexpr MutSpan() = default;
@@ -66,14 +67,14 @@ public:
 	AX_INLINE constexpr Int      size() const noexcept { return _size; }
 	AX_INLINE constexpr Int	     sizeInBytes() const noexcept { return _size * ax_sizeof<T>; }
 
-	AX_INLINE	constexpr static MutSpan	s_fromMutByteSpan	(MutSpan<MutByte>	from) noexcept	{ return MutSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
-	AX_INLINE	constexpr static CSpan		s_fromByteSpan		(ByteSpan			from) noexcept	{ return   CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
+	AX_INLINE	constexpr static MSpan		s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
+	AX_INLINE	constexpr static CSpan		s_fromByteSpan		(   ByteSpan	from) noexcept	{ return CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
 
-	AX_INLINE	constexpr void				fromMutByteSpan		(MutSpan<MutByte>	from) noexcept	{ *this = s_fromMutByteSpan(from); }
-	AX_INLINE	constexpr void				fromByteSpan		(ByteSpan			from) noexcept	{ *this = s_fromByteSpan(from); }
+	AX_INLINE	constexpr void				fromMutByteSpan		(MutByteSpan	from) noexcept	{ *this = s_fromMutByteSpan(from); }
+	AX_INLINE	constexpr void				fromByteSpan		(ByteSpan		from) noexcept	{ *this = s_fromByteSpan(from); }
 
-	AX_INLINE	constexpr MutSpan<MutByte>	toMutByteSpan		() const noexcept { return MutSpan<MutByte>(reinterpret_cast<   MutByte*>(_data), sizeInBytes()); }
-	AX_INLINE	constexpr    Span<Byte>		toByteSpan			() const noexcept { return MutSpan<MutByte>(reinterpret_cast<const Byte*>(_data), sizeInBytes()); }
+	AX_INLINE	constexpr MutByteSpan		toMutByteSpan		()       noexcept { return MutByteSpan(reinterpret_cast<   MutByte*>(_data), sizeInBytes()); }
+	AX_INLINE	constexpr    ByteSpan		toByteSpan			() const noexcept { return    ByteSpan(reinterpret_cast<const Byte*>(_data), sizeInBytes()); }
 	
 	//            +--------------------------------------------+
 	//            |         |                      |           |
@@ -83,17 +84,17 @@ public:
 	//  sliceBack                                  ^---- N ----^
 	//  sliceTill ^--------------------------------^(  N less  )
 
-	AX_INLINE	constexpr MutSpan	slice		(Int offset, Int size);
-	AX_INLINE	constexpr   CSpan	slice		(Int offset, Int size) const	{ return ax_const_cast(this)->slice(offset, size); }
+	AX_INLINE	constexpr MSpan	slice		(Int offset, Int size);
+	AX_INLINE	constexpr CSpan	slice		(Int offset, Int size) const	{ return ax_const_cast(this)->slice(offset, size); }
 
-	AX_INLINE	constexpr MutSpan	slice		(IntRange range)				{ return slice(range.start, range.size); }
-	AX_INLINE	constexpr   CSpan	slice		(IntRange range) const			{ return slice(range.start, range.size); }
+	AX_INLINE	constexpr MSpan	slice		(IntRange range)				{ return slice(range.start, range.size); }
+	AX_INLINE	constexpr CSpan	slice		(IntRange range) const			{ return slice(range.start, range.size); }
 
-	AX_INLINE	constexpr MutSpan	sliceFrom	(Int offset)					{ return slice(offset, _size - offset); }
-	AX_INLINE	constexpr   CSpan	sliceFrom	(Int offset) const				{ return slice(offset, _size - offset); }
+	AX_INLINE	constexpr MSpan	sliceFrom	(Int offset)					{ return slice(offset, _size - offset); }
+	AX_INLINE	constexpr CSpan	sliceFrom	(Int offset) const				{ return slice(offset, _size - offset); }
 
-	AX_INLINE	constexpr MutSpan	sliceBack	(Int n)			 				{ return slice(_size - n, n); }
-	AX_INLINE	constexpr   CSpan	sliceBack	(Int n) const	 				{ return slice(_size - n, n); }	
+	AX_INLINE	constexpr MSpan	sliceBack	(Int n)			 				{ return slice(_size - n, n); }
+	AX_INLINE	constexpr CSpan	sliceBack	(Int n) const	 				{ return slice(_size - n, n); }	
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -122,4 +123,5 @@ constexpr MutSpan<T> MutSpan<T>::slice(Int offset, Int size) {
 	}
 	return MutSpan(_data + offset, size);
 }
+
 } // namespace

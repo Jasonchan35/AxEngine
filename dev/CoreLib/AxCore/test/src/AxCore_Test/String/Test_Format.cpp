@@ -2,32 +2,55 @@
 
 import <string_view>;
 import <format>;
+import <iostream>;
 
 namespace ax {
 
 struct TestCase_Format : public UnitTestCase {
-	void run() {
-		StrView format = "format test view {} {}";
-	
-//		auto compile_fmt_check = ax_format("format test {} {} {}", 1, 2); // compile time format string check
+	struct CustmoData {
 
-		auto sf1  = StringA_N<2>::s_format("format test {} {}", 1, 2);
-		auto sf1v = StringW_N<2>::s_format(L"format test {} {}", 1, 2);
+		template<class FMT_CH>
+		constexpr static void onFormatParse(FormatParseContext_<FMT_CH> &  ctx) {
 		
-		auto buf   = ax_format("format test {} {}", 1, 2);
-		// Debug::_internal_log(buf.c_str());
+		}
+
+		template<class FMT_CH>
+		constexpr void onFormat(FormatContext_<FMT_CH> & ctx) const {
+			ax_format_to(ctx, "{}", 100);
+		}	
+	};
+	
+	void run() {
+		{
+			auto str = ax_format("{} {}", 1, 2.3);
+			Debug::_internal_log(str.c_str());
+		}
 		
-		auto bufW  = ax_format( L"format test {} {} {}", 1, 2, "sz");
+		CustmoData data;
+		{
+			auto str = ax_format("{}", data);
+			Debug::_internal_log(str.c_str());
+		}
+// 		
+// 		String format_string("format test {}");
+// 		constexpr StrView format_sv("format test view {}");
+//
+// //		auto compile_fmt_check = ax_format("format test {} {} {}", 1, 2); // compile time format string check
+//
+// 		{ auto str = StringA_N<2>::s_format("format test {} {}", 1, 2); }
+// 		{ auto str = StringW_N<2>::s_format(L"format test {} {}", 1, 2); }
+//
+// 		{ auto str = StringA_N<2>::s_format(format_string, 1, 2); }
+// 		{ auto str = ax_format("format test {} {}", 1, 2); }
+// 		{ auto str = ax_format( L"format test {} {} {}", 1, 2, "sz"); }
+// 		{ auto str = ax_format(format_sv, 1); }
+// 		{ auto str = ax_format(format_string, 1); }
 		
 #if AX_LANG_CPP_23 
 		auto buf8  = ax_format(u8"format test {} {} ", 1, sv);
 		auto buf16 = ax_format( u"format test {} {} ", 1, sv);
 		auto buf32 = ax_format( U"format test {} {} ", 1, sv);
 #endif
-
-		// StrView format_string = "format test {} {}";
-		// auto sv_buf = ax_format_(format_string, 1, sv);
-		
 	}
 };
 
