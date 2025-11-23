@@ -62,7 +62,7 @@ public:
 private:
 	template<class PARAM>
 	consteval void _check_format(PARAM && param) {
-		// std_format_string checker(AX_FORWARD(param));
+		std_format_string checker(AX_FORWARD(param));
 	}
 	
 	StrView_<T> _view;
@@ -75,32 +75,20 @@ using FormatString_ = FormatStringT_<T, std::type_identity_t<ARGS>...>;
 template<class FMT_CH>
 using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
 
-template<class T, class OUTPUT, class ... ARGS> 
-AX_INLINE void ax_format_to_internal(OUTPUT & output, FormatString_<T, ARGS...> && fmt, ARGS&&... args) {
+template<class T, class ... ARGS> 
+AX_INLINE void ax_format_to_internal(IString_<T> & output, FormatString_<T, ARGS...> && fmt, ARGS&&... args) {
 	FormatArgs_<T> format_args = std::make_format_args<FormatContext_<T>>(args...);
 	auto fmt_sv = fmt.get().to_string_view();
 	try {
-		if constexpr (std::is_base_of_v<FormatContext_<T>, OUTPUT>) {
-			std::vformat_to(output.out(), fmt_sv, format_args);
+		output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
+		std::vformat_to(FormatBackInserter_<T>(output), fmt_sv, format_args);
 			
-		} else if constexpr (std::is_base_of_v<IString_<T>, OUTPUT>) {
-			output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
-			std::vformat_to(FormatBackInserter_<T>(output), fmt_sv, format_args);
-			
-		} else {
-			static_assert(false);
-		}
 	} catch (std::exception& e) {
 		auto msg  = std::format("Exception in format={}, {})", fmt_sv, e.what());
 		Debug::_internal_logError(msg.c_str());
 		throw Error_Format();
 	}
 }
-
-template<class... ARGS> AX_INLINE
-void FmtTo(FormatContext_<CharA> & output, FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
-template<class... ARGS> AX_INLINE
-void FmtTo(FormatContext_<CharW> & output, FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
 
 template<class... ARGS> AX_INLINE
 void FmtTo(IString_<CharA> & output, FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
