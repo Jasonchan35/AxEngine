@@ -7,23 +7,53 @@ import AxCore.Atomic;
 
 export namespace ax {
 
-class SPtrReferenable : public NonCopyable {
-public:
-	Int addRef()const		{ return ++_refCount; }
-	Int releaseRef() const	{ return --_refCount; }
-	Int refCount() const	{ return _refCount; }
-
-	virtual ~SPtrReferenable() {
-		AX_ASSERT(_refCount == 0);
-	}
-
-	virtual void onRefCountZero()	{ onSPtrDeleteThis(); }
-
+class SPtrReferenableBase : public NonCopyable {
 protected:
-	virtual void onSPtrDeleteThis() { ax_delete(this); }
+	SPtrReferenableBase() = default;
+};
+
+template<bool USE_ATOMIC_INT>
+class SPtrReferenable_ : public SPtrReferenableBase {
+public:
+	using SPtrRefCounter = std::conditional_t<USE_ATOMIC_INT, Thread::AtomicInt, Int>; 
+	
+	AX_INLINE Int _addSPtrRef() const		{ return ++m_SPtrRefCount; }
+	AX_INLINE Int _releaseSPtrRef() const	{ return --m_SPtrRefCount; }
+	AX_INLINE Int _getSPtrRefCount() const	{ return m_SPtrRefCount; }
+
+	AX_INLINE ~SPtrReferenable_() { AX_ASSERT(m_SPtrRefCount == 0); }
 
 private:
-	mutable Thread::AtomicInt	_refCount;
+	mutable SPtrRefCounter	m_SPtrRefCount;
+};
+
+using SPtrReferenable = SPtrReferenable_<true>;
+
+template<class T> class SPtr;
+
+// add this layer to support SPtr<forward declare class>
+template<class T>
+class SPtr_Internal : public NonCopyable {
+public:
+	static T* ref(SPtr<T>* s, T* p) {
+		static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
+		if (s->_p != p) {
+			unref(s);
+			s->_p = p;
+			if (p) s->_p->_addSPtrRef();
+		}
+		return p;
+	}
+	
+	static void unref(SPtr<T>* s) {
+		static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
+		if (s->_p) {
+			if (s->_p->_releaseSPtrRef() == 0) {
+				ax_delete(s->_p);
+			}
+			s->_p = nullptr;
+		}
+	}
 };
 
 //! Intrusive Shared pointer, the reference count is embedded in object
@@ -52,44 +82,34 @@ public:
 
 	AX_INLINE	~SPtr() { unref(); }
 
-	T*	 ref	(T* p) noexcept;
-	void unref	() noexcept;
+	AX_INLINE T*	 ref	(T* p) noexcept;
+	AX_INLINE void unref	() noexcept;
 
-	operator       T* () &       { return _p; }
-	operator const T* () const & { return _p; }
+	AX_INLINE operator       T* () &       { return _p; }
+	AX_INLINE operator const T* () const & { return _p; }
 
 	operator T* () && = delete;
 
-	AX_INLINE	void operator=(const SPtr & r) noexcept	{ ref(r._p); }
-	AX_INLINE	void operator=(SPtr && r) noexcept		{ _move(std::move(r)); }
 	AX_INLINE	void operator=(std::nullptr_t) noexcept	{ unref(); }
-
 	template<class R> AX_INLINE	void operator=(SPtr<R> &  r) { ref(r.ptr()); }
 	template<class R> AX_INLINE	void operator=(SPtr<R> && r) noexcept { _move(std::move(r)); }
 
-	template<class... ARGS>
-	T*	newObject(const MemAllocRequest& req, ARGS&&...args) {
-		return ref(new (req) T(AX_FORWARD(args)...));
-	}
+	template<class... ARGS> AX_INLINE
+	T*	newObject(const MemAllocRequest& req, ARGS&&...args) { return ref(new (req) T(AX_FORWARD(args)...)); }
 
-	template<class R>
-	bool operator==(const SPtr<R>& r) const { return _p == r._p; }
+	template<class R> AX_INLINE bool operator==(const SPtr<R>& r) const { return _p == r._p; }
 
-	template<class R> bool operator==(R * const r) const { return _p == r; }
-	template<class R> bool operator!=(R * const r) const { return _p != r; }
+	template<class R> AX_INLINE bool operator==(R * const r) const { return _p == r; }
+	template<class R> AX_INLINE bool operator!=(R * const r) const { return _p != r; }
 
-	template<class R>
-	bool operator!=(const SPtr<R>& r) const { return _p != r._p; }
+	template<class R> AX_INLINE bool operator!=(const SPtr<R>& r) const { return _p != r._p; }
+	
+	AX_INLINE static SPtr<T> s_ref(T* p) noexcept { return SPtr(p); }
 
-
-	static SPtr<T> s_ref(T* p) noexcept { return SPtr(p); }
-
+	friend  class SPtr_Internal<T>;
 protected:
 	template<class R>
 	AX_INLINE	void _move(SPtr<R> && r) noexcept;
-
-private:
-
 	using Base::_p;
 };
 
@@ -98,7 +118,6 @@ template<class R, class T> AX_INLINE bool operator!=(R* const a, const SPtr<T>& 
 
 template<class T> AX_INLINE bool operator==(const std::nullptr_t&, const SPtr<T>& b) { return b == nullptr; }
 template<class T> AX_INLINE bool operator!=(const std::nullptr_t&, const SPtr<T>& b) { return b != nullptr; }
-
 
 template<class T> inline
 SPtr<T> SPtr_ref(T* p) noexcept { return SPtr<T>::s_ref(p); }
@@ -115,24 +134,13 @@ SPtr<T> SPtr_new(const MemAllocRequest& req, ARGS &&... args) {
 
 template<class T> AX_INLINE
 void SPtr<T>::unref() noexcept {
-	if (_p) {
-		if (_p->releaseRef() == 0) {
-			ax_const_cast(_p)->onRefCountZero();
-		}
-		_p = nullptr;
-	}
+	SPtr_Internal<T>::unref(this);
 }
 
 template<class T> AX_INLINE
 T* SPtr<T>::ref(T * p) noexcept {
-	static_assert(std::is_base_of_v<SPtrReferenable, T>);
-
-	if (_p != p) {
-		unref();
-		_p = p;
-		if (p) _p->addRef();
-	}
-	return p;
+	static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
+	return SPtr_Internal<T>::ref(this, p);
 }
 
 template<class T>

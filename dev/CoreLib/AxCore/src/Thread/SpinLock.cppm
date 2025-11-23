@@ -1,9 +1,9 @@
 export module AxCore.SpinLock;
 
 #include "AxBase.h"
-import AxCore.BasicType;
-import AxCore.ScopedLock;
-import AxCore.LockProtected;
+export import AxCore.BasicType;
+export import AxCore.ScopedLock;
+export import AxCore.LockProtected;
 import <atomic>;
 
 export namespace ax::Thread {
@@ -112,6 +112,18 @@ public:
 	AX_INLINE void	unlock	() { _impl.unlock(); }
 private:
 	InternalSpinLock _impl;
+};
+
+class NullSpinLock : public NonCopyable {
+	using This = NullSpinLock;
+public:
+	using ScopedLock = ScopedLock_<This>;
+
+	AX_NODISCARD ScopedLock scopedLock() { return ScopedLock(*this); }
+
+	AX_INLINE bool	tryLock	() {}
+	AX_INLINE void	lock	() {}
+	AX_INLINE void	unlock	() {}
 };
 
 template<class VALUE> using SpinLockProtected			= LockProtected<SpinLock, VALUE>;

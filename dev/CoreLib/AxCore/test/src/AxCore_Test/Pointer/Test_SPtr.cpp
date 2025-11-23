@@ -6,11 +6,16 @@ namespace ax {
 
 class Test_SPtr : public UnitTestClass {
 public:
-#if 0
-	class TestForwardDeclareObject;
+#if 1 
+	class FooClass; // forward declare
 	void test_forward_declare() {
-		SPtr<TestForwardDeclareObject> s;
+		SPtr<FooClass> s;
 	}
+
+	class FooClass : public SPtrReferenable {
+		public:
+		int foo = 0; 
+	};
 #endif
 
 	class TestObjectBase : public WPtrReferenable {

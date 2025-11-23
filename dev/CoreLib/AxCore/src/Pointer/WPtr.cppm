@@ -4,46 +4,40 @@ export module AxCore.WPtr;
 export import AxCore.SPtr;
 import AxCore.SpinLock;
 import AxCore.IArray;
+import AxCore.Atomic;
 
 export namespace ax {
 
-struct WPtrBlock : public SPtrReferenable {
+template <bool USE_ATOMIC_PTR>
+struct WPtrBlock_ : public SPtrReferenable_<USE_ATOMIC_PTR> {
+	using LockType = std::conditional_t<USE_ATOMIC_PTR, Thread::SpinLock, Thread::NullSpinLock>;
+	
 	struct Data {
 		SPtrReferenable* obj = nullptr;
 	};
-	Thread::SpinLockProtected<Data>	data;
+	Thread::LockProtected<LockType, Data> data;
 };
 
-class WPtrReferenable : public SPtrReferenable {
-	using Base = SPtrReferenable;
+template<bool USE_ATOMIC_PTR>
+class WPtrReferenable_ : public SPtrReferenable_<USE_ATOMIC_PTR> {
 public:
-
-	virtual ~WPtrReferenable() override {
-		if (_weakBlock) {
-			auto data = _weakBlock->data.scopedLock();
-			AX_ASSERT(data->obj == nullptr); // _clearWPtrBlock() should be called onRefCountZero() to avoid race condition during destructor
-			data->obj = nullptr;
+	using WPtrBlock = WPtrBlock_<USE_ATOMIC_PTR>;
+	~WPtrReferenable_() {
+		if (auto* block = _weakPtrBlock.ptr()) {
+			AX_ASSERT(block->data.scopedLock()->obj == nullptr);
 		}
 	}
-
-	virtual void onRefCountZero() override {
-		clearWPtrBlock();
-		Base::onRefCountZero();
-	}
-
-	void clearWPtrBlock() {
-		if (_weakBlock) {
-			auto data = _weakBlock->data.scopedLock();
-			data->obj = nullptr;
-		}
-	}
-	SPtr<WPtrBlock>	_weakBlock;
+	SPtr<WPtrBlock>		_weakPtrBlock;
 };
+
+using WPtrReferenable = WPtrReferenable_<true>;
 
 //! Weak pointer
 template<class T>
 class WPtr {
 public:
+	using WPtrBlock = typename T::WPtrBlock;
+	
 	WPtr() = default;
 	WPtr(std::nullptr_t)	{}
 	WPtr(T* p)				{ _ref(p); }
@@ -89,13 +83,13 @@ private:
 
 		if (!p) return _block.unref();
 		
-		if (auto* b = p->_weakBlock.ptr()) {
+		if (auto* b = p->_weakPtrBlock.ptr()) {
 			_block.ref(b);
 			return;
 		}
 
 		_block.ref(new(AX_ALLOC_REQ) WPtrBlock());
-		p->_weakBlock.ref(_block.ptr());
+		p->_weakPtrBlock.ref(_block.ptr());
 		auto data = _block->data.scopedLock();
 		data->obj = p;
 

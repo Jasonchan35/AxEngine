@@ -15,7 +15,6 @@ private:
 	AtomicType _v = ATOMIC_FLAG_INIT;
 };
 
-
 template< class T >
 class AtomicInt_ : public NonCopyable {
 	 using AtomicType = std::atomic<T>;
@@ -30,6 +29,24 @@ public:
 
 	AX_INLINE	T		operator++	() 				{ return ++_v; }
 	AX_INLINE	T		operator--	()				{ return --_v; }
+
+private:
+	AtomicType _v;
+};
+
+template<class T>
+class AtomicPtr : public NonCopyable {
+	using AtomicType = std::atomic<T*>;
+public:
+	AX_INLINE AtomicPtr(T* v = nullptr) : _v(v) {}
+
+	AX_INLINE void     set(const T& v) { _v.store(v); }
+	AX_INLINE T*       get() { return _v.load(); }
+	AX_INLINE const T* get() const { return _v.load(); }
+
+	AX_INLINE void operator=(const T& v) { set(v); }
+	AX_INLINE      operator T() { return get(); }
+	AX_INLINE      operator const T*() const { return get(); }
 
 private:
 	AtomicType _v;
