@@ -59,13 +59,13 @@ public:
 protected:
 	virtual MemoryBlock<u8> onAlloc(Int size, Int alignment) {
 		void* data = ::_aligned_malloc(size, alignment);
-		std::cout << std::format("onAlloc size={} data={}\n", size, data);
+//		std::cout << std::format("onAlloc size={} data={}\n", size, data);
 		return MemoryBlock<u8>(this, reinterpret_cast<u8*>(data), size);
 	}
 
 	virtual void onDealloc(void* data) {
 		if (!data) return;
-		std::cout << std::format("onDealloc data={}\n", data);
+//		std::cout << std::format("onDealloc data={}\n", data);
 		::_aligned_free(data);
 	}
 };

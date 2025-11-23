@@ -2,7 +2,9 @@
 
 export import AxCore.BasicType;
 export import AxCore.Span;
+
 export import <string_view>;
+export import <cctype>;
 
 import "AxBase.h";
 
@@ -24,11 +26,16 @@ using StrView8  = StrView_<Char8 >;
 using StrView16 = StrView_<Char16>;
 using StrView32 = StrView_<Char32>;
 
+enum class StrCase : u8 {
+	Ignore,
+	Sensitive,
+};
+
 template <CharType T>
 class MutStrView_ { //Copyable
 	using This = MutStrView_;
 protected:
-	T* _data = nullptr;
+	T*  _data = nullptr;
 	Int _size = 0;	
 public:
 	using CharType = T;
@@ -44,7 +51,6 @@ public:
 	AX_INLINE consteval MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {} // consteval only for string literal
 
 	constexpr std_string_view to_string_view() const noexcept { return std_string_view(_data, _size); }
-	constexpr       operator std_string_view() const noexcept { return std_string_view(_data, _size); }
 
 	AX_INLINE constexpr       T* data()       noexcept { return _data; }
 	AX_INLINE constexpr const T* data() const noexcept { return _data; }
@@ -60,14 +66,34 @@ public:
 	AX_INLINE	constexpr MutByteSpan	toMutByteSpan		()       noexcept { return MutByteSpan(reinterpret_cast<   MutByte*>(_data), sizeInBytes()); }
 	AX_INLINE	constexpr    ByteSpan	toByteSpan			() const noexcept { return    ByteSpan(reinterpret_cast<const Byte*>(_data), sizeInBytes()); }
 
-	constexpr bool operator==(const This & r) const noexcept;
-	constexpr bool operator!=(const This & r) const noexcept { return !(*this == r); }
+	constexpr bool equals(const This & r, StrCase sc) const noexcept;
+	
+	constexpr bool operator==(const This & r) const noexcept { return  equals(r, StrCase::Sensitive); }
+	constexpr bool operator!=(const This & r) const noexcept { return !equals(r, StrCase::Sensitive); }
+
+	using  Iter	= T*;
+	using CIter	= const T*;
+	
+	constexpr  Iter	begin	()		 noexcept	{ return _data; }
+	constexpr CIter	begin	() const noexcept	{ return _data; }
+	constexpr  Iter	end		()		 noexcept	{ return _data + _size; }
+	constexpr CIter	end		() const noexcept	{ return _data + _size; }
 };
 
 template <CharType T> AX_INLINE
-constexpr bool MutStrView_<T>::operator==(const This& r) const noexcept {
+constexpr bool MutStrView_<T>::equals(const This& r, StrCase sc) const noexcept {
 	if (_data == r._data && _size == r._size) return true;
-	for (Int i = 0; i < _size; ++i) if (_data[i] != r._data[i]) return false;
+	if (sc == StrCase::Ignore) {
+		for (Int i = 0; i < _size; ++i) {
+			if (std::toupper(_data[i]) != std::toupper(r._data[i]))
+				return false;
+		}
+	} else {
+		for (Int i = 0; i < _size; ++i) {
+			if (_data[i] != r._data[i])
+				return false;
+		}
+	}
 	return true;
 }
 

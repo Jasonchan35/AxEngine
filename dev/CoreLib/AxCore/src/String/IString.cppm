@@ -15,6 +15,9 @@ using IString8  = IString_<Char8>;
 using IString16 = IString_<Char16>;
 using IString32 = IString_<Char32>;
 
+template<class OBJ, class CH>
+concept CON_IString_ = std::is_base_of_v<IString_<CH>, OBJ>;
+
 template<class T>
 class IString_ : public IArrayStorage<T> {
 	using Base = IArrayStorage<T>;
@@ -87,8 +90,8 @@ public:
 	AX_INLINE constexpr CView	sliceBack	(Int offset) const				{ return  view().sliceBack(offset); }
 	AX_INLINE constexpr MView	sliceTill	(Int n)							{ return mview().sliceTill(n); }	
 	AX_INLINE constexpr CView	sliceTill	(Int n) const					{ return  view().sliceTill(n); }
-	AX_INLINE constexpr MView	extractFromPrefix(CView prefix, bool ignoreCase = false)		{ return mview().extractFromPrefix(prefix, ignoreCase); }
-	AX_INLINE constexpr CView	extractFromPrefix(CView prefix, bool ignoreCase = false) const	{ return  view().extractFromPrefix(prefix, ignoreCase); }
+	AX_INLINE constexpr MView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive)		{ return mview().extractFromPrefix(prefix, sc); }
+	AX_INLINE constexpr CView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) const	{ return  view().extractFromPrefix(prefix, sc); }
 	//----------------------------------	
 	AX_INLINE constexpr bool operator==	(CView r) const	{ return equals(r); }
 	AX_INLINE constexpr bool operator!=	(CView r) const	{ return !equals(r); }
@@ -96,18 +99,18 @@ public:
 	AX_INLINE constexpr bool operator<=	(CView r) const	{ return compare(r) <= 0; }
 	AX_INLINE constexpr bool operator>	(CView r) const	{ return compare(r) >  0; }
 	AX_INLINE constexpr bool operator>=	(CView r) const	{ return compare(r) >= 0; }
-	AX_INLINE constexpr Int  compare		(CView r,  bool ignoreCase = false) const { return view().compare	  (r,  ignoreCase); }
-	AX_INLINE constexpr bool equals		(CView r,  bool ignoreCase = false) const { return view().equals    (r,  ignoreCase); }
-	AX_INLINE constexpr bool startsWith	(CView r,  bool ignoreCase = false) const { return view().startsWith(r,  ignoreCase); }
-	AX_INLINE constexpr bool endsWith	(CView r,  bool ignoreCase = false) const { return view().endsWith  (r,  ignoreCase); }
-	AX_INLINE constexpr bool matchWildcard(CView wildcard, bool ignoreCase) const  { return view().matchWildcard(wildcard, ignoreCase); }
+	AX_INLINE constexpr Int  compare	(CView r, StrCase sc = StrCase::Sensitive) const { return view().compare   (r, sc); }
+	AX_INLINE constexpr bool equals		(CView r, StrCase sc = StrCase::Sensitive) const { return view().equals    (r, sc); }
+	AX_INLINE constexpr bool startsWith	(CView r, StrCase sc = StrCase::Sensitive) const { return view().startsWith(r, sc); }
+	AX_INLINE constexpr bool endsWith	(CView r, StrCase sc = StrCase::Sensitive) const { return view().endsWith  (r, sc); }
+	AX_INLINE constexpr bool matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const { return view().matchWildcard(wildcard, sc); }
 	
 	//-----------------------------------
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 	
 	constexpr void append(CView view);
-	constexpr void appendChar(const T& ch) { append(CView(&ch, 1)); }
+	constexpr void appendChar(const T& ch);
 
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -148,6 +151,7 @@ constexpr void IString_<T>::move(IString_<T> && rhs) {
 template <class T> inline
 constexpr void IString_<T>::append(CView view) {
 	if (isOverlapped(view)) throw Error_BufferOverlapped();
+	if (view.size() <= 0) return;
 	
 	auto oldSize = size();
 	auto newSize = oldSize + view.size();
@@ -155,6 +159,17 @@ constexpr void IString_<T>::append(CView view) {
 	MemoryUtil::copy(data() + oldSize, view.data(), view.size());
 	_storage.setSize(newSize);
 	_setNullTerminator();
+}
+
+template <class T> AX_INLINE
+constexpr void IString_<T>::appendChar(const T& ch) {
+	auto oldSize = size();
+	auto newSize = oldSize + 1;
+	reserve(newSize);
+	_storage.setSize(newSize);
+	auto* dst = data() + oldSize;
+	*dst = ch; dst++;
+	*dst = 0;
 }
 
 template <class T> AX_INLINE

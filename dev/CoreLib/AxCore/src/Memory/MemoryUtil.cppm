@@ -91,14 +91,14 @@ void MemoryUtil::destructor(T* p, Int n) {
 
 template <class T> AX_INLINE
 void MemoryUtil::copy(T* dst, const T* src, Int n) {
-	if (n <= 0) return;
-	if (MemoryUtil::isOverlapped(dst, n, src, n)) {
-		throw Error_BufferOverlapped();
-	}
-
-	if (std::is_trivially_copy_assignable_v<T>) {
+	if constexpr (std::is_trivially_copy_assignable_v<T>) {
 		MemoryUtil::rawCopy(dst, src, n * ax_sizeof<T>);
 	}else{
+		if (n <= 0) return;
+		if (MemoryUtil::isOverlapped(dst, n, src, n)) {
+			throw Error_BufferOverlapped();
+		}
+		
 		auto s = src;
 		auto e = src + n ;
 		for( ; s<e; ++s, ++dst ) {

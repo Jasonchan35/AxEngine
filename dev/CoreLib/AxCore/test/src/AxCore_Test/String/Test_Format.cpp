@@ -15,20 +15,29 @@ struct TestCase_Format : public UnitTestCase {
 		}
 
 		template<class FMT_CH>
-		constexpr void onFormat(FormatContext_<FMT_CH> & ctx) const {
-			ax_format_to(ctx, "{}", 100);
+		constexpr void onFormat(Format_<FMT_CH> & fmt) const {
+			fmt.format("{}", 100);
 		}	
 	};
 	
 	void run() {
 		{
-			auto str = ax_format("{} {}", 1, 2.3);
-			Debug::_internal_log(str.c_str());
+			String   str = "str";
+			IString& istr = str;
+			StrView  sv = str;
+			// auto ret = Fmt("int=[{:6}] sz=[{:6}]", 1, "abc");
+			auto ret = Fmt("sv=[{:6}] istr=[{:6}] str=[{:6}]", sv, istr, str);
+			Debug::_internal_log(ret.c_str());
+		}
+		{
+			AX_TEST_EQ(Fmt("[{:4}][{:4.1}]", 1, 0.123), "[   1][ 0.1]");
+			// auto str = Fmt("{} {}", 1, 2.3);
+			// Debug::_internal_log(str.c_str());
 		}
 		
 		CustmoData data;
 		{
-			auto str = ax_format("{}", data);
+			auto str = Fmt("{}", data);
 			Debug::_internal_log(str.c_str());
 		}
 // 		

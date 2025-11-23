@@ -29,7 +29,7 @@ struct UnitTestCase : public NonCopyable {
 };
 
 inline
-bool UnitTest_Validate(const SrcLoc& loc, bool success, const char* expr_str) {
+bool UnitTest_Validate(bool success, const char* expr_str, const SrcLoc& loc = SrcLoc()) {
 	bool verbose = true;
 
 	if (success && !verbose)

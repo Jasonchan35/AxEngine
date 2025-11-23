@@ -2,7 +2,7 @@
 
 #include "AxBase.h"
 
-export import AxCore.IString;
+export import AxCore.String;
 import AxCore.Debug;
 import <format>;
 
@@ -76,41 +76,48 @@ using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
 template<class T, class OUTPUT, class ... ARGS> 
 AX_INLINE void ax_format_to_internal(OUTPUT & output, FormatString_<T, ARGS...> && fmt, ARGS&&... args) {
 	FormatArgs_<T> format_args = std::make_format_args<FormatContext_<T>>(args...);
+	auto fmt_sv = fmt.get().to_string_view();
 	try {
 		if constexpr (std::is_base_of_v<FormatContext_<T>, OUTPUT>) {
-			std::vformat_to(output.out(), fmt.get(), format_args);
+			std::vformat_to(output.out(), fmt_sv, format_args);
 			
 		} else if constexpr (std::is_base_of_v<IString_<T>, OUTPUT>) {
 			output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
-			std::vformat_to(FormatBackInserter_<T>(output), fmt.get(), format_args);
+			std::vformat_to(FormatBackInserter_<T>(output), fmt_sv, format_args);
 			
 		} else {
 			static_assert(false);
 		}
 	} catch (std::exception& e) {
-		auto msg  = std::format("Exception in format={}, {})", fmt.get(), e.what());
+		auto msg  = std::format("Exception in format={}, {})", fmt_sv, e.what());
 		Debug::_internal_logError(msg.c_str());
 		throw Error_Format();
 	}
 }
 
 template<class... ARGS> AX_INLINE
-void ax_format_to(FormatContext_<CharA> & output, FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
+void FmtTo(FormatContext_<CharA> & output, FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
 template<class... ARGS> AX_INLINE
-void ax_format_to(FormatContext_<CharW> & output, FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
+void FmtTo(FormatContext_<CharW> & output, FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
 
 template<class... ARGS> AX_INLINE
-void ax_format_to(IString_<CharA> & output, FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
+void FmtTo(IString_<CharA> & output, FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
 template<class... ARGS> AX_INLINE
-void ax_format_to(IString_<CharW> & output, FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
+void FmtTo(IString_<CharW> & output, FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
+
+template<class... ARGS> AX_INLINE
+StringA Fmt(FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { StringA str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+
+template<class... ARGS> AX_INLINE
+StringW Fmt(FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { StringW str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 //--- Formatter
 template<class FMT_CH>
-struct FormatterBase_ {
-	using FormatContext = FormatContext_<FMT_CH>;
-	using ParseContext = FormatParseContext_<FMT_CH>;
-
-	constexpr auto parse(ParseContext& ctx) { return ctx.begin(); }
+struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FMT_CH> {
+	using Base = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
+	
+	template<class Context>
+	constexpr auto parse(Context& ctx) { return Base::parse(ctx); }
 };
 
 template<class OBJ>
@@ -123,39 +130,49 @@ concept Format_HasOnParse_ = requires(const OBJ& obj) {
 	{ OBJ::onFormatParse };
 };
 
+template<class T>
+class Format_ : public NonCopyable {
+public:
+	using Context   = FormatContext_<T>;
+	using Formatter = FormatterBase_<T>;
 
+	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), ctx(ctx_) {}
+
+	AX_INLINE constexpr void append(StrView_<T> view) {
+		formatter.format(view.to_string_view(), ctx);
+	}
+
+	template<class ... ARGS>
+	AX_INLINE constexpr void format(FormatString_<T, ARGS...> fmt, ARGS&&... args) {
+		TempString_<T> tmp;
+		FmtTo(tmp, AX_FORWARD(fmt), AX_FORWARD(args)...);
+		append(tmp);
+	}
+
+	const Formatter& formatter;
+	Context&   ctx;
+};
 
 } // namespace
 
 //----- global namespace ----------
 
-
-//
-// template<class FMT_CH> 
-// struct std::formatter<CustmoData, FMT_CH> {
-// 	template<class ParseContext>
-// 	constexpr auto parse(ParseContext& ctx) { return ctx.begin(); }
-//
-// 	template<class FormatContext>
-// 	constexpr auto format(const CustmoData & obj, FormatContext& ctx) const { return ctx.out(); }
-// };
-
-
+// Wrapper to CustomClass::onFormat()
 template<class OBJ, class FMT_CH> requires ax::Format_HasOnFormat_<OBJ>
 struct std::formatter<OBJ, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
 
-	constexpr auto parse(Base::ParseContext& ctx) {
+	constexpr auto parse(ax::FormatParseContext_<FMT_CH>& ctx) {
 		if constexpr (ax::Format_HasOnParse_<OBJ>) {
 			OBJ::onFormatParse(ctx);
 		} else {
 			return Base::parse(ctx);
 		}
-		return ctx.begin(); 
 	}
 
-	auto format(const OBJ& obj, Base::FormatContext& ctx) const {
-		obj.onFormat(ctx);
+	auto format(const OBJ& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+		ax::Format_<FMT_CH> format(*this, ctx);
+		obj.onFormat(format);
 		return ctx.out();
 	}
 };
@@ -164,12 +181,29 @@ template <class CH, class FMT_CH>
 struct std::formatter<ax::MutStrView_<CH>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
 	using FmtContext = ax::FormatContext_<FMT_CH>;
-
+	
 	template<class Context>
-	constexpr auto format(const ax::MutStrView_<CH> & obj, Context& ctx) const {
-		return std::format_to(ctx.out(), "2");
+	constexpr auto format(const ax::MutStrView_<CH>& obj, Context& ctx) const {
+		return Base::format(obj.to_string_view(), ctx);
 	}
 };
+
+template <class CH, class FMT_CH>
+struct std::formatter<ax::IString_<CH>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
+	using Base = ax::FormatterBase_<FMT_CH>;
+	auto format(const ax::IString_<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+		return Base::format(obj.view().to_string_view(), ctx);
+	}
+};
+
+template <class CH, ax::Int N, class FMT_CH>
+struct std::formatter<ax::String_<CH, N>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
+	using Base = ax::FormatterBase_<FMT_CH>;
+	auto format(const ax::String_<CH, N>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+		return Base::format(obj.view().to_string_view(), ctx);
+	}
+};
+
 
 template <class FMT_CH>
 struct std::formatter<std::wstring_view, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
@@ -205,7 +239,7 @@ struct std::formatter<char16_t, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 };
 
 //std lib doesn't support char[N] for same FMT_CH
-template <ax::CharType CH, size_t N, class FMT_CH> requires !std::is_same_v<char, FMT_CH>
+template <ax::CharType CH, size_t N, class FMT_CH> requires !std::is_same_v<CH, FMT_CH>
 struct std::formatter<CH[N], FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
 

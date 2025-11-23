@@ -5,7 +5,6 @@ import <format>;
 
 export import AxCore.IString;
 export import AxCore.Array;
-export import AxCore.Format;
 
 import AxCore.Allocator;
 import AxCore.MemoryUtil;
@@ -55,41 +54,23 @@ class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null
 public:
 	using View = StrView_<T>;
 	
-	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
-	AX_INLINE constexpr String_(View view) : String_() { Base::append(view); }
-	
-	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+	AX_INLINE String_() : Base(inlineBufPtr(), BUF_SIZE) {}
+	AX_INLINE String_(View view) : String_() { Base::append(view); }
+	AX_INLINE String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+
+	template<Int N>
+	AX_INLINE String_(const T (&sz)[N]) : String_() { Base::append(View(sz, N > 0 ? N-1 : 0)); } 
 
 	constexpr       IString_<T>& asIString()		{ return *this; }
 	constexpr const IString_<T>& asIString() const	{ return *this; }
 
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
-	template <class... ARGS> AX_INLINE
-	static AX_NODISCARD This s_format(FormatString_<T, ARGS...> && fmt, ARGS&&... args) {
-		This str; ax_format_to(str.asIString(), AX_FORWARD(fmt), AX_FORWARD(args)...); return str;
-	}
-
 protected:
 	constexpr virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
 	constexpr virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
 	constexpr virtual	void			onStorageFree	(T* p) override;
 };
-
-// template<class T, class... ARGS> AX_INLINE String_<T> ax_format_(const StrView_<T>& fmt, ARGS&&... args) { return String_<T>::s_format_(fmt, AX_FORWARD(args)...); }
-// template<class T, class... ARGS> AX_INLINE String_<T> ax_format_(const IString_<T>& fmt, ARGS&&... args) { return String_<T>::s_format_(fmt, AX_FORWARD(args)...); }
-// template<         class... ARGS> AX_INLINE StringA ax_format(const  std::format_string<ARGS...>& fmt, ARGS&&... args) { return StringA::s_format(fmt, AX_FORWARD(args)...); }
-// template<         class... ARGS> AX_INLINE StringW ax_format(const std::wformat_string<ARGS...>& fmt, ARGS&&... args) { return StringW::s_format(fmt, AX_FORWARD(args)...); }
-
-template<class... ARGS> AX_INLINE
-String_<char> ax_format(FormatString_<char, ARGS...> && fmt, ARGS&&... args) {
-	return String_<char>::s_format(AX_FORWARD(fmt), AX_FORWARD(args)...);
-}
-
-template<class... ARGS> AX_INLINE
-String_<wchar_t> ax_format(FormatString_<wchar_t, ARGS...> && fmt, ARGS&&... args) {
-	return String_<wchar_t>::s_format(AX_FORWARD(fmt), AX_FORWARD(args)...);
-}
 
 template <CharType T, Int BUF_SIZE> inline
 constexpr MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
