@@ -7,16 +7,18 @@ import AxCore.Debug;
 import AxCore.UnitTest;
 
 #define	AX_TEST_GROUP( fn )	\
-	::ax::Debug::_internal_log("========================== [" #fn "] =================="); \
+	::ax::Debug::_internal_log("====== Group [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----
 
 #define	AX_TEST_FUNC( fn )	\
-	::ax::Debug::_internal_log("[" #fn "]"); \
+	::ax::Debug::_internal_log("======= Func [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----
+
+#define	AX_TEST_RUN_CASE(func, ...) do { ::ax::UnitTest_RunCase(#func, &func, ##__VA_ARGS__); } while(false);
 
 #define AX_TEST_DUMP(A) \
 	do { \

@@ -6,7 +6,8 @@ import <iostream>;
 
 namespace ax {
 
-struct TestCase_Format : public UnitTestCase {
+class TestClass_Format : public UnitTestClass {
+public:
 	struct CustmoData {
 
 		template<class FMT_CH>
@@ -20,7 +21,7 @@ struct TestCase_Format : public UnitTestCase {
 		}	
 	};
 	
-	void run() {
+	void test_case1() {
 		{
 			auto ret = Fmt("int=[{:6}] sz=[{:6}] wsz=[{:6}]", 1, "abc", L"wchar");
 			Debug::_internal_log(ret.c_str());
@@ -69,6 +70,6 @@ struct TestCase_Format : public UnitTestCase {
 } // namespace
 
 void Test_Format() {
-	ax::TestCase_Format().run();
+	AX_TEST_RUN_CASE(ax::TestClass_Format::test_case1)
 }
 

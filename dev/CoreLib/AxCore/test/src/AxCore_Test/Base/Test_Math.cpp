@@ -2,16 +2,16 @@
 
 namespace ax {
 
-struct TestCase_Math : public UnitTestCase {
-	void test1() {
+class TestClase_Math : public UnitTestClass {
+public:
+	void test_case1() {
 		Math::nextPow2(10);
 	}
-
-	void run() {
-		test1();
-	}
+	
 };
 
 } // namespace
 
-void Test_Math() { ax::TestCase_Math().run(); }
+void Test_Math() {
+	AX_TEST_RUN_CASE(ax::TestClase_Math::test_case1);
+}

@@ -2,9 +2,10 @@
 
 namespace ax {
 
-struct TestCase_String : public UnitTestCase {
+class TestClass_String : public UnitTestClass {
+public:
 
-	void run() {
+	void test_case1() {
 		StrView   view  (  "Testing");
 		StrView8  view8 (u8"Testing");
 		StrView16 view16( u"Testing");
@@ -31,6 +32,6 @@ struct TestCase_String : public UnitTestCase {
 } // namespace
 
 void Test_String() {
-	ax::TestCase_String().run();
+	AX_TEST_RUN_CASE(ax::TestClass_String::test_case1)
 }
 

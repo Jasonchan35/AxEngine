@@ -1,11 +1,31 @@
 ﻿#pragma once
 
-#define AX_FORWARD(a) ::std::forward<decltype(a)>(a)
+#define AX_UNUSED(v)	((void)v)
+#define AX_COMMA ,
+#define AX_EMPTY
+#define AX_STRINGIFY(...)	#__VA_ARGS__
 
+#define AX_IDENTITY(x) x
+#define AX_WRAP(...)		__VA_ARGS__	
+
+#define AX_CALL(M, ARGS) AX_IDENTITY( M(ARGS) )
+// work around for MSVC bug - MSVC expands all __VA_ARGS__ as one argument
+//#define ax_CALL_MACRO(MACRO_NAME, ARGS) MACRO_NAME ARGS
+
+#define AX_FILE		__FILE__
+#define AX_LINE		static_cast<::ax::Int>(__LINE__)
+
+#define AX_FORWARD(a) ::std::forward<decltype(a)>(a)
 #define AX_ASSERT(EXPR) ::ax::ax_assert((EXPR), #EXPR)
 #define AX_ASSERT_MSG(EXPR, MSG) ::ax::ax_assert((EXPR), MSG)
 
-#define AX_UNUSED(v)	((void)v)
+#define _AX_JOIN_WORD_IMPL( w0,w1)		w0##w1
+#define _AX_JOIN_WORD3_IMPL(w0,w1,w2)	w0##w1##w2
+
+#define AX_JOIN_WORD( w0,w1)			_AX_JOIN_WORD_IMPL( w0, w1)
+#define AX_JOIN_WORD3(w0,w1,w2)			_AX_JOIN_WORD3_IMPL(w0, w1, w2)
+
+#define AX_WITH_NAME(v) ::ax::WithName(v, #v)
 
 #define AX_SIMPLE_ERROR(ERROR_TYPE) \
 	class ERROR_TYPE : public Error { \

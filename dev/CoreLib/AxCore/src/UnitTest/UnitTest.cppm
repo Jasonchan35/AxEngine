@@ -24,7 +24,7 @@ public:
 	int          waitKeyPress();
 };
 
-struct UnitTestCase : public NonCopyable {
+struct UnitTestClass : public NonCopyable {
 	static UnitTestRequest& s_testRequest() { return UnitTestProgram::s_get()->testRequest; }
 };
 
@@ -43,6 +43,46 @@ bool UnitTest_Validate(bool success, const char* expr_str, const SrcLoc& loc = S
 		::ax::Debug::_internal_assert("", expr_str, loc, buf);
 	}
 	return success;
+}
+
+template<class T> inline
+const char* _ax_get_cls_name() {
+	auto* src = AX_FUNC_SIG;
+	auto* t = "_ax_get_cls_name";
+	auto* sz = std::strstr(src, t);
+	if (!sz) AX_ASSERT(false);
+	return sz + std::strlen(t);
+}
+
+template<class TEST_CLASS, class... FUNC_ARGS, class... CALL_ARGS>
+inline void UnitTest_RunCase(const char* funcName, void (TEST_CLASS::*testFunc)(FUNC_ARGS...), CALL_ARGS&&... args) {
+//	const char* clsName = _ax_get_cls_name<TEST_CLASS>();
+	const int kBufSize = 4096;
+	char msg[kBufSize + 1];
+	snprintf(msg, kBufSize, "---- RunCase [%s] ---------\n", funcName);
+	::ax::Debug::_internal_log(msg);
+
+	try {
+		TEST_CLASS obj;		
+		(obj.*testFunc)(AX_FORWARD(args)...);
+
+	} catch (const Error& e) {
+		snprintf(msg, kBufSize, "\n  uncatched ax::Error occur %s", e.what());
+		::ax::Debug::_internal_log(msg);
+		AX_ASSERT(false);
+
+	} catch (const std::exception& e) {
+		snprintf(msg, kBufSize, "\n  uncatched std::exception occur %s", e.what());
+		::ax::Debug::_internal_log(msg);
+		AX_ASSERT(false);
+
+	} catch (...) {
+		snprintf(msg, kBufSize, "\n  uncatched exception occur");
+		::ax::Debug::_internal_log(msg);
+		AX_ASSERT(false);
+	}
+	//	TestClass o;
+	//	o.TestFunc;
 }
 
 } // namespace

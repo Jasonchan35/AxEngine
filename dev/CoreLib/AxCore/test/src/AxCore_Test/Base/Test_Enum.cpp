@@ -2,8 +2,9 @@
 
 namespace ax {
 
-struct TestCase_Enum : public UnitTestCase {
-	void run() {
+class TestClass_Enum : public UnitTestClass {
+public:
+	void test_case1() {
 		
 	}
 };
@@ -11,6 +12,6 @@ struct TestCase_Enum : public UnitTestCase {
 } // namespace
 
 void Test_Enum() {
-	ax::TestCase_Enum().run();
+	AX_TEST_RUN_CASE(ax::TestClass_Enum::test_case1)
 }
 

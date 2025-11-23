@@ -4,5 +4,6 @@
 
 void AxCore_Test() {
     AX_TEST_GROUP(AxCore_Test_Base)
+    AX_TEST_GROUP(AxCore_Test_Reflection)
     AX_TEST_GROUP(AxCore_Test_String)
 }

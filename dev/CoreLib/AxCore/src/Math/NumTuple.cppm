@@ -25,11 +25,12 @@ public:
 	using Element = T;
 	static constexpr Int kElementCount = 1;
 
+	T	x;
+	
 	AX_INLINE constexpr NumTuple_() = default;
 	AX_INLINE constexpr NumTuple_( const Element& x_) : x(x_) {}
 	AX_INLINE constexpr void set(const Element& x_) { x = x_; }
 
-	T	x;
 	AX_INLINE 		Element*	data()		 { return &x; }
 	AX_INLINE const	Element*	data() const { return &x; }
 	

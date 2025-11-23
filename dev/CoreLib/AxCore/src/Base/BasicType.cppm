@@ -5,6 +5,7 @@ export module AxCore.BasicType;
 
 export import <type_traits>;
 export import <cstdint>;
+export import <optional>;
 
 import <stdexcept>;
 import <cassert>;
@@ -124,11 +125,17 @@ protected:
 	std::source_location _loc;
 };
 
-export inline
-void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc()) {
+inline void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc()) {
 	if (expr) return;
 	assert(false);
-} 
+}
+
+template<class T>
+struct WithName {
+	WithName(T& value_, const char* name_) : value(value_), name(name_) {}
+	T& value;
+	const char* name;
+};
 
 class Error : public std::exception {
 public:
@@ -195,5 +202,25 @@ AX_INLINE			CharW_Native**	CharW_to_Native(      CharW** v) { return reinterpret
 AX_INLINE	const	CharW_Native&	CharW_to_Native(const CharW&  v) { return reinterpret_cast<const CharW_Native& >(v); }
 AX_INLINE	const	CharW_Native*	CharW_to_Native(const CharW*  v) { return reinterpret_cast<const CharW_Native* >(v); }
 AX_INLINE	const	CharW_Native**	CharW_to_Native(const CharW** v) { return reinterpret_cast<const CharW_Native**>(v); }
+
+
+// this cast can over come function pointer to void*
+template<class DST, class SRC> AX_INLINE
+constexpr DST ax_bit_cast(const SRC& src) {
+	// std::bit_cast needs c++20, so use union work around
+	union Wrap {
+		constexpr Wrap(const SRC& src_) : src(src_) {}
+		DST dst;
+		SRC src;
+	};
+	static_assert(sizeof(DST) == sizeof(SRC));
+	return Wrap(src).dst;
+}
+
+template<class T> using Opt = std::optional<T>;
+
+template<Int... ints> using IntSequence = std::integer_sequence<Int, ints...>;
+template<Int N> using IntSequence_make = std::make_integer_sequence<Int, N>;
+
 
 } // namespace

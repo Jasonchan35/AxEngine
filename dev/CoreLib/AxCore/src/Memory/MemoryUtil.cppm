@@ -27,6 +27,31 @@ struct MemoryUtil {
 	template< class T > static void destructor(T* p, Int n);
 	template< class T > static void moveConstructorAndDestructor(T* dst, T* src, Int n);
 	
+	template<class T> AX_INLINE
+	static Int sizeInBytes(const T* start, const T* end) {
+		return reinterpret_cast<const char*>(end) - reinterpret_cast<const char*>(start);
+	}
+
+	template<class T> AX_INLINE
+	static T* addOffsetInBytes(T* p, Int numBytes) { 
+		return reinterpret_cast<T*>(reinterpret_cast<char*>(p) + numBytes); 
+	}
+
+	template<class T> AX_INLINE 
+	static const T* addOffsetInBytes(const T* p, Int numBytes) {
+		return reinterpret_cast<const T*>(reinterpret_cast<const char*>(p) + numBytes);
+	}
+
+	template<class T> struct memberOffset_wrap { static T v; };
+
+	template< class Obj, class Member > AX_INLINE
+	static Int memberOffset(Member Obj::*ptrToMember) {
+		Obj* obj = nullptr;
+		char* m = reinterpret_cast<char*>(&(obj->*ptrToMember));
+		char* c = nullptr;
+		return m - c;
+	}
+	
 private:
 	template <class T>
 	static void _copyLoop(T* dst, const T* src, Int len);
