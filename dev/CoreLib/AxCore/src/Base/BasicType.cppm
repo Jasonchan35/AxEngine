@@ -223,4 +223,44 @@ template<Int... ints> using IntSequence = std::integer_sequence<Int, ints...>;
 template<Int N> using IntSequence_make = std::make_integer_sequence<Int, N>;
 
 
+template<class T>
+class PtrBase {
+public:
+	PtrBase(T* p = nullptr) : _p(p) {}
+	~PtrBase() { _p = nullptr; }
+
+	//	AX_INLINE 		T* ptr() && = delete;
+
+	AX_INLINE 		T* ptr()				{ return  _p; }
+	AX_INLINE const	T* ptr() const			{ return  _p; }
+
+	AX_INLINE 		T* get()				{ return  _p; }
+	AX_INLINE const	T* get() const			{ return  _p; }
+
+	AX_INLINE 		T* operator->()			{ return  _p; }
+	AX_INLINE const	T* operator->() const	{ return  _p; }
+
+	AX_INLINE 		T& operator* ()			{ return *_p; }
+	AX_INLINE const	T& operator* () const	{ return *_p; }
+
+	AX_INLINE explicit operator bool() const	{ return _p != nullptr; }
+
+protected:
+	T* _p;
+};
+
+template<class T> struct NumLimit;
+
+template<class T> requires std::is_integral_v<T> || std::is_floating_point_v<T> || CharType<T>
+struct NumLimit<T> {
+	AX_INLINE static constexpr T kDefaultValue	() { return 0; }
+	AX_INLINE static constexpr T kLowest		() { return  std::numeric_limits<T>::lowest();    }
+	AX_INLINE static constexpr T kMin			() { return  std::numeric_limits<T>::min();		  }
+	AX_INLINE static constexpr T kMax			() { return  std::numeric_limits<T>::max();		  }
+	AX_INLINE static constexpr T kInfinity		() { return  std::numeric_limits<T>::infinity();  }
+	AX_INLINE static constexpr T kNegInfinity	() { return -std::numeric_limits<T>::infinity();  }
+	AX_INLINE static constexpr T kNaN			() { return  std::numeric_limits<T>::quiet_NaN(); }
+};
+
+
 } // namespace
