@@ -16,16 +16,19 @@ struct TestCase_Format : public UnitTestCase {
 
 		template<class FMT_CH>
 		constexpr void onFormat(Format_<FMT_CH> & fmt) const {
-			fmt.format("{}", 100);
+			fmt.format("CustmoData={}", 100);
 		}	
 	};
 	
 	void run() {
 		{
+			auto ret = Fmt("int=[{:6}] sz=[{:6}] wsz=[{:6}]", 1, "abc", L"wchar");
+			Debug::_internal_log(ret.c_str());
+		}
+		{
 			String   str = "str";
 			IString& istr = str;
 			StrView  sv = str;
-			// auto ret = Fmt("int=[{:6}] sz=[{:6}]", 1, "abc");
 			auto ret = Fmt("sv=[{:6}] istr=[{:6}] str=[{:6}]", sv, istr, str);
 			Debug::_internal_log(ret.c_str());
 		}

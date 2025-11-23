@@ -48,9 +48,10 @@ public:
 	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
 
 	template<Int N>
-	AX_INLINE consteval MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {} // consteval only for string literal
+	AX_INLINE constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
 
 	constexpr std_string_view to_string_view() const noexcept { return std_string_view(_data, _size); }
+	constexpr operator std_string_view() const noexcept { return to_string_view(); }
 
 	AX_INLINE constexpr       T* data()       noexcept { return _data; }
 	AX_INLINE constexpr const T* data() const noexcept { return _data; }
@@ -105,5 +106,8 @@ AX_INLINE consteval StrView32 operator ""_sv(const Char32* sz, size_t n)  noexce
 
 template<class T> AX_INLINE
 constexpr StrView_<T> StrView_make(std::basic_string_view<T> src) { return StrView_<T>(src.data(), src.size()); }
+
+template<class T, Int N> AX_INLINE
+constexpr StrView_<T> StrView_make(T (&sz)[N]) { return StrView_<T>(sz, N > 0 ? N-1 : 0); }
 
 } // namespace

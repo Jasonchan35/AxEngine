@@ -3,6 +3,8 @@
 #include "AxBase.h"
 
 export import AxCore.String;
+export import AxCore.UtfUtil;
+
 import AxCore.Debug;
 import <format>;
 
@@ -180,11 +182,8 @@ struct std::formatter<OBJ, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 template <class CH, class FMT_CH>
 struct std::formatter<ax::MutStrView_<CH>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
-	using FmtContext = ax::FormatContext_<FMT_CH>;
-	
-	template<class Context>
-	constexpr auto format(const ax::MutStrView_<CH>& obj, Context& ctx) const {
-		return Base::format(obj.to_string_view(), ctx);
+	constexpr auto format(const ax::MutStrView_<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+		return Base::format(obj, ctx);
 	}
 };
 
@@ -192,7 +191,7 @@ template <class CH, class FMT_CH>
 struct std::formatter<ax::IString_<CH>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
 	auto format(const ax::IString_<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return Base::format(obj.view().to_string_view(), ctx);
+		return Base::format(obj, ctx);
 	}
 };
 
@@ -200,64 +199,39 @@ template <class CH, ax::Int N, class FMT_CH>
 struct std::formatter<ax::String_<CH, N>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
 	auto format(const ax::String_<CH, N>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return Base::format(obj.view().to_string_view(), ctx);
+		return Base::format(obj, ctx);
 	}
 };
 
+// template <class FMT_CH>
+// struct std::formatter<wchar_t, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
+// 	using Base = ax::FormatterBase_<FMT_CH>;
+// 	using FmtContext = ax::FormatContext_<FMT_CH>;
+//
+// 	template <class FormatContext>
+// 	constexpr auto format(const wchar_t &obj, FormatContext& ctx) const {
+// 		return std::format_to(ctx.out(), "1");
+// 	}
+// };
 
-template <class FMT_CH>
-struct std::formatter<std::wstring_view, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	using FmtContext = ax::FormatContext_<FMT_CH>;
-	
-	template <class FormatContext>
-	constexpr auto format(const std::wstring_view& obj, FormatContext& ctx) const {
-		return std::format_to(ctx.out(), "1");
-	}
-};
+// template <class FMT_CH>
+// struct std::formatter<char16_t, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
+// 	using Base = ax::FormatterBase_<FMT_CH>;
+// 	using FmtContext = ax::FormatContext_<FMT_CH>;
+// 	
+// 	template <class FormatContext>
+// 	constexpr auto format(const char16_t &obj, FormatContext& ctx) const {
+// 		return std::format_to(ctx.out(), "1");
+// 	}
+// };
 
-template <class FMT_CH>
-struct std::formatter<wchar_t, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	using FmtContext = ax::FormatContext_<FMT_CH>;
-
-	template <class FormatContext>
-	constexpr auto format(const wchar_t &obj, FormatContext& ctx) const {
-		return std::format_to(ctx.out(), "1");
-	}
-};
-
-template <class FMT_CH>
-struct std::formatter<char16_t, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	using FmtContext = ax::FormatContext_<FMT_CH>;
-	
-	template <class FormatContext>
-	constexpr auto format(const char16_t &obj, FormatContext& ctx) const {
-		return std::format_to(ctx.out(), "1");
-	}
-};
-
-//std lib doesn't support char[N] for same FMT_CH
+//std lib doesn't support char[N] for different FMT_CH
 template <ax::CharType CH, size_t N, class FMT_CH> requires !std::is_same_v<CH, FMT_CH>
 struct std::formatter<CH[N], FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
-
-	template<class Context>
-	constexpr auto format(const CH (&sz)[N], Context& ctx) const {
-		// ax::StrView_<CH> sv(sz);
-		// return ctx.out() = sv;
-		return ctx.out();		
-	}
-};
-
-template <>
-struct std::formatter<ax::MutStrView8> {
-	template<class ParseContext>
-	constexpr auto parse(ParseContext& ctx) { return ctx.end(); }
-	
-	template <class FormatContext>
-	constexpr auto format(const ax::MutStrView8 & obj, FormatContext& ctx) const {
-		return std::format_to(ctx.out(), "2");
+	constexpr auto format(const CH (&sz)[N], ax::FormatContext_<FMT_CH>& ctx) const {
+		ax::TempString_<FMT_CH> tmp;
+		ax::UtfUtil::convert(tmp, ax::StrView_<CH>(sz));
+		return Base::format(tmp, ctx);
 	}
 };

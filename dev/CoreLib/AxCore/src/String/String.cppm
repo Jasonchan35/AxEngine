@@ -4,6 +4,7 @@
 import <format>;
 
 export import AxCore.IString;
+export import AxCore.UtfUtil;
 export import AxCore.Array;
 
 import AxCore.Allocator;
@@ -59,7 +60,7 @@ public:
 	AX_INLINE String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
 
 	template<Int N>
-	AX_INLINE String_(const T (&sz)[N]) : String_() { Base::append(View(sz, N > 0 ? N-1 : 0)); } 
+	AX_INLINE String_(const T (&sz)[N]) : String_() { Base::append(StrView_make(sz)); } 
 
 	constexpr       IString_<T>& asIString()		{ return *this; }
 	constexpr const IString_<T>& asIString() const	{ return *this; }

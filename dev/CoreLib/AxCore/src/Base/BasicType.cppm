@@ -54,6 +54,9 @@ constexpr u16 u16_min = std::numeric_limits<u16>::min();
 constexpr u32 u32_min = std::numeric_limits<u32>::min();
 constexpr u64 u64_min = std::numeric_limits<u64>::min();
 
+using Int  = i64;
+using UInt = u64;
+using Byte = u8;
 
 using f32  = float;
 using f64  = double;
@@ -65,10 +68,7 @@ using Char16 = char16_t;
 using Char32 = char32_t;
 using CharW  = wchar_t;
 using Char   = CharA;
-
-using Int  = i64;
-using UInt = u64;
-using Byte = u8;
+using CharU	 = Char32;
 
 template<class T> constexpr bool ax_type_is_char =	std::is_same_v<std::remove_cv_t<T>, CharA>
 												 ||	std::is_same_v<std::remove_cv_t<T>, CharW>
@@ -142,18 +142,13 @@ protected:
 	std::string _what;
 };
 
-#define AX_SIMPLE_ERROR(ERROR_TYPE) \
-	class ERROR_TYPE : public Error { \
-	public: \
-	ERROR_TYPE(const SrcLoc& srcLoc = SrcLoc()) : Error(srcLoc) {} \
-	}; \
-//------
 AX_SIMPLE_ERROR(Error_IndexOutOfRange)
 AX_SIMPLE_ERROR(Error_InvalidSize)
 AX_SIMPLE_ERROR(Error_BufferOverlapped)
 AX_SIMPLE_ERROR(Error_ValueCast)
 AX_SIMPLE_ERROR(Error_Allocator)
 AX_SIMPLE_ERROR(Error_Format)
+AX_SIMPLE_ERROR(Error_Utf)
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {
@@ -187,5 +182,18 @@ template<class T> AX_INLINE
 void ax_call_destructor(T* p ) noexcept {
 	p->~T();
 }
+
+template<Int N>	struct CharW_Native_;
+template<>	struct CharW_Native_<ax_sizeof<Char16>> { using Type = Char16; };
+template<>	struct CharW_Native_<ax_sizeof<Char32>> { using Type = Char32; };
+using CharW_Native = typename CharW_Native_<ax_sizeof<CharW>>::Type;
+
+AX_INLINE			CharW_Native	CharW_to_Native(      CharW   v) { return static_cast<           CharW_Native  >(v); }
+AX_INLINE			CharW_Native&	CharW_to_Native(      CharW&  v) { return reinterpret_cast<      CharW_Native& >(v); }
+AX_INLINE			CharW_Native*	CharW_to_Native(      CharW*  v) { return reinterpret_cast<      CharW_Native* >(v); }
+AX_INLINE			CharW_Native**	CharW_to_Native(      CharW** v) { return reinterpret_cast<      CharW_Native**>(v); }
+AX_INLINE	const	CharW_Native&	CharW_to_Native(const CharW&  v) { return reinterpret_cast<const CharW_Native& >(v); }
+AX_INLINE	const	CharW_Native*	CharW_to_Native(const CharW*  v) { return reinterpret_cast<const CharW_Native* >(v); }
+AX_INLINE	const	CharW_Native**	CharW_to_Native(const CharW** v) { return reinterpret_cast<const CharW_Native**>(v); }
 
 } // namespace

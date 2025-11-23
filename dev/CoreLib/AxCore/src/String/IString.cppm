@@ -33,6 +33,8 @@ public:
 	using std_string_view = std::basic_string_view<std::remove_cv_t<T>>;
 
 	const T* c_str() const { return zview().c_str(); }
+	constexpr std_string_view to_string_view() const noexcept { return std_string_view(data(), size()); }
+	constexpr operator std_string_view() const noexcept { return to_string_view(); }
 	
 	constexpr explicit operator bool() const { return size() != 0; }
 	constexpr       T* data()			{ return _storage.data(); }

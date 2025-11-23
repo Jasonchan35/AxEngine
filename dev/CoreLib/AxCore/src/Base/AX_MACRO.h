@@ -7,6 +7,21 @@
 
 #define AX_UNUSED(v)	((void)v)
 
+#define AX_SIMPLE_ERROR(ERROR_TYPE) \
+	class ERROR_TYPE : public Error { \
+		public: \
+		ERROR_TYPE(const SrcLoc& srcLoc = SrcLoc()) : Error(srcLoc) {} \
+	}; \
+//------
+
+//----- TYPE_LIST ----
+#define AX_CHAR_TYPE_SUFFIX_LIST(E)				E(A) E(W)     E(8)     E(16)     E(32)
+#define	AX_TYPE_LIST_CHAR_OTHER_THAN_CHAR_A(E)		 E(CharW) E(Char8) E(Char16) E(Char32)
+
+#define	AX_TYPE_LIST_CHAR(E) \
+	E(CharA) \
+	AX_TYPE_LIST_CHAR_OTHER_THAN_CHAR_A(E) \
+//----
 
 //--- Enum -----
 
