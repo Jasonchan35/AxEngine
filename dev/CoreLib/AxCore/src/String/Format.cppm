@@ -203,29 +203,6 @@ struct std::formatter<ax::String_<CH, N>, FMT_CH> : public ax::FormatterBase_<FM
 	}
 };
 
-// template <class FMT_CH>
-// struct std::formatter<wchar_t, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-// 	using Base = ax::FormatterBase_<FMT_CH>;
-// 	using FmtContext = ax::FormatContext_<FMT_CH>;
-//
-// 	template <class FormatContext>
-// 	constexpr auto format(const wchar_t &obj, FormatContext& ctx) const {
-// 		return std::format_to(ctx.out(), "1");
-// 	}
-// };
-
-// template <class FMT_CH>
-// struct std::formatter<char16_t, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-// 	using Base = ax::FormatterBase_<FMT_CH>;
-// 	using FmtContext = ax::FormatContext_<FMT_CH>;
-// 	
-// 	template <class FormatContext>
-// 	constexpr auto format(const char16_t &obj, FormatContext& ctx) const {
-// 		return std::format_to(ctx.out(), "1");
-// 	}
-// };
-
-//std lib doesn't support char[N] for different FMT_CH
 template <ax::CharType CH, size_t N, class FMT_CH> requires !std::is_same_v<CH, FMT_CH>
 struct std::formatter<CH[N], FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;

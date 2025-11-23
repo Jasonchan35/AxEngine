@@ -67,6 +67,9 @@ public:
 
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
+	template<class U>
+	static This s_utf(StrView_<U> v) { This s; UtfUtil::convert(s, v); return s; } 
+
 protected:
 	constexpr virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
 	constexpr virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;

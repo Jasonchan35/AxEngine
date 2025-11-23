@@ -41,26 +41,26 @@ public:
 
 	AX_INLINE constexpr bool isOverlapped(CSpan rhs) const noexcept { return MemoryUtil::isOverlapped(_data, _size, rhs.data(), rhs.size()); }
 
-	AX_INLINE constexpr       T& operator[](Int i)       noexcept { return get(i); }
-	AX_INLINE constexpr const T& operator[](Int i) const noexcept { return get(i); }
+	AX_INLINE constexpr       T& operator[](Int i)       noexcept { return at(i); }
+	AX_INLINE constexpr const T& operator[](Int i) const noexcept { return at(i); }
 
-	AX_INLINE constexpr       T& get(Int i)       noexcept { _checkBound(i); return unsafe_get(i); }
-	AX_INLINE constexpr const T& get(Int i) const noexcept { _checkBound(i); return unsafe_get(i); }
+	AX_INLINE constexpr       T& at(Int i)       noexcept { _checkBound(i); return unsafe_at(i); }
+	AX_INLINE constexpr const T& at(Int i) const noexcept { _checkBound(i); return unsafe_at(i); }
 
-	AX_INLINE constexpr       T* try_get(Int i)       noexcept { return inBound(i) ? &unsafe_get(i) : nullptr; }
-	AX_INLINE constexpr const T* try_get(Int i) const noexcept { return inBound(i) ? &unsafe_get(i) : nullptr; }
+	AX_INLINE constexpr       T* try_at(Int i)       noexcept { return inBound(i) ? &unsafe_at(i) : nullptr; }
+	AX_INLINE constexpr const T* try_at(Int i) const noexcept { return inBound(i) ? &unsafe_at(i) : nullptr; }
 	
-	AX_INLINE constexpr       T& back()       noexcept { return get(_size - 1); }
-	AX_INLINE constexpr const T& back() const noexcept { return get(_size - 1); }
+	AX_INLINE constexpr       T& back()       noexcept { return at(_size - 1); }
+	AX_INLINE constexpr const T& back() const noexcept { return at(_size - 1); }
 
-	AX_INLINE constexpr       T& back(Int i)       noexcept { return get(_size - i - 1); }
-	AX_INLINE constexpr const T& back(Int i) const noexcept { return get(_size - i - 1); }
+	AX_INLINE constexpr       T& back(Int i)       noexcept { return at(_size - i - 1); }
+	AX_INLINE constexpr const T& back(Int i) const noexcept { return at(_size - i - 1); }
 
-	AX_INLINE constexpr       T& unsafe_get(Int i)       noexcept { _debug_checkBound(i); return _data[i]; }
-	AX_INLINE constexpr const T& unsafe_get(Int i) const noexcept { _debug_checkBound(i); return _data[i]; }
+	AX_INLINE constexpr       T& unsafe_at(Int i)       noexcept { _debug_checkBound(i); return _data[i]; }
+	AX_INLINE constexpr const T& unsafe_at(Int i) const noexcept { _debug_checkBound(i); return _data[i]; }
 
-	AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept { return unsafe_get(_size - i - 1); }
-	AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept { return unsafe_get(_size - i - 1); }
+	AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept { return unsafe_at(_size - i - 1); }
+	AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept { return unsafe_at(_size - i - 1); }
 
 	AX_INLINE constexpr       T* data()       noexcept { return _data; }
 	AX_INLINE constexpr const T* data() const noexcept { return _data; }
