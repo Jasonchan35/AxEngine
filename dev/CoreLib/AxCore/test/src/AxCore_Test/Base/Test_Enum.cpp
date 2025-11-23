@@ -2,7 +2,7 @@
 
 namespace ax {
 
-class TestClass_Enum : public UnitTestClass {
+class Test_Enum : public UnitTestClass {
 public:
 	void test_case1() {
 		
@@ -12,6 +12,6 @@ public:
 } // namespace
 
 void Test_Enum() {
-	AX_TEST_RUN_CASE(ax::TestClass_Enum::test_case1)
+	AX_TEST_RUN_CASE(ax::Test_Enum::test_case1)
 }
 

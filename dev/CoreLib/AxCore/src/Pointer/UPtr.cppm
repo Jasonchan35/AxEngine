@@ -1,25 +1,23 @@
-#pragma once
+export module AxCore.UPtr;
 
-#include "PtrBase.cppm"
-#include "AxCore/Memory/Allocator.h"
-#include "AxCore/Memory/RawArrayUtil.h"
+#include "AxBase.h"
+export import AxCore.BasicType;
+export import AxCore.Allocator;
+export import AxCore.Span;
 
-namespace ax {
+export namespace ax {
 
 //! Unique Pointer
 template<class T, class DEL = AxDelete>
-class UPtr : public AxCore::PtrBase<T>, public NonCopyable {
-	using Base = AxCore::PtrBase<T>;
+class UPtr : public PtrBase<T>, public NonCopyable {
+	using Base = PtrBase<T>;
 	using Base::_p;
 	void operator=(const UPtr&) = delete;
 public:
 	AX_INLINE	UPtr() = default;
 	AX_INLINE	UPtr(UPtr && r) noexcept { move(AX_FORWARD(r)); }
 	AX_INLINE	UPtr(std::nullptr_t) noexcept {}
-
-	template<class... ARGS>
-	AX_INLINE	UPtr(Tag::NewObject, const AllocRequest& req, ARGS&&... args) { newObject(req, AX_FORWARD(args)...); }
-
+	
 	 // only accept when using same DEL class
 	template<class R> AX_INLINE	UPtr(const UPtr<R, DEL> & r) = delete;
 
@@ -38,7 +36,7 @@ public:
 	AX_INLINE	T*		detach		() noexcept			{ auto* p = _p; _p = nullptr; return p; }
 
 	template<class... ARGS>
-	T*	newObject(const AllocRequest& req, ARGS&&...args) {
+	T*	newObject(const MemAllocRequest& req, ARGS&&...args) {
 		return ref(new (req) T(AX_FORWARD(args)...));
 	}
 
@@ -78,13 +76,13 @@ void UPtr<T, DEL>::move(UPtr<R, DEL> && r) noexcept {
 }
 
 template<class T, class DEL = AxDelete, class... ARGS> AX_INLINE
-UPtr<T, DEL> UPtr_new(const AllocRequest& req, ARGS &&... args) {
+UPtr<T, DEL> UPtr_new(const MemAllocRequest& req, ARGS &&... args) {
 	return UPtr_ref<T, DEL>(new (req) T(AX_FORWARD(args)...));
 }
 
 template<class T, class DEL = AxDelete, class... ARGS> AX_INLINE
-UPtr<T, DEL> UPtr_new(const SrcLoc& srcLoc, Allocator* allocator, ARGS &&... args) {
-	AllocRequest req(srcLoc, allocator);
+UPtr<T, DEL> UPtr_new(const SrcLoc& srcLoc, MemAllocator* allocator, ARGS &&... args) {
+	MemAllocRequest req(srcLoc, allocator);
 	return UPtr_new(req, AX_FORWARD(args)...);
 }
 

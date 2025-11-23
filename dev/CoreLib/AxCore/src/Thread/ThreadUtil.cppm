@@ -10,7 +10,7 @@ import <thread>;
 	import <windows.h>;
 #endif
 
-namespace ax::AxCore {
+namespace ax::Thread {
 
 #if AX_OS_WINDOWS
 
@@ -89,7 +89,6 @@ public:
 		ctx << _v;
 	}
 
-friend class Thread;
 protected:
 	ThreadId_Native _v = ThreadId_Native_kNull;
 };

@@ -71,16 +71,16 @@ public:
 	static This s_utf(StrView_<U> v) { This s; UtfUtil::convert(s, v); return s; } 
 
 protected:
-	constexpr virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
-	constexpr virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
+	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
+	constexpr virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) override;
 	constexpr virtual	void			onStorageFree	(T* p) override;
 };
 
 template <CharType T, Int BUF_SIZE> inline
-constexpr MemoryBlock<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
+constexpr MemAllocResult<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize + 1; // +1 for null terminator
 	auto* allocator = ax_default_allocator();
-	auto buf = allocator->alloc<T>(newCapacity);
+	auto buf = allocator->allocArray<T>(newCapacity);
 	buf.size--; // -1 for null terminator
 	return buf;
 }

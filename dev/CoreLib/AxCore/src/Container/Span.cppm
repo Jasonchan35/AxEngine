@@ -39,7 +39,7 @@ public:
 	AX_INLINE constexpr bool inBound(Int      i) const noexcept { return i >= 0 && i < _size; }
 	AX_INLINE constexpr bool inBound(IntRange r) const noexcept { return IntRange(0, _size).contains(r); }
 
-	AX_INLINE constexpr bool isOverlapped(CSpan rhs) const noexcept { return MemoryUtil::isOverlapped(_data, _size, rhs.data(), rhs.size()); }
+	AX_INLINE constexpr bool isOverlapped(CSpan rhs) const noexcept { return MemUtil::isOverlapped(_data, _size, rhs.data(), rhs.size()); }
 
 	AX_INLINE constexpr       T& operator[](Int i)       noexcept { return at(i); }
 	AX_INLINE constexpr const T& operator[](Int i) const noexcept { return at(i); }

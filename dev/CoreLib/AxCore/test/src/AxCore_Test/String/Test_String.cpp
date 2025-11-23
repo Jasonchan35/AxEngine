@@ -2,7 +2,7 @@
 
 namespace ax {
 
-class TestClass_String : public UnitTestClass {
+class Test_String : public UnitTestClass {
 public:
 
 	void test_case1() {
@@ -32,6 +32,6 @@ public:
 } // namespace
 
 void Test_String() {
-	AX_TEST_RUN_CASE(ax::TestClass_String::test_case1)
+	AX_TEST_RUN_CASE(ax::Test_String::test_case1)
 }
 

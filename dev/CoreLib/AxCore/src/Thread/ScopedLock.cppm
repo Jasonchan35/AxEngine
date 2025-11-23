@@ -8,7 +8,7 @@ import AxCore.BasicType;
 	auto ax_ = ax_lock(mutex0, mutex1)
 */
 
-export namespace ax {
+export namespace ax::Thread {
 
 class TryLockTag {};
 

@@ -27,6 +27,8 @@
 
 #define AX_WITH_NAME(v) ::ax::WithName(v, #v)
 
+#define AX_ALLOC_REQ	::ax::MemAllocRequest(ax_current_allocator())
+
 #define AX_SIMPLE_ERROR(ERROR_TYPE) \
 	class ERROR_TYPE : public Error { \
 		public: \

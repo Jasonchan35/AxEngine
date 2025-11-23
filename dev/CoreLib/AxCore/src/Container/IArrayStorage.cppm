@@ -24,8 +24,8 @@ protected:
 	constexpr virtual ~IArrayStorage() = default;
 
 protected:
-	constexpr virtual MemoryBlock<T>	onStorageLocalBuf() = 0;
-	constexpr virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) = 0;
+	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() = 0;
+	constexpr virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) = 0;
 	constexpr virtual	void			onStorageFree(T* p) = 0;
 
 	constexpr void _storageMove(IArrayStorage<T>&& rhs);
@@ -104,7 +104,7 @@ constexpr void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 	} else {
 		_storageClear();
 		_storageReserve(srcSize);
-		MemoryUtil::moveConstructorAndDestructor(_storage.data(), srcData, srcSize);
+		MemUtil::moveConstructorAndDestructor(_storage.data(), srcData, srcSize);
 		_storage.setSize(srcSize);
 		rhs._storage.setSize(0);
 	}
@@ -130,7 +130,7 @@ constexpr void IArrayStorage<T>::_storageRreserveImpl(Int reqCapacity) {
 	auto* newData = reinterpret_cast<T*>(memoryBlock.data);
 	if (newData != oldData) {
 		if (oldData) {
-			MemoryUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
+			MemUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
 			if (!_storage.isSmall()) {
 				onStorageFree(oldData);
 			}
@@ -151,18 +151,18 @@ constexpr void IArrayStorage<T>::_storageResize(Int newSize, Args&&... args) {
 	if( newSize <  oldSize ) {
 		auto dst = oldData + newSize;
 		auto n   = oldSize  - newSize;
-		MemoryUtil::destructor(dst, n);
+		MemUtil::destructor(dst, n);
 	}else{
 		_storageReserve(newSize);
 		auto* newData = _storage.data();
-		MemoryUtil::constructor(newData + oldSize, newSize - oldSize, AX_FORWARD(args)...);
+		MemUtil::constructor(newData + oldSize, newSize - oldSize, AX_FORWARD(args)...);
 	}
 	_storage.setSize(newSize);
 }
 
 template <class T> AX_INLINE
 constexpr void IArrayStorage<T>::_storageClear() {
-	MemoryUtil::destructor(_storage.data(), _storage.size());
+	MemUtil::destructor(_storage.data(), _storage.size());
 	_storage.setSize(0);
 }
 

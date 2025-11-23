@@ -6,7 +6,7 @@ import <iostream>;
 
 namespace ax {
 
-class TestClass_Format : public UnitTestClass {
+class Test_Format : public UnitTestClass {
 public:
 	struct CustmoData {
 
@@ -70,6 +70,6 @@ public:
 } // namespace
 
 void Test_Format() {
-	AX_TEST_RUN_CASE(ax::TestClass_Format::test_case1)
+	AX_TEST_RUN_CASE(ax::Test_Format::test_case1)
 }
 

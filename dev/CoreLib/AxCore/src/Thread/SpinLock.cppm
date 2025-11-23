@@ -6,7 +6,7 @@ import AxCore.ScopedLock;
 import AxCore.LockProtected;
 import <atomic>;
 
-export namespace ax {
+export namespace ax::Thread {
 
 //! Internal Spin Lock used by Allocator or PerfProfiler
 class InternalSpinLock : public NonCopyable {

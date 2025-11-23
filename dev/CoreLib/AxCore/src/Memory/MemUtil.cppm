@@ -8,8 +8,8 @@ import AxCore.BasicType;
 
 export namespace ax {
 
-struct MemoryUtil {
-	MemoryUtil() = delete;
+struct MemUtil {
+	MemUtil() = delete;
 
 	static const Int k_size_to_use_system_memcpy = 2048;
 
@@ -27,38 +27,13 @@ struct MemoryUtil {
 	template< class T > static void destructor(T* p, Int n);
 	template< class T > static void moveConstructorAndDestructor(T* dst, T* src, Int n);
 	
-	template<class T> AX_INLINE
-	static Int sizeInBytes(const T* start, const T* end) {
-		return reinterpret_cast<const char*>(end) - reinterpret_cast<const char*>(start);
-	}
-
-	template<class T> AX_INLINE
-	static T* addOffsetInBytes(T* p, Int numBytes) { 
-		return reinterpret_cast<T*>(reinterpret_cast<char*>(p) + numBytes); 
-	}
-
-	template<class T> AX_INLINE 
-	static const T* addOffsetInBytes(const T* p, Int numBytes) {
-		return reinterpret_cast<const T*>(reinterpret_cast<const char*>(p) + numBytes);
-	}
-
-	template<class T> struct memberOffset_wrap { static T v; };
-
-	template< class Obj, class Member > AX_INLINE
-	static Int memberOffset(Member Obj::*ptrToMember) {
-		Obj* obj = nullptr;
-		char* m = reinterpret_cast<char*>(&(obj->*ptrToMember));
-		char* c = nullptr;
-		return m - c;
-	}
-	
 private:
 	template <class T>
 	static void _copyLoop(T* dst, const T* src, Int len);
 };
 
 template< class T > AX_INLINE
-void MemoryUtil::_copyLoop(T* dst, const T* src, Int len) {
+void MemUtil::_copyLoop(T* dst, const T* src, Int len) {
 	auto* e = dst + len;
 	for( ; dst < e; ++src, ++dst ) {
 		*dst = *src;
@@ -66,7 +41,7 @@ void MemoryUtil::_copyLoop(T* dst, const T* src, Int len) {
 }
 
 AX_INLINE
-void MemoryUtil::rawCopy(void* dst, const void* src, Int len) {
+void MemUtil::rawCopy(void* dst, const void* src, Int len) {
 	if (len <= 0) { AX_ASSERT(false); return; }
 
 	if (isOverlapped(static_cast<const char*>(dst), len, static_cast<const char*>(src), len)) {
@@ -87,14 +62,14 @@ void MemoryUtil::rawCopy(void* dst, const void* src, Int len) {
 }
 
 template <class A, class B> AX_INLINE
-bool MemoryUtil::isOverlapped(const A* a, Int a_size, const B* b, Int b_size) {
+bool MemUtil::isOverlapped(const A* a, Int a_size, const B* b, Int b_size) {
 	const void* ea = a + a_size;
 	const void* eb = b + b_size; 
 	return (ea > b) && (eb > a);
 }
 
 template <class T, class ... Args> AX_INLINE
-void MemoryUtil::constructor(T* p, Int n, Args&&... args) {
+void MemUtil::constructor(T* p, Int n, Args&&... args) {
 	if( n <= 0 ) return;
 	T* d = p;
 	T* e = p + n;
@@ -104,7 +79,7 @@ void MemoryUtil::constructor(T* p, Int n, Args&&... args) {
 }
 
 template <class T> AX_INLINE
-void MemoryUtil::destructor(T* p, Int n) {
+void MemUtil::destructor(T* p, Int n) {
 	if (std::is_trivially_destructible_v<T>) return;
 	if (n <= 0) return;
 	T* d = p;
@@ -115,15 +90,15 @@ void MemoryUtil::destructor(T* p, Int n) {
 }
 
 template <class T> AX_INLINE
-void MemoryUtil::copy(T* dst, const T* src, Int n) {
-	if constexpr (std::is_trivially_copy_assignable_v<T>) {
-		MemoryUtil::rawCopy(dst, src, n * ax_sizeof<T>);
+void MemUtil::copy(T* dst, const T* src, Int n) {
+	if (n <= 0) return;
+	if (MemUtil::isOverlapped(dst, n, src, n)) {
+		throw Error_BufferOverlapped();
+	}
+
+	if (std::is_trivially_copy_assignable_v<T>) {
+		MemUtil::rawCopy(dst, src, n * ax_sizeof<T>);
 	}else{
-		if (n <= 0) return;
-		if (MemoryUtil::isOverlapped(dst, n, src, n)) {
-			throw Error_BufferOverlapped();
-		}
-		
 		auto s = src;
 		auto e = src + n ;
 		for( ; s<e; ++s, ++dst ) {
@@ -133,14 +108,14 @@ void MemoryUtil::copy(T* dst, const T* src, Int n) {
 }
 
 template <class T> AX_INLINE
-void MemoryUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
+void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	if( n <= 0 ) return;
-	if (MemoryUtil::isOverlapped(dst, n, src, n)) {
+	if (MemUtil::isOverlapped(dst, n, src, n)) {
 		throw Error_BufferOverlapped();
 	}
 
 	if (std::is_trivially_copy_assignable_v<T>) {
-		MemoryUtil::rawCopy(dst, src, n * ax_sizeof<T>);
+		MemUtil::rawCopy(dst, src, n * ax_sizeof<T>);
 	}else{
 		auto s = src;
 		auto e = src + n ;

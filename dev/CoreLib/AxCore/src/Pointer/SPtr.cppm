@@ -1,9 +1,11 @@
-#pragma once
+export module AxCore.SPtr;
 
-#include "UPtr.h"
-#include "AxCore/Thread/AtomicInt.h"
+#include "AxBase.h"
 
-namespace ax {
+export import AxCore.UPtr;
+import AxCore.Atomic;
+
+export namespace ax {
 
 class SPtrReferenable : public NonCopyable {
 public:
@@ -21,7 +23,7 @@ protected:
 	virtual void onSPtrDeleteThis() { ax_delete(this); }
 
 private:
-	mutable AxCore::AtomicInt		_refCount;
+	mutable Thread::AtomicInt	_refCount;
 };
 
 //! Intrusive Shared pointer, the reference count is embedded in object
@@ -30,8 +32,8 @@ private:
 //! may create different control block to hold the reference count
 //! which may cause double delete of same object
 template<class T>
-class SPtr : public AxCore::PtrBase<T> {
-	using Base = AxCore::PtrBase<T>;
+class SPtr : public PtrBase<T> {
+	using Base = PtrBase<T>;
 public:
 	AX_INLINE	SPtr() = default;
 	AX_INLINE	SPtr(std::nullptr_t) noexcept {}
@@ -40,7 +42,7 @@ public:
 	AX_INLINE	SPtr(T* p) noexcept { ref(p); }
 
 	template<class... ARGS>
-	AX_INLINE	SPtr(Tag::NewObject, const AllocRequest& req, ARGS&&... args) { newObject(req, AX_FORWARD(args)...); }
+	AX_INLINE	SPtr(Tag::NewObject, const MemAllocRequest& req, ARGS&&... args) { newObject(req, AX_FORWARD(args)...); }
 
 	template<class R>
 	AX_INLINE	SPtr(SPtr<R> && r) noexcept { _move(std::move(r)); }
@@ -66,7 +68,7 @@ public:
 	template<class R> AX_INLINE	void operator=(SPtr<R> && r) noexcept { _move(std::move(r)); }
 
 	template<class... ARGS>
-	T*	newObject(const AllocRequest& req, ARGS&&...args) {
+	T*	newObject(const MemAllocRequest& req, ARGS&&...args) {
 		return ref(new (req) T(AX_FORWARD(args)...));
 	}
 
@@ -105,7 +107,7 @@ template<class T> inline
 SPtr<T> SPtr_fromUPtr(UPtr<T> && p) noexcept { return SPtr<T>::s_ref(p.detach()); }
 
 template<class T, class... ARGS> AX_INLINE
-SPtr<T> SPtr_new(const AllocRequest& req, ARGS &&... args) {
+SPtr<T> SPtr_new(const MemAllocRequest& req, ARGS &&... args) {
 	return SPtr_ref(new (req) T(AX_FORWARD(args)...));
 }
 

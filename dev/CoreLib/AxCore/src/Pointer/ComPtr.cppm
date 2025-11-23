@@ -1,5 +1,6 @@
 export module AxCore.ComPtr;
 
+#include "AxBase.h"
 import AxCore.BasicType;
 
 namespace ax {

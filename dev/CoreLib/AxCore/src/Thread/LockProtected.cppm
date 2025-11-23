@@ -3,7 +3,7 @@ export module AxCore.LockProtected;
 #include "AxBase.h"
 import AxCore.BasicType;
 
-export namespace ax {
+export namespace ax::Thread {
 
 template<class MUTEX, class DATA>
 class LockProtected : public NonCopyable {

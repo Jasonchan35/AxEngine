@@ -110,10 +110,13 @@ protected:
 
 using StrLit = StrLit_<const Char>;
 
-class NoInit {};
+namespace Tag {
+	class NewObject {};
+	class NoInit {};
+} // Tag
 
 struct SrcLoc {
-	constexpr SrcLoc(NoInit) {}
+	constexpr SrcLoc(Tag::NoInit) {}
 	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) : _loc(loc) {};
 
 	constexpr Int    column() const { return _loc.column(); }

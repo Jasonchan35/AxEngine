@@ -1,16 +1,17 @@
-#pragma once
+export module AxCore.WPtr;
 
-#include "SPtr.h"
-#include "AxCore/Thread/SpinLock.h"
-#include "AxCore/Container/IArray.h"
+#include "AxBase.h"
+export import AxCore.SPtr;
+import AxCore.SpinLock;
+import AxCore.IArray;
 
-namespace ax {
+export namespace ax {
 
 struct WPtrBlock : public SPtrReferenable {
 	struct Data {
 		SPtrReferenable* obj = nullptr;
 	};
-	SpinLockProtected<Data>	data;
+	Thread::SpinLockProtected<Data>	data;
 };
 
 class WPtrReferenable : public SPtrReferenable {

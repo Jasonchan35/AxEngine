@@ -9,7 +9,7 @@ import AxCore.LockProtected;
 	import <windows.h>;
 #endif
 
-export namespace ax {
+export namespace ax::Thread {
 
 //! Internal Mutex used by axAllocator or axPerfProfiler
 class InternalMutex : public NonCopyable {

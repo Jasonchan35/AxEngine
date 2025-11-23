@@ -2,7 +2,7 @@ module AxCore.ThreadUtil;
 
 #include "AxBase.h"
 
-namespace ax::AxCore {
+namespace ax::Thread {
 
 bool ThreadId::isCurrentThread() {
 	return *this == s_current();

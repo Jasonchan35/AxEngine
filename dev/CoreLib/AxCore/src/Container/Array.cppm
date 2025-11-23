@@ -23,16 +23,16 @@ public:
 	virtual	~Array() override { Base::clearAndFree(); }
 	
 protected:
-	virtual MemoryBlock<T>	onStorageLocalBuf() override { return MemoryBlock<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
-	virtual	MemoryBlock<T>	onStorageMalloc(Int reqSize) override;
+	virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
+	virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) override;
 	virtual	void			onStorageFree(T* p) override;
 };
 
 template <class T, Int BUF_SIZE> inline
-MemoryBlock<T> Array<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
+MemAllocResult<T> Array<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize;
 	auto* allocator = ax_default_allocator();
-	return allocator->alloc<T>(newCapacity);
+	return allocator->allocArray<T>(newCapacity);
 }
 
 template <class T, Int BUF_SIZE> inline

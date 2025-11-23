@@ -158,7 +158,7 @@ constexpr void IString_<T>::append(CView view) {
 	auto oldSize = size();
 	auto newSize = oldSize + view.size();
 	reserve(newSize);
-	MemoryUtil::copy(data() + oldSize, view.data(), view.size());
+	MemUtil::copy(data() + oldSize, view.data(), view.size());
 	_storage.setSize(newSize);
 	_setNullTerminator();
 }
