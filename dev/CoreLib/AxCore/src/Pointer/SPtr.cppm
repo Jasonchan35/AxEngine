@@ -5,17 +5,24 @@ export module AxCore.SPtr;
 
 export import AxCore.UPtr;
 import AxCore.Atomic;
+import AxCore.SpinLock;
 
 export namespace ax {
+
+template<class T> class SPtr;
 
 class SPtrReferenableBase : public NonCopyable {
 protected:
 	SPtrReferenableBase() = default;
 };
 
+template<bool USE_ATOMIC_INT> class WPtrReferenable_; 
+
 template<bool USE_ATOMIC_INT>
 class SPtrReferenable_ : public SPtrReferenableBase {
 public:
+	using _WPtrReferenable = WPtrReferenable_<USE_ATOMIC_INT>;
+	
 	using SPtrRefCounter = std::conditional_t<USE_ATOMIC_INT, Thread::AtomicInt, Int>; 
 	
 	AX_INLINE Int _addSPtrRef() const		{ return ++m_SPtrRefCount; }
@@ -30,13 +37,38 @@ private:
 
 using SPtrReferenable = SPtrReferenable_<true>;
 
-template<class T> class SPtr;
+template <bool USE_ATOMIC_PTR>
+struct WPtrBlock_ : public SPtrReferenable_<USE_ATOMIC_PTR> {
+	using LockType = std::conditional_t<USE_ATOMIC_PTR, Thread::SpinLock, Thread::NullSpinLock>;
+	
+	struct Data {
+		SPtrReferenable* obj = nullptr;
+	};
+	Thread::LockProtected<LockType, Data> data;
+};
+
+template<bool USE_ATOMIC_INT>
+class WPtrReferenable_ : public SPtrReferenable_<USE_ATOMIC_INT> {
+public:
+	using WPtrBlock = WPtrBlock_<USE_ATOMIC_INT>;
+	~WPtrReferenable_() {
+		if (auto* block = _weakPtrBlock.ptr()) {
+			AX_ASSERT(block->data.scopedLock()->obj == nullptr);
+		}
+	}
+	SPtr<WPtrBlock>		_weakPtrBlock;
+};
+
+using WPtrReferenable = WPtrReferenable_<true>;
+
 
 // add this layer to support SPtr<forward declare class>
 template<class T>
 class SPtr_Internal : public NonCopyable {
 public:
-	static T* ref(SPtr<T>* s, T* p) {
+	SPtr_Internal() = delete;
+	
+	static constexpr T* ref(SPtr<T>* s, T* p) {
 		static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
 		if (s->_p != p) {
 			unref(s);
@@ -45,15 +77,40 @@ public:
 		}
 		return p;
 	}
+
+	static constexpr bool kHasWPtrBlock = requires (T & o) { o._weakPtrBlock; };
 	
-	static void unref(SPtr<T>* s) {
+	static constexpr void unref(SPtr<T>* s) {
 		static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
-		if (s->_p) {
-			if (s->_p->_releaseSPtrRef() == 0) {
-				ax_delete(s->_p);
+		auto* obj = s->_p;
+		if (!obj) return;
+
+		if constexpr (kHasWPtrBlock) {
+			if (auto* wb = obj->_weakPtrBlock.ptr()) {
+				// lock and clear weakPtrBlock before delete object
+				auto wbData = wb->data.scopedLock();
+
+				if (wbData->obj) {
+					AX_ASSERT(wbData->obj == obj);
+					wbData->obj = nullptr;
+				}
+				
+				_doRelease(s);
+			} else {
+				_doRelease(s);
 			}
-			s->_p = nullptr;
+		} else {
+			_doRelease(s);
 		}
+
+	}
+	
+private:
+	static AX_INLINE constexpr void _doRelease(SPtr<T>* s) {
+		if (s->_p->_releaseSPtrRef() == 0) {
+			ax_delete(s->_p);
+			s->_p = nullptr;
+		}		
 	}
 };
 

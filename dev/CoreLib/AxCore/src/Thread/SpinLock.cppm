@@ -28,18 +28,18 @@ public:
 
 private:
 #if AX_LANG_CPP_20
-	static constexpr bool kUseWait = false; // true
+	static constexpr bool kUseAtomicWait = true;
 #else
-	static constexpr bool kUseWait = false;
+	static constexpr bool kUseAtomicWait = false;
 #endif
 	
 	
-#if 0 // use std::atomic_flag
+#if 1 // use std::atomic_flag
 	AX_INLINE void	_ctor	()		{}
 	AX_INLINE void	_dtor	()		{}
 	AX_INLINE bool	_tryLock()		{ return !_v.test_and_set(std::memory_order_acquire); }
 	AX_INLINE void	_lock	()		{
-		if constexpr(kUseWait) {
+		if constexpr(kUseAtomicWait) {
 			while (_v.test_and_set(std::memory_order_acquire)) {
 				_v.wait(true, std::memory_order_relaxed);
 			}
@@ -47,24 +47,24 @@ private:
 			for (Int i = 0; _v.test_and_set(std::memory_order_acquire); i++) {
 				if (i < 8) continue;
 				//else if (i < 16) __asm__ __volatile__("rep; nop" : : : "memory");
-				else if(i < 64) {
+				else if(i < 32) {
 					ThreadUtil::yield();
 				} else {
-					ThreadUtil::sleep(Milliseconds(8));
+					ThreadUtil::sleep(Milliseconds(16));
 				}
 			}
 		}
 	}
 	AX_INLINE void	_unlock	()		{
 		_v.clear(std::memory_order_release);
-		if constexpr (kUseWait) {
+		if constexpr (kUseAtomicWait) {
 			_v.notify_one();
 		}
 	}
 
 	std::atomic_flag _v = ATOMIC_FLAG_INIT;
 
-#elif 1 // mutex
+#elif 0 // mutex
 	AX_INLINE void	_ctor	()		{}
 	AX_INLINE void	_dtor	()		{}
 	AX_INLINE bool	_tryLock()		{ return _v.try_lock(); }

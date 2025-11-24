@@ -15,21 +15,22 @@ UnitTestProgram* UnitTestProgram::s_get() {
 	return UnitTestProgram_instance;
 }
 
-int             UnitTestProgram::run() {
+int UnitTestProgram::run() {
 	onRun();
 
-//	::ax::AxCore::_internal_log("\n\n==== Program Ended ==== \n");
+	::ax::Debug::_internal_log("\n\n==== Program Ended ==== \n");
 
 #if 1 // AX_COMPILER_VC
 	if (Debug::isDebuggerPresent()) {
-//		::ax::AxCore::_internal_log(" ! Press Any Key to Exit\n\n");
-		waitKeyPress();
+		// waitKeyPress(); // doesn't work on Rider
 	}
 #endif
 	return 0;
 }
 
 int UnitTestProgram::waitKeyPress() {
+	::ax::Debug::_internal_log(" ! Press Any Key to Exit\n\n");
+	
 #if AX_OS_WINDOWS
 	return _getch();
 #else

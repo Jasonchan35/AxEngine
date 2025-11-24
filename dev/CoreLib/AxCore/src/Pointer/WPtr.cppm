@@ -10,30 +10,6 @@ import AxCore.Atomic;
 
 export namespace ax {
 
-template <bool USE_ATOMIC_PTR>
-struct WPtrBlock_ : public SPtrReferenable_<USE_ATOMIC_PTR> {
-	using LockType = std::conditional_t<USE_ATOMIC_PTR, Thread::SpinLock, Thread::NullSpinLock>;
-	
-	struct Data {
-		SPtrReferenable* obj = nullptr;
-	};
-	Thread::LockProtected<LockType, Data> data;
-};
-
-template<bool USE_ATOMIC_PTR>
-class WPtrReferenable_ : public SPtrReferenable_<USE_ATOMIC_PTR> {
-public:
-	using WPtrBlock = WPtrBlock_<USE_ATOMIC_PTR>;
-	~WPtrReferenable_() {
-		if (auto* block = _weakPtrBlock.ptr()) {
-			AX_ASSERT(block->data.scopedLock()->obj == nullptr);
-		}
-	}
-	SPtr<WPtrBlock>		_weakPtrBlock;
-};
-
-using WPtrReferenable = WPtrReferenable_<true>;
-
 //! Weak pointer
 template<class T>
 class WPtr { // copyable
