@@ -68,7 +68,14 @@ public:
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
 	template<class U>
-	static This s_utf(StrView_<U> v) { This s; UtfUtil::append(s, v); return s; } 
+	static This s_utf(StrView_<U> v) {
+		This s; UtfUtil::append(s, v); return s;
+	}
+
+	template<class... ARGS>
+	static This s_format(const FormatString_<Char, ARGS...> & fmt, ARGS&&... args) {
+		This s; FmtTo(s, fmt, AX_FORWARD(args)...); return s;
+	}
 
 protected:
 	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
