@@ -11,7 +11,10 @@ public:
 	void test_forward_declare() {
 		SPtr<FooClass> s;
 	}
-
+	struct TestForwardDeclare {
+		SPtr<FooClass> s;
+	};
+	
 	class FooClass : public SPtrReferenable {
 		public:
 		int foo = 0; 
