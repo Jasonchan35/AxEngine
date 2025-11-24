@@ -1,7 +1,7 @@
-export module AxCore.Tuple;
-
+module;
 #include "AxBase.h"
-import <tuple>;
+
+export module AxCore.Tuple;
 
 import AxCore.BasicType;
 

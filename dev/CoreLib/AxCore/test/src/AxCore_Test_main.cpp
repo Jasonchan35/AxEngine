@@ -2,9 +2,7 @@
 
 import AxCore.UnitTest;
 
-namespace ax {
-
-class AxCore_TestProgram : public UnitTestProgram {
+class AxCore_TestProgram : public ax::UnitTestProgram {
 public:
 	virtual void onRun() override {
 		constexpr bool test_all = true;
@@ -17,9 +15,7 @@ public:
 	}
 };
 
-} // namespace
-
 int main() {
-	ax::AxCore_TestProgram test;
+	AxCore_TestProgram test;
 	return test.run();
 }

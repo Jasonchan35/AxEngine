@@ -109,6 +109,7 @@ function(ax_set_warning_level target_name)
 														-Wno-unused-parameter														
 														-Wno-unused-local-typedef
 														-Wno-unused-member-function
+														-Wno-uninitialized
 														#
 														-mavx #enable AVX
 														)
@@ -243,7 +244,7 @@ function(ax_target_set_common_properties target_name)
 							UNITY_BUILD_MODE BATCH
 							UNITY_BUILD_BATCH_SIZE 8)
 
-#	target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
+	target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
 	target_compile_definitions(${target_name} PUBLIC -DAX_BUILD_${target_name})
 	target_compile_definitions(${target_name} PUBLIC 
 		$<$<CONFIG:Debug>:AX_BUILD_CONFIG_Debug>

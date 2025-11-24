@@ -1,10 +1,9 @@
+module;
+
+#include "AxBase.h"
+
 export module AxCore.Math;
-
 import AxCore.BasicType;
-import <type_traits>;
-
-#include "AX_MACRO.h"
-#include "AX_DETECT_PLATFORM.h"
 
 export namespace ax::Math {
 

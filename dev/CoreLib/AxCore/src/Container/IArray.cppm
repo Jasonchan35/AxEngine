@@ -1,7 +1,7 @@
-﻿export module AxCore.IArray;
-
+﻿module;
 #include "AxBase.h"
 
+export module AxCore.IArray;
 export import AxCore.IArrayStorage;
 
 export namespace ax {

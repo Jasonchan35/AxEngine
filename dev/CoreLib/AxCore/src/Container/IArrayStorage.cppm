@@ -1,9 +1,8 @@
-export module AxCore.IArrayStorage;
-
+module;
 #include "AxBase.h"
 
-import <algorithm>;
-import <bit>;
+export module AxCore.IArrayStorage;
+
 export import AxCore.BasicType;
 export import AxCore.ByteOrder;
 export import AxCore.Span;
@@ -54,9 +53,13 @@ protected:
 		u16                  _isSmall  : 1; // share between normal and small storage
 		u16                  _capacity : 15;
 		u16                  _size;
-		T                    _data[0];
 		static constexpr u16 kCapacityMax = u16_max >> 1;
 		constexpr void       setCapacity(Int v);
+	};
+
+	struct SmallStorage_Dummy {
+		SmallStorage small_storagea;
+		T _data[1];
 	};
 	
 	union Storage {
@@ -65,22 +68,27 @@ protected:
 		NormalStorage _normal;
 
 		static constexpr bool kSmallBufferOptimization = IArrayStorage::kSmallBufferOptimization;
-		static constexpr Int  kSmallDataOffset    = offsetof(SmallStorage, _data);
+		static constexpr Int  kSmallDataOffset    = offsetof(SmallStorage_Dummy, _data);
 		static constexpr Int  kSmallExtraCapacity = Math::max0<Int>(ax_sizeof<NormalStorage> - kSmallDataOffset) / ax_sizeof<T>;
 
 
-		constexpr Storage(T* data, Int initCap) { resetToLocalBuf(data, initCap); }
+		AX_INLINE constexpr Storage(T* data, Int initCap) { resetToLocalBuf(data, initCap); }
 		constexpr ~Storage();
 
 		constexpr void resetToLocalBuf(T* data, Int initCap);
 		
-		constexpr bool isSmall() const { return _small._isSmall; }
-		constexpr bool isAllocatedData() const { return !isSmall() && _normal._isAllocatedData; }
-		constexpr Int capacity() const;
+		AX_INLINE constexpr bool isSmall() const { return _small._isSmall; }
+		AX_INLINE constexpr bool isAllocatedData() const { return !isSmall() && _normal._isAllocatedData; }
+		AX_INLINE constexpr Int capacity() const;
 
-		constexpr const T* data() const { return isSmall() ? _small._data : _normal._data; }
-		constexpr T*       data()		{ return isSmall() ? _small._data : _normal._data; }
-		constexpr Int      size() const { return isSmall() ? _small._size : _normal._size; }
+		AX_INLINE constexpr T* small_data() {
+			auto* p = reinterpret_cast<char*>(this) + kSmallDataOffset;
+			return reinterpret_cast<T*>(p);
+		}
+		
+		AX_INLINE constexpr const T* data() const { return ax_const_cast(this)->data(); }
+		AX_INLINE constexpr T*       data()		  { return isSmall() ? small_data() : _normal._data; }
+		AX_INLINE constexpr Int      size() const { return isSmall() ? _small._size : _normal._size; }
 
 		constexpr void setSize(Int v);
 		constexpr void setAllocDataPtr(T* data, Int cap);

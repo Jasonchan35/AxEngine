@@ -1,7 +1,7 @@
-﻿export module AxCore.InlineBuffer;
-
+﻿module;
 #include "AxBase.h"
 
+export module AxCore.InlineBuffer;
 import AxCore.BasicType;
 
 export namespace ax {
@@ -10,9 +10,17 @@ template< class T, Int BUF_SIZE >
 class InlineBuffer : public NonCopyable {
 protected:
 	static constexpr	Int	kInlineBufSize = BUF_SIZE;
-	AX_INLINE constexpr			T*		inlineBufPtr	() 		 { return reinterpret_cast<	     T*>(_inlineBuf); }
-	AX_INLINE constexpr	const 	T*		inlineBufPtr	() const { return reinterpret_cast<const T*>(_inlineBuf); }
-
+	
+	AX_INLINE constexpr			T*		inlineBufPtr	() {
+		AX_PRAGMA_GCC(diagnostic push)
+		AX_PRAGMA_GCC(diagnostic ignored "-Wuninitialized")
+		return reinterpret_cast<	     T*>(_inlineBuf);
+		AX_PRAGMA_GCC(diagnostic pop)		
+	}
+	
+	AX_INLINE constexpr	const 	T*		inlineBufPtr	() const { return ax_const_cast(this)->inlineBufPtr(); }
+	
+private:
 	Byte	_inlineBuf[ax_sizeof<T> * BUF_SIZE];
 };
 

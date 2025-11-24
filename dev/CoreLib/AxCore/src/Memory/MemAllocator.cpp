@@ -1,6 +1,7 @@
-﻿module AxCore.Allocator;
-
+﻿module;
 #include "AxBase.h"
+
+module AxCore.Allocator;
 
 namespace ax {
 

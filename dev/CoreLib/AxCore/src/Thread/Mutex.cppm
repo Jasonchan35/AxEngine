@@ -1,13 +1,15 @@
+module;
+#include "AxBase.h"
+
+#if AX_OS_WINDOWS
+	#include <windows.h>
+#endif
+
 export module AxCore.Mutex;
 
-#include "AxBase.h"
 import AxCore.BasicType;
 import AxCore.ScopedLock;
 import AxCore.LockProtected;
-
-#if AX_OS_WINDOWS
-	import <windows.h>;
-#endif
 
 export namespace ax::Thread {
 

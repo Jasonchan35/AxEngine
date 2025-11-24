@@ -1,6 +1,7 @@
-export module AxCore.IString;
-
+module;
 #include "AxBase.h"
+
+export module AxCore.IString;
 
 export import AxCore.IArrayStorage;
 export import AxCore.ZStrView;

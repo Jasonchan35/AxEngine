@@ -1,12 +1,10 @@
-﻿export module AxCore.StrView;
+﻿module;
+#include "AxBase.h"
+
+export module AxCore.StrView;
 
 export import AxCore.BasicType;
 export import AxCore.Span;
-
-export import <string_view>;
-export import <cctype>;
-
-import "AxBase.h";
 
 export namespace ax {
 

@@ -1,6 +1,7 @@
-export module AxCore.NumTuple;
-
+module;
 #include "AxBase.h"
+
+export module AxCore.NumTuple;
 
 export import AxCore.CpuSIMD;
 export import AxCore.FixedSpan;

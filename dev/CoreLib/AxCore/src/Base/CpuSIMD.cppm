@@ -1,14 +1,7 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.CpuSIMD;
-
-import "AxBase.h";
-// SSE / AVX
-import <xmmintrin.h>;
-
-#if AX_COMPILER_CLANG && AX_OS_WINDOWS
-	import <avxintrin.h>;
-#else
-	import <immintrin.h>;
-#endif
 
 import AxCore.StrView;
 import AxCore.Enum;

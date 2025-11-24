@@ -1,10 +1,7 @@
-module AxCore.UnitTest;
-
+module;
 #include "AxBase.h"
 
-#if AX_OS_WINDOWS
-	import <conio.h>;
-#endif
+module AxCore.UnitTest;
 
 namespace ax {
 

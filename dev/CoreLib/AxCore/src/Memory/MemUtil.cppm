@@ -1,7 +1,7 @@
-﻿export module AxCore.MemoryUtil;
+﻿module;
+#include "AxBase.h"
 
-import <cstdlib>;
-import <memory>;
+export module AxCore.MemoryUtil;
 
 #include "AxBase.h"
 import AxCore.BasicType;
@@ -26,6 +26,55 @@ struct MemUtil {
 
 	template< class T > static void destructor(T* p, Int n);
 	template< class T > static void moveConstructorAndDestructor(T* dst, T* src, Int n);
+
+
+	template<class T> AX_INLINE
+	static Int sizeInBytes(const T* start, const T* end) {
+		return reinterpret_cast<const char*>(end) - reinterpret_cast<const char*>(start);
+	}
+
+	template<class T> AX_INLINE
+	static T* addOffsetInBytes(T* p, Int numBytes) { 
+		return reinterpret_cast<T*>(reinterpret_cast<char*>(p) + numBytes); 
+	}
+
+	template<class T> AX_INLINE 
+	static const T* addOffsetInBytes(const T* p, Int numBytes) {
+		return reinterpret_cast<const T*>(reinterpret_cast<const char*>(p) + numBytes);
+	}
+
+	template<class T> struct memberOffset_wrap { static T v; };
+
+	template< class Obj, class Member > AX_INLINE
+	static Int memberOffset(Member Obj::*ptrToMember) {
+#if 1
+		Obj* obj = nullptr;
+		char* m = reinterpret_cast<char*>(&(obj->*ptrToMember));
+		char* c = nullptr;
+		return m - c;
+#else // try constexpr, but seems not work
+		using W = memberOffset_wrap<Obj>;
+		char arr[reinterpret_cast<char*>(&(W::v.*ptrToMember)) - reinterpret_cast<char*>(&W::v)];
+		return static_cast<IntPtr>(sizeof(arr));
+#endif
+	}
+
+	template< class Obj, class Member > AX_INLINE
+	static Obj* _memberOwner( Member Obj::*ptrToMember, Member* member) {
+		if (!member) return nullptr;
+		auto o = reinterpret_cast<char*>(member) - memberOffset(ptrToMember);
+		return reinterpret_cast<Obj*>(o);
+	}
+
+	template< class Obj, class Member > AX_INLINE
+	static Obj* memberOwner( Member Obj::*ptrToMember, Member* member) {
+		return _memberOwner(ptrToMember, member);
+	}
+
+	template< class Obj, class Member > AX_INLINE
+	static const Obj* memberOwner( Member Obj::*ptrToMember, const Member* member) {
+		return _memberOwner(ptrToMember, ax_const_cast(member));
+	}
 	
 private:
 	template <class T>

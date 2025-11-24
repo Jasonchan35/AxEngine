@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cmake.generator": "Ninja",
+		"cmake.configureSettings": {
+			"CMAKE_MAKE_PROGRAM": "${workspaceFolder}/ninja.exe"
+		},
+		"cmake.buildDirectory": "${workspaceFolder}/_build/vscode_cmake"
+	}
+}

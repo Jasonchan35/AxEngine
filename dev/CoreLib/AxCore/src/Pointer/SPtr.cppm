@@ -1,6 +1,7 @@
-export module AxCore.SPtr;
-
+module;
 #include "AxBase.h"
+
+export module AxCore.SPtr;
 
 export import AxCore.UPtr;
 import AxCore.Atomic;

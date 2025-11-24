@@ -1,6 +1,8 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.UPtr;
 
-#include "AxBase.h"
 export import AxCore.BasicType;
 export import AxCore.Allocator;
 export import AxCore.Span;
@@ -78,12 +80,6 @@ void UPtr<T, DEL>::move(UPtr<R, DEL> && r) noexcept {
 template<class T, class DEL = AxDelete, class... ARGS> AX_INLINE
 UPtr<T, DEL> UPtr_new(const MemAllocRequest& req, ARGS &&... args) {
 	return UPtr_ref<T, DEL>(new (req) T(AX_FORWARD(args)...));
-}
-
-template<class T, class DEL = AxDelete, class... ARGS> AX_INLINE
-UPtr<T, DEL> UPtr_new(const SrcLoc& srcLoc, MemAllocator* allocator, ARGS &&... args) {
-	MemAllocRequest req(srcLoc, allocator);
-	return UPtr_new(req, AX_FORWARD(args)...);
 }
 
 template<class DST, class SRC> AX_INLINE

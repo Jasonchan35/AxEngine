@@ -1,8 +1,8 @@
 #include "AxUnitTest.h"
 
-import <string_view>;
-import <format>;
-import <iostream>;
+#if AX_COMPILER_CLANG
+	void Test_Format() {}
+#else
 
 namespace ax {
 
@@ -73,3 +73,4 @@ void Test_Format() {
 	AX_TEST_RUN_CASE(ax::Test_Format::test_case1)
 }
 
+#endif

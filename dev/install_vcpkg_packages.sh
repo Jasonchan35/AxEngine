@@ -14,7 +14,7 @@ fi
 
 sh _vcpkg/bootstrap-vcpkg.sh
 
-# _vcpkg/vcpkg install vcpkg-tool-ninja
+# _vcpkg/vcpkg install vcpkg-tool-ninja # this version doesn't support c++module, require 1.11
 # _vcpkg/vcpkg install tracy --recurse
 # _vcpkg/vcpkg install directx-dxc --recurse
 # _vcpkg/vcpkg install mozjpeg --recurse

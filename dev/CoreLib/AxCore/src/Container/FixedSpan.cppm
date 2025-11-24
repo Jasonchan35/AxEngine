@@ -1,6 +1,7 @@
-export module AxCore.FixedSpan;
-
+module;
 #include "AxBase.h"
+
+export module AxCore.FixedSpan;
 export import AxCore.Span;
 
 export namespace ax {

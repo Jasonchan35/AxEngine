@@ -1,6 +1,7 @@
-module AxCore.ThreadUtil;
-
+module;
 #include "AxBase.h"
+
+module AxCore.ThreadUtil;
 
 namespace ax::Thread {
 

@@ -1,11 +1,13 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.SpinLock;
 
-#include "AxBase.h"
 export import AxCore.BasicType;
 export import AxCore.ScopedLock;
 export import AxCore.LockProtected;
 export import AxCore.ThreadUtil; 
-import <atomic>;
+export import AxCore.TimeDuration;
 
 export namespace ax::Thread {
 
@@ -129,7 +131,7 @@ public:
 
 	AX_NODISCARD ScopedLock scopedLock() { return ScopedLock(*this); }
 
-	AX_INLINE bool	tryLock	() {}
+	AX_INLINE bool	tryLock	() { return true; }
 	AX_INLINE void	lock	() {}
 	AX_INLINE void	unlock	() {}
 };

@@ -1,13 +1,12 @@
-export module AxCore.UtfUtil;
-
+module;
 #include "AxBase.h"
+
+export module AxCore.UtfUtil;
 export import AxCore.IString;
 
-export namespace ax {
+namespace ax {
 
-template<class T> class IString_;
-
-struct UtfUtil {
+export struct UtfUtil {
 	UtfUtil() = delete;
 
 	template<CharType DST, CharType SRC>
@@ -24,7 +23,7 @@ private:
 
 
 template<class SRC, class DST> inline
-AX_INLINE Int UtfUtil::getConvertedCount(const SRC* src, Int src_len) {
+Int UtfUtil::getConvertedCount(const SRC* src, Int src_len) {
 	if constexpr (sizeof(DST) == sizeof(SRC)) {
 		return src_len;
 	}
@@ -39,7 +38,7 @@ AX_INLINE Int UtfUtil::getConvertedCount(const SRC* src, Int src_len) {
 }
 
 template<> inline
-AX_INLINE void UtfUtil::_encodeUtf(IString_<Char16>& dst, CharU ch) {
+void UtfUtil::_encodeUtf(IString_<Char16>& dst, CharU ch) {
 	const auto& v = ch;
 	if (v < 0x10000) {
 		dst.appendChar(static_cast<Char16>(v));
@@ -90,12 +89,12 @@ CharU UtfUtil::_decodeUtf<Char16>( const Char16* & src, const Char16* end ) {
 
 	if (v >= 0xD800 && v < 0xDBFF) {
 		if( src+2 > end ) throw Error_Utf();
-		CharU a = *src; src++;
-		CharU b = *src; src++;
+		CharU a = static_cast<CharU>(*src); src++;
+		CharU b = static_cast<CharU>(*src); src++;
 		return ((a - 0xD800) << 10) | (b - 0xDC00);
 	}
 
-	CharU a = *src; src++;
+	CharU a = static_cast<CharU>(*src); src++;
 	return a;
 }
 

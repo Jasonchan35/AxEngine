@@ -1,8 +1,9 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.Atomic;
 
-#include "AxBase.h"
 import AxCore.BasicType;
-import <atomic>;
 
 export namespace ax::Thread {
 

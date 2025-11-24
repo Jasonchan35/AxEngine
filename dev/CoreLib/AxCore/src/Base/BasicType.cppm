@@ -1,16 +1,8 @@
+module;
+
+#include "AxBase.h"
 export module AxCore.BasicType;
 
-#include "AX_DETECT_PLATFORM.h"
-#include "AX_MACRO.h"
-
-export import <type_traits>;
-export import <cstdint>;
-export import <optional>;
-
-import <stdexcept>;
-import <cassert>;
-import <exception>;
-import <source_location>;
 
 export namespace ax {
 

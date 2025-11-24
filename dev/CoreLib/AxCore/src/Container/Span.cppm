@@ -1,7 +1,7 @@
-﻿export module AxCore.Span;
-
+﻿module;
 #include "AxBase.h"
 
+export module AxCore.Span;
 export import AxCore.BasicType;
 export import AxCore.Range;
 

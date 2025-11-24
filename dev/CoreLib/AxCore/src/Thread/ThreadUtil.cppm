@@ -1,14 +1,10 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.ThreadUtil;
 
-#include "AxBase.h"
 import AxCore.Format;
 import AxCore.TimeDuration;
-
-import <thread>;
-
-#if AX_OS_WINDOWS
-	import <windows.h>;
-#endif
 
 export namespace ax::Thread {
 

@@ -1,8 +1,7 @@
-﻿export module AxCore.Allocator;
+﻿module;
+#include "AxBase.h"
 
-import <cstdlib>;
-import <format>;
-import <iostream>;
+export module AxCore.Allocator;
 
 import AxCore.Math;
 import AxCore.MemoryUtil;
@@ -27,10 +26,10 @@ AX_INLINE void* ax_malloc(Int size, Int alignment) {
 class MemAllocRequest : public NonCopyable {
 public:
 	MemAllocRequest(MemAllocator* allocator_, const SrcLoc& srcLoc_ = SrcLoc()) : allocator(allocator_), srcLoc(srcLoc_) {}
-	const SrcLoc&	srcLoc;
 	MemAllocator*	allocator = nullptr;
 	Int				dataSize = 0;
 	Int				alignment = ax_sizeof<void*>;
+	const SrcLoc&	srcLoc;
 };
 
 template<class T>
@@ -44,8 +43,8 @@ public:
 	constexpr MemAllocResult(const MemAllocResult&) = delete;
 
 	constexpr MemAllocResult(MemAllocResult&& r) noexcept
-		: data(r.data)
-		, allocator(r.allocator) {
+		: allocator(r.allocator), data(r.data)
+	{
 		r.data = nullptr;
 		r.size = 0;
 	}

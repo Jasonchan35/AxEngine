@@ -1,11 +1,12 @@
-﻿export module AxCore.Array;
+﻿module;
+#include "AxBase.h"
+
+export module AxCore.Array;
 
 export import AxCore.IArray;
 import AxCore.Allocator;
 import AxCore.MemoryUtil;
 import AxCore.InlineBuffer;
-
-#include "AxBase.h"
 
 export namespace ax {
 

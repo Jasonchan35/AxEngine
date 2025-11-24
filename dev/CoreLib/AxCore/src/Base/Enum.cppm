@@ -1,8 +1,7 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.Enum;
-
-import <type_traits>;
-
-import "AxBase.h";
 
 export namespace ax {
 

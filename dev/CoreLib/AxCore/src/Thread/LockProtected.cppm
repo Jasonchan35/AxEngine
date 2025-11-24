@@ -1,6 +1,8 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.LockProtected;
 
-#include "AxBase.h"
 import AxCore.BasicType;
 
 export namespace ax::Thread {

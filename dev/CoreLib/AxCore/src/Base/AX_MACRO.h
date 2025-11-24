@@ -15,6 +15,19 @@
 #define AX_FILE		__FILE__
 #define AX_LINE		static_cast<::ax::Int>(__LINE__)
 
+#if AX_COMPILER_GCC | AX_COMPILER_CLANG
+	#define AX_PRAGMA_GCC_STRINGIZE(x)	_Pragma(#x)
+	#define AX_PRAGMA_GCC(x)			AX_PRAGMA_GCC_STRINGIZE(GCC x)
+#else
+	#define AX_PRAGMA_GCC(x)	
+#endif
+
+#if AX_COMPILER_VC
+	#define AX_PROGMA_VC(x)		__pragma(x)
+#else
+	#define AX_PROGMA_VC(x)
+#endif
+
 #define AX_FORWARD(a) ::std::forward<decltype(a)>(a)
 #define AX_ASSERT(EXPR) ::ax::ax_assert((EXPR), #EXPR)
 #define AX_ASSERT_MSG(EXPR, MSG) ::ax::ax_assert((EXPR), MSG)

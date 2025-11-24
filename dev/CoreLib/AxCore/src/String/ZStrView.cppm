@@ -1,6 +1,8 @@
-﻿export module AxCore.ZStrView;
-
+﻿module;
 #include "AxBase.h"
+
+export module AxCore.ZStrView;
+
 export import AxCore.StrView;
 
 export namespace ax {

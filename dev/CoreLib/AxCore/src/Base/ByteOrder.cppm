@@ -1,6 +1,7 @@
-﻿export module AxCore.ByteOrder;
-
+﻿module;
 #include "AxBase.h"
+
+export module AxCore.ByteOrder;
 import AxCore.BasicType;
 
 export namespace ax {

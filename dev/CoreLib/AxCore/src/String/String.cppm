@@ -1,7 +1,7 @@
-﻿export module AxCore.String;
-
+﻿module;
 #include "AxBase.h"
-import <format>;
+
+export module AxCore.String;
 
 export import AxCore.IString;
 export import AxCore.UtfUtil;

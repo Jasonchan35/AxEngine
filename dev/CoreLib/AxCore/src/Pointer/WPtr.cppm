@@ -1,6 +1,8 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.WPtr;
 
-#include "AxBase.h"
 export import AxCore.SPtr;
 import AxCore.SpinLock;
 import AxCore.IArray;
@@ -34,30 +36,24 @@ using WPtrReferenable = WPtrReferenable_<true>;
 
 //! Weak pointer
 template<class T>
-class WPtr {
+class WPtr { // copyable
 public:
 	using WPtrBlock = typename T::WPtrBlock;
 	
 	WPtr() = default;
 	WPtr(std::nullptr_t)	{}
 	WPtr(T* p)				{ _ref(p); }
-	WPtr(const WPtr&  r)	{ _block = r._block; }
-	WPtr(      WPtr&& r)	{ _block = std::move(r._block); }
 
 	template<class R>
 	WPtr(WPtr<R> &r)	{ _ref(r.ptr()); }
 
-	~WPtr() {
-		unref();
-	}
+	~WPtr() { unref(); }
 
 	void ref(T* p) { _ref(p); }
 	void ref(const SPtr<T>& r) { _ref(ax_const_cast(r.ptr())); }
 
 	void unref	() { _block.unref(); }
 
-	void operator=(const WPtr & r)		{ _ref(r._p); }
-	void operator=(WPtr && r)			{ _move(std::move(r)); }
 	void operator=(std::nullptr_t)		{ unref(); }
 	void operator=(const SPtr<T>& r)	{ _ref(ax_const_cast(r.ptr())); }
 

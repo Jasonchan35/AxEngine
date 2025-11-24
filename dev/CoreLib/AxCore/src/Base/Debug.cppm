@@ -1,7 +1,7 @@
-export module AxCore.Debug;
-
+module;
 #include "AxBase.h"
-import <iostream>;
+
+export module AxCore.Debug;
 import AxCore.BasicType;
 
 export namespace ax::Debug {

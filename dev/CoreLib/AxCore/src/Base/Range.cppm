@@ -1,6 +1,7 @@
-export module AxCore.Range;
-
+module;
 #include "AxBase.h"
+
+export module AxCore.Range;
 import AxCore.BasicType;
 import AxCore.Math;
 
@@ -58,8 +59,8 @@ public:
 		T _v;
 	};
 
-	Iter begin()	{ return Iter(start); }
-	Iter end()		{ return Iter(endValue()); }
+	Iter begin() const	{ return Iter(start); }
+	Iter end() const	{ return Iter(endValue()); }
 
 private:
 	AX_INLINE

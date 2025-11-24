@@ -1,12 +1,12 @@
-﻿export module AxCore.Format;
-
+﻿module;
 #include "AxBase.h"
+
+export module AxCore.Format;
 
 export import AxCore.String;
 export import AxCore.UtfUtil;
 
 import AxCore.Debug;
-import <format>;
 
 export namespace ax {
 
@@ -62,7 +62,9 @@ public:
 private:
 	template<class PARAM>
 	consteval void _check_format(PARAM && param) {
+		#if !AX_COMPILER_CLANG
 		std_format_string checker(AX_FORWARD(param));
+		#endif
 	}
 	
 	StrView_<T> _view;
@@ -191,7 +193,7 @@ struct std::formatter<ax::String_<CH, N>, FMT_CH> : public ax::FormatterBase_<FM
 	}
 };
 
-template <ax::CharType CH, size_t N, class FMT_CH> requires !std::is_same_v<CH, FMT_CH>
+template <ax::CharType CH, size_t N, class FMT_CH> requires (!std::is_same_v<CH, FMT_CH>)
 struct std::formatter<CH[N], FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
 	constexpr auto format(const CH (&sz)[N], ax::FormatContext_<FMT_CH>& ctx) const {

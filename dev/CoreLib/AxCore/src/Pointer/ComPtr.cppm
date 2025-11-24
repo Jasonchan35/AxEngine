@@ -1,6 +1,8 @@
+module;
+#include "AxBase.h"
+
 export module AxCore.ComPtr;
 
-#include "AxBase.h"
 import AxCore.BasicType;
 
 namespace ax {
