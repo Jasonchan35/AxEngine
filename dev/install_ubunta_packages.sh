@@ -2,7 +2,10 @@
 apt install \
     build-essential \
     cmake \
+    clang \
+    clang-tools \
     ninja-build \
+    pkg-config \
     nasm \
     curl \
     uuid-dev \

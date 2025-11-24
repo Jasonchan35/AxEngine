@@ -14,11 +14,11 @@ fi
 
 sh _vcpkg/bootstrap-vcpkg.sh
 
-_vcpkg/vcpkg install vcpkg-tool-ninja
+# _vcpkg/vcpkg install vcpkg-tool-ninja
 # _vcpkg/vcpkg install tracy --recurse
 # _vcpkg/vcpkg install directx-dxc --recurse
 # _vcpkg/vcpkg install mozjpeg --recurse
-# _vcpkg/vcpkg install libpng --recurse
+_vcpkg/vcpkg install libpng --recurse
 # _vcpkg/vcpkg install freetype --recurse
 
 # _vcpkg/vcpkg install vulkan --recurse
