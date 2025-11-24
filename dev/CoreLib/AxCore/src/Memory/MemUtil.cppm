@@ -166,11 +166,17 @@ void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	if (std::is_trivially_copy_assignable_v<T>) {
 		MemUtil::rawCopy(dst, src, n * ax_sizeof<T>);
 	}else{
-		auto s = src;
-		auto e = src + n ;
-		for( ; s<e; ++s, ++dst ) {
-			ax_call_constructor<T>(dst, std::move(*s));
-			ax_call_destructor(s);
+		try {
+			auto s = src;
+			auto e = src + n ;
+			for( ; s<e; ++s, ++dst ) {
+				ax_call_constructor<T>(dst, std::move(*s));
+				ax_call_destructor(s);
+			}
+		} catch	(...) {
+			AX_ASSERT(false);
+			// TODO: catch exception and rewind the move here before re-throw
+			throw;
 		}
 	}
 }

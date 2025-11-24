@@ -18,9 +18,8 @@ void* ax_operator_new_handler(size_t sizeInBytes, const MemAllocRequest& req_) {
 	MemAllocRequest req(req_.allocator, req_.srcLoc);
 	req.dataSize = ax_safe_cast_Int(sizeInBytes);
 	
-	auto  result = req.allocator->allocBytes(req);
-	auto* o      = result.data;
-	return o;
+	auto result = req.allocator->allocBytes(req);
+	return result.takeOwnership();
 }
 
 void ax_operator_delete_handler(void* block, const MemAllocRequest& req) {

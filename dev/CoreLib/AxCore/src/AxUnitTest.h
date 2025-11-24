@@ -28,6 +28,13 @@ import AxCore.UnitTest;
 	} while (false) \
 //----
 
+#define AX_TEST_CHECK(A) \
+	do { \
+		auto msg = Fmt("{}\n  (value: {})", #A, A); \
+		::ax::UnitTest_Validate(bool((A)), msg.c_str()); \
+	} while (false) \
+//----
+
 #define AX_TEST_EQ(A, B) \
 	do { \
 		auto msg = Fmt("{} == {}\n  (value: {} == {})", #A, #B, A, B); \

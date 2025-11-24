@@ -13,14 +13,14 @@ export namespace ax {
 
 class MemAllocator;
 
-AX_INLINE void ax_free(void* p) {
-	std::cout << std::format("ax_free data={}\n", p);
-	if (p) ::_aligned_free(p);
-}
-
 AX_INLINE void* ax_malloc(Int size, Int alignment) {
 	std::cout << std::format("ax_malloc size={} alignment={}\n", size, alignment);
 	return _aligned_malloc(size, alignment);
+}
+
+AX_INLINE void ax_free(void* p) {
+	std::cout << std::format("ax_free data={}\n", p);
+	if (p) ::_aligned_free(p);
 }
 
 class MemAllocRequest : public NonCopyable {
@@ -35,30 +35,43 @@ public:
 template<class T>
 class MemAllocResult : public NonCopyable {
 public:
-	class MemAllocator* allocator = nullptr;
-	T*  data	= nullptr;
-	Int size	= 0;
-
 	constexpr MemAllocResult() = default;
 	constexpr MemAllocResult(const MemAllocResult&) = delete;
 
 	constexpr MemAllocResult(MemAllocResult&& r) noexcept
-		: allocator(r.allocator), data(r.data)
+		: _allocator(r._allocator), _data(r._data)
 	{
-		r.data = nullptr;
-		r.size = 0;
+		r._data = nullptr;
+		r._size = 0;
 	}
 
 	constexpr MemAllocResult(MemAllocator* allocator_, T* data_, Int size_) noexcept
-		: allocator(allocator_)
-		, data(data_)
-		, size(size_) {
+		: _allocator(allocator_)
+		, _data(data_)
+		, _size(size_) {
 	}
 	
 	constexpr ~MemAllocResult() noexcept { dealloc(); }
 	
-	constexpr void detach() noexcept { data = nullptr; allocator = nullptr; size = 0; }
 	constexpr void dealloc();
+
+	AX_INLINE constexpr class MemAllocator* allocator() const noexcept { return _allocator; }
+	AX_INLINE constexpr Int size() const noexcept { return _size; }
+
+	AX_INLINE constexpr T* takeOwnership() noexcept {
+		auto* o  = _data;
+		_data      = nullptr;
+		_allocator = nullptr;
+		_size      = 0;
+		return o;
+	}
+
+	AX_INLINE T* peekData() noexcept { return _data; }
+	
+private:
+	class MemAllocator* _allocator = nullptr;
+	T*  _data	= nullptr;
+	Int _size	= 0;
 };
 
 class MemAllocator {
@@ -75,8 +88,7 @@ public:
 		req.alignment = alignment;
 		
 		auto block = onAlloc(req);
-		T* data = reinterpret_cast<T*>(block.data);
-		block.detach();
+		T* data = reinterpret_cast<T*>(block.takeOwnership());
 		return MemAllocResult<T>(this, data, reqSize);
 	}
 
@@ -100,10 +112,10 @@ protected:
 
 template<class T> inline
 constexpr void MemAllocResult<T>::dealloc() {
-	if (!data || !allocator) return;
-	allocator->dealloc(data);
-	data = nullptr;
-	size = 0;
+	if (!_data || !_allocator) return;
+	_allocator->dealloc(_data);
+	_data = nullptr;
+	_size = 0;
 }
 
 MemAllocator*	ax_default_allocator();

@@ -14,6 +14,7 @@ export import <exception>;
 export import <format>;
 export import <iostream>;
 export import <memory>;
+export import <mutex>;
 export import <optional>;
 export import <source_location>;
 export import <stdexcept>;

@@ -81,8 +81,7 @@ constexpr MemAllocResult<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize + 1; // +1 for null terminator
 	auto* allocator = ax_default_allocator();
 	auto buf = allocator->allocArray<T>(newCapacity);
-	buf.size--; // -1 for null terminator
-	return buf;
+	return MemAllocResult<T>(buf.allocator(), buf.takeOwnership(), buf.size() - 1); // -1 for null terminator
 }
 
 template <CharType T, Int BUF_SIZE> inline

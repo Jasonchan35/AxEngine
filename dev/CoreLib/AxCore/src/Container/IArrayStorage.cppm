@@ -24,8 +24,8 @@ protected:
 
 protected:
 	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() = 0;
-	constexpr virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) = 0;
-	constexpr virtual	void			onStorageFree(T* p) = 0;
+	constexpr virtual MemAllocResult<T>	onStorageMalloc(Int reqSize) = 0;
+	constexpr virtual void				onStorageFree(T* p) = 0;
 
 	constexpr void _storageMove(IArrayStorage<T>&& rhs);
 	constexpr bool _storageReserve(Int newCapacity);
@@ -86,12 +86,12 @@ protected:
 			return reinterpret_cast<T*>(p);
 		}
 		
-		AX_INLINE constexpr const T* data() const { return ax_const_cast(this)->data(); }
-		AX_INLINE constexpr T*       data()		  { return isSmall() ? small_data() : _normal._data; }
-		AX_INLINE constexpr Int      size() const { return isSmall() ? _small._size : _normal._size; }
+		AX_INLINE constexpr const T* data() const noexcept { return ax_const_cast(this)->data(); }
+		AX_INLINE constexpr T*       data()		  noexcept { return isSmall() ? small_data() : _normal._data; }
+		AX_INLINE constexpr Int      size() const noexcept { return isSmall() ? _small._size : _normal._size; }
 
-		constexpr void setSize(Int v);
-		constexpr void setAllocDataPtr(T* data, Int cap);
+		constexpr void setSize(Int v) noexcept;
+		constexpr void setAllocDataPtr(T* data, Int cap) noexcept;
 	};
 
 	Storage _storage;
@@ -130,12 +130,12 @@ constexpr bool IArrayStorage<T>::_storageReserve(Int newCapacity) {
 template <class T> inline
 constexpr void IArrayStorage<T>::_storageRreserveImpl(Int reqCapacity) {
 	auto  memoryBlock  = onStorageMalloc(reqCapacity);
-	auto  newCapacity  = memoryBlock.size;
+	auto  newCapacity  = memoryBlock.size();
 	if (newCapacity < reqCapacity) throw Error_Allocator();
 	
 	auto  oldSize = _storage.size();
 	auto* oldData = _storage.data();
-	auto* newData = reinterpret_cast<T*>(memoryBlock.data);
+	auto* newData = reinterpret_cast<T*>(memoryBlock.peekData());
 	if (newData != oldData) {
 		if (oldData) {
 			MemUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
@@ -143,9 +143,9 @@ constexpr void IArrayStorage<T>::_storageRreserveImpl(Int reqCapacity) {
 				onStorageFree(oldData);
 			}
 		}
-		memoryBlock.detach();
 	}
 	
+	memoryBlock.takeOwnership();
 	_storage.setAllocDataPtr(newData, newCapacity);
 }
 
@@ -186,8 +186,8 @@ constexpr void IArrayStorage<T>::_storageClearAndFree() {
 template <class T>
 constexpr void IArrayStorage<T>::_storageResetToLocalBuf() {
 	auto block = onStorageLocalBuf();
-	if (block.allocator) throw Error_Allocator();
-	_storage.resetToLocalBuf(block.data, block.size);
+	if (block.allocator()) throw Error_Allocator();
+	_storage.resetToLocalBuf(block.takeOwnership(), block.size());
 }
 
 template <class T> AX_INLINE
@@ -200,7 +200,7 @@ constexpr Int IArrayStorage<T>::Storage::capacity() const {
 }
 
 template <class T> AX_INLINE
-constexpr void IArrayStorage<T>::Storage::setSize(Int v) {
+constexpr void IArrayStorage<T>::Storage::setSize(Int v) noexcept {
 	if (isSmall()) {
 		AX_ASSERT(v <= i8_max);
 		_small._size = static_cast<i8>(v);
@@ -210,7 +210,7 @@ constexpr void IArrayStorage<T>::Storage::setSize(Int v) {
 }
 
 template <class T> AX_INLINE
-constexpr void IArrayStorage<T>::Storage::setAllocDataPtr(T* data, Int cap) {
+constexpr void IArrayStorage<T>::Storage::setAllocDataPtr(T* data, Int cap) noexcept {
 	auto oldSize = size();
 	_normal._size = oldSize;
 	_normal._data = data;
