@@ -5,7 +5,6 @@ export module AxCore.WPtr;
 
 export import AxCore.SPtr;
 import AxCore.SpinLock;
-import AxCore.IArray;
 import AxCore.Atomic;
 
 export namespace ax {
@@ -70,19 +69,5 @@ private:
 
 	SPtr<WPtrBlock>	_block;
 };
-
-template<class T> inline
-void WPtrArray_append(IArray<WPtr<T>> & outArr, MutSpan<SPtr<T>> src) {
-	outArr.reserve(outArr.size() + src.size());
-	for (auto& s : src) {
-		outArr.emplaceBack(s);
-	}
-}
-
-template<class T> inline
-void WPtrArray_assign(IArray<WPtr<T>> & outArr, MutSpan<SPtr<T>> src) {
-	outArr.clear();
-	WPtrArray_append(outArr, src);
-}
 
 } // namespace
