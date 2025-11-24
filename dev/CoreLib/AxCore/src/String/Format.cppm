@@ -111,11 +111,6 @@ struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FM
 };
 
 template<class OBJ>
-concept Format_HasOnFormat_ = requires(const OBJ& obj) {
-	{ obj.onFormat };
-};
-
-template<class OBJ>
 concept Format_HasOnParse_ = requires(const OBJ& obj) {
 	{ OBJ::onFormatParse };
 };
@@ -145,18 +140,26 @@ public:
 	Context&   formatContext;
 };
 
+
+template<class OBJ, class FMT_CH>
+concept Format_HasOnFormat_ = requires(const OBJ& obj, Format_<FMT_CH> & fmt) {
+//	{ obj.onFormat(fmt) } -> std::same_as<void>;
+	true;
+};
+
 } // namespace
 
 //----- global namespace ----------
 
 // Wrapper to CustomClass::onFormat()
-template<class OBJ, class FMT_CH> requires ax::Format_HasOnFormat_<OBJ>
+template<class OBJ, class FMT_CH> requires ax::Format_HasOnFormat_<OBJ, FMT_CH>
 struct std::formatter<OBJ, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
 	using Base = ax::FormatterBase_<FMT_CH>;
 
 	constexpr auto parse(ax::FormatParseContext_<FMT_CH>& ctx) {
 		if constexpr (ax::Format_HasOnParse_<OBJ>) {
 			OBJ::onFormatParse(ctx);
+			return ctx.end();
 		} else {
 			return Base::parse(ctx);
 		}
