@@ -3,7 +3,8 @@
 @cd %~dp0
 
 cmake -G "Visual Studio 17 2022" ^
-	-B _build/AxEngine-x64-windows ^
+	-T "ClangCL" ^
+	-B _build/AxEngine-x64-windows-ClangCL ^
 	.
 
 @pause
