@@ -4,6 +4,7 @@ export module AxCore.SpinLock;
 export import AxCore.BasicType;
 export import AxCore.ScopedLock;
 export import AxCore.LockProtected;
+export import AxCore.ThreadUtil; 
 import <atomic>;
 
 export namespace ax::Thread {
@@ -24,32 +25,39 @@ public:
 	AX_INLINE void	unlock	() { _unlock(); }
 
 private:
+#if AX_LANG_CPP_20
+	static constexpr bool kUseWait = false; // true
+#else
+	static constexpr bool kUseWait = false;
+#endif
+	
+	
 #if 1 // use std::atomic_flag
 	AX_INLINE void	_ctor	()		{}
 	AX_INLINE void	_dtor	()		{}
 	AX_INLINE bool	_tryLock()		{ return !_v.test_and_set(std::memory_order_acquire); }
 	AX_INLINE void	_lock	()		{
-	#if AX_LANG_CPP_20
-		while (_v.test_and_set(std::memory_order_acquire)) {
-			_v.wait(true, std::memory_order_relaxed);
-		}
-	#else
-		for (Int i = 0; _v.test_and_set(std::memory_order_acquire); i++) {
-			if (i < 8) continue;
-			//else if (i < 16) __asm__ __volatile__("rep; nop" : : : "memory");
-			else if(i < 64) {
-				AxCore::ThreadUtil::yield();
-			} else {
-				AxCore::ThreadUtil::sleep(Milliseconds(1));
+		if constexpr(kUseWait) {
+			while (_v.test_and_set(std::memory_order_acquire)) {
+				_v.wait(true, std::memory_order_relaxed);
+			}
+		} else {
+			for (Int i = 0; _v.test_and_set(std::memory_order_acquire); i++) {
+				if (i < 8) continue;
+				//else if (i < 16) __asm__ __volatile__("rep; nop" : : : "memory");
+				else if(i < 64) {
+					ThreadUtil::yield();
+				} else {
+					ThreadUtil::sleep(Milliseconds(8));
+				}
 			}
 		}
-	#endif
 	}
 	AX_INLINE void	_unlock	()		{
 		_v.clear(std::memory_order_release);
-	#if AX_LANG_CPP_20
-		_v.notify_one();
-	#endif
+		if constexpr (kUseWait) {
+			_v.notify_one();
+		}
 	}
 
 	std::atomic_flag _v = ATOMIC_FLAG_INIT;

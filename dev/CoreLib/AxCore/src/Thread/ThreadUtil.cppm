@@ -10,7 +10,7 @@ import <thread>;
 	import <windows.h>;
 #endif
 
-namespace ax::Thread {
+export namespace ax::Thread {
 
 #if AX_OS_WINDOWS
 
