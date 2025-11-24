@@ -101,7 +101,8 @@ public:
 				// lock before release ref count and delete object
 				auto wbData = wb->data.scopedLock();
 				
-				if (bool isDeleted = _doRelease(s)) {
+				bool isDeleted = _doRelease(s);
+				if (isDeleted) {
 					AX_ASSERT(wbData->obj == obj);
 					wbData->obj = nullptr;
 				}

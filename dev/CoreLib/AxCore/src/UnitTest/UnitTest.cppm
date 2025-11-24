@@ -61,7 +61,7 @@ inline void UnitTest_RunCase(const char* funcName, void (TEST_CLASS::*testFunc)(
 //	const char* clsName = _ax_get_cls_name<TEST_CLASS>();
 	const int kBufSize = 4096;
 	char msg[kBufSize + 1];
-	snprintf(msg, kBufSize, "---- RunCase [%s] ---------\n", funcName);
+	snprintf(msg, kBufSize, "---- RunCase [%s] ---------", funcName);
 	__ax_internal_log(msg);
 
 	try {

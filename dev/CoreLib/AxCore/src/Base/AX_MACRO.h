@@ -39,7 +39,7 @@
 #define AX_JOIN_WORD3(w0,w1,w2)			_AX_JOIN_WORD3_IMPL(w0, w1, w2)
 
 
-#if AX_COMPILER_VC
+#if 0 // AX_COMPILER_VC
 	#define AX_SZ_A_JOIN(A,B)	(  ""     A ##     B)
 	#define AX_SZ_W_JOIN(A,B)	( L""  L##A ##  L##B)
 	#define AX_SZ_8_JOIN(A,B)	(u8"" u8##A ## u8##B)

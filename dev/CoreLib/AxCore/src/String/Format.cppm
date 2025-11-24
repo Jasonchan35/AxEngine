@@ -91,33 +91,5 @@ concept Format_HasOnFormat_ = requires(const OBJ& obj, Format_<FMT_CH> & fmt) {
 
 } // namespace
 
-//----- global namespace ----------
 
-// Wrapper to CustomClass::onFormat()
-template<class OBJ, class FMT_CH> requires ax::Format_HasOnFormat_<OBJ, FMT_CH>
-struct std::formatter<OBJ, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
 
-	constexpr auto parse(ax::FormatParseContext_<FMT_CH>& ctx) {
-		if constexpr (ax::Format_HasOnParse_<OBJ>) {
-			OBJ::onFormatParse(ctx);
-			return ctx.end();
-		} else {
-			return Base::parse(ctx);
-		}
-	}
-
-	auto format(const OBJ& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		ax::Format_<FMT_CH> format(*this, ctx);
-		obj.onFormat(format);
-		return ctx.out();
-	}
-};
-
-template <class CH, class FMT_CH>
-struct std::formatter<ax::MutStrView_<CH>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	constexpr auto format(const ax::MutStrView_<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return Base::format(obj, ctx);
-	}
-};

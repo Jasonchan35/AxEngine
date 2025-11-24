@@ -16,6 +16,35 @@ public:
 			fmt << Fmt("CustmoData={}", 100);
 		}	
 	};
+
+	void test_format_custom_type() {
+		CustmoData data;
+		auto str = Fmt("{}", data);
+		__ax_internal_log(str.c_str());
+
+		FmtTo(str, L" {}", StrView("strA"));
+		//			FmtTo(str,  " {}", u"str16");
+		__ax_internal_log(str.c_str());
+	}
+
+	template<class T>
+	void test_utf() {
+		String_<T> str;
+		FmtTo(str, AX_STR_A( " fmtA"));
+		FmtTo(str, AX_STR_W( " fmtW"));
+		FmtTo(str, AX_STR_8( " fmt8"));
+		FmtTo(str, AX_STR_16(" fmt16"));
+		FmtTo(str, AX_STR_32(" fmt32"));
+
+		FmtTo(str, " {}", AX_STR_A( "argA"));
+		FmtTo(str, " {}", AX_STR_W( "argW"));
+		FmtTo(str, " {}", AX_STR_8( "arg8"));
+		FmtTo(str, " {}", AX_STR_16("arg16"));
+		FmtTo(str, " {}", AX_STR_32("arg32"));
+
+		auto msg = TempStringA::s_utf(str);
+		__ax_internal_log(msg.c_str());
+	}	
 	
 	void test_case1() {
 		{
@@ -36,11 +65,7 @@ public:
 			//__ax_internal_log(str.c_str());
 		}
 		
-		{
-			CustmoData data;
-			auto str = Fmt("{}", data);
-			__ax_internal_log(str.c_str());
-		}
+
 // 		
 // 		String format_string("format test {}");
 // 		constexpr StrView format_sv("format test view {}");
@@ -64,8 +89,16 @@ public:
 	}
 };
 
+void Test_Format_Func() {
+	AX_TEST_RUN_CASE(Test_Format::test_case1)
+	AX_TEST_RUN_CASE(Test_Format::test_format_custom_type)
+	AX_TEST_RUN_CASE(Test_Format::test_utf<CharA>)
+	AX_TEST_RUN_CASE(Test_Format::test_utf<CharW>)
+	AX_TEST_RUN_CASE(Test_Format::test_utf<Char8>)
+	AX_TEST_RUN_CASE(Test_Format::test_utf<Char16>)
+	AX_TEST_RUN_CASE(Test_Format::test_utf<Char32>)
+}
+
 } // namespace
 
-void Test_Format() {
-	AX_TEST_RUN_CASE(ax::Test_Format::test_case1)
-}
+void Test_Format() { ax::Test_Format_Func(); }

@@ -164,7 +164,7 @@ protected:
 	constexpr void _appendUtf(StrView_<R> src);
 };
 
-template<class OUT_CH>	
+template<class IN_CH, class OUT_CH>	
 struct IStringBackInserter_ {
 	using This = IStringBackInserter_;
 	using OutIString = IString_<OUT_CH>;
@@ -173,8 +173,11 @@ struct IStringBackInserter_ {
 
 	constexpr explicit IStringBackInserter_(OutIString& s) noexcept : _s(&s) {}
 
-	constexpr This& operator=(const OUT_CH&  ch) { _s->appendChar(ch); return *this; }
-	constexpr This& operator=(      OUT_CH&& ch) { _s->appendChar(std::move(ch)); return *this; }
+	template<class R>
+	constexpr This& operator=(const R&  ch) { _s->appendChar(ch); return *this; }
+
+	template<class R>
+	constexpr This& operator=(      R&& ch) { _s->appendChar(std::move(ch)); return *this; }
 
 	constexpr       This& operator*()       noexcept { return *this; }
 	constexpr const This& operator*() const noexcept { return *this; }
@@ -186,31 +189,6 @@ protected:
 	OutIString* _s = nullptr;
 };
 
-
-template< class OUT_CH, class FMT_CH, class ... ARGS> 
-AX_INLINE void ax_format_to_internal(IString_<OUT_CH> & output, const FormatString_<FMT_CH, ARGS...> & fmt, ARGS&&... args) {
-	FormatArgs_<FMT_CH> format_args = std::make_format_args<FormatContext_<FMT_CH>>(args...);
-	auto fmt_sv = fmt.get().to_string_view();
-	try {
-		output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
-		std::vformat_to(IStringBackInserter_<OUT_CH>(output), fmt_sv, format_args);
-			
-	} catch (std::exception& e) {
-		auto msg  = std::format("Exception in format={}, {})", fmt_sv, e.what());
-		__ax_internal_logError(msg.c_str());
-		throw Error_Format();
-	}
-}
-
-template<class CH, class... ARGS> AX_INLINE
-void FmtTo(IString_<CH> & output, const FormatString_<CharA, ARGS...> & fmt, ARGS&&... args) {
-	return ax_format_to_internal<CH, CharA, ARGS...>(output, fmt, AX_FORWARD(args)...);
-}
-
-template<class T, class... ARGS> AX_INLINE
-void FmtTo(IString_<T> & output, const FormatString_<CharW, ARGS...> & fmt, ARGS&&... args) {
-	return ax_format_to_internal<T, CharW, ARGS...>(output, fmt, AX_FORWARD(args)...);
-}
 
 template <class T> AX_INLINE
 constexpr void IString_<T>::reserve(Int newCapacity) {
