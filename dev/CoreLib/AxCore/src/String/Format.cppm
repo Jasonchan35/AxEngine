@@ -2,35 +2,9 @@
 #include "AxCore-pch.h"
 
 export module AxCore.Format;
-
-export import AxCore.IString;
-export import AxCore.UtfUtil;
-
-import AxCore.Debug;
+export import AxCore.StrView;
 
 export namespace ax {
-
-template<class OUT_CH>	
-struct FormatBackInserter_ {
-	using This = FormatBackInserter_;
-	using OutIString = IString_<OUT_CH>;
-	
-	using difference_type = ptrdiff_t;
-
-	constexpr explicit FormatBackInserter_(OutIString& s) noexcept : _s(&s) {}
-
-	constexpr This& operator=(const OUT_CH&  ch) { _s->appendChar(ch); return *this; }
-	constexpr This& operator=(      OUT_CH&& ch) { _s->appendChar(std::move(ch)); return *this; }
-
-	constexpr       This& operator*()       noexcept { return *this; }
-	constexpr const This& operator*() const noexcept { return *this; }
-	
-	constexpr This& operator++() noexcept { return *this; }
-	constexpr This  operator++(int) noexcept { return *this; }
-
-protected:
-	OutIString* _s = nullptr;
-};
 
 // using FormatContext_ = std::format_context;
 template<class FMT_CH>
@@ -55,7 +29,7 @@ public:
 	
 	constexpr FormatStringT_(StrView_<T> view) : _view(view) {}
 	constexpr FormatStringT_(StrLit_<T> view) : _view(view) {}
-	constexpr FormatStringT_(const IString_<T> & str) : FormatStringT_(str.view()) {}
+//	constexpr FormatStringT_(const IString_<T> & str) : FormatStringT_(str.view()) {}
 
 	constexpr StrView_<T> get() const { return _view; }
 	constexpr Int size() const { return _view.size(); } 
@@ -75,26 +49,6 @@ using FormatString_ = FormatStringT_<T, std::type_identity_t<ARGS>...>;
 
 template<class FMT_CH>
 using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
-
-template<class T, class ... ARGS> 
-AX_INLINE void ax_format_to_internal(IString_<T> & output, const FormatString_<T, ARGS...> & fmt, ARGS&&... args) {
-	FormatArgs_<T> format_args = std::make_format_args<FormatContext_<T>>(args...);
-	auto fmt_sv = fmt.get().to_string_view();
-	try {
-		output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
-		std::vformat_to(FormatBackInserter_<T>(output), fmt_sv, format_args);
-			
-	} catch (std::exception& e) {
-		auto msg  = std::format("Exception in format={}, {})", fmt_sv, e.what());
-		Debug::_internal_logError(msg.c_str());
-		throw Error_Format();
-	}
-}
-
-template<class... ARGS> AX_INLINE
-void FmtTo(IString_<CharA> & output, const FormatString_<CharA, ARGS...> & fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, fmt, AX_FORWARD(args)...); }
-template<class... ARGS> AX_INLINE
-void FmtTo(IString_<CharW> & output, const FormatString_<CharW, ARGS...> & fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, fmt, AX_FORWARD(args)...); }
 
 //--- Formatter
 template<class FMT_CH>
@@ -167,13 +121,3 @@ struct std::formatter<ax::MutStrView_<CH>, FMT_CH> : public ax::FormatterBase_<F
 		return Base::format(obj, ctx);
 	}
 };
-
-template <class CH, class FMT_CH>
-struct std::formatter<ax::IString_<CH>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	auto format(const ax::IString_<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return Base::format(obj, ctx);
-	}
-};
-
-

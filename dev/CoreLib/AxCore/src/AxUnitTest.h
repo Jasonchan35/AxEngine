@@ -8,13 +8,13 @@ import AxCore.UnitTest;
 import AxCore.Logger;
 
 #define	AX_TEST_GROUP( fn )	\
-	::ax::Debug::_internal_log("====== Group [" #fn "] ============"); \
+	::ax::__ax_internal_log("====== Group [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----
 
 #define	AX_TEST_FUNC( fn )	\
-	::ax::Debug::_internal_log("======= Func [" #fn "] ============"); \
+	::ax::__ax_internal_log("======= Func [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----

@@ -40,3 +40,25 @@ export import <utility>;
 #endif
 
 #endif // AX_USE_IMPROT_INSTEAD_INCLUDE
+
+export namespace ax {
+
+// for internal use, i.e. unit test cannot have high level logger functions
+inline void _internal_log(const char* msg) {
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_INFO, "libax", msg);
+#else
+	std::wcout << msg << std::endl;
+#endif
+}
+
+// for internal use, i.e. unit test cannot have high level logger functions
+inline void __ax_internal_logError(const char* msg) {
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_ERROR, "libax", msg);
+#else
+	std::wcerr << msg;
+#endif
+}
+
+} // namespace

@@ -20,7 +20,7 @@ public:
 	void test_case1() {
 		{
 			auto ret = Fmt("int=[{:6}] sz=[{:6}] wsz=[{:6}]", 1, "abc", L"wchar");
-			Debug::_internal_log(ret.c_str());
+			__ax_internal_log(ret.c_str());
 			AX_LOG("test {}", 123);
 		}
 		{
@@ -28,18 +28,18 @@ public:
 			IString& istr = str;
 			StrView  sv = str;
 			auto ret = Fmt("sv=[{:6}] istr=[{:6}] str=[{:6}]", sv, istr, str);
-			Debug::_internal_log(ret.c_str());
+			__ax_internal_log(ret.c_str());
 		}
 		{
 			AX_TEST_EQ(Fmt("[{:4}][{:4.1}]", 1, 0.123), "[   1][ 0.1]");
 			// auto str = Fmt("{} {}", 1, 2.3);
-			// Debug::_internal_log(str.c_str());
+			//__ax_internal_log(str.c_str());
 		}
 		
 		{
 			CustmoData data;
 			auto str = Fmt("{}", data);
-			Debug::_internal_log(str.c_str());
+			__ax_internal_log(str.c_str());
 		}
 // 		
 // 		String format_string("format test {}");

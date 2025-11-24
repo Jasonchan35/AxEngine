@@ -74,7 +74,7 @@ public:
 
 	template<class... ARGS>
 	static This s_format(const FormatString_<Char, ARGS...> & fmt, ARGS&&... args) {
-		This s; FmtTo(s, fmt, AX_FORWARD(args)...); return s;
+		This s; s.appendFormat(fmt, AX_FORWARD(args)...); return s;
 	}
 
 protected:

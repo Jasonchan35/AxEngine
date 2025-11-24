@@ -280,7 +280,7 @@ protected:
 
 template<class T> struct NumLimit;
 
-template<class T> requires std::is_integral_v<T> || std::is_floating_point_v<T> || CharType<T>
+template<class T> requires std::is_integral_v<T> || std::is_floating_point_v<T> || ax_type_is_char<T>
 struct NumLimit<T> {
 	AX_INLINE static constexpr T kDefaultValue	() { return 0; }
 	AX_INLINE static constexpr T kLowest		() { return  std::numeric_limits<T>::lowest();    }
@@ -290,6 +290,62 @@ struct NumLimit<T> {
 	AX_INLINE static constexpr T kNegInfinity	() { return -std::numeric_limits<T>::infinity();  }
 	AX_INLINE static constexpr T kNaN			() { return  std::numeric_limits<T>::quiet_NaN(); }
 };
+
+
+
+// for internal use, i.e. unit test cannot have high level logger functions
+inline void __ax_internal_log(const char* msg) {
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_INFO, "libax", msg);
+#else
+	std::wcout << msg << std::endl;
+#endif
+}
+
+// for internal use, i.e. unit test cannot have high level logger functions
+inline void __ax_internal_logError(const char* msg) {
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_ERROR, "libax", msg);
+#else
+	std::wcerr << msg;
+#endif
+}
+
+void __ax_internal_forceCrash() {
+	std::cout << "ax_force_crash\n";
+	*reinterpret_cast<int*>(1) = 0;
+}
+
+void __ax_internal_assert(const char* title, const char* expr, const SrcLoc& loc, const char* msg) {
+	const int bufLen = 32 * 1024;
+	char buf[bufLen + 1];
+	snprintf(buf, bufLen,
+		"\n%s\n"
+		"  Expr: %s\n"
+		"  Func: %s\n"
+		"Source: %s:%lld\n"
+		"-------------\n"
+		"%s\n",
+		title,
+			expr,
+			loc.function().c_str(),
+			loc.file().c_str(), loc.line(),
+			msg);
+	buf[bufLen] = 0; //snprintf might not end with zero if exists bufLen limit
+
+#if AX_OS_WINDOWS & _DEBUG
+	if (1 == _CrtDbgReport(_CRT_ASSERT, loc.file().c_str(), static_cast<int>(loc.line()), "bax", "%s", buf)) {
+		_CrtDbgBreak();
+	}
+#else
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_ERROR, "libax", buf);
+#else
+	std::wcerr << msg;
+#endif
+	AX_ASSERT(false);
+#endif
+}
 
 
 } // namespace
