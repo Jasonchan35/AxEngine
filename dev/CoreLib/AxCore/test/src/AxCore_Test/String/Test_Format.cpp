@@ -1,22 +1,18 @@
 #include "AxUnitTest.h"
 
-#if AX_COMPILER_CLANG
-	void Test_Format() {}
-#else
-
 namespace ax {
 
 class Test_Format : public UnitTestClass {
 public:
 	struct CustmoData {
-
 		template<class FMT_CH>
-		constexpr static void onFormatParse(FormatParseContext_<FMT_CH> &  ctx) {
-		
+		constexpr static void onFormatParse(Format_<FMT_CH> & fmt) {
+			
 		}
 
 		template<class FMT_CH>
 		constexpr void onFormat(Format_<FMT_CH> & fmt) const {
+			fmt << "abcd";
 			fmt.format("CustmoData={}", 100);
 		}	
 	};
@@ -39,8 +35,8 @@ public:
 			// Debug::_internal_log(str.c_str());
 		}
 		
-		CustmoData data;
 		{
+			CustmoData data;
 			auto str = Fmt("{}", data);
 			Debug::_internal_log(str.c_str());
 		}
@@ -72,5 +68,3 @@ public:
 void Test_Format() {
 	AX_TEST_RUN_CASE(ax::Test_Format::test_case1)
 }
-
-#endif

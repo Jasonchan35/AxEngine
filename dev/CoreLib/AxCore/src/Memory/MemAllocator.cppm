@@ -14,12 +14,12 @@ export namespace ax {
 class MemAllocator;
 
 AX_INLINE void* ax_malloc(Int size, Int alignment) {
-	std::cout << std::format("ax_malloc size={} alignment={}\n", size, alignment);
+//	std::cout << std::format("ax_malloc size={} alignment={}\n", size, alignment);
 	return _aligned_malloc(size, alignment);
 }
 
 AX_INLINE void ax_free(void* p) {
-	std::cout << std::format("ax_free data={}\n", p);
+//	std::cout << std::format("ax_free data={}\n", p);
 	if (p) ::_aligned_free(p);
 }
 
@@ -99,13 +99,13 @@ public:
 protected:
 	virtual MemAllocResult<u8> onAlloc(const MemAllocRequest & req) {
 		void* data = ax_malloc(req.dataSize, req.alignment);
-		std::cout << std::format("onAlloc size={} data={}\n", req.dataSize, data);
+//		std::cout << std::format("onAlloc size={} data={}\n", req.dataSize, data);
 		return MemAllocResult<u8>(this, reinterpret_cast<u8*>(data), req.dataSize);
 	}
 
 	virtual void onDealloc(void* data) {
 		if (!data) return;
-		std::cout << std::format("onDealloc data={}\n", data);
+//		std::cout << std::format("onDealloc data={}\n", data);
 		ax_free(data);
 	}
 };

@@ -62,9 +62,7 @@ public:
 private:
 	template<class PARAM>
 	consteval void _check_format(PARAM && param) {
-		#if !AX_COMPILER_CLANG
 		std_format_string checker(AX_FORWARD(param));
-		#endif
 	}
 	
 	StrView_<T> _view;
@@ -128,11 +126,13 @@ public:
 	using Context   = FormatContext_<T>;
 	using Formatter = FormatterBase_<T>;
 
-	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), ctx(ctx_) {}
+	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
 
 	AX_INLINE constexpr void append(StrView_<T> view) {
-		formatter.format(view.to_string_view(), ctx);
+		formatter.format(view.to_string_view(), formatContext);
 	}
+
+	AX_INLINE constexpr void operator << (StrView_<T> view) { append(view); }
 
 	template<class ... ARGS>
 	AX_INLINE constexpr void format(FormatString_<T, ARGS...> fmt, ARGS&&... args) {
@@ -142,7 +142,7 @@ public:
 	}
 
 	const Formatter& formatter;
-	Context&   ctx;
+	Context&   formatContext;
 };
 
 } // namespace
