@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxBase.h"
+#include "AxCore-pch.h"
 
 export module AxCore.IArray;
 export import AxCore.IArrayStorage;

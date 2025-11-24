@@ -244,7 +244,6 @@ function(ax_target_set_common_properties target_name)
 							UNITY_BUILD_MODE BATCH
 							UNITY_BUILD_BATCH_SIZE 8)
 
-	target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
 	target_compile_definitions(${target_name} PUBLIC -DAX_BUILD_${target_name})
 	target_compile_definitions(${target_name} PUBLIC 
 		$<$<CONFIG:Debug>:AX_BUILD_CONFIG_Debug>
@@ -252,6 +251,13 @@ function(ax_target_set_common_properties target_name)
 		$<$<CONFIG:Release>:AX_BUILD_CONFIG_Release>
 		$<$<CONFIG:RelWithDebInfo>:AX_BUILD_CONFIG_RelWithDebInfo>
 	)
+
+	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	else()
+		target_compile_definitions(${target_name} PUBLIC -DAX_USE_PRECOMPILE_HEADER)
+		target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
+	endif()
+
 	target_compile_definitions(${target_name} PUBLIC -DUNICODE -D_UNICODE)
 endfunction()
 

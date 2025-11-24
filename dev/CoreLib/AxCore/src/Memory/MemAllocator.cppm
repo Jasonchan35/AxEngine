@@ -1,12 +1,12 @@
 ﻿module;
-#include "AxBase.h"
+#include "AxCore-pch.h"
 
 export module AxCore.Allocator;
 
 import AxCore.Math;
 import AxCore.MemoryUtil;
 
-#include "AxBase.h"
+#include "AxCore-pch.h"
 export import AxCore.BasicType;
 
 export namespace ax {

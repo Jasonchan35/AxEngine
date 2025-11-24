@@ -1,9 +1,9 @@
 ﻿module;
-#include "AxBase.h"
+#include "AxCore-pch.h"
 
 export module AxCore.MemoryUtil;
 
-#include "AxBase.h"
+#include "AxCore-pch.h"
 import AxCore.BasicType;
 
 export namespace ax {

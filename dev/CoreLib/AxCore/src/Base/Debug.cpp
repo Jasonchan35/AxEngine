@@ -1,3 +1,8 @@
+module;
+
+#include "AxCore-pch.h"
+#include "Base/AX_WINDOWS.h"
+
 module AxCore.Debug;
 
 namespace ax::Debug {

@@ -1,8 +1,9 @@
 module;
 
-#include "AxBase.h"
+#include "AxCore-pch.h"
 export module AxCore.BasicType;
 
+export import AxCore.pch;
 
 export namespace ax {
 
