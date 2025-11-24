@@ -38,8 +38,106 @@
 #define AX_JOIN_WORD( w0,w1)			_AX_JOIN_WORD_IMPL( w0, w1)
 #define AX_JOIN_WORD3(w0,w1,w2)			_AX_JOIN_WORD3_IMPL(w0, w1, w2)
 
-#define AX_WITH_NAME(v) ::ax::WithName(v, #v)
 
+#if AX_COMPILER_VC
+	#define AX_SZ_A_JOIN(A,B)	(  ""     A ##     B)
+	#define AX_SZ_W_JOIN(A,B)	( L""  L##A ##  L##B)
+	#define AX_SZ_8_JOIN(A,B)	(u8"" u8##A ## u8##B)
+	#define AX_SZ_16_JOIN(A,B)	( u""  u##A ##  u##B)
+	#define AX_SZ_32_JOIN(A,B)	( U""  U##A ##  u##B)
+
+	#define AX_SZ_A( sz)		(  ""     sz)
+	#define AX_SZ_W( sz)		( L""  L##sz)
+	#define AX_SZ_8( sz)		(u8""  u##sz)
+	#define AX_SZ_16(sz)		( u""  u##sz)
+	#define AX_SZ_32(sz)		( U""  U##sz)
+
+	#define AX_CH_A( c)			::ax::CharA(    c)
+	#define AX_CH_W( c)			::ax::CharW( L##c)
+	#define AX_CH_8( c)			::ax::Char8(u8##c)
+	#define AX_CH_16(c)			::ax::Char16(u##c)
+	#define AX_CH_32(c)			::ax::Char32(U##c)
+
+#else
+	#define AX_SZ_A_JOIN(A,B)	( ""  A ## B)
+	#define AX_SZ_W_JOIN(A,B)	( L"" A ## B)
+	#define AX_SZ_8_JOIN(A,B)	(u8"" A ## B)
+	#define AX_SZ_16_JOIN(A,B)	( u"" A ## B)
+	#define AX_SZ_32_JOIN(A,B)	( U"" A ## B)
+
+	#define AX_SZ_A( sz)		(  ""  sz)
+	#define AX_SZ_W( sz)		( L""  sz)
+	#define AX_SZ_8( sz)		(u8""  sz)
+	#define AX_SZ_16(sz)		( u""  sz)
+	#define AX_SZ_32(sz)		( U""  sz)
+
+	#define AX_CH_A( c)			::ax::CharA(    c)
+	#define AX_CH_W( c)			::ax::CharW( L##c)
+	#define AX_CH_8( c)			::ax::Char8(u8##c)
+	#define AX_CH_16(c)			::ax::Char16(u##c)
+	#define AX_CH_32(c)			::ax::Char32(U##c)
+
+#endif
+
+#ifdef _DEBUG
+	#define AX_DEBUG_ONLY_SZ(...)			AX_SZ(__VA_ARGS__)
+	#define AX_DEBUG_ONLY_STR_LIT(...)		AX_STR_LIT(__VA_ARGS__)
+#else
+	#define AX_DEBUG_ONLY_SZ(...)			AX_SZ("")
+	#define AX_DEBUG_ONLY_STR_LIT(...)		AX_STR_LIT("")
+#endif
+
+#define AX_STR_A( sz)		::ax::StrLit_<const ::ax::CharA >(AX_SZ_A( sz))
+#define AX_STR_W( sz)		::ax::StrLit_<const ::ax::CharW >(AX_SZ_W( sz))
+#define AX_STR_8( sz)		::ax::StrLit_<const ::ax::Char8 >(AX_SZ_8( sz))
+#define AX_STR_16(sz)		::ax::StrLit_<const ::ax::Char16>(AX_SZ_16(sz))
+#define AX_STR_32(sz)		::ax::StrLit_<const ::ax::Char32>(AX_SZ_32(sz))
+
+#define AX_TYPE_CHAR_DEFINE_A   1001
+#define AX_TYPE_CHAR_DEFINE_W   1002
+#define AX_TYPE_CHAR_DEFINE_8   1008
+#define AX_TYPE_CHAR_DEFINE_16  1016
+#define AX_TYPE_CHAR_DEFINE_32  1032
+
+//define axChar type
+#define AX_TYPE_CHAR_DEFINE AX_TYPE_CHAR_DEFINE_A
+
+#if AX_TYPE_CHAR_DEFINE == AX_TYPE_CHAR_DEFINE_A
+	#define AX_SZ(sz)		AX_SZ_A(sz)
+	#define AX_CH(sz)		AX_CH_A(sz)
+	#define AX_STR(sz)		AX_STR_A(sz)
+	#define AX_SZ_JOIN(sz)	AX_SZ_A_JOIN(sz)
+
+#elif AX_TYPE_CHAR_DEFINE == AX_TYPE_CHAR_DEFINE_W
+	#define AX_SZ(sz)		AX_SZ_W(sz
+	#define AX_CH(sz)		AX_CH_W(sz)
+	#define AX_STR(sz)		AX_STR_W(sz)
+	#define AX_SZ_JOIN(sz)	AX_SZ_W_JOIN(sz)
+
+#elif AX_TYPE_CHAR_DEFINE == AX_TYPE_CHAR_DEFINE_8
+	#define AX_SZ(sz)		AX_SZ_8(sz)
+	#define AX_CH(sz)		AX_CH_8(sz)
+	#define AX_STR(sz)		AX_STR_8(sz)
+	#define AX_SZ_JOIN(sz)	AX_SZ_8_JOIN(sz)
+
+#elif AX_TYPE_CHAR_DEFINE == AX_TYPE_CHAR_DEFINE_16
+	#define AX_SZ(sz)		AX_SZ_16(sz)
+	#define AX_CH(sz)		AX_CH_16(sz)
+	#define AX_STR(sz)		AX_STR_16(sz)
+	#define AX_SZ_JOIN(sz)	AX_SZ_16_JOIN(sz)
+
+#elif AX_TYPE_CHAR_DEFINE == AX_TYPE_CHAR_DEFINE_32
+	#define AX_SZ(sz)		AX_SZ_32(sz)
+	#define AX_CH(sz)		AX_CH_32(sz)
+	#define AX_STR(sz)		AX_STR_32(sz)
+	#define AX_SZ_JOIN(sz)	AX_SZ_32_JOIN(sz)
+
+#else
+	#error "Unknown AX_TYPE_CHAR_DEFINE"
+#endif
+
+
+//----------------
 #define AX_ALLOC_REQ	::ax::MemAllocRequest(ax_current_allocator())
 
 #define AX_SIMPLE_ERROR(ERROR_TYPE) \
@@ -150,3 +248,8 @@
 //----
 
 #define AX_ENUM_FLAGS_CLASS(LIST,T, BASE_TYPE) AX_ENUM_CLASS(LIST, T, BASE_TYPE)
+
+//----- Logger
+#define AX_LOG(fmt, ...)			do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Info,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)

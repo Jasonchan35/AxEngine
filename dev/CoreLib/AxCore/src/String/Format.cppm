@@ -3,7 +3,7 @@
 
 export module AxCore.Format;
 
-export import AxCore.String;
+export import AxCore.IString;
 export import AxCore.UtfUtil;
 
 import AxCore.Debug;
@@ -54,6 +54,7 @@ public:
 	}
 	
 	constexpr FormatStringT_(StrView_<T> view) : _view(view) {}
+	constexpr FormatStringT_(StrLit_<T> view) : _view(view) {}
 	constexpr FormatStringT_(const IString_<T> & str) : FormatStringT_(str.view()) {}
 
 	constexpr StrView_<T> get() const { return _view; }
@@ -76,7 +77,7 @@ template<class FMT_CH>
 using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
 
 template<class T, class ... ARGS> 
-AX_INLINE void ax_format_to_internal(IString_<T> & output, FormatString_<T, ARGS...> && fmt, ARGS&&... args) {
+AX_INLINE void ax_format_to_internal(IString_<T> & output, const FormatString_<T, ARGS...> & fmt, ARGS&&... args) {
 	FormatArgs_<T> format_args = std::make_format_args<FormatContext_<T>>(args...);
 	auto fmt_sv = fmt.get().to_string_view();
 	try {
@@ -91,15 +92,9 @@ AX_INLINE void ax_format_to_internal(IString_<T> & output, FormatString_<T, ARGS
 }
 
 template<class... ARGS> AX_INLINE
-void FmtTo(IString_<CharA> & output, FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
+void FmtTo(IString_<CharA> & output, const FormatString_<CharA, ARGS...> & fmt, ARGS&&... args) { return ax_format_to_internal<CharA>(output, fmt, AX_FORWARD(args)...); }
 template<class... ARGS> AX_INLINE
-void FmtTo(IString_<CharW> & output, FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, AX_FORWARD(fmt), AX_FORWARD(args)...); }
-
-template<class... ARGS> AX_INLINE
-StringA Fmt(FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { StringA str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
-
-template<class... ARGS> AX_INLINE
-StringW Fmt(FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { StringW str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+void FmtTo(IString_<CharW> & output, const FormatString_<CharW, ARGS...> & fmt, ARGS&&... args) { return ax_format_to_internal<CharW>(output, fmt, AX_FORWARD(args)...); }
 
 //--- Formatter
 template<class FMT_CH>
@@ -128,13 +123,6 @@ public:
 	}
 
 	AX_INLINE constexpr void operator << (StrView_<T> view) { append(view); }
-
-	template<class ... ARGS>
-	AX_INLINE constexpr void format(FormatString_<T, ARGS...> fmt, ARGS&&... args) {
-		TempString_<T> tmp;
-		FmtTo(tmp, AX_FORWARD(fmt), AX_FORWARD(args)...);
-		append(tmp);
-	}
 
 	const Formatter& formatter;
 	Context&   formatContext;
@@ -188,20 +176,4 @@ struct std::formatter<ax::IString_<CH>, FMT_CH> : public ax::FormatterBase_<FMT_
 	}
 };
 
-template <class CH, ax::Int N, class FMT_CH>
-struct std::formatter<ax::String_<CH, N>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	auto format(const ax::String_<CH, N>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return Base::format(obj, ctx);
-	}
-};
 
-template <ax::CharType CH, size_t N, class FMT_CH> requires (!std::is_same_v<CH, FMT_CH>)
-struct std::formatter<CH[N], FMT_CH> : public ax::FormatterBase_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	constexpr auto format(const CH (&sz)[N], ax::FormatContext_<FMT_CH>& ctx) const {
-		ax::TempString_<FMT_CH> tmp;
-		ax::UtfUtil::convert(tmp, ax::StrView_<CH>(sz));
-		return Base::format(tmp, ctx);
-	}
-};

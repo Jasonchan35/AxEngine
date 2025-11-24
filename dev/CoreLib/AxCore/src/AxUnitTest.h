@@ -5,6 +5,7 @@
 import AxCore.Format;
 import AxCore.Debug;
 import AxCore.UnitTest;
+import AxCore.Logger;
 
 #define	AX_TEST_GROUP( fn )	\
 	::ax::Debug::_internal_log("====== Group [" #fn "] ============"); \

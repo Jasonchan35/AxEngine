@@ -28,12 +28,10 @@ public:
 
 	constexpr MutSpan() = default;
 	constexpr MutSpan(T* data, Int size) noexcept : _data(data), _size(size) {}
-	constexpr MutSpan(T& data) noexcept : _data(&data), _size(1) {}
 
-	constexpr MutSpan	span		()       noexcept	{ return MutSpan(_data, _size); }
-	constexpr CSpan		span		() const noexcept	{ return   CSpan(_data, _size); }
-	constexpr CSpan		constSpan	() const noexcept	{ return   CSpan(_data, _size); }
-
+	constexpr MSpan	span		()       noexcept	{ return MSpan(_data, _size); }
+	constexpr CSpan	span		() const noexcept	{ return CSpan(_data, _size); }
+	constexpr CSpan	constSpan	() const noexcept	{ return CSpan(_data, _size); }
 	constexpr operator CSpan() const noexcept { return constSpan(); }
 
 	AX_INLINE constexpr bool inBound(Int      i) const noexcept { return i >= 0 && i < _size; }
@@ -76,25 +74,26 @@ public:
 	AX_INLINE	constexpr MutByteSpan		toMutByteSpan		()       noexcept { return MutByteSpan(reinterpret_cast<   MutByte*>(_data), sizeInBytes()); }
 	AX_INLINE	constexpr    ByteSpan		toByteSpan			() const noexcept { return    ByteSpan(reinterpret_cast<const Byte*>(_data), sizeInBytes()); }
 	
-	//            +--------------------------------------------+
-	//            |         |                      |           |
-	//            +--------------------------------------------+
-	//  slice     ( offset )^------- size ---------^
-	//  sliceFrom ( offset )^------------ to End --------------^
-	//  sliceBack                                  ^---- N ----^
-	//  sliceTill ^--------------------------------^(  N less  )
-
-	AX_INLINE	constexpr MSpan	slice		(Int offset, Int size);
-	AX_INLINE	constexpr CSpan	slice		(Int offset, Int size) const	{ return ax_const_cast(this)->slice(offset, size); }
-
-	AX_INLINE	constexpr MSpan	slice		(IntRange range)				{ return slice(range.start, range.size); }
-	AX_INLINE	constexpr CSpan	slice		(IntRange range) const			{ return slice(range.start, range.size); }
-
-	AX_INLINE	constexpr MSpan	sliceFrom	(Int offset)					{ return slice(offset, _size - offset); }
-	AX_INLINE	constexpr CSpan	sliceFrom	(Int offset) const				{ return slice(offset, _size - offset); }
-
-	AX_INLINE	constexpr MSpan	sliceBack	(Int n)			 				{ return slice(_size - n, n); }
-	AX_INLINE	constexpr CSpan	sliceBack	(Int n) const	 				{ return slice(_size - n, n); }	
+	//                +--------------------------------------------+
+	//                |         |                      |           |
+	//                +--------------------------------------------+
+	//  slice         (  offset  )[______ newSize ____]
+	//  sliceBack                       [________ newSize__________]
+	//  sliceTrim     (  offset  )[_________till to end ___________]
+	//  sliceTrimBack [________________________________](  offset  )
+	AX_INLINE	constexpr MSpan	slice			(Int offset, Int newSize) {
+		if (offset < 0 || newSize < 0 || offset + newSize > _size) throw Error_IndexOutOfRange();
+		return MSpan(_data + offset, newSize);
+	}
+	AX_INLINE	constexpr CSpan	slice			(Int offset, Int newSize) const	{ return ax_const_cast(this)->slice(offset, newSize); }
+	AX_INLINE	constexpr MSpan	slice			(IntRange range)				{ return slice(range.start, range.size); }
+	AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return slice(range.start, range.size); }
+	AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return slice(_size - newSize, newSize); }
+	AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return slice(_size - newSize, newSize); }
+	AX_INLINE	constexpr MSpan	sliceTrim		(Int offset)					{ return slice(offset, _size - offset); }
+	AX_INLINE	constexpr CSpan	sliceTrim		(Int offset) const				{ return slice(offset, _size - offset); }
+	AX_INLINE	constexpr MSpan	sliceTrimBack	(Int offset)					{ return slice(0, _size - offset); }
+	AX_INLINE	constexpr CSpan	sliceTrimBack	(Int offset) const				{ return slice(0, _size - offset); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -115,13 +114,5 @@ protected:
 	T*	_data = nullptr;
 	Int _size = 0;
 };
-
-template <class T> AX_INLINE
-constexpr MutSpan<T> MutSpan<T>::slice(Int offset, Int size) {
-	if (offset < 0 || size < 0 || offset + size > _size) {
-		throw Error_IndexOutOfRange();
-	}
-	return MutSpan(_data + offset, size);
-}
 
 } // namespace

@@ -70,7 +70,7 @@ template<class T> constexpr bool ax_type_is_char =	std::is_same_v<std::remove_cv
 												 || std::is_same_v<std::remove_cv_t<T>, Char16>
 												 || std::is_same_v<std::remove_cv_t<T>, Char32>;
 
-template<class T> concept CharType = ax_type_is_char<T>;
+// template<class T> concept CharType = ax_type_is_char<T>;
 
 template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	if (!sz) return 0;
@@ -79,29 +79,37 @@ template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	return i;
 }
 
-template<class T> requires std::is_const_v<T>
-class StrLit_ {
-	using This = StrLit_;
+template<class T>
+class MutStrLit_ {
+	using This = MutStrLit_;
 public:
-	StrLit_() = default;
+	
+	MutStrLit_() noexcept = default;
 
-	AX_INLINE constexpr StrLit_(T* sz, Int size) : _data(sz), _size(size) {}
+	AX_INLINE constexpr MutStrLit_(T* sz, Int size) noexcept : _data(sz), _size(size) {}
 	
 	template<Int N>
-	AX_INLINE constexpr StrLit_(T (&sz)[N]) : _data(sz), _size(N > 0 ? N-1 : 0) {}
+	AX_INLINE constexpr MutStrLit_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
 	
-	AX_INLINE static constexpr StrLit_ s_from_c_str(T* sz) { return StrLit_(sz, sz ? ax_strlen(sz) : 0); }
+	AX_INLINE static constexpr MutStrLit_ s_from_c_str(T* sz) noexcept { return MutStrLit_(sz, sz ? ax_strlen(sz) : 0); }
 	
-	AX_INLINE constexpr const T* c_str() const { return _size ? _data : &_empty_c_str; }
-
+	AX_INLINE constexpr const T* c_str() const noexcept { return _size ? _data : &_empty_c_str; }
+	AX_INLINE constexpr T*  data() const noexcept { return _data; }
+	AX_INLINE constexpr Int size() const noexcept { return _size; }
+	
 protected:
 	static constexpr T _empty_c_str = 0;	
-	
 	T*  _data = nullptr;
 	Int _size = 0;
 };
 
-using StrLit = StrLit_<const Char>;
+template<class T> using StrLit_ = MutStrLit_<const T>;
+using StrLit   = StrLit_<Char>;
+using StrLitA  = StrLit_<CharA >;
+using StrLitW  = StrLit_<CharW >;
+using StrLit8  = StrLit_<Char8 >;
+using StrLit16 = StrLit_<Char16>;
+using StrLit32 = StrLit_<Char32>;
 
 namespace Tag {
 	class NewObject {};
@@ -109,17 +117,42 @@ namespace Tag {
 } // Tag
 
 struct SrcLoc {
-	constexpr SrcLoc(Tag::NoInit) {}
-	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) : _loc(loc) {};
-
-	constexpr Int    column() const { return _loc.column(); }
-	constexpr Int    line() const { return _loc.line(); }
-	constexpr StrLit file() const { return StrLit::s_from_c_str(_loc.file_name()); }
-	constexpr StrLit function() const { return StrLit::s_from_c_str(_loc.function_name()); }
+	constexpr SrcLoc(Tag::NoInit) noexcept {}
+	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) noexcept : _loc(loc) {};
+	
+	constexpr Int    column() const noexcept { return _loc.column(); }
+	constexpr Int    line() const noexcept { return _loc.line(); }
+	constexpr StrLit file() const noexcept { return StrLit::s_from_c_str(_loc.file_name()); }
+	constexpr StrLit function() const noexcept { return StrLit::s_from_c_str(_loc.function_name()); }
 	
 protected:
 	std::source_location _loc;
 };
+
+enum class StrCase : u8 {
+	Ignore,
+	Sensitive,
+};
+template<class T> requires ax_type_is_char<T>
+AX_INLINE bool ax_char_ignore_case_equals(const T& a, const T& b) { return std::tolower(a) == std::tolower(b); }
+
+enum class CmpResult : u8 {
+	Equal,
+	Greater,
+	Lesser,
+};
+
+AX_INLINE constexpr CmpResult CmpResult_fromInt(Int v) {
+	return v == 0 ? CmpResult::Equal
+	      : v > 0 ? CmpResult::Greater
+	              : CmpResult::Lesser; 
+}
+
+AX_INLINE constexpr bool CmpResult_isEqual         (CmpResult a) { return a == CmpResult::Equal;   }
+AX_INLINE constexpr bool CmpResult_isLesser        (CmpResult a) { return a == CmpResult::Lesser;  }
+AX_INLINE constexpr bool CmpResult_isLesserOrEqual (CmpResult a) { return a == CmpResult::Lesser  || a == CmpResult::Equal; }
+AX_INLINE constexpr bool CmpResult_isGreater       (CmpResult a) { return a == CmpResult::Greater; }
+AX_INLINE constexpr bool CmpResult_isGreaterOrEqual(CmpResult a) { return a == CmpResult::Greater || a == CmpResult::Equal; }
 
 inline void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc()) {
 	if (expr) return;

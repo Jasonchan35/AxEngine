@@ -13,7 +13,7 @@ public:
 		template<class FMT_CH>
 		constexpr void onFormat(Format_<FMT_CH> & fmt) const {
 			fmt << "abcd";
-			fmt.format("CustmoData={}", 100);
+			fmt << Fmt("CustmoData={}", 100);
 		}	
 	};
 	
@@ -21,6 +21,7 @@ public:
 		{
 			auto ret = Fmt("int=[{:6}] sz=[{:6}] wsz=[{:6}]", 1, "abc", L"wchar");
 			Debug::_internal_log(ret.c_str());
+			AX_LOG("test {}", 123);
 		}
 		{
 			String   str = "str";

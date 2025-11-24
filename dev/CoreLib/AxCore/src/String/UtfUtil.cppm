@@ -9,18 +9,16 @@ namespace ax {
 export struct UtfUtil {
 	UtfUtil() = delete;
 
-	template<CharType DST, CharType SRC>
-	AX_INLINE static void	convert(IString_<DST>& dst, StrView_<SRC>  src) { _convert(dst, src); }
+	template<class DST, class SRC>
+	AX_INLINE static void	append(IString_<DST>& dst, StrView_<SRC>  src);
 	
 	template<class SRC, class DST> AX_INLINE
 	static Int	getConvertedCount ( const SRC* src, Int src_len );
 private:
-	template< class SRC, class DST > static void	_convert	( IString_<DST>& dst, StrView_<SRC> src);
-	template< class SRC > static Int				_utfCount 	( CharU v );
-	template< class SRC > static CharU 				_decodeUtf	( const SRC* & src, const SRC* e );
-	template< class DST > static void 				_encodeUtf	( IString_<DST>& dst, CharU v );
+	template< class SRC > static Int	_utfCount 	( CharU v );
+	template< class SRC > static CharU 	_decodeUtf	( const SRC* & src, const SRC* e );
+	template< class DST > static void 	_encodeUtf	( IString_<DST>& dst, CharU v );
 };
-
 
 template<class SRC, class DST> inline
 Int UtfUtil::getConvertedCount(const SRC* src, Int src_len) {
@@ -58,13 +56,12 @@ void UtfUtil::_encodeUtf(IString_<Char16>& dst, CharU ch) {
 	}
 }
 
-template<class SRC, class DST> inline
-void UtfUtil::_convert(IString_<DST>& dst, StrView_<SRC> src) {
+template<class DST, class SRC> inline
+void UtfUtil::append(IString_<DST>& dst, StrView_<SRC> src) {
 	if constexpr (std::is_same_v<DST, SRC>) {
 		auto old_size = dst.size();
 		dst.resize(old_size + src.size());
-		ax_memcpy(&dst[old_size], src.data(), src.sizeInBytes());
-
+		MemUtil::copy(dst.data() + old_size, src.data(), src.size());
 	} else {
 		auto		src_len = src.size();
 		const auto* s		= src.begin();
@@ -99,7 +96,7 @@ CharU UtfUtil::_decodeUtf<Char16>( const Char16* & src, const Char16* end ) {
 }
 
 template<> AX_INLINE
-CharU UtfUtil::_decodeUtf<CharA>( const CharA* & src, const CharA* end ) {
+CharU UtfUtil::_decodeUtf<Char8>( const Char8* & src, const Char8* end ) {
 	const auto v = static_cast<uint8_t>(*src);
 	CharU o = 0;
 	if (v < 0x80) {
@@ -158,9 +155,15 @@ CharU UtfUtil::_decodeUtf<CharA>( const CharA* & src, const CharA* end ) {
 	}
 }
 
-template<> AX_INLINE
-CharU UtfUtil::_decodeUtf<CharW>( const CharW* & src, const CharW* e ) {
-	return _decodeUtf<CharW_Native>(*CharW_to_Native(&src), CharW_to_Native(e) );
+template <>
+AX_INLINE CharU UtfUtil::_decodeUtf<CharA>(const CharA* & src, const CharA* end) {
+	static_assert(sizeof(Char8) == sizeof(CharA));
+	return _decodeUtf<Char8>(reinterpret_cast<const Char8* &>(src), reinterpret_cast<const Char8* &>(end));
+}
+
+template <>
+AX_INLINE CharU UtfUtil::_decodeUtf<CharW>(const CharW* & src, const CharW* end) {
+	return _decodeUtf<CharW_Native>(*CharW_to_Native(&src), CharW_to_Native(end));
 }
 
 //----------------------------------------------------
@@ -201,41 +204,41 @@ Int UtfUtil::_utfCount< CharW >( CharU v ) {
 }
 
 template<> AX_INLINE
-void UtfUtil::_encodeUtf< CharA >( IString_<CharA>& dst, CharU ch) {
+void UtfUtil::_encodeUtf< Char8 >( IString_<Char8>& dst, CharU ch) {
 	const auto& v = ch;
 	if( v <       0x80 ) {
-		dst.appendChar(CharA(static_cast<uint8_t>(v)));
+		dst.appendChar(Char8(static_cast<uint8_t>(v)));
 		return;
 	}
 
 	if( v <    0x00800 ) {
-		CharA t[] = {
-			CharA(static_cast<uint8_t>(( v >> 6   ) | 0xC0)),
-			CharA(static_cast<uint8_t>(( v & 0x3F ) | 0x80)),
-			CharA(0)
+		Char8 t[] = {
+			Char8(static_cast<uint8_t>(( v >> 6   ) | 0xC0)),
+			Char8(static_cast<uint8_t>(( v & 0x3F ) | 0x80)),
+			Char8(0)
 		};
 		dst.append(t);
 		return;
 	}
 
 	if( v <    0x10000 ) {
-		CharA t[] = {
-			CharA(static_cast<uint8_t>(( (v >> 12)        ) | 0xE0)),
-			CharA(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)),
-			CharA(0)
+		Char8 t[] = {
+			Char8(static_cast<uint8_t>(( (v >> 12)        ) | 0xE0)),
+			Char8(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)),
+			Char8(0)
 		};
 		dst.append(t);
 		return;
 	}
 
 	if( v <   0x200000 ) {
-		CharA t[] = {
-			CharA(static_cast<uint8_t>(( (v >> 18)        ) | 0xF0)),
-			CharA(static_cast<uint8_t>(( (v >> 12) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)),
-			CharA(0)
+		Char8 t[] = {
+			Char8(static_cast<uint8_t>(( (v >> 18)        ) | 0xF0)),
+			Char8(static_cast<uint8_t>(( (v >> 12) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)),
+			Char8(0)
 		};
 		dst.append(t);
 		return;
@@ -243,27 +246,27 @@ void UtfUtil::_encodeUtf< CharA >( IString_<CharA>& dst, CharU ch) {
 
 // The patterns below are not part of UTF-8, but were part of the first specification.
 	if( v <  0x4000000 ) {
-		CharA t[] = {
-			CharA(static_cast<uint8_t>(((v >> 24)        ) | 0xF8)),
-			CharA(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)),
-			CharA(0)
+		Char8 t[] = {
+			Char8(static_cast<uint8_t>(((v >> 24)        ) | 0xF8)),
+			Char8(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)),
+			Char8(0)
 		};
 		dst.append(t);
 		return;
 	}
 
 	if( v < 0x80000000 ) {
-		CharA t[] = {
-			CharA(static_cast<uint8_t>(((v >> 30)        ) | 0xFC)),
-			CharA(static_cast<uint8_t>(((v >> 24) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)),
-			CharA(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)),
-			CharA(0)
+		Char8 t[] = {
+			Char8(static_cast<uint8_t>(((v >> 30)        ) | 0xFC)),
+			Char8(static_cast<uint8_t>(((v >> 24) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)),
+			Char8(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)),
+			Char8(0)
 		};
 		dst.append(t);
 		return;
@@ -286,6 +289,10 @@ void UtfUtil::_encodeUtf< CharW >( IString_<CharW>& dst, CharU v ) {
 	_encodeUtf(reinterpret_cast< IString_<CharW_Native>& >(dst), v ); // char32_t on unix
 }
 
+template<> AX_INLINE
+void UtfUtil::_encodeUtf< CharA >( IString_<CharA>& dst, CharU v ) {
+	_encodeUtf(reinterpret_cast< IString_<Char8>& >(dst), v );
+}
 
 } // namespace
 

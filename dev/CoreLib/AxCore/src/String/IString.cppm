@@ -4,7 +4,7 @@ module;
 export module AxCore.IString;
 
 export import AxCore.IArrayStorage;
-export import AxCore.ZStrView;
+export import AxCore.StrView;
 
 export namespace ax {
 
@@ -26,11 +26,13 @@ class IString_ : public IArrayStorage<T> {
 protected:
 	constexpr IString_(T* data, Int initCap) : Base(data, initCap) {}
 public:
-	using CharType = T;
-	using CView    = StrView_<T>;
-	using MView    = MutStrView_<T>;
-	using ZView    = ZStrView_<T>;
-	using MutByte  = std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
+	using CharType        = T;
+	using CSpan           = Span<T>;
+	using MSpan           = MutSpan<T>;
+	using CView           = StrView_<T>;
+	using MView           = MutStrView_<T>;
+	using ZView           = ZStrView_<T>;
+	using MutByte         = std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
 	using std_string_view = std::basic_string_view<std::remove_cv_t<T>>;
 
 	const T* c_str() const { return zview().c_str(); }
@@ -53,7 +55,7 @@ public:
 	constexpr void resize(Int newSize, Args&&... args);
 
 	template<class R>
-	AX_INLINE constexpr bool	isOverlapped(StrView_<R> r) const	{ return getByteSpan().isOverlapped(r.toByteSpan()); }
+	AX_INLINE constexpr bool	isOverlapped(StrView_<R> r) const	{ return toByteSpan().isOverlapped(r.toByteSpan()); }
 	AX_INLINE constexpr	bool	inBound(Int i) const				{ return i >= 0 && i < size(); }
 	
 	AX_INLINE constexpr			T&	operator[]	(Int i)				{ return at(i); }
@@ -66,55 +68,74 @@ public:
 	AX_INLINE constexpr const	T&	unsafe_at	(Int i) const		{ _debug_checkBound(i); return data()[i]; }
 	AX_INLINE constexpr 		T&	unsafe_back	(Int i)				{ return unsafe_at( size()-i-1 ); }
 	AX_INLINE constexpr const	T&	unsafe_back	(Int i)  const		{ return unsafe_at( size()-i-1 ); }
-	
-	AX_INLINE constexpr MView mview() noexcept			{ return MView(data(), size()); }
-	AX_INLINE constexpr CView view() const noexcept		{ return CView(data(), size()); }
+
+	//---------------
+	AX_INLINE constexpr CView	constView	() const noexcept	{ return CView(data(), size()); }
+	AX_INLINE constexpr CView	view		() const noexcept	{ return CView(data(), size()); }
+	AX_INLINE constexpr MView	view		()       noexcept	{ return MView(data(), size()); }
+	AX_INLINE constexpr operator CView() const noexcept { return constView(); }
+
+	AX_INLINE constexpr CSpan constSpan() const noexcept	{ return CSpan(data(), size()); }
+	AX_INLINE constexpr CSpan      span() const noexcept	{ return CSpan(data(), size()); }
+	AX_INLINE constexpr MSpan      span() noexcept			{ return MSpan(data(), size()); }
+	AX_INLINE constexpr operator CSpan() const noexcept { return constSpan(); }
+	//---------------
+
 	AX_INLINE constexpr ZView zview() const noexcept	{ return ZView(data(), size()); }
-
-	AX_INLINE constexpr operator MView() const noexcept	{ return mview(); }
-	AX_INLINE constexpr operator CView() const noexcept	{ return view(); }
 	AX_INLINE constexpr operator ZView() const noexcept	{ return zview(); }
-
-	// AX_INLINE constexpr std_string_view to_std_string_view() const noexcept { return std_string_view(data(), size()); }
-	// AX_INLINE constexpr operator std_string_view() const noexcept { return to_std_string_view(); }
+	//---------------
 	
-	AX_INLINE constexpr MutSpan<T> getMutSpan()	 noexcept	{ return mview().mutSpan(); }
-	AX_INLINE constexpr Span<T>    getSpan() const noexcept	{ return view().span(); }
-
-	AX_INLINE constexpr MutSpan<MutByte> getMutByteSpan()		{ return mview().toMutByteSpan(); }
-	AX_INLINE constexpr Span<MutByte>    getByteSpan() const	{ return view().toByteSpan(); }
+	AX_INLINE constexpr MutSpan<MutByte> toMutByteSpan()		{ return view().toMutByteSpan(); }
+	AX_INLINE constexpr    Span<MutByte>    toByteSpan() const	{ return view().toByteSpan(); }
 	
-	//------- CView wrapper ---------------
-	AX_INLINE constexpr MView	slice		(Int offset, Int size)			{ return mview().slice(offset, size); }
-	AX_INLINE constexpr CView	slice		(Int offset, Int size) const	{ return  view().slice(offset, size); }
-	AX_INLINE constexpr MView	sliceFrom	(Int offset) 					{ return mview().sliceFrom(offset); }
-	AX_INLINE constexpr CView	sliceFrom	(Int offset) const				{ return  view().sliceFrom(offset); }
-	AX_INLINE constexpr MView	sliceBack	(Int offset)					{ return mview().sliceBack(offset); }
-	AX_INLINE constexpr CView	sliceBack	(Int offset) const				{ return  view().sliceBack(offset); }
-	AX_INLINE constexpr MView	sliceTill	(Int n)							{ return mview().sliceTill(n); }	
-	AX_INLINE constexpr CView	sliceTill	(Int n) const					{ return  view().sliceTill(n); }
-	AX_INLINE constexpr MView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive)		{ return mview().extractFromPrefix(prefix, sc); }
-	AX_INLINE constexpr CView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) const	{ return  view().extractFromPrefix(prefix, sc); }
+	//                +--------------------------------------------+
+	//                |         |                      |           |
+	//                +--------------------------------------------+
+	//  slice         (  offset  )[______ newSize ____]
+	//  sliceBack                       [________ newSize__________]
+	//  sliceTrim     (  offset  )[_________till to end ___________]
+	//  sliceTrimBack [________________________________](  offset  )
+	AX_INLINE	constexpr MView	slice			(Int offset, Int newSize)		{ return view().slice(offset, newSize); }
+	AX_INLINE	constexpr CView	slice			(Int offset, Int newSize) const	{ return view().slice(offset, newSize); }
+	AX_INLINE	constexpr MView	slice			(IntRange range)				{ return view().slice(range); }
+	AX_INLINE	constexpr CView	slice			(IntRange range) const			{ return view().slice(range); }
+	AX_INLINE	constexpr MView	sliceBack		(Int newSize)			 		{ return view().sliceBack(newSize); }
+	AX_INLINE	constexpr CView	sliceBack		(Int newSize) const	 			{ return view().sliceBack(newSize); }
+	AX_INLINE	constexpr MView	sliceTrim		(Int offset)					{ return view().sliceTrim(offset); }
+	AX_INLINE	constexpr CView	sliceTrim		(Int offset) const				{ return view().sliceTrim(offset); }
+	AX_INLINE	constexpr MView	sliceTrimBack	(Int offset)					{ return view().sliceTrimBack(offset); }
+	AX_INLINE	constexpr CView	sliceTrimBack	(Int offset) const				{ return view().sliceTrimBack(offset); }
 	//----------------------------------	
-	AX_INLINE constexpr bool operator==	(CView r) const	{ return equals(r); }
-	AX_INLINE constexpr bool operator!=	(CView r) const	{ return !equals(r); }
-	AX_INLINE constexpr bool operator<	(CView r) const	{ return compare(r) <  0; }
-	AX_INLINE constexpr bool operator<=	(CView r) const	{ return compare(r) <= 0; }
-	AX_INLINE constexpr bool operator>	(CView r) const	{ return compare(r) >  0; }
-	AX_INLINE constexpr bool operator>=	(CView r) const	{ return compare(r) >= 0; }
-	AX_INLINE constexpr Int  compare	(CView r, StrCase sc = StrCase::Sensitive) const { return view().compare   (r, sc); }
-	AX_INLINE constexpr bool equals		(CView r, StrCase sc = StrCase::Sensitive) const { return view().equals    (r, sc); }
-	AX_INLINE constexpr bool startsWith	(CView r, StrCase sc = StrCase::Sensitive) const { return view().startsWith(r, sc); }
-	AX_INLINE constexpr bool endsWith	(CView r, StrCase sc = StrCase::Sensitive) const { return view().endsWith  (r, sc); }
-	AX_INLINE constexpr bool matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const { return view().matchWildcard(wildcard, sc); }
-	
+	AX_INLINE constexpr CmpResult compare      (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().compare   (r, sc); }
+	AX_INLINE constexpr bool      equals       (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().equals    (r, sc); }
+	AX_INLINE constexpr bool      startsWith   (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().startsWith(r, sc); }
+	AX_INLINE constexpr bool      endsWith     (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().endsWith  (r, sc); }
+	AX_INLINE constexpr bool      matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const noexcept { return view().matchWildcard(wildcard, sc); }
+	AX_INLINE constexpr bool operator==	(CView r) const noexcept { return view().operator==(r); }
+	AX_INLINE constexpr bool operator!=	(CView r) const noexcept { return view().operator!=(r); }
+	AX_INLINE constexpr bool operator<	(CView r) const noexcept { return view().operator< (r); }
+	AX_INLINE constexpr bool operator>	(CView r) const noexcept { return view().operator> (r); }
+	AX_INLINE constexpr bool operator<=	(CView r) const noexcept { return view().operator<=(r); }
+	AX_INLINE constexpr bool operator>=	(CView r) const noexcept { return view().operator>=(r); }
 	//-----------------------------------
+	
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
 	AX_INLINE constexpr void move(IString_<T> && rhs);
+
+	constexpr void appendChar(const T& ch);
+	template<class R>
+	constexpr void appendChar(const R& ch) { appendUtf(StrView_<R>(&ch, 1)); }
 	
 	constexpr void append(CView view);
-	constexpr void appendChar(const T& ch);
+	constexpr void appendUtf(StrViewA  src);
+	constexpr void appendUtf(StrViewW  src);
+	constexpr void appendUtf(StrView8  src);
+	constexpr void appendUtf(StrView16 src);
+	constexpr void appendUtf(StrView32 src);
 
+
+	//----------------------------------
+	
 	using  Iter	= T*;
 	using CIter	= const T*;
 	
@@ -131,6 +152,9 @@ protected:
 		_checkBound(i);
 	#endif
 	}
+
+	template<class R>
+	constexpr void _appendUtf(StrView_<R> src);
 };
 
 template <class T> AX_INLINE

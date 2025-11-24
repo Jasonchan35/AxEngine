@@ -3,7 +3,7 @@
 
 export module AxCore.String;
 
-export import AxCore.IString;
+export import AxCore.Format;
 export import AxCore.UtfUtil;
 export import AxCore.Array;
 
@@ -21,7 +21,7 @@ constexpr Int String_DefaultBufSize = []() {
 	return size + padding;
 }();
 
-template<CharType T, Int BUF_SIZE = String_DefaultBufSize<T>>
+template<class T, Int BUF_SIZE = String_DefaultBufSize<T>>
 class String_;
 using String   = String_<Char  >;
 using StringA  = String_<CharA >;
@@ -37,7 +37,7 @@ template<Int N> using String8_N  = String_<Char8 , N>;
 template<Int N> using String16_N = String_<Char16, N>;
 template<Int N> using String32_N = String_<Char32, N>;
 
-template <CharType T>
+template<class T>
 using TempString_  = String_<T, 512>; // long enough to hold file path
 using TempString   = TempString_<Char>;
 using TempStringA  = TempString_<CharA>;
@@ -45,7 +45,7 @@ using TempStringW  = TempString_<CharW>;
 using TempString16 = TempString_<Char16>;
 using TempString32 = TempString_<Char32>;
 
-template<CharType T, Int BUF_SIZE> 
+template<class T, Int BUF_SIZE> 
 class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator
 {
 	using This = String_;
@@ -68,7 +68,7 @@ public:
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
 	template<class U>
-	static This s_utf(StrView_<U> v) { This s; UtfUtil::convert(s, v); return s; } 
+	static This s_utf(StrView_<U> v) { This s; UtfUtil::append(s, v); return s; } 
 
 protected:
 	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
@@ -76,7 +76,13 @@ protected:
 	constexpr virtual	void			onStorageFree	(T* p) override;
 };
 
-template <CharType T, Int BUF_SIZE> inline
+template<class... ARGS> AX_INLINE
+StringA Fmt(FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { StringA str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+
+template<class... ARGS> AX_INLINE
+StringW Fmt(FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { StringW str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+
+template <class T, Int BUF_SIZE> inline
 constexpr MemAllocResult<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize + 1; // +1 for null terminator
 	auto* allocator = ax_default_allocator();
@@ -84,7 +90,7 @@ constexpr MemAllocResult<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	return MemAllocResult<T>(buf.allocator(), buf.takeOwnership(), buf.size() - 1); // -1 for null terminator
 }
 
-template <CharType T, Int BUF_SIZE> inline
+template <class T, Int BUF_SIZE> inline
 constexpr void String_<T, BUF_SIZE>::onStorageFree(T* p) {
 	auto* d = inlineBufPtr(); 
 	if (p == d) return;
@@ -92,6 +98,22 @@ constexpr void String_<T, BUF_SIZE>::onStorageFree(T* p) {
 	allocator->dealloc(p);
 }
 
-
-
 } // namespace
+
+template <class CH, ax::Int N, class FMT_CH>
+struct std::formatter<ax::String_<CH, N>, FMT_CH> : public ax::FormatterBase_<FMT_CH> {
+	using Base = ax::FormatterBase_<FMT_CH>;
+	auto format(const ax::String_<CH, N>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+		return Base::format(obj, ctx);
+	}
+};
+
+template <class CH, size_t N, class FMT_CH> requires (!std::is_same_v<CH, FMT_CH>)
+struct std::formatter<CH[N], FMT_CH> : public ax::FormatterBase_<FMT_CH> {
+	using Base = ax::FormatterBase_<FMT_CH>;
+	constexpr auto format(const CH (&sz)[N], ax::FormatContext_<FMT_CH>& ctx) const {
+		ax::TempString_<FMT_CH> tmp;
+		ax::UtfUtil::append(tmp, ax::StrView_<CH>(sz));
+		return Base::format(tmp, ctx);
+	}
+};
