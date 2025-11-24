@@ -39,19 +39,19 @@ template<> inline
 void UtfUtil::_encodeUtf(IString_<Char16>& dst, CharU ch) {
 	const auto& v = ch;
 	if (v < 0x10000) {
-		dst.appendChar(static_cast<Char16>(v));
+		dst.append(static_cast<Char16>(v));
 		return;
 	}
 
 	if (v < 0x110000) {
-		dst.appendChar(static_cast<Char16>((v >> 10)   + 0xD800));
-		dst.appendChar(static_cast<Char16>((v & 0x3FF) + 0xDC00));
+		dst.append(static_cast<Char16>((v >> 10)   + 0xD800));
+		dst.append(static_cast<Char16>((v & 0x3FF) + 0xDC00));
 		return;
 	}
 
 	{
 		AX_ASSERT(false);
-		dst.appendChar(static_cast<Char16>(v));
+		dst.append(static_cast<Char16>(v));
 		return;
 	}
 }
@@ -207,7 +207,7 @@ template<> AX_INLINE
 void UtfUtil::_encodeUtf< Char8 >( IString_<Char8>& dst, CharU ch) {
 	const auto& v = ch;
 	if( v <       0x80 ) {
-		dst.appendChar(Char8(static_cast<uint8_t>(v)));
+		dst.append(Char8(static_cast<uint8_t>(v)));
 		return;
 	}
 
@@ -274,14 +274,14 @@ void UtfUtil::_encodeUtf< Char8 >( IString_<Char8>& dst, CharU ch) {
 
 	{
 		AX_ASSERT(false);
-		dst.appendChar(CharA(static_cast<uint8_t>(v)));
+		dst.append(CharA(static_cast<uint8_t>(v)));
 	}
 }
 
 template<> AX_INLINE
 void UtfUtil::_encodeUtf< Char32 >( IString_<Char32>& dst, CharU v ) {
 	static_assert(sizeof(Char32) == sizeof(v));
-	dst.appendChar(v);
+	dst.append(v);
 }
 
 template<> AX_INLINE

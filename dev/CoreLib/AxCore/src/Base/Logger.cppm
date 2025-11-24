@@ -2,7 +2,7 @@ module;
 #include "AxCore-pch.h"
 
 export module AxCore.Logger;
-export import AxCore.String;
+export import AxCore.Formatter;
 
 export namespace ax {
 

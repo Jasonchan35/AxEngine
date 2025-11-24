@@ -7,11 +7,11 @@ import AxCore.UtfUtil;
 
 namespace ax {
 
-template <class T> constexpr void IString_<T>::appendUtf(StrViewA  src) { UtfUtil::append(*this, src); }
-template <class T> constexpr void IString_<T>::appendUtf(StrViewW  src) { UtfUtil::append(*this, src); }
-template <class T> constexpr void IString_<T>::appendUtf(StrView8  src) { UtfUtil::append(*this, src); }
-template <class T> constexpr void IString_<T>::appendUtf(StrView16 src) { UtfUtil::append(*this, src); }
-template <class T> constexpr void IString_<T>::appendUtf(StrView32 src) { UtfUtil::append(*this, src); }
+template <class T> constexpr void IString_<T>::appendUtf(StrViewA  r) { UtfUtil::append(*this, r); }
+template <class T> constexpr void IString_<T>::appendUtf(StrViewW  r) { UtfUtil::append(*this, r); }
+template <class T> constexpr void IString_<T>::appendUtf(StrView8  r) { UtfUtil::append(*this, r); }
+template <class T> constexpr void IString_<T>::appendUtf(StrView16 r) { UtfUtil::append(*this, r); }
+template <class T> constexpr void IString_<T>::appendUtf(StrView32 r) { UtfUtil::append(*this, r); }
 
 #define	E(T)	\
 /*---- The explicit instantiation ---*/ \

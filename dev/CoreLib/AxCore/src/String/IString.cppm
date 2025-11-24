@@ -122,16 +122,20 @@ public:
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 
-	constexpr void appendChar(const T& ch);
-	template<class R>
-	constexpr void appendChar(const R& ch) { appendUtf(StrView_<R>(&ch, 1)); }
-	
 	constexpr void append(CView view);
-	constexpr void appendUtf(StrViewA  src);
-	constexpr void appendUtf(StrViewW  src);
-	constexpr void appendUtf(StrView8  src);
-	constexpr void appendUtf(StrView16 src);
-	constexpr void appendUtf(StrView32 src);
+	constexpr void append(const T& ch);
+
+	AX_INLINE constexpr void appendUtf(CharA  r) { _appendUtf(r); }
+	AX_INLINE constexpr void appendUtf(CharW  r) { _appendUtf(r); }
+	AX_INLINE constexpr void appendUtf(Char8  r) { _appendUtf(r); }
+	AX_INLINE constexpr void appendUtf(Char16 r) { _appendUtf(r); }
+	AX_INLINE constexpr void appendUtf(Char32 r) { _appendUtf(r); }
+	
+	constexpr void appendUtf(StrViewA  r);
+	constexpr void appendUtf(StrViewW  r);
+	constexpr void appendUtf(StrView8  r);
+	constexpr void appendUtf(StrView16 r);
+	constexpr void appendUtf(StrView32 r);
 
 	template<class... ARGS>
 	constexpr void appendFmt(const FormatString_<Char, ARGS...> & fmt, ARGS&&... args) {
@@ -160,11 +164,20 @@ protected:
 	#endif
 	}
 
-	template<class R>
-	constexpr void _appendUtf(StrView_<R> src);
+	template<class R> constexpr void _appendUtf(const R& ch);
 };
 
-template<class IN_CH, class OUT_CH>	
+template <class T>
+template <class R> AX_INLINE
+constexpr void IString_<T>::_appendUtf(const R& r) {
+	if constexpr (std::is_same_v<R,T>) {
+		append(r);
+	} else {
+		appendUtf(StrView_<R>(&r, 1));
+	}
+}
+
+template<class OUT_CH>	
 struct IStringBackInserter_ {
 	using This = IStringBackInserter_;
 	using OutIString = IString_<OUT_CH>;
@@ -173,11 +186,8 @@ struct IStringBackInserter_ {
 
 	constexpr explicit IStringBackInserter_(OutIString& s) noexcept : _s(&s) {}
 
-	template<class R>
-	constexpr This& operator=(const R&  ch) { _s->appendChar(ch); return *this; }
-
-	template<class R>
-	constexpr This& operator=(      R&& ch) { _s->appendChar(std::move(ch)); return *this; }
+	template<class R> constexpr This& operator=(const R&  ch) { _s->appendUtf(ch); return *this; }
+	template<class R> constexpr This& operator=(      R&& ch) { _s->appendUtf(std::move(ch)); return *this; }
 
 	constexpr       This& operator*()       noexcept { return *this; }
 	constexpr const This& operator*() const noexcept { return *this; }
@@ -222,7 +232,7 @@ constexpr void IString_<T>::append(CView view) {
 }
 
 template <class T> AX_INLINE
-constexpr void IString_<T>::appendChar(const T& ch) {
+constexpr void IString_<T>::append(const T& ch) {
 	auto oldSize = size();
 	auto newSize = oldSize + 1;
 	reserve(newSize);
