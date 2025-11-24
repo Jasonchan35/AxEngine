@@ -8,6 +8,16 @@ import AxCore.Atomic;
 import AxCore.SpinLock;
 
 export namespace ax {
+// +-----------------+     +----------+
+// | SPtrReferenable |     | SPtr x N |
+// |                 |<----| - p*     |
+// | - refCount      |     +----------+
+// +-----------------+     +-----------+     +----------+
+// | WPtrReferenable |     | WPtrBlock |     | WPtr x N |
+// | - WPtrBlock*    |---->|           |<----| - p*     |
+// |                 |<----| - obj*    |     +----------+
+// +-----------------+     +-----------+
+
 
 template<class T> class SPtr;
 
@@ -61,6 +71,7 @@ public:
 
 using WPtrReferenable = WPtrReferenable_<true>;
 
+} namespace ax { // no export
 
 // add this layer to support SPtr<forward declare class>
 template<class T>
@@ -87,32 +98,32 @@ public:
 
 		if constexpr (kHasWPtrBlock) {
 			if (auto* wb = obj->_weakPtrBlock.ptr()) {
-				// lock and clear weakPtrBlock before delete object
+				// lock before release ref count and delete object
 				auto wbData = wb->data.scopedLock();
-
-				if (wbData->obj) {
+				
+				if (bool isDeleted = _doRelease(s)) {
 					AX_ASSERT(wbData->obj == obj);
 					wbData->obj = nullptr;
 				}
-				
-				_doRelease(s);
-			} else {
-				_doRelease(s);
+				return;
 			}
-		} else {
-			_doRelease(s);
 		}
 
+		_doRelease(s);
 	}
 	
 private:
-	static AX_INLINE constexpr void _doRelease(SPtr<T>* s) {
+	static AX_INLINE constexpr bool _doRelease(SPtr<T>* s) {
 		if (s->_p->_releaseSPtrRef() == 0) {
 			ax_delete(s->_p);
 			s->_p = nullptr;
-		}		
+			return true;
+		}
+		return false;
 	}
 };
+
+} export namespace ax {
 
 //! Intrusive Shared pointer, the reference count is embedded in object
 //! therefore SPtr<T> and T* can be interchangable
