@@ -212,63 +212,43 @@ void UtfUtil::_encodeUtf< Char8 >( IString_<Char8>& dst, CharU ch) {
 	}
 
 	if( v <    0x00800 ) {
-		Char8 t[] = {
-			Char8(static_cast<uint8_t>(( v >> 6   ) | 0xC0)),
-			Char8(static_cast<uint8_t>(( v & 0x3F ) | 0x80)),
-			Char8(0)
-		};
-		dst.append(t);
+		dst.append(static_cast<uint8_t>(( v >> 6   ) | 0xC0));
+		dst.append(static_cast<uint8_t>(( v & 0x3F ) | 0x80));
 		return;
 	}
 
 	if( v <    0x10000 ) {
-		Char8 t[] = {
-			Char8(static_cast<uint8_t>(( (v >> 12)        ) | 0xE0)),
-			Char8(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)),
-			Char8(0)
-		};
-		dst.append(t);
+		dst.append(Char8(static_cast<uint8_t>(( (v >> 12)        ) | 0xE0)));
+		dst.append(Char8(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)));
 		return;
 	}
 
 	if( v <   0x200000 ) {
-		Char8 t[] = {
-			Char8(static_cast<uint8_t>(( (v >> 18)        ) | 0xF0)),
-			Char8(static_cast<uint8_t>(( (v >> 12) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)),
-			Char8(0)
-		};
-		dst.append(t);
+		dst.append(Char8(static_cast<uint8_t>(( (v >> 18)        ) | 0xF0)));
+		dst.append(Char8(static_cast<uint8_t>(( (v >> 12) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(( (v >> 6 ) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>((  v        & 0x3F ) | 0x80)));
 		return;
 	}
 
 // The patterns below are not part of UTF-8, but were part of the first specification.
 	if( v <  0x4000000 ) {
-		Char8 t[] = {
-			Char8(static_cast<uint8_t>(((v >> 24)        ) | 0xF8)),
-			Char8(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)),
-			Char8(0)
-		};
-		dst.append(t);
+		dst.append(Char8(static_cast<uint8_t>(((v >> 24)        ) | 0xF8)));
+		dst.append(Char8(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)));
 		return;
 	}
 
 	if( v < 0x80000000 ) {
-		Char8 t[] = {
-			Char8(static_cast<uint8_t>(((v >> 30)        ) | 0xFC)),
-			Char8(static_cast<uint8_t>(((v >> 24) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)),
-			Char8(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)),
-			Char8(0)
-		};
-		dst.append(t);
+		dst.append(Char8(static_cast<uint8_t>(((v >> 30)        ) | 0xFC)));
+		dst.append(Char8(static_cast<uint8_t>(((v >> 24) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(((v >> 18) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(((v >> 12) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(((v >> 6 ) & 0x3F ) | 0x80)));
+		dst.append(Char8(static_cast<uint8_t>(( v        & 0x3F ) | 0x80)));
 		return;
 	}
 

@@ -68,7 +68,7 @@ protected:
 
 		static constexpr bool kSmallBufferOptimization = IArrayStorage::kSmallBufferOptimization;
 		static constexpr Int  kSmallDataOffset    = offsetof(SmallStorage_Dummy, _data);
-		static constexpr Int  kSmallExtraCapacity = Math::max0<Int>(ax_sizeof<NormalStorage> - kSmallDataOffset) / ax_sizeof<T>;
+		static constexpr Int  kSmallExtraCapacity = Math::max0<Int>(AX_SIZEOF(NormalStorage) - kSmallDataOffset) / AX_SIZEOF(T);
 
 
 		AX_INLINE constexpr Storage(T* data, Int initCap) { resetToLocalBuf(data, initCap); }

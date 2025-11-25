@@ -35,7 +35,6 @@ protected:
 	}
 };
 
-
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
 AX_INLINE void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, ARGS&&... args) {
 	// std::format only support char and wchar_t format string
@@ -136,10 +135,10 @@ struct std::formatter<ax::MutStrView_<OBJ_CH>, FMT_CH> : public ax::UtfFormatter
 	}
 };
 
-template <class OBJ_CH, class FMT_CH>
-struct std::formatter<ax::MutStrLit_<OBJ_CH>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	constexpr auto format(const ax::MutStrLit_<OBJ_CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<OBJ_CH>(obj), ctx);
+template <class CH, template<class> class VIEW, class FMT_CH> requires std::is_convertible_v< VIEW<CH>, ax::StrView_<CH> >
+struct std::formatter<VIEW<CH>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
+	constexpr auto format(const VIEW<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<CH>(obj), ctx);
 	}
 };
 
@@ -158,9 +157,18 @@ struct std::formatter<std::basic_string_view<OBJ_CH>, FMT_CH> : public ax::UtfFo
 	}
 };
 
-template <class OBJ_CH, size_t N, class FMT_CH> requires (!std::is_same_v<OBJ_CH, FMT_CH>)
+template <class OBJ_CH, size_t N, class FMT_CH> requires ax::Type_IsChar<OBJ_CH> && (!ax::Type_IsSame<OBJ_CH, FMT_CH>)
 struct std::formatter<OBJ_CH[N], FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
 	constexpr auto format(const OBJ_CH (&obj)[N], ax::FormatContext_<FMT_CH>& ctx) const {
 		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<OBJ_CH>(obj), ctx);
+	}
+};
+
+template <class T, size_t N, class FMT_CH>
+struct std::formatter<std::array<T, N>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
+	constexpr auto format(const std::array<T, N>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+		for (auto& it : obj) {
+			return ax::UtfFormatter_<FMT_CH>::format(it, ctx);
+		}
 	}
 };

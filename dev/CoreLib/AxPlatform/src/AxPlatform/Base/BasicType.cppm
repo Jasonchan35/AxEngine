@@ -283,8 +283,7 @@ constexpr DST ax_safe_cast(const SRC& src) {
 constexpr inline Int	ax_safe_cast_Int(size_t src) { return ax_safe_cast<Int>(src); }
 constexpr inline size_t ax_safe_cast_size_t(Int src) { return ax_safe_cast<size_t>(src); }
 
-template<class T> constexpr Int ax_sizeof  = ax_safe_cast<Int>(sizeof(T)); 
-template<class T> constexpr Int ax_alignof = ax_safe_cast<Int>(alignof(T));
+consteval Int ax_const_eval_Int(size_t v) { return ax_safe_cast_Int(v); } 
 
 template<class T, class... Args > AX_INLINE
 T* ax_call_constructor(T* p, Args&&... args ) {
@@ -297,9 +296,9 @@ void ax_call_destructor(T* p ) noexcept {
 }
 
 template<Int N>	struct CharW_Native_;
-template<>	struct CharW_Native_<ax_sizeof<Char16>> { using Type = Char16; };
-template<>	struct CharW_Native_<ax_sizeof<Char32>> { using Type = Char32; };
-using CharW_Native = typename CharW_Native_<ax_sizeof<CharW>>::Type;
+template<>	struct CharW_Native_<AX_SIZEOF(Char16)> { using Type = Char16; };
+template<>	struct CharW_Native_<AX_SIZEOF(Char32)> { using Type = Char32; };
+using CharW_Native = typename CharW_Native_<AX_SIZEOF(CharW)>::Type;
 
 AX_INLINE			CharW_Native	CharW_to_Native(      CharW   v) { return static_cast<           CharW_Native  >(v); }
 AX_INLINE			CharW_Native&	CharW_to_Native(      CharW&  v) { return reinterpret_cast<      CharW_Native& >(v); }

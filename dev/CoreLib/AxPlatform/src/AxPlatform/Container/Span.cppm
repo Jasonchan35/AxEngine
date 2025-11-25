@@ -63,10 +63,10 @@ public:
 	AX_INLINE constexpr       T* data()       noexcept { return _data; }
 	AX_INLINE constexpr const T* data() const noexcept { return _data; }
 	AX_INLINE constexpr Int      size() const noexcept { return _size; }
-	AX_INLINE constexpr Int	     sizeInBytes() const noexcept { return _size * ax_sizeof<T>; }
+	AX_INLINE constexpr Int	     sizeInBytes() const noexcept { return _size * AX_SIZEOF(T); }
 
-	AX_INLINE	constexpr static MSpan		s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
-	AX_INLINE	constexpr static CSpan		s_fromByteSpan		(   ByteSpan	from) noexcept	{ return CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
+	AX_INLINE	constexpr static MSpan		s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
+	AX_INLINE	constexpr static CSpan		s_fromByteSpan		(   ByteSpan	from) noexcept	{ return CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
 
 	AX_INLINE	constexpr void				fromMutByteSpan		(MutByteSpan	from) noexcept	{ *this = s_fromMutByteSpan(from); }
 	AX_INLINE	constexpr void				fromByteSpan		(ByteSpan		from) noexcept	{ *this = s_fromByteSpan(from); }

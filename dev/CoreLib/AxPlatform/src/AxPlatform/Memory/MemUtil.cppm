@@ -11,42 +11,42 @@ export namespace ax {
 struct MemUtil {
 	MemUtil() = delete;
 
-	static const Int k_size_to_use_system_memcpy = 2048;
+	static constexpr const Int k_size_to_use_system_memcpy = 2048;
 
-	static void rawCopy(void* dst, const void* src, Int len);
+	static constexpr void rawCopy(void* dst, const void* src, Int len);
 	
 	template <class A, class B>
-	static bool isOverlapped(const A* a, Int a_size, const B* b, Int b_size);
+	static constexpr bool isOverlapped(const A* a, Int a_size, const B* b, Int b_size);
 
 	template<class T>
-	static void copy(T* dst, const T* src, Int n);
+	static constexpr void copy(T* dst, const T* src, Int n);
 	
 	template< class T, class... Args>
-	static void constructor( T* p, Int n, Args&&... args);
+	static constexpr void constructor( T* p, Int n, Args&&... args);
 
-	template< class T > static void destructor(T* p, Int n);
-	template< class T > static void moveConstructorAndDestructor(T* dst, T* src, Int n);
+	template< class T > static constexpr void destructor(T* p, Int n);
+	template< class T > static constexpr void moveConstructorAndDestructor(T* dst, T* src, Int n);
 
 
 	template<class T> AX_INLINE
-	static Int sizeInBytes(const T* start, const T* end) {
+	static constexpr Int sizeInBytes(const T* start, const T* end) {
 		return reinterpret_cast<const char*>(end) - reinterpret_cast<const char*>(start);
 	}
 
 	template<class T> AX_INLINE
-	static T* addOffsetInBytes(T* p, Int numBytes) { 
+	static constexpr T* addOffsetInBytes(T* p, Int numBytes) { 
 		return reinterpret_cast<T*>(reinterpret_cast<char*>(p) + numBytes); 
 	}
 
 	template<class T> AX_INLINE 
-	static const T* addOffsetInBytes(const T* p, Int numBytes) {
+	static constexpr const T* addOffsetInBytes(const T* p, Int numBytes) {
 		return reinterpret_cast<const T*>(reinterpret_cast<const char*>(p) + numBytes);
 	}
 
 	template<class T> struct memberOffset_wrap { static T v; };
 
 	template< class Obj, class Member > AX_INLINE
-	static Int memberOffset(Member Obj::*ptrToMember) {
+	static constexpr Int memberOffset(Member Obj::*ptrToMember) {
 #if 1
 		Obj* obj = nullptr;
 		char* m = reinterpret_cast<char*>(&(obj->*ptrToMember));
@@ -60,28 +60,28 @@ struct MemUtil {
 	}
 
 	template< class Obj, class Member > AX_INLINE
-	static Obj* _memberOwner( Member Obj::*ptrToMember, Member* member) {
+	static constexpr Obj* _memberOwner( Member Obj::*ptrToMember, Member* member) {
 		if (!member) return nullptr;
 		auto o = reinterpret_cast<char*>(member) - memberOffset(ptrToMember);
 		return reinterpret_cast<Obj*>(o);
 	}
 
 	template< class Obj, class Member > AX_INLINE
-	static Obj* memberOwner( Member Obj::*ptrToMember, Member* member) {
+	static constexpr Obj* memberOwner( Member Obj::*ptrToMember, Member* member) {
 		return _memberOwner(ptrToMember, member);
 	}
 
 	template< class Obj, class Member > AX_INLINE
-	static const Obj* memberOwner( Member Obj::*ptrToMember, const Member* member) {
+	static constexpr const Obj* memberOwner( Member Obj::*ptrToMember, const Member* member) {
 		return _memberOwner(ptrToMember, ax_const_cast(member));
 	}
 	
 private:
 	template <class T>
-	static void _copyLoop(T* dst, const T* src, Int len);
+	static constexpr void _copyLoop(T* dst, const T* src, Int len);
 };
 
-template< class T > AX_INLINE
+template< class T > AX_INLINE constexpr
 void MemUtil::_copyLoop(T* dst, const T* src, Int len) {
 	auto* e = dst + len;
 	for( ; dst < e; ++src, ++dst ) {
@@ -89,7 +89,7 @@ void MemUtil::_copyLoop(T* dst, const T* src, Int len) {
 	}
 }
 
-AX_INLINE
+AX_INLINE constexpr
 void MemUtil::rawCopy(void* dst, const void* src, Int len) {
 	if (len <= 0) { AX_ASSERT(false); return; }
 
@@ -102,7 +102,7 @@ void MemUtil::rawCopy(void* dst, const void* src, Int len) {
 		return;
 	}
 	using Block = u64;
-	const Int w = ax_sizeof<Block>;
+	const Int w = AX_SIZEOF(Block);
 	auto n = len / w;
 	auto r = len % w;
 	auto j = n*w;
@@ -110,14 +110,14 @@ void MemUtil::rawCopy(void* dst, const void* src, Int len) {
 	_copyLoop( reinterpret_cast<Byte*>(dst)+j, reinterpret_cast<const Byte*>(src)+j, r);
 }
 
-template <class A, class B> AX_INLINE
+template <class A, class B> AX_INLINE constexpr
 bool MemUtil::isOverlapped(const A* a, Int a_size, const B* b, Int b_size) {
 	const void* ea = a + a_size;
 	const void* eb = b + b_size; 
 	return (ea > b) && (eb > a);
 }
 
-template <class T, class ... Args> AX_INLINE
+template <class T, class ... Args> AX_INLINE constexpr
 void MemUtil::constructor(T* p, Int n, Args&&... args) {
 	if( n <= 0 ) return;
 	T* d = p;
@@ -127,7 +127,7 @@ void MemUtil::constructor(T* p, Int n, Args&&... args) {
 	}
 }
 
-template <class T> AX_INLINE
+template <class T> AX_INLINE constexpr
 void MemUtil::destructor(T* p, Int n) {
 	if (std::is_trivially_destructible_v<T>) return;
 	if (n <= 0) return;
@@ -138,7 +138,7 @@ void MemUtil::destructor(T* p, Int n) {
 	}
 }
 
-template <class T> AX_INLINE
+template <class T> AX_INLINE constexpr
 void MemUtil::copy(T* dst, const T* src, Int n) {
 	if (n <= 0) return;
 	if (MemUtil::isOverlapped(dst, n, src, n)) {
@@ -146,7 +146,7 @@ void MemUtil::copy(T* dst, const T* src, Int n) {
 	}
 
 	if (std::is_trivially_copy_assignable_v<T>) {
-		MemUtil::rawCopy(dst, src, n * ax_sizeof<T>);
+		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
 		auto s = src;
 		auto e = src + n ;
@@ -156,7 +156,7 @@ void MemUtil::copy(T* dst, const T* src, Int n) {
 	}
 }
 
-template <class T> AX_INLINE
+template <class T> AX_INLINE constexpr
 void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	if( n <= 0 ) return;
 	if (MemUtil::isOverlapped(dst, n, src, n)) {
@@ -164,7 +164,7 @@ void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	}
 
 	if (std::is_trivially_copy_assignable_v<T>) {
-		MemUtil::rawCopy(dst, src, n * ax_sizeof<T>);
+		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
 		try {
 			auto s = src;

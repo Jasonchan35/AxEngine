@@ -12,6 +12,9 @@
 // work around for MSVC bug - MSVC expands all __VA_ARGS__ as one argument
 //#define ax_CALL_MACRO(MACRO_NAME, ARGS) MACRO_NAME ARGS
 
+#define AX_SIZEOF(...)  ::ax::ax_const_eval_Int(sizeof(__VA_ARGS__))
+#define AX_ALIGNOF(...) ::ax::ax_const_eval_Int(alignof(__VA_ARGS__))
+
 #define AX_FILE		__FILE__
 #define AX_LINE		static_cast<::ax::Int>(__LINE__)
 

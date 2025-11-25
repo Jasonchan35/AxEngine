@@ -11,25 +11,26 @@ class InlineBuffer : public NonCopyable {
 protected:
 	static constexpr	Int	kInlineBufSize = BUF_SIZE;
 	
-	AX_INLINE constexpr			T*		inlineBufPtr	() {
+	AX_INLINE constexpr	T* inlineBufPtr() {
 		AX_PRAGMA_GCC(diagnostic push)
 		AX_PRAGMA_GCC(diagnostic ignored "-Wuninitialized")
-		return reinterpret_cast<	     T*>(_inlineBuf);
-		AX_PRAGMA_GCC(diagnostic pop)		
+		return reinterpret_cast<T*>(_inlineBuf);
+		AX_PRAGMA_GCC(diagnostic pop)
 	}
 	
-	AX_INLINE constexpr	const 	T*		inlineBufPtr	() const { return ax_const_cast(this)->inlineBufPtr(); }
+	AX_INLINE constexpr	const 	T*	inlineBufPtr() const { return ax_const_cast(this)->inlineBufPtr(); }
 	
 private:
-	Byte	_inlineBuf[ax_sizeof<T> * BUF_SIZE];
+//	std::aligned_storage<sizeof(T) * BUF_SIZE, alignof(T)> _inlineBuf;
+	alignas(T) Byte _inlineBuf[AX_SIZEOF(T) * BUF_SIZE];
 };
 
 template< class T >
 class InlineBuffer<T,0> : public NonCopyable {
 protected:
-	static constexpr	Int	kInlineBufSize = 0;
-	AX_INLINE constexpr	T*		inlineBufPtr	() 		 { return nullptr; }
-	AX_INLINE constexpr	const	T*		inlineBufPtr	() const { return nullptr; }
+	static constexpr	Int	 kInlineBufSize = 0;
+	AX_INLINE constexpr	      T* inlineBufPtr	() 		 { return nullptr; }
+	AX_INLINE constexpr	const T* inlineBufPtr	() const { return nullptr; }
 };
 
 } // namespace

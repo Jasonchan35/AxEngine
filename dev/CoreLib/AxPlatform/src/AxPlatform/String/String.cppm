@@ -16,7 +16,7 @@ export namespace ax {
 template<class T> inline
 constexpr Int String_DefaultBufSize = []() {
 	Int size = 0;
-	Int s = ax_sizeof<Int> / ax_sizeof<T>;
+	Int s = AX_SIZEOF(Int) / AX_SIZEOF(T);
 	Int padding = s > 0 ? s - 1 : 0;; // -1 for null terminator
 	return size + padding;
 }();
@@ -55,23 +55,23 @@ class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null
 public:
 	using View = StrView_<T>;
 	
-	AX_INLINE String_() : Base(inlineBufPtr(), BUF_SIZE) {}
-	AX_INLINE String_(View view) : String_() { Base::append(view); }
-	AX_INLINE String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
+	AX_INLINE constexpr String_(View view) : String_() { Base::append(view); }
+	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
 
 	template<Int N>
-	AX_INLINE String_(const T (&sz)[N]) : String_() { Base::append(StrView_make(sz)); } 
+	AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(StrView_make(sz)); } 
 
 	constexpr       IString_<T>& asIString()		{ return *this; }
 	constexpr const IString_<T>& asIString() const	{ return *this; }
 
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
-	static This s_utf(StrViewA  v) { This s; UtfUtil::append(s, v); return s; }
-	static This s_utf(StrViewW  v) { This s; UtfUtil::append(s, v); return s; }
-	static This s_utf(StrView8  v) { This s; UtfUtil::append(s, v); return s; }
-	static This s_utf(StrView16 v) { This s; UtfUtil::append(s, v); return s; }
-	static This s_utf(StrView32 v) { This s; UtfUtil::append(s, v); return s; }
+	static constexpr This s_utf(StrViewA  v) { This s; UtfUtil::append(s, v); return s; }
+	static constexpr This s_utf(StrViewW  v) { This s; UtfUtil::append(s, v); return s; }
+	static constexpr This s_utf(StrView8  v) { This s; UtfUtil::append(s, v); return s; }
+	static constexpr This s_utf(StrView16 v) { This s; UtfUtil::append(s, v); return s; }
+	static constexpr This s_utf(StrView32 v) { This s; UtfUtil::append(s, v); return s; }
 
 	template<class... ARGS>
 	static This s_format(const FormatString_<Char, ARGS...> & fmt, ARGS&&... args) {

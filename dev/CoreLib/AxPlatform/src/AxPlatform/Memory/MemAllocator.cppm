@@ -28,7 +28,7 @@ public:
 	MemAllocRequest(MemAllocator* allocator_, const SrcLoc& srcLoc_ = SrcLoc()) : allocator(allocator_), srcLoc(srcLoc_) {}
 	MemAllocator*	allocator = nullptr;
 	Int				dataSize = 0;
-	Int				alignment = ax_sizeof<void*>;
+	Int				alignment = AX_SIZEOF(void*);
 	const SrcLoc&	srcLoc;
 };
 
@@ -78,13 +78,13 @@ class MemAllocator {
 public:
 	
 	template<class T>
-	MemAllocResult<T> allocArray(Int reqSize, Int alignment = ax_alignof<T>, const SrcLoc srcLoc = SrcLoc()) {
+	MemAllocResult<T> allocArray(Int reqSize, Int alignment = AX_ALIGNOF(T), const SrcLoc srcLoc = SrcLoc()) {
 		constexpr Int kMinByteSize = 64;
-		reqSize = Math::max(reqSize, kMinByteSize / ax_sizeof<T>);
+		reqSize = Math::max(reqSize, kMinByteSize / AX_SIZEOF(T));
 		reqSize = Math::nextPow2_half(reqSize);
 
 		MemAllocRequest req(nullptr, srcLoc);
-		req.dataSize = reqSize * ax_sizeof<T>;
+		req.dataSize = reqSize * AX_SIZEOF(T);
 		req.alignment = alignment;
 		
 		auto block = onAlloc(req);

@@ -73,7 +73,7 @@ public:
 	AX_INLINE constexpr MSpan      span() noexcept			{ return MSpan(data(), size()); }
 	AX_INLINE constexpr operator CSpan() const noexcept { return constSpan(); }
 	//---------------
-	AX_INLINE constexpr static MView	s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MView(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / ax_sizeof<T>); }
+	AX_INLINE constexpr static MView	s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MView(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
 	AX_INLINE constexpr void			  fromMutByteSpan	(MutByteSpan	from) noexcept	{ *this = s_fromMutByteSpan(from); }
 	AX_INLINE constexpr MutByteSpan		toMutByteSpan		()       noexcept { return MutByteSpan((      Byte*)_data, sizeInBytes()); }
 	AX_INLINE constexpr    ByteSpan		   toByteSpan		() const noexcept { return    ByteSpan((const Byte*)_data, sizeInBytes()); }
@@ -84,7 +84,7 @@ public:
 	AX_INLINE constexpr       T* data()       noexcept { return _data; }
 	AX_INLINE constexpr const T* data() const noexcept { return _data; }
 	AX_INLINE constexpr Int      size() const noexcept { return _size; }
-	AX_INLINE constexpr Int	     sizeInBytes() const noexcept { return _size * ax_sizeof<T>; }
+	AX_INLINE constexpr Int	     sizeInBytes() const noexcept { return _size * AX_SIZEOF(T); }
 	
 
 	//                +--------------------------------------------+

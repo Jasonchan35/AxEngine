@@ -71,7 +71,7 @@ public:
 	constexpr const T* data() const		{ return _storage.data(); }
 	constexpr Int capacity() const		{ return _storage.capacity(); }
 	constexpr Int size() const			{ return _storage.size(); }
-	constexpr Int sizeInBytes() const	{ return size() * ax_sizeof<T>; }
+	constexpr Int sizeInBytes() const	{ return size() * AX_SIZEOF(T); }
 	
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
