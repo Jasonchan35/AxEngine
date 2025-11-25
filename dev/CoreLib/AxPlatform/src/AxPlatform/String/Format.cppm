@@ -50,45 +50,6 @@ using FormatString_ = FormatStringT_<T, std::type_identity_t<ARGS>...>;
 template<class FMT_CH>
 using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
 
-//--- Formatter
-template<class FMT_CH>
-struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FMT_CH> {
-	using Base = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
-	
-	template<class Context>
-	constexpr auto parse(Context& ctx) { return Base::parse(ctx); }
-};
-
-template<class OBJ>
-concept Format_HasOnParse_ = requires(const OBJ& obj) {
-	{ OBJ::onFormatParse };
-};
-
-template<class T>
-class Format_ : public NonCopyable {
-public:
-	using Context   = FormatContext_<T>;
-	using Formatter = FormatterBase_<T>;
-
-	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
-
-	AX_INLINE constexpr void append(StrView_<T> view) {
-		formatter.format(view.to_string_view(), formatContext);
-	}
-
-	AX_INLINE constexpr void operator << (StrView_<T> view) { append(view); }
-
-	const Formatter& formatter;
-	Context&   formatContext;
-};
-
-
-template<class OBJ, class FMT_CH>
-concept Format_HasOnFormat_ = requires(const OBJ& obj, Format_<FMT_CH> & fmt) {
-//	{ obj.onFormat(fmt) } -> std::same_as<void>;
-	true;
-};
-
 } // namespace
 
 

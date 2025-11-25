@@ -8,6 +8,8 @@ export import AxPlatform.Format;
 
 export namespace ax {
 
+template<class T> class Format_;
+
 template<class T> class IString_;
 using IString   = IString_<Char>;
 using IStringA  = IString_<CharA>;

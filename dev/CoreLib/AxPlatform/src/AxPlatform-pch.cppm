@@ -1,15 +1,16 @@
 ﻿module;
 
 #include "AxPlatform-pch.h"
-export module AxPlatform.pch;
+export module AxPlatform._PCH;
 
 #if !AX_USE_PRECOMPILE_HEADER
 
 export import <algorithm>;
 export import <bit>;
+export import <cctype>;
+export import <cfloat>;
 export import <cstdint>;
 export import <cstdlib>;
-export import <cctype>;
 export import <exception>;
 export import <format>;
 export import <iostream>;

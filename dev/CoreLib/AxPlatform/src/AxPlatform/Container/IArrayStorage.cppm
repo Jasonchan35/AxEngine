@@ -5,9 +5,8 @@ export module AxPlatform.IArrayStorage;
 
 export import AxPlatform.BasicType;
 export import AxPlatform.ByteOrder;
-export import AxPlatform.Span;
+export import AxPlatform.FixedSpan;
 export import AxPlatform.Math;
-export import AxPlatform.Span;
 
 export import AxPlatform.Allocator;
 export import AxPlatform.MemoryUtil;

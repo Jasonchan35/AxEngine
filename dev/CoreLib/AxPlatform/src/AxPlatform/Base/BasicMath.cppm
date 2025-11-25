@@ -1,6 +1,7 @@
 module;
 
 #include "AxPlatform-pch.h"
+#include <cfloat>
 
 export module AxPlatform.Math;
 import AxPlatform.BasicType;
@@ -36,8 +37,91 @@ template< class T > constexpr T	max1	( const T& a )	{ return max(a, T(1)); }
 template< class T > constexpr T	clamp	( const T& x, const T& a, const T & b )		{ return max(a, min(b,x)); }
 template< class T > constexpr T	clamp01	( const T& x )								{ return clamp(x, T(0), T(1)); }
 
-template< class T > constexpr bool	isInRange	(const T& x, const T& a, const T & b)		{ return x >= a && x <= b; }
+//----- float ----
 
+AX_INLINE float		ceil	( float  a )	{ return std::ceil(a); }
+AX_INLINE double	ceil	( double a )	{ return std::ceil(a); }
+
+AX_INLINE float		floor	( float  a )	{ return std::floor(a); }
+AX_INLINE double	floor	( double a )	{ return std::floor(a); }
+
+#if AX_COMPILER_VC | AX_OS_CYGWIN
+	AX_INLINE float  trunc	( float  n )	{ float  i; return std::modf( n, &i ); }
+	AX_INLINE double trunc	( double n )	{ double i; return std::modf( n, &i ); }
+
+	AX_INLINE float  round	( float  a )	{ return a > 0 ? floor(a+0.5f) : ceil(a-0.5f); }
+	AX_INLINE double round	( double a )	{ return a > 0 ? floor(a+0.5 ) : ceil(a-0.5 ); }
+#else
+	AX_INLINE float  trunc	( float  n )	{ return std::trunc(n); }
+	AX_INLINE double trunc	( double n )	{ return std::trunc(n); }
+
+	AX_INLINE float  round	( float  a )	{ return std::round(a); }
+	AX_INLINE double round	( double a )	{ return std::round(a); }
+#endif
+
+template<class SRC>	inline constexpr Int truncToInt(const SRC& src) { return static_cast<Int>(trunc(src)); }
+template<class SRC>	inline constexpr Int roundToInt(const SRC& src) { return static_cast<Int>(round(src)); }
+template<class SRC>	inline constexpr Int  ceilToInt(const SRC& src) { return static_cast<Int>(ceil( src)); }
+template<class SRC>	inline constexpr Int floorToInt(const SRC& src) { return static_cast<Int>(floor(src)); }
+
+template<class T> inline constexpr T epsilon		=  NumLimit<T>::epsilon;
+template<class T> inline constexpr T NaN			=  NumLimit<T>::NaN;
+template<class T> inline constexpr T infinity		=  NumLimit<T>::infinity; 
+template<class T> inline constexpr T negInfinity	= -NumLimit<T>::infinity; 
+
+template<class T> AX_INLINE constexpr bool	isNaN			( const T& v ) { return std::isnan(v); }
+template<class T> AX_INLINE constexpr bool	isInfinity		( const T& v ) { return NumLimit<T>::hasInfinity && v == infinity<T>;    }
+template<class T> AX_INLINE constexpr bool	isNegInfinity	( const T& v ) { return NumLimit<T>::hasInfinity && v == negInfinity<T>; }
+
+template<class T>	AX_INLINE T			fmod		( const T& a, const T& b )					{ return a % b; }
+template<>			AX_INLINE float		fmod<float >(const float  & a, const float  & b)		{ return ::fmodf(a, b); }
+template<>			AX_INLINE double	fmod<double>(const double & a, const double & b)		{ return ::fmod(a, b); }
+
+template<class T>
+struct modf_Result {
+	T int_part;		// integer part
+	T frac_part;	// fractional part
+};
+
+template<class T> constexpr	modf_Result<T>	modf(const T& v) {
+	if constexpr (AxType::isInt<T>) {
+		return {v, 0};
+
+	} else if constexpr (AxType::isFloat<T>) {
+		modf_Result<float> o;
+		o.int_part = std::modf(v, &o.frac_part);
+		return o;
+
+	} else {
+		static_assert(false);
+	}
+}
+
+template<class T, class ENABLE = void>
+inline constexpr bool almostEqual(const T& a, const T& b, const T& ep = epsilon<T>) {
+	if constexpr (std::is_integral_v<T>) {
+		return a == b;
+	} else {
+		return (abs(a - b) <= ep);
+	}
+}
+
+template<class T, class ENABLE = void>
+inline constexpr bool almostZero(const T& a, const T& ep = epsilon<T>) {
+	return (almostEqual(a, T(0), ep));
+}
+
+template<class T, class ENABLE = void> AX_INLINE constexpr
+bool exactlyEqual(const T& a, const T& b) {
+	AX_PRAGMA_GCC(diagnostic push)
+	AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
+	return a == b; 
+	AX_PRAGMA_GCC(diagnostic pop)
+}
+
+template< class T > constexpr T	safeDiv	( const T& a, const T& b )	{ return almostZero(b) ? T(0) : a/b; }
+
+template< class T > constexpr bool	isInRange	(const T& x, const T& a, const T & b)		{ return x >= a && x <= b; }
 template< class T > constexpr bool	isPow2 ( const T& v )	{ return v != 0 && (v & (v - 1)) == 0; }
 
 AX_INLINE constexpr i8	nextPow2	( i8  v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4;                              v++; return max0(v); }
@@ -84,10 +168,10 @@ constexpr T alignTo(T n, T a) {
 		}
 	} else {
 		static_assert(false);
+		return n;
 	}
 }
 
 template<class T> constexpr T isAlignTo(T n, T a) { return alignTo(n,a) == n; }
 
 } // namespace
-

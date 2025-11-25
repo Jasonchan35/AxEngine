@@ -11,9 +11,10 @@
 
 #include <algorithm>
 #include <bit>
+#include <cctype>
+#include <cfloat>
 #include <cstdint>
 #include <cstdlib>
-#include <cctype>
 #include <exception>
 #include <format>
 #include <iostream>

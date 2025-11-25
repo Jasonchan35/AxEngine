@@ -2,8 +2,7 @@ module;
 
 #include "AxPlatform-pch.h"
 export module AxPlatform.BasicType;
-
-export import AxPlatform.pch;
+export import AxPlatform._PCH;
 
 export namespace ax {
 
@@ -48,13 +47,14 @@ constexpr u16 u16_min = std::numeric_limits<u16>::min();
 constexpr u32 u32_min = std::numeric_limits<u32>::min();
 constexpr u64 u64_min = std::numeric_limits<u64>::min();
 
-using Int  = i64;
-using UInt = u64;
-using Byte = u8;
-
 using f32  = float;
 using f64  = double;
 using f128 = long double;
+
+using Byte  = u8;
+using Int   = i64;
+using UInt  = u64;
+using Float = f64;
 
 using CharA  = char;
 using Char8  = char8_t;
@@ -64,13 +64,88 @@ using CharW  = wchar_t;
 using Char   = CharA;
 using CharU	 = Char32;
 
-template<class T> constexpr bool ax_type_is_char =	std::is_same_v<std::remove_cv_t<T>, CharA>
-												 ||	std::is_same_v<std::remove_cv_t<T>, CharW>
-												 || std::is_same_v<std::remove_cv_t<T>, Char8>
-												 || std::is_same_v<std::remove_cv_t<T>, Char16>
-												 || std::is_same_v<std::remove_cv_t<T>, Char32>;
+namespace AxType {
+template<class T> constexpr bool isInt		=  std::is_integral_v<T>;
+template<class T> constexpr bool isSInt		=  std::is_integral_v<T> && std::is_signed_v<T>;
+template<class T> constexpr bool isUInt		=  std::is_integral_v<T> && std::is_unsigned_v<T>;
+template<class T> constexpr bool isFloat	=  std::is_floating_point_v<T>;
+template<class T> constexpr bool isChar		=  std::is_same_v<std::remove_cv_t<T>, CharA>
+											|| std::is_same_v<std::remove_cv_t<T>, CharW>
+											|| std::is_same_v<std::remove_cv_t<T>, Char8>
+											|| std::is_same_v<std::remove_cv_t<T>, Char16>
+											|| std::is_same_v<std::remove_cv_t<T>, Char32>;
 
-// template<class T> concept CharType = ax_type_is_char<T>;
+template<class T> concept CON_IntType	= isInt<T>;
+template<class T> concept CON_SIntType	= isSInt<T>;
+template<class T> concept CON_UIntType	= isUInt<T>;
+template<class T> concept CON_FloatType	= isFloat<T>;
+template<class T> concept CON_CharType	= isChar<T>;
+
+//--------
+template<Int N>		struct	IntTypeBySize_Helper;
+template<>			struct	IntTypeBySize_Helper<1> { using Type = i8 ; };
+template<>			struct	IntTypeBySize_Helper<2> { using Type = i16; };
+template<>			struct	IntTypeBySize_Helper<4> { using Type = i32; };
+template<>			struct	IntTypeBySize_Helper<8> { using Type = i64; };
+template<Int N>		using	IntTypeBySize = typename IntTypeBySize_Helper<N>::Type;
+
+template<Int N>		struct	UIntTypeBySize_Helper;
+template<>			struct	UIntTypeBySize_Helper<1> { using Type = u8 ; };
+template<>			struct	UIntTypeBySize_Helper<2> { using Type = u16; };
+template<>			struct	UIntTypeBySize_Helper<4> { using Type = u32; };
+template<>			struct	UIntTypeBySize_Helper<8> { using Type = u64; };
+template<Int N>		using	UIntTypeBySize = typename UIntTypeBySize_Helper<N>::Type;
+
+template<Int N>		struct	CharTypeBySize_Helper;
+template<>			struct	CharTypeBySize_Helper<1> { using Type = CharA ; };
+template<>			struct	CharTypeBySize_Helper<2> { using Type = Char16; };
+template<>			struct	CharTypeBySize_Helper<4> { using Type = Char32; };
+template<Int N>		using	CharTypeBySize =typename  CharTypeBySize_Helper<N>::Type;
+
+template<Int N>		struct	FloatTypeBySize_Helper;
+template<>			struct	FloatTypeBySize_Helper<4 > { using Type = f32; };
+template<>			struct	FloatTypeBySize_Helper<8 > { using Type = f64; };
+template<>			struct	FloatTypeBySize_Helper<16> { using Type = f128; };
+template<Int N>		using	FloatTypeBySize = typename FloatTypeBySize_Helper<N>::Type;
+
+//-----------------------
+template<class T>	struct	ToFloatType_Helper;
+template<>			struct	ToFloatType_Helper<i8  > { using Type = f32;  };
+template<>			struct	ToFloatType_Helper<i16 > { using Type = f32;  };
+template<>			struct	ToFloatType_Helper<i32 > { using Type = f64;  };
+template<>			struct	ToFloatType_Helper<i64 > { using Type = f64;  };
+template<>			struct	ToFloatType_Helper<u8  > { using Type = f32;  };
+template<>			struct	ToFloatType_Helper<u16 > { using Type = f32;  };
+template<>			struct	ToFloatType_Helper<u32 > { using Type = f64;  };
+template<>			struct	ToFloatType_Helper<u64 > { using Type = f64;  };
+template<>			struct	ToFloatType_Helper<f32 > { using Type = f32;  };
+template<>			struct	ToFloatType_Helper<f64 > { using Type = f64;  };
+template<>			struct	ToFloatType_Helper<f128> { using Type = f128; };
+template<class T>	using	ToFloatType = typename ToFloatType_Helper<T>::Type;
+
+template<class T>	struct	ToSIntType_Helper;
+template<>			struct	ToSIntType_Helper<i8 > { using Type = i8;  };
+template<>			struct	ToSIntType_Helper<i16> { using Type = i16; };
+template<>			struct	ToSIntType_Helper<i32> { using Type = i32; };
+template<>			struct	ToSIntType_Helper<i64> { using Type = i64; };
+template<>			struct	ToSIntType_Helper<u8 > { using Type = i8;  };
+template<>			struct	ToSIntType_Helper<u16> { using Type = i16; };
+template<>			struct	ToSIntType_Helper<u32> { using Type = i32; };
+template<>			struct	ToSIntType_Helper<u64> { using Type = i64; };
+template<class T>	using	ToSIntType = typename ToSIntType_Helper<T>::Type;
+
+template<class T>	struct	ToUIntType_Helper;
+template<>			struct	ToUIntType_Helper<i8 > { using Type = u8;  };
+template<>			struct	ToUIntType_Helper<i16> { using Type = u16; };
+template<>			struct	ToUIntType_Helper<i32> { using Type = u32; };
+template<>			struct	ToUIntType_Helper<i64> { using Type = u64; };
+template<>			struct	ToUIntType_Helper<u8 > { using Type = u8;  };
+template<>			struct	ToUIntType_Helper<u16> { using Type = u16; };
+template<>			struct	ToUIntType_Helper<u32> { using Type = u32; };
+template<>			struct	ToUIntType_Helper<u64> { using Type = u64; };
+template<class T>	using	ToUIntType = typename ToUIntType_Helper<T>::Type;
+
+} // namespace AxType
 
 template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	if (!sz) return 0;
@@ -133,7 +208,7 @@ enum class StrCase : u8 {
 	Ignore,
 	Sensitive,
 };
-template<class T> requires ax_type_is_char<T>
+template<class T> requires AxType::isChar<T>
 AX_INLINE bool ax_char_ignore_case_equals(const T& a, const T& b) { return std::tolower(a) == std::tolower(b); }
 
 enum class CmpResult : u8 {
@@ -280,18 +355,33 @@ protected:
 
 template<class T> struct NumLimit;
 
-template<class T> requires std::is_integral_v<T> || std::is_floating_point_v<T> || ax_type_is_char<T>
+template<class T> requires AxType::isInt<T> || AxType::isFloat<T> || AxType::isChar<T>
 struct NumLimit<T> {
-	AX_INLINE static constexpr T kDefaultValue	() { return 0; }
-	AX_INLINE static constexpr T kLowest		() { return  std::numeric_limits<T>::lowest();    }
-	AX_INLINE static constexpr T kMin			() { return  std::numeric_limits<T>::min();		  }
-	AX_INLINE static constexpr T kMax			() { return  std::numeric_limits<T>::max();		  }
-	AX_INLINE static constexpr T kInfinity		() { return  std::numeric_limits<T>::infinity();  }
-	AX_INLINE static constexpr T kNegInfinity	() { return -std::numeric_limits<T>::infinity();  }
-	AX_INLINE static constexpr T kNaN			() { return  std::numeric_limits<T>::quiet_NaN(); }
+	static constexpr T    epsilon     =  std::numeric_limits<T>::epsilon();
+	static constexpr T    lowest      =  std::numeric_limits<T>::lowest();
+	static constexpr T    min         =  std::numeric_limits<T>::min();
+	static constexpr T    max         =  std::numeric_limits<T>::max();
+	static constexpr T    infinity    =  std::numeric_limits<T>::infinity();
+	static constexpr T    negInfinity = -std::numeric_limits<T>::infinity();
+	static constexpr T    NaN         =  std::numeric_limits<T>::quiet_NaN();
+	static constexpr bool hasInfinity =  std::numeric_limits<T>::has_infinity;
 };
 
+inline constexpr f32   f32_epsilon       = NumLimit<f32>::epsilon;
+inline constexpr f64   f64_epsilon       = NumLimit<f64>::epsilon;
+inline constexpr Float Float_epsilon     = NumLimit<Float>::epsilon;
 
+inline constexpr f32   f32_NaN           = NumLimit<f32>::NaN;
+inline constexpr f64   f64_NaN           = NumLimit<f64>::NaN;
+inline constexpr Float Float_NaN         = NumLimit<Float>::NaN;
+
+inline constexpr f32   f32_infinity      = NumLimit<f32>::infinity;
+inline constexpr f64   f64_infinity      = NumLimit<f64>::infinity;
+inline constexpr Float Float_infinity    = NumLimit<Float>::infinity;
+
+inline constexpr f32   f32_negInfinity   = NumLimit<f32>::negInfinity;
+inline constexpr f64   f64_negInfinity   = NumLimit<f64>::negInfinity;
+inline constexpr Float Float_negInfinity = NumLimit<Float>::negInfinity;
 
 // for internal use, i.e. unit test cannot have high level logger functions
 inline void __ax_internal_log(const char* msg) {

@@ -17,9 +17,7 @@ struct ThreadId_Native {
 	constexpr ThreadId_Native(HANDLE handle_, DWORD id_) : handle(handle_), id(id_) {}
 
 	operator HANDLE() const { return handle; }
-
-	template<class CH> void onFmt(Format_<CH>& ctx) const { ctx << id; }
-
+	
 	bool operator==(const ThreadId_Native& r) const { return handle == r.handle && id == r.id; }
 	bool operator!=(const ThreadId_Native& r) const { return !operator==(r); }
 
@@ -79,11 +77,6 @@ public:
 	bool isCurrentThread();
 
 	NativeHandle nativeHandle() { return _v; }
-
-	template<class CH>
-	void onFmt(Format_<CH>& ctx) const {
-		ctx << _v;
-	}
 
 protected:
 	ThreadId_Native _v = ThreadId_Native_kNull;

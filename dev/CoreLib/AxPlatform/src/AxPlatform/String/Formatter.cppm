@@ -7,7 +7,44 @@ export import AxPlatform.String;
 export namespace ax {
 
 
-//------ Format ------
+//--- Formatter
+template<class FMT_CH>
+struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FMT_CH> {
+	using Base = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
+	
+	template<class Context>
+	constexpr auto parse(Context& ctx) { return Base::parse(ctx); }
+};
+
+template<class T>
+class Format_ : public NonCopyable {
+public:
+	using Context   = FormatContext_<T>;
+	using Formatter = FormatterBase_<T>;
+
+	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
+
+	AX_INLINE constexpr void append(StrView_<T> view) {
+		formatter.format(view.to_string_view(), formatContext);
+	}
+
+	AX_INLINE constexpr void operator << (StrView_<T> view) { append(view); }
+
+	const Formatter& formatter;
+	Context&   formatContext;
+};
+
+template<class OBJ>
+concept CON_onFormatParse_ = requires(const OBJ& obj) {
+	{ OBJ::onFormatParse };
+};
+
+template<class OBJ, class FMT_CH>
+concept CON_onFormat_ = requires(const OBJ& obj, Format_<FMT_CH> & fmt) {
+	//	{ obj.onFormat(fmt) } -> std::same_as<void>;
+	true;
+};
+
 
 template<class FMT_CH>
 struct UtfFormatter_ : public FormatterBase_<FMT_CH> {
@@ -99,12 +136,12 @@ String32 Fmt(FormatString_<Char32, ARGS...> && fmt, ARGS&&... args) { String32 s
 //----- global namespace ----------
 
 // Wrapper to CustomClass::onFormat()
-template<class OBJ, class FMT_CH> requires ax::Format_HasOnFormat_<OBJ, FMT_CH>
+template<class OBJ, class FMT_CH> requires ax::CON_onFormat_<OBJ, FMT_CH>
 struct std::formatter<OBJ, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
 	using Base = ax::UtfFormatter_<FMT_CH>;
 
 	constexpr auto parse(ax::FormatParseContext_<FMT_CH>& ctx) {
-		if constexpr (ax::Format_HasOnParse_<OBJ>) {
+		if constexpr (ax::CON_onFormatParse_<OBJ>) {
 			OBJ::onFormatParse(ctx);
 			return ctx.end();
 		} else {
