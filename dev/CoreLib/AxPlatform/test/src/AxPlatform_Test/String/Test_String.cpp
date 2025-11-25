@@ -29,9 +29,6 @@ public:
 		AX_UNUSED(str16);
 		AX_UNUSED(str32);
 		AX_UNUSED(strW);
-
-		//constexpr
-		// constexpr String constStr("constexpr string");
 	}
 };
 

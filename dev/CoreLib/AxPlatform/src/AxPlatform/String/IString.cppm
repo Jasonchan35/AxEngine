@@ -152,6 +152,12 @@ public:
 	constexpr void append(CView view);
 	constexpr void append(const T& ch);
 
+	template<class... ARGS>
+	constexpr void append_args(ARGS&&... args) { append(args...); }
+
+	constexpr void appendList(const std::initializer_list<T    > & list);
+	constexpr void appendList(const std::initializer_list<CView> & list);
+	
 	AX_INLINE constexpr void appendUtf(CharA  r) { _appendUtf(r); }
 	AX_INLINE constexpr void appendUtf(CharW  r) { _appendUtf(r); }
 	AX_INLINE constexpr void appendUtf(Char8  r) { _appendUtf(r); }
@@ -264,10 +270,35 @@ constexpr void IString_<T>::append(const T& ch) {
 	auto newSize = oldSize + 1;
 	reserve(newSize);
 	_storage.setSize(newSize);
-	auto* dst = data() + oldSize;
-	*dst = ch; dst++;
-	*dst = 0;
+	auto* newData = data();
+	newData[oldSize] = ch;
+	newData[newSize] = 0;
 }
+
+template <class T>
+constexpr void IString_<T>::appendList(const std::initializer_list<T> & list) {
+	auto oldSize = size();
+	auto newSize = oldSize + list.size();
+	reserve(newSize);
+	_storage.setSize(newSize);
+	auto* newData = data();
+	MemUtil::copy(newData + oldSize, list.begin(), list.size());
+	newData[newSize] = 0;	
+}
+
+template <class T>
+constexpr void IString_<T>::appendList(const std::initializer_list<CView>& list) {
+	auto newSize = size();
+	for (auto& it : list) {
+		newSize += it.size();
+	}
+	
+	reserve(newSize);
+	for (auto& it : list) {
+		append(it);
+	}
+}
+
 
 template <class T> AX_INLINE
 constexpr void IString_<T>::_setNullTerminator() {
