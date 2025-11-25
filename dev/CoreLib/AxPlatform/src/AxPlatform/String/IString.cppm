@@ -8,7 +8,32 @@ export import AxPlatform.Format;
 
 export namespace ax {
 
-template<class T> class Format_;
+template<class FMT_CH>
+struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FMT_CH> {
+	using Base = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
+	
+	template<class Context>
+	constexpr auto parse(Context& ctx) { return Base::parse(ctx); }
+};
+
+template<class T>
+class Format_ : public NonCopyable {
+public:
+	using Context   = FormatContext_<T>;
+	using Formatter = FormatterBase_<T>;
+
+	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
+
+	AX_INLINE constexpr void append(StrView_<T> view) {
+		formatter.format(view.to_string_view(), formatContext);
+	}
+
+	AX_INLINE constexpr void operator << (StrView_<T> view) { append(view); }
+
+	const Formatter& formatter;
+	Context&   formatContext;
+};
+
 
 template<class T> class IString_;
 using IString   = IString_<Char>;
