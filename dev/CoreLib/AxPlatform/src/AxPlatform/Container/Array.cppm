@@ -6,7 +6,7 @@ export module AxPlatform.Array;
 export import AxPlatform.IArray;
 import AxPlatform.Allocator;
 import AxPlatform.MemoryUtil;
-import AxPlatform.InlineBuffer;
+import AxPlatform.InlineStorage;
 
 export namespace ax {
 
@@ -15,9 +15,9 @@ using ByteArray = Array<Byte>;
 using IntArray  = Array<Int>;
 
 template <class T, Int BUF_SIZE>
-class Array : public IArray<T>, InlineBuffer<T, BUF_SIZE> {
+class Array : public IArray<T>, InlineStorage<T, BUF_SIZE> {
 	using Base = IArray<T>;
-	using BaseInlineBuffer = InlineBuffer<T, BUF_SIZE>;
+	using BaseInlineBuffer = InlineStorage<T, BUF_SIZE>;
 	using BaseInlineBuffer::inlineBufPtr;
 public:
 	Array() : Base(inlineBufPtr(), BUF_SIZE) {}

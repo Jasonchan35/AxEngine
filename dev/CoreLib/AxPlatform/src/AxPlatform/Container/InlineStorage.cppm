@@ -1,13 +1,13 @@
 ﻿module;
 #include "AxPlatform-pch.h"
 
-export module AxPlatform.InlineBuffer;
+export module AxPlatform.InlineStorage;
 import AxPlatform.BasicType;
 
 export namespace ax {
 
 template< class T, Int BUF_SIZE >
-class InlineBuffer : public NonCopyable {
+class InlineStorage : public NonCopyable {
 protected:
 	static constexpr	Int	kInlineBufSize = BUF_SIZE;
 	
@@ -26,7 +26,7 @@ private:
 };
 
 template< class T >
-class InlineBuffer<T,0> : public NonCopyable {
+class InlineStorage<T,0> : public NonCopyable {
 protected:
 	static constexpr	Int	 kInlineBufSize = 0;
 	AX_INLINE constexpr	      T* inlineBufPtr	() 		 { return nullptr; }

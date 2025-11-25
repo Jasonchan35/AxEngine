@@ -9,7 +9,7 @@ export import AxPlatform.Array;
 
 import AxPlatform.Allocator;
 import AxPlatform.MemoryUtil;
-import AxPlatform.InlineBuffer;
+import AxPlatform.InlineStorage;
 
 export namespace ax {
 
@@ -46,11 +46,11 @@ using TempString16 = TempString_<Char16>;
 using TempString32 = TempString_<Char32>;
 
 template<class T, Int BUF_SIZE> 
-class String_ : public IString_<T>, InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator
+class String_ : public IString_<T>, InlineStorage<T, BUF_SIZE + 1> // +1 for null terminator
 {
 	using This = String_;
 	using Base = IString_<T>;
-	using BaseInlineBuffer = InlineBuffer<T, BUF_SIZE + 1>;
+	using BaseInlineBuffer = InlineStorage<T, BUF_SIZE + 1>;
 	using BaseInlineBuffer::inlineBufPtr;
 public:
 	using View = StrView_<T>;
