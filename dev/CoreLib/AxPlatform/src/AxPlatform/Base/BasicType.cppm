@@ -64,88 +64,89 @@ using CharW  = wchar_t;
 using Char   = CharA;
 using CharU	 = Char32;
 
-namespace AxType {
-template<class T> constexpr bool isInt		=  std::is_integral_v<T>;
-template<class T> constexpr bool isSInt		=  std::is_integral_v<T> && std::is_signed_v<T>;
-template<class T> constexpr bool isUInt		=  std::is_integral_v<T> && std::is_unsigned_v<T>;
-template<class T> constexpr bool isFloat	=  std::is_floating_point_v<T>;
-template<class T> constexpr bool isChar		=  std::is_same_v<std::remove_cv_t<T>, CharA>
-											|| std::is_same_v<std::remove_cv_t<T>, CharW>
-											|| std::is_same_v<std::remove_cv_t<T>, Char8>
-											|| std::is_same_v<std::remove_cv_t<T>, Char16>
-											|| std::is_same_v<std::remove_cv_t<T>, Char32>;
+template<class T> constexpr bool Type_IsFundamental =  std::is_fundamental_v<T>;
+template<class T> constexpr bool Type_IsInt         =  std::is_integral_v<T>;
+template<class T> constexpr bool Type_IsSInt        =  std::is_integral_v<T> && std::is_signed_v<T>;
+template<class T> constexpr bool Type_IsUInt        =  std::is_integral_v<T> && std::is_unsigned_v<T>;
+template<class T> constexpr bool Type_IsFloat       =  std::is_floating_point_v<T>;
+template<class T> constexpr bool Type_IsChar        =  std::is_same_v<std::remove_cv_t<T>, CharA>
+                                                    || std::is_same_v<std::remove_cv_t<T>, CharW>
+                                                    || std::is_same_v<std::remove_cv_t<T>, Char8>
+                                                    || std::is_same_v<std::remove_cv_t<T>, Char16>
+                                                    || std::is_same_v<std::remove_cv_t<T>, Char32>;
 
-template<class T> concept CON_IntType	= isInt<T>;
-template<class T> concept CON_SIntType	= isSInt<T>;
-template<class T> concept CON_UIntType	= isUInt<T>;
-template<class T> concept CON_FloatType	= isFloat<T>;
-template<class T> concept CON_CharType	= isChar<T>;
+template<class T> constexpr bool Type_Is_f32        =  std::is_same_v<T, f32>;
+template<class T> constexpr bool Type_Is_f64        =  std::is_same_v<T, f64>;
+
+template<class T> concept Con_Type_IsInt		 = Type_IsInt<T>;
+template<class T> concept Con_Type_IsSInt		 = Type_IsSInt<T>;
+template<class T> concept Con_Type_IsUInt		 = Type_IsUInt<T>;
+template<class T> concept Con_Type_IsFloat		 = Type_IsFloat<T>;
+template<class T> concept Con_Type_IsChar		 = Type_IsChar<T>;
 
 //--------
-template<Int N>		struct	IntTypeBySize_Helper;
-template<>			struct	IntTypeBySize_Helper<1> { using Type = i8 ; };
-template<>			struct	IntTypeBySize_Helper<2> { using Type = i16; };
-template<>			struct	IntTypeBySize_Helper<4> { using Type = i32; };
-template<>			struct	IntTypeBySize_Helper<8> { using Type = i64; };
-template<Int N>		using	IntTypeBySize = typename IntTypeBySize_Helper<N>::Type;
+template<Int N>		struct	Type_Int_BySize_Struct;
+template<>			struct	Type_Int_BySize_Struct<1> { using Type = i8 ; };
+template<>			struct	Type_Int_BySize_Struct<2> { using Type = i16; };
+template<>			struct	Type_Int_BySize_Struct<4> { using Type = i32; };
+template<>			struct	Type_Int_BySize_Struct<8> { using Type = i64; };
+template<Int N>		using	Type_Int_BySize = typename Type_Int_BySize_Struct<N>::Type;
 
-template<Int N>		struct	UIntTypeBySize_Helper;
-template<>			struct	UIntTypeBySize_Helper<1> { using Type = u8 ; };
-template<>			struct	UIntTypeBySize_Helper<2> { using Type = u16; };
-template<>			struct	UIntTypeBySize_Helper<4> { using Type = u32; };
-template<>			struct	UIntTypeBySize_Helper<8> { using Type = u64; };
-template<Int N>		using	UIntTypeBySize = typename UIntTypeBySize_Helper<N>::Type;
+template<Int N>		struct	Type_UInt_BySize_Struct;
+template<>			struct	Type_UInt_BySize_Struct<1> { using Type = u8 ; };
+template<>			struct	Type_UInt_BySize_Struct<2> { using Type = u16; };
+template<>			struct	Type_UInt_BySize_Struct<4> { using Type = u32; };
+template<>			struct	Type_UInt_BySize_Struct<8> { using Type = u64; };
+template<Int N>		using	Type_UInt_BySize = typename Type_UInt_BySize_Struct<N>::Type;
 
-template<Int N>		struct	CharTypeBySize_Helper;
-template<>			struct	CharTypeBySize_Helper<1> { using Type = CharA ; };
-template<>			struct	CharTypeBySize_Helper<2> { using Type = Char16; };
-template<>			struct	CharTypeBySize_Helper<4> { using Type = Char32; };
-template<Int N>		using	CharTypeBySize =typename  CharTypeBySize_Helper<N>::Type;
+template<Int N>		struct	Type_Char_BySize_Struct;
+template<>			struct	Type_Char_BySize_Struct<1> { using Type = CharA ; };
+template<>			struct	Type_Char_BySize_Struct<2> { using Type = Char16; };
+template<>			struct	Type_Char_BySize_Struct<4> { using Type = Char32; };
+template<Int N>		using	Type_Char_BySize =typename  Type_Char_BySize_Struct<N>::Type;
 
-template<Int N>		struct	FloatTypeBySize_Helper;
-template<>			struct	FloatTypeBySize_Helper<4 > { using Type = f32; };
-template<>			struct	FloatTypeBySize_Helper<8 > { using Type = f64; };
-template<>			struct	FloatTypeBySize_Helper<16> { using Type = f128; };
-template<Int N>		using	FloatTypeBySize = typename FloatTypeBySize_Helper<N>::Type;
+template<Int N>		struct	Type_Float_BySize_Struct;
+template<>			struct	Type_Float_BySize_Struct<4 > { using Type = f32;  };
+template<>			struct	Type_Float_BySize_Struct<8 > { using Type = f64;  };
+template<>			struct	Type_Float_BySize_Struct<16> { using Type = f128; };
+template<Int N>		using	Type_Float_BySize = typename Type_Float_BySize_Struct<N>::Type;
 
 //-----------------------
-template<class T>	struct	ToFloatType_Helper;
-template<>			struct	ToFloatType_Helper<i8  > { using Type = f32;  };
-template<>			struct	ToFloatType_Helper<i16 > { using Type = f32;  };
-template<>			struct	ToFloatType_Helper<i32 > { using Type = f64;  };
-template<>			struct	ToFloatType_Helper<i64 > { using Type = f64;  };
-template<>			struct	ToFloatType_Helper<u8  > { using Type = f32;  };
-template<>			struct	ToFloatType_Helper<u16 > { using Type = f32;  };
-template<>			struct	ToFloatType_Helper<u32 > { using Type = f64;  };
-template<>			struct	ToFloatType_Helper<u64 > { using Type = f64;  };
-template<>			struct	ToFloatType_Helper<f32 > { using Type = f32;  };
-template<>			struct	ToFloatType_Helper<f64 > { using Type = f64;  };
-template<>			struct	ToFloatType_Helper<f128> { using Type = f128; };
-template<class T>	using	ToFloatType = typename ToFloatType_Helper<T>::Type;
+template<class T>	struct	Type_Float_From_Struct;
+template<>			struct	Type_Float_From_Struct<i8  > { using Type = f32;  };
+template<>			struct	Type_Float_From_Struct<i16 > { using Type = f32;  };
+template<>			struct	Type_Float_From_Struct<i32 > { using Type = f64;  };
+template<>			struct	Type_Float_From_Struct<i64 > { using Type = f64;  };
+template<>			struct	Type_Float_From_Struct<u8  > { using Type = f32;  };
+template<>			struct	Type_Float_From_Struct<u16 > { using Type = f32;  };
+template<>			struct	Type_Float_From_Struct<u32 > { using Type = f64;  };
+template<>			struct	Type_Float_From_Struct<u64 > { using Type = f64;  };
+template<>			struct	Type_Float_From_Struct<f32 > { using Type = f32;  };
+template<>			struct	Type_Float_From_Struct<f64 > { using Type = f64;  };
+template<>			struct	Type_Float_From_Struct<f128> { using Type = f128; };
+template<class T>	using	Type_Float_From = typename Type_Float_From_Struct<T>::Type;
 
-template<class T>	struct	ToSIntType_Helper;
-template<>			struct	ToSIntType_Helper<i8 > { using Type = i8;  };
-template<>			struct	ToSIntType_Helper<i16> { using Type = i16; };
-template<>			struct	ToSIntType_Helper<i32> { using Type = i32; };
-template<>			struct	ToSIntType_Helper<i64> { using Type = i64; };
-template<>			struct	ToSIntType_Helper<u8 > { using Type = i8;  };
-template<>			struct	ToSIntType_Helper<u16> { using Type = i16; };
-template<>			struct	ToSIntType_Helper<u32> { using Type = i32; };
-template<>			struct	ToSIntType_Helper<u64> { using Type = i64; };
-template<class T>	using	ToSIntType = typename ToSIntType_Helper<T>::Type;
+template<class T>	struct	Type_SInt_From_Struct;
+template<>			struct	Type_SInt_From_Struct<i8 > { using Type = i8;  };
+template<>			struct	Type_SInt_From_Struct<i16> { using Type = i16; };
+template<>			struct	Type_SInt_From_Struct<i32> { using Type = i32; };
+template<>			struct	Type_SInt_From_Struct<i64> { using Type = i64; };
+template<>			struct	Type_SInt_From_Struct<u8 > { using Type = i8;  };
+template<>			struct	Type_SInt_From_Struct<u16> { using Type = i16; };
+template<>			struct	Type_SInt_From_Struct<u32> { using Type = i32; };
+template<>			struct	Type_SInt_From_Struct<u64> { using Type = i64; };
+template<class T>	using	Type_SInt_From = typename Type_SInt_From_Struct<T>::Type;
 
-template<class T>	struct	ToUIntType_Helper;
-template<>			struct	ToUIntType_Helper<i8 > { using Type = u8;  };
-template<>			struct	ToUIntType_Helper<i16> { using Type = u16; };
-template<>			struct	ToUIntType_Helper<i32> { using Type = u32; };
-template<>			struct	ToUIntType_Helper<i64> { using Type = u64; };
-template<>			struct	ToUIntType_Helper<u8 > { using Type = u8;  };
-template<>			struct	ToUIntType_Helper<u16> { using Type = u16; };
-template<>			struct	ToUIntType_Helper<u32> { using Type = u32; };
-template<>			struct	ToUIntType_Helper<u64> { using Type = u64; };
-template<class T>	using	ToUIntType = typename ToUIntType_Helper<T>::Type;
-
-} // namespace AxType
+template<class T>	struct	Type_UInt_From_Struct;
+template<>			struct	Type_UInt_From_Struct<i8 > { using Type = u8;  };
+template<>			struct	Type_UInt_From_Struct<i16> { using Type = u16; };
+template<>			struct	Type_UInt_From_Struct<i32> { using Type = u32; };
+template<>			struct	Type_UInt_From_Struct<i64> { using Type = u64; };
+template<>			struct	Type_UInt_From_Struct<u8 > { using Type = u8;  };
+template<>			struct	Type_UInt_From_Struct<u16> { using Type = u16; };
+template<>			struct	Type_UInt_From_Struct<u32> { using Type = u32; };
+template<>			struct	Type_UInt_From_Struct<u64> { using Type = u64; };
+template<class T>	using	Type_UInt_From = typename Type_UInt_From_Struct<T>::Type;
 
 template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	if (!sz) return 0;
@@ -208,7 +209,7 @@ enum class StrCase : u8 {
 	Ignore,
 	Sensitive,
 };
-template<class T> requires AxType::isChar<T>
+template<class T> requires Type_IsChar<T>
 AX_INLINE bool ax_char_ignore_case_equals(const T& a, const T& b) { return std::tolower(a) == std::tolower(b); }
 
 enum class CmpResult : u8 {
@@ -367,7 +368,7 @@ template<class T> struct NumLimit {
 	static constexpr T    NaN            =  Helper::NaN;
 };
 
-template<class T> requires AxType::isInt<T> || AxType::isFloat<T> || AxType::isChar<T>
+template<class T> requires Type_IsInt<T> || Type_IsFloat<T> || Type_IsChar<T>
 struct NumLimit<T> {
 	static constexpr bool isExactType    =  std::numeric_limits<T>::is_exact;
 	static constexpr bool hasInfinity    =  std::numeric_limits<T>::has_infinity;

@@ -14,6 +14,10 @@ AX_ENUM_CLASS(AX_VecSIMD_ENUM_LIST, VecSIMD, u8)
 constexpr VecSIMD VecSIMD_default = VecSIMD::SSE;
 using CpuSIMD = VecSIMD; // TODO: remove
 
+namespace Tag {
+	class VecSetAll{};
+} // namespace Tag
+
 template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class VecBase_;
 template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class Vec_;
 template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class Quat_;
@@ -194,9 +198,6 @@ public:
 		struct { T x, y, z, w; };
 		__m128 _m; // SSE
 	};
-
-	// explicit
-	AX_INLINE explicit constexpr VecBase_(const T& v) : x(v), y(v), z(v), w(v) {}
 	
 	AX_INLINE			VecBase_() = default;
 	AX_INLINE constexpr VecBase_(const __m128& m) : _m(m) {}
@@ -228,37 +229,23 @@ public:
 	AX_INLINE			VecBase_() = default;
 	AX_INLINE constexpr VecBase_(const __m256d& m) : _m(m) {}
 	AX_INLINE constexpr VecBase_(const T& x_, const T& y_, const T& z_, const T& w_) : x(x_), y(y_), z(z_), w(w_) {}
-	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { x = x_; y = y_; z = z_; w = w_; }
-	
-			T*	data()		 { return &x; }
-	const	T*	data() const { return &x; }
-
-	using CFixedSpan =    FixedSpan<T, elementCount>;
-	using MFixedSpan = MutFixedSpan<T, elementCount>;
-
-	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
-	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(data()); }
 };
 
 template<Int N, class T, VecSIMD SIMD>
-struct NumLimit<VecBase_<N, T, SIMD>> {
-	using OBJ = VecBase_<N, T, SIMD>;
+struct NumLimit<Vec_<N, T, SIMD>> {
+	using OBJ = Vec_<N, T, SIMD>;
 	using ElemLimit = NumLimit<T>;
 
 	static constexpr bool isExactType   =  ElemLimit::isExactType;
 	static constexpr bool hasInfinity   =  ElemLimit::hasInfinity;
-	static constexpr OBJ  infinity      =  OBJ(ElemLimit::infinity);
-	static constexpr OBJ  negInfinity   =  OBJ(ElemLimit::negInfinity);
-	static constexpr OBJ  lowest        =  OBJ(ElemLimit::lowest);
-	static constexpr OBJ  min           =  OBJ(ElemLimit::min);
-	static constexpr OBJ  max           =  OBJ(ElemLimit::max);
-	static constexpr OBJ  epsilon       =  OBJ(ElemLimit::epsilon);
-	static constexpr OBJ  NaN           =  OBJ(ElemLimit::NaN);
+	static constexpr OBJ  infinity      =  OBJ(Tag::VecSetAll(), ElemLimit::infinity);
+	static constexpr OBJ  negInfinity   =  OBJ(Tag::VecSetAll(), ElemLimit::negInfinity);
+	static constexpr OBJ  lowest        =  OBJ(Tag::VecSetAll(), ElemLimit::lowest);
+	static constexpr OBJ  min           =  OBJ(Tag::VecSetAll(), ElemLimit::min);
+	static constexpr OBJ  max           =  OBJ(Tag::VecSetAll(), ElemLimit::max);
+	static constexpr OBJ  epsilon       =  OBJ(Tag::VecSetAll(), ElemLimit::epsilon);
+	static constexpr OBJ  NaN           =  OBJ(Tag::VecSetAll(), ElemLimit::NaN);
 };
-
-template<Int N, class T, VecSIMD SIMD>
-struct NumLimit<Vec_<N, T, SIMD>> : NumLimit<VecBase_<N, T, SIMD>> {};
-
 
 //----------
 using Intx1	= VecBase1_<Int>;

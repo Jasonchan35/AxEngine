@@ -6,6 +6,7 @@
 // header must use #include instead of import
 #include <atomic>
 #include <cassert>
+#include <cmath>
 
 // SSE / AVX
 #if AX_COMPILER_CLANG && AX_OS_WINDOWS

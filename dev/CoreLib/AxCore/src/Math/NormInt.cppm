@@ -147,7 +147,7 @@ private:
 	}
 };
 
-template<class T> struct AxType::ToFloatType_Helper< NormInt_<T> >  { using Type = typename NormInt_<T>::FloatType; };
+template<class T> struct Type_Float_From_Struct< NormInt_<T> >  { using Type = typename NormInt_<T>::FloatType; };
 
 template<class T> struct IsNormInt_Helper : std::false_type {};
 template<class T> struct IsNormInt_Helper< NormInt_<T> > : std::true_type {};

@@ -266,19 +266,6 @@ struct NumLimit<Float16> {
 	// static constexpr f16    maxExponent10  =  std::numeric_limits<f16>::max_exponent10;
 };
 
+inline constexpr f16 f16_epsilon = NumLimit<f16>::epsilon;
+
 } // namespace ax
-
-namespace ax::Math {
-	inline constexpr f16 f16_epsilon = NumLimit<f16>::epsilon;
-
-	template<> AX_INLINE constexpr
-	bool almostEqual<f16>(const f16& a, const f16& b, const f16& ep) {
-		return (abs(a - b) <= ep);
-	}
-
-	template<> AX_INLINE constexpr
-	bool almostZero<f16>(const f16& a, const f16& ep) {
-		return (almostEqual(a, f16(0), ep));
-	}
-
-} // namespace ax::Math

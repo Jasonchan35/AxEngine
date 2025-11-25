@@ -11,6 +11,9 @@ public:
 		Vec4f b(2, 3, 4, 5);
 		auto c = a + b;
 		AX_TEST_ALMOST_EQ(c, Vec4f(3,5,7,9));
+		AX_TEST_NOT_ALMOST_EQ(c, Vec4f(3,9,7,9));
+		AX_TEST_NOT_ALMOST_EQ(c, Vec4f(3,1,7,9));
+		
 	}
 };
 
