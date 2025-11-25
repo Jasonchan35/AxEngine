@@ -39,7 +39,9 @@ project(${PROJECT_NAME} VERSION 0.1.0)
 
 add_subdirectory(CoreLib/AxDetectPlatform)
 add_subdirectory(CoreLib/AxPlatform)
+add_subdirectory(CoreLib/AxCore)
 add_subdirectory(CoreLib/AxPlatform/test)
+add_subdirectory(CoreLib/AxCore/test)
 
 # target_sources(${PROJECT_NAME} PRIVATE ax_common.cmake)
 
