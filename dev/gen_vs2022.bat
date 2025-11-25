@@ -3,7 +3,7 @@
 @cd %~dp0
 
 cmake -G "Visual Studio 17 2022" ^
-	-B _build/AxEngine-x64-windows ^
+	-B _build/vs2022-x64-windows ^
 	.
 
 @pause

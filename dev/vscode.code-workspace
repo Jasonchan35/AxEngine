@@ -9,6 +9,10 @@
 		"cmake.configureSettings": {
 			"CMAKE_MAKE_PROGRAM": "${workspaceFolder}/ninja.exe"
 		},
-		"cmake.buildDirectory": "${workspaceFolder}/_build/vscode_cmake"
+		"cmake.configureEnvironment": {
+			"CMAKE_C_COMPILER=clang": "clang",
+			"CMAKE_CXX_COMPILER=clang++": "clang++"
+		},
+		"cmake.buildDirectory": "${workspaceFolder}/_build/vscode-ninja-clang"
 	}
 }
