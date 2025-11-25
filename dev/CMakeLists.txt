@@ -37,7 +37,6 @@ endif()
 
 project(${PROJECT_NAME} VERSION 0.1.0)
 
-add_subdirectory(CoreLib/AxDetectPlatform)
 add_subdirectory(CoreLib/AxPlatform)
 add_subdirectory(CoreLib/AxCore)
 add_subdirectory(CoreLib/AxPlatform/test)

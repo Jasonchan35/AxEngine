@@ -1,7 +1,7 @@
 module;
 
 #include "AxPlatform-pch.h"
-#include "AxPlatform/AxWindows.h"
+#include "AxPlatform/Base/AX_WINDOWS.h"
 
 module AxPlatform.Debug;
 

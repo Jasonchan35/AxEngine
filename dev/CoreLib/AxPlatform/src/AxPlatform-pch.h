@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "AX_DETECT_PLATFORM.h"
-#include "AxPlatform/AxMacro.h"
+#include "AxPlatform/Detect/AX_DETECT_PLATFORM.h"
+#include "AxPlatform/Base/AX_MACRO.h"
 
 // header must use #include instead of import
 #include <atomic>
@@ -38,6 +38,6 @@
 #endif
 //---- end of SSE / AVX ------
 
-#include "AxPlatform/AxWindows.h"
+#include "AxPlatform/Base/AX_WINDOWS.h"
 
 #endif // AX_USE_PRECOMPILE_HEADER
