@@ -57,6 +57,9 @@ public:
 	AX_INLINE constexpr Vec3	homogenize () const { return Math::safeDiv(*this, w).xyz(); }
 	AX_INLINE constexpr Vec3	toVec3() const		{ return homogenize(); }
 
+	AX_INLINE  This abs() const { return This(Math::abs(x), Math::abs(y), Math::abs(z), Math::abs(w)); }
+	AX_INLINE constexpr This operator-() const	{ return This(-x, -y, -z, -w); }
+	
 	AX_NODISCARD AX_INLINE constexpr This operator+(const This& r) const	{ return This(x + r.x, y + r.y, z + r.z, w + r.w); }
 	AX_NODISCARD AX_INLINE constexpr This operator-(const This& r) const	{ return This(x - r.x, y - r.y, z - r.z, w - r.w); }
 	AX_NODISCARD AX_INLINE constexpr This operator*(const This& r) const	{ return This(x * r.x, y * r.y, z * r.z, w * r.w); }
@@ -66,19 +69,16 @@ public:
 	AX_NODISCARD AX_INLINE constexpr This operator-(const T& s) const { return This(x - s, y - s, z - s, w - s); }
 	AX_NODISCARD AX_INLINE constexpr This operator*(const T& s) const { return This(x * s, y * s, z * s, w * s); }
 	AX_NODISCARD AX_INLINE constexpr This operator/(const T& s) const { return This(x / s, y / s, z / s, w / s); }
-
-	AX_INLINE  This abs() const { return This(Math::abs(x), Math::abs(y), Math::abs(z), Math::abs(w)); }
-	AX_INLINE constexpr This operator-() const	{ return This(-x, -y, -z, -w); }
 	
-	AX_INLINE void operator+=(const T& s)		{ x += s; y += s; z += s; w += s; }
-	AX_INLINE void operator-=(const T& s)		{ x -= s; y -= s; z -= s; w -= s; }
-	AX_INLINE void operator*=(const T& s)		{ x *= s; y *= s; z *= s; w *= s; }
-	AX_INLINE void operator/=(const T& s)		{ x /= s; y /= s; z /= s; w /= s; }
+	AX_INLINE void operator+=(const T& s)		{ *this = operator+(s); }
+	AX_INLINE void operator-=(const T& s)		{ *this = operator-(s); }
+	AX_INLINE void operator*=(const T& s)		{ *this = operator*(s); }
+	AX_INLINE void operator/=(const T& s)		{ *this = operator/(s); }
 
-	AX_INLINE void operator+=(const This& r)	{ x += r.x; y += r.y; z += r.z; w += r.w; }
-	AX_INLINE void operator-=(const This& r)	{ x -= r.x; y -= r.y; z -= r.z; w -= r.w; }
-	AX_INLINE void operator*=(const This& r)	{ x *= r.x; y *= r.y; z *= r.z; w *= r.w; }
-	AX_INLINE void operator/=(const This& r)	{ x /= r.x; y /= r.y; z /= r.z; w /= r.w; }
+	AX_INLINE void operator+=(const This& r)	{ *this = operator+(r); }
+	AX_INLINE void operator-=(const This& r)	{ *this = operator-(r); }
+	AX_INLINE void operator*=(const This& r)	{ *this = operator*(r); }
+	AX_INLINE void operator/=(const This& r)	{ *this = operator/(r); }
 
 	AX_NODISCARD AX_INLINE bool operator==(const This& r) const	{ return x == r.x && y == r.y && z == r.z && w == r.w; }
 	AX_NODISCARD AX_INLINE bool operator!=(const This& r) const	{ return x != r.x || y != r.y || z != r.z || w != r.w; }
@@ -104,7 +104,7 @@ public:
 	}
 };
 
-//---- Vec4f_SSE
+//---- Vec4f_SSE / Vec4d_SSE
 
 template<> AX_NODISCARD AX_INLINE constexpr void Vec4f_SSE::setAll(const f32& v) {
 	if (std::is_constant_evaluated()) {
@@ -122,62 +122,44 @@ template<> AX_NODISCARD AX_INLINE constexpr void Vec4d_SSE::setAll(const f64& v)
 	}
 }
 
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator+(const Vec4f_SSE& r) const { return Vec4f_SSE(_mm_add_ps(_m, r._m)); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator-(const Vec4f_SSE& r) const { return Vec4f_SSE(_mm_sub_ps(_m, r._m)); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator*(const Vec4f_SSE& r) const { return Vec4f_SSE(_mm_mul_ps(_m, r._m)); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator/(const Vec4f_SSE& r) const { return Vec4f_SSE(_mm_div_ps(_m, r._m)); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator+(const Vec4d_SSE& r) const { return Vec4d_SSE(_mm256_add_pd(_m, r._m)); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator-(const Vec4d_SSE& r) const { return Vec4d_SSE(_mm256_sub_pd(_m, r._m)); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator*(const Vec4d_SSE& r) const { return Vec4d_SSE(_mm256_mul_pd(_m, r._m)); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator/(const Vec4d_SSE& r) const { return Vec4d_SSE(_mm256_div_pd(_m, r._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator+(const Vec4f_SSE& v) const { return Vec4f_SSE(   _mm_add_ps(_m, v._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator-(const Vec4f_SSE& v) const { return Vec4f_SSE(   _mm_sub_ps(_m, v._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator*(const Vec4f_SSE& v) const { return Vec4f_SSE(   _mm_mul_ps(_m, v._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator/(const Vec4f_SSE& v) const { return Vec4f_SSE(   _mm_div_ps(_m, v._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator+(const Vec4d_SSE& v) const { return Vec4d_SSE(_mm256_add_pd(_m, v._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator-(const Vec4d_SSE& v) const { return Vec4d_SSE(_mm256_sub_pd(_m, v._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator*(const Vec4d_SSE& v) const { return Vec4d_SSE(_mm256_mul_pd(_m, v._m)); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator/(const Vec4d_SSE& v) const { return Vec4d_SSE(_mm256_div_pd(_m, v._m)); }
 
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator+(const f32& r) const { return Vec4f_SSE(_mm_add_ps(_m, _mm_set1_ps(r))); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator-(const f32& r) const { return Vec4f_SSE(_mm_sub_ps(_m, _mm_set1_ps(r))); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator*(const f32& r) const { return Vec4f_SSE(_mm_mul_ps(_m, _mm_set1_ps(r))); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator/(const f32& r) const { return Vec4f_SSE(_mm_div_ps(_m, _mm_set1_ps(r))); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator+(const f64& r) const { return Vec4d_SSE(_mm256_add_pd(_m, _mm256_set1_pd(r))); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator-(const f64& r) const { return Vec4d_SSE(_mm256_sub_pd(_m, _mm256_set1_pd(r))); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator*(const f64& r) const { return Vec4d_SSE(_mm256_mul_pd(_m, _mm256_set1_pd(r))); }
-template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator/(const f64& r) const { return Vec4d_SSE(_mm256_div_pd(_m, _mm256_set1_pd(r))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator+(const f32& v) const { return Vec4f_SSE(   _mm_add_ps(_m,    _mm_set1_ps(v))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator-(const f32& v) const { return Vec4f_SSE(   _mm_sub_ps(_m,    _mm_set1_ps(v))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator*(const f32& v) const { return Vec4f_SSE(   _mm_mul_ps(_m,    _mm_set1_ps(v))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4f_SSE Vec4f_SSE::operator/(const f32& v) const { return Vec4f_SSE(   _mm_div_ps(_m,    _mm_set1_ps(v))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator+(const f64& v) const { return Vec4d_SSE(_mm256_add_pd(_m, _mm256_set1_pd(v))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator-(const f64& v) const { return Vec4d_SSE(_mm256_sub_pd(_m, _mm256_set1_pd(v))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator*(const f64& v) const { return Vec4d_SSE(_mm256_mul_pd(_m, _mm256_set1_pd(v))); }
+template<> AX_NODISCARD AX_INLINE constexpr Vec4d_SSE Vec4d_SSE::operator/(const f64& v) const { return Vec4d_SSE(_mm256_div_pd(_m, _mm256_set1_pd(v))); }
 
-AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator+(const f32& s, const Vec4f_SSE& r) { return Vec4f_SSE(_mm_add_ps(_mm_set1_ps(s), r._m)); }
-AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator-(const f32& s, const Vec4f_SSE& r) { return Vec4f_SSE(_mm_sub_ps(_mm_set1_ps(s), r._m)); }
-AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator*(const f32& s, const Vec4f_SSE& r) { return Vec4f_SSE(_mm_mul_ps(_mm_set1_ps(s), r._m)); }
-AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator/(const f32& s, const Vec4f_SSE& r) { return Vec4f_SSE(_mm_div_ps(_mm_set1_ps(s), r._m)); }
-AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator+(const f64& s, const Vec4d_SSE& r) { return Vec4d_SSE(_mm256_add_pd(_mm256_set1_pd(s), r._m)); }
-AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator-(const f64& s, const Vec4d_SSE& r) { return Vec4d_SSE(_mm256_sub_pd(_mm256_set1_pd(s), r._m)); }
-AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator*(const f64& s, const Vec4d_SSE& r) { return Vec4d_SSE(_mm256_mul_pd(_mm256_set1_pd(s), r._m)); }
-AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator/(const f64& s, const Vec4d_SSE& r) { return Vec4d_SSE(_mm256_div_pd(_mm256_set1_pd(s), r._m)); }
-
-template<> AX_INLINE void Vec4f_SSE::operator+=(const Vec4f_SSE& r) { _m = _mm_add_ps(_m, r._m); }
-template<> AX_INLINE void Vec4f_SSE::operator-=(const Vec4f_SSE& r) { _m = _mm_sub_ps(_m, r._m); }
-template<> AX_INLINE void Vec4f_SSE::operator*=(const Vec4f_SSE& r) { _m = _mm_mul_ps(_m, r._m); }
-template<> AX_INLINE void Vec4f_SSE::operator/=(const Vec4f_SSE& r) { _m = _mm_div_ps(_m, r._m); }
-template<> AX_INLINE void Vec4d_SSE::operator+=(const Vec4d_SSE& r) { _m = _mm256_add_pd(_m, r._m); }
-template<> AX_INLINE void Vec4d_SSE::operator-=(const Vec4d_SSE& r) { _m = _mm256_sub_pd(_m, r._m); }
-template<> AX_INLINE void Vec4d_SSE::operator*=(const Vec4d_SSE& r) { _m = _mm256_mul_pd(_m, r._m); }
-template<> AX_INLINE void Vec4d_SSE::operator/=(const Vec4d_SSE& r) { _m = _mm256_div_pd(_m, r._m); }
-
-template<> AX_INLINE void Vec4f_SSE::operator+=(const float& r) { _m = _mm_add_ps(_m, _mm_set1_ps(r)); }
-template<> AX_INLINE void Vec4f_SSE::operator-=(const float& r) { _m = _mm_sub_ps(_m, _mm_set1_ps(r)); }
-template<> AX_INLINE void Vec4f_SSE::operator*=(const float& r) { _m = _mm_mul_ps(_m, _mm_set1_ps(r)); }
-template<> AX_INLINE void Vec4f_SSE::operator/=(const float& r) { _m = _mm_div_ps(_m, _mm_set1_ps(r)); }
-template<> AX_INLINE void Vec4d_SSE::operator+=(const double& r) { _m = _mm256_add_pd(_m, _mm256_set1_pd(r)); }
-template<> AX_INLINE void Vec4d_SSE::operator-=(const double& r) { _m = _mm256_sub_pd(_m, _mm256_set1_pd(r)); }
-template<> AX_INLINE void Vec4d_SSE::operator*=(const double& r) { _m = _mm256_mul_pd(_m, _mm256_set1_pd(r)); }
-template<> AX_INLINE void Vec4d_SSE::operator/=(const double& r) { _m = _mm256_div_pd(_m, _mm256_set1_pd(r)); }
+AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator+(const f32& s, const Vec4f_SSE& v) { return Vec4f_SSE(   _mm_add_ps(   _mm_set1_ps(s), v._m)); }
+AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator-(const f32& s, const Vec4f_SSE& v) { return Vec4f_SSE(   _mm_sub_ps(   _mm_set1_ps(s), v._m)); }
+AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator*(const f32& s, const Vec4f_SSE& v) { return Vec4f_SSE(   _mm_mul_ps(   _mm_set1_ps(s), v._m)); }
+AX_NODISCARD AX_INLINE constexpr Vec4f_SSE operator/(const f32& s, const Vec4f_SSE& v) { return Vec4f_SSE(   _mm_div_ps(   _mm_set1_ps(s), v._m)); }
+AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator+(const f64& s, const Vec4d_SSE& v) { return Vec4d_SSE(_mm256_add_pd(_mm256_set1_pd(s), v._m)); }
+AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator-(const f64& s, const Vec4d_SSE& v) { return Vec4d_SSE(_mm256_sub_pd(_mm256_set1_pd(s), v._m)); }
+AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator*(const f64& s, const Vec4d_SSE& v) { return Vec4d_SSE(_mm256_mul_pd(_mm256_set1_pd(s), v._m)); }
+AX_NODISCARD AX_INLINE constexpr Vec4d_SSE operator/(const f64& s, const Vec4d_SSE& v) { return Vec4d_SSE(_mm256_div_pd(_mm256_set1_pd(s), v._m)); }
 
 // Check if ALL lanes resulted in TRUE (0xFFFFFFFF)
 // Extract a 4-bit mask (one bit per lane) from the result vector R.
 // If all 4 bits are set (0b1111 or 0x0F), then all elements are true.
-template<> AX_INLINE bool Vec4f_SSE::operator> (const Vec4f_SSE& r) const { auto cmp = _mm_cmp_ps(_m, r._m, _CMP_GT_OQ); return 0x0F == _mm_movemask_ps(cmp); }
-template<> AX_INLINE bool Vec4f_SSE::operator< (const Vec4f_SSE& r) const {	auto cmp = _mm_cmp_ps(_m, r._m, _CMP_LT_OQ); return 0x0F == _mm_movemask_ps(cmp); }
-template<> AX_INLINE bool Vec4f_SSE::operator>=(const Vec4f_SSE& r) const { auto cmp = _mm_cmp_ps(_m, r._m, _CMP_GE_OQ); return 0x0F == _mm_movemask_ps(cmp); }
-template<> AX_INLINE bool Vec4f_SSE::operator<=(const Vec4f_SSE& r) const { auto cmp = _mm_cmp_ps(_m, r._m, _CMP_LE_OQ); return 0x0F == _mm_movemask_ps(cmp); }
-template<> AX_INLINE bool Vec4d_SSE::operator> (const Vec4d_SSE& r) const { auto cmp = _mm256_cmp_pd(_m, r._m, _CMP_GT_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
-template<> AX_INLINE bool Vec4d_SSE::operator< (const Vec4d_SSE& r) const {	auto cmp = _mm256_cmp_pd(_m, r._m, _CMP_LT_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
-template<> AX_INLINE bool Vec4d_SSE::operator>=(const Vec4d_SSE& r) const { auto cmp = _mm256_cmp_pd(_m, r._m, _CMP_GE_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
-template<> AX_INLINE bool Vec4d_SSE::operator<=(const Vec4d_SSE& r) const { auto cmp = _mm256_cmp_pd(_m, r._m, _CMP_LE_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
+template<> AX_INLINE bool Vec4f_SSE::operator> (const Vec4f_SSE& v) const { auto cmp =    _mm_cmp_ps(_m, v._m, _CMP_GT_OQ); return 0x0F ==    _mm_movemask_ps(cmp); }
+template<> AX_INLINE bool Vec4f_SSE::operator< (const Vec4f_SSE& v) const { auto cmp =    _mm_cmp_ps(_m, v._m, _CMP_LT_OQ); return 0x0F ==    _mm_movemask_ps(cmp); }
+template<> AX_INLINE bool Vec4f_SSE::operator>=(const Vec4f_SSE& v) const { auto cmp =    _mm_cmp_ps(_m, v._m, _CMP_GE_OQ); return 0x0F ==    _mm_movemask_ps(cmp); }
+template<> AX_INLINE bool Vec4f_SSE::operator<=(const Vec4f_SSE& v) const { auto cmp =    _mm_cmp_ps(_m, v._m, _CMP_LE_OQ); return 0x0F ==    _mm_movemask_ps(cmp); }
+template<> AX_INLINE bool Vec4d_SSE::operator> (const Vec4d_SSE& v) const { auto cmp = _mm256_cmp_pd(_m, v._m, _CMP_GT_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
+template<> AX_INLINE bool Vec4d_SSE::operator< (const Vec4d_SSE& v) const { auto cmp = _mm256_cmp_pd(_m, v._m, _CMP_LT_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
+template<> AX_INLINE bool Vec4d_SSE::operator>=(const Vec4d_SSE& v) const { auto cmp = _mm256_cmp_pd(_m, v._m, _CMP_GE_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
+template<> AX_INLINE bool Vec4d_SSE::operator<=(const Vec4d_SSE& v) const { auto cmp = _mm256_cmp_pd(_m, v._m, _CMP_LE_OQ); return 0x0F == _mm256_movemask_pd(cmp); }
 
 template<> AX_NODISCARD AX_INLINE Vec4f_SSE Vec4f_SSE::abs() const { return Vec4f_SSE(_mm_andnot_ps(_m, _mm_set1_ps(-0.0f))); }
 template<> AX_NODISCARD AX_INLINE Vec4d_SSE Vec4d_SSE::abs() const { return Vec4d_SSE(_mm256_andnot_pd(_m, _mm256_set1_pd(-0.0f))); }

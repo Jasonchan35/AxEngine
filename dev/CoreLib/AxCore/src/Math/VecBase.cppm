@@ -83,7 +83,10 @@ public:
 	using Element = T;
 	static constexpr Int elementCount = 3;
 
-	T x, y, z;
+	union {
+		struct { T x, y, z; };
+		struct { T r, g, b; };
+	};
 	
 	AX_INLINE constexpr VecBase_() = default;
 	AX_INLINE constexpr VecBase_(const T& x_, const T& y_, const T& z_) : x(x_), y(y_), z(z_) {}
@@ -107,17 +110,12 @@ public:
 	static constexpr Int elementCount = 3;
 
 	union {
-		struct {
-			T x, y, z;
-			T _unused_padding; // keep this to zero for memory wise compare
-		};
+		struct { T x, y, z, _unused_padding; };
 		__m128 _m; // SSE
 	};
 	
 	AX_INLINE			VecBase_() = default;
 	AX_INLINE constexpr	VecBase_(const __m128& m) : _m(m) {}
-	AX_INLINE constexpr	VecBase_( const T& x_, const T& y_, const T& z_) : x(x_), y(y_), z(z_), _unused_padding(0) {}
-	AX_INLINE constexpr	void set(const T& x_, const T& y_, const T& z_) { x = x_; y = y_; z = z_; _unused_padding=0; }
 
 			T*	data()		 { return &x; }
 	const	T*	data() const { return &x; }
@@ -138,15 +136,9 @@ public:
 
 	AX_INLINE			VecBase_() = default;
 	AX_INLINE constexpr VecBase_(const __m256d& m) : _m(m) {}
-	AX_INLINE constexpr VecBase_( const T& x_, const T& y_, const T& z_) : x(x_), y(y_), z(z_), _unused_padding(0) {}
-
-	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_) { x = x_; y = y_; z = z_; _unused_padding=0; }
 
 	union {
-		struct {
-			T x, y, z;
-			T _unused_padding; // keep this to zero for memory wise compare
-		};
+		struct { T x, y, z; T _unused_padding; };
 		__m256d _m; // SSE
 	};
 			T*	data()		 { return &x; }
@@ -171,7 +163,10 @@ public:
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { x = x_; y = y_; z = z_; w = w_; }
 
-	T x, y, z, w;
+	union {
+		struct { T x, y, z, w; };
+		struct { T r, g, b, a; };
+	};
 	
 			T*	data()		 { return &x; }
 	const	T*	data() const { return &x; }
@@ -192,6 +187,7 @@ public:
 
 	union {
 		struct { T x, y, z, w; };
+		struct { T r, g, b, a; };
 		__m128 _m; // SSE
 	};
 	
@@ -219,6 +215,7 @@ public:
 
 	union {
 		struct { T x, y, z, w; };
+		struct { T r, g, b, a; };
 		__m256d _m; // AVX
 	};
 	
