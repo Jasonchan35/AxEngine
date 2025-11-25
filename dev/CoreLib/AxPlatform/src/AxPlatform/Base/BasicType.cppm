@@ -188,12 +188,13 @@ using StrLit16 = StrLit_<Char16>;
 using StrLit32 = StrLit_<Char32>;
 
 namespace Tag {
-	class NewObject {};
-	class NoInit {};
-} // Tag
+	class NewObject_{};	inline constexpr NewObject_ NewObject = {};
+	class NoInit_{};	inline constexpr NoInit_	NoInit = {};
+	class All_{};		inline constexpr All_		All = {};
+} // namespace Tag
 
 struct SrcLoc {
-	constexpr SrcLoc(Tag::NoInit) noexcept {}
+	constexpr SrcLoc(Tag::NoInit_) noexcept {}
 	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) noexcept : _loc(loc) {};
 	
 	constexpr Int    column() const noexcept { return _loc.column(); }
@@ -357,21 +358,9 @@ protected:
 template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
 template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
 
-template<class T> struct NumLimit {
-	using Helper = typename T::NumLimit_Helper;
-	
-	static constexpr bool isExactType    =  Helper::isExactType;
-	static constexpr bool hasInfinity    =  Helper::hasInfinity;
-	static constexpr T    infinity       =  Helper::infinity;
-	static constexpr T    negInfinity    =  Helper::negInfinity;
-	static constexpr T    lowest         =  Helper::lowest;
-	static constexpr T    min            =  Helper::min;
-	static constexpr T    max            =  Helper::max;
-	static constexpr T    epsilon        =  Helper::epsilon;
-	static constexpr T    NaN            =  Helper::NaN;
-};
+template<class T> struct NumLimit;
 
-template<class T> requires Type_IsInt<T> || Type_IsFloat<T> || Type_IsChar<T>
+template<class T> requires Type_IsFundamental<T>
 struct NumLimit<T> {
 	static constexpr bool isExactType    =  std::numeric_limits<T>::is_exact;
 	static constexpr bool hasInfinity    =  std::numeric_limits<T>::has_infinity;

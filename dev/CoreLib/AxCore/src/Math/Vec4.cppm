@@ -24,9 +24,9 @@ public:
 	using Mat4   = Mat4_< T, SIMD>;
 	using Rect2  = Rect2_<T, SIMD>;
 	using Quat4  = Quat4_<T, SIMD>;
-
+	
 	AX_INLINE explicit	constexpr Vec_() = default;
-	AX_INLINE			constexpr Vec_(Tag::VecSetAll, const T& v) { setAll(v); }
+	AX_INLINE			constexpr Vec_(Tag::All_, const T& v) { setAll(v); }
 	AX_INLINE			constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) { set(x_,y_,z_,w_); }
 	AX_INLINE			constexpr Vec_(const Vec3& v, T w_) { set(v, w_); }
 	AX_INLINE			constexpr Vec_(const Data& t) : Data(t) {}
@@ -37,9 +37,9 @@ public:
 
 	AX_INLINE constexpr void operator=(const Data& t)			{ Base::operator=(t); }
 
-	AX_INLINE static constexpr This s_zero		() { return This(Tag::VecSetAll(), T(0)); }
-	AX_INLINE static constexpr This s_one 		() { return This(Tag::VecSetAll(), T(1)); }
-	AX_INLINE static constexpr This s_epsilon	() { return This(Tag::VecSetAll(), Math::epsilon<T>); }
+	AX_INLINE static constexpr This s_zero		() { return This(Tag::All, T(0)); }
+	AX_INLINE static constexpr This s_one 		() { return This(Tag::All, T(1)); }
+	AX_INLINE static constexpr This s_epsilon	() { return This(Tag::All, Math::epsilon<T>); }
 	
 	AX_INLINE constexpr		  T* data()			{ return &x; }
 	AX_INLINE constexpr const T* data() const	{ return &x; }

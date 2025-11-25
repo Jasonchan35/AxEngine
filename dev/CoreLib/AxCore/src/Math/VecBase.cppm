@@ -14,10 +14,6 @@ AX_ENUM_CLASS(AX_VecSIMD_ENUM_LIST, VecSIMD, u8)
 constexpr VecSIMD VecSIMD_default = VecSIMD::SSE;
 using CpuSIMD = VecSIMD; // TODO: remove
 
-namespace Tag {
-	class VecSetAll{};
-} // namespace Tag
-
 template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class VecBase_;
 template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class Vec_;
 template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class Quat_;
@@ -233,18 +229,18 @@ public:
 
 template<Int N, class T, VecSIMD SIMD>
 struct NumLimit<Vec_<N, T, SIMD>> {
-	using OBJ = Vec_<N, T, SIMD>;
+	using VEC = Vec_<N, T, SIMD>;
 	using ElemLimit = NumLimit<T>;
 
 	static constexpr bool isExactType   =  ElemLimit::isExactType;
 	static constexpr bool hasInfinity   =  ElemLimit::hasInfinity;
-	static constexpr OBJ  infinity      =  OBJ(Tag::VecSetAll(), ElemLimit::infinity);
-	static constexpr OBJ  negInfinity   =  OBJ(Tag::VecSetAll(), ElemLimit::negInfinity);
-	static constexpr OBJ  lowest        =  OBJ(Tag::VecSetAll(), ElemLimit::lowest);
-	static constexpr OBJ  min           =  OBJ(Tag::VecSetAll(), ElemLimit::min);
-	static constexpr OBJ  max           =  OBJ(Tag::VecSetAll(), ElemLimit::max);
-	static constexpr OBJ  epsilon       =  OBJ(Tag::VecSetAll(), ElemLimit::epsilon);
-	static constexpr OBJ  NaN           =  OBJ(Tag::VecSetAll(), ElemLimit::NaN);
+	static constexpr VEC  infinity      =  VEC(Tag::All, ElemLimit::infinity);
+	static constexpr VEC  negInfinity   =  VEC(Tag::All, ElemLimit::negInfinity);
+	static constexpr VEC  lowest        =  VEC(Tag::All, ElemLimit::lowest);
+	static constexpr VEC  min           =  VEC(Tag::All, ElemLimit::min);
+	static constexpr VEC  max           =  VEC(Tag::All, ElemLimit::max);
+	static constexpr VEC  epsilon       =  VEC(Tag::All, ElemLimit::epsilon);
+	static constexpr VEC  NaN           =  VEC(Tag::All, ElemLimit::NaN);
 };
 
 //----------
