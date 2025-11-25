@@ -354,6 +354,9 @@ protected:
 	T* _p;
 };
 
+template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
+template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
+
 template<class T> struct NumLimit {
 	using Helper = typename T::NumLimit_Helper;
 	
