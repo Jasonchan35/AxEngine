@@ -97,7 +97,7 @@ template<class T> constexpr	modf_Result<T>	modf(const T& v) {
 	}
 }
 
-template<class T, class ENABLE = void>
+template<class T>
 inline constexpr bool almostEqual(const T& a, const T& b, const T& ep = epsilon<T>) {
 	if constexpr (std::is_integral_v<T>) {
 		return a == b;
@@ -106,12 +106,12 @@ inline constexpr bool almostEqual(const T& a, const T& b, const T& ep = epsilon<
 	}
 }
 
-template<class T, class ENABLE = void>
+template<class T>
 inline constexpr bool almostZero(const T& a, const T& ep = epsilon<T>) {
 	return (almostEqual(a, T(0), ep));
 }
 
-template<class T, class ENABLE = void> AX_INLINE constexpr
+template<class T> AX_INLINE constexpr
 bool exactlyEqual(const T& a, const T& b) {
 	AX_PRAGMA_GCC(diagnostic push)
 	AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")

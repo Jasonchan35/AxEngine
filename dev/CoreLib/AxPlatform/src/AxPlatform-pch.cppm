@@ -25,22 +25,12 @@ export import <tuple>;
 export import <type_traits>;
 export import <utility>;
 
-// SSE / AVX
-#if AX_COMPILER_CLANG && AX_OS_WINDOWS
-	export import <xmmintrin.h>;
-	export import <avxintrin.h>;
-#else
-	export import <xmmintrin.h>;
-	export import <immintrin.h>;
-#endif
-//----------
-
 #if AX_OS_WINDOWS
 	export import <conio.h>;
 	export import <windows.h>;
 #endif
 
-#endif // AX_USE_IMPROT_INSTEAD_INCLUDE
+#endif // AX_USE_PRECOMPILE_HEADER
 
 export namespace ax {
 

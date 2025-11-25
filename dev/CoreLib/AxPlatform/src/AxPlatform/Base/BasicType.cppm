@@ -353,18 +353,31 @@ protected:
 	T* _p;
 };
 
-template<class T> struct NumLimit;
+template<class T> struct NumLimit {
+	using Helper = typename T::NumLimit_Helper;
+	
+	static constexpr bool isExactType    =  Helper::isExactType;
+	static constexpr bool hasInfinity    =  Helper::hasInfinity;
+	static constexpr T    infinity       =  Helper::infinity;
+	static constexpr T    negInfinity    =  Helper::negInfinity;
+	static constexpr T    lowest         =  Helper::lowest;
+	static constexpr T    min            =  Helper::min;
+	static constexpr T    max            =  Helper::max;
+	static constexpr T    epsilon        =  Helper::epsilon;
+	static constexpr T    NaN            =  Helper::NaN;
+};
 
 template<class T> requires AxType::isInt<T> || AxType::isFloat<T> || AxType::isChar<T>
 struct NumLimit<T> {
-	static constexpr T    epsilon     =  std::numeric_limits<T>::epsilon();
-	static constexpr T    lowest      =  std::numeric_limits<T>::lowest();
-	static constexpr T    min         =  std::numeric_limits<T>::min();
-	static constexpr T    max         =  std::numeric_limits<T>::max();
-	static constexpr T    infinity    =  std::numeric_limits<T>::infinity();
-	static constexpr T    negInfinity = -std::numeric_limits<T>::infinity();
-	static constexpr T    NaN         =  std::numeric_limits<T>::quiet_NaN();
-	static constexpr bool hasInfinity =  std::numeric_limits<T>::has_infinity;
+	static constexpr bool isExactType    =  std::numeric_limits<T>::is_exact;
+	static constexpr bool hasInfinity    =  std::numeric_limits<T>::has_infinity;
+	static constexpr T    infinity       =  std::numeric_limits<T>::infinity();
+	static constexpr T    negInfinity    = -std::numeric_limits<T>::infinity();
+	static constexpr T    lowest         =  std::numeric_limits<T>::lowest();
+	static constexpr T    min            =  std::numeric_limits<T>::min();
+	static constexpr T    max            =  std::numeric_limits<T>::max();
+	static constexpr T    epsilon        =  std::numeric_limits<T>::epsilon();
+	static constexpr T    NaN            =  std::numeric_limits<T>::quiet_NaN();
 };
 
 inline constexpr f32   f32_epsilon       = NumLimit<f32>::epsilon;

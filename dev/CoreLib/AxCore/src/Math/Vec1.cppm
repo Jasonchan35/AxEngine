@@ -5,14 +5,15 @@ export import AxCore.VecBase;
 
 export namespace ax {
 
-template<class T, CpuSIMD SIMD>
+template<class T, VecSIMD SIMD>
 class Vec_<1, T, SIMD> : public VecBase1_<T, SIMD> {
 	using This = Vec_;
+	using Base = VecBase1_<T, SIMD>;
 public:
 	using Data = VecBase1_<T, SIMD>;
 	using Data::ElementCount;
 	using Data::x;
-	using typename Data::Element;
+	using typename Data::T;
 
 	using Vec2   = Vec2_< T, SIMD>;
 	using Vec3   = Vec3_< T, SIMD>;

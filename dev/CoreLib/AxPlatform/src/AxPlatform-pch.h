@@ -7,6 +7,17 @@
 #include <atomic>
 #include <cassert>
 
+// SSE / AVX
+#if AX_COMPILER_CLANG && AX_OS_WINDOWS
+	#include <xmmintrin.h>
+	#include <avxintrin.h>
+#else
+	#include <xmmintrin.h>
+	#include <immintrin.h>
+#endif
+//---- end of SSE / AVX ------
+
+
 #if AX_USE_PRECOMPILE_HEADER
 
 #include <algorithm>
@@ -29,16 +40,9 @@
 #include <type_traits>
 #include <utility>
 
-// SSE / AVX
-#if AX_COMPILER_CLANG && AX_OS_WINDOWS
-	#include <xmmintrin.h>
-	#include <avxintrin.h>
-#else
-	#include <xmmintrin.h>
-	#include <immintrin.h>
+#if AX_OS_WINDOWS
+	#include <conio.h>
+	#include "AxPlatform/Base/AX_WINDOWS.h"
 #endif
-//---- end of SSE / AVX ------
-
-#include "AxPlatform/Base/AX_WINDOWS.h"
 
 #endif // AX_USE_PRECOMPILE_HEADER
