@@ -8,9 +8,9 @@ export namespace  ax {
 inline constexpr CpuSIMD Vec_DefaultSIMD = CpuSIMD::SSE;
 template<Int N, class T, CpuSIMD SIMD> class Vec_Storage_;
 
-template<Int N, class T, CpuSIMD SIMD> class VecBase_;
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec3_ = VecBase_<3, T, SIMD>;
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec4_ = VecBase_<4, T, SIMD>;
+template<Int N, class T, CpuSIMD SIMD> class Vec_;
+template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec3_ = Vec_<3, T, SIMD>;
+template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec4_ = Vec_<4, T, SIMD>;
 
 using Vec3f			= Vec3_<f32>;
 using Vec3f_SSE		= Vec3_<f32, CpuSIMD::SSE>;
@@ -99,53 +99,41 @@ public:
 	AX_NODISCARD AX_INLINE			constexpr Vec_Storage_(const T& e0, const T& e1, const T& e2, const T& e3) : _e0(e0), _e1(e1), _e2(e2), _e3(e3) {}
 };
 
-template<Int N, class T, CpuSIMD SIMD>
-using VecBase_Base = NumSIMD_<N,  VecBase_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
+template<Int N, class T, CpuSIMD SIMD> using Vec_NumSIMD = NumSIMD_<N,  Vec_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
 
 template<class T, CpuSIMD SIMD>
-class VecBase_<4, T, SIMD> : public VecBase_Base<4, T, SIMD> {
-	using This = VecBase_;
-	using Base = NumSIMD_<4, VecBase_, Vec_Storage_<4, T, SIMD>>;
+class Vec_<3, T, SIMD> : public Vec_NumSIMD<3, T, SIMD> {
+	using Base = Vec_NumSIMD<3, T, SIMD>;
+	using This = Vec_;
 public:
-	using _NumLimit = typename NumSIMD_NumLimit<This, T>;
-
 	using Storage = Base::Storage;
 	using Element = typename Storage::Element;
 	static constexpr Int elementCount = Storage::elementCount;
 	static constexpr CpuSIMD cpuSIMD  = Storage::cpuSIMD;
 	
-	AX_INLINE constexpr VecBase_() = default;
-	AX_INLINE constexpr VecBase_(Tag::All_, const T& v_) : Base(Tag::All, v_) {}
-	AX_INLINE constexpr VecBase_(const Storage & storage) : Base(storage) {} 
-	AX_INLINE constexpr VecBase_(const T& e0, const T& e1, const T& e2) : Base(e0, e1, e2) {}
-	AX_INLINE constexpr VecBase_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
+	AX_INLINE constexpr Vec_() = default;
+	AX_INLINE constexpr Vec_(Tag::All_, const T& v_) : Base(Tag::All, v_) {}
+	AX_INLINE constexpr Vec_(const Storage & storage) : Base(storage) {} 
+	AX_INLINE constexpr Vec_(const T& e0, const T& e1, const T& e2) : Base(e0, e1, e2) {}
+	AX_INLINE constexpr Vec_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
 };
 
 
-namespace Math {
-// for UnitTest validate between different SIMD
-template <Int N, class T, CpuSIMD A_SIMD, CpuSIMD B_SIMD> requires (A_SIMD != B_SIMD)
-inline constexpr bool almostEqual(const VecBase_<N, T, A_SIMD>& a, const VecBase_<N, T, B_SIMD>& b) {
-	for (Int i = 0; i < N; ++i) {
-		if (!almostEqual(a.unsafe_at(i), b.unsafe_at(i))) return false;
-	}
-	return true;
+template<class T, CpuSIMD SIMD>
+class Vec_<4, T, SIMD> : public Vec_NumSIMD<4, T, SIMD> {
+	using Base = Vec_NumSIMD<4, T, SIMD>;
+	using This = Vec_;
+public:
+	using Storage = Base::Storage;
+	using Element = typename Storage::Element;
+	static constexpr Int elementCount = Storage::elementCount;
+	static constexpr CpuSIMD cpuSIMD  = Storage::cpuSIMD;
+	
+	AX_INLINE constexpr Vec_() = default;
+	AX_INLINE constexpr Vec_(Tag::All_, const T& v_) : Base(Tag::All, v_) {}
+	AX_INLINE constexpr Vec_(const Storage & storage) : Base(storage) {} 
+	AX_INLINE constexpr Vec_(const T& e0, const T& e1, const T& e2) : Base(e0, e1, e2) {}
+	AX_INLINE constexpr Vec_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
+};
+
 }
-} // namespace Math
-
-
-// template<class T, CpuSIMD SIMD = Vec_DefaultSIMD>
-// class Vec3_ : public VecBase_<3, T, SIMD> {
-// public:
-// 	AX_INLINE constexpr Vec3_() = default;
-// }; 
-
-// template<class T, CpuSIMD SIMD = Vec_DefaultSIMD>
-// class Vec4_ : public VecBase_<4, T, SIMD> {
-// 	using Base = VecBase_<4, T, SIMD>;
-// public:
-// 	AX_INLINE constexpr Vec4_() = default;
-// 	AX_INLINE constexpr Vec4_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
-// };
-
-} // namespace

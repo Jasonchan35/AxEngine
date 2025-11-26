@@ -113,8 +113,8 @@ AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 	return o;
 }
 
-template<class T> AX_NODISCARD
-inline constexpr bool almostEqual(const T& a, const T& b) {
+template<class A, class B> AX_NODISCARD
+inline constexpr bool almostEqual(const A& a, const B& b) {
 	return a.almostEqual(b);
 }
 

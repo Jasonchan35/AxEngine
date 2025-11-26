@@ -5,7 +5,6 @@ export import AxCore.NumSIMD3;
 
 export namespace ax {
 
-
 template<class VEC, class STORAGE>
 class NumSIMD_<4, VEC, STORAGE> : public STORAGE {
 	using This = NumSIMD_;
@@ -66,7 +65,11 @@ public:
 	AX_NODISCARD constexpr bool operator> (const VEC& v) const;
 	AX_NODISCARD constexpr bool operator<=(const VEC& v) const;
 	AX_NODISCARD constexpr bool operator>=(const VEC& v) const;
-	AX_NODISCARD constexpr bool almostEqual(const VEC& v) const;
+
+//	AX_NODISCARD constexpr bool almostEqual(const VEC& v) const;
+
+	template<class R, class R_STORAGE>
+	AX_NODISCARD constexpr bool almostEqual(const NumSIMD_<4, R, R_STORAGE>& v) const;
 
 	AX_NODISCARD constexpr VEC abs() const;
 
@@ -141,10 +144,8 @@ constexpr VEC NumSIMD_<4, VEC, STORAGE>::operator/(const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<4, VEC, STORAGE>::operator< (const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (elementCount == 3 && _use_SSE_f32) { return 0x7 =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LT_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LT_OQ)); } 
-		if constexpr (elementCount == 3 && _use_SSE_f64) { return 0x7 = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LT_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LT_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LT_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LT_OQ)); } 
 	}
 	return _e0 < v._e0
 		&& _e1 < v._e1
@@ -155,10 +156,8 @@ constexpr bool NumSIMD_<4, VEC, STORAGE>::operator< (const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<4, VEC, STORAGE>::operator> (const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (elementCount == 3 && _use_SSE_f32) { return 0x7 =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GT_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GT_OQ)); } 
-		if constexpr (elementCount == 3 && _use_SSE_f64) { return 0x7 = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GT_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GT_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GT_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GT_OQ)); } 
 	}
 	return _e0 > v._e0
 		&& _e1 > v._e1
@@ -169,10 +168,8 @@ constexpr bool NumSIMD_<4, VEC, STORAGE>::operator> (const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<4, VEC, STORAGE>::operator<=(const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (elementCount == 3 && _use_SSE_f32) { return 0x7 =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LE_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LE_OQ)); } 
-		if constexpr (elementCount == 3 && _use_SSE_f64) { return 0x7 = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LE_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LE_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0xF ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LE_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0xF == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LE_OQ)); } 
 	}
 	return _e0 <= v._e0
 		&& _e1 <= v._e1
@@ -183,10 +180,8 @@ constexpr bool NumSIMD_<4, VEC, STORAGE>::operator<=(const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<4, VEC, STORAGE>::operator>=(const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (elementCount == 3 && _use_SSE_f32) { return 0x7 =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GE_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GE_OQ)); } 
-		if constexpr (elementCount == 3 && _use_SSE_f64) { return 0x7 = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GE_OQ)); } 
-		if constexpr (elementCount == 4 && _use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GE_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0xF ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GE_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0xF == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GE_OQ)); } 
 	}
 	return _e0 >= v._e0
 		&& _e1 >= v._e1
@@ -194,12 +189,21 @@ constexpr bool NumSIMD_<4, VEC, STORAGE>::operator>=(const VEC& v) const {
 		&& _e3 >= v._e3;
 }
 
-template <class VEC, class STORAGE> AX_INLINE
-constexpr bool NumSIMD_<4, VEC, STORAGE>::almostEqual(const VEC& v) const {
-	return	Math::almostEqual(_e0, v._e0)
-		&&	Math::almostEqual(_e1, v._e1)
-		&&	Math::almostEqual(_e2, v._e2)
-		&&	Math::almostEqual(_e3, v._e3);
+template <class VEC, class STORAGE>
+template <class R_VEC, class R_STORAGE>
+constexpr bool NumSIMD_<4, VEC, STORAGE>::almostEqual(const NumSIMD_<4, R_VEC, R_STORAGE>& v) const {
+	if (!std::is_constant_evaluated()) {
+		if constexpr (Type_IsSame<VEC, R_VEC> && Type_IsSame<STORAGE, R_STORAGE>) {
+			auto diff = Math::abs(*this - v);
+			return diff <= Math::epsilon<VEC>;
+		}
+	}
+	
+// for UnitTest validate between different SIMD
+	return Math::almostEqual(_e0, v._e0)
+		&& Math::almostEqual(_e1, v._e1)
+		&& Math::almostEqual(_e2, v._e2)
+		&& Math::almostEqual(_e3, v._e3);
 }
 
 template <class VEC, class STORAGE> AX_INLINE
