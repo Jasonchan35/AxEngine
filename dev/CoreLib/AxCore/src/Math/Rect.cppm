@@ -37,7 +37,7 @@ template<Int N, class T, CpuSIMD SIMD> using RectBase_ = NumSIMD_<N,  Rect_<N, T
 template<class T, CpuSIMD SIMD>
 class Rect_<4, T, SIMD> : public VecBase_<4, T, SIMD> {
 	using Base = VecBase_<4, T, SIMD>;
-	using This = Vec_;
+	using This = Rect_;
 public:
 	using Storage = typename Base::Storage;
 	using Element = typename Base::Element;

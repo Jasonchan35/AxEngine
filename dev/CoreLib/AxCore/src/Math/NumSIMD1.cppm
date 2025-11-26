@@ -71,20 +71,19 @@ class NumSIMD_<1, VEC, STORAGE> : public STORAGE {
 	using This = NumSIMD_;
 	using T = typename STORAGE::Element;
 public:
-	using _NumLimit = typename NumSIMD_NumLimit<This, T>;
+	using _NumLimit = NumSIMD_NumLimit<This, T>;
 	using Element = T;
 	using Storage = STORAGE;
 	static constexpr Int elementCount = STORAGE::elementCount;
 	static constexpr CpuSIMD cpuSIMD  = STORAGE::cpuSIMD;
-protected:
-	using Storage::_data;
-	using Storage::_e0;
-	
+
 	static constexpr bool _use_SSE     = cpuSIMD == CpuSIMD::SSE;
 	static constexpr bool _use_SSE_f32 = _use_SSE && Type_IsSame<T, f32>;
 	static constexpr bool _use_SSE_f64 = _use_SSE && Type_IsSame<T, f64>;
 
-public:
+	using Storage::_data;
+	using Storage::_e0;
+
 	using CFixedSpan =    FixedSpan<T, elementCount>;
 	using MFixedSpan = MutFixedSpan<T, elementCount>;
 	AX_NODISCARD AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_data); }
@@ -98,11 +97,11 @@ public:
 	AX_INLINE constexpr       T& unsafe_at(Int i)       { return _data[i]; }
 	AX_INLINE constexpr const T& unsafe_at(Int i) const { return _data[i]; }
 
-	static AX_NODISCARD AX_INLINE constexpr VEC s_all (const T& v) { return Storage(v); }
-	static AX_NODISCARD AX_INLINE constexpr VEC s_zero(const T& v) { return s_all(0); }
-	static AX_NODISCARD AX_INLINE constexpr VEC s_one (const T& v) { return s_all(1); }
+	AX_NODISCARD AX_INLINE static constexpr VEC s_all (const T& v) { return Storage(v); }
+	AX_NODISCARD AX_INLINE static constexpr VEC s_zero(const T& v) { return s_all(0); }
+	AX_NODISCARD AX_INLINE static constexpr VEC s_one (const T& v) { return s_all(1); }
 	
-	AX_NODISCARD AX_INLINE constexpr void setAll(const T& v) { *this = s_all(v); }
+	 AX_INLINE constexpr void setAll(const T& v) { *this = s_all(v); }
 
 	AX_NODISCARD constexpr VEC operator+(const VEC& v) const { 	return VEC(	_e0 + v._e0); }
 	AX_NODISCARD constexpr VEC operator-(const VEC& v) const { 	return VEC(	_e0 - v._e0); }
@@ -114,20 +113,20 @@ public:
 	AX_NODISCARD AX_INLINE constexpr VEC operator*(const T& v) const { return *this + VEC::s_all(v);  }
 	AX_NODISCARD AX_INLINE constexpr VEC operator/(const T& v) const { return *this + VEC::s_all(v);  }
 	
-	AX_NODISCARD AX_INLINE constexpr void operator+=(const VEC& v) { *this = *this + v; }
-	AX_NODISCARD AX_INLINE constexpr void operator-=(const VEC& v) { *this = *this - v; }
-	AX_NODISCARD AX_INLINE constexpr void operator*=(const VEC& v) { *this = *this * v; }
-	AX_NODISCARD AX_INLINE constexpr void operator/=(const VEC& v) { *this = *this / v; }
+	AX_INLINE constexpr void operator+=(const VEC& v) { *this = *this + v; }
+	AX_INLINE constexpr void operator-=(const VEC& v) { *this = *this - v; }
+	AX_INLINE constexpr void operator*=(const VEC& v) { *this = *this * v; }
+	AX_INLINE constexpr void operator/=(const VEC& v) { *this = *this / v; }
 
-	AX_NODISCARD constexpr bool operator< (const VEC& v) const;
-	AX_NODISCARD constexpr bool operator> (const VEC& v) const;
-	AX_NODISCARD constexpr bool operator<=(const VEC& v) const;
-	AX_NODISCARD constexpr bool operator>=(const VEC& v) const;
+	AX_NODISCARD AX_INLINE constexpr bool operator< (const VEC& v) const { return _e0 <  v._e0; }
+	AX_NODISCARD AX_INLINE constexpr bool operator> (const VEC& v) const { return _e0 >  v._e0; }
+	AX_NODISCARD AX_INLINE constexpr bool operator<=(const VEC& v) const { return _e0 <= v._e0; }
+	AX_NODISCARD AX_INLINE constexpr bool operator>=(const VEC& v) const { return _e0 >= v._e0; }
 
 	template<class R, class R_STORAGE>
 	AX_NODISCARD constexpr bool almostEqual(const NumSIMD_<1, R, R_STORAGE>& v) const { return Math::almostEqual(_e0, v._e0); }
 
-	AX_NODISCARD constexpr VEC abs() const;
+	AX_NODISCARD constexpr VEC abs() const { return VEC(Math::abs(_e0)); }
 
 	template<class FMT_CH>
 	void onFormat(Format_<FMT_CH> & fmt) const {

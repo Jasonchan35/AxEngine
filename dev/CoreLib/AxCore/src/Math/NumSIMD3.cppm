@@ -10,12 +10,12 @@ class NumSIMD_<3, VEC, STORAGE> : public STORAGE {
 	using This = NumSIMD_;
 	using T = typename STORAGE::Element;
 public:
-	using _NumLimit = typename NumSIMD_NumLimit<This, T>;
+	using _NumLimit = NumSIMD_NumLimit<This, T>;
 	using Element = T;
 	using Storage = STORAGE;
 	static constexpr Int elementCount = STORAGE::elementCount;
 	static constexpr CpuSIMD cpuSIMD  = STORAGE::cpuSIMD;
-protected:
+
 	using Storage::_data;
 	using Storage::_e0;
 	using Storage::_e1;
@@ -25,7 +25,6 @@ protected:
 	static constexpr bool _use_SSE_f32 = _use_SSE && Type_IsSame<T, f32>;
 	static constexpr bool _use_SSE_f64 = _use_SSE && Type_IsSame<T, f64>;
 
-public:
 	using CFixedSpan =    FixedSpan<T, elementCount>;
 	using MFixedSpan = MutFixedSpan<T, elementCount>;
 	AX_NODISCARD AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_data); }
@@ -39,11 +38,11 @@ public:
 	AX_INLINE constexpr       T& unsafe_at(Int i)       { return _data[i]; }
 	AX_INLINE constexpr const T& unsafe_at(Int i) const { return _data[i]; }
 
-	static AX_NODISCARD AX_INLINE constexpr VEC s_all (const T& v);
-	static AX_NODISCARD AX_INLINE constexpr VEC s_zero(const T& v) { return s_all(0); }
-	static AX_NODISCARD AX_INLINE constexpr VEC s_one (const T& v) { return s_all(1); }
+	AX_NODISCARD static AX_INLINE constexpr VEC s_all (const T& v);
+	AX_NODISCARD static AX_INLINE constexpr VEC s_zero(const T& v) { return s_all(0); }
+	AX_NODISCARD static AX_INLINE constexpr VEC s_one (const T& v) { return s_all(1); }
 	
-	AX_NODISCARD AX_INLINE constexpr void setAll(const T& v) { *this = s_all(v); }
+	AX_INLINE constexpr void setAll(const T& v) { *this = s_all(v); }
 
 	AX_NODISCARD constexpr VEC operator+(const VEC& v) const;
 	AX_NODISCARD constexpr VEC operator-(const VEC& v) const;
@@ -55,17 +54,15 @@ public:
 	AX_NODISCARD AX_INLINE constexpr VEC operator*(const T& v) const { return *this + VEC::s_all(v);  }
 	AX_NODISCARD AX_INLINE constexpr VEC operator/(const T& v) const { return *this + VEC::s_all(v);  }
 	
-	AX_NODISCARD AX_INLINE constexpr void operator+=(const VEC& v) { *this = *this + v; }
-	AX_NODISCARD AX_INLINE constexpr void operator-=(const VEC& v) { *this = *this - v; }
-	AX_NODISCARD AX_INLINE constexpr void operator*=(const VEC& v) { *this = *this * v; }
-	AX_NODISCARD AX_INLINE constexpr void operator/=(const VEC& v) { *this = *this / v; }
+	AX_INLINE constexpr void operator+=(const VEC& v) { *this = *this + v; }
+	AX_INLINE constexpr void operator-=(const VEC& v) { *this = *this - v; }
+	AX_INLINE constexpr void operator*=(const VEC& v) { *this = *this * v; }
+	AX_INLINE constexpr void operator/=(const VEC& v) { *this = *this / v; }
 
 	AX_NODISCARD constexpr bool operator< (const VEC& v) const;
 	AX_NODISCARD constexpr bool operator> (const VEC& v) const;
 	AX_NODISCARD constexpr bool operator<=(const VEC& v) const;
 	AX_NODISCARD constexpr bool operator>=(const VEC& v) const;
-
-//	AX_NODISCARD constexpr bool almostEqual(const VEC& v) const;
 
 	template<class R, class R_STORAGE>
 	AX_NODISCARD constexpr bool almostEqual(const NumSIMD_<3, R, R_STORAGE>& v) const;
@@ -134,8 +131,8 @@ constexpr VEC NumSIMD_<3, VEC, STORAGE>::operator/(const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<3, VEC, STORAGE>::operator< (const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (_use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LT_OQ)); } 
-		if constexpr (_use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LT_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0b111 ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LT_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0b111 == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LT_OQ)); } 
 	}
 	return _e0 < v._e0
 		&& _e1 < v._e1
@@ -145,8 +142,8 @@ constexpr bool NumSIMD_<3, VEC, STORAGE>::operator< (const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<3, VEC, STORAGE>::operator> (const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (_use_SSE_f32) { return 0xF =    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GT_OQ)); } 
-		if constexpr (_use_SSE_f64) { return 0xF = _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GT_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0b111 ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GT_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0b111 == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GT_OQ)); } 
 	}
 	return _e0 > v._e0
 		&& _e1 > v._e1
@@ -156,8 +153,8 @@ constexpr bool NumSIMD_<3, VEC, STORAGE>::operator> (const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<3, VEC, STORAGE>::operator<=(const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (_use_SSE_f32) { return 0xF ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LE_OQ)); } 
-		if constexpr (_use_SSE_f64) { return 0xF == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LE_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0b111 ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_LE_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0b111 == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_LE_OQ)); } 
 	}
 	return _e0 <= v._e0
 		&& _e1 <= v._e1
@@ -167,8 +164,8 @@ constexpr bool NumSIMD_<3, VEC, STORAGE>::operator<=(const VEC& v) const {
 template <class VEC, class STORAGE> AX_INLINE
 constexpr bool NumSIMD_<3, VEC, STORAGE>::operator>=(const VEC& v) const {
 	if (!std::is_constant_evaluated()) {
-		if constexpr (_use_SSE_f32) { return 0xF ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GE_OQ)); } 
-		if constexpr (_use_SSE_f64) { return 0xF == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GE_OQ)); } 
+		if constexpr (_use_SSE_f32) { return 0b111 ==    _mm_movemask_ps(    _mm_cmp_ps(this->_m, v._m, _CMP_GE_OQ)); } 
+		if constexpr (_use_SSE_f64) { return 0b111 == _mm256_movemask_pd( _mm256_cmp_pd(this->_m, v._m, _CMP_GE_OQ)); } 
 	}
 	return _e0 >= v._e0
 		&& _e1 >= v._e1
