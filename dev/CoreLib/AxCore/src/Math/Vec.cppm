@@ -1,7 +1,7 @@
 ﻿module;
 #include "AxCore-pch.h"
 export module AxCore.Vec;
-export import AxCore.Num;
+export import AxCore.NumSIMD4;
 
 export namespace  ax {
 
@@ -100,14 +100,14 @@ public:
 };
 
 template<Int N, class T, CpuSIMD SIMD>
-using VecBase_Base = Num_<N,  VecBase_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
+using VecBase_Base = NumSIMD_<N,  VecBase_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
 
 template<class T, CpuSIMD SIMD>
 class VecBase_<4, T, SIMD> : public VecBase_Base<4, T, SIMD> {
 	using This = VecBase_;
-	using Base = Num_<4, VecBase_, Vec_Storage_<4, T, SIMD>>;
+	using Base = NumSIMD_<4, VecBase_, Vec_Storage_<4, T, SIMD>>;
 public:
-	using _NumLimit = typename NumBase_NumLimit<This, T>;
+	using _NumLimit = typename NumSIMD_NumLimit<This, T>;
 
 	using Storage = Base::Storage;
 	using Element = typename Storage::Element;
@@ -123,13 +123,11 @@ public:
 
 
 namespace Math {
-// for Unit Test
+// for UnitTest validate between different SIMD
 template <Int N, class T, CpuSIMD A_SIMD, CpuSIMD B_SIMD> requires (A_SIMD != B_SIMD)
-inline constexpr bool almostEqual(const VecBase_<N, T, A_SIMD>& a,
-                                     const VecBase_<N, T, B_SIMD>& b) {
-	auto ep = Math::epsilon<T>;
+inline constexpr bool almostEqual(const VecBase_<N, T, A_SIMD>& a, const VecBase_<N, T, B_SIMD>& b) {
 	for (Int i = 0; i < N; ++i) {
-		if (!almostEqual(a.unsafe_at(i), b.unsafe_at(i), ep)) return false;
+		if (!almostEqual(a.unsafe_at(i), b.unsafe_at(i))) return false;
 	}
 	return true;
 }

@@ -113,19 +113,24 @@ AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 	return o;
 }
 
-template<class T>
-inline constexpr bool almostEqual(const T& a, const T& b, const T& ep = epsilon<T>) {
+template<class T> AX_NODISCARD
+inline constexpr bool almostEqual(const T& a, const T& b) {
+	return a.almostEqual(b);
+}
+
+template<class T> requires Type_IsFundamental<T>
+inline constexpr bool almostEqual(const T& a, const T& b) {
 	if constexpr (Type_IsInt<T>) {
 		return a == b;
 	} else {
 		auto diff = abs(a - b);
-		return diff <= ep;
+		return diff <= epsilon<T>;
 	}
 }
 
-template<class T>
-inline constexpr bool almostZero(const T& a, const T& ep = epsilon<T>) {
-	return (almostEqual(a, zero<T>, ep));
+template<class T> AX_NODISCARD
+inline constexpr bool almostZero(const T& a) {
+	return (almostEqual(a, zero<T>));
 }
 
 template<class T> AX_INLINE constexpr

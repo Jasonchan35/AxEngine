@@ -87,19 +87,19 @@ void FmtTo(IString_<T> & output, const FormatString_<Char32, ARGS...> & fmt, ARG
 }
 
 template<class... ARGS> AX_INLINE
-StringA Fmt(FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { StringA str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+TempStringA Fmt(FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { TempStringA str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 template<class... ARGS> AX_INLINE
-StringW Fmt(FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { StringW str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+TempStringW Fmt(FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { TempStringW str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 template<class... ARGS> AX_INLINE
-String8 Fmt(FormatString_<Char8, ARGS...> && fmt, ARGS&&... args) { String8 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+TempString8 Fmt(FormatString_<Char8, ARGS...> && fmt, ARGS&&... args) { TempString8 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 template<class... ARGS> AX_INLINE
-String16 Fmt(FormatString_<Char16, ARGS...> && fmt, ARGS&&... args) { String16 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+TempString16 Fmt(FormatString_<Char16, ARGS...> && fmt, ARGS&&... args) { TempString16 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 template<class... ARGS> AX_INLINE
-String32 Fmt(FormatString_<Char32, ARGS...> && fmt, ARGS&&... args) { String32 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+TempString32 Fmt(FormatString_<Char32, ARGS...> && fmt, ARGS&&... args) { TempString32 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 
 } // namespace

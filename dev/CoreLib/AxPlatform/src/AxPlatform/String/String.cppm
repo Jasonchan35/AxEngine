@@ -14,12 +14,7 @@ import AxPlatform.InlineStorage;
 export namespace ax {
 
 template<class T> inline
-constexpr Int String_DefaultBufSize = []() {
-	Int size = 0;
-	Int s = AX_SIZEOF(Int) / AX_SIZEOF(T);
-	Int padding = s > 0 ? s - 1 : 0;; // -1 for null terminator
-	return size + padding;
-}();
+constexpr Int String_DefaultBufSize = 0;
 
 template<class T, Int BUF_SIZE = String_DefaultBufSize<T>>
 class String_;
@@ -38,10 +33,11 @@ template<Int N> using String16_N = String_<Char16, N>;
 template<Int N> using String32_N = String_<Char32, N>;
 
 template<class T>
-using TempString_  = String_<T, 512>; // long enough to hold file path
+using TempString_  = String_<T, 220>;
 using TempString   = TempString_<Char>;
 using TempStringA  = TempString_<CharA>;
 using TempStringW  = TempString_<CharW>;
+using TempString8 = TempString_<Char8>;
 using TempString16 = TempString_<Char16>;
 using TempString32 = TempString_<Char32>;
 

@@ -1,7 +1,7 @@
 module;
 #include "AxCore-pch.h"
 export module AxCore.VecBase;
-export import AxCore.Num;
+export import AxCore.NumSIMD4;
 
 export import AxCore.NormInt;
 

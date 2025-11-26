@@ -45,12 +45,16 @@ public:
 		using Vec = Vec4_<T, SIMD>; 
 		Vec add;  
 		Vec sub;
+		Vec mul;
+		Vec div;
 
 		SIMD_Test() {
 			auto a = Vec(1, 2, 3, 4);
 			auto b = Vec(2, 3, 4, 5);
 			add = a + b;
 			sub = a - b;
+			mul = a * b;
+			div = a / b;
 		}
 	};
 
@@ -61,7 +65,9 @@ public:
 		SIMD_Test<T, CpuSIMD::NoSIMD>	noSIMD;
 		SIMD_Test<T, CpuSIMD::SSE>		sse;
 		AX_TEST_ALMOST_EQ(sse.add, noSIMD.add);
-		// AX_TEST_ALMOST_EQ(sse.sub, noSIMD.sub);
+		AX_TEST_ALMOST_EQ(sse.sub, noSIMD.sub);
+		AX_TEST_ALMOST_EQ(sse.mul, noSIMD.mul);
+		AX_TEST_ALMOST_EQ(sse.div, noSIMD.div);
 	}
 };
 
