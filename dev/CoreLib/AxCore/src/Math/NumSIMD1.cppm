@@ -2,6 +2,8 @@
 #include "AxCore-pch.h"
 export module AxCore.NumSIMD1;
 export import AxCore._PCH;
+export import AxCore.NormInt;
+export import AxCore.Float16;
 
 export namespace ax {
 

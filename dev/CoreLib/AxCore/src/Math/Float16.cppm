@@ -76,6 +76,9 @@ public:
 		}
 	}
 
+	AX_INLINE constexpr bool almostEqual(const This& r) const { return Math::almostEqual(to_f32(), r.to_f32()); }
+	template<class F> constexpr void onFormat(F & f) const { f << Fmt("{}", to_f32()); } 
+	
 	constexpr hdata value() const { return _v; }
 private:
 	hdata _v; // = 0; <-- want to keep "trivial default constructor"
