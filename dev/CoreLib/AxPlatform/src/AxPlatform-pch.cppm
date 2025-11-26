@@ -26,8 +26,10 @@ export import <type_traits>;
 export import <utility>;
 
 #if AX_OS_WINDOWS
-	export import <conio.h>;
+	export import <WinSock2.h>; // WinSock2.h must include before windows.h to avoid winsock1 define
+	export import <WS2tcpip.h>; // struct sockaddr_in6
 	export import <windows.h>;
+	export import <conio.h>;
 #endif
 
 #endif // AX_USE_PRECOMPILE_HEADER
