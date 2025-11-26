@@ -12,7 +12,7 @@ public:
 		
 		// AX_TEST_EQ(sizeof(Vec3f_NoSIMD), 4 * 3);
 		// AX_TEST_EQ(sizeof(Vec3f_SSE)   , 4 * 4);
-		AX_TEST_EQ(sizeof(Vec4f_NoSIMD), 4 * 4);
+		AX_TEST_EQ(sizeof(Vec4f_Basic), 4 * 4);
 		AX_TEST_EQ(sizeof(Vec4f_SSE)   , 4 * 4);
 
 		{
@@ -42,32 +42,85 @@ public:
 	
 	template<class T, CpuSIMD SIMD>
 	struct SIMD_Test {
-		using Vec = Vec4_<T, SIMD>; 
-		Vec add;  
-		Vec sub;
-		Vec mul;
-		Vec div;
+		using Vec1 = Vec1_<T, SIMD>; 
+		using Vec2 = Vec2_<T, SIMD>; 
+		using Vec3 = Vec3_<T, SIMD>; 
+		using Vec4 = Vec4_<T, SIMD>;
+		
+		Vec1 add1;  Vec1 sub1;	Vec1 mul1;	Vec1 div1;
+		Vec2 add2;  Vec2 sub2;	Vec2 mul2;	Vec2 div2;
+		Vec3 add3;  Vec3 sub3;	Vec3 mul3;	Vec3 div3;
+		Vec4 add4;  Vec4 sub4;	Vec4 mul4;	Vec4 div4;
 
+		Vec1 scalar_add1;  Vec1 scalar_sub1;	Vec1 scalar_mul1;	Vec1 scalar_div1;
+		Vec2 scalar_add2;  Vec2 scalar_sub2;	Vec2 scalar_mul2;	Vec2 scalar_div2;
+		Vec3 scalar_add3;  Vec3 scalar_sub3;	Vec3 scalar_mul3;	Vec3 scalar_div3;
+		Vec4 scalar_add4;  Vec4 scalar_sub4;	Vec4 scalar_mul4;	Vec4 scalar_div4;
+
+		Vec1 add_scalar1;  Vec1 sub_scalar1;	Vec1 mul_scalar1;	Vec1 div_scalar1;
+		Vec2 add_scalar2;  Vec2 sub_scalar2;	Vec2 mul_scalar2;	Vec2 div_scalar2;
+		Vec3 add_scalar3;  Vec3 sub_scalar3;	Vec3 mul_scalar3;	Vec3 div_scalar3;
+		Vec4 add_scalar4;  Vec4 sub_scalar4;	Vec4 mul_scalar4;	Vec4 div_scalar4;
+		
 		SIMD_Test() {
-			auto a = Vec(1, 2, 3, 4);
-			auto b = Vec(2, 3, 4, 5);
-			add = a + b;
-			sub = a - b;
-			mul = a * b;
-			div = a / b;
+			{
+				auto a = Vec1(1);
+				auto b = Vec1(2);
+				add1 = a + b;	add_scalar1 = a + 1;	scalar_add1 = 2 + b;
+				sub1 = a - b;	sub_scalar1 = a - 1;	scalar_sub1 = 2 - b;
+				mul1 = a * b;	mul_scalar1 = a * 1;	scalar_mul1 = 2 * b;
+				div1 = a / b;	div_scalar1 = a / 1;	scalar_div1 = 2 / b;
+			}
+			{
+				auto a = Vec2(1, 2);
+				auto b = Vec2(2, 3);
+				add2 = a + b;	add_scalar2 = a + 1;	scalar_add2 = 2 + b;
+				sub2 = a - b;	sub_scalar2 = a - 1;	scalar_sub2 = 2 - b;
+				mul2 = a * b;	mul_scalar2 = a * 1;	scalar_mul2 = 2 * b;
+				div2 = a / b;	div_scalar2 = a / 1;	scalar_div2 = 2 / b;
+			}
+			{
+				auto a = Vec3(1, 2, 3);
+				auto b = Vec3(2, 3, 4);
+				add3 = a + b;	add_scalar3 = a + 1;	scalar_add3 = 2 + b;
+				sub3 = a - b;	sub_scalar3 = a - 1;	scalar_sub3 = 2 - b;
+				mul3 = a * b;	mul_scalar3 = a * 1;	scalar_mul3 = 2 * b;
+				div3 = a / b;	div_scalar3 = a / 1;	scalar_div3 = 2 / b;
+			}
+			{
+				auto a = Vec4(1, 2, 3, 4);
+				auto b = Vec4(2, 3, 4, 5);
+				add4 = a + b;	add_scalar4 = a + 1;	scalar_add4 = 2 + b;
+				sub4 = a - b;	sub_scalar4 = a - 1;	scalar_sub4 = 2 - b;
+				mul4 = a * b;	mul_scalar4 = a * 1;	scalar_mul4 = 2 * b;
+				div4 = a / b;	div_scalar4 = a / 1;	scalar_div4 = 2 / b;
+			}
 		}
 	};
-
-	
 	
 	template<class T>
 	void test_SSE() {
-		SIMD_Test<T, CpuSIMD::NoSIMD>	noSIMD;
-		SIMD_Test<T, CpuSIMD::SSE>		sse;
-		AX_TEST_ALMOST_EQ(sse.add, noSIMD.add);
-		AX_TEST_ALMOST_EQ(sse.sub, noSIMD.sub);
-		AX_TEST_ALMOST_EQ(sse.mul, noSIMD.mul);
-		AX_TEST_ALMOST_EQ(sse.div, noSIMD.div);
+		SIMD_Test<T, CpuSIMD::None>	basic;
+		SIMD_Test<T, CpuSIMD::SSE>	sse;
+		AX_TEST_ALMOST_EQ(basic.add1, sse.add1);
+		AX_TEST_ALMOST_EQ(basic.add2, sse.add2);
+		AX_TEST_ALMOST_EQ(basic.add3, sse.add3);
+		AX_TEST_ALMOST_EQ(basic.add4, sse.add4);
+		
+		AX_TEST_ALMOST_EQ(basic.sub1, sse.sub1);
+		AX_TEST_ALMOST_EQ(basic.sub2, sse.sub2);
+		AX_TEST_ALMOST_EQ(basic.sub3, sse.sub3);
+		AX_TEST_ALMOST_EQ(basic.sub4, sse.sub4);
+
+		AX_TEST_ALMOST_EQ(basic.mul1, sse.mul1);
+		AX_TEST_ALMOST_EQ(basic.mul2, sse.mul2);
+		AX_TEST_ALMOST_EQ(basic.mul3, sse.mul3);
+		AX_TEST_ALMOST_EQ(basic.mul4, sse.mul4);
+
+		AX_TEST_ALMOST_EQ(basic.div1, sse.div1);
+		AX_TEST_ALMOST_EQ(basic.div2, sse.div2);
+		AX_TEST_ALMOST_EQ(basic.div3, sse.div3);
+		AX_TEST_ALMOST_EQ(basic.div4, sse.div4);
 	}
 };
 

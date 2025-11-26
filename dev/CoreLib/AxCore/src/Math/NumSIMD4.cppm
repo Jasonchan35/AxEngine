@@ -51,10 +51,10 @@ public:
 	AX_NODISCARD constexpr VEC operator*(const VEC& v) const;
 	AX_NODISCARD constexpr VEC operator/(const VEC& v) const;
 
-	AX_NODISCARD AX_INLINE constexpr VEC operator+(const T& v) const { return *this + VEC(Tag::All, v);  }
-	AX_NODISCARD AX_INLINE constexpr VEC operator-(const T& v) const { return *this + VEC(Tag::All, v);  }
-	AX_NODISCARD AX_INLINE constexpr VEC operator*(const T& v) const { return *this + VEC(Tag::All, v);  }
-	AX_NODISCARD AX_INLINE constexpr VEC operator/(const T& v) const { return *this + VEC(Tag::All, v);  }
+	AX_NODISCARD AX_INLINE constexpr VEC operator+(const T& v) const { return *this + VEC::s_all(v);  }
+	AX_NODISCARD AX_INLINE constexpr VEC operator-(const T& v) const { return *this + VEC::s_all(v);  }
+	AX_NODISCARD AX_INLINE constexpr VEC operator*(const T& v) const { return *this + VEC::s_all(v);  }
+	AX_NODISCARD AX_INLINE constexpr VEC operator/(const T& v) const { return *this + VEC::s_all(v);  }
 	
 	AX_NODISCARD AX_INLINE constexpr void operator+=(const VEC& v) { *this = *this + v; }
 	AX_NODISCARD AX_INLINE constexpr void operator-=(const VEC& v) { *this = *this - v; }
@@ -87,11 +87,6 @@ constexpr VEC NumSIMD_<4, VEC, STORAGE>::s_all(const T& v) {
 	}
 	return Storage(v,v,v,v);
 }
-
-template<class VEC, class STORAGE> AX_NODISCARD AX_INLINE VEC operator+(const typename VEC::Element & s, const VEC& vec) { return VEC(Tag::All, s) + vec; }
-template<class VEC, class STORAGE> AX_NODISCARD AX_INLINE VEC operator-(const typename VEC::Element & s, const VEC& vec) { return VEC(Tag::All, s) - vec; }
-template<class VEC, class STORAGE> AX_NODISCARD AX_INLINE VEC operator*(const typename VEC::Element & s, const VEC& vec) { return VEC(Tag::All, s) * vec; }
-template<class VEC, class STORAGE> AX_NODISCARD AX_INLINE VEC operator/(const typename VEC::Element & s, const VEC& vec) { return VEC(Tag::All, s) / vec; }
 
 template <class VEC, class STORAGE> AX_INLINE
 constexpr VEC NumSIMD_<4, VEC, STORAGE>::operator+(const VEC& v) const {
