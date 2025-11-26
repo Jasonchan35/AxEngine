@@ -1,13 +1,14 @@
 ﻿module;
 #include "AxCore-pch.h"
 export module AxCore.Rect;
-export import AxCore.Vec;
+export import AxCore.Margin;
 
 export namespace ax {
 
 template<Int N, class T, CpuSIMD SIMD> class Rect_Storage_;
 template<Int N, class T, CpuSIMD SIMD> class Rect_;
 template<Int N, class T, CpuSIMD SIMD> using RectBase_ = NumSIMD_<N,  Rect_<N, T, SIMD>, Rect_Storage_<N, T, SIMD> >;
+
 
 template<class T, CpuSIMD SIMD>
 class Rect_Storage_<4, T, SIMD> {
@@ -31,12 +32,9 @@ public:
 	AX_NODISCARD AX_INLINE			constexpr Rect_Storage_(const T& e0, const T& e1, const T& e2, const T& e3) : _e0(e0), _e1(e1), _e2(e2), _e3(e3) {}
 };
 
-template<Int N, class T, CpuSIMD SIMD> class Rect_;
-template<Int N, class T, CpuSIMD SIMD> using RectBase_ = NumSIMD_<N,  Rect_<N, T, SIMD>, Rect_Storage_<N, T, SIMD> >;
-
 template<class T, CpuSIMD SIMD>
-class Rect_<4, T, SIMD> : public VecBase_<4, T, SIMD> {
-	using Base = VecBase_<4, T, SIMD>;
+class Rect_<4, T, SIMD> : public RectBase_<4, T, SIMD> {
+	using Base = RectBase_<4, T, SIMD>;
 	using This = Rect_;
 public:
 	using Storage = typename Base::Storage;
@@ -46,18 +44,21 @@ public:
 	static constexpr CpuSIMD cpuSIMD      = Base::cpuSIMD;
 	static_assert(SIMD == cpuSIMD);
 
-	using Vec2 = Vec2_<T, SIMD>;
 	using Storage::x;
 	using Storage::y;
 	using Storage::w;
 	using Storage::h;
 	using Storage::pos;
 	using Storage::extents;
+	using Vec2 = Vec2_<T, SIMD>;
+	using Vec4 = Vec4_<T, SIMD>;
+	using Margin4 = Margin_<4, T, SIMD>;
 	
 	AX_INLINE constexpr Rect_() = default;
 	AX_INLINE constexpr Rect_(Tag::All_, const T& v) : Base(Tag::All, v) {}
 	AX_INLINE constexpr Rect_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Rect_(const T& x_, const T& y_, const T& w_, const T& h_) : Base(x_, y_, w_, h_) {}
+	AX_INLINE constexpr Rect_(const T& x_,   const T& y_, const T& w_, const T& h_) : Base(x_, y_, w_, h_) {}
+	AX_INLINE constexpr Rect_(const T& pos_, const T& extents_) : Base(pos_.x, pos_.y, extents_.x, extents_.y) {}
 	
 	constexpr Vec2		center		() const { return pos + extents / 2; }
 	constexpr T			xCenter		() const { return x + w / 2; }
@@ -93,7 +94,88 @@ public:
 	constexpr void		set_xMin_yMin	(const Vec2& v) { set_xMin(v.x); set_yMin(v.y); }
 	constexpr void		set_xMax_yMin	(const Vec2& v) { set_xMax(v.x); set_yMin(v.y); }
 	constexpr void		set_xMin_yMax	(const Vec2& v) { set_xMin(v.x); set_yMax(v.y); }
-	constexpr void		set_xMax_yMax	(const Vec2& v) { set_xMax(v.x); set_yMax(v.y); }	
+	constexpr void		set_xMax_yMax	(const Vec2& v) { set_xMax(v.x); set_yMax(v.y); }
+
+
+	AX_NODISCARD constexpr This		expand		(const Margin4& m) const { return This(x - m.left, y - m.top, w + m.left + m.right, h + m.top + m.bottom ); }
+	AX_NODISCARD constexpr This		expand		(T x_, T y_) const	{ return expand(Margin2(x_,y_)); }
+	AX_NODISCARD constexpr This		expand		(T v) const			{ return expand(Margin2(v)); }
+
+	AX_NODISCARD constexpr This		expandTop	(T v) const			{ return expand({v,0,0,0}); }
+	AX_NODISCARD constexpr This		expandRight	(T v) const			{ return expand({0,v,0,0}); }
+	AX_NODISCARD constexpr This		expandBottom(T v) const			{ return expand({0,0,v,0}); }
+	AX_NODISCARD constexpr This		expandLeft	(T v) const			{ return expand({0,0,0,v}); }
+
+	AX_NODISCARD constexpr This		trimTop		(T v) const { v = min(v, h); This o(x  , y+v, w  , h-v); return o; }
+	AX_NODISCARD constexpr This		trimRight	(T v) const { v = min(v, w); This o(x  , y  , w-v, h  ); return o; }
+	AX_NODISCARD constexpr This		trimBottom	(T v) const { v = min(v, h); This o(x  , y  , w  , h-v); return o; }
+	AX_NODISCARD constexpr This		trimLeft	(T v) const { v = min(v, w); This o(x+v, y  , w-v, h  ); return o; }
+
+	AX_NODISCARD constexpr This		flipXWithinContainer	(T containerWidth ) const { return This(containerWidth - xMax(),  y, w, h); }
+	AX_NODISCARD constexpr This		flipYWithinContainer	(T containerHeight) const { return This(x, containerHeight - yMax(), w, h); }
+
+	AX_NODISCARD constexpr T		area		() const { return w * h; }
+	AX_NODISCARD constexpr T		perimeter	() const { return w + w + h + h; }
+
+	AX_NODISCARD constexpr This		offset		(const Vec2& v) const				{ return Rect2_(pos + v, extents); }
+
+	AX_NODISCARD constexpr This		operator+	(const Vec2& v) const				{ return offset( v); }
+	AX_NODISCARD constexpr This		operator-	(const Vec2& v) const				{ return offset(-v); }
+
+	AX_NODISCARD constexpr Margin4	diff		(const This& inner) const;
+	AX_NODISCARD constexpr Margin4	operator-	(const This& inner) const			{ return diff(inner); }
+
+	AX_NODISCARD constexpr This		operator+	(const Margin4& m) const			{ return expand( m); }
+	AX_NODISCARD constexpr This		operator-	(const Margin4& m) const			{ return expand(-m); }
+
+				 constexpr void		operator+=	(const Margin4& m)					{ *this = expand( m); }
+				 constexpr void		operator-=	(const Margin4& m)					{ *this = expand(-m); }
+
+	AX_NODISCARD constexpr This		operator*	(T s) const							{ return This(x * s,   y * s,   w * s,   h * s); }
+	AX_NODISCARD constexpr This		operator/	(T s) const							{ return This(x / s,   y / s,   w / s,   h / s); }
+
+	AX_NODISCARD constexpr This		operator*	(const Vec2& s) const				{ return This(x * s.x, y * s.y, w * s.x, h * s.y); }
+	AX_NODISCARD constexpr This		operator/	(const Vec2& s) const				{ return This(x / s.x, y / s.y, w / s.x, h / s.y); }
+
+				 constexpr void		operator*=	(T s)								{ x *= s;   y *= s;   w *= s;   h *= s; }
+				 constexpr void		operator/=	(T s)								{ x /= s;   y /= s;   w /= s;   h /= s; }
+
+				 constexpr void		operator*=	(const Vec2& s)						{ x *= s.x; y *= s.y; w *= s.x; h *= s.y; }
+				 constexpr void		operator/=	(const Vec2& s)						{ x /= s.x; y /= s.y; w /= s.x; h /= s.y; }
+
+				 constexpr bool		operator==	(const This& r) const				{ return pos == r.pos && extents == r.size; }
+				 constexpr bool		operator!=	(const This& r) const				{ return pos != r.pos || extents != r.size; }
+
+				 constexpr bool		isValid			() const						{ return w > 0 && h >0; }
+				 constexpr This		unionWith		(const This& r) const;
+				 constexpr This		intersects		(const This& r) const;
+				 constexpr bool		isIntersected	(const This& r) const;
+	
+	AX_NODISCARD constexpr bool		containsPoint	(const Vec2& v) const	{ return v.x >= xMin() && v.x <= xMax() && v.y >= yMin() && v.y <= yMax(); }
+
+	AX_NODISCARD constexpr Vec4		toVec4() const { return Vec4(x,y,w,h); }
+
+	AX_NODISCARD constexpr This		nonNegativeSize() const {
+		return This(w<0 ? x + w : x,
+					h<0 ? y + h : y,
+					abs(w), abs(h));
+	}
+
+#if AX_OS_WINDOWS
+	AX_NODISCARD AX_INLINE static constexpr This s_from(const ::RECT& r) {
+		return This(static_cast<T>(r.left),
+					static_cast<T>(r.top),
+					static_cast<T>(r.right  - r.left),
+					static_cast<T>(r.bottom - r.top));
+	}
+
+	AX_NODISCARD AX_INLINE constexpr RECT to_RECT() const {
+		RECT o;
+		o.left = static_cast<LONG>(xMin());	o.right  = static_cast<LONG>(xMax());
+		o.top  = static_cast<LONG>(yMin());	o.bottom = static_cast<LONG>(yMax());
+		return o;
+	}
+#endif	
 };
 
 

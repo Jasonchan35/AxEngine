@@ -7,6 +7,7 @@ export namespace ax {
 
 template<class VEC, class STORAGE>
 class NumSIMD_<2, VEC, STORAGE> : public STORAGE {
+	static constexpr Int N = 2;
 	using This = NumSIMD_;
 	using T = typename STORAGE::Element;
 public:
@@ -45,6 +46,12 @@ public:
 	AX_NODISCARD static AX_INLINE constexpr VEC s_one (const T& v) { return s_all(1); }
 
 	AX_INLINE constexpr void setAll(const T& v) { *this = s_all(v); }
+	AX_NODISCARD constexpr VEC abs() const { return VEC(Math::abs(_e0), Math::abs(_e1)); }
+
+	template <class R, class R_STORAGE>
+	AX_NODISCARD AX_INLINE constexpr static This s_cast(const NumSIMD_<N, R, R_STORAGE>& v) {
+		return This(static_cast<T>(v._e0), static_cast<T>(v._e1), static_cast<T>(v._e2), static_cast<T>(v._e3));
+	}
 	
 	AX_NODISCARD AX_INLINE constexpr VEC operator+(const VEC& v) const { return VEC(_e0 + v._e0, _e1 + v._e1); }
 	AX_NODISCARD AX_INLINE constexpr VEC operator-(const VEC& v) const { return VEC(_e0 - v._e0, _e1 - v._e1); }
@@ -70,9 +77,7 @@ public:
 	AX_NODISCARD constexpr bool almostEqual(const NumSIMD_<2, R, R_STORAGE>& v) const {
 		return Math::almostEqual(_e0, v._e0) && Math::almostEqual(_e1, v._e1);
 	}
-
-	AX_NODISCARD constexpr VEC abs() const { return VEC(Math::abs(_e0), Math::abs(_e1)); }
-
+	
 	template<class FMT_CH>
 	void onFormat(Format_<FMT_CH> & fmt) const {
 		fmt << Fmt("({},{})", _e0, _e1);

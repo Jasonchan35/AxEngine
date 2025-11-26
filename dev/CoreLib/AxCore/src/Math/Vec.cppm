@@ -223,6 +223,4 @@ public:
 	AX_INLINE constexpr Vec_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
 };
 
-
-
-}
+} // namespace 
