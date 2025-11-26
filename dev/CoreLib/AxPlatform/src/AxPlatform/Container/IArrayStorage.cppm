@@ -200,9 +200,12 @@ constexpr Int IArrayStorage<T>::Storage::capacity() const {
 
 template <class T> AX_INLINE
 constexpr void IArrayStorage<T>::Storage::setSize(Int v) noexcept {
+	AX_ASSERT(v >= 0);
+	v = Math::max0(v);
+	
 	if (isSmall()) {
-		AX_ASSERT(v <= i8_max);
-		_small._size = static_cast<i8>(v);
+		AX_ASSERT(v <= u16_max);
+		_small._size = static_cast<u16>(v);
 	} else {
 		_normal._size = v;
 	}

@@ -14,13 +14,31 @@ template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec2_ = Vec_<2, T, SIMD>
 template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec3_ = Vec_<3, T, SIMD>;
 template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec4_ = Vec_<4, T, SIMD>;
 
+using Vec1f			= Vec1_<f32>;
+using Vec1f_SSE		= Vec1_<f32, CpuSIMD::SSE>;
+using Vec1f_Basic	= Vec1_<f32, CpuSIMD::None>;
+using Vec2f			= Vec2_<f32>;
+using Vec2f_SSE		= Vec2_<f32, CpuSIMD::SSE>;
+using Vec2f_Basic	= Vec2_<f32, CpuSIMD::None>;
 using Vec3f			= Vec3_<f32>;
 using Vec3f_SSE		= Vec3_<f32, CpuSIMD::SSE>;
 using Vec3f_Basic	= Vec3_<f32, CpuSIMD::None>;
-
 using Vec4f			= Vec4_<f32>;
 using Vec4f_SSE		= Vec4_<f32, CpuSIMD::SSE>;
 using Vec4f_Basic	= Vec4_<f32, CpuSIMD::None>;
+
+using Vec1d			= Vec1_<f64>;
+using Vec1d_SSE		= Vec1_<f64, CpuSIMD::SSE>;
+using Vec1d_Basic	= Vec1_<f64, CpuSIMD::None>;
+using Vec2d			= Vec2_<f64>;
+using Vec2d_SSE		= Vec2_<f64, CpuSIMD::SSE>;
+using Vec2d_Basic	= Vec2_<f64, CpuSIMD::None>;
+using Vec3d			= Vec3_<f64>;
+using Vec3d_SSE		= Vec3_<f64, CpuSIMD::SSE>;
+using Vec3d_Basic	= Vec3_<f64, CpuSIMD::None>;
+using Vec4d			= Vec4_<f64>;
+using Vec4d_SSE		= Vec4_<f64, CpuSIMD::SSE>;
+using Vec4d_Basic	= Vec4_<f64, CpuSIMD::None>;
 
 template<class T, CpuSIMD SIMD>
 class Vec_Storage_<1, T, SIMD> {
