@@ -11,161 +11,97 @@ export namespace ax {
 //---
 AX_ENUM_CLASS(AX_NumSIMD_ENUM_LIST, CpuSIMD, u8)
 
-// template<Int N, class T, class STORAGE> class NumBase_;
-// template<       class T, class STORAGE> using Num1_  = NumBase_<1, T, STORAGE>;
-// template<       class T, class STORAGE> using Num2_  = NumBase_<2, T, STORAGE>;
-// template<       class T, class STORAGE> using Num3_  = NumBase_<3, T, STORAGE>;
-// template<       class T, class STORAGE> using Num4_  = NumBase_<4, T, STORAGE>;
+template<Int N, class OUT_CLS, class STORAGE> class NumBase_;
+template<       class OUT_CLS, class STORAGE> using Num1_  = NumBase_<1, OUT_CLS, STORAGE>;
+template<       class OUT_CLS, class STORAGE> using Num2_  = NumBase_<2, OUT_CLS, STORAGE>;
+template<       class OUT_CLS, class STORAGE> using Num3_  = NumBase_<3, OUT_CLS, STORAGE>;
+template<       class OUT_CLS, class STORAGE> using Num4_  = NumBase_<4, OUT_CLS, STORAGE>;
 
 template<Int N, class T, CpuSIMD SIMD> class Num_Storage;
 
-template<Int N, class T, class STORAGE>
-class NumBase_ : public STORAGE {
+template<class OUT_CLS, class T>
+struct NumBase_NumLimit {
+	using T_NumLimit = NumLimit<T>;
+
+	static constexpr bool isExactType       =  T_NumLimit::isExactType;
+	static constexpr bool hasInfinity       =  T_NumLimit::hasInfinity;
+	static constexpr OUT_CLS  infinity      =  OUT_CLS(Tag::All, T_NumLimit::infinity);
+	static constexpr OUT_CLS  negInfinity   =  OUT_CLS(Tag::All, T_NumLimit::negInfinity);
+	static constexpr OUT_CLS  lowest        =  OUT_CLS(Tag::All, T_NumLimit::lowest);
+	static constexpr OUT_CLS  min           =  OUT_CLS(Tag::All, T_NumLimit::min);
+	static constexpr OUT_CLS  max           =  OUT_CLS(Tag::All, T_NumLimit::max);
+	static constexpr OUT_CLS  epsilon       =  OUT_CLS(Tag::All, T_NumLimit::epsilon);
+	static constexpr OUT_CLS  NaN           =  OUT_CLS(Tag::All, T_NumLimit::NaN);
+};
+
+template<class OUT_CLS, class STORAGE>
+class NumBase_<4, OUT_CLS, STORAGE> : public STORAGE {
 	using This = NumBase_;
-protected:
-	using STORAGE::_data;
+	using OutClass = OUT_CLS;
+	using T = typename STORAGE::Element;
 public:
+	using _NumLimit = typename NumBase_NumLimit<This, T>;
+	using Element = T;
 	using Storage = STORAGE;
-	using Element = STORAGE::Element;
 	static constexpr Int elementCount = STORAGE::elementCount;
-	static constexpr CpuSIMD cpuSIMD = STORAGE::cpuSIMD;
+	static constexpr CpuSIMD cpuSIMD  = STORAGE::cpuSIMD;
+protected:
+	using Storage::_data;
+	using Storage::_e0;
+	using Storage::_e1;
+	using Storage::_e2;
+	using Storage::_e3;
 	
-	      T* data()			{ return _data; }
-	const T* data() const	{ return _data; }
-	
+	static constexpr bool _use_f32     = Type_IsSame<T, f32>;
+	static constexpr bool _use_f64     = Type_IsSame<T, f64>;
+	static constexpr bool _use_SSE     = cpuSIMD == CpuSIMD::SSE;
+	static constexpr bool _use_SSE_f32 = _use_SSE && _use_f32;
+	static constexpr bool _use_SSE_f64 = _use_SSE && _use_f64;
+public:
 	using CFixedSpan =    FixedSpan<T, elementCount>;
 	using MFixedSpan = MutFixedSpan<T, elementCount>;
-	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_data); }
-	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_data); }
+	AX_NODISCARD AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_data); }
+	AX_NODISCARD AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_data); }
 
-	AX_INLINE constexpr NumBase_() = default;
-	AX_INLINE constexpr NumBase_(const T& e0, const T& e1, const T& e2) : Storage(e0, e1, e2) {
-		static_assert(elementCount == 3);
+	AX_NODISCARD AX_INLINE constexpr NumBase_() = default;
+	AX_NODISCARD AX_INLINE constexpr NumBase_(const Storage & storage_) : Storage(storage_) {}
+	AX_NODISCARD AX_INLINE constexpr NumBase_(Tag::All_, const T& v_) : Storage(v_, v_, v_, v_) {}
+
+	AX_NODISCARD AX_INLINE constexpr NumBase_(const T& e0, const T& e1, const T& e2, const T& e3) : Storage(e0, e1, e2, e3) {}
+
+	AX_INLINE constexpr void setAll(const T& v_);
+	AX_NODISCARD AX_INLINE constexpr OutClass operator+(const OutClass& v) const {
+		if (!std::is_constant_evaluated()) {
+			if constexpr (_use_SSE_f32) {
+				return Storage(_mm_add_ps(this->_m, v._m));
+			}
+		}
+		return OutClass(_e0 + v._e0, _e1 + v._e1, _e2 + v._e2, _e3 + v._e3);
 	}
-	AX_INLINE constexpr NumBase_(const T& e0, const T& e1, const T& e2, const T& e3) : Storage(e0, e1, e2, e3) {
-		static_assert(elementCount == 4);
-	} 
+	AX_NODISCARD AX_INLINE constexpr OutClass operator-(const OutClass& v) const {
+		if (!std::is_constant_evaluated()) {
+			if constexpr (_use_SSE_f32) {
+				return Storage(_mm_sub_ps(this->_m, v._m));
+			}
+		}
+		return OutClass(_e0 - v._e0, _e1 - v._e1, _e2 - v._e2, _e3 - v._e3);
+	}
 	
-	AX_INLINE constexpr This operator+(const This& rhs) const {
-		This tmp; for (Int i = 0; i < elementCount; ++i) { tmp._data[i] = this->_data[i] + rhs._data[i]; }
-		return tmp;
+	AX_NODISCARD AX_INLINE constexpr bool operator<=(const OutClass& v) const {
+		return _e0 <= v._e0 && _e1 <= v._e1 && _e2 <= v._e2 && _e3 <= v._e3;
+	}
+
+	AX_NODISCARD AX_INLINE constexpr OutClass abs() const {
+		return OutClass(Math::abs(_e0), Math::abs(_e1), Math::abs(_e2), Math::abs(_e3));
+	}
+
+	template<class FMT_CH>
+	void onFormat(Format_<FMT_CH> & fmt) const {
+		fmt << Fmt("({},{},{},{})", _e0, _e1, _e2, _e3);
 	}
 };
 
 //----------------
 
-inline constexpr CpuSIMD Vec_DefaultSIMD = CpuSIMD::SSE;
-template<Int N, class T, CpuSIMD SIMD> class Vec_Storage_; 
-
-template<class T>
-class Vec_Storage_<3, T, CpuSIMD::NoSIMD> {
-public:
-	using Element = T;
-	static constexpr Int elementCount = 3;
-	static constexpr CpuSIMD cpuSIMD = CpuSIMD::NoSIMD;
-	
-	union {
-		T _data[elementCount];
-		struct { T _e0, _e1, _e2; };
-		struct { T x, y, z; };
-	};
-
-	AX_INLINE constexpr Vec_Storage_() = default;
-	AX_INLINE constexpr Vec_Storage_(const T& e0, const T& e1, const T& e2) : _e0(e0), _e1(e1), _e2(e2) {}
-};
-
-template<>
-class Vec_Storage_<3, f32, CpuSIMD::SSE> {
-	using T = f32;
-public:
-	using Element = T;
-	static constexpr Int elementCount = 3;
-	static constexpr CpuSIMD cpuSIMD = CpuSIMD::NoSIMD;
-	
-	union {
-		T _data[elementCount];
-		struct { T _e0, _e1, _e2, _e3_unused; };
-		struct { T x, y, z; };
-		__m128 _m;
-	};
-
-	AX_INLINE constexpr Vec_Storage_() = default;
-	AX_INLINE constexpr Vec_Storage_(const T& e0, const T& e1, const T& e2) : _e0(e0), _e1(e1), _e2(e2) {}
-};
-
-template<class T>
-class Vec_Storage_<4, T, CpuSIMD::NoSIMD> {
-public:
-	using Element = T;
-	static constexpr Int elementCount = 4;
-	static constexpr CpuSIMD cpuSIMD = CpuSIMD::NoSIMD;
-	
-	union {
-		T _data[elementCount];
-		struct { T _e0, _e1, _e2, _e3; };
-		struct { T x, y, z, w; };
-	};
-
-	AX_INLINE constexpr Vec_Storage_() = default;
-	AX_INLINE constexpr Vec_Storage_(const T& e0, const T& e1, const T& e2, const T& e3) : _e0(e0), _e1(e1), _e2(e2), _e3(e3) {}
-};
-
-template<>
-class Vec_Storage_<4, f32, CpuSIMD::SSE> {
-	using T = f32;
-public:
-	using Element = T;
-	static constexpr Int elementCount = 4;
-	static constexpr CpuSIMD cpuSIMD = CpuSIMD::SSE;
-	union {
-		T _data[elementCount];
-		struct { T _e0, _e1, _e2, _e3; };
-		struct { T x, y, z, w; };
-		__m128 _m;
-	};
-	
-	AX_INLINE constexpr Vec_Storage_() = default;
-	AX_INLINE constexpr Vec_Storage_(const T& e0, const T& e1, const T& e2, const T& e3) : _e0(e0), _e1(e1), _e2(e2), _e3(e3) {}
-};
-
-template<Int N, class T, CpuSIMD SIMD>
-class VecBase_ : public NumBase_<N, T, Vec_Storage_<N, T, SIMD> > {
-	using This = VecBase_;
-	using Base = NumBase_<N, T, Vec_Storage_<N, T, SIMD>>;
-public:
-	using Storage = Base::Storage;
-	using Element = Base::Element;
-	static constexpr Int elementCount = Base::elementCount;
-	static constexpr CpuSIMD cpuSIMD  = Base::cpuSIMD;
-	
-	AX_INLINE constexpr VecBase_() = default;
-	AX_INLINE constexpr VecBase_(const T& e0, const T& e1, const T& e2) : Base(e0, e1, e2) {}
-	AX_INLINE constexpr VecBase_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
-}; 
-
-// template<class T, CpuSIMD SIMD = Vec_DefaultSIMD>
-// class Vec3_ : public VecBase_<3, T, SIMD> {
-// public:
-// 	AX_INLINE constexpr Vec3_() = default;
-// }; 
-
-// template<class T, CpuSIMD SIMD = Vec_DefaultSIMD>
-// class Vec4_ : public VecBase_<4, T, SIMD> {
-// 	using Base = VecBase_<4, T, SIMD>;
-// public:
-// 	AX_INLINE constexpr Vec4_() = default;
-// 	AX_INLINE constexpr Vec4_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
-// };
-
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec3_ = VecBase_<3, T, SIMD>;
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec4_ = VecBase_<4, T, SIMD>;
-
-using Vec3f			= Vec3_<f32>;
-using Vec3f_SSE		= Vec3_<f32, CpuSIMD::SSE>;
-using Vec3f_NoSIMD	= Vec3_<f32, CpuSIMD::NoSIMD>;
-
-using Vec4f			= Vec4_<f32>;
-using Vec4f_SSE		= Vec4_<f32, CpuSIMD::SSE>;
-using Vec4f_NoSIMD	= Vec4_<f32, CpuSIMD::NoSIMD>;
 
 } // namespace

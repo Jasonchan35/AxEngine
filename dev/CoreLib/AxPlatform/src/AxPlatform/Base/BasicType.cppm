@@ -357,10 +357,12 @@ protected:
 template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
 template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
 
-template<class T> struct NumLimit;
+template<class T> struct NumLimit_Struct {
+	using Type = typename T::_NumLimit;
+};
 
-template<class T> requires Type_IsFundamental<T>
-struct NumLimit<T> {
+template<class T>
+struct NumLimit_FundamentalType {
 	static constexpr bool isExactType    =  std::numeric_limits<T>::is_exact;
 	static constexpr bool hasInfinity    =  std::numeric_limits<T>::has_infinity;
 	static constexpr T    infinity       =  std::numeric_limits<T>::infinity();
@@ -371,6 +373,12 @@ struct NumLimit<T> {
 	static constexpr T    epsilon        =  std::numeric_limits<T>::epsilon();
 	static constexpr T    NaN            =  std::numeric_limits<T>::quiet_NaN();
 };
+
+template<class T> requires Type_IsFundamental<T>
+struct NumLimit_Struct<T> { using Type = NumLimit_FundamentalType<T>; };
+
+template<class T>
+using NumLimit = typename NumLimit_Struct<T>::Type;
 
 inline constexpr f32   f32_epsilon       = NumLimit<f32>::epsilon;
 inline constexpr f64   f64_epsilon       = NumLimit<f64>::epsilon;

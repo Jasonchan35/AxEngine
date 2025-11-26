@@ -69,8 +69,9 @@ template<> struct NormIntTraits<i32> {
 template<class T>
 class NormInt_ {
 	using This = NormInt_;
-
 public:
+	struct _NumLimit;
+	
 	using Traits = NormIntTraits<T>;
 
 	using FloatType = typename Traits::FloatType;
@@ -152,12 +153,7 @@ template<class T> struct Type_Float_From_Struct< NormInt_<T> >  { using Type = t
 template<class T> struct IsNormInt_Helper : std::false_type {};
 template<class T> struct IsNormInt_Helper< NormInt_<T> > : std::true_type {};
 
-template<class T> struct NumLimit<NormInt_<T>> : public NumLimit<T> {};
-
-namespace Math {
-	template<class T> inline constexpr NormInt_<T> epsilon<NormInt_<T>> = NormInt_<T>::kZero();
-} // namespace ax::Math
-
+template<class T> struct NormInt_<T>::_NumLimit : public NumLimit<T> {};
 
 } // namespace ax
 

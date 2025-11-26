@@ -12,6 +12,8 @@ using f16 = Float16;
 struct Float16 {
 	using This = Float16;
 public:
+	struct _NumLimit;
+	
 	enum class hdata : u16 {
 		// set(float) require c++20 std::bit_cast() for constexpr, therefore using pre-computed int
 		Zero = 0,
@@ -245,8 +247,7 @@ constexpr float Float16::s_overflow() {
 
 #pragma warning(pop)
 
-template<>
-struct NumLimit<Float16> {
+struct Float16::_NumLimit {
 	static constexpr bool isExactType    =  false;
 	
 	// static constexpr f16    lowest         =  std::numeric_limits<f16>::lowest();
