@@ -11,7 +11,8 @@
 // SSE / AVX
 #if AX_COMPILER_CLANG && AX_OS_WINDOWS
 	#include <xmmintrin.h>
-	#include <avxintrin.h>
+//	#include <avxintrin.h>
+	#include <immintrin.h>
 #else
 	#include <xmmintrin.h>
 	#include <immintrin.h>

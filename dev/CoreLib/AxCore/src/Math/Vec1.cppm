@@ -3,9 +3,11 @@ module;
 export module AxCore.Vec1;
 export import AxCore.VecBase;
 
-export namespace ax {
+export namespace  ax::TODO {
 
-template<class T, VecSIMD SIMD>
+#if 0
+
+template<class T, CpuSIMD SIMD>
 class Vec_<1, T, SIMD> : public VecBase1_<T, SIMD> {
 	using This = Vec_;
 	using Base = VecBase1_<T, SIMD>;
@@ -13,7 +15,7 @@ public:
 	using Data = VecBase1_<T, SIMD>;
 	using Data::ElementCount;
 	using Data::x;
-	using typename Data::T;
+	using typename Data::Element;
 
 	using Vec2   = Vec2_< T, SIMD>;
 	using Vec3   = Vec3_< T, SIMD>;
@@ -59,6 +61,8 @@ public:
 };
 
 //-------
+
+#endif
 
 } // namespace
 

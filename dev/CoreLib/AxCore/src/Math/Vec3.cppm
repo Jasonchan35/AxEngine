@@ -3,7 +3,9 @@
 export module AxCore.Vec3;
 export import AxCore.Vec2;
 
-export namespace ax {
+export namespace  ax::TODO {
+
+#if 0
 
 template<class T, CpuSIMD SIMD>
 class Vec_<3, T, SIMD> : public VecBase3_<T, SIMD> {
@@ -128,7 +130,7 @@ private:
 };
 
 //---- Vec3f_SSE / Vec3d_SSE
-template<> AX_NODISCARD AX_INLINE constexpr void Vec3f_SSE::setAll(const f32& v) {
+template<> AX_INLINE constexpr void Vec3f_SSE::setAll(const f32& v) {
 	if (std::is_constant_evaluated()) {
 		x = v; y = v; z = v;
 	} else {
@@ -136,7 +138,7 @@ template<> AX_NODISCARD AX_INLINE constexpr void Vec3f_SSE::setAll(const f32& v)
 	}
 }
 
-template<> AX_NODISCARD AX_INLINE constexpr void Vec3d_SSE::setAll(const f64& v) {
+template<> AX_INLINE constexpr void Vec3d_SSE::setAll(const f64& v) {
 	if (std::is_constant_evaluated()) {
 		x = v; y = v; z = v;
 	} else {
@@ -186,5 +188,6 @@ template<> AX_INLINE bool Vec3d_SSE::operator<=(const Vec3d_SSE& r) const { auto
 template<> AX_NODISCARD AX_INLINE Vec3f_SSE Vec3f_SSE::abs() const { return Vec3f_SSE(_mm_andnot_ps(   _m, _mm_set1_ps(   -0.0f))); }
 template<> AX_NODISCARD AX_INLINE Vec3d_SSE Vec3d_SSE::abs() const { return Vec3d_SSE(_mm256_andnot_pd(_m, _mm256_set1_pd(-0.0f))); }
 
+#endif
 
 } // namespace

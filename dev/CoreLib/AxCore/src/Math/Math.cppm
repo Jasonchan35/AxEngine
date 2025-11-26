@@ -138,7 +138,7 @@ AX_INLINE float rsqrt(float v) {
 AX_INLINE double rsqrt(double v) { return rcp(sqrt(v)); }
 AX_INLINE Int    rsqrt(Int    v) { return roundToInt(rsqrt(static_cast<double>(v))); }
 
-template<class T, class WEIGHT = typename Type_Float_From<T>> AX_INLINE constexpr
+template<class T, class WEIGHT = Type_Float_From<T>> AX_INLINE constexpr
 T lerp(const T& a, const T& b, const WEIGHT& w) {
 	if constexpr (std::is_integral_v<T>) {
 		return static_cast<T>(round(static_cast<WEIGHT>(a) + w * static_cast<WEIGHT>(b - a)));

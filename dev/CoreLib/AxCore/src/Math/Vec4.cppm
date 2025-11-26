@@ -3,7 +3,9 @@
 export module AxCore.Vec4;
 export import AxCore.Vec3;
 
-export namespace ax {
+export namespace ax::TODO {
+
+#if 0
 
 template<class T, CpuSIMD SIMD>
 class Vec_<4, T, SIMD> : public VecBase4_<T, SIMD> {
@@ -163,5 +165,7 @@ template<> AX_INLINE bool Vec4d_SSE::operator<=(const Vec4d_SSE& v) const { auto
 
 template<> AX_NODISCARD AX_INLINE Vec4f_SSE Vec4f_SSE::abs() const { return Vec4f_SSE(_mm_andnot_ps(_m, _mm_set1_ps(-0.0f))); }
 template<> AX_NODISCARD AX_INLINE Vec4d_SSE Vec4d_SSE::abs() const { return Vec4d_SSE(_mm256_andnot_pd(_m, _mm256_set1_pd(-0.0f))); }
+
+#endif
 
 } // namespace

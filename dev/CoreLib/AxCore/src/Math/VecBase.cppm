@@ -1,40 +1,40 @@
 module;
 #include "AxCore-pch.h"
 export module AxCore.VecBase;
+export import AxCore.Num;
+
 export import AxCore.NormInt;
 
 export namespace ax {
 
-#define AX_VecSIMD_ENUM_LIST(E) \
-	E(None,) \
-	E(SSE,)  \
-//---
-AX_ENUM_CLASS(AX_VecSIMD_ENUM_LIST, VecSIMD, u8)
+#if 0
 
-constexpr VecSIMD VecSIMD_default = VecSIMD::SSE;
-using CpuSIMD = VecSIMD; // TODO: remove
+inline constexpr CpuSIMD VecSIMD_default = CpuSIMD::SSE;
 
-template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class VecBase_;
-template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class Vec_;
-template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class Quat_;
-template<Int N, class T, VecSIMD SIMD = VecSIMD_default> class Rect_;
-template<Int ROW, Int Col, class T, VecSIMD SIMD = VecSIMD_default> class Mat_;
+template<Int N, class T, CpuSIMD SIMD = VecSIMD_default> class VecBase_;
+template<class T, CpuSIMD SIMD = VecSIMD_default> using VecBase1_  = VecBase_<1, T, SIMD>;
+template<class T, CpuSIMD SIMD = VecSIMD_default> using VecBase2_  = VecBase_<2, T, SIMD>;
+template<class T, CpuSIMD SIMD = VecSIMD_default> using VecBase3_  = VecBase_<3, T, SIMD>;
+template<class T, CpuSIMD SIMD = VecSIMD_default> using VecBase4_  = VecBase_<4, T, SIMD>;
 
-template<class T, VecSIMD SIMD = VecSIMD_default> using VecBase1_  = VecBase_<1, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using VecBase2_  = VecBase_<2, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using VecBase3_  = VecBase_<3, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using VecBase4_  = VecBase_<4, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using Vec1_      = Vec_<1, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using Vec2_      = Vec_<2, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using Vec3_      = Vec_<3, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using Vec4_      = Vec_<4, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using Quat4_     = Quat_<4, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using Rect2_     = Rect_<2, T, SIMD>;
+template<Int N, class T, CpuSIMD SIMD = VecSIMD_default> class Vec_;
+template<       class T, CpuSIMD SIMD = VecSIMD_default> using Vec1_      = Vec_<1, T, SIMD>;
+template<       class T, CpuSIMD SIMD = VecSIMD_default> using Vec2_      = Vec_<2, T, SIMD>;
+template<       class T, CpuSIMD SIMD = VecSIMD_default> using Vec3_      = Vec_<3, T, SIMD>;
+template<       class T, CpuSIMD SIMD = VecSIMD_default> using Vec4_      = Vec_<4, T, SIMD>;
+
+template<Int N, class T, CpuSIMD SIMD = VecSIMD_default> class Quat_;
+template<class T, CpuSIMD SIMD = VecSIMD_default> using Quat4_     = Quat_<4, T, SIMD>;
+
+template<Int N, class T, CpuSIMD SIMD = VecSIMD_default> class Rect_;
+template<class T, CpuSIMD SIMD = VecSIMD_default> using Rect2_     = Rect_<2, T, SIMD>;
+
+template<Int ROW, Int Col, class T, CpuSIMD SIMD = VecSIMD_default> class Mat_;
 // template<class T, VecSIMD SIMD = VecSIMD_default> using Mat3_   = Mat_<3, 3, T, SIMD>;
 // template<class T, VecSIMD SIMD = VecSIMD_default> using Mat4x3_ = Mat_<4, 3, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_default> using Mat4_      = Mat_<4, 4, T, SIMD>;
+template<class T, CpuSIMD SIMD = VecSIMD_default> using Mat4_      = Mat_<4, 4, T, SIMD>;
 
-template<class T, VecSIMD SIMD>
+template<class T, CpuSIMD SIMD>
 class VecBase_<1, T, SIMD> {
 	using This = VecBase_;
 public:
@@ -55,7 +55,7 @@ public:
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(data()); }
 };
 
-template<class T, VecSIMD SIMD>
+template<class T, CpuSIMD SIMD>
 class VecBase_<2, T, SIMD> {
 	using This = VecBase_;
 public:
@@ -76,7 +76,7 @@ public:
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(data()); }
 };
 
-template<class T, VecSIMD SIMD>
+template<class T, CpuSIMD SIMD>
 class VecBase_<3, T, SIMD> {
 	using This = VecBase_;
 public:
@@ -102,7 +102,7 @@ public:
 };
 
 template<>
-class VecBase_<3, f32, VecSIMD::SSE> {
+class VecBase_<3, f32, CpuSIMD::SSE> {
 	using This = VecBase_;
 	using T = f32;
 public:
@@ -127,7 +127,7 @@ public:
 };
 
 template<>
-class VecBase_<3, f64, VecSIMD::SSE> {
+class VecBase_<3, f64, CpuSIMD::SSE> {
 	using This = VecBase_;
 	using T = f64;
 public:
@@ -151,7 +151,7 @@ public:
 };
 
 
-template<class T, VecSIMD SIMD>
+template<class T, CpuSIMD SIMD>
 class VecBase_<4, T, SIMD> {
 	using This = VecBase_;
 public:
@@ -178,7 +178,7 @@ public:
 };
 
 template<>
-class VecBase_<4, f32, VecSIMD::SSE> {
+class VecBase_<4, f32, CpuSIMD::SSE> {
 	using This = VecBase_;
 	using T = f32;
 public:
@@ -206,7 +206,7 @@ public:
 };
 
 template<>
-class VecBase_<4, f64, VecSIMD::SSE> {
+class VecBase_<4, f64, CpuSIMD::SSE> {
 	using This = VecBase_;
 	using T = f64;
 public:
@@ -224,7 +224,7 @@ public:
 	AX_INLINE constexpr VecBase_(const T& x_, const T& y_, const T& z_, const T& w_) : x(x_), y(y_), z(z_), w(w_) {}
 };
 
-template<Int N, class T, VecSIMD SIMD>
+template<Int N, class T, CpuSIMD SIMD>
 struct NumLimit<Vec_<N, T, SIMD>> {
 	using VEC = Vec_<N, T, SIMD>;
 	using ElemLimit = NumLimit<T>;
@@ -332,15 +332,15 @@ using SNorm32x3	= VecBase3_<SNorm32>;
 using SNorm32x4	= VecBase4_<SNorm32>;
 
 //---- SSE ----
-using f32x1_SSE = VecBase1_<f32, VecSIMD::SSE>;
-using f32x2_SSE = VecBase2_<f32, VecSIMD::SSE>;
-using f32x3_SSE = VecBase3_<f32, VecSIMD::SSE>;
-using f32x4_SSE = VecBase4_<f32, VecSIMD::SSE>;
+using f32x1_SSE = VecBase1_<f32, CpuSIMD::SSE>;
+using f32x2_SSE = VecBase2_<f32, CpuSIMD::SSE>;
+using f32x3_SSE = VecBase3_<f32, CpuSIMD::SSE>;
+using f32x4_SSE = VecBase4_<f32, CpuSIMD::SSE>;
 
-using f64x1_SSE = VecBase1_<f64, VecSIMD::SSE>;
-using f64x2_SSE = VecBase2_<f64, VecSIMD::SSE>;
-using f64x3_SSE = VecBase3_<f64, VecSIMD::SSE>;
-using f64x4_SSE = VecBase4_<f64, VecSIMD::SSE>;
+using f64x1_SSE = VecBase1_<f64, CpuSIMD::SSE>;
+using f64x2_SSE = VecBase2_<f64, CpuSIMD::SSE>;
+using f64x3_SSE = VecBase3_<f64, CpuSIMD::SSE>;
+using f64x4_SSE = VecBase4_<f64, CpuSIMD::SSE>;
 
 //--------
 
@@ -390,6 +390,6 @@ using Vec3d_SSE	= Vec3_<f64, CpuSIMD::SSE>;
 using Vec4f_SSE	= Vec4_<f32, CpuSIMD::SSE>;
 using Vec4d_SSE	= Vec4_<f64, CpuSIMD::SSE>;
 
-
+#endif
 } // namespace
 

@@ -128,7 +128,7 @@ public:
 protected:
 	Mutex	_mutex;
 	Data*	_data = nullptr;
-	Byte	_dataBuffer[ax_sizeof<Data>];
+	Byte	_dataBuffer[AX_SIZEOF(Data)];
 };
 
 } // namespace
