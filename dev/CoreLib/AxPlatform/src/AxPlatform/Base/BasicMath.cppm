@@ -118,7 +118,7 @@ inline constexpr bool almostEqual(const T& a, const T& b, const T& ep = epsilon<
 	if constexpr (Type_IsInt<T>) {
 		return a == b;
 	} else {
-		T diff = abs(a - b);
+		auto diff = abs(a - b);
 		return diff <= ep;
 	}
 }

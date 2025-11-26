@@ -60,6 +60,8 @@ public:
 template<>
 class Vec_Storage_<3, f32, CpuSIMD::SSE> {
 	using T = f32;
+	static constexpr bool _is_f64 = Type_IsSame<T, f64>;
+	using MM = std::conditional_t<_is_f64, __m256d, __m128>;
 public:
 	using Element = T;
 	static constexpr Int elementCount = 3;
@@ -69,17 +71,18 @@ public:
 		T _data[elementCount];
 		struct { T _e0, _e1, _e2, _e3_unused; };
 		struct { T x, y, z; };
-		__m128 _m;
+		MM _m;
 	};
 
 	AX_NODISCARD AX_INLINE			constexpr Vec_Storage_() = default;
-	AX_NODISCARD AX_INLINE explicit	constexpr Vec_Storage_(const __m128& m) : _m(m) {}
+	AX_NODISCARD AX_INLINE explicit	constexpr Vec_Storage_(const MM& m) : _m(m) {}
 	AX_NODISCARD AX_INLINE			constexpr Vec_Storage_(const T& e0, const T& e1, const T& e2) : _e0(e0), _e1(e1), _e2(e2) {}
 };
 
-template<>
-class Vec_Storage_<4, f32, CpuSIMD::SSE> {
-	using T = f32;
+template<class T>
+class Vec_Storage_<4, T, CpuSIMD::SSE> {
+	static constexpr bool _is_f64 = Type_IsSame<T, f64>;
+	using MM = std::conditional_t<_is_f64, __m256d, __m128>;
 public:
 	using Element = T;
 	static constexpr Int elementCount = 4;
@@ -88,21 +91,21 @@ public:
 		T _data[elementCount];
 		struct { T _e0, _e1, _e2, _e3; };
 		struct { T x, y, z, w; };
-		__m128 _m;
+		MM _m;
 	};
 	
 	AX_NODISCARD AX_INLINE			constexpr Vec_Storage_() = default;
-	AX_NODISCARD AX_INLINE explicit	constexpr Vec_Storage_(const __m128& m) : _m(m) {}
+	AX_NODISCARD AX_INLINE explicit	constexpr Vec_Storage_(const MM& m) : _m(m) {}
 	AX_NODISCARD AX_INLINE			constexpr Vec_Storage_(const T& e0, const T& e1, const T& e2, const T& e3) : _e0(e0), _e1(e1), _e2(e2), _e3(e3) {}
 };
 
 template<Int N, class T, CpuSIMD SIMD>
-using VecBase_Base = NumBase_<N,  VecBase_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
+using VecBase_Base = Num_<N,  VecBase_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
 
 template<class T, CpuSIMD SIMD>
 class VecBase_<4, T, SIMD> : public VecBase_Base<4, T, SIMD> {
 	using This = VecBase_;
-	using Base = NumBase_<4, VecBase_, Vec_Storage_<4, T, SIMD>>;
+	using Base = Num_<4, VecBase_, Vec_Storage_<4, T, SIMD>>;
 public:
 	using _NumLimit = typename NumBase_NumLimit<This, T>;
 
@@ -116,7 +119,22 @@ public:
 	AX_INLINE constexpr VecBase_(const Storage & storage) : Base(storage) {} 
 	AX_INLINE constexpr VecBase_(const T& e0, const T& e1, const T& e2) : Base(e0, e1, e2) {}
 	AX_INLINE constexpr VecBase_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
-}; 
+};
+
+
+namespace Math {
+// for Unit Test
+template <Int N, class T, CpuSIMD A_SIMD, CpuSIMD B_SIMD> requires (A_SIMD != B_SIMD)
+inline constexpr bool almostEqual(const VecBase_<N, T, A_SIMD>& a,
+                                     const VecBase_<N, T, B_SIMD>& b) {
+	auto ep = Math::epsilon<T>;
+	for (Int i = 0; i < N; ++i) {
+		if (!almostEqual(a.unsafe_at(i), b.unsafe_at(i), ep)) return false;
+	}
+	return true;
+}
+} // namespace Math
+
 
 // template<class T, CpuSIMD SIMD = Vec_DefaultSIMD>
 // class Vec3_ : public VecBase_<3, T, SIMD> {
