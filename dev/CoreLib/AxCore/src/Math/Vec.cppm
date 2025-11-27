@@ -5,15 +5,14 @@ export import AxCore.NumSIMD4;
 
 export namespace  ax {
 
-inline constexpr CpuSIMD Vec_DefaultSIMD = CpuSIMD::SSE;
 template<Int N, class T, CpuSIMD SIMD> class Vec_Storage_;
 template<Int N, class T, CpuSIMD SIMD> class Vec_;
 template<Int N, class T, CpuSIMD SIMD> using VecBase_ = NumSIMD_<N,  Vec_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
 
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec1_ = Vec_<1, T, SIMD>;
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec2_ = Vec_<2, T, SIMD>;
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec3_ = Vec_<3, T, SIMD>;
-template<class T, CpuSIMD SIMD = Vec_DefaultSIMD> using Vec4_ = Vec_<4, T, SIMD>;
+template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Vec1_ = Vec_<1, T, SIMD>;
+template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Vec2_ = Vec_<2, T, SIMD>;
+template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Vec3_ = Vec_<3, T, SIMD>;
+template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Vec4_ = Vec_<4, T, SIMD>;
 
 using Vec1h			= Vec1_<f16>;
 using Vec1h_SSE		= Vec1_<f16, CpuSIMD::SSE>;

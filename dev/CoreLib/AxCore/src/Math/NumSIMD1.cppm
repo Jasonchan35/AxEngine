@@ -12,6 +12,7 @@ export namespace ax {
 	E(SSE,)  \
 //---
 AX_ENUM_CLASS(AX_NumSIMD_ENUM_LIST, CpuSIMD, u8)
+inline constexpr CpuSIMD CpuSIMD_Default = CpuSIMD::SSE;
 
 class SIMD_MM_Void {};
 template<Int N, class T, CpuSIMD SIMD>	struct CpuSIMD_REG_							{ using Type = SIMD_MM_Void; static constexpr Int padding = 0; };
