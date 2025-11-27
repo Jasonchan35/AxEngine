@@ -31,7 +31,7 @@ public:
 	AX_INLINE constexpr void setMin(const T& newMin) { auto e = endValue(); start = newMin; setEnd(e); }
 	AX_INLINE constexpr void setEnd(const T& newEnd) { size = newEnd - start; }
 
-	AX_INLINE constexpr void trimStart(const T& n) { T t = Math::max0(size - n); start -= t; size += t; }
+	AX_INLINE constexpr void trimStart(const T& n) { T t = Math::max_0(size - n); start -= t; size += t; }
 
 	AX_INLINE constexpr bool contains(const Range_& r) const { return r.start >= start && r.end() <= end(); }
 

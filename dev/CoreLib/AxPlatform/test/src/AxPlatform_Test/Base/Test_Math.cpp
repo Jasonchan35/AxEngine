@@ -5,7 +5,7 @@ namespace ax {
 class Test_Math : public UnitTestClass {
 public:
 	void test_case1() {
-		Math::nextPow2(10);
+		AX_TEST_EQ(Math::nextPow2(10), 16);
 	}
 	
 };
