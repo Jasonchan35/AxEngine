@@ -5,8 +5,8 @@ export import AxCore.NumSIMD4;
 
 export namespace  ax {
 
-template<Int N, class T, CpuSIMD SIMD> class Vec_Storage_;
 template<Int N, class T, CpuSIMD SIMD> class Vec_;
+template<Int N, class T, CpuSIMD SIMD> class Vec_Storage_;
 template<Int N, class T, CpuSIMD SIMD> using VecBase_ = NumSIMD_<N,  Vec_<N, T, SIMD>, Vec_Storage_<N, T, SIMD> >;
 
 template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Vec1_ = Vec_<1, T, SIMD>;
@@ -164,7 +164,7 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(Tag::All_, const T& v) : Base(Tag::All, v) {}
 	AX_INLINE constexpr Vec_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Vec_(const T& e0) : Base(e0) {}
+	AX_INLINE constexpr Vec_(const T& x_) : Base(x_) {}
 };
 
 template<class T, CpuSIMD SIMD>
@@ -183,7 +183,7 @@ public:
 	AX_INLINE constexpr Vec_(const This& v) = default;	
 	AX_INLINE constexpr Vec_(Tag::All_, const T& v) : Base(Tag::All, v) {}
 	AX_INLINE constexpr Vec_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Vec_(const T& e0, const T& e1) : Base(e0, e1) {}
+	AX_INLINE constexpr Vec_(const T& x_, const T& y_) : Base(x_, y_) {}
 };
 
 template<class T, CpuSIMD SIMD>
@@ -201,7 +201,7 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(Tag::All_, const T& v) : Base(Tag::All, v) {}
 	AX_INLINE constexpr Vec_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Vec_(const T& e0, const T& e1, const T& e2) : Base(e0, e1, e2) {}
+	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_) : Base(x_, y_, z_) {}
 };
 
 template<class T, CpuSIMD SIMD>
@@ -219,7 +219,7 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(Tag::All_, const T& v) : Base(Tag::All, v) {}
 	AX_INLINE constexpr Vec_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Vec_(const T& e0, const T& e1, const T& e2, const T& e3) : Base(e0, e1, e2, e3) {}
+	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : Base(x_, y_, z_, w_) {}
 };
 
 } // namespace 

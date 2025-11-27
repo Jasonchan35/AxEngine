@@ -3,6 +3,7 @@
 
 export module AxCore.Float16;
 export import AxCore._PCH;
+export import AxCore.Math;
 
 export namespace ax {
 

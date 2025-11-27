@@ -5,8 +5,8 @@ export import AxCore.Vec;
 
 export namespace ax {
 
-template<Int N, class T, CpuSIMD SIMD> class Margin_Storage_;
 template<Int N, class T, CpuSIMD SIMD> class Margin_;
+template<Int N, class T, CpuSIMD SIMD> class Margin_Storage_;
 template<Int N, class T, CpuSIMD SIMD> using MarginBase_ = NumSIMD_<N,  Margin_<N, T, SIMD>, Margin_Storage_<N, T, SIMD> >;
 
 template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Margin4_ = Margin_<4, T, SIMD>;
@@ -14,11 +14,9 @@ template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Margin4_ = Margin_<4, T,
 using Margin4h			= Margin4_<f16>;
 using Margin4h_SSE		= Margin4_<f16, CpuSIMD::SSE>;
 using Margin4h_Basic	= Margin4_<f16, CpuSIMD::None>;
-
 using Margin4f			= Margin4_<f32>;
 using Margin4f_SSE		= Margin4_<f32, CpuSIMD::SSE>;
 using Margin4f_Basic	= Margin4_<f32, CpuSIMD::None>;
-
 using Margin4d			= Margin4_<f64>;
 using Margin4d_SSE		= Margin4_<f64, CpuSIMD::SSE>;
 using Margin4d_Basic	= Margin4_<f64, CpuSIMD::None>;
@@ -57,11 +55,12 @@ public:
 	static constexpr CpuSIMD cpuSIMD      = Base::cpuSIMD;
 	static_assert(SIMD == cpuSIMD);
 
-	using Vec2 = Vec2_<T, SIMD>;
 	using Storage::top;
 	using Storage::right;
 	using Storage::bottom;
 	using Storage::left;
+
+	using Vec2 = Vec2_<T, SIMD>;
 	
 	AX_INLINE constexpr Margin_() = default;
 	AX_INLINE constexpr Margin_(Tag::All_, const T& v) : Base(Tag::All, v) {}

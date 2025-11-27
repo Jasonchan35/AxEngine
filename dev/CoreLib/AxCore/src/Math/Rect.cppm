@@ -5,8 +5,8 @@ export import AxCore.Margin;
 
 export namespace ax {
 
-template<Int N, class T, CpuSIMD SIMD> class Rect_Storage_;
 template<Int N, class T, CpuSIMD SIMD> class Rect_;
+template<Int N, class T, CpuSIMD SIMD> class Rect_Storage_;
 template<Int N, class T, CpuSIMD SIMD> using RectBase_ = NumSIMD_<N, Rect_<N, T, SIMD>, Rect_Storage_<N, T, SIMD> >;
 
 template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Rect4_ = Rect_<4, T, SIMD>;
@@ -14,11 +14,9 @@ template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Rect4_ = Rect_<4, T, SIM
 using Rect4h		= Rect4_<f16>;
 using Rect4h_SSE	= Rect4_<f16, CpuSIMD::SSE>;
 using Rect4h_Basic	= Rect4_<f16, CpuSIMD::None>;
-
 using Rect4f		= Rect4_<f32>;
 using Rect4f_SSE	= Rect4_<f32, CpuSIMD::SSE>;
 using Rect4f_Basic	= Rect4_<f32, CpuSIMD::None>;
-
 using Rect4d		= Rect4_<f64>;
 using Rect4d_SSE	= Rect4_<f64, CpuSIMD::SSE>;
 using Rect4d_Basic	= Rect4_<f64, CpuSIMD::None>;
@@ -64,10 +62,11 @@ public:
 	using Storage::h;
 	using Storage::pos;
 	using Storage::extents;
-	using Vec2 = Vec2_<T, SIMD>;
-	using Vec4 = Vec4_<T, SIMD>;
+
+	using Vec2    = Vec2_<T, SIMD>;
+	using Vec4    = Vec4_<T, SIMD>;
 	using Margin4 = Margin_<4, T, SIMD>;
-	using Range = Range_<T>;
+	using Range   = Range_<T>;
 	
 	AX_INLINE constexpr Rect_() = default;
 	AX_INLINE constexpr Rect_(Tag::All_, const T& v) : Base(Tag::All, v) {}
