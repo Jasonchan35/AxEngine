@@ -1,7 +1,7 @@
 ﻿module;
 #include "AxCore-pch.h"
 export module AxCore.Quat; // Quaternion
-export import AxCore.Vec;
+export import AxCore.Mat;
 
 export namespace ax {
 

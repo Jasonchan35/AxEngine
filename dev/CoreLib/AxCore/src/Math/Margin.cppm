@@ -24,7 +24,7 @@ using Margin4d_Basic	= Margin4_<f64, CpuSIMD::None>;
 
 template<class T, CpuSIMD SIMD>
 class Margin_Storage_<4, T, SIMD> {
-	using REG = CpuSIMD_REG_<4, T, SIMD>;
+	using REG = CpuSIMD_Register_<4, T, SIMD>;
 	using MM  = typename REG::Type;
 	using Vec2 = Vec2_<T, SIMD>;
 public:

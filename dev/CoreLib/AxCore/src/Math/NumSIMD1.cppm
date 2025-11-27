@@ -15,11 +15,11 @@ AX_ENUM_CLASS(AX_NumSIMD_ENUM_LIST, CpuSIMD, u8)
 inline constexpr CpuSIMD CpuSIMD_Default = CpuSIMD::SSE;
 
 class SIMD_MM_Void {};
-template<Int N, class T, CpuSIMD SIMD>	struct CpuSIMD_REG_							{ using Type = SIMD_MM_Void; static constexpr Int padding = 0; };
-template<> 								struct CpuSIMD_REG_<3, f32, CpuSIMD::SSE>	{ using Type = __m128;       static constexpr Int padding = 1; }; 
-template<> 								struct CpuSIMD_REG_<3, f64, CpuSIMD::SSE>	{ using Type = __m256d;      static constexpr Int padding = 1; };
-template<> 								struct CpuSIMD_REG_<4, f32, CpuSIMD::SSE>	{ using Type = __m128;       static constexpr Int padding = 0; }; 
-template<> 								struct CpuSIMD_REG_<4, f64, CpuSIMD::SSE>	{ using Type = __m256d;      static constexpr Int padding = 0; };
+template<Int N, class T, CpuSIMD SIMD>	struct CpuSIMD_Register_						{ using Type = SIMD_MM_Void; static constexpr Int padding = 0; };
+template<> 								struct CpuSIMD_Register_<3, f32, CpuSIMD::SSE>	{ using Type = __m128;       static constexpr Int padding = 1; }; 
+template<> 								struct CpuSIMD_Register_<3, f64, CpuSIMD::SSE>	{ using Type = __m256d;      static constexpr Int padding = 1; };
+template<> 								struct CpuSIMD_Register_<4, f32, CpuSIMD::SSE>	{ using Type = __m128;       static constexpr Int padding = 0; }; 
+template<> 								struct CpuSIMD_Register_<4, f64, CpuSIMD::SSE>	{ using Type = __m256d;      static constexpr Int padding = 0; };
 
 template<Int N, class VEC, class STORAGE> class NumSIMD_;
 template<       class VEC, class STORAGE> using NumSIMD1_  = NumSIMD_<1, VEC, STORAGE>;

@@ -68,7 +68,7 @@ using Vec4i_Basic	= Vec4_<Int, CpuSIMD::None>;
 
 template<class T, CpuSIMD SIMD>
 class Vec_Storage_<1, T, SIMD> {
-	using REG = CpuSIMD_REG_<1, T, SIMD>;
+	using REG = CpuSIMD_Register_<1, T, SIMD>;
 	using MM  = typename REG::Type;
 public:
 	using Element = T;
@@ -89,7 +89,7 @@ public:
 
 template<class T, CpuSIMD SIMD>
 class Vec_Storage_<2, T, SIMD> {
-	using REG = CpuSIMD_REG_<2, T, SIMD>;
+	using REG = CpuSIMD_Register_<2, T, SIMD>;
 	using MM  = typename REG::Type;
 public:
 	using Element = T;
@@ -110,7 +110,7 @@ public:
 
 template<class T, CpuSIMD SIMD>
 class Vec_Storage_<3, T, SIMD> {
-	using REG = CpuSIMD_REG_<3, T, SIMD>;
+	using REG = CpuSIMD_Register_<3, T, SIMD>;
 	using MM  = typename REG::Type;
 public:
 	using Element = T;
@@ -131,7 +131,7 @@ public:
 
 template<class T, CpuSIMD SIMD>
 class Vec_Storage_<4, T, SIMD> {
-	using REG = CpuSIMD_REG_<4, T, SIMD>;
+	using REG = CpuSIMD_Register_<4, T, SIMD>;
 	using MM  = typename REG::Type;
 public:
 	using Element = T;
