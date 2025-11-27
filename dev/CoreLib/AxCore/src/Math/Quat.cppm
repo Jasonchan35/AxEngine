@@ -131,20 +131,17 @@ Quat4_<T, SIMD> slerp_longway(const Quat4_<T, SIMD> & a, const Quat4_<T, SIMD> &
 	return slerp<T, true>(a, b, weight);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-T Quat_<4, T, SIMD>::dot(const This& r) const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::dot(const This& r) const -> T {
 	return (x * r.x + y * r.y) + (z * r.z + w * r.w);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-Vec3_<T, SIMD> Quat_<4, T, SIMD>::axis() const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::axis() const -> Vec3 {
 	T a = T(1) - w * w;
 	if (a <= 0) return Vec3(0, 0, 1);
 	return Vec3(x, y, z) * Math::rsqrt_fast(a);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-Quat_<4, T, SIMD> Quat_<4, T, SIMD>::s_euler(const Vec3& r) {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::s_euler(const Vec3& r) -> This {
 	Vec3_<T, SIMD> s, c;
 	Math::sincos(r * T(0.5), s, c);
 	return This(s.x * c.y * c.z - c.x * s.y * s.z,
@@ -153,29 +150,25 @@ Quat_<4, T, SIMD> Quat_<4, T, SIMD>::s_euler(const Vec3& r) {
 	            c.x * c.y * c.z + s.x * s.y * s.z);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-T Quat_<4, T, SIMD>::euler_z() const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_z() const -> T {
 	auto a = T(2) * (x * y + w * z);
 	auto b = w * w + x * x - y * y - z * z;
 	return Math::atan2(a, b);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-T Quat_<4, T, SIMD>::euler_y() const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_y() const -> T {
 	auto v = T(-2) * (x * z - w * y);
 	auto a = Math::clamp(v, T(-1), T(1));
 	return Math::asin(a);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-T Quat_<4, T, SIMD>::euler_x() const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_x() const -> T {
 	auto a = T(2) * (y * z + w * x);
 	auto b = w * w - x * x - y * y + z * z;
 	return Math::atan2(a, b);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-Quat_<4, T, SIMD> Quat_<4, T, SIMD>::inverse() const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::inverse() const -> This {
 	T d = x * x + y * y + z * z + w * w;
 	return This(-x, -y, -z, w) / d;
 }
@@ -186,24 +179,21 @@ Vec_<3, T, SIMD> operator*(const Vec_<3, T, SIMD> & vec, const Quat4_<T, SIMD>& 
 	return q.inverse() * vec;
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-Vec_<3, T, SIMD> Quat_<4, T, SIMD>::operator*(const Vec3_<T, SIMD>& v) const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const Vec3_<T, SIMD>& v) const -> Vec3 {
 	Vec3 qv(x, y, z);
 	auto uv  = qv.cross(v);
 	auto uuv = qv.cross(uv);
 	return v + (uv * w + uuv) * T(2);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
-Quat4_<T, SIMD> Quat_<4, T, SIMD>::operator*(const This& q) const {
+template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const This& q) const -> This {
 	return This(x * q.w +  w * q.x + z * q.y - y * q.z,
 				y * q.w +  w * q.y + x * q.z - z * q.x,
 				z * q.w +  w * q.z + y * q.x - x * q.y,
 				w * q.w -  x * q.x - y * q.y - z * q.z);
 }
 
-template<class T, CpuSIMD SIMD> constexpr AX_INLINE
-Quat4_<T, SIMD> Quat_<4, T, SIMD>::s_angleAxis(T rad, const Vec3& axis) {
+template<class T, CpuSIMD SIMD> constexpr AX_INLINE auto Quat_<4, T, SIMD>::s_angleAxis(T rad, const Vec3& axis) -> This {
 	T s, c;
 	sincos(rad * T(0.5), s, c);
 	return This(axis.x * s, axis.y * s, axis.z * s, c);

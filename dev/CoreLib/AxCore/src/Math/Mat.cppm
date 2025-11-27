@@ -52,14 +52,14 @@ public:
 		, cw(xx, wy, wz, ww)
 	{}
 
-	AX_NODISCARD AX_INLINE constexpr void set(const Vec4& cx_, const Vec4& cy_, const Vec4& cz_, const Vec4& cw_) {
+	AX_INLINE constexpr void set(const Vec4& cx_, const Vec4& cy_, const Vec4& cz_, const Vec4& cw_) {
 		cx = cx_;
 		cy = cy_;
 		cz = cz_;
 		cw = cw_;
 	}
 	
-	AX_NODISCARD AX_INLINE constexpr void set( const T& xx, const T& xy, const T& xz, const T& xw,
+	AX_INLINE constexpr void set( const T& xx, const T& xy, const T& xz, const T& xw,
 			  const T& yx, const T& yy, const T& yz, const T& yw,
 			  const T& zx, const T& zy, const T& zz, const T& zw,
 			  const T& wx, const T& wy, const T& wz, const T& ww )
@@ -131,13 +131,13 @@ public:
 	AX_NODISCARD constexpr 		This operator*			(const T& s) const		{ return This(cx * s, cy * s, cz * s, cw * s); }
 	AX_NODISCARD constexpr 		This operator/			(const T& s) const		{ return This(cx / s, cy / s, cz / s, cw / s); }
 
-	AX_NODISCARD constexpr 		void operator+=			(const T& s)			{ cx += s; cy += s; cz += s; cw += s; }
-	AX_NODISCARD constexpr 		void operator-=			(const T& s)			{ cx -= s; cy -= s; cz -= s; cw -= s; }
-	AX_NODISCARD constexpr 		void operator*=			(const T& s)			{ cx *= s; cy *= s; cz *= s; cw *= s; }
-	AX_NODISCARD constexpr 		void operator/=			(const T& s)			{ cx /= s; cy /= s; cz /= s; cw /= s; }
+				 constexpr 		void operator+=			(const T& s)			{ cx += s; cy += s; cz += s; cw += s; }
+				 constexpr 		void operator-=			(const T& s)			{ cx -= s; cy -= s; cz -= s; cw -= s; }
+				 constexpr 		void operator*=			(const T& s)			{ cx *= s; cy *= s; cz *= s; cw *= s; }
+				 constexpr 		void operator/=			(const T& s)			{ cx /= s; cy /= s; cz /= s; cw /= s; }
 
 	AX_NODISCARD constexpr 		This operator*			(const This &r) const;
-	AX_NODISCARD constexpr 		void operator*=			(const This &r)			{ *this = *this * r; }
+	 			 constexpr 		void operator*=			(const This &r)			{ *this = *this * r; }
 
 	AX_NODISCARD constexpr 		Vec4	mulPoint		(const Vec4&   v) const;
 //	AX_NODISCARD constexpr 		Vec4 operator*			(const Vec4& v) const	{ return mulPoint(v); }

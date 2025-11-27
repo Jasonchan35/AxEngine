@@ -44,7 +44,7 @@
 
 #if AX_OS_WINDOWS
 	#include <conio.h>
-	#include "AxPlatform/Base/AX_WINDOWS.h"
+	#include "AxPlatform/Platform/AX_OS_WINDOWS.h"
 #endif
 
 #endif // AX_USE_PRECOMPILE_HEADER
