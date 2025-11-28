@@ -30,12 +30,12 @@
 	#define AX_TYPE_HAS_SIZE_T		0  //linux 
 	#define AX_TYPE_HAS_SSIZE_T		0  //linux 
 
-	#define AX_OPTIMIZE_OFF			_Pragma("clang optimize off")
+	#define AX_OPTIMIZE_OFF()		_Pragma("clang optimize off")
 #else
 	#define AX_TYPE_HAS_SIZE_T		0  //linux 
 	#define AX_TYPE_HAS_SSIZE_T		0  //linux 
 
-	#define AX_OPTIMIZE_OFF			_Pragma("GCC optimize(\"O0\")")
+	#define AX_OPTIMIZE_OFF()		_Pragma("GCC optimize(\"O0\")")
 #endif
 
 #if __GNUC__ >= 4

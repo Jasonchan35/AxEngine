@@ -24,7 +24,11 @@ public:
 		for (Int i = 0; i < N; i++) {
 			c[i] = a[i] + b[i];
 		}
-		AX_LOG("sum = {}", c[5]);
+
+		auto msg = Fmt("test={}", c[5]);
+		std::cout << msg << std::endl;
+		
+		AX_LOG("sum = {}", 1);
 		AX_TEST_ALMOST_EQ(c[5].e[0], T(5));
 		AX_TEST_ALMOST_EQ(c[5].e[2], T(9));
 	}

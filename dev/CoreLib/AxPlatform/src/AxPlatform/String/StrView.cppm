@@ -240,6 +240,7 @@ constexpr bool MutStrView_<T>::matchWildcard(CView wildcard, StrCase sc) const n
 	return p == e && w == wEnd;
 }
 
-
+template<class T> inline
+std::ostream& operator << ( std::ostream & s, const MutStrView_<T> & v ) { return s << v.to_string_view(); }
 
 } // namespace

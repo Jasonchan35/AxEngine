@@ -53,7 +53,7 @@
 //#define AX_ALIGN(N)				__declspec(align(N)) 
 //#define AX_ALIGN(N)				alignas(N) //c++11
 
-#define AX_OPTIMIZE_OFF			__pragma(optimize("", off))
+#define AX_OPTIMIZE_OFF()			__pragma(optimize("", off))
 
 #if 0 // AX_BUILD_CONFIG_Debug
 	#define	AX_INLINE			inline

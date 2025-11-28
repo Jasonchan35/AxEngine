@@ -202,6 +202,9 @@ protected:
 	template<class R> constexpr void _appendUtf(const R& ch);
 };
 
+template<class T> inline
+std::ostream& operator << ( std::ostream & s, const IString_<T> & v ) { return s << v.to_string_view(); }
+
 template <class T>
 template <class R>
 constexpr void IString_<T>::_appendUtf(const R& r) {
