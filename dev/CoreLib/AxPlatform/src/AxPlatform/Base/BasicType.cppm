@@ -78,12 +78,6 @@ template<class T> constexpr bool Type_IsChar        =  std::is_same_v<std::remov
 template<class T> constexpr bool Type_Is_f32        =  std::is_same_v<T, f32>;
 template<class T> constexpr bool Type_Is_f64        =  std::is_same_v<T, f64>;
 
-template<class T> concept Con_Type_IsInt		 = Type_IsInt<T>;
-template<class T> concept Con_Type_IsSInt		 = Type_IsSInt<T>;
-template<class T> concept Con_Type_IsUInt		 = Type_IsUInt<T>;
-template<class T> concept Con_Type_IsFloat		 = Type_IsFloat<T>;
-template<class T> concept Con_Type_IsChar		 = Type_IsChar<T>;
-
 //--------
 template<Int N>		struct	Type_Int_BySize_Struct;
 template<>			struct	Type_Int_BySize_Struct<1> { using Type = i8 ; };

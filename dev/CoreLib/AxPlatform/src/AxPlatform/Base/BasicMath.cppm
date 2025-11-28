@@ -123,11 +123,6 @@ AX_NODISCARD AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 	return o;
 }
 
-template<class A, class B>
-AX_NODISCARD AX_INLINE constexpr bool almostEqual(const A& a, const B& b) {
-	return a.almostEqual(b);
-}
-
 template<class T> requires Type_IsFundamental<T>
 AX_NODISCARD AX_INLINE constexpr bool almostEqual(const T& a, const T& b) {
 	if constexpr (Type_IsInt<T>) {
@@ -136,6 +131,11 @@ AX_NODISCARD AX_INLINE constexpr bool almostEqual(const T& a, const T& b) {
 		auto diff = abs(a - b);
 		return diff <= epsilon<T>;
 	}
+}
+
+template<class A, class B>
+AX_NODISCARD AX_INLINE constexpr bool almostEqual(const A& a, const B& b) {
+	return a.almostEqual(b);
 }
 
 template<class T> AX_NODISCARD AX_INLINE constexpr

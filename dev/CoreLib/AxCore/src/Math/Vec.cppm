@@ -1,6 +1,7 @@
 ﻿module;
 #include "AxCore-pch.h"
 export module AxCore.Vec;
+export import AxCore.VecSimd;
 export import AxCore.NumSIMD4;
 
 export namespace  ax {
@@ -205,21 +206,42 @@ public:
 };
 
 template<class T, CpuSIMD SIMD>
-class Vec_<4, T, SIMD> : public VecBase_<4, T, SIMD> {
-	using Base = VecBase_<4, T, SIMD>;
+class Vec_<4, T, SIMD> {
+	static constexpr Int N = 4;
 	using This = Vec_;
 public:
-	using Storage = typename Base::Storage;
-	using Element = typename Base::Element;
-	static_assert(Type_IsSame<T, Element>);
-	static constexpr Int     elementCount = Base::elementCount;
-	static constexpr CpuSIMD cpuSIMD      = Base::cpuSIMD;
-	static_assert(SIMD == cpuSIMD);
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	static constexpr Int elementCount = N;
+	static constexpr CpuSIMD cpuSIMD = SIMD;
+
+	using VecSimd = VecSimd_<N,T,SIMD>; 
+	union {
+		VecSimd	_simd;
+		struct { T x, y, z, w; };
+	};
 	
 	AX_INLINE constexpr Vec_() = default;
-	AX_INLINE constexpr Vec_(Tag::All_, const T& v) : Base(Tag::All, v) {}
-	AX_INLINE constexpr Vec_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : Base(x_, y_, z_, w_) {}
+	AX_INLINE constexpr Vec_(const VecSimd & simd) : _simd(simd) {}
+	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(VecSimd::s_all(vec)) {}
+	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
+
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const This& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr This operator+(const This& vec) const { return _simd + vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator-(const This& vec) const { return _simd - vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator*(const This& vec) const { return _simd * vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator/(const This& vec) const { return _simd / vec._simd; }
+
+	AX_NODISCARD AX_INLINE constexpr void operator+=(const This& vec) { _simd += vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr void operator-=(const This& vec) { _simd -= vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr void operator*=(const This& vec) { _simd *= vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr void operator/=(const This& vec) { _simd /= vec._simd; }
+	
+	template <class R, CpuSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) {
+		return VecSimd::s_cast(vec._simd);
+	}
+
+	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
 };
 
 } // namespace 

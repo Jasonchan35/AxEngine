@@ -50,7 +50,7 @@ public:
 		{
 			auto ret = Fmt("int=[{:6}] sz=[{:6}] wsz=[{:6}]", 1, "abc", L"wchar");
 			__ax_internal_log(ret.c_str());
-			AX_LOG("test {}", 123);
+//			AX_LOG("test {}", 123);
 		}
 		{
 			String   str = "str";

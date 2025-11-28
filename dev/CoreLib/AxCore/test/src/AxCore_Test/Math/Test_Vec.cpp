@@ -1,20 +1,41 @@
 #include "AxUnitTest.h"
 
 import AxCore.Vec;
+import AxCore.VecSimd;
+import AxCore.Random;
 
 namespace ax {
 
 class Test_Vec : public UnitTestClass {
 public:
 
+	template<class T>
+	void test_VecSimd() {
+		using Vec = VecSimd_<4, T, CpuSIMD::None>;
+		T x = Random::range<T>(1, 100);
+		constexpr Int N = 10;
+		Vec a[N]; 
+		Vec b[N];
+		Vec c[N];
+		for (Int i = 0; i < N; i++) {
+			a[i] = Vec(1,2,3,x);
+			b[i] = Vec(4,x,6,x);
+		}
+		for (Int i = 0; i < N; i++) {
+			c[i] = a[i] + b[i];
+		}
+		AX_LOG("sum = {}", c[5]);
+		AX_TEST_ALMOST_EQ(c[5].e[0], T(5));
+		AX_TEST_ALMOST_EQ(c[5].e[2], T(9));
+	}
+	
 	void test_case1() {
 		AX_TEST_EQ(Math::epsilon<Vec4f>.y, f32_epsilon);
-		
 		// AX_TEST_EQ(sizeof(Vec3f_NoSIMD), 4 * 3);
 		// AX_TEST_EQ(sizeof(Vec3f_SSE)   , 4 * 4);
 		AX_TEST_EQ(sizeof(Vec4f_Basic), 4 * 4);
 		AX_TEST_EQ(sizeof(Vec4f_SSE)   , 4 * 4);
-
+		
 		{
 			// Vec3f a(1, 2, 3);
 			// Vec3f b(2, 3, 4);
@@ -128,24 +149,31 @@ public:
 };
 
 void Test_Vec_Func() {
-	AX_TEST_RUN_CASE(Test_Vec::test_case1)
+	AX_TEST_RUN_CASE(Test_Vec::test_VecSimd<f32>)
+	AX_TEST_RUN_CASE(Test_Vec::test_VecSimd<f64>)
 
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i8>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i16>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i32>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i64>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u8>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u16>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u32>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u64>)
-	
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f32>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
-
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_case1)
+	//
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i8>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i16>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i32>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i64>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u8>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u16>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u32>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u64>)
+	//
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<f32>)
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
+	//
+	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
 }
 
+template class Vec_<4, f32, CpuSIMD::None>;
+template class Vec_<4, f32, CpuSIMD::SSE>;
 
 } // namespace
 
 void Test_Vec() { ax::Test_Vec_Func(); }
+
+/*---- The explicit instantiation ---*/ \

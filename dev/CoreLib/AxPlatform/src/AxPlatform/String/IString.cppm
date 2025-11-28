@@ -24,11 +24,11 @@ public:
 
 	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
 
-	AX_INLINE constexpr void append(StrView_<T> view) {
+	constexpr void append(StrView_<T> view) {
 		formatter.format(view.to_string_view(), formatContext);
 	}
 
-	AX_INLINE constexpr void operator << (StrView_<T> view) { append(view); }
+	constexpr void operator << (StrView_<T> view) { append(view); }
 
 	const Formatter& formatter;
 	Context&   formatContext;
@@ -152,6 +152,8 @@ public:
 	constexpr void append(CView view);
 	constexpr void append(const T& ch);
 
+	template<class A> constexpr void operator<<(A & a) { append(a); }
+	
 	template<class... ARGS>
 	constexpr void append_args(ARGS&&... args) { append(args...); }
 
@@ -201,7 +203,7 @@ protected:
 };
 
 template <class T>
-template <class R> AX_INLINE
+template <class R>
 constexpr void IString_<T>::_appendUtf(const R& r) {
 	if constexpr (std::is_same_v<R,T>) {
 		append(r);

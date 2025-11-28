@@ -36,7 +36,7 @@ protected:
 };
 
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
-AX_INLINE void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, ARGS&&... args) {
+inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, ARGS&&... args) {
 	// std::format only support char and wchar_t format string
 	using FMT_CH = std::conditional_t<std::is_same_v<IN_FMT_CH, CharA>, CharA, CharW>; 
 	FormatArgs_<FMT_CH> format_args = std::make_format_args<FormatContext_<FMT_CH>>(args...);
@@ -61,44 +61,44 @@ AX_INLINE void ax_format_to_internal(IString_<STR_CH> & output, const FormatStri
 	}
 }
 
-template<class CH, class... ARGS> AX_INLINE
+template<class CH, class... ARGS> constexpr 
 void FmtTo(IString_<CH> & output, const FormatString_<CharA, ARGS...> & fmt, ARGS&&... args) {
 	return ax_format_to_internal<CH, CharA, ARGS...>(output, fmt, AX_FORWARD(args)...);
 }
 
-template<class T, class... ARGS> AX_INLINE
+template<class T, class... ARGS> constexpr
 void FmtTo(IString_<T> & output, const FormatString_<CharW, ARGS...> & fmt, ARGS&&... args) {
 	return ax_format_to_internal<T, CharW, ARGS...>(output, fmt, AX_FORWARD(args)...);
 }
 
-template<class T, class... ARGS> AX_INLINE
+template<class T, class... ARGS> constexpr
 void FmtTo(IString_<T> & output, const FormatString_<Char8, ARGS...> & fmt, ARGS&&... args) {
 	return ax_format_to_internal<T, Char8, ARGS...>(output, fmt, AX_FORWARD(args)...);
 }
 
-template<class T, class... ARGS> AX_INLINE
+template<class T, class... ARGS> constexpr
 void FmtTo(IString_<T> & output, const FormatString_<Char16, ARGS...> & fmt, ARGS&&... args) {
 	return ax_format_to_internal<T, Char16, ARGS...>(output, fmt, AX_FORWARD(args)...);
 }
 
-template<class T, class... ARGS> AX_INLINE
+template<class T, class... ARGS> constexpr
 void FmtTo(IString_<T> & output, const FormatString_<Char32, ARGS...> & fmt, ARGS&&... args) {
 	return ax_format_to_internal<T, Char32, ARGS...>(output, fmt, AX_FORWARD(args)...);
 }
 
-template<class... ARGS> AX_INLINE
+template<class... ARGS> constexpr
 TempStringA Fmt(FormatString_<CharA, ARGS...> && fmt, ARGS&&... args) { TempStringA str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
-template<class... ARGS> AX_INLINE
+template<class... ARGS> constexpr
 TempStringW Fmt(FormatString_<CharW, ARGS...> && fmt, ARGS&&... args) { TempStringW str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
-template<class... ARGS> AX_INLINE
+template<class... ARGS> constexpr
 TempString8 Fmt(FormatString_<Char8, ARGS...> && fmt, ARGS&&... args) { TempString8 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
-template<class... ARGS> AX_INLINE
+template<class... ARGS> constexpr
 TempString16 Fmt(FormatString_<Char16, ARGS...> && fmt, ARGS&&... args) { TempString16 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
-template<class... ARGS> AX_INLINE
+template<class... ARGS> constexpr
 TempString32 Fmt(FormatString_<Char32, ARGS...> && fmt, ARGS&&... args) { TempString32 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 

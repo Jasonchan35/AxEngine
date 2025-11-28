@@ -156,7 +156,7 @@ void MemUtil::copy(T* dst, const T* src, Int n) {
 	}
 }
 
-template <class T> AX_INLINE constexpr
+template <class T> inline constexpr
 void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	if( n <= 0 ) return;
 	if (MemUtil::isOverlapped(dst, n, src, n)) {

@@ -4,5 +4,8 @@ module;
 export module AxCore._PCH;
 export import AxPlatform;
 
-export namespace ax {
-} // namespace
+#if !AX_USE_PRECOMPILE_HEADER
+
+export import <random>;
+
+#endif
