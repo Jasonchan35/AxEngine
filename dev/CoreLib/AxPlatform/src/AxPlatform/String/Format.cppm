@@ -46,9 +46,51 @@ private:
 template<class T, class... ARGS>
 using FormatString_ = FormatStringT_<T, std::type_identity_t<ARGS>...>;
 
-
 template<class FMT_CH>
 using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
+
+template<class FMT_CH>
+struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FMT_CH> {
+	using Base = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
+	
+	template<class Context>
+	constexpr auto parse(Context& ctx) { return Base::parse(ctx); }
+};
+
+template <class OBJ, class FMT_CH> class FormatHandler;
+
+template<class FMT_CH>
+class Format_ : public NonCopyable {
+	using This = Format_;
+public:
+	using Context   = FormatContext_<FMT_CH>;
+	using Formatter = FormatterBase_<FMT_CH>;
+
+	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
+	
+	template<class OBJ>
+	constexpr void operator << (const OBJ& obj) {
+		FormatHandler<OBJ, FMT_CH> handler;
+		handler.onFormat(obj, *this);
+	}
+
+	void newline() {
+		*this << '\n';
+		for (Int i = 0; i < _indent; i++) {
+			*this << "  ";
+		}
+	}
+
+	AX_INLINE Int indent() const { return _indent; }
+	AX_INLINE void incIndent() { _indent++; }
+	AX_INLINE void decIndent() { _indent--; }
+	AX_NODISCARD ScopeGuard<This, &This::decIndent> indentScope() { incIndent(); return this; }
+
+	const Formatter& formatter;
+	Context&   formatContext;
+private:
+	Int _indent = 0;	
+};
 
 } // namespace
 

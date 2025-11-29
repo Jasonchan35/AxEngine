@@ -18,6 +18,44 @@ concept CON_onFormat_ = requires(const OBJ& obj, Format_<FMT_CH> & fmt) {
 	true;
 };
 
+template <class T, class FMT_CH> class FormatHandler;
+
+template <class T, class FMT_CH> requires Type_IsFundamental<T>
+class FormatHandler<T, FMT_CH> {
+public:
+	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
+		std::formatter<T, FMT_CH> tmp;
+		tmp.format(obj, fmt.formatContext);
+	}
+};
+
+template <class T, class FMT_CH>
+requires std::is_convertible_v<T, StrViewA>
+	||	 std::is_convertible_v<T, StrViewW>
+	||	 std::is_convertible_v<T, StrView8>
+	||	 std::is_convertible_v<T, StrView16>
+	||	 std::is_convertible_v<T, StrView32>
+class FormatHandler<T, FMT_CH> {
+public:
+	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
+		
+		if constexpr (std::is_convertible_v<T, StrView_<FMT_CH>>) {
+			auto sv = StrView_<FMT_CH>(obj); 
+			fmt.formatter.format(sv.to_string_view(), fmt.formatContext);
+		} else {
+			auto utf = TempString_<FMT_CH>::s_utf(obj);
+			fmt.formatter.format(utf.to_string_view(), fmt.formatContext);
+		}
+	}
+};
+
+template <class T, class FMT_CH>
+class FormatHandler {
+public:
+	void onFormat(const T & obj, Format_<FMT_CH> & fmt) { obj.onFormat(fmt); }
+};
+
+
 
 template<class FMT_CH>
 struct UtfFormatter_ : public FormatterBase_<FMT_CH> {
@@ -104,82 +142,29 @@ TempString16 Fmt(FormatString_<Char16, ARGS...> && fmt, const ARGS&... args) { T
 template<class... ARGS> constexpr
 TempString32 Fmt(FormatString_<Char32, ARGS...> && fmt, const ARGS&... args) { TempString32 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
-
-template <class OBJ, class FMT_CH>
-class FormatHandler {
-public:
-	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) { obj.onFormat(fmt); }
-};
-
-template <class FMT_CH>
-class FormatHandler<i64, FMT_CH> {
-	using OBJ = i64;
-public:
-	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) {
-		std::formatter<OBJ, FMT_CH> tmp;
-		tmp.format(obj, fmt.formatContext);
-	}
-};
-
 } // namespace
 
 
 //----- global namespace ----------
 
 // Wrapper to CustomClass::onFormat()
-template<class OBJ, class FMT_CH> requires ax::CON_onFormat_<OBJ, FMT_CH>
-struct std::formatter<OBJ, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
+template<class T, class FMT_CH> requires	ax::CON_onFormat_<T, FMT_CH>
+struct std::formatter<T, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
 	using Base = ax::UtfFormatter_<FMT_CH>;
 
 	constexpr auto parse(ax::FormatParseContext_<FMT_CH>& ctx) {
-		if constexpr (ax::CON_onFormatParse_<OBJ>) {
-			OBJ::onFormatParse(ctx);
+		if constexpr (ax::CON_onFormatParse_<T>) {
+			T::onFormatParse(ctx);
 			return ctx.end();
 		} else {
 			return Base::parse(ctx);
 		}
 	}
 
-	auto format(const OBJ& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+	auto format(const T& obj, ax::FormatContext_<FMT_CH>& ctx) const {
 		ax::Format_<FMT_CH> format(*this, ctx);
-		ax::FormatHandler<OBJ, FMT_CH> handler;
+		ax::FormatHandler<T, FMT_CH> handler;
 		handler.onFormat(obj, format);
 		return ctx.out();
-	}
-};
-
-template <class OBJ_CH, class FMT_CH>
-struct std::formatter<ax::MutStrView_<OBJ_CH>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	constexpr auto format(const ax::MutStrView_<OBJ_CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return ax::UtfFormatter_<FMT_CH>::utfFormat(obj, ctx);
-	}
-};
-
-template <class CH, template<class> class VIEW, class FMT_CH> requires std::is_convertible_v< VIEW<CH>, ax::StrView_<CH> >
-struct std::formatter<VIEW<CH>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	constexpr auto format(const VIEW<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<CH>(obj), ctx);
-	}
-};
-
-template <class OBJ_CH, ax::Int N, class FMT_CH>
-struct std::formatter<ax::String_<OBJ_CH, N>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	using Base = ax::FormatterBase_<FMT_CH>;
-	auto format(const ax::String_<OBJ_CH, N>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<OBJ_CH>(obj), ctx);
-	}
-};
-
-template <class OBJ_CH, class FMT_CH> requires (!std::is_same_v<OBJ_CH, FMT_CH>)
-struct std::formatter<std::basic_string_view<OBJ_CH>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	constexpr auto format(const std::basic_string_view<OBJ_CH> obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<OBJ_CH>(obj), ctx);
-	}
-};
-
-template <class OBJ_CH, size_t N, class FMT_CH> requires ax::Type_IsChar<OBJ_CH> && (!ax::Type_IsSame<OBJ_CH, FMT_CH>)
-struct std::formatter<OBJ_CH[N], FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	constexpr auto format(const OBJ_CH (&obj)[N], ax::FormatContext_<FMT_CH>& ctx) const {
-		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<OBJ_CH>(obj), ctx);
 	}
 };

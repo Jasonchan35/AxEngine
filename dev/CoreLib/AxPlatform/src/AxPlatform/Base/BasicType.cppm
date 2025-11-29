@@ -230,12 +230,64 @@ inline void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc(
 	assert(false);
 }
 
-template<class T>
-struct WithName {
-	WithName(T& value_, const char* name_) : value(value_), name(name_) {}
-	T& value;
-	const char* name;
+template<class OBJ, void (OBJ::*FUNC)()>
+class ScopeGuard : public NonCopyable {
+public:
+	AX_NODISCARD ScopeGuard(OBJ* obj) : _obj(obj) {}
+
+	ScopeGuard(ScopeGuard && r) : _obj(r._obj) { r._obj = nullptr; }
+	~ScopeGuard() { if (_obj) (_obj->*FUNC)(); }
+
+private:
+	OBJ*	_obj = nullptr;
 };
+
+
+template<class T>
+class ValueScope {
+public:
+	AX_NODISCARD ValueScope(T* p) {
+		ref(p);
+	}
+
+	AX_NODISCARD ValueScope(T* p, const T& newValue) {
+		ref(p); if(p) *p = newValue;
+	}
+
+	AX_NODISCARD ValueScope(ValueScope && r) {
+		std::swap(_p,       r._p);
+		std::swap(oldValue, r.oldValue);
+	}
+
+	~ValueScope() { release(); }
+
+	void ref(T* newPtr) {
+		if (newPtr == _p) return;
+
+		release();
+		if (newPtr) {
+			_p = newPtr;
+			oldValue = *newPtr;
+		}
+	}
+
+	void release() {
+		if (_p) {
+			*_p = oldValue;
+			_p = nullptr;
+		}
+	}
+
+	void discard() {
+		_p = nullptr;
+	}
+
+	T  oldValue;
+
+private:
+	T* _p = nullptr;
+};
+
 
 class Error : public std::exception {
 public:
