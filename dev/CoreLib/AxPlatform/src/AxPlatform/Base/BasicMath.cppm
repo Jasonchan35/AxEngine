@@ -8,8 +8,14 @@ import AxPlatform.BasicType;
 
 export namespace ax::Math {
 
-template<class T> AX_INLINE constexpr T pow2(const T& v) { return v * v; }
-template<class T> AX_INLINE constexpr T pow3(const T& v) { return v * v * v; }
+template<class T, Int N> struct s_pos_struct;
+template<class T> struct s_pos_struct<T, 0> { constexpr T compute(const T& v) { return 1; } };
+template<class T> struct s_pos_struct<T, 1> { constexpr T compute(const T& v) { return v; } };
+template<class T> struct s_pos_struct<T, 2> { constexpr T compute(const T& v) { return v * v; } };
+template<class T> struct s_pos_struct<T, 3> { constexpr T compute(const T& v) { return v * v * v; } };
+
+template<class T, Int N>
+constexpr T s_pow(const T& v) { return s_pos_struct<T, N>::compute(v); } 
 
 //-------------------------
 template< class T > constexpr Int sign( const T& a ) {

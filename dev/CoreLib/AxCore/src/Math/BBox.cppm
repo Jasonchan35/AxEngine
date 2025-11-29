@@ -48,8 +48,38 @@ public:
 
 	constexpr void includePoint(const Vec& pt);
 
-	void getCornerPoints(FixedArray<Vec, Math::pow3(2, N)>& outPoints) const;	
+	void getCornerPoints(FixedArray<Vec, Math::s_pow<N>(2)>& outPoints) const;
 };
+
+template <Int N, class T, VecSIMD SIMD>
+void BBox_<N, T, SIMD>::getCornerPoints(FixedArray<Vec, Math::s_pow<N>(2)>& outPoints) const {
+	auto& a = min;
+	auto& b = max;
+
+	if constexpr (N == 1) {
+		outPoints[0] = Vec(a.x);
+		outPoints[1] = Vec(b.x);
+		
+	} else if constexpr (N == 2) {
+		outPoints[0] = Vec(a.x, a.y);
+		outPoints[1] = Vec(b.x, a.y);
+		outPoints[2] = Vec(b.x, b.y);
+		outPoints[3] = Vec(a.x, b.y);
+		
+	} else if constexpr (N == 3) {
+		outPoints[0] = Vec(a.x, a.y, a.z);
+		outPoints[1] = Vec(b.x, a.y, a.z);
+		outPoints[2] = Vec(b.x, b.y, a.z);
+		outPoints[3] = Vec(a.x, b.y, a.z);
+
+		outPoints[4] = Vec(a.x, a.y, b.z);
+		outPoints[5] = Vec(b.x, a.y, b.z);
+		outPoints[6] = Vec(b.x, b.y, b.z);
+		outPoints[7] = Vec(a.x, b.y, b.z);
+	} else {
+		static_assert(false);
+	}
+}
 
 template<Int N, class T, VecSIMD SIMD> AX_INLINE constexpr 
 void BBox_<N,T,SIMD>::includePoint(const Vec& pt) {
