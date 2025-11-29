@@ -38,8 +38,7 @@ protected:
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
 inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, const ARGS&... args) {
 	// std::format only support char and wchar_t format string
-	using FMT_CH = std::conditional_t<std::is_same_v<IN_FMT_CH, CharA>, CharA, CharW>; 
-	FormatArgs_<FMT_CH> format_args = std::make_format_args<FormatContext_<FMT_CH>>(args...);
+	using FMT_CH = std::conditional_t<std::is_same_v<IN_FMT_CH, CharA>, CharA, CharW>;
 	
 	StrView_<FMT_CH> out_fmt;
 	TempString_<FMT_CH> tmp_str;
@@ -49,11 +48,15 @@ inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_
 		tmp_str.appendUtf(fmt.get());
 		out_fmt = tmp_str;
 	}
-	
-	try {
+
+	auto func = [&](const FormatArgs_<FMT_CH> & format_args) {
 		output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
 		std::vformat_to(IStringBackInserter_<STR_CH>(output), out_fmt.to_string_view(), format_args);
-			
+	};
+	
+	try {
+		// std::make_format_args() must be call inside funcation call parameter to keep lifetime, otherwise the stored arg will be dangling 
+		func(std::make_format_args<FormatContext_<FMT_CH>>(args...));
 	} catch (std::exception& e) {
 		auto msg = TempString::s_format("Format: Exception: {}, ArgCount={} format_string=[{}])", e.what(), sizeof...(args), out_fmt);
 		__ax_internal_logError(msg.c_str());

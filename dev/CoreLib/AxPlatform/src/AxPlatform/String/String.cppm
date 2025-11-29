@@ -76,8 +76,8 @@ public:
 
 protected:
 	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
-	constexpr virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) override;
-	constexpr virtual	void			onStorageFree	(T* p) override;
+	constexpr virtual MemAllocResult<T>	onStorageMalloc(Int reqSize) override;
+	constexpr virtual void				onStorageFree	(T* p) override;
 };
 
 template <class T, Int BUF_SIZE> inline
