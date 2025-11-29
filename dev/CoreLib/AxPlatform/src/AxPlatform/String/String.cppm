@@ -70,7 +70,7 @@ public:
 	static constexpr This s_utf(StrView32 v) { This s; UtfUtil::append(s, v); return s; }
 
 	template<class... ARGS>
-	static This s_format(const FormatString_<Char, ARGS...> & fmt, ARGS&&... args) {
+	static This s_format(const FormatString_<Char, ARGS...> & fmt, const ARGS&... args) {
 		This s; s.appendFmt(fmt, AX_FORWARD(args)...); return s;
 	}
 

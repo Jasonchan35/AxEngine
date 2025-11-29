@@ -173,7 +173,7 @@ public:
 	constexpr void appendUtf(StrView32 r);
 
 	template<class... ARGS>
-	constexpr void appendFmt(const FormatString_<Char, ARGS...> & fmt, ARGS&&... args) {
+	constexpr void appendFmt(const FormatString_<Char, ARGS...> & fmt, const ARGS&... args) {
 		FmtTo(*this, fmt, AX_FORWARD(args)...);
 	}
 
