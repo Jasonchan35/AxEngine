@@ -50,12 +50,7 @@ template<class FMT_CH>
 using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
 
 template<class FMT_CH>
-struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FMT_CH> {
-	using Base = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
-	
-	template<class Context>
-	constexpr auto parse(Context& ctx) { return Base::parse(ctx); }
-};
+using Formatter_ = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
 
 template <class OBJ, class FMT_CH> class FormatHandler;
 
@@ -64,7 +59,7 @@ class Format_ : public NonCopyable {
 	using This = Format_;
 public:
 	using Context   = FormatContext_<FMT_CH>;
-	using Formatter = FormatterBase_<FMT_CH>;
+	using Formatter = Formatter_<FMT_CH>;
 
 	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
 	

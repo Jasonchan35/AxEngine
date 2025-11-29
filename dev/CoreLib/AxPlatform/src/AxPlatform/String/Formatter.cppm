@@ -55,24 +55,6 @@ public:
 	void onFormat(const T & obj, Format_<FMT_CH> & fmt) { obj.onFormat(fmt); }
 };
 
-
-
-template<class FMT_CH>
-struct UtfFormatter_ : public FormatterBase_<FMT_CH> {
-	using Base = FormatterBase_<FMT_CH>;
-	
-protected:
-	template<class CH>
-	constexpr auto utfFormat(const ax::MutStrView_<CH>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		if constexpr (std::is_same_v<CH, FMT_CH>) {
-			return Base::format(obj, ctx);
-		} else {
-			auto tmp = ax::TempString_<FMT_CH>::s_utf(obj);
-			return Base::format(tmp, ctx);
-		}
-	}
-};
-
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
 inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, const ARGS&... args) {
 	// std::format only support char and wchar_t format string
@@ -149,8 +131,8 @@ TempString32 Fmt(FormatString_<Char32, ARGS...> && fmt, const ARGS&... args) { T
 
 // Wrapper to CustomClass::onFormat()
 template<class T, class FMT_CH> requires	ax::CON_onFormat_<T, FMT_CH>
-struct std::formatter<T, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	using Base = ax::UtfFormatter_<FMT_CH>;
+struct std::formatter<T, FMT_CH> : public  ax::Formatter_<FMT_CH> {
+	using Base = ax::Formatter_<FMT_CH>;
 
 	constexpr auto parse(ax::FormatParseContext_<FMT_CH>& ctx) {
 		if constexpr (ax::CON_onFormatParse_<T>) {
