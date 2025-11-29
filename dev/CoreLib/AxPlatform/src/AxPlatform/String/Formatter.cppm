@@ -18,8 +18,6 @@ concept CON_onFormat_ = requires(const OBJ& obj, Format_<FMT_CH> & fmt) {
 	true;
 };
 
-template <class T, class FMT_CH> class FormatHandler;
-
 template <class T, class FMT_CH> requires Type_IsFundamental<T>
 class FormatHandler<T, FMT_CH> {
 public:
@@ -49,12 +47,6 @@ public:
 	}
 };
 
-template <class T, class FMT_CH>
-class FormatHandler {
-public:
-	void onFormat(const T & obj, Format_<FMT_CH> & fmt) { obj.onFormat(fmt); }
-};
-
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
 inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, const ARGS&... args) {
 	// std::format only support char and wchar_t format string
@@ -69,14 +61,14 @@ inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_
 		out_fmt = tmp_str;
 	}
 
-	auto func = [&](const FormatArgs_<FMT_CH> & format_args) {
+	auto func = [&](const StdFormatArgs_<FMT_CH> & format_args) {
 		output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
 		std::vformat_to(IStringBackInserter_<STR_CH>(output), out_fmt.to_string_view(), format_args);
 	};
 	
 	try {
 		// std::make_format_args() must be call inside function call parameter to keep lifetime, otherwise the stored arg will be dangling 
-		func(std::make_format_args<FormatContext_<FMT_CH>>(args...));
+		func(std::make_format_args<StdFormatContext_<FMT_CH>>(args...));
 	} catch (std::exception& e) {
 		auto msg = TempString::s_format("Format: Exception: {}, ArgCount={} format_string=[{}])", e.what(), sizeof...(args), out_fmt);
 		__ax_internal_logError(msg.c_str());
@@ -131,10 +123,10 @@ TempString32 Fmt(FormatString_<Char32, ARGS...> && fmt, const ARGS&... args) { T
 
 // Wrapper to CustomClass::onFormat()
 template<class T, class FMT_CH> requires	ax::CON_onFormat_<T, FMT_CH>
-struct std::formatter<T, FMT_CH> : public  ax::Formatter_<FMT_CH> {
-	using Base = ax::Formatter_<FMT_CH>;
+struct std::formatter<T, FMT_CH> : public  ax::StdFormatter_<FMT_CH> {
+	using Base = ax::StdFormatter_<FMT_CH>;
 
-	constexpr auto parse(ax::FormatParseContext_<FMT_CH>& ctx) {
+	constexpr auto parse(ax::StdFormatParseContext_<FMT_CH>& ctx) {
 		if constexpr (ax::CON_onFormatParse_<T>) {
 			T::onFormatParse(ctx);
 			return ctx.end();
@@ -143,7 +135,7 @@ struct std::formatter<T, FMT_CH> : public  ax::Formatter_<FMT_CH> {
 		}
 	}
 
-	auto format(const T& obj, ax::FormatContext_<FMT_CH>& ctx) const {
+	auto format(const T& obj, ax::StdFormatContext_<FMT_CH>& ctx) const {
 		ax::Format_<FMT_CH> format(*this, ctx);
 		ax::FormatHandler<T, FMT_CH> handler;
 		handler.onFormat(obj, format);

@@ -8,12 +8,12 @@ export namespace ax {
 
 // using FormatContext_ = std::format_context;
 template<class FMT_CH>
-using FormatContext_ = std::_Default_format_context<FMT_CH>;
+using StdFormatContext_ = std::_Default_format_context<FMT_CH>;
 // using FormatContext_ = std::basic_format_context<FormatBackInserter_<FMT_CH>, FMT_CH>;
 
 // using FormatParseContext_ = std::format_parse_context;
 template<class FMT_CH>
-using FormatParseContext_ = std::basic_format_parse_context<FMT_CH>;
+using StdFormatParseContext_ = std::basic_format_parse_context<FMT_CH>;
 
 // template<class... ARGS> using FormatString_ = std::format_string<ARGS...>;
 
@@ -47,21 +47,27 @@ template<class T, class... ARGS>
 using FormatString_ = FormatStringT_<T, std::type_identity_t<ARGS>...>;
 
 template<class FMT_CH>
-using FormatArgs_ = std::basic_format_args<FormatContext_<FMT_CH>>;
+using StdFormatArgs_ = std::basic_format_args<StdFormatContext_<FMT_CH>>;
 
 template<class FMT_CH>
-using Formatter_ = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
+using StdFormatter_ = std::formatter<std::basic_string_view<FMT_CH>, FMT_CH>;
 
-template <class OBJ, class FMT_CH> class FormatHandler;
+template<class FMT_CH> class Format_;
+
+template <class T, class FMT_CH>
+class FormatHandler {
+public:
+	void onFormat(const T & obj, Format_<FMT_CH> & fmt) { obj.onFormat(fmt); }
+};
 
 template<class FMT_CH>
 class Format_ : public NonCopyable {
 	using This = Format_;
 public:
-	using Context   = FormatContext_<FMT_CH>;
-	using Formatter = Formatter_<FMT_CH>;
+	using StdContext   = StdFormatContext_<FMT_CH>;
+	using StdFormatter = StdFormatter_<FMT_CH>;
 
-	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
+	constexpr Format_(const StdFormatter & formatter_, StdContext & ctx_) : formatter(formatter_), formatContext(ctx_) {}
 	
 	template<class OBJ>
 	constexpr void operator << (const OBJ& obj) {
@@ -81,8 +87,8 @@ public:
 	AX_INLINE void decIndent() { _indent--; }
 	AX_NODISCARD ScopeGuard<This, &This::decIndent> indentScope() { incIndent(); return this; }
 
-	const Formatter& formatter;
-	Context&   formatContext;
+	const StdFormatter& formatter;
+	StdContext&   formatContext;
 private:
 	Int _indent = 0;	
 };
