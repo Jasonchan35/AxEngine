@@ -51,7 +51,7 @@ public:
 	void getCornerPoints(FixedArray<Vec, Math::s_pow<N>(2)>& outPoints) const;
 };
 
-template <Int N, class T, VecSIMD SIMD>
+template <Int N, class T, VecSIMD SIMD> inline
 void BBox_<N, T, SIMD>::getCornerPoints(FixedArray<Vec, Math::s_pow<N>(2)>& outPoints) const {
 	auto& a = min;
 	auto& b = max;
