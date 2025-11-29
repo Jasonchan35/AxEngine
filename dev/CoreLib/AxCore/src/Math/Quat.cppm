@@ -5,47 +5,53 @@ export import AxCore.Mat;
 
 export namespace ax {
 
-template<Int N, class T, CpuSIMD SIMD> class Quat_;
-template<Int N, class T, CpuSIMD SIMD> class Quat_Storage_ : public Vec_Storage_<N, T, SIMD> {};
-template<Int N, class T, CpuSIMD SIMD> using QuatBase_ = NumSIMD_<N,  Quat_<N, T, SIMD>, Quat_Storage_<N, T, SIMD> >;
-
-template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Quat4_ = Quat_<4, T, SIMD>;
+template<Int N, class T, VecSIMD SIMD> class Quat_;
+template<class T, VecSIMD SIMD = CpuSIMD_Default> using Quat4_ = Quat_<4, T, SIMD>;
 
 using Quat4h		= Quat4_<f16>;
-using Quat4h_SSE	= Quat4_<f16, CpuSIMD::SSE>;
-using Quat4h_Basic	= Quat4_<f16, CpuSIMD::None>;
+using Quat4h_SSE	= Quat4_<f16, VecSIMD::SSE>;
+using Quat4h_Basic	= Quat4_<f16, VecSIMD::None>;
 using Quat4f		= Quat4_<f32>;
-using Quat4f_SSE	= Quat4_<f32, CpuSIMD::SSE>;
-using Quat4f_Basic	= Quat4_<f32, CpuSIMD::None>;
+using Quat4f_SSE	= Quat4_<f32, VecSIMD::SSE>;
+using Quat4f_Basic	= Quat4_<f32, VecSIMD::None>;
 using Quat4d		= Quat4_<f64>;
-using Quat4d_SSE	= Quat4_<f64, CpuSIMD::SSE>;
-using Quat4d_Basic	= Quat4_<f64, CpuSIMD::None>;
+using Quat4d_SSE	= Quat4_<f64, VecSIMD::SSE>;
+using Quat4d_Basic	= Quat4_<f64, VecSIMD::None>;
 
-template<class T, CpuSIMD SIMD>
-class Quat_<4, T, SIMD> : public QuatBase_<4, T, SIMD> {
-	using Base = QuatBase_<4, T, SIMD>;
+template<class T, VecSIMD SIMD>
+class Quat_<4, T, SIMD> {
+	static constexpr Int N = 4;
 	using This = Quat_;
 public:
-	using Storage = typename Base::Storage;
-	using Element = typename Base::Element;
-	static_assert(Type_IsSame<T, Element>);
-	static constexpr Int     elementCount = Base::elementCount;
-	static constexpr CpuSIMD cpuSIMD      = Base::cpuSIMD;
-	static_assert(SIMD == cpuSIMD);
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	static constexpr Int elementCount = N;
+	static constexpr VecSIMD cpuSIMD = SIMD;
 
-	using Storage::x;
-	using Storage::y;
-	using Storage::z;
-	using Storage::w;
-	
+	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { T x, y, z, w; };
+	};
+
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
 	
 	AX_INLINE constexpr Quat_() = default;
-	AX_INLINE constexpr Quat_(Tag::All_, const T& v) : Base(Tag::All, v) {}
-	AX_INLINE constexpr Quat_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Quat_(const T& x_, const T& y_, const T& z_, const T& w_) : Base(x_, y_, z_, w_) {}
+	AX_INLINE constexpr Quat_(const SIMD_Data & simd) : _simd(simd) {}
+	AX_INLINE constexpr Quat_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
+	AX_INLINE constexpr Quat_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
+
+	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
+	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
+	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); } 
+
+	template<VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	
+	template <class R, VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
+	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
 	
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { x=x_; y=y_; z=z_; w=w_; }
 
@@ -89,16 +95,6 @@ public:
 	AX_NODISCARD constexpr Vec3 operator*(const Vec3& v) const;
 	
 	template<class V> AX_INLINE void fromCast(const V& v) { *this = s_cast(v); }	
-
-	template<class V> AX_INLINE
-	static This s_cast(const V& v) { return This(	static_cast<T>(v.x), 
-													static_cast<T>(v.y),
-													static_cast<T>(v.z),
-													static_cast<T>(v.w)); }
-private:
-	void operator+(const This&) = delete;
-	void operator-(const This&) = delete;
-	void operator/(const This&) = delete;
 };
 
 template<class T, bool LONG_WAY = false> AX_NODISCARD AX_INLINE constexpr
@@ -126,22 +122,22 @@ Quat4_<T> slerp(const Quat4_<T> & a, const Quat4_<T> & b, T weight) {
 	}
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 Quat4_<T, SIMD> slerp_longway(const Quat4_<T, SIMD> & a, const Quat4_<T, SIMD> & b, T weight) {
 	return slerp<T, true>(a, b, weight);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::dot(const This& r) const -> T {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::dot(const This& r) const -> T {
 	return (x * r.x + y * r.y) + (z * r.z + w * r.w);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::axis() const -> Vec3 {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::axis() const -> Vec3 {
 	T a = T(1) - w * w;
 	if (a <= 0) return Vec3(0, 0, 1);
 	return Vec3(x, y, z) * Math::rsqrt_fast(a);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::s_euler(const Vec3& r) -> This {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::s_euler(const Vec3& r) -> This {
 	Vec3_<T, SIMD> s, c;
 	Math::sincos(r * T(0.5), s, c);
 	return This(s.x * c.y * c.z - c.x * s.y * s.z,
@@ -150,50 +146,50 @@ template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 	            c.x * c.y * c.z + s.x * s.y * s.z);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_z() const -> T {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_z() const -> T {
 	auto a = T(2) * (x * y + w * z);
 	auto b = w * w + x * x - y * y - z * z;
 	return Math::atan2(a, b);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_y() const -> T {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_y() const -> T {
 	auto v = T(-2) * (x * z - w * y);
 	auto a = Math::clamp(v, T(-1), T(1));
 	return Math::asin(a);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_x() const -> T {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_x() const -> T {
 	auto a = T(2) * (y * z + w * x);
 	auto b = w * w - x * x - y * y + z * z;
 	return Math::atan2(a, b);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::inverse() const -> This {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::inverse() const -> This {
 	T d = x * x + y * y + z * z + w * w;
 	return This(-x, -y, -z, w) / d;
 }
 
 // operator * (Vec3, Quat4)
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 Vec_<3, T, SIMD> operator*(const Vec_<3, T, SIMD> & vec, const Quat4_<T, SIMD>& q) {
 	return q.inverse() * vec;
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const Vec3_<T, SIMD>& v) const -> Vec3 {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const Vec3_<T, SIMD>& v) const -> Vec3 {
 	Vec3 qv(x, y, z);
 	auto uv  = qv.cross(v);
 	auto uuv = qv.cross(uv);
 	return v + (uv * w + uuv) * T(2);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const This& q) const -> This {
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const This& q) const -> This {
 	return This(x * q.w +  w * q.x + z * q.y - y * q.z,
 				y * q.w +  w * q.y + x * q.z - z * q.x,
 				z * q.w +  w * q.z + y * q.x - x * q.y,
 				w * q.w -  x * q.x - y * q.y - z * q.z);
 }
 
-template<class T, CpuSIMD SIMD> constexpr AX_INLINE auto Quat_<4, T, SIMD>::s_angleAxis(T rad, const Vec3& axis) -> This {
+template<class T, VecSIMD SIMD> constexpr AX_INLINE auto Quat_<4, T, SIMD>::s_angleAxis(T rad, const Vec3& axis) -> This {
 	T s, c;
 	sincos(rad * T(0.5), s, c);
 	return This(axis.x * s, axis.y * s, axis.z * s, c);

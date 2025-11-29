@@ -6,21 +6,21 @@ export import AxCore.Rect;
 
 export namespace ax {
 
-template<Int N, Int M, class T, CpuSIMD SIMD> class Mat_;
+template<Int N, Int M, class T, VecSIMD SIMD> class Mat_;
 
-template <class T, CpuSIMD SIMD = CpuSIMD_Default> using Mat3_	= Mat_<3, 3, T, SIMD>;
-template <class T, CpuSIMD SIMD = CpuSIMD_Default> using Mat4_	= Mat_<4, 4, T, SIMD>;
-template <class T, CpuSIMD SIMD = CpuSIMD_Default> using Mat4x3_	= Mat_<4, 3, T, SIMD>; 
+template <class T, VecSIMD SIMD = CpuSIMD_Default> using Mat3_	= Mat_<3, 3, T, SIMD>;
+template <class T, VecSIMD SIMD = CpuSIMD_Default> using Mat4_	= Mat_<4, 4, T, SIMD>;
+template <class T, VecSIMD SIMD = CpuSIMD_Default> using Mat4x3_	= Mat_<4, 3, T, SIMD>; 
 
 using Mat4f			= Mat4_<f32>;
-using Mat4f_SSE		= Mat4_<f32, CpuSIMD::SSE>;
-using Mat4f_Basic	= Mat4_<f32, CpuSIMD::None>;
+using Mat4f_SSE		= Mat4_<f32, VecSIMD::SSE>;
+using Mat4f_Basic	= Mat4_<f32, VecSIMD::None>;
 using Mat4d			= Mat4_<f64>;
-using Mat4d_SSE		= Mat4_<f64, CpuSIMD::SSE>;
-using Mat4d_Basic	= Mat4_<f64, CpuSIMD::None>;
+using Mat4d_SSE		= Mat4_<f64, VecSIMD::SSE>;
+using Mat4d_Basic	= Mat4_<f64, VecSIMD::None>;
 
 // column major matrix
-template<class T, CpuSIMD SIMD>
+template<class T, VecSIMD SIMD>
 class Mat_<4,4,T,SIMD> {
 	using This = Mat_;
 public:
@@ -29,7 +29,7 @@ public:
 	using Vec3		= Vec3_< T, SIMD>;
 	using Vec4		= Vec4_< T, SIMD>;
 	using Mat4		= Mat4_< T, SIMD>;
-	using Rect4		= Rect4_<T, SIMD>;
+	using Box2		= Box2_<T, SIMD>;
 
 	static constexpr Int elementCount = 16;
 
@@ -118,8 +118,8 @@ public:
 	AX_NODISCARD constexpr This inverse3x3			() const;
 	AX_NODISCARD constexpr This inverse3x3Transpose	() const;
 
-	AX_NODISCARD constexpr Vec3 unprojectPoint_slow	(const Vec3& screenPos, const Rect4& viewport) const { return inverse().unprojectPoint_inv(screenPos, viewport); }
-	AX_NODISCARD constexpr Vec3 unprojectPoint_inv	(const Vec3& screenPos, const Rect4& viewport) const;
+	AX_NODISCARD constexpr Vec3 unprojectPoint_slow	(const Vec3& screenPos, const Box2& viewport) const { return inverse().unprojectPoint_inv(screenPos, viewport); }
+	AX_NODISCARD constexpr Vec3 unprojectPoint_inv	(const Vec3& screenPos, const Box2& viewport) const;
 
 			//bool operator==			(const This &r) const	{ return cx == r.cx && cy == r.cy && cw == r.cw && cz == r.cz; }
 			//bool operator!=			(const This &r) const	{ return cx != r.cx || cy != r.cy || cw != r.cw || cz != r.cz; }
@@ -162,7 +162,7 @@ public:
 
 //---------- inline ---------------
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 bool Mat_<4,4,T,SIMD>::almostEqual(const This &r, const T& ep) const {
 	return cx.almostEqual(r.cx, ep)
 		&& cy.almostEqual(r.cy, ep)
@@ -170,7 +170,7 @@ bool Mat_<4,4,T,SIMD>::almostEqual(const This &r, const T& ep) const {
 		&& cz.almostEqual(r.cz, ep);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 auto Mat_<4,4,T,SIMD>::mulPoint(const Vec4& v) const -> Vec4 {
 	return Vec4(cx * v.x 
 			  + cy * v.y 
@@ -178,30 +178,30 @@ auto Mat_<4,4,T,SIMD>::mulPoint(const Vec4& v) const -> Vec4 {
 			  + cw * v.w);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 auto Mat_<4, 4, T, SIMD>::mulPoint(const Vec3& v) const -> Vec3 {
 	return mulPoint(Vec4(v, 1)).toVec3();
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 auto Mat_<4, 4, T, SIMD>::mulPoint4x3(const Vec3& v) const -> Vec3 {
 	return mulPoint(Vec4(v, 1)).xyz();
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 auto Mat_<4, 4, T, SIMD>::mulVector(const Vec3& v) const -> Vec3 {
 	return Vec3(cx.xyz() * v.x 
 			  + cy.xyz() * v.y 
 			  + cz.xyz() * v.z);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 auto Mat_<4, 4, T, SIMD>::mulNormal(const Vec3& v) const -> Vec3 {
 	return inverse3x3Transpose().mulVector(v);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
-auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const Rect4& viewport) const -> Vec3 {
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
+auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const Box2& viewport) const -> Vec3 {
 	auto  tmp = Vec4(screenPos, 1);
 	tmp.y = viewport.h - tmp.y; // y is down
 
@@ -212,7 +212,7 @@ auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const Rect4& vi
 	return vec.homogenize();
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD AX_INLINE constexpr
 auto Mat_<4,4,T,SIMD>::transpose() const -> This {
 	return This(
 		cx.x, cy.x, cz.x, cw.x,
@@ -223,7 +223,7 @@ auto Mat_<4,4,T,SIMD>::transpose() const -> This {
 }
 
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4,4,T,SIMD>::inverse() const -> This {
 #if 0
 	T wtmp[4][8];
@@ -428,7 +428,7 @@ auto Mat_<4,4,T,SIMD>::inverse() const -> This {
 #endif
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::inverse3x3() const -> This {
 	T oneOverDeterminant = T(1) / (
 		+ cx.x * (cy.y * cz.z - cz.y * cy.z)
@@ -451,7 +451,7 @@ auto Mat_<4, 4, T, SIMD>::inverse3x3() const -> This {
 		0,0,0,1);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::inverse3x3Transpose() const -> This {
 	T oneOverDeterminant = T(1) / (
 		+ cx.x * (cy.y * cz.z - cz.y * cy.z)
@@ -474,7 +474,7 @@ auto Mat_<4, 4, T, SIMD>::inverse3x3Transpose() const -> This {
 		0,0,0,1);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::operator*(const This& r) const -> This {
 	This o;
 	T e0, e1, e2, e3;
@@ -506,7 +506,7 @@ auto Mat_<4, 4, T, SIMD>::operator*(const This& r) const -> This {
 	return o;
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_perspective(T fovy_rad, T aspect, T zNear, T zFar) -> This {
 	AX_ASSERT(!almostZero(aspect));
 
@@ -521,7 +521,7 @@ auto Mat_<4, 4, T, SIMD>::s_perspective(T fovy_rad, T aspect, T zNear, T zFar) -
 	);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_ortho(T left, T right, T bottom, T top, T zNear, T zFar) -> This {
 	T w = right - left;
 	T h = top - bottom;
@@ -539,7 +539,7 @@ auto Mat_<4, 4, T, SIMD>::s_ortho(T left, T right, T bottom, T top, T zNear, T z
 	);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3& up) -> This {
 	auto f = (aim - eye).normal();
 	auto s = f.cross(up).normal();
@@ -553,7 +553,7 @@ auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3&
 	);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_rotate(const Vec3& rad) -> This {
 	if (rad.almostEqualZero()) return s_identity();
 
@@ -570,7 +570,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate(const Vec3& rad) -> This {
 	);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_rotate_x(T rad) -> This {
 	if (almostEqualZero(rad)) return s_identity();
 
@@ -582,7 +582,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate_x(T rad) -> This {
 				 0, 0, 0, 1);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_rotate_y(T rad) -> This {
 	if (almostZero(rad)) return s_identity();
 
@@ -594,7 +594,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate_y(T rad) -> This {
 				 0, 0, 0, 1);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4,4,T,SIMD>::s_rotate_z(T rad) -> This {
 	if (almostZero(rad)) return s_identity();
 
@@ -606,7 +606,7 @@ auto Mat_<4,4,T,SIMD>::s_rotate_z(T rad) -> This {
 				 0, 0, 0, 1);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4,4,T,SIMD>::s_translateScale(const Vec3 & translate, const Vec3 & scale) -> This {
 	return This( scale.x, 0, 0, 0,
 				 0, scale.y, 0, 0,
@@ -614,7 +614,7 @@ auto Mat_<4,4,T,SIMD>::s_translateScale(const Vec3 & translate, const Vec3 & sca
 				 translate.x, translate.y, translate.z, 1);
 }
 
-template<class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4,4,T,SIMD>::s_TRS(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) -> This {
 	Vec3 s, c;
 	sincos(rotate.x, s.x, c.x);
@@ -627,7 +627,7 @@ auto Mat_<4,4,T,SIMD>::s_TRS(const Vec3 & translate, const Vec3 & rotate, const 
 				translate.x, translate.y, translate.z, 1);
 }
 
-template <class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template <class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_translate(const Vec3& v) -> This {
 	return This( 1,   0,   0,   0,
 				 0,   1,   0,   0,
@@ -635,7 +635,7 @@ auto Mat_<4, 4, T, SIMD>::s_translate(const Vec3& v) -> This {
 				 v.x, v.y, v.z, 1);
 }
 
-template <class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template <class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_scale(const Vec3& s) -> This {
 	return This( s.x, 0,   0,   0,
 				 0,   s.y, 0,   0,
@@ -643,7 +643,7 @@ auto Mat_<4, 4, T, SIMD>::s_scale(const Vec3& s) -> This {
 				 0,   0,   0,   1);
 }
 
-template <class T, CpuSIMD SIMD> AX_NODISCARD constexpr
+template <class T, VecSIMD SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_shear(const Vec3& v) -> This {
 	const T &xy = v.x;
 	const T &xz = v.y;

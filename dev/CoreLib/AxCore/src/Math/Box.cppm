@@ -5,76 +5,47 @@ export import AxCore.Margin;
 
 export namespace ax {
 
-template<Int N, class T, CpuSIMD SIMD> class Rect_;
-template<Int N, class T, CpuSIMD SIMD> class Rect_Storage_;
-template<Int N, class T, CpuSIMD SIMD> using RectBase_ = NumSIMD_<N, Rect_<N, T, SIMD>, Rect_Storage_<N, T, SIMD> >;
+template<Int N, class T, VecSIMD SIMD> class Box_;
+template<class T, VecSIMD SIMD = CpuSIMD_Default> using Box2_ = Box_<2, T, SIMD>;
 
-template<class T, CpuSIMD SIMD = CpuSIMD_Default> using Rect4_ = Rect_<4, T, SIMD>;
+using Box2h			= Box2_<f16>;
+using Box2h_SSE		= Box2_<f16, VecSIMD::SSE>;
+using Box2h_Basic	= Box2_<f16, VecSIMD::None>;
+using Box2f			= Box2_<f32>;
+using Box2f_SSE		= Box2_<f32, VecSIMD::SSE>;
+using Box2f_Basic	= Box2_<f32, VecSIMD::None>;
+using Box2d			= Box2_<f64>;
+using Box2d_SSE		= Box2_<f64, VecSIMD::SSE>;
+using Box2d_Basic	= Box2_<f64, VecSIMD::None>;
 
-using Rect4h		= Rect4_<f16>;
-using Rect4h_SSE	= Rect4_<f16, CpuSIMD::SSE>;
-using Rect4h_Basic	= Rect4_<f16, CpuSIMD::None>;
-using Rect4f		= Rect4_<f32>;
-using Rect4f_SSE	= Rect4_<f32, CpuSIMD::SSE>;
-using Rect4f_Basic	= Rect4_<f32, CpuSIMD::None>;
-using Rect4d		= Rect4_<f64>;
-using Rect4d_SSE	= Rect4_<f64, CpuSIMD::SSE>;
-using Rect4d_Basic	= Rect4_<f64, CpuSIMD::None>;
-
-
-template<class T, CpuSIMD SIMD>
-class Rect_Storage_<4, T, SIMD> {
-	using REG = CpuSIMD_Register_<4, T, SIMD>;
-	using MM  = typename REG::Type;
-	using Vec2 = Vec2_<T, SIMD>;
+template<class T, VecSIMD SIMD>
+class Box_<2, T, SIMD> {
+	static constexpr Int N = 2;
+	using This = Box_;
 public:
 	using Element = T;
-	static constexpr Int elementCount = 4;
-	static constexpr CpuSIMD cpuSIMD = SIMD;
-	union {
-		MM _m;
-		T _data[elementCount];
-		struct { T _e0, _e1, _e2, _e3; };
-		struct { T x, y, w, h; };
-		struct { Vec2 pos, extents; };
-	};
-	
-	AX_NODISCARD AX_INLINE			constexpr Rect_Storage_() = default;
-	AX_NODISCARD AX_INLINE explicit	constexpr Rect_Storage_(const MM& m) : _m(m) {}
-	AX_NODISCARD AX_INLINE			constexpr Rect_Storage_(const T& e0, const T& e1, const T& e2, const T& e3) : _e0(e0), _e1(e1), _e2(e2), _e3(e3) {}
-};
-
-template<class T, CpuSIMD SIMD>
-class Rect_<4, T, SIMD> : public RectBase_<4, T, SIMD> {
-	using Base = RectBase_<4, T, SIMD>;
-	using This = Rect_;
-public:
-	using Storage = typename Base::Storage;
-	using Element = typename Base::Element;
-	static_assert(Type_IsSame<T, Element>);
-	static constexpr Int     elementCount = Base::elementCount;
-	static constexpr CpuSIMD cpuSIMD      = Base::cpuSIMD;
+	static constexpr Int     elementCount = N;
+	static constexpr VecSIMD cpuSIMD = SIMD;
 	static_assert(SIMD == cpuSIMD);
-
-	using Storage::x;
-	using Storage::y;
-	using Storage::w;
-	using Storage::h;
-	using Storage::pos;
-	using Storage::extents;
 
 	using Vec2    = Vec2_<T, SIMD>;
 	using Vec4    = Vec4_<T, SIMD>;
 	using Margin4 = Margin_<4, T, SIMD>;
 	using Range   = Range_<T>;
-	
-	AX_INLINE constexpr Rect_() = default;
-	AX_INLINE constexpr Rect_(Tag::All_, const T& v) : Base(Tag::All, v) {}
-	AX_INLINE constexpr Rect_(const Storage & storage) : Base(storage) {}
-	AX_INLINE constexpr Rect_(const T& x_,   const T& y_, const T& w_, const T& h_) : Base(x_, y_, w_, h_) {}
-	AX_INLINE constexpr Rect_(const T& pos_, const T& extents_) : Base(pos_.x, pos_.y, extents_.x, extents_.y) {}
 
-	AX_NODISCARD static constexpr This s_zero() { return This(0,0,0,0); } 
+	using SIMD_Data = VecSIMD_Data_<N * 2,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { Vec2 pos, extents; };
+		struct { T x, y, w, h; };
+	};
+	
+	AX_INLINE constexpr Box_() = default;
+	AX_INLINE constexpr Box_(Tag::All_, const T& v) : _simd(Tag::All, v) {}
+	AX_INLINE constexpr Box_(const T& x_,   const T& y_, const T& w_, const T& h_) : _simd(x_, y_, w_, h_) {}
+	AX_INLINE constexpr Box_(const T& pos_, const T& extents_) : _simd(pos_.x, pos_.y, extents_.x, extents_.y) {}
+
+	AX_NODISCARD static constexpr This s_zero() { return _simd.s_zero(); } 
 	
 	AX_NODISCARD constexpr Vec2		center			() const { return pos + extents / 2; }
 	AX_NODISCARD constexpr T		x_center		() const { return x + w / 2; }
@@ -129,8 +100,8 @@ public:
 	AX_NODISCARD constexpr T		area		() const { return w * h; }
 	AX_NODISCARD constexpr T		perimeter	() const { return w + w + h + h; }
 
-	AX_NODISCARD constexpr This		operator+	(const Vec2& v) const				{ return Rect2_(pos + v, extents); }
-	AX_NODISCARD constexpr This		operator-	(const Vec2& v) const				{ return Rect2_(pos - v, extents); }
+	AX_NODISCARD constexpr This		operator+	(const Vec2& v) const				{ return Box2_(pos + v, extents); }
+	AX_NODISCARD constexpr This		operator-	(const Vec2& v) const				{ return Box2_(pos - v, extents); }
 
 	AX_NODISCARD constexpr Margin4	operator-	(const This& inner) const			{ return marginTo(inner); }
 

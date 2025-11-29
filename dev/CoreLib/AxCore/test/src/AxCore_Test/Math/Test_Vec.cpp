@@ -11,7 +11,7 @@ public:
 
 	template<class T>
 	void test_VecSimd() {
-		using Vec = VecSimd_<4, T, CpuSIMD::None>;
+		using Vec = VecSIMD_Data_<4, T, VecSIMD::None>;
 		T x = Random::range<T>(1, 100);
 		constexpr Int N = 10;
 		Vec a[N]; 
@@ -68,7 +68,7 @@ public:
 		}
 	}
 	
-	template<class T, CpuSIMD SIMD>
+	template<class T, VecSIMD SIMD>
 	struct SIMD_Test {
 		using Vec1 = Vec1_<T, SIMD>; 
 		using Vec2 = Vec2_<T, SIMD>; 
@@ -94,42 +94,42 @@ public:
 			{
 				auto a = Vec1(2);
 				auto b = Vec1(1);
-				add1 = a + b;	add_scalar1 = a + 1;	scalar_add1 = 2 + b;
-				sub1 = a - b;	sub_scalar1 = a - 1;	scalar_sub1 = 2 - b;
-				mul1 = a * b;	mul_scalar1 = a * 1;	scalar_mul1 = 2 * b;
-				div1 = a / b;	div_scalar1 = a / 1;	scalar_div1 = 2 / b;
+				add1 = a + b;	add_scalar1 = a + 1;	scalar_add1 = T(2) + b;
+				sub1 = a - b;	sub_scalar1 = a - 1;	scalar_sub1 = T(2) - b;
+				mul1 = a * b;	mul_scalar1 = a * 1;	scalar_mul1 = T(2) * b;
+				div1 = a / b;	div_scalar1 = a / 1;	scalar_div1 = T(2) / b;
 			}
 			{
 				auto a = Vec2(2, 3);
 				auto b = Vec2(1, 2);
-				add2 = a + b;	add_scalar2 = a + 1;	scalar_add2 = 2 + b;
-				sub2 = a - b;	sub_scalar2 = a - 1;	scalar_sub2 = 2 - b;
-				mul2 = a * b;	mul_scalar2 = a * 1;	scalar_mul2 = 2 * b;
-				div2 = a / b;	div_scalar2 = a / 1;	scalar_div2 = 2 / b;
+				add2 = a + b;	add_scalar2 = a + 1;	scalar_add2 = T(2) + b;
+				sub2 = a - b;	sub_scalar2 = a - 1;	scalar_sub2 = T(2) - b;
+				mul2 = a * b;	mul_scalar2 = a * 1;	scalar_mul2 = T(2) * b;
+				div2 = a / b;	div_scalar2 = a / 1;	scalar_div2 = T(2) / b;
 			}
 			{
 				auto a = Vec3(2, 3, 4);
 				auto b = Vec3(1, 2, 3);
-				add3 = a + b;	add_scalar3 = a + 1;	scalar_add3 = 2 + b;
-				sub3 = a - b;	sub_scalar3 = a - 1;	scalar_sub3 = 2 - b;
-				mul3 = a * b;	mul_scalar3 = a * 1;	scalar_mul3 = 2 * b;
-				div3 = a / b;	div_scalar3 = a / 1;	scalar_div3 = 2 / b;
+				add3 = a + b;	add_scalar3 = a + 1;	scalar_add3 = T(2) + b;
+				sub3 = a - b;	sub_scalar3 = a - 1;	scalar_sub3 = T(2) - b;
+				mul3 = a * b;	mul_scalar3 = a * 1;	scalar_mul3 = T(2) * b;
+				div3 = a / b;	div_scalar3 = a / 1;	scalar_div3 = T(2) / b;
 			}
 			{
 				auto a = Vec4(2, 3, 4, 5);
 				auto b = Vec4(1, 2, 3, 4);
-				add4 = a + b;	add_scalar4 = a + 1;	scalar_add4 = 2 + b;
-				sub4 = a - b;	sub_scalar4 = a - 1;	scalar_sub4 = 2 - b;
-				mul4 = a * b;	mul_scalar4 = a * 1;	scalar_mul4 = 2 * b;
-				div4 = a / b;	div_scalar4 = a / 1;	scalar_div4 = 2 / b;
+				add4 = a + b;	add_scalar4 = a + 1;	scalar_add4 = T(2) + b;
+				sub4 = a - b;	sub_scalar4 = a - 1;	scalar_sub4 = T(2) - b;
+				mul4 = a * b;	mul_scalar4 = a * 1;	scalar_mul4 = T(2) * b;
+				div4 = a / b;	div_scalar4 = a / 1;	scalar_div4 = T(2) / b;
 			}
 		}
 	};
 	
 	template<class T>
 	void test_SSE() {
-		SIMD_Test<T, CpuSIMD::None>	basic;
-		SIMD_Test<T, CpuSIMD::SSE>	sse;
+		SIMD_Test<T, VecSIMD::None>	basic;
+		SIMD_Test<T, VecSIMD::SSE>	sse;
 		AX_TEST_ALMOST_EQ(basic.add1, sse.add1);
 		AX_TEST_ALMOST_EQ(basic.add2, sse.add2);
 		AX_TEST_ALMOST_EQ(basic.add3, sse.add3);
@@ -156,25 +156,25 @@ void Test_Vec_Func() {
 	AX_TEST_RUN_CASE(Test_Vec::test_VecSimd<f32>)
 	AX_TEST_RUN_CASE(Test_Vec::test_VecSimd<f64>)
 
-	// AX_TEST_RUN_CASE(Test_Vec::test_case1)
-	//
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i8>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i16>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i32>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<i64>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u8>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u16>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u32>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<u64>)
-	//
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<f32>)
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
-	//
-	// AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
+	AX_TEST_RUN_CASE(Test_Vec::test_case1)
+	
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i8>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i16>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i32>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i64>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u8>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u16>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u32>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u64>)
+	
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f32>)
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
+	
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
 }
 
-template class Vec_<4, f32, CpuSIMD::None>;
-template class Vec_<4, f32, CpuSIMD::SSE>;
+template class Vec_<4, f32, VecSIMD::None>;
+template class Vec_<4, f32, VecSIMD::SSE>;
 
 } // namespace
 
