@@ -48,7 +48,7 @@ public:
 
 	constexpr void includePoint(const Vec& pt);
 
-//	void getCornerPoints(FixedArray<Vec, Math::pow3(2, N)>& outPoints) const;	
+	void getCornerPoints(FixedArray<Vec, Math::pow3(2, N)>& outPoints) const;	
 };
 
 template<Int N, class T, VecSIMD SIMD> AX_INLINE constexpr 
