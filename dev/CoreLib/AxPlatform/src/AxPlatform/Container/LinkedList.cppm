@@ -4,6 +4,7 @@
 export module AxPlatform.LinkedList;
 export import AxPlatform.Array;
 export import AxPlatform.UPtr;
+export import AxPlatform.Formatter;
 
 export namespace ax {
 
@@ -24,6 +25,11 @@ protected:
 	//! separate node data to another class, so T cannot access via protected
 	T*	_listNode_next = nullptr;
 	T*	_listNode_prev = nullptr;
+public:
+	~LinkedListNode() {
+		AX_ASSERT(_listNode_prev == nullptr);
+		AX_ASSERT(_listNode_next == nullptr);
+	}
 };
 
 template<class T, bool REV>
@@ -103,6 +109,20 @@ public:
 
 	AX_INLINE CIter begin() const	{ return CIter(_head); }
 	AX_INLINE CIter end()	const	{ return CIter(nullptr); }
+
+	template<class CH>
+	void onFormat(Format_<CH> & fmt) const {
+		fmt << "[";
+		bool first = true;
+		for (auto & it : *this) {
+			if (!first) {
+				fmt << ",";
+				first = false;
+			}
+			fmt << it;
+		}
+		fmt << "]";
+	}
 
 private:
 	void _appendMove(LinkedList && r) {

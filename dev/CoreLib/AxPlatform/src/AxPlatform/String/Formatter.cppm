@@ -105,6 +105,22 @@ template<class... ARGS> constexpr
 TempString32 Fmt(FormatString_<Char32, ARGS...> && fmt, const ARGS&... args) { TempString32 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
 
+template <class OBJ, class FMT_CH>
+class FormatHandler {
+public:
+	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) { obj.onFormat(fmt); }
+};
+
+template <class FMT_CH>
+class FormatHandler<i64, FMT_CH> {
+	using OBJ = i64;
+public:
+	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) {
+		std::formatter<OBJ, FMT_CH> tmp;
+		tmp.format(obj, fmt.formatContext);
+	}
+};
+
 } // namespace
 
 
@@ -126,7 +142,8 @@ struct std::formatter<OBJ, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
 
 	auto format(const OBJ& obj, ax::FormatContext_<FMT_CH>& ctx) const {
 		ax::Format_<FMT_CH> format(*this, ctx);
-		obj.onFormat(format);
+		ax::FormatHandler<OBJ, FMT_CH> handler;
+		handler.onFormat(obj, format);
 		return ctx.out();
 	}
 };
@@ -164,14 +181,5 @@ template <class OBJ_CH, size_t N, class FMT_CH> requires ax::Type_IsChar<OBJ_CH>
 struct std::formatter<OBJ_CH[N], FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
 	constexpr auto format(const OBJ_CH (&obj)[N], ax::FormatContext_<FMT_CH>& ctx) const {
 		return ax::UtfFormatter_<FMT_CH>::utfFormat(ax::StrView_<OBJ_CH>(obj), ctx);
-	}
-};
-
-template <class T, size_t N, class FMT_CH>
-struct std::formatter<std::array<T, N>, FMT_CH> : public ax::UtfFormatter_<FMT_CH> {
-	constexpr auto format(const std::array<T, N>& obj, ax::FormatContext_<FMT_CH>& ctx) const {
-		for (auto& it : obj) {
-			return ax::UtfFormatter_<FMT_CH>::format(it, ctx);
-		}
 	}
 };

@@ -17,9 +17,9 @@ public:
 
 	FixedArray() = default;
 
-	MutSpan<T>	  span		()			{ return MutSpan<T>(data(), N); }
-	   Span<T>	  span		() const	{ return    Span<T>(data(), N); }
-	   Span<T>	  constSpan	() const	{ return    Span<T>(data(), N); }
+	MutSpan<T>	  span		()			{ return MutSpan<T>(data(), size()); }
+	   Span<T>	  span		() const	{ return    Span<T>(data(), size()); }
+	   Span<T>	  constSpan	() const	{ return    Span<T>(data(), size()); }
 
 	operator  MutSpan<T>	()			{ return span(); }
 	operator  Span<T>		() const	{ return span(); }
@@ -28,34 +28,34 @@ public:
 	AX_INLINE constexpr    FixedSpan<T, N> fixedSpan() const { return    FixedSpan<T, N>(data()); }
 	AX_INLINE constexpr MutFixedSpan<T, N> fixedSpan()       { return MutFixedSpan<T, N>(data()); }
 
-	AX_INLINE	 	  T &	operator[]	( Int i )			{ return at(i); }
-	AX_INLINE	const T &	operator[]	( Int i ) const		{ return at(i); }
+	AX_INLINE constexpr	 	  T &	operator[]	( Int i )			{ return at(i); }
+	AX_INLINE constexpr	const T &	operator[]	( Int i ) const		{ return at(i); }
 
-	AX_INLINE	 	  T &	at			( Int i )			{ _checkBound(i); return data()[i]; }
-	AX_INLINE	const T &	at			( Int i ) const		{ _checkBound(i); return data()[i]; }
+	AX_INLINE constexpr	 	  T &	at			( Int i )			{ return fixedSpan().at(i); }
+	AX_INLINE constexpr	const T &	at			( Int i ) const		{ return fixedSpan().at(i); }
 
-	AX_INLINE	 		T *	tryAt		(Int i)				{ return inBound(i) ? &data()[i] : nullptr; }
-	AX_INLINE	const	T *	tryAt		(Int i) const		{ return inBound(i) ? &data()[i] : nullptr; }
+	AX_INLINE constexpr	 		T *	try_at		(Int i)				{ return fixedSpan().try_at(i); }
+	AX_INLINE constexpr	const	T *	try_at		(Int i) const		{ return fixedSpan().try_at(i); }
 
 	//-----------------------
-	AX_INLINE		Int		size		() const			{ return N; }
-	AX_INLINE		bool	inBound		( Int  i ) const	{ return i >= 0 && i < N; }
+	AX_INLINE constexpr		Int		size		() const			{ return N; }
+	AX_INLINE constexpr		bool	inBound		( Int  i ) const	{ return i >= 0 && i < N; }
 
-	AX_INLINE 		  T*	data		()					{ return _data; }
-	AX_INLINE	const T*	data		() const			{ return _data; }
+	AX_INLINE constexpr 	  T*	data		()					{ return _data; }
+	AX_INLINE constexpr	const T*	data		() const			{ return _data; }
 
 	//------- forward View functions ----------------
-	AX_INLINE		MutSpan<T>	slice		( Int offset, Int size )		{ return span().slice(offset, size); }
-	AX_INLINE		Span<T>		slice		( Int offset, Int size ) const	{ return span().slice(offset, size); }
+	AX_INLINE constexpr		MutSpan<T>	slice		( Int offset, Int size )		{ return span().slice(offset, size); }
+	AX_INLINE constexpr		Span<T>		slice		( Int offset, Int size ) const	{ return span().slice(offset, size); }
 
-	AX_INLINE		MutSpan<T>	sliceFrom	( Int offset )					{ return span().sliceFrom(offset); }
-	AX_INLINE		Span<T>		sliceFrom	( Int offset ) const			{ return span().sliceFrom(offset); }
+	AX_INLINE constexpr		MutSpan<T>	sliceFrom	( Int offset )					{ return span().sliceFrom(offset); }
+	AX_INLINE constexpr		Span<T>		sliceFrom	( Int offset ) const			{ return span().sliceFrom(offset); }
 
-	AX_INLINE		MutSpan<T>	sliceBack	( Int offset )					{ return span().sliceBack(offset); }
-	AX_INLINE		Span<T>		sliceBack	( Int offset ) const			{ return span().sliceBack(offset); }
+	AX_INLINE constexpr		MutSpan<T>	sliceBack	( Int offset )					{ return span().sliceBack(offset); }
+	AX_INLINE constexpr		Span<T>		sliceBack	( Int offset ) const			{ return span().sliceBack(offset); }
 
-	AX_INLINE		void		copyValues	(Span<T> v, Int offset = 0)		{ span().copyValues(); }
-	AX_INLINE		void		fillValues	( const T& v )					{ span().fillValues(v); }
+	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ span().copyValues(); }
+	AX_INLINE constexpr		void		fillValues	( const T& v )					{ span().fillValues(v); }
 
 	//---------------
 	using  Iter			= T*;

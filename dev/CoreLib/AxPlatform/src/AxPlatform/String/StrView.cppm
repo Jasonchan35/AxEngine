@@ -130,6 +130,12 @@ public:
 	constexpr CIter	end		() const noexcept	{ return _data + _size; }
 };
 
+template<class T> struct Type_IsMutStrView_Struct : std::false_type {};
+template<class T> struct Type_IsMutStrView_Struct< MutStrView_<T> > : std::true_type {};
+template<class T> constexpr bool Type_IsMutStrView = Type_IsMutStrView_Struct<T>::value; 
+template<class T> constexpr bool Type_IsStrView = Type_IsMutStrView_Struct<const T>::value; 
+
+
 // Null-terminated string, should use StrLit or StrView if possible
 template<class T>
 class MutZStrView_ : public MutStrView_<T> {

@@ -12,14 +12,12 @@ class IArray : public IArrayStorage<T> {
 	using Base::_storage;
 protected:
 	constexpr IArray(T* data, Int initCap) : Base(data, initCap) {}
-	
+	using MSpan = MutSpan<T>;
+	using CSpan =    Span<T>;
 public:
 	constexpr T*  data() { return _storage.data(); }
 	constexpr Int size() const { return _storage.size(); }
 	constexpr Int capacity() const { return _storage.capacity(); }
-
-	constexpr MutSpan<T> toMutSpan() { return MutSpan<T>(data(), size()); }
-	constexpr operator MutSpan<T>()  { return toMutSpan(); }
 
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
@@ -31,6 +29,25 @@ public:
 
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
+
+	constexpr void operator << (const T &  item)  { append(item); }
+	constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
+
+	MSpan	span		()			{ return MutSpan<T>(data(), size()); }
+	CSpan	span		() const	{ return    Span<T>(data(), size()); }
+	CSpan	constSpan	() const	{ return    Span<T>(data(), size()); }
+
+	operator  MutSpan<T>	()			{ return span(); }
+	operator  Span<T>		() const	{ return span(); }
+
+			T & at(Int i)				{ return span().at(i); }
+	const	T & at(Int i) const 		{ return span().at(i); }
+
+			T & unsafe_at(Int i)		{ return span().unsafe_at(i); }
+	const	T & unsafe_at(Int i) const	{ return span().unsafe_at(i); }
+	
+			T & operator[](Int i)		{ return span()[i]; }
+	const	T & operator[](Int i) const { return span()[i]; }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;

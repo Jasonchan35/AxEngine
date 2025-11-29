@@ -47,10 +47,10 @@ public:
 	static bool s_showSourceLocation;
 
 	template<class... Args>
-	void log(const SrcLoc& loc, Level lv, const FormatString_<Char, Args...> & fmt, Args&&... args) {
+	void log(const SrcLoc& loc, Level lv, const FormatString_<Char, Args...> & fmt, const Args&... args) {
 		if (!_output) return;
 		TempString tmp;
-		FmtTo(tmp, fmt, AX_FORWARD(args)...);
+		FmtTo(tmp, fmt, args...);
 		write(lv, tmp);
 	}
 

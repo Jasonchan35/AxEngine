@@ -88,7 +88,7 @@ protected:
 		AX_INLINE constexpr const T* data() const noexcept { return ax_const_cast(this)->data(); }
 		AX_INLINE constexpr T*       data()		  noexcept { return isSmall() ? small_data() : _normal._data; }
 		AX_INLINE constexpr Int      size() const noexcept { return isSmall() ? _small._size : _normal._size; }
-
+		
 		constexpr void setSize(Int v) noexcept;
 		constexpr void setAllocDataPtr(T* data, Int cap) noexcept;
 	};

@@ -32,6 +32,9 @@ public:
 	AX_INLINE	constexpr		T &	at			( Int i )			{ _checkBound(i); return _data[i]; }
 	AX_INLINE	constexpr const T &	at			( Int i ) const		{ _checkBound(i); return _data[i]; }
 
+	AX_INLINE	constexpr		T *	try_at		( Int i )			{ return inBound(i) ? &_data[i] : nullptr; }
+	AX_INLINE	constexpr const T *	try_at		( Int i ) const		{ return inBound(i) ? &_data[i] : nullptr; }
+	
 	AX_INLINE 	constexpr 		T &	back		()					{ return at( kSize-1 ); }
 	AX_INLINE 	constexpr const T &	back		() const			{ return at( kSize-1 ); }
 

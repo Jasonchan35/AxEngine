@@ -26,7 +26,7 @@ public:
 protected:
 	virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
 	virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) override;
-	virtual	void			onStorageFree(T* p) override;
+	virtual	void				onStorageFree(T* p) override;
 };
 
 template<class T>		 struct Type_IsArray_Struct : std::false_type {};

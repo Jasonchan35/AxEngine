@@ -16,19 +16,30 @@ struct FormatterBase_ : public std::formatter<std::basic_string_view<FMT_CH>, FM
 	constexpr auto parse(Context& ctx) { return Base::parse(ctx); }
 };
 
-template<class T>
+template <class OBJ, class FMT_CH>
+class FormatHandler;
+
+template<class FMT_CH>
 class Format_ : public NonCopyable {
 public:
-	using Context   = FormatContext_<T>;
-	using Formatter = FormatterBase_<T>;
+	using Context   = FormatContext_<FMT_CH>;
+	using Formatter = FormatterBase_<FMT_CH>;
 
 	constexpr Format_(const Formatter & formatter_, Context & ctx_) : formatter(formatter_), formatContext(ctx_) {}
 
-	constexpr void append(StrView_<T> view) {
+	constexpr void append(StrView_<FMT_CH> view) {
 		formatter.format(view.to_string_view(), formatContext);
 	}
 
-	constexpr void operator << (StrView_<T> view) { append(view); }
+	template<class OBJ>
+	constexpr void operator << (const OBJ& obj) {
+		if constexpr (std::is_convertible_v<OBJ, StrView_<FMT_CH>>) {
+			append(obj);
+		} else {
+			FormatHandler<OBJ, FMT_CH> handler;
+			handler.onFormat(obj, *this);
+		}
+	}
 
 	const Formatter& formatter;
 	Context&   formatContext;
