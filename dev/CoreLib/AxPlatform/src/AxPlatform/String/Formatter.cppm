@@ -55,7 +55,7 @@ inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_
 	};
 	
 	try {
-		// std::make_format_args() must be call inside funcation call parameter to keep lifetime, otherwise the stored arg will be dangling 
+		// std::make_format_args() must be call inside function call parameter to keep lifetime, otherwise the stored arg will be dangling 
 		func(std::make_format_args<FormatContext_<FMT_CH>>(args...));
 	} catch (std::exception& e) {
 		auto msg = TempString::s_format("Format: Exception: {}, ArgCount={} format_string=[{}])", e.what(), sizeof...(args), out_fmt);
