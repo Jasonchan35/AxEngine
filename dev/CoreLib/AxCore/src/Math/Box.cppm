@@ -46,6 +46,10 @@ public:
 	AX_INLINE constexpr Box_(const T& pos_, const T& extents_) : _simd(pos_.x, pos_.y, extents_.x, extents_.y) {}
 
 	AX_NODISCARD static constexpr This s_zero() { return _simd.s_zero(); } 
+
+	template<VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+
 	
 	AX_NODISCARD constexpr Vec2		center			() const { return pos + extents / 2; }
 	AX_NODISCARD constexpr T		x_center		() const { return x + w / 2; }
@@ -102,20 +106,18 @@ public:
 
 	AX_NODISCARD constexpr This		operator+	(const Vec2& v) const				{ return Box2_(pos + v, extents); }
 	AX_NODISCARD constexpr This		operator-	(const Vec2& v) const				{ return Box2_(pos - v, extents); }
-
-	AX_NODISCARD constexpr Margin4	operator-	(const This& inner) const			{ return marginTo(inner); }
-
+	
 	AX_NODISCARD constexpr This		operator+	(const Margin4& m) const			{ return expand( m); }
 	AX_NODISCARD constexpr This		operator-	(const Margin4& m) const			{ return expand(-m); }
 
 				 constexpr void		operator+=	(const Margin4& m)					{ *this = expand( m); }
 				 constexpr void		operator-=	(const Margin4& m)					{ *this = expand(-m); }
 	
-	AX_NODISCARD constexpr This		operator*	(const Vec2& s) const				{ return This(x * s.x, y * s.y, w * s.x, h * s.y); }
-	AX_NODISCARD constexpr This		operator/	(const Vec2& s) const				{ return This(x / s.x, y / s.y, w / s.x, h / s.y); }
+	AX_NODISCARD constexpr This		operator*	(const Vec2& s) const				{ return _simd * s._simd; }
+	AX_NODISCARD constexpr This		operator/	(const Vec2& s) const				{ return _simd / s._simd; }
 
-				 constexpr void		operator*=	(const Vec2& s)						{ x *= s.x; y *= s.y; w *= s.x; h *= s.y; }
-				 constexpr void		operator/=	(const Vec2& s)						{ x /= s.x; y /= s.y; w /= s.x; h /= s.y; }
+				 constexpr void		operator*=	(const Vec2& s)						{ _simd *= s._simd; }
+				 constexpr void		operator/=	(const Vec2& s)						{ _simd /= s._simd; }
 
 				 constexpr bool		isValid			() const						{ return w > 0 && h >0; }
 

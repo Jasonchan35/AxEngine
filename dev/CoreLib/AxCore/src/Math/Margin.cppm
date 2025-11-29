@@ -46,6 +46,34 @@ public:
 	AX_NODISCARD Vec2	topRight	() const { return Vec2(right, top   ); }
 	AX_NODISCARD Vec2	bottomLeft	() const { return Vec2(left,  bottom); }
 	AX_NODISCARD Vec2	bottomRight	() const { return Vec2(right, bottom); }
+
+	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
+	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
+	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); } 
+
+	template<VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr This operator+(const This& vec) const { return _simd + vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator-(const This& vec) const { return _simd - vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator*(const This& vec) const { return _simd * vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator/(const This& vec) const { return _simd / vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator+(const T& t) const { return _simd + t; }
+	AX_NODISCARD AX_INLINE constexpr This operator-(const T& t) const { return _simd - t; }
+	AX_NODISCARD AX_INLINE constexpr This operator*(const T& t) const { return _simd * t; }
+	AX_NODISCARD AX_INLINE constexpr This operator/(const T& t) const { return _simd / t; }
+
+	AX_NODISCARD AX_INLINE constexpr void operator+=(const This& vec) { _simd += vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr void operator-=(const This& vec) { _simd -= vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr void operator*=(const This& vec) { _simd *= vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr void operator/=(const This& vec) { _simd /= vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr void operator+=(const T& t) { _simd += t; }
+	AX_NODISCARD AX_INLINE constexpr void operator-=(const T& t) { _simd -= t; }
+	AX_NODISCARD AX_INLINE constexpr void operator*=(const T& t) { _simd *= t; }
+	AX_NODISCARD AX_INLINE constexpr void operator/=(const T& t) { _simd /= t; }
+	
+	template <class R, VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
+	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }	
 };
 
 } // namespace 
