@@ -2,7 +2,7 @@
 #include "AxCore-pch.h"
 export module AxCore.Mat; // Matrix
 export import AxCore.Vec;
-export import AxCore.Rect;
+export import AxCore.BBox;
 
 export namespace ax {
 
@@ -29,7 +29,7 @@ public:
 	using Vec3		= Vec3_< T, SIMD>;
 	using Vec4		= Vec4_< T, SIMD>;
 	using Mat4		= Mat4_< T, SIMD>;
-	using Box2		= Box2_<T, SIMD>;
+	using BBox2		= BBox2_<T, SIMD>;
 
 	static constexpr Int elementCount = 16;
 
@@ -118,8 +118,8 @@ public:
 	AX_NODISCARD constexpr This inverse3x3			() const;
 	AX_NODISCARD constexpr This inverse3x3Transpose	() const;
 
-	AX_NODISCARD constexpr Vec3 unprojectPoint_slow	(const Vec3& screenPos, const Box2& viewport) const { return inverse().unprojectPoint_inv(screenPos, viewport); }
-	AX_NODISCARD constexpr Vec3 unprojectPoint_inv	(const Vec3& screenPos, const Box2& viewport) const;
+	AX_NODISCARD constexpr Vec3 unprojectPoint_slow	(const Vec3& screenPos, const BBox2& viewport) const { return inverse().unprojectPoint_inv(screenPos, viewport); }
+	AX_NODISCARD constexpr Vec3 unprojectPoint_inv	(const Vec3& screenPos, const BBox2& viewport) const;
 
 			//bool operator==			(const This &r) const	{ return cx == r.cx && cy == r.cy && cw == r.cw && cz == r.cz; }
 			//bool operator!=			(const This &r) const	{ return cx != r.cx || cy != r.cy || cw != r.cw || cz != r.cz; }
@@ -201,12 +201,12 @@ auto Mat_<4, 4, T, SIMD>::mulNormal(const Vec3& v) const -> Vec3 {
 }
 
 template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
-auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const Box2& viewport) const -> Vec3 {
+auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const BBox2& viewport) const -> Vec3 {
 	auto  tmp = Vec4(screenPos, 1);
-	tmp.y = viewport.h - tmp.y; // y is down
+	tmp.y = viewport.extents().y - tmp.y; // y is down
 
-	tmp.x = (tmp.x - viewport.x) / viewport.w * 2 - 1;
-	tmp.y = (tmp.y - viewport.y) / viewport.h * 2 - 1;
+	tmp.x = (tmp.x - viewport.min.x) / viewport.extents().x * 2 - 1;
+	tmp.y = (tmp.y - viewport.min.y) / viewport.extents().y * 2 - 1;
 
 	auto vec = mulPoint(tmp);
 	return vec.homogenize();

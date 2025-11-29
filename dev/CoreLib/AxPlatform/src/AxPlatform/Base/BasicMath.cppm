@@ -8,6 +8,9 @@ import AxPlatform.BasicType;
 
 export namespace ax::Math {
 
+template<class T> AX_INLINE constexpr T pow2(const T& v) { return v * v; }
+template<class T> AX_INLINE constexpr T pow3(const T& v) { return v * v * v; }
+
 //-------------------------
 template< class T > constexpr Int sign( const T& a ) {
 	if constexpr (std::is_signed_v<T>) {
@@ -57,10 +60,10 @@ template<class T> AX_INLINE constexpr void clamp_01_itself	(T& x, const T& a, co
 
 //----- float ----
 
-AX_NODISCARD AX_INLINE float		ceil	( float  a )	{ return std::ceil(a); }
+AX_NODISCARD AX_INLINE float	ceil	( float  a )	{ return std::ceil(a); }
 AX_NODISCARD AX_INLINE double	ceil	( double a )	{ return std::ceil(a); }
 
-AX_NODISCARD AX_INLINE float		floor	( float  a )	{ return std::floor(a); }
+AX_NODISCARD AX_INLINE float	floor	( float  a )	{ return std::floor(a); }
 AX_NODISCARD AX_INLINE double	floor	( double a )	{ return std::floor(a); }
 
 #if AX_COMPILER_VC | AX_OS_CYGWIN
