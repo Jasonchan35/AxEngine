@@ -41,6 +41,11 @@ public:
 	constexpr CIter	end		() const	{ return data() + size(); }
 };
 
+template<class T> struct Type_IsIArray_Struct : std::false_type {};
+template<class T> struct Type_IsIArray_Struct< IArray<T> > : std::true_type {};
+template<class T> constexpr bool Type_IsArray = Type_IsIArray_Struct<T>::value; 
+
+
 template <class T>
 constexpr void IArray<T>::append(const T& item) {
 	auto oldSize = size();

@@ -80,6 +80,10 @@ protected:
 	constexpr virtual void				onStorageFree	(T* p) override;
 };
 
+template<class T>		 struct Type_IsString_Struct : std::false_type {};
+template<class T, Int N> struct Type_IsString_Struct< String_<T,N> > : std::true_type {};
+template<class T> constexpr bool Type_IsString_ = Type_IsString_Struct<T>::value; 
+
 template <class T, Int BUF_SIZE> inline
 constexpr MemAllocResult<T> String_<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize + 1; // +1 for null terminator

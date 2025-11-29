@@ -29,6 +29,11 @@ protected:
 	virtual	void			onStorageFree(T* p) override;
 };
 
+template<class T>		 struct Type_IsArray_Struct : std::false_type {};
+template<class T, Int N> struct Type_IsArray_Struct< Array<T,N> > : std::true_type {};
+template<class T> constexpr bool Type_IsFixedArray = Type_IsArray_Struct<T>::value; 
+
+
 template <class T, Int BUF_SIZE> inline
 MemAllocResult<T> Array<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize;

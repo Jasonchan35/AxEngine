@@ -16,7 +16,6 @@ public:
 	static const Int elementCount = N;
 
 	FixedArray() = default;
-	FixedArray(FixedArray && r);
 
 	MutSpan<T>	  span		()			{ return MutSpan<T>(data(), N); }
 	   Span<T>	  span		() const	{ return    Span<T>(data(), N); }
@@ -76,14 +75,8 @@ private:
 	}
 };
 
-template<class T>		 struct TypeIsFixedArray : std::false_type {};
-template<class T, Int N> struct TypeIsFixedArray< FixedArray<T,N> > : std::true_type {};
-
-template<class T, Int N> inline
-FixedArray<T, N>::FixedArray(FixedArray&& r) {
-	for (Int i = 0; i < N; i++) {
-		_data[i] = std::move(r._data[i]);
-	}
-}
+template<class T>		 struct Type_IsFixedArray_Struct : std::false_type {};
+template<class T, Int N> struct Type_IsFixedArray_Struct< FixedArray<T,N> > : std::true_type {};
+template<class T> constexpr bool Type_IsFixedArray = Type_IsFixedArray_Struct<T>::value; 
 
 } // namespace
