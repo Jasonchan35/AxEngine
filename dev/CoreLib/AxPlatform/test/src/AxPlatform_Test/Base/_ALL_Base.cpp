@@ -4,5 +4,6 @@
 
 void AxPlatform_Test_Base() {
     AX_TEST_FUNC(Test_Enum)
+    AX_TEST_FUNC(Test_HashInt)
     AX_TEST_FUNC(Test_Math)
 }

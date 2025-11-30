@@ -39,13 +39,6 @@ public:
 	constexpr std_string_view to_string_view() const noexcept { return std_string_view(data(), size()); }
 	constexpr operator std_string_view() const noexcept { return to_string_view(); }
 	
-	constexpr explicit operator bool() const { return size() != 0; }
-	constexpr       T* data()			{ return _storage.data(); }
-	constexpr const T* data() const		{ return _storage.data(); }
-	constexpr Int capacity() const		{ return _storage.capacity(); }
-	constexpr Int size() const			{ return _storage.size(); }
-	constexpr Int sizeInBytes() const	{ return size() * AX_SIZEOF(T); }
-	
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 
@@ -54,10 +47,16 @@ public:
 	template<class... Args>
 	constexpr void resize(Int newSize, Args&&... args);
 
+	constexpr explicit operator bool() const { return size() != 0; }
+	constexpr       T* data()			{ return _storage.data(); }
+	constexpr const T* data() const		{ return _storage.data(); }
+	constexpr Int capacity() const		{ return _storage.capacity(); }
+	constexpr Int size() const			{ return _storage.size(); }
+	constexpr Int sizeInBytes() const	{ return size() * AX_SIZEOF(T); }
+	
 	template<class R>
 	AX_INLINE constexpr bool	isOverlapped(StrView_<R> r) const	{ return toByteSpan().isOverlapped(r.toByteSpan()); }
 	AX_INLINE constexpr	bool	inBound(Int i) const				{ return i >= 0 && i < size(); }
-	
 	AX_INLINE constexpr			T&	operator[]	(Int i)				{ return at(i); }
 	AX_INLINE constexpr	const	T&	operator[]	(Int i) const		{ return at(i); }
 	AX_INLINE constexpr			T&	at			(Int i)				{ _checkBound(i); return unsafe_at(i); }

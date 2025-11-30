@@ -31,8 +31,11 @@
 #include <utility>
 
 #if AX_OS_WINDOWS
-	#include <conio.h>
 	#include "AxPlatform/Platform/AX_OS_WINDOWS.h"
+	#include <conio.h>
+	#include <comdef.h> //Com error
+#else
+	#include <uuid/uuid.h>
 #endif
 
 #endif // AX_USE_PRECOMPILE_HEADER

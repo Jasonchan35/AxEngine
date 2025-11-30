@@ -69,6 +69,24 @@ public:
 	template<Int N>
 	AX_INLINE constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
 
+	//--------------
+	AX_INLINE constexpr       T*	data()       noexcept 				{ return _data; }
+	AX_INLINE constexpr const T*	data() const noexcept 				{ return _data; }
+	AX_INLINE constexpr Int      	size() const noexcept 				{ return _size; }
+	AX_INLINE constexpr Int	     	sizeInBytes() const noexcept		{ return _size * AX_SIZEOF(T); }
+	template<class R>
+	AX_INLINE constexpr bool		isOverlapped(StrView_<R> r) const	{ return toByteSpan().isOverlapped(r.toByteSpan()); }
+	AX_INLINE constexpr	bool		inBound(Int i) const				{ return i >= 0 && i < size(); }
+	AX_INLINE constexpr			T&	operator[]	(Int i)					{ return at(i); }
+	AX_INLINE constexpr	const	T&	operator[]	(Int i) const			{ return at(i); }
+	AX_INLINE constexpr			T&	at			(Int i)					{ _checkBound(i); return unsafe_at(i); }
+	AX_INLINE constexpr	const	T&	at			(Int i) const			{ _checkBound(i); return unsafe_at(i); }
+	AX_INLINE constexpr 		T&	back		(Int i = 0)				{ return at( size()-i-1 ); }
+	AX_INLINE constexpr const	T&	back		(Int i = 0) const		{ return at( size()-i-1 ); }
+	AX_INLINE constexpr 		T&	unsafe_at	(Int i)	noexcept		{ _debug_checkBound(i); return data()[i]; }
+	AX_INLINE constexpr const	T&	unsafe_at	(Int i) const noexcept	{ _debug_checkBound(i); return data()[i]; }
+	AX_INLINE constexpr 		T&	unsafe_back	(Int i)					{ return unsafe_at( size()-i-1 ); }
+	AX_INLINE constexpr const	T&	unsafe_back	(Int i)  const			{ return unsafe_at( size()-i-1 ); }
 	//---------------
 	AX_INLINE constexpr CView	constView	() const noexcept	{ return CView(data(), size()); }
 	AX_INLINE constexpr CView	view		() const noexcept	{ return CView(data(), size()); }
@@ -87,12 +105,6 @@ public:
 	
 	constexpr std_string_view to_string_view() const noexcept { return std_string_view(_data, _size); }
 	constexpr operator std_string_view() const noexcept { return to_string_view(); }
-
-	AX_INLINE constexpr       T* data()       noexcept { return _data; }
-	AX_INLINE constexpr const T* data() const noexcept { return _data; }
-	AX_INLINE constexpr Int      size() const noexcept { return _size; }
-	AX_INLINE constexpr Int	     sizeInBytes() const noexcept { return _size * AX_SIZEOF(T); }
-	
 
 	//                +--------------------------------------------+
 	//                |         |                      |           |
@@ -135,6 +147,14 @@ public:
 	constexpr CIter	begin	() const noexcept	{ return _data; }
 	constexpr  Iter	end		()		 noexcept	{ return _data + _size; }
 	constexpr CIter	end		() const noexcept	{ return _data + _size; }
+
+private:
+	AX_INLINE constexpr void _checkBound		( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
+	AX_INLINE constexpr void _debug_checkBound	( Int i ) const {
+#ifdef _DEBUG
+		_checkBound(i);
+#endif
+	}	
 };
 
 template<class T> struct Type_IsMutStrView_Struct : std::false_type {};

@@ -32,7 +32,7 @@ struct UnitTestClass : public NonCopyable {
 
 inline
 bool UnitTest_Validate(bool success, const char* expr_str, const SrcLoc& loc = SrcLoc()) {
-	bool verbose = true;
+	bool verbose = false;
 
 	if (success && !verbose)
 		return success;

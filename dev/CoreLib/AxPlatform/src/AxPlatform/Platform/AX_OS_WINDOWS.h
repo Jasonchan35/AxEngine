@@ -7,8 +7,9 @@
 #include <WinSock2.h> // WinSock2.h must include before windows.h to avoid winsock1 define
 #include <WS2tcpip.h> // struct sockaddr_in6
 #include <windows.h>
+#include <rpc.h> // uuid
+#pragma comment( lib, "Rpcrt4.lib" )
 
-#include <comdef.h> //Com error
 
 #ifdef small
 #undef small // char

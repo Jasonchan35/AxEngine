@@ -3,4 +3,5 @@
 #include "AxUnitTest.h"
 
 void AxPlatform_Test_Container() {
+    AX_TEST_FUNC(Test_LinkedList)
 }

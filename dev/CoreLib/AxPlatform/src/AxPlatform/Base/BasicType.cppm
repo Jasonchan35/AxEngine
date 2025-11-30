@@ -230,6 +230,8 @@ inline void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc(
 	assert(false);
 }
 
+template<class A, class B> using Pair = std::pair<A, B>;
+
 template<class OBJ, void (OBJ::*FUNC)()>
 class ScopeGuard : public NonCopyable {
 public:
@@ -308,6 +310,7 @@ AX_SIMPLE_ERROR(Error_ValueCast)
 AX_SIMPLE_ERROR(Error_Allocator)
 AX_SIMPLE_ERROR(Error_Format)
 AX_SIMPLE_ERROR(Error_Utf)
+AX_SIMPLE_ERROR(Error_ParseString)
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {
@@ -498,5 +501,28 @@ void __ax_internal_assert(const char* title, const char* expr, const SrcLoc& loc
 
 template<class T> using ax_enum_int_t = std::underlying_type_t<T>;
 template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<ax_enum_int_t<T>>(v); }
+
+template<class T> requires Type_IsChar<T>
+AX_INLINE constexpr bool ax_char_is_hex(T ch) {
+	if( ch >= '0' && ch <='9' ) return true;
+	if( ch >= 'A' && ch <='F' ) return true;
+	if( ch >= 'a' && ch <='f' ) return true;
+	return false;
+}
+
+template<class T> requires Type_IsChar<T>
+AX_INLINE constexpr Opt<u8> ax_char_hex_to_u8(T ch) {
+	if( ch >= '0' && ch <= '9' ) return static_cast<u8>(ch - '0');
+	if( ch >= 'a' && ch <= 'f' ) return static_cast<u8>(ch - 'a' + 10);
+	if( ch >= 'A' && ch <= 'F' ) return static_cast<u8>(ch - 'A' + 10);
+	return std::nullopt;
+}
+
+template<class T> requires Type_IsChar<T>
+AX_INLINE constexpr Pair<T,T> ax_char_u8_to_upper_hex_pair(u8 ch) {
+	static const char* hex = "0123456789ABCDEF";
+	return Pair<T,T>(static_cast<T>((ch >> 4) & 0xF),
+					 static_cast<T>( ch       & 0xF));
+}
 
 } // namespace

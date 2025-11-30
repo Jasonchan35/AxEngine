@@ -30,6 +30,9 @@ export import <utility>;
 	export import <WS2tcpip.h>; // struct sockaddr_in6
 	export import <windows.h>;
 	export import <conio.h>;
+
+#else
+	export import <uuid/uuid.h>;
 #endif
 
 #endif // AX_USE_PRECOMPILE_HEADER
