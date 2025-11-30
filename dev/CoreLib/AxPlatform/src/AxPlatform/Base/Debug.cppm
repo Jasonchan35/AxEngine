@@ -8,5 +8,4 @@ export namespace ax::Debug {
 
 bool isDebuggerPresent();
 
-
 } // namespace

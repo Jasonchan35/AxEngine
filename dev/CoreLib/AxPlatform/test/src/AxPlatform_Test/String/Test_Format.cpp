@@ -89,16 +89,15 @@ public:
 	}
 };
 
-void Test_Format_Func() {
+} // namespace
+
+void Test_Format() {
+	using namespace ax;
 	AX_TEST_RUN_CASE(Test_Format::test_case1)
 	AX_TEST_RUN_CASE(Test_Format::test_format_custom_type)
 	AX_TEST_RUN_CASE(Test_Format::test_utf<CharA>)
 	AX_TEST_RUN_CASE(Test_Format::test_utf<CharW>)
 	AX_TEST_RUN_CASE(Test_Format::test_utf<Char8>)
 	AX_TEST_RUN_CASE(Test_Format::test_utf<Char16>)
-	AX_TEST_RUN_CASE(Test_Format::test_utf<Char32>)
+	AX_TEST_RUN_CASE(Test_Format::test_utf<Char32>)	
 }
-
-} // namespace
-
-void Test_Format() { ax::Test_Format_Func(); }

@@ -27,12 +27,7 @@ public:
 	}
 };
 
-template <class T, class FMT_CH>
-requires std::is_convertible_v<T, StrViewA>
-	||	 std::is_convertible_v<T, StrViewW>
-	||	 std::is_convertible_v<T, StrView8>
-	||	 std::is_convertible_v<T, StrView16>
-	||	 std::is_convertible_v<T, StrView32>
+template <class T, class FMT_CH> requires Type_IsConvertiableToStrViewT<T>
 class FormatHandler<T, FMT_CH> {
 public:
 	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {

@@ -13,5 +13,6 @@ public:
 } // namespace
 
 void Test_Math() {
-	AX_TEST_RUN_CASE(ax::Test_Math::test_case1);
+	using namespace ax;
+	AX_TEST_RUN_CASE(Test_Math::test_case1);
 }

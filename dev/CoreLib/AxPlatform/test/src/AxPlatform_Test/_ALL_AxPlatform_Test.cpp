@@ -4,6 +4,7 @@
 
 void AxPlatform_Test() {
     AX_TEST_GROUP(AxPlatform_Test_Base)
+    AX_TEST_GROUP(AxPlatform_Test_Container)
     AX_TEST_GROUP(AxPlatform_Test_Pointer)
     AX_TEST_GROUP(AxPlatform_Test_String)
 }

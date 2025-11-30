@@ -2,24 +2,23 @@
 
 import AxPlatform.UnitTest;
 
-import AxPlatform_Test.Test_LinkedList;
-
-
+namespace ax {
 class AxPlatform_TestProgram : public ax::UnitTestProgram {
 public:
 	virtual void onRun() override {
-		constexpr bool test_all = false;
+		constexpr bool test_all = true;
 		if constexpr(test_all) {
 			// ALL
 			AX_TEST_GROUP(AxPlatform_Test)
 		} else {
-//			AX_TEST_GROUP(Test_Math);
-			AX_TEST_RUN_CASE(ax::Test_LinkedList::test_case1)
+			//	AX_TEST_GROUP(Test_Math);
 		}
 	}
 };
 
+} // namespace
+
 int main() {
-	AxPlatform_TestProgram test;
+	ax::AxPlatform_TestProgram test;
 	return test.run();
 }

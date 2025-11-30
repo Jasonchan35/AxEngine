@@ -1,9 +1,8 @@
-﻿module;
-#include "AxUnitTest.h"
-export module AxPlatform_Test.Test_LinkedList;
+﻿#include "AxUnitTest.h"
+
 import AxPlatform.LinkedList;
 
-export namespace ax {
+namespace ax {
 
 struct Test_LinkedList : public UnitTestClass {
 	class TestData : public LinkedListNode<TestData> {
@@ -64,6 +63,7 @@ struct Test_LinkedList : public UnitTestClass {
 } // namespace
 
 void Test_LinkedList() {
-	AX_TEST_RUN_CASE(ax::Test_LinkedList::test_case1)
+	using namespace ax;
+	AX_TEST_RUN_CASE(Test_LinkedList::test_case1)
 }
 

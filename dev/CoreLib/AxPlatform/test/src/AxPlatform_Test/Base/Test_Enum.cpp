@@ -12,6 +12,7 @@ public:
 } // namespace
 
 void Test_Enum() {
-	AX_TEST_RUN_CASE(ax::Test_Enum::test_case1)
+	using namespace ax;
+	AX_TEST_RUN_CASE(Test_Enum::test_case1)
 }
 

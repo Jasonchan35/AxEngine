@@ -41,6 +41,13 @@ using ZStrView8		= ZStrView_<Char8>;
 using ZStrView16	= ZStrView_<Char16>;
 using ZStrView32	= ZStrView_<Char32>;
 
+template<class T> constexpr bool Type_IsConvertiableToStrViewT	=  std::is_convertible_v<T, StrViewA>
+																|| std::is_convertible_v<T, StrViewW>
+																|| std::is_convertible_v<T, StrView8>
+																|| std::is_convertible_v<T, StrView16>
+																|| std::is_convertible_v<T, StrView32>;
+
+
 template <class T>
 class MutStrView_ { //Copyable
 	using This = MutStrView_;

@@ -35,6 +35,7 @@ public:
 } // namespace
 
 void Test_String() {
-	AX_TEST_RUN_CASE(ax::Test_String::test_case1)
+	using namespace ax;
+	AX_TEST_RUN_CASE(Test_String::test_case1)
 }
 

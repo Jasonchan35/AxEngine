@@ -79,7 +79,8 @@ public:
 } // namespace
 
 void Test_SPtr() {
-	AX_TEST_RUN_CASE(ax::Test_SPtr::test_weakPtr)
-	AX_TEST_RUN_CASE(ax::Test_SPtr::test_upcast)
+	using namespace ax;
+	AX_TEST_RUN_CASE(Test_SPtr::test_weakPtr)
+	AX_TEST_RUN_CASE(Test_SPtr::test_upcast)
 }
 
