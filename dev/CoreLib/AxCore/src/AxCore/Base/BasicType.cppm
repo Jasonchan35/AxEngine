@@ -520,9 +520,9 @@ AX_INLINE constexpr Opt<u8> ax_char_hex_to_u8(T ch) {
 
 template<class T> requires Type_IsChar<T>
 AX_INLINE constexpr Pair<T,T> ax_char_u8_to_upper_hex_pair(u8 ch) {
-	static const char* hex = "0123456789ABCDEF";
-	return Pair<T,T>(static_cast<T>((ch >> 4) & 0xF),
-					 static_cast<T>( ch       & 0xF));
+	constexpr char hex[] = "0123456789ABCDEF";
+	return Pair<T,T>(static_cast<T>(hex[(ch >> 4) & 0xF]),
+					 static_cast<T>(hex[ ch       & 0xF]));
 }
 
 struct DebuggerNatvisHex {

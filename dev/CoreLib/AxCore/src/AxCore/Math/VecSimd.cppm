@@ -136,14 +136,14 @@ public:
 	AX_NODISCARD AX_INLINE constexpr auto operator*(T t) const -> Vec { return *this * s_all(t); }
 	AX_NODISCARD AX_INLINE constexpr auto operator/(T t) const -> Vec { return *this / s_all(t); }
 	
-	AX_NODISCARD AX_INLINE constexpr auto operator+=(Vec vec) -> void { *this = *this + vec; }
-	AX_NODISCARD AX_INLINE constexpr auto operator-=(Vec vec) -> void { *this = *this - vec; }
-	AX_NODISCARD AX_INLINE constexpr auto operator*=(Vec vec) -> void { *this = *this * vec; }
-	AX_NODISCARD AX_INLINE constexpr auto operator/=(Vec vec) -> void { *this = *this / vec; }
-	AX_NODISCARD AX_INLINE constexpr auto operator+=(T t) -> void { *this = *this + t; }
-	AX_NODISCARD AX_INLINE constexpr auto operator-=(T t) -> void { *this = *this - t; }
-	AX_NODISCARD AX_INLINE constexpr auto operator*=(T t) -> void { *this = *this * t; }
-	AX_NODISCARD AX_INLINE constexpr auto operator/=(T t) -> void { *this = *this / t; }
+	AX_INLINE constexpr auto operator+=(Vec vec) -> void { *this = *this + vec; }
+	AX_INLINE constexpr auto operator-=(Vec vec) -> void { *this = *this - vec; }
+	AX_INLINE constexpr auto operator*=(Vec vec) -> void { *this = *this * vec; }
+	AX_INLINE constexpr auto operator/=(Vec vec) -> void { *this = *this / vec; }
+	AX_INLINE constexpr auto operator+=(T t) -> void { *this = *this + t; }
+	AX_INLINE constexpr auto operator-=(T t) -> void { *this = *this - t; }
+	AX_INLINE constexpr auto operator*=(T t) -> void { *this = *this * t; }
+	AX_INLINE constexpr auto operator/=(T t) -> void { *this = *this / t; }
 	
 //------------
 	AX_NODISCARD AX_INLINE static constexpr Vec s_unroll(T t, T (*func)(T a)) {

@@ -2,7 +2,7 @@
 #include "AxCore-pch.h"
 
 export module AxCore.Uuid;
-export import AxCore.HashInt;
+export import AxCore.String;
 
 #if !AX_USE_PRECOMPILE_HEADER && AX_OS_WINDOWS
 export import <rpc.h>; // uuid
@@ -59,7 +59,7 @@ public:
 
 	String	toString() const { String s; getString(s); return s; }
 
-	HashInt	onHashInt() const { return HashInt_get(value); }
+	HashInt	onHashInt() const { return HashInt::s_get(value); }
 
 	template<class CH> void onFmt(Format_<CH>& ctx) const { ctx << toString(); }
 

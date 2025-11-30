@@ -2,8 +2,8 @@
 #include "AxCore-pch.h"
 
 export module AxCore.StrView;
-
 export import AxCore.BasicType;
+export import AxCore.HashInt;
 export import AxCore.Span;
 import AxCore.Math;
 
@@ -139,6 +139,8 @@ public:
 	AX_INLINE constexpr bool operator>	(CView r) const	{ return CmpResult_isGreater       (compare(r)); }
 	AX_INLINE constexpr bool operator>=	(CView r) const	{ return CmpResult_isGreaterOrEqual(compare(r)); }
 	//----------------
+
+	constexpr HashInt onHashInt() const noexcept { return HashInt::s_get(span()); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;

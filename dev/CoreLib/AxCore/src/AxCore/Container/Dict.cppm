@@ -4,6 +4,7 @@
 export module AxCore.Dict;
 export import AxCore.LinkedList;
 export import AxCore.Array;
+export import AxCore.UPtr;
 
 export namespace ax {
 
@@ -28,9 +29,7 @@ public:
 
 	template<class... ARGS>
 	VALUE& add(const KEY & key, ARGS&&... args) {
-		
-		
-		auto node = UPtr_new<Node>(ax_default_allocator(), key, AX_FORWARD(args));
+		auto node = UPtr_new<Node>(ax_default_allocator(), key, AX_FORWARD(args)...);
 	}
 
 private:
