@@ -3,7 +3,6 @@
 #include "AxPlatform-pch.h"
 
 import AxPlatform.Format;
-import AxPlatform.Debug;
 import AxPlatform.UnitTest;
 import AxPlatform.Logger;
 

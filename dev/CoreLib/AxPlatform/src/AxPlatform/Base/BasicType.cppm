@@ -535,5 +535,13 @@ struct DebuggerNatvisHex {
 	struct high4 { uint8_t c; };
 };
 
+inline bool ax_is_debugger_present() {
+#if AX_OS_WINDOWS
+	return ::IsDebuggerPresent();
+#else
+	return false;
+#endif
+}
+
 
 } // namespace

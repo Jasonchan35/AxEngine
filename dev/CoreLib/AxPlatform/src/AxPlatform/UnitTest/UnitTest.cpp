@@ -21,7 +21,7 @@ int UnitTestProgram::run() {
 	__ax_internal_log("\n\n==== Program Ended ==== \n");
 
 #if 1 // AX_COMPILER_VC
-	if (Debug::isDebuggerPresent()) {
+	if (ax_is_debugger_present()) {
 		// waitKeyPress(); // doesn't work on Rider
 	}
 #endif

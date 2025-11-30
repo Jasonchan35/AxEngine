@@ -2,9 +2,7 @@
 #include "AxPlatform-pch.h"
 
 export module AxPlatform.UnitTest;
-
 export import AxPlatform.String;
-export import AxPlatform.Debug;
 
 export namespace ax {
 
