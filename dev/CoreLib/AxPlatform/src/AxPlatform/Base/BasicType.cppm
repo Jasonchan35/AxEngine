@@ -525,4 +525,15 @@ AX_INLINE constexpr Pair<T,T> ax_char_u8_to_upper_hex_pair(u8 ch) {
 					 static_cast<T>( ch       & 0xF));
 }
 
+struct DebuggerNatvisHex {
+	// UpperCase
+	struct Low4  { uint8_t c; };
+	struct High4 { uint8_t c; };
+
+	// LowerCase
+	struct low4  { uint8_t c; };
+	struct high4 { uint8_t c; };
+};
+
+
 } // namespace

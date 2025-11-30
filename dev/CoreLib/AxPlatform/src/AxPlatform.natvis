@@ -56,7 +56,7 @@
 		<DisplayString>r={r}, g={g}, b={b}, a={a}</DisplayString>
 	</Type>
 
-	<Type Name="ax::Debug::Natvis_Hex::L4">
+	<Type Name="ax::DebuggerNatvisHex::Low4">
 		<DisplayString Condition="((c &amp; 0x0f) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x01)">1</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x02)">2</DisplayString>
@@ -75,7 +75,7 @@
 		<DisplayString Condition="((c &amp; 0x0f) == 0x0f)">F</DisplayString>
 	</Type>
  
-	<Type Name="ax::Debug::Natvis_Hex::H4">
+	<Type Name="ax::DebuggerNatvisHex::High4">
 		<DisplayString Condition="((c >> 4) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c >> 4) == 0x01)">1</DisplayString>
 		<DisplayString Condition="((c >> 4) == 0x02)">2</DisplayString>
@@ -95,7 +95,7 @@
 	</Type>
 
 	
-	<Type Name="ax::Debug::Natvis_Hex::l4">
+	<Type Name="ax::DebuggerNatvisHex::low4">
 		<DisplayString Condition="((c &amp; 0x0f) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x01)">1</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x02)">2</DisplayString>
@@ -114,7 +114,7 @@
 		<DisplayString Condition="((c &amp; 0x0f) == 0x0f)">f</DisplayString>
 	</Type>
 
-	<Type Name="ax::Debug::Natvis_Hex::h4">
+	<Type Name="ax::DebuggerNatvisHex::high4">
 		<DisplayString Condition="((c >> 4) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c >> 4) == 0x01)">1</DisplayString>
 		<DisplayString Condition="((c >> 4) == 0x02)">2</DisplayString>
@@ -133,37 +133,29 @@
 		<DisplayString Condition="((c >> 4) == 0x0f)">f</DisplayString>
 	</Type>
 
-	<Type Name="ax::Uuid;">
+	<Type Name="ax::Uuid">
 		<DisplayString>
-			[Uuid]
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 0 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 0 )}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 1 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 1 )}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 2 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 2 )}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 3 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 3 )}-
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 4 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 4 )}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 5 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 5 )}-
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 6 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 6 )}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 7 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 7 )}-
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 8 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 8 )}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 9 )}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 9 )}-
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 10)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 10)}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 11)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 11)}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 12)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 12)}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 13)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 13)}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 14)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 14)}
-			{*(ax::Debug::Natvis_Hex::h4*)((char*)this + 15)}{*(ax::Debug::Natvis_Hex::l4*)((char*)this + 15)}
+			{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 0 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 0 )}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 1 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 1 )}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 2 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 2 )}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 3 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 3 )}-{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 4 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 4 )}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 5 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 5 )}-{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 6 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 6 )}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 7 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 7 )}-{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 8 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 8 )}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 9 )}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 9 )}-{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 10)}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 10)}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 11)}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 11)}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 12)}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 12)}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 13)}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 13)}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 14)}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 14)}{
+			*(ax::DebuggerNatvisHex::high4*)((char*)this + 15)}{*(ax::DebuggerNatvisHex::low4*)((char*)this + 15)}
 		</DisplayString>
 		<Expand>
 			<Item Name="first ">value.first,x</Item>
 			<Item Name="second">value.second,x</Item>
-		</Expand>
-	</Type>
-
-	<!-- ax::AxPlatform::AtomicInt_<T> -->
-	<Type Name="ax::AxPlatform::AtomicInt_&lt;*&gt;">
-		<DisplayString>{_v}</DisplayString>
-		<Expand>
-			<ExpandedItem>_v</ExpandedItem>
 		</Expand>
 	</Type>
 
@@ -184,10 +176,6 @@
 		</Expand>
 	</Type>
 
-	<Type Name="ax::JsonReader">
-		<DisplayString>line={_lineNumber} token={_token} </DisplayString>
-	</Type>
-
 	<!-- ax::MutSpan<*> -->
 	<Type Name="ax::MutSpan&lt;*&gt;">
 		<DisplayString>Span size={_size}</DisplayString>
@@ -201,7 +189,7 @@
 		</Expand> 	
 	</Type>
 	
-	<!-- FixedArray<*,*> -->
+	<!-- ax::FixedArray<*,*> -->
 	<Type Name="ax::FixedArray&lt;*,*&gt;">
 		<DisplayString>size={_size}</DisplayString>
 		<Expand>

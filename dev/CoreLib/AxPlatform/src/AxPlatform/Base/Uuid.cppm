@@ -6,6 +6,7 @@ export import AxPlatform.HashInt;
 
 #if !AX_USE_PRECOMPILE_HEADER && AX_OS_WINDOWS
 export import <rpc.h>; // uuid
+#pragma comment( lib, "Rpcrt4.lib" )
 #endif
 
 export namespace ax {

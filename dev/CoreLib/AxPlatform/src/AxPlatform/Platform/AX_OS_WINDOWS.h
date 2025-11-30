@@ -10,7 +10,6 @@
 #include <rpc.h> // uuid
 #pragma comment( lib, "Rpcrt4.lib" )
 
-
 #ifdef small
 #undef small // char
 #endif
