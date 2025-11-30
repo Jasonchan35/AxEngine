@@ -47,10 +47,6 @@ public:
 	}	
 };
 
-template<class OBJ> inline
-constexpr HashInt HashInt::s_get(const OBJ& obj) { return HashInt_Handler<OBJ>::onHashInt(obj); }
-
-
 template<class T> requires std::is_integral_v<T>
 struct HashInt_Handler<Span<T>> {
 	AX_INLINE constexpr static HashInt onHashInt(const Span<T>& obj) {
@@ -79,5 +75,8 @@ template<class T>
 struct HashInt_Handler {
 	AX_INLINE constexpr static HashInt onHashInt(const T& obj) { return obj.onHashInt(); }
 };
+
+template<class OBJ> inline
+constexpr HashInt HashInt::s_get(const OBJ& obj) { return HashInt_Handler<OBJ>::onHashInt(obj); }
 
 } // namespace

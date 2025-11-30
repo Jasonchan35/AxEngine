@@ -174,5 +174,3 @@ template class Vec_<4, f32, VecSIMD::SSE>;
 } // namespace
 
 void Test_Vec() { ax::Test_Vec_Func(); }
-
-/*---- The explicit instantiation ---*/ \
