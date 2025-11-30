@@ -6,7 +6,7 @@ export import AxCore.Span;
 
 export namespace ax {
 
-template<class OBJ> struct HashInt_Handler;
+template<class T> struct HashInt_Handler;
 
 class HashInt {
 	using This = HashInt;
@@ -17,7 +17,7 @@ public:
 	Value	value;
 
 	template<class OBJ>
-	static constexpr This s_get(const OBJ& obj) { return HashInt_Handler<OBJ>::onHashInt(obj); }
+	static constexpr This s_get(const OBJ& obj);
 
 	constexpr This operator^(const This& other) const { return value ^ other.value; }
 
@@ -47,10 +47,9 @@ public:
 	}	
 };
 
-template<class T>
-struct HashInt_Handler {
-	AX_INLINE constexpr static HashInt onHashInt(const T& obj) { return obj.onHashInt(); }
-};
+template<class OBJ> inline
+constexpr HashInt HashInt::s_get(const OBJ& obj) { return HashInt_Handler<OBJ>::onHashInt(obj); }
+
 
 template<class T> requires std::is_integral_v<T>
 struct HashInt_Handler<Span<T>> {
@@ -74,6 +73,11 @@ struct HashInt_Handler<T> {
 template<class T> requires std::is_fundamental_v<T>
 struct HashInt_Handler<T> {
 	AX_INLINE constexpr static HashInt onHashInt(const T& v) { return HashInt::s_get(static_cast<HashInt::Value>(v)); }
+};
+
+template<class T>
+struct HashInt_Handler {
+	AX_INLINE constexpr static HashInt onHashInt(const T& obj) { return obj.onHashInt(); }
 };
 
 } // namespace

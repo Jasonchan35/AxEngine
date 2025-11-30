@@ -60,7 +60,7 @@ public:
 
 	constexpr       IString_<T>& asIString()		{ return *this; }
 	constexpr const IString_<T>& asIString() const	{ return *this; }
-
+	
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
 	static constexpr This s_utf(StrViewA  v) { This s; UtfUtil::append(s, v); return s; }
