@@ -1,6 +1,6 @@
 #include "AxUnitTest.h"
 
-import AxPlatform.UnitTest;
+import AxCore.UnitTest;
 
 class AxCore_TestProgram : public ax::UnitTestProgram {
 public:

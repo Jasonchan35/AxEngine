@@ -3,5 +3,9 @@
 #include "AxUnitTest.h"
 
 void AxCore_Test() {
+    AX_TEST_GROUP(AxCore_Test_Base)
+    AX_TEST_GROUP(AxCore_Test_Container)
     AX_TEST_GROUP(AxCore_Test_Math)
+    AX_TEST_GROUP(AxCore_Test_Pointer)
+    AX_TEST_GROUP(AxCore_Test_String)
 }
