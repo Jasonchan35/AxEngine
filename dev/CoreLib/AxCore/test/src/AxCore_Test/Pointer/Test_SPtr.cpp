@@ -13,6 +13,7 @@ public:
 	}
 	struct TestForwardDeclare {
 		SPtr<FooClass> s;
+		UPtr<FooClass> u;
 	};
 	
 	class FooClass : public SPtrReferenable {
