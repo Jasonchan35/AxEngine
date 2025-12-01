@@ -232,8 +232,8 @@ constexpr CmpResult MutStrView_<T>::compare(CView r, StrCase sc) const noexcept 
 	} else {
 		Int i = 0;
 		for( i=0; i<n; ++p0, ++p1, i++ ) {
-			auto c0 = std::tolower(*p0);
-			auto c1 = std::tolower(*p1);
+			const auto c0 = (*p0);
+			const auto c1 = (*p1);
 			if (c0 != c1 ) return CmpResult_fromInt(c0 - c1);
 			if (c0 == T(0) || c1 == T(0)) break;
 		}

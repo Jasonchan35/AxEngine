@@ -89,7 +89,7 @@ void BBox_<N,T,SIMD>::includePoint(const Vec& pt) {
 		max = pt;
 	} else {
 		Math::min_itself(min, pt);
-		Math::min_itself(max, pt);
+		Math::max_itself(max, pt);
 	}
 }
 
