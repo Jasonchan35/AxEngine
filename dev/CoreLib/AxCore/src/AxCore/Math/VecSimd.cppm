@@ -13,8 +13,8 @@ E(SSE,)  \
 AX_ENUM_CLASS(AX_NumSIMD_ENUM_LIST, VecSIMD, u8)
 inline constexpr VecSIMD CpuSIMD_Default = VecSIMD::SSE;
 
-class VecSimd_Register_None {};
-template<Int N, class T, VecSIMD SIMD>	struct VecSimdInfo_							{ using Register = VecSimd_Register_None; static constexpr Int padding = 0; };
+class VecSimd_NullReg {};
+template<Int N, class T, VecSIMD SIMD>	struct VecSimdInfo_							{ using Register = VecSimd_NullReg; static constexpr Int padding = 0; };
 template<> 								struct VecSimdInfo_<3, f32, VecSIMD::SSE>	{ using Register = __m128;                static constexpr Int padding = 1; }; 
 template<> 								struct VecSimdInfo_<3, f64, VecSIMD::SSE>	{ using Register = __m256d;               static constexpr Int padding = 1; };
 template<> 								struct VecSimdInfo_<4, f32, VecSIMD::SSE>	{ using Register = __m128;                static constexpr Int padding = 0; }; 

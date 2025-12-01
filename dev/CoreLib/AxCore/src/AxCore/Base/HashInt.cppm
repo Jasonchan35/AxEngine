@@ -11,7 +11,7 @@ template<class T> struct HashInt_Handler;
 class HashInt {
 	using This = HashInt;
 	using VALUE = u64;
-	constexpr HashInt(const VALUE& v) : value(v) {} // private
+	AX_INLINE constexpr HashInt(const VALUE& v) noexcept : value(v) {} // private
 public:
 	using Value = VALUE;
 	Value	value;
@@ -19,9 +19,16 @@ public:
 	template<class OBJ>
 	static constexpr This s_get(const OBJ& obj);
 
-	constexpr This operator^(const This& other) const { return value ^ other.value; }
+	AX_NODISCARD AX_INLINE constexpr bool operator==(const This& other) const noexcept { return value == other.value; }
+	AX_NODISCARD AX_INLINE constexpr bool operator!=(const This& other) const noexcept { return value != other.value; }
+	AX_NODISCARD AX_INLINE constexpr bool operator< (const This& other) const noexcept { return value <  other.value; }
+	AX_NODISCARD AX_INLINE constexpr bool operator> (const This& other) const noexcept { return value >  other.value; }
+	AX_NODISCARD AX_INLINE constexpr bool operator<=(const This& other) const noexcept { return value <= other.value; }
+	AX_NODISCARD AX_INLINE constexpr bool operator>=(const This& other) const noexcept { return value >= other.value; }
 
-	static constexpr This s_fromInt(const Value& v) { return This(v); }
+	AX_NODISCARD AX_INLINE constexpr This operator^ (const This& other) const noexcept { return value ^ other.value; }
+	
+	static constexpr This s_fromInt(const Value& v) noexcept { return This(v); }
 
 	
 	template<class T> requires std::is_integral_v<T>
@@ -63,12 +70,12 @@ struct HashInt_Handler<Pair<A,B> > {
 
 template<class T> requires std::is_enum_v<T>
 struct HashInt_Handler<T> {
-	AX_INLINE constexpr static HashInt onHashInt(const T& v) { return HashInt::s_get(static_cast<HashInt::Value>(v)); }
+	AX_INLINE constexpr static HashInt onHashInt(const T& v) { return HashInt::s_fromInt(static_cast<HashInt::Value>(v)); }
 };
 
 template<class T> requires std::is_fundamental_v<T>
 struct HashInt_Handler<T> {
-	AX_INLINE constexpr static HashInt onHashInt(const T& v) { return HashInt::s_get(static_cast<HashInt::Value>(v)); }
+	AX_INLINE constexpr static HashInt onHashInt(const T& v) { return HashInt::s_fromInt(static_cast<HashInt::Value>(v)); }
 };
 
 template<class T>

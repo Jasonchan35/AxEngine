@@ -140,7 +140,7 @@ public:
 	AX_INLINE constexpr bool operator>=	(CView r) const	{ return CmpResult_isGreaterOrEqual(compare(r)); }
 	//----------------
 
-	constexpr HashInt onHashInt() const noexcept { return HashInt::s_get(span()); }
+	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_get(span()); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -156,7 +156,7 @@ private:
 #ifdef _DEBUG
 		_checkBound(i);
 #endif
-	}	
+	}
 };
 
 template<class T> struct Type_IsMutStrView_Struct : std::false_type {};
@@ -164,6 +164,7 @@ template<class T> struct Type_IsMutStrView_Struct< MutStrView_<T> > : std::true_
 template<class T> constexpr bool Type_IsMutStrView = Type_IsMutStrView_Struct<T>::value; 
 template<class T> constexpr bool Type_IsStrView = Type_IsMutStrView_Struct<const T>::value; 
 
+template<class T> AX_NODISCARD constexpr StrView_<T> StrView_make(StrView_<T> view) { return view; }
 
 // Null-terminated string, should use StrLit or StrView if possible
 template<class T>

@@ -54,7 +54,11 @@ public:
 	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
 	AX_INLINE constexpr String_(View view) : String_() { Base::append(view); }
 	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+	AX_INLINE constexpr String_(const String_ & rhs) : String_(rhs.view()) {}
 
+	template<Int N>
+	AX_INLINE constexpr String_(String_<T,N> && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+	
 	template<Int N>
 	AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(StrView_make(sz)); } 
 

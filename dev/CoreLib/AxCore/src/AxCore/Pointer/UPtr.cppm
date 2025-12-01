@@ -14,6 +14,7 @@ template<class T, class DEL = AxDelete>
 class UPtr : public PtrBase<T>, public NonCopyable {
 	using Base = PtrBase<T>;
 	using Base::_p;
+	
 	void operator=(const UPtr&) = delete;
 public:
 	AX_INLINE	UPtr() = default;

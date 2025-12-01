@@ -77,12 +77,14 @@ public:
 	AX_INLINE constexpr CSpan constSpan() const noexcept	{ return CSpan(data(), size()); }
 	AX_INLINE constexpr CSpan      span() const noexcept	{ return CSpan(data(), size()); }
 	AX_INLINE constexpr MSpan      span() noexcept			{ return MSpan(data(), size()); }
-	AX_INLINE constexpr operator CSpan() const noexcept { return constSpan(); }
+//	AX_INLINE constexpr operator CSpan() const noexcept { return constSpan(); }
 	//---------------
 
 	AX_INLINE constexpr ZView zview() const noexcept	{ return ZView(data(), size()); }
 	AX_INLINE constexpr operator ZView() const noexcept	{ return zview(); }
 	//---------------
+
+	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_get(span()); }
 	
 	AX_INLINE constexpr MutSpan<MutByte> toMutByteSpan()		{ return view().toMutByteSpan(); }
 	AX_INLINE constexpr    Span<MutByte>    toByteSpan() const	{ return view().toByteSpan(); }
