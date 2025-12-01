@@ -236,63 +236,72 @@ inline void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc(
 
 template<class A, class B> using Pair = std::pair<A, B>;
 
-template<class OBJ, void (OBJ::*FUNC)()>
-class ScopeGuard : public NonCopyable {
+
+template<void (*FUNC)()>
+class ScopeFunc0 : public NonCopyable {
 public:
-	AX_NODISCARD ScopeGuard(OBJ* obj) : _obj(obj) {}
+	AX_NODISCARD ScopeFunc0() : _valid(1) {}
+	ScopeFunc0(ScopeFunc0 && r) { std::swap(_valid, r._valid); }
+	~ScopeFunc0() { if (_valid) (*FUNC)(); }
+private:
+	u8 _valid = false;
+};
 
-	ScopeGuard(ScopeGuard && r) : _obj(r._obj) { r._obj = nullptr; }
-	~ScopeGuard() { if (_obj) (_obj->*FUNC)(); }
+template<class PARAM0, void (*FUNC)(PARAM0)>
+class ScopeFunc1 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeFunc1(PARAM0 && param0) : _valid(1), _param0(param0) {}
+	ScopeFunc1(ScopeFunc1 && r) { std::swap(_valid, r._valid); std::swap(_param0, r._param0); }
+	~ScopeFunc1() { if (_valid) (*FUNC)(std::move(_param0)); }
+private:
+	u8		_valid = false;
+	PARAM0	_param0 = {};
+};
 
+template<class OBJ, void (OBJ::*FUNC)()>
+class ScopeObjFunc0 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeObjFunc0(OBJ* obj) : _obj(obj) {}
+	ScopeObjFunc0(ScopeObjFunc0 && r) { std::swap(_obj, r._obj); }
+	~ScopeObjFunc0() { if (_obj) (_obj->*FUNC)(); }
 private:
 	OBJ*	_obj = nullptr;
 };
 
+template<class OBJ, class PARAM0, void (OBJ::*FUNC)(PARAM0)>
+class ScopeObjFunc1 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeObjFunc1(OBJ* obj, PARAM0 && param0) : _obj(obj), _param0(param0) {}
+	ScopeObjFunc1(ScopeObjFunc1 && r) { std::swap(_obj, r._obj); std::swap(_param0, r._param0); }
+	~ScopeObjFunc1() { if (_obj) (_obj->*FUNC)(_param0); }
+private:
+	OBJ*	_obj = nullptr;
+	PARAM0	_param0 = {};
+};
 
 template<class T>
-class ValueScope {
+class ScopeValue {
 public:
-	AX_NODISCARD ValueScope(T* p) {
-		ref(p);
-	}
+	AX_NODISCARD ScopeValue(T* p) { save(p); }
+	AX_NODISCARD ScopeValue(T* p, const T& newValue) { save(p); if(p) *p = newValue; }
+	AX_NODISCARD ScopeValue(ScopeValue && r) { std::swap(_p, r._p); std::swap(_backup, r._backup); }
+	~ScopeValue() { restore(); }
 
-	AX_NODISCARD ValueScope(T* p, const T& newValue) {
-		ref(p); if(p) *p = newValue;
-	}
-
-	AX_NODISCARD ValueScope(ValueScope && r) {
-		std::swap(_p,       r._p);
-		std::swap(oldValue, r.oldValue);
-	}
-
-	~ValueScope() { release(); }
-
-	void ref(T* newPtr) {
+	void save(T* newPtr) {
 		if (newPtr == _p) return;
-
-		release();
-		if (newPtr) {
-			_p = newPtr;
-			oldValue = *newPtr;
-		}
+		restore();
+		_p = newPtr;
+		if (newPtr) { _backup = *newPtr; }
 	}
 
-	void release() {
-		if (_p) {
-			*_p = oldValue;
-			_p = nullptr;
-		}
-	}
-
-	void discard() {
-		_p = nullptr;
-	}
-
-	T  oldValue;
+	void restore() { if (_p) { *_p = _backup; _p = nullptr; } }
+	void detach() { _p = nullptr; }
 
 private:
+	T  _backup;
 	T* _p = nullptr;
 };
+
 
 
 class Error : public std::exception {

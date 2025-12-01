@@ -85,7 +85,7 @@ public:
 	AX_INLINE Int indent() const { return _indent; }
 	AX_INLINE void incIndent() { _indent++; }
 	AX_INLINE void decIndent() { _indent--; }
-	AX_NODISCARD ScopeGuard<This, &This::decIndent> indentScope() { incIndent(); return this; }
+	AX_NODISCARD ScopeObjFunc0<This, &This::decIndent> indentScope() { incIndent(); return this; }
 
 	const StdFormatter& formatter;
 	StdContext&   formatContext;
