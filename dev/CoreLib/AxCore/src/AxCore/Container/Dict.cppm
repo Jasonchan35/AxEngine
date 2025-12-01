@@ -22,19 +22,17 @@ public:
 
 	template<class... ARGS>
 	DictNode(const Key & key, const HashInt& hash, ARGS&&... args)
-		          : _key(key),         _hash(hash),   _value(args...) {}
+		          : _key(key),         _hash(hash),    value(args...) {}
 
 	const	Key&	key() const		{ return _key; }
-	const	Value&	value() const	{ return _value; }
-			Value&	value()			{ return _value; }
-
 	const HashInt&	hash() const { return _hash; }
 
+	Value	value;
+	
 	friend class DictNode;
 protected:
 	Key		_key;
 	HashInt _hash;
-	Value	_value;
 };
 
 template<class NODE>
@@ -46,7 +44,7 @@ public:
 	explicit AX_NODISCARD AX_INLINE constexpr operator bool() const noexcept { return _node; } 
 	
 	AX_NODISCARD AX_INLINE constexpr NODE*	node		() noexcept	{ return _node; }
-	AX_NODISCARD AX_INLINE constexpr Value&	value		() noexcept	{ return _node->value(); }
+	AX_NODISCARD AX_INLINE constexpr Value&	value		() noexcept	{ return _node->value; }
 
 	AX_NODISCARD AX_INLINE constexpr Value&	operator*	() noexcept	{ return  value(); }
 	AX_NODISCARD AX_INLINE constexpr Value*	operator->	() noexcept	{ return &value(); }
@@ -125,7 +123,7 @@ public:
 
 	template<class... ARGS>
 	Node& addNode(const InKey & key, ARGS&&... args) {
-		auto hash = HashInt::s_get(key);
+		auto hash = HashInt::s_make(key);
 		HashList& hashList = _getListForAdd(hash);
 		SPtr<Node> node = SPtr_new<Node>(AX_ALLOC_REQ, key, hash, AX_FORWARD(args)...);
 		hashList.append(node);
@@ -133,19 +131,22 @@ public:
 	}
 
 	template<class... ARGS>
-	Value& add(const InKey & key, ARGS&&... args) { return addNode(key, AX_FORWARD(args)...).value(); }	
+	Value& add(const InKey & key, ARGS&&... args) { return addNode(key, AX_FORWARD(args)...).value; }
 
 	FindEnumator findAll(const InKey& key, const HashInt& hash) {
+		if (_hashTable.size() <= 0) {
+			return FindEnumator(key, nullptr);
+		}
 		auto& list = _getList(hash);
 		return FindEnumator(key, _findInHashList(list, hash, key));
 	}
 
 	FindEnumator findAll(const InKey& key) {
-		auto hash = HashInt::s_get(key);
+		auto hash = HashInt::s_make(key);
 		return findAll(key, hash);
 	}
 	
-	Value* find(const InKey& key) { return find(key, HashInt::s_get(key)); }
+	Value* find(const InKey& key) { return find(key, HashInt::s_make(key)); }
 	Value* find(const InKey& key, HashInt hash) {
 		auto enumator = findAll(key, hash);
 		if (auto it = enumator.begin()) {
@@ -169,7 +170,9 @@ private:
 	}
 	
 	HashList&	_getList(const HashInt& hash) {
-		Int index = static_cast<Int>(hash.value % static_cast<HashInt::Value>(_hashTable.size()));
+		auto n = _hashTable.size();
+		AX_ASSERT(n > 0);
+		Int index = static_cast<Int>(hash.value % static_cast<HashInt::Value>(n));
 		return _hashTable[index];
 	}
 	
@@ -178,6 +181,7 @@ private:
 		_hashTable.clear();
 		_hashTable.resize(newSize);
 
+		if (newSize <= 0) return;
 		//re-insert to table
 		for(Node& node : _orderedList) {
 			auto& hashList = _getList(node.hash());

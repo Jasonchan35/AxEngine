@@ -1,5 +1,7 @@
 #include "AxUnitTest.h"
 
+import AxCore.PersistString;
+
 namespace ax {
 
 class Test_String : public UnitTestClass {
@@ -29,6 +31,14 @@ public:
 		AX_UNUSED(str16);
 		AX_UNUSED(str32);
 		AX_UNUSED(strW);
+	}
+
+	void test_PersistString() {
+		auto a = PersistString::s_make("Testing");
+		auto b = PersistString::s_make("Testing");
+
+		AX_TEST_EQ(a, b);
+		AX_TEST_EQ(a.view(), StrView("Testing"));
 	}
 
 	/*
@@ -157,6 +167,8 @@ public:
 void Test_String() {
 	using namespace ax;
 	AX_TEST_RUN_CASE(Test_String::test_case1)
+	AX_TEST_RUN_CASE(Test_String::test_PersistString)
+
 	//AX_TEST_RUN_CASE(Test_String::test_case2_string_construction)
 	AX_TEST_RUN_CASE(Test_String::test_case3_string_append)
 	AX_TEST_RUN_CASE(Test_String::test_case4_string_comparison)

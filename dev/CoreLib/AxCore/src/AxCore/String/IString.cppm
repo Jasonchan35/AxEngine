@@ -5,6 +5,7 @@ export module AxCore.IString;
 
 export import AxCore.IArrayStorage;
 export import AxCore.Format;
+export import AxCore.HashInt;
 
 export namespace ax {
 
@@ -84,7 +85,7 @@ public:
 	AX_INLINE constexpr operator ZView() const noexcept	{ return zview(); }
 	//---------------
 
-	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_get(span()); }
+	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_make(span()); }
 	
 	AX_INLINE constexpr MutSpan<MutByte> toMutByteSpan()		{ return view().toMutByteSpan(); }
 	AX_INLINE constexpr    Span<MutByte>    toByteSpan() const	{ return view().toByteSpan(); }

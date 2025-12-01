@@ -32,7 +32,7 @@ class FormatHandler<T, FMT_CH> {
 public:
 	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
 		
-		if constexpr (std::is_convertible_v<T, StrView_<FMT_CH>>) {
+		if constexpr (std::is_same_v<T, FMT_CH>) {
 			auto sv = StrView_<FMT_CH>(obj); 
 			fmt.formatter.format(sv.to_string_view(), fmt.formatContext);
 		} else {

@@ -166,7 +166,7 @@ public:
 	AX_INLINE constexpr const T* c_str() const noexcept { return _size ? _data : &_empty_c_str; }
 	AX_INLINE constexpr T*  data() const noexcept { return _data; }
 	AX_INLINE constexpr Int size() const noexcept { return _size; }
-	
+
 protected:
 	static constexpr T _empty_c_str = 0;	
 	T*  _data = nullptr;

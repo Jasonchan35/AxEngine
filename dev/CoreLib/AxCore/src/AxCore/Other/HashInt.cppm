@@ -17,7 +17,7 @@ public:
 	Value	value;
 
 	template<class OBJ>
-	static constexpr This s_get(const OBJ& obj);
+	static constexpr This s_make(const OBJ& obj);
 
 	AX_NODISCARD AX_INLINE constexpr bool operator==(const This& other) const noexcept { return value == other.value; }
 	AX_NODISCARD AX_INLINE constexpr bool operator!=(const This& other) const noexcept { return value != other.value; }
@@ -64,7 +64,7 @@ struct HashInt_Handler<Span<T>> {
 template<class A, class B>
 struct HashInt_Handler<Pair<A,B> > {
 	AX_INLINE constexpr static HashInt onHashInt(const Pair<A,B>& obj) {
-		return HashInt::s_get(obj.first) ^ HashInt::s_get(obj.second);
+		return HashInt::s_make(obj.first) ^ HashInt::s_make(obj.second);
 	}
 };
 
@@ -79,11 +79,17 @@ struct HashInt_Handler<T> {
 };
 
 template<class T>
+struct HashInt_Handler<MutStrLit_<T>> {
+	AX_INLINE constexpr static HashInt onHashInt(const MutStrLit_<T>& obj) { return HashInt::s_make(StrView_<T>(obj)); }
+};
+
+
+template<class T>
 struct HashInt_Handler {
 	AX_INLINE constexpr static HashInt onHashInt(const T& obj) { return obj.onHashInt(); }
 };
 
 template<class OBJ> inline
-constexpr HashInt HashInt::s_get(const OBJ& obj) { return HashInt_Handler<OBJ>::onHashInt(obj); }
+constexpr HashInt HashInt::s_make(const OBJ& obj) { return HashInt_Handler<OBJ>::onHashInt(obj); }
 
 } // namespace

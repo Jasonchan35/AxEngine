@@ -136,7 +136,7 @@ public:
 	AX_INLINE void	unlock	() {}
 };
 
-template<class VALUE> using SpinLockProtected			= LockProtected<SpinLock, VALUE>;
-template<class VALUE> using InternalSpinLockProtected	= LockProtected<InternalSpinLock, VALUE>;
+template<class DATA> using SpinLockProtected			= LockProtected<SpinLock, DATA>;
+template<class DATA> using InternalSpinLockProtected	= LockProtected<InternalSpinLock, DATA>;
 
 } // namespace

@@ -59,7 +59,7 @@ public:
 
 	String	toString() const { String s; getString(s); return s; }
 
-	HashInt	onHashInt() const { return HashInt::s_get(value); }
+	HashInt	onHashInt() const { return HashInt::s_make(value); }
 
 	template<class CH> void onFmt(Format_<CH>& ctx) const { ctx << toString(); }
 

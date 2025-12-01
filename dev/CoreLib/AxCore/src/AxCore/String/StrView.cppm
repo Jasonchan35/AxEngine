@@ -69,6 +69,8 @@ public:
 	template<Int N>
 	AX_INLINE constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
 
+	explicit operator bool() const { return size() > 0; }
+
 	//--------------
 	AX_INLINE constexpr       T*	data()       noexcept 				{ return _data; }
 	AX_INLINE constexpr const T*	data() const noexcept 				{ return _data; }
@@ -140,7 +142,7 @@ public:
 	AX_INLINE constexpr bool operator>=	(CView r) const	{ return CmpResult_isGreaterOrEqual(compare(r)); }
 	//----------------
 
-	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_get(span()); }
+	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_make(span()); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
