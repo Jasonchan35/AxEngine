@@ -26,7 +26,8 @@ struct Test_LinkedList : public UnitTestClass {
 			Int N = 5;
 		
 			for (Int i = 0; i < N; i++) {
-				auto* p = list.append(UPtr_new<TestData>(AX_ALLOC_REQ, i));
+				auto uptr = UPtr_new<TestData>(AX_ALLOC_REQ, i);
+				auto* p = list.append(std::move(uptr));
 				arr << p;
 			}
 

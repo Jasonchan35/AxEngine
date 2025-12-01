@@ -129,26 +129,29 @@ struct AxNoDelete {
 
 struct AxDelete {
 	template<class T>
-	static void deleteObject(T* p) {
-		// if (!p) return;
+	static void deleteObject(T* & p) {
+		if (!p) return;
 		// auto* block = AllocBlockBase::s_fromMem(p);
 		// auto  dataSize = block->data().size();
 		// if (dataSize < AX_SIZEOF(T)) { AX_ASSERT(false); }
 		MemUtil::destructor(p, 1);
 		ax_free(p);
+		 p = nullptr;
 	}
 
 	template<class T>
-	static void deleteArray(T* p) {
+	static void deleteArray(T* & p) {
+		AX_ASSERT(false); // TODO
 		// if (!p) return;
 		// auto* block = AllocBlockBase::s_fromMem(p);
 		// auto  dataSize = block->data().size();
 		// if (dataSize < AX_SIZEOF(T)) { AX_ASSERT(false); }
 		//
-		// //call destructor
+		//call destructor
 		// Int numObject = dataSize / AX_SIZEOF(T);
-		// MemoryUtil::destructor(p, numObject);
-		ax_free(p);
+		// MemUtil::destructor(p, numObject);
+		// ax_free(p);
+		// p = nullptr;
 	}
 };
 

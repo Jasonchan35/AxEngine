@@ -64,7 +64,7 @@ private:
 
 	std::atomic_flag _v = ATOMIC_FLAG_INIT;
 
-#elif 0 // mutex
+#elif 1 // mutex
 	AX_INLINE void	_ctor	()		{}
 	AX_INLINE void	_dtor	()		{}
 	AX_INLINE bool	_tryLock()		{ return _v.try_lock(); }

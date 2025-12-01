@@ -9,12 +9,12 @@ public:
 
 	struct TestData : public NonCopyable {
 		TestData(Int a_, Int b_) : a(a_), b(b_) {
-			AX_LOG("TestData {} {}", a, b);
+//			AX_LOG("TestData {} {}", a, b);
 		}
 		TestData(TestData &&) = default;
 		
 		~TestData() {
-			AX_LOG("~TestData {} {}", a, b);
+//			AX_LOG("~TestData {} {}", a, b);
 		}
 		Int a;
 		Int b;
@@ -24,14 +24,10 @@ public:
 	void test_case1() {
 		Dict<String, TestData> dict;
 
-		for (Int i = 0; i < 10; i++) {
-			AX_LOG("-- + ");
+		for (Int i = 0; i < 1; i++) {
 			dict.add(Fmt("foo{}", i), 10, i);
-			AX_LOG(" added");
 		}
 
-		AX_LOG("------------");
-		
 		auto* p = dict.find("foo2");
 		AX_UNUSED(p);
 
