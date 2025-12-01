@@ -22,6 +22,8 @@ protected:
 	constexpr virtual ~IArrayStorage() = default;
 
 protected:
+	using ElementType = T;
+
 	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() = 0;
 	constexpr virtual MemAllocResult<T>	onStorageMalloc(Int reqSize) = 0;
 	constexpr virtual void				onStorageFree(T* p) = 0;
