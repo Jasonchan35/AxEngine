@@ -75,8 +75,7 @@ private:
 	}
 };
 
-template<class T>		 struct Type_IsFixedArray_Struct : std::false_type {};
-template<class T, Int N> struct Type_IsFixedArray_Struct< FixedArray<T,N> > : std::true_type {};
-template<class T> constexpr bool Type_IsFixedArray = Type_IsFixedArray_Struct<T>::value; 
+template<class T> constexpr bool Type_IsFixedArray = false; 
+template<class T, Int N> constexpr bool Type_IsFixedArray<FixedArray<T, N>> = true; 
 
 } // namespace

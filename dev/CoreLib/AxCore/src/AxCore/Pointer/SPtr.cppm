@@ -190,11 +190,14 @@ protected:
 	using Base::_p;
 };
 
-template<class R, class T> AX_INLINE bool operator==(R* const a, const SPtr<T>& b) { return b == a; }
-template<class R, class T> AX_INLINE bool operator!=(R* const a, const SPtr<T>& b) { return b != a; }
+template<class T> constexpr bool Type_IsSPtr = false; 
+template<class T> constexpr bool Type_IsSPtr<SPtr<T>> = true; 
 
-template<class T> AX_INLINE bool operator==(const std::nullptr_t&, const SPtr<T>& b) { return b == nullptr; }
-template<class T> AX_INLINE bool operator!=(const std::nullptr_t&, const SPtr<T>& b) { return b != nullptr; }
+template<class R, class T> AX_NODISCARD AX_INLINE constexpr bool operator==(R* const a, const SPtr<T>& b) { return b == a; }
+template<class R, class T> AX_NODISCARD AX_INLINE constexpr bool operator!=(R* const a, const SPtr<T>& b) { return b != a; }
+
+template<class T> AX_NODISCARD AX_INLINE constexpr bool operator==(const std::nullptr_t&, const SPtr<T>& b) { return b == nullptr; }
+template<class T> AX_NODISCARD AX_INLINE constexpr bool operator!=(const std::nullptr_t&, const SPtr<T>& b) { return b != nullptr; }
 
 template<class T> inline
 SPtr<T> SPtr_ref(T* p) noexcept { return SPtr<T>::s_ref(p); }

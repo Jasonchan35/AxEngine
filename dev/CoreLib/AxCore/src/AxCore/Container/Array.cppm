@@ -29,9 +29,8 @@ protected:
 	virtual	void				onStorageFree(T* p) override;
 };
 
-template<class T>		 struct Type_IsArray_Struct : std::false_type {};
-template<class T, Int N> struct Type_IsArray_Struct< Array<T,N> > : std::true_type {};
-template<class T> constexpr bool Type_IsArray = Type_IsArray_Struct<T>::value; 
+template<class T> constexpr bool Type_IsArray = false;
+template<class T, Int N> constexpr bool Type_IsArray<Array<T,N>> = true;
 
 
 template <class T, Int BUF_SIZE> inline
