@@ -97,40 +97,39 @@ public:
 		return p;
 	}
 
-	static constexpr bool kHasWPtrBlock = requires (T & o) { o._weakPtrBlock; };
+	static constexpr bool hasWPtrReferenable = std::is_base_of_v<typename T::_WPtrReferenable, T>;
 	
 	static constexpr void unref(SPtr<T>* s) {
 		static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
 		auto* obj = s->_p;
 		if (!obj) return;
-
-		if constexpr (kHasWPtrBlock) {
-			if (auto* wb = obj->_weakPtrBlock.ptr()) {
-				// lock before release ref count and delete object
-				auto wbData = wb->data.scopedLock();
-				
-				bool isDeleted = _doRelease(s);
-				if (isDeleted) {
-					AX_ASSERT(wbData->obj == obj);
-					wbData->obj = nullptr;
-				}
-				return;
-			}
+		auto refCount = _releaseRefCount(s);
+		AX_ASSERT(refCount >= 0);
+		if (refCount == 0) {
+			ax_delete(s->_p);
 		}
-
-		_doRelease(s);
+		s->_p = nullptr;
 	}
 	
 private:
-	static AX_INLINE constexpr bool _doRelease(SPtr<T>* s) {
-		auto rc = s->_p->_releaseSPtrRefCount();
-		AX_ASSERT(rc >= 0);
-		if (rc == 0) {
-			ax_delete(s->_p);
-			s->_p = nullptr;
-			return true;
+	static AX_INLINE constexpr Int _releaseRefCount(SPtr<T>* s) {
+		auto* obj = s->_p;
+		if constexpr (hasWPtrReferenable) {
+			if (auto* wb = obj->_weakPtrBlock.ptr()) {
+				// lock before release ref count
+				auto wbData   = wb->data.scopedLock();
+				//------				
+				auto refCount = obj->_releaseSPtrRefCount();
+				if (refCount == 0) { 
+					AX_ASSERT(wbData->obj == obj);
+					wbData->obj = nullptr;
+				}
+				return refCount;
+			}
 		}
-		return false;
+
+		auto refCount = obj->_releaseSPtrRefCount();
+		return refCount;
 	}
 };
 
