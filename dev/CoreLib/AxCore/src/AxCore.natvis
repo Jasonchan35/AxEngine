@@ -8,54 +8,6 @@
 	Expression[,<FormatSpecifier> ]
 	https://msdn.microsoft.com/en-us/library/windows/hardware/dn936815(v=vs.85).aspx
 -->
-	<!-- ax::Tuple1_<*,*> -->
-	<Type Name="ax::Vec1_&lt;*,*&gt;">
-		<DisplayString>x={x}</DisplayString>
-	</Type>
-
-	<!-- ax::Tuple2_<*,*> -->
-	<Type Name="ax::Tuple2_&lt;*,*&gt;">
-		<DisplayString>x={x}, y={y}</DisplayString>
-	</Type>
-
-	<!-- ax::Tuple3_<*,*> -->
-	<Type Name="ax::Tuple3_&lt;*,*&gt;">
-		<DisplayString>x={x}, y={y}, z={z}</DisplayString>
-	</Type>
-
-	<!-- ax::Tuple4_<*,*> -->
-	<Type Name="ax::Tuple4_&lt;*,*&gt;">
-		<DisplayString>x={x}, y={y}, z={z}, w={w}</DisplayString>
-	</Type>
-
-	<!-- Margin2_<T> -->
-	<Type Name="ax::Margin2_&lt;*&gt;">
-		<DisplayString>top={top}, right={right}, bottom={bottom}, left={left}</DisplayString>
-	</Type>
-	<!-- Rect2<T> -->
-	<Type Name="ax::Rect2_&lt;*&gt;">
-		<DisplayString>x={x}, y={y}, w={w}, h={h}</DisplayString>
-	</Type>
-	<!-- ColorR<T> -->
-	<Type Name="ax::ColorR_&lt;*&gt;">
-		<DisplayString>r={r}</DisplayString>
-	</Type>
-
-	<!-- ColorRG_<T> -->
-	<Type Name="ax::ColorRGBA_&lt;*&gt;">
-		<DisplayString>r={r}, g={g}</DisplayString>
-	</Type>
-
-	<!-- ColorRGB_<T> -->
-	<Type Name="ax::ColorRGBA_&lt;*&gt;">
-		<DisplayString>r={r}, g={g}, b={b}</DisplayString>
-	</Type>
-
-	<!-- ColorRGBA_<T> -->
-	<Type Name="ax::ColorRGBA_&lt;*&gt;">
-		<DisplayString>r={r}, g={g}, b={b}, a={a}</DisplayString>
-	</Type>
-
 	<Type Name="ax::DebuggerNatvisHex::Low4">
 		<DisplayString Condition="((c &amp; 0x0f) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x01)">1</DisplayString>
@@ -94,7 +46,6 @@
 		<DisplayString Condition="((c >> 4) == 0x0f)">F</DisplayString>
 	</Type>
 
-	
 	<Type Name="ax::DebuggerNatvisHex::low4">
 		<DisplayString Condition="((c &amp; 0x0f) == 0x00)">0</DisplayString>
 		<DisplayString Condition="((c &amp; 0x0f) == 0x01)">1</DisplayString>
@@ -204,10 +155,10 @@
 
 	<!-- ax::IArayStorage<*>::Storage -->
 	<Type Name="ax::IArrayStorage&lt;*&gt;::Storage">
-		<DisplayString Condition=" _small._isSmall">size={_small._size } small-capacity={_small._capacity}</DisplayString>
-		<DisplayString Condition="!_small._isSmall">size={_normal._size} capacity={_normal._capacity}</DisplayString>
+		<DisplayString Condition=" _small._isSmall">size={_small._size }/s{_small._capacity}</DisplayString>
+		<DisplayString Condition="!_small._isSmall">size={_normal._size}/{_normal._capacity}</DisplayString>
 		<Expand>
-			<Item Name="data" Condition=" _small._isSmall">&amp;_small._data[0]</Item>
+			<Item Name="data" Condition=" _small._isSmall">&amp;((SmallStorage_Dummy&amp;)_small)._data[0]</Item>
 			<Item Name="data" Condition="!_small._isSmall">_normal._data</Item>
 
 			<Item Name="size" Condition=" _small._capacity &amp; 0x80">_small._size</Item>
@@ -223,12 +174,7 @@
 
 	<!-- ax::IArray<*> -->
 	<Type Name="ax::IArray&lt;*&gt;">
-		<DisplayString Condition=" _storage._small._isSmall">
-			size={_storage._small._size} cap={_storage._small._capacity} data={&amp;_storage._small._data[0], [_storage._small._size]na}
-		</DisplayString>
-		<DisplayString Condition="!_storage._small._isSmall">
-			size={_storage._normal._size} cap={_storage._normal._capacity} data={_storage._normal._data, [_storage._normal._size]na}
-		</DisplayString>
+		<DisplayString>{_storage}</DisplayString>
 		<Expand>
 			<Item Name="_storage">_storage</Item>
 			<Synthetic Name="Elements">
@@ -236,7 +182,7 @@
 				<Expand>
 					<ArrayItems Condition="_storage._small._isSmall">
 						<Size>_storage._small._size</Size>
-						<ValuePointer>&amp;_storage._small._data[0]</ValuePointer>
+						<ValuePointer>&amp;((SmallStorage_Dummy&amp;)_storage._small)._data[0]</ValuePointer>
 					</ArrayItems>
 
 					<ArrayItems Condition="!_storage._small._isSmall">
@@ -247,6 +193,20 @@
 			</Synthetic>
 		</Expand>
 	</Type>
+
+	<!-- ax::LinkedList<*> -->
+	<Type Name="ax::LinkedList&lt;*&gt;">
+		<DisplayString>size={_size}</DisplayString>
+		<Expand>
+			<LinkedListItems>
+				<Size>_size</Size>
+				<HeadPointer>_head</HeadPointer>
+				<NextPointer>_listNode_next</NextPointer>
+				<ValueNode>this</ValueNode>
+			</LinkedListItems>
+		</Expand>
+	</Type>
+
 
 	<!-- MutStrView_<*> -->
 	<Type Name="ax::MutStrView_&lt;*&gt;">
@@ -260,14 +220,17 @@
 	<!-- ax::IString_<*> -->
 	<Type Name="ax::IString_&lt;*&gt;">
 		<DisplayString Condition="_storage._small._isSmall">
-			size={_storage._small._size }/{_storage._small._capacity } {&amp;_storage._small._data[0], [_storage._small._size]na}
+			{_storage} {
+				&amp;((SmallStorage_Dummy&amp;)_storage._small)._data[0]
+				, [_storage._small._size]na 
+			}
 		</DisplayString>
 		<DisplayString Condition="!_storage._small._isSmall">
-			size={_storage._normal._size}/{_storage._normal._capacity} {_storage._normal._data, [_storage._normal._size]na}
+			{_storage} {_storage._normal._data, [_storage._normal._size]na}
 		</DisplayString>
 
 		<StringView  Condition="_storage._small._isSmall">
-			&amp;_storage._small._data[0], [_storage._small._size]na
+			&amp;((SmallStorage_Dummy&amp;)_storage._small)._data[0]
 		</StringView>
 		<StringView  Condition="!_storage._small._isSmall">
 			_storage._normal._data, [_storage._normal._size]na
