@@ -24,7 +24,7 @@ import AxCore.Logger;
 	do { \
 		auto value = A; \
 		auto tmpTestMsg = Fmt("{} (value: {})", #A, A); \
-		::ax::UnitTest_Validate(bool((A) == (B)), tmpTestMsg.c_str()); \
+		::ax::UnitTest_Validate(bool((A)), tmpTestMsg.c_str()); \
 	} while (false) \
 //----
 
