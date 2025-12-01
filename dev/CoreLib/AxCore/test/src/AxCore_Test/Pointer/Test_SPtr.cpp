@@ -50,7 +50,7 @@ public:
 
 	void test_weakPtr() {
 		WPtr<TestObject>	w;
-
+		
 		{
 			auto obj1 = SPtr_new<TestObject>(AX_ALLOC_REQ, 1,2);
 			w.ref(obj1);

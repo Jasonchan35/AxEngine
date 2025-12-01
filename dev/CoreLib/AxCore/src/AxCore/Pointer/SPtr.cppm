@@ -2,7 +2,6 @@ module;
 #include "AxCore-pch.h"
 
 export module AxCore.SPtr;
-
 export import AxCore.UPtr;
 import AxCore.Atomic;
 import AxCore.SpinLock;
@@ -167,7 +166,7 @@ public:
 	AX_INLINE operator       T* () &       { return _p; }
 	AX_INLINE operator const T* () const & { return _p; }
 
-	operator T* () && = delete;
+//	operator T* () && = delete;
 
 	AX_INLINE	void operator=(std::nullptr_t) noexcept	{ unref(); }
 	template<class R> AX_INLINE	void operator=(SPtr<R> &  r) { ref(r.ptr()); }
@@ -182,6 +181,7 @@ public:
 	template<class R> AX_NODISCARD AX_INLINE bool operator!=(const SPtr<R>& r) const { return _p != r._p; }
 	
 	AX_NODISCARD AX_INLINE static SPtr<T> s_ref(T* p) noexcept { return SPtr(p); }
+	AX_NODISCARD AX_INLINE static SPtr<T> s_ref_DontAddRefCount(T* p) noexcept { SPtr<T> o; o._p = p; return o; }
 	
 	friend  class SPtr_Internal<T>;
 protected:

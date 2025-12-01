@@ -32,7 +32,7 @@ public:
 	operator       T* () &			{ return _p; }
 	operator const T* () const &	{ return _p; }
 
-	operator T* () && = delete;
+//	operator T* () && = delete;
 
 	AX_INLINE	T*		ref			(T* p) & noexcept	{ if (_p != p) { unref(); _p = p; } return p; }
 	AX_INLINE	void	unref		() noexcept			{ DEL::deleteObject(_p); _p = nullptr; }

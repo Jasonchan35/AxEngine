@@ -24,13 +24,13 @@ public:
 	void test_case1() {
 		Dict<String, TestData> dict;
 
-		for (Int i = 0; i < 1; i++) {
+		for (Int i = 0; i < 10; i++) {
 			dict.add(Fmt("foo{}", i), 10, i);
 		}
 
 		auto* p = dict.find("foo2");
 		AX_UNUSED(p);
-
+		
 		dict.clear();
 	}
 };

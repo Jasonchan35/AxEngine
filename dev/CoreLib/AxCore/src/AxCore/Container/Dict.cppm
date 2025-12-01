@@ -8,14 +8,13 @@ export import AxCore.SPtr;
 
 export namespace ax {
 
-class Dict_HashListTag {};
-using DictNode_HashList_Config    = LinkedList_Config_<Dict_HashListTag>;
-using DictNode_OrderedList_Config = LinkedList_Config_<void>;
+class Dict_OrderedListConfig {};
+class Dict_HashListConfig {};
 
 template<class KEY, class VALUE>
 class DictNode : public SPtrReferenable_NonThreadSafe
-	, public LinkedListNode< DictNode<KEY, VALUE>, DictNode_OrderedList_Config >
-	, public LinkedListNode< DictNode<KEY, VALUE>, DictNode_HashList_Config    >
+	, public LinkedListNode< DictNode<KEY, VALUE>, Dict_OrderedListConfig>
+	, public LinkedListNode< DictNode<KEY, VALUE>, Dict_HashListConfig>
 {
 public:
 	using Key   = KEY;
@@ -109,8 +108,8 @@ struct Dict_DefaultConfig<String_<T,N>, VALUE> : Dict_Config_<String_<T,N>, VALU
 template<class KEY, class VALUE, class CONFIG = Dict_DefaultConfig<KEY,VALUE>>
 class Dict : public NonCopyable {
 	using Node = DictNode<KEY, VALUE>;
-	using OrderedList = LinkedList<Node, DictNode_OrderedList_Config>;
-	using HashList    = LinkedList<Node, DictNode_HashList_Config>;
+	using OrderedList = SPtrLinkedList<Node, Dict_OrderedListConfig>;
+	using HashList    = SPtrLinkedList<Node, Dict_HashListConfig>;
 public:
 	using Key          = KEY;
 	using Value        = VALUE;
@@ -176,16 +175,13 @@ private:
 	
 	void _resizeTable(Int newSize) {
 		if (newSize == _hashTable.size()) return;
-		HashList tmpList;
-		for (auto& node : _hashTable) {
-			tmpList.appendMove(std::move(node));
-		}
+		_hashTable.clear();
 		_hashTable.resize(newSize);
 
 		//re-insert to table
-		while(SPtr<Node> node = tmpList.popHead()) {
-			auto& hashList = _getList(node->hash());
-			hashList.append(node);
+		for(Node& node : _orderedList) {
+			auto& hashList = _getList(node.hash());
+			hashList.append(&node);
 		}
 	}
 
