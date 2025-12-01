@@ -3,28 +3,40 @@
 
 export module AxCore.LinkedList;
 export import AxCore.Array;
-export import AxCore.UPtr;
+export import AxCore.WPtr;
 export import AxCore.Formatter;
 
 export namespace ax {
 
 AX_SIMPLE_ERROR(Error_LinkedList)
 
+template<class TAG>
+struct LinkedList_Config_ {
+};
+
+using LinkedList_DefaultConfig = LinkedList_Config_<void>;
+
 //! Intrusive Linked List
-template<class T> class LinkedList;
+template<class T, class CONFIG = LinkedList_DefaultConfig> class LinkedList;
 template<class T, bool REV> class LinkedList_Iter;
 
-template<class T>
+template<class T, class CONFIG = LinkedList_DefaultConfig>
 class LinkedListNode : public NonCopyable {
-	friend class LinkedList<T>;
-	friend class LinkedList_Iter<      T, true>;
-	friend class LinkedList_Iter<const T, true>;
-	friend class LinkedList_Iter<      T, false>;
-	friend class LinkedList_Iter<const T, false>;
+	using Node = LinkedListNode;
+	friend class LinkedList<T, CONFIG>;
+	friend class LinkedList_Iter<      Node, true>;
+	friend class LinkedList_Iter<const Node, true>;
+	friend class LinkedList_Iter<      Node, false>;
+	friend class LinkedList_Iter<const Node, false>;
 protected:
-	//! separate node data to another class, so T cannot access via protected
-	T*	_listNode_next = nullptr;
-	T*	_listNode_prev = nullptr;
+	using _ListNodeConfig = CONFIG;
+	
+	Node*	_listNode_next = nullptr;
+	Node*	_listNode_prev = nullptr;
+
+	using _ListNodeOwner = T;
+			T* _listNodeOwner()			{ return static_cast<      T*>(this); }
+	const	T* _listNodeOwner() const	{ return static_cast<const T*>(this); }
 public:
 	~LinkedListNode() {
 		AX_ASSERT(_listNode_prev == nullptr);
@@ -32,34 +44,46 @@ public:
 	}
 };
 
-template<class T, bool REV>
+template<class NODE, bool REV>
 class LinkedList_Iter {
-	using This = LinkedList_Iter;
+	using This   = LinkedList_Iter;
+	using Node   = NODE;
+	using Config = typename NODE::_ListNodeConfig;
 public:
-	LinkedList_Iter(T* p) : _p(p) {}
+	using Owner		= Type_KeepConst<NODE, typename NODE::_ListNodeOwner>;
+	
+	LinkedList_Iter(NODE* p) : _node(p) {}
 
-	operator T*			()  { return  _p; }
-	T&		operator*	()	{ return *_p; }
-	T*		operator->	()	{ return  _p; }
-	bool	operator==	( const This & r ) const { return _p == r._p; }
-	bool	operator!=	( const This & r ) const { return _p != r._p; }
+	NODE* node() { return _node; }
+	Owner* owner() { return _node->_listNodeOwner(); }
+	
+	operator Owner*		()  { return  owner(); }
+	Owner&	operator*	()	{ return *owner(); }
+	Owner*	operator->	()	{ return  owner(); }
+	bool	operator==	( const This & r ) const { return _node == r._node; }
+	bool	operator!=	( const This & r ) const { return _node != r._node; }
 	void	operator++	()	{
-		if(!_p) return;
+		if(!_node) return;
 		if constexpr (REV) {
-			_p = _p->_listNode_prev;
+			_node = _node->_listNode_prev;
 		} else {
-			_p = _p->_listNode_next;
+			_node = _node->_listNode_next;
 		}
 	}
 private:
-	T*	_p = nullptr;
+	NODE*	_node = nullptr;
 };
 
 //! Intrusive Linked Array
-template<class T>
+template<class T, class CONFIG>
 class LinkedList : public NonCopyable {
 public:
-	using Node = LinkedListNode<T>;
+	using Node      = LinkedListNode<T, CONFIG>;
+
+	static constexpr bool useSPtr = std::is_base_of_v<SPtrReferenableBase, T>; 
+	using OUT_Ptr = std::conditional_t<useSPtr, SPtr<T>,   UPtr<T>>; 
+	using IN_Ptr  = std::conditional_t<useSPtr, SPtr<T> &, UPtr<T> &&>; 
+	
 	LinkedList() = default;
 	LinkedList(LinkedList && r) {
 		swap(r);
@@ -69,12 +93,14 @@ public:
 
 	AX_INLINE Int size() const { return _size; }
 
-	AX_INLINE T* append			(UPtr<T> && newNode) noexcept				{ return _append(AX_FORWARD(newNode)); }
-	AX_INLINE T* insert			(UPtr<T> && newNode) noexcept				{ return _insertBefore(AX_FORWARD(newNode), _head);  }
-	AX_INLINE T* insertBefore	(UPtr<T> && newNode, T* before) noexcept	{ return _insertBefore(AX_FORWARD(newNode), before); }
-	AX_INLINE T* insertAfter	(UPtr<T> && newNode, T* after ) noexcept	{ return _insertBefore(AX_FORWARD(newNode), after ? after->_listNode_next : _head); }
-
-	AX_INLINE UPtr<T> remove(T* node) noexcept { return _remove(node); }
+	AX_INLINE T* append			(IN_Ptr newNode) noexcept				{ return _append(AX_FORWARD(newNode)); }
+	AX_INLINE T* insert			(IN_Ptr newNode) noexcept				{ return _insertBefore(AX_FORWARD(newNode), _head);  }
+	AX_INLINE T* insertBefore	(IN_Ptr newNode, T* before) noexcept	{ return _insertBefore(AX_FORWARD(newNode), before); }
+	AX_INLINE T* insertAfter	(IN_Ptr newNode, T* after ) noexcept {
+		return _insertBefore(AX_FORWARD(newNode), after ? _getNode(after)->_listNode_next : _head);
+	}
+	
+	AX_INLINE OUT_Ptr remove(T* node) noexcept { return _remove(node); }
 
 	AX_INLINE void swap(LinkedList & r) {
 		std::swap(_head, r._head);
@@ -91,8 +117,8 @@ public:
 	AX_INLINE 		T*	tail()			{ return _tail; }
 	AX_INLINE const	T*	tail() const	{ return _tail; }
 
-	AX_INLINE UPtr<T>	popHead() { return _head ? _remove(_head) : nullptr; }
-	AX_INLINE UPtr<T>	popTail() { return _tail ? _remove(_tail) : nullptr; }
+	AX_INLINE OUT_Ptr	popHead() { return _head ? _remove(_head) : nullptr; }
+	AX_INLINE OUT_Ptr	popTail() { return _tail ? _remove(_tail) : nullptr; }
 
 	AX_INLINE void clear() {
 		while(_head) {
@@ -101,8 +127,8 @@ public:
 		AX_ASSERT(!_head && !_tail && _size == 0);
 	}
 
-	using Iter  = LinkedList_Iter<      T, false>;
-	using CIter = LinkedList_Iter<const T, false>;
+	using Iter  = LinkedList_Iter<      Node, false>;
+	using CIter = LinkedList_Iter<const Node, false>;
 
 	AX_INLINE Iter begin()		{ return Iter(_head); }
 	AX_INLINE Iter end()		{ return Iter(nullptr); }
@@ -125,6 +151,8 @@ public:
 	}
 
 private:
+	AX_INLINE Node* _getNode(T* obj) { return static_cast<Node*>(obj); }
+
 	void _appendMove(LinkedList && r) {
 		if (r.size() <= 0) return;
 		if (size() <= 0) {
@@ -136,7 +164,7 @@ private:
 		r._head->_listNode_prev = _tail;
 		  _tail->_listNode_next = r._head;
 
-		_tail = r._tail;
+		_tail  = r._tail;
 		_size += r._size;
 
 		r._head = nullptr;
@@ -144,29 +172,37 @@ private:
 		r._size = 0;
 	}
 
-	T* _append(UPtr<T> &&  newNode) {
-		if (!newNode) throw Error_LinkedList();
+	T* _append(IN_Ptr newObj) {
+		if (!newObj) throw Error_LinkedList();
+		auto* newNode = _getNode(newObj);
 		if (newNode->_listNode_next || newNode->_listNode_prev) {
 			throw Error_LinkedList();
 		}
 
 		newNode->_listNode_prev = _tail;
 		if (_tail) {
-			_tail->_listNode_next = newNode.ptr();
+			_tail->_listNode_next = newNode;
 		} else {
-			_head = newNode.ptr();
+			_head = newNode;
 		}
-		_tail = newNode.ptr();
+		_tail = newNode;
 		_size++;
-		return newNode.detach();
-	}
 
-	T* _insertBefore(UPtr<T> &&  newNode, T* before) {
+		if constexpr (useSPtr) {
+			newObj->_addSPtrRefCount();
+			return newObj.ptr();
+		} else {
+			return newObj.detach();
+		}
+	}
+	
+	T* _insertBefore(UPtr<T> &&  newNode, Node* before) {
 		if (!before) {
 			return append(AX_FORWARD(newNode));
 		}
-
+		
 		if (!newNode) throw Error_LinkedList();
+		
 		if (newNode->_listNode_next || newNode->_listNode_prev) {
 			throw Error_LinkedList();
 		}
@@ -174,18 +210,18 @@ private:
 		newNode->_listNode_next = before;
 		newNode->_listNode_prev = before->_listNode_prev;
 
-		if (before->_listNode_prev) {
-			before->_listNode_prev->_listNode_next = newNode.ptr();
+		if (auto* prev = before->_listNode_prev) {
+			prev->_listNode_next = newNode;
 		} else {
-			_head = newNode.ptr();
+			_head = newNode;
 		}
 
-		before->_listNode_prev = newNode.ptr();
+		before->_listNode_prev = newNode;
 		_size++;
 		return newNode.detach();
 	}
 
-	UPtr<T> _remove(T* node) {
+	OUT_Ptr _remove(Node* node) {
 		if (!node) return nullptr;
 		if (!_size) {
 			AX_ASSERT(false);
@@ -211,11 +247,19 @@ private:
 		prev = nullptr;
 
 		_size--;
-		return UPtr<T>::s_ref(node);
+
+		T* nodeOwner = node->_listNodeOwner();
+		if constexpr (useSPtr) {
+			SPtr<T> sp(nodeOwner);
+			nodeOwner->_releaseSPtrRefCount();
+			return sp;
+		} else {
+			return UPtr<T>::s_ref(nodeOwner);
+		}
 	}
 
-	T*		_head = nullptr;
-	T*		_tail = nullptr;
+	Node*	_head = nullptr;
+	Node*	_tail = nullptr;
 	Int		_size = 0;
 };
 

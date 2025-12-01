@@ -182,9 +182,9 @@ using StrLit16 = StrLit_<Char16>;
 using StrLit32 = StrLit_<Char32>;
 
 namespace Tag {
-	class NewObject_{};	inline constexpr NewObject_ NewObject = {};
-	class NoInit_{};	inline constexpr NoInit_	NoInit = {};
-	class All_{};		inline constexpr All_		All = {};
+	class NewObject_{};			inline constexpr NewObject_ 		NewObject = {};
+	class NoInit_{};			inline constexpr NoInit_			NoInit = {};
+	class All_{};				inline constexpr All_				All = {};
 } // namespace Tag
 
 struct SrcLoc {
@@ -204,6 +204,10 @@ enum class StrCase : u8 {
 	Ignore,
 	Sensitive,
 };
+
+template<class A, class B> using Type_KeepConst = std::conditional_t< std::is_const_v<A>, const B, B>;
+
+
 template<class T> requires Type_IsChar<T>
 AX_INLINE bool ax_char_ignore_case_equals(const T& a, const T& b) { return std::tolower(a) == std::tolower(b); }
 

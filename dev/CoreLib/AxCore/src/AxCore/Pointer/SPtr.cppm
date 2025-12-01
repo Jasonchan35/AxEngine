@@ -21,46 +21,54 @@ export namespace ax {
 
 template<class T> class SPtr;
 
+struct SPtr_Config_ThreadSafe {
+	using RefCountType = Thread::AtomicInt;
+	using LockType     = Thread::SpinLock;
+};
+
+struct SPtr_Config_NonThreadSafe {
+	using RefCountType = Int;
+	using LockType     = Thread::NullSpinLock;
+};
+
 class SPtrReferenableBase : public NonCopyable {
 protected:
 	SPtrReferenableBase() = default;
 };
 
-template<bool USE_ATOMIC_INT> class WPtrReferenable_; 
+template<class CONFIG> class WPtrReferenable_; 
 
-template<bool USE_ATOMIC_INT>
+template<class CONFIG>
 class SPtrReferenable_ : public SPtrReferenableBase {
 public:
-	using _WPtrReferenable = WPtrReferenable_<USE_ATOMIC_INT>;
+	using _WPtrReferenable = WPtrReferenable_<CONFIG>;
 	
-	using SPtrRefCounter = std::conditional_t<USE_ATOMIC_INT, Thread::AtomicInt, Int>; 
-	
-	AX_INLINE Int _addSPtrRef() const		{ return ++m_SPtrRefCount; }
-	AX_INLINE Int _releaseSPtrRef() const	{ return --m_SPtrRefCount; }
-	AX_INLINE Int _getSPtrRefCount() const	{ return m_SPtrRefCount; }
+	AX_INLINE Int _addSPtrRefCount() const		{ return ++m_SPtrRefCount; }
+	AX_INLINE Int _releaseSPtrRefCount() const	{ return --m_SPtrRefCount; }
+	AX_INLINE Int _getSPtrRefCount() const		{ return m_SPtrRefCount; }
 
 	AX_INLINE ~SPtrReferenable_() { AX_ASSERT(m_SPtrRefCount == 0); }
 
 private:
-	mutable SPtrRefCounter	m_SPtrRefCount;
+	mutable typename CONFIG::RefCountType	m_SPtrRefCount = 0;
 };
 
-using SPtrReferenable = SPtrReferenable_<true>;
+using SPtrReferenable = SPtrReferenable_<SPtr_Config_ThreadSafe>;
+using SPtrReferenable_NonThreadSafe = SPtrReferenable_<SPtr_Config_NonThreadSafe>;
 
-template <bool USE_ATOMIC_PTR>
-struct WPtrBlock_ : public SPtrReferenable_<USE_ATOMIC_PTR> {
-	using LockType = std::conditional_t<USE_ATOMIC_PTR, Thread::SpinLock, Thread::NullSpinLock>;
-	
+template <class CONFIG>
+struct WPtrBlock_ : public SPtrReferenable_<CONFIG> {
+	using LockType = typename CONFIG::LockType;
 	struct Data {
 		SPtrReferenable* obj = nullptr;
 	};
 	Thread::LockProtected<LockType, Data> data;
 };
 
-template<bool USE_ATOMIC_INT>
-class WPtrReferenable_ : public SPtrReferenable_<USE_ATOMIC_INT> {
+template<class CONFIG>
+class WPtrReferenable_ : public SPtrReferenable_<CONFIG> {
 public:
-	using WPtrBlock = WPtrBlock_<USE_ATOMIC_INT>;
+	using WPtrBlock = WPtrBlock_<CONFIG>;
 	~WPtrReferenable_() {
 		if (auto* block = _weakPtrBlock.ptr()) {
 			AX_ASSERT(block->data.scopedLock()->obj == nullptr);
@@ -69,7 +77,7 @@ public:
 	SPtr<WPtrBlock>		_weakPtrBlock;
 };
 
-using WPtrReferenable = WPtrReferenable_<true>;
+using WPtrReferenable = WPtrReferenable_<SPtr_Config_ThreadSafe>;
 
 } namespace ax { // no export
 
@@ -84,7 +92,7 @@ public:
 		if (s->_p != p) {
 			unref(s);
 			s->_p = p;
-			if (p) s->_p->_addSPtrRef();
+			if (p) s->_p->_addSPtrRefCount();
 		}
 		return p;
 	}
@@ -115,7 +123,9 @@ public:
 	
 private:
 	static AX_INLINE constexpr bool _doRelease(SPtr<T>* s) {
-		if (s->_p->_releaseSPtrRef() == 0) {
+		auto rc = s->_p->_releaseSPtrRefCount();
+		AX_ASSERT(rc >= 0);
+		if (rc == 0) {
 			ax_delete(s->_p);
 			s->_p = nullptr;
 			return true;
@@ -164,18 +174,16 @@ public:
 	template<class R> AX_INLINE	void operator=(SPtr<R> &  r) { ref(r.ptr()); }
 	template<class R> AX_INLINE	void operator=(SPtr<R> && r) noexcept { _move(std::move(r)); }
 
-	template<class... ARGS> AX_INLINE
+	template<class... ARGS> AX_NODISCARD AX_INLINE
 	T*	newObject(const MemAllocRequest& req, ARGS&&...args) { return ref(new (req) T(AX_FORWARD(args)...)); }
 
-	template<class R> AX_INLINE bool operator==(const SPtr<R>& r) const { return _p == r._p; }
-
-	template<class R> AX_INLINE bool operator==(R * const r) const { return _p == r; }
-	template<class R> AX_INLINE bool operator!=(R * const r) const { return _p != r; }
-
-	template<class R> AX_INLINE bool operator!=(const SPtr<R>& r) const { return _p != r._p; }
+	template<class R> AX_NODISCARD AX_INLINE bool operator==(const SPtr<R>& r) const { return _p == r._p; }
+	template<class R> AX_NODISCARD AX_INLINE bool operator==(R * const r) const { return _p == r; }
+	template<class R> AX_NODISCARD AX_INLINE bool operator!=(R * const r) const { return _p != r; }
+	template<class R> AX_NODISCARD AX_INLINE bool operator!=(const SPtr<R>& r) const { return _p != r._p; }
 	
-	AX_INLINE static SPtr<T> s_ref(T* p) noexcept { return SPtr(p); }
-
+	AX_NODISCARD AX_INLINE static SPtr<T> s_ref(T* p) noexcept { return SPtr(p); }
+	
 	friend  class SPtr_Internal<T>;
 protected:
 	template<class R>
@@ -217,9 +225,12 @@ template<class T>
 template<class R> AX_INLINE
 void SPtr<T>::_move(SPtr<R> && r) noexcept {
 	if (static_cast<void*>(&r) == this) return;
-	ref(r.ptr());
-	r.unref();
+	auto* rp = static_cast<T*>(r.ptr());
+	if (rp == _p) return;
+	unref();
+	_p = rp;
+	r._p = nullptr;
 }
 
-
 } // namespace
+

@@ -4,19 +4,26 @@
 export module AxCore.Dict;
 export import AxCore.LinkedList;
 export import AxCore.Array;
-export import AxCore.UPtr;
+export import AxCore.SPtr;
 
 export namespace ax {
 
+class Dict_HashListTag {};
+using DictNode_HashList_Config    = LinkedList_Config_<Dict_HashListTag>;
+using DictNode_OrderedList_Config = LinkedList_Config_<void>;
+
 template<class KEY, class VALUE>
-class DictNode : public LinkedListNode< DictNode<KEY, VALUE> > {
-	using Base = LinkedListNode< DictNode<KEY, VALUE> >;
+class DictNode : public SPtrReferenable_NonThreadSafe
+	, public LinkedListNode< DictNode<KEY, VALUE>, DictNode_OrderedList_Config >
+	, public LinkedListNode< DictNode<KEY, VALUE>, DictNode_HashList_Config    >
+{
 public:
 	using Key   = KEY;
 	using Value = VALUE;
 
-	DictNode(const Key & key, const HashInt& hash,          Value && value)
-		          : _key(key),         _hash(hash), _value(std::move(value)) {}
+	template<class... ARGS>
+	DictNode(const Key & key, const HashInt& hash, ARGS&&... args)
+		          : _key(key),         _hash(hash),   _value(args...) {}
 
 	const	Key&	key() const		{ return _key; }
 	const	Value&	value() const	{ return _value; }
@@ -85,23 +92,25 @@ private:
 	const IN_KEY*	_key = nullptr;
 };
 
-template<class KEY, class VALUE> struct Dict_ConfigBase {
+template<class KEY, class VALUE>
+struct Dict_Config_ {
 	using InKey = KEY;
 	static constexpr Int s_tableBufSize = 0;
 };
 
-template<class KEY, class VALUE> struct Dict_Config : Dict_ConfigBase<KEY, VALUE> {};
+template<class KEY, class VALUE> struct Dict_DefaultConfig : Dict_Config_<KEY, VALUE> {};
 
 // using StrView as key for add() and find(), when the KEY is String  
 template<class T, Int N, class VALUE>
-struct Dict_Config<String_<T,N>, VALUE> : Dict_ConfigBase<String_<T,N>, VALUE> {
+struct Dict_DefaultConfig<String_<T,N>, VALUE> : Dict_Config_<String_<T,N>, VALUE> {
 	using InKey = StrView_<T>;
 };
 
-template<class KEY, class VALUE, class CONFIG = Dict_Config<KEY,VALUE>>
+template<class KEY, class VALUE, class CONFIG = Dict_DefaultConfig<KEY,VALUE>>
 class Dict : public NonCopyable {
 	using Node = DictNode<KEY, VALUE>;
-	using List = LinkedList<Node>;
+	using OrderedList = LinkedList<Node, DictNode_OrderedList_Config>;
+	using HashList    = LinkedList<Node, DictNode_HashList_Config>;
 public:
 	using Key          = KEY;
 	using Value        = VALUE;
@@ -109,14 +118,19 @@ public:
 	using FindEnumator = Dict_FindEnumator<Node, InKey>;
 	using FindIter     = Dict_FindIter<Node>;
 	static constexpr Int s_tableBufSize = CONFIG::s_tableBufSize;
-	
+
+	void clear() {
+		_hashTable.clear();
+		_orderedList.clear();
+	}
+
 	template<class... ARGS>
 	Node& addNode(const InKey & key, ARGS&&... args) {
 		auto hash = HashInt::s_get(key);
-		List& list = _getListForAdd(hash);
-		auto node = UPtr_new<Node>(AX_ALLOC_REQ, key, hash, VALUE(AX_FORWARD(args)...));
-		_nodes.append(node);
-		return *list.append(std::move(node));
+		HashList& hashList = _getListForAdd(hash);
+		SPtr<Node> node = SPtr_new<Node>(AX_ALLOC_REQ, key, hash, AX_FORWARD(args)...);
+		hashList.append(node);
+		return *_orderedList.append(node);
 	}
 
 	template<class... ARGS>
@@ -143,8 +157,8 @@ public:
 	}
 
 private:
-	List& _getListForAdd(const HashInt& hash) {
-		auto n = _nodes.size();
+	HashList& _getListForAdd(const HashInt& hash) {
+		auto n = _orderedList.size();
 		auto newTableSize = _hashTable.size();
 		if (newTableSize <= 0) {
 			newTableSize = 4; // first resize table
@@ -155,28 +169,28 @@ private:
 		return _getList(hash);
 	}
 	
-	List&	_getList(const HashInt& hash) {
+	HashList&	_getList(const HashInt& hash) {
 		Int index = static_cast<Int>(hash.value % static_cast<HashInt::Value>(_hashTable.size()));
 		return _hashTable[index];
 	}
 	
 	void _resizeTable(Int newSize) {
 		if (newSize == _hashTable.size()) return;
-		List tmpList;
+		HashList tmpList;
 		for (auto& node : _hashTable) {
 			tmpList.appendMove(std::move(node));
 		}
 		_hashTable.resize(newSize);
 
 		//re-insert to table
-		while(UPtr<Node> node = tmpList.popHead()) {
+		while(SPtr<Node> node = tmpList.popHead()) {
 			auto& hashList = _getList(node->hash());
-			hashList.append(std::move(node));
+			hashList.append(node);
 		}
 	}
 
 	template<class InKey>
-	Node*	_findInHashList(List& list, HashInt hash, const InKey& key) {
+	Node*	_findInHashList(HashList& list, HashInt hash, const InKey& key) {
 		for(auto& node : list) {
 			if (node.hash() == hash && node.key() == key) {
 				return &node;
@@ -185,8 +199,8 @@ private:
 		return nullptr;
 	}	
 
-	Array<Node*> _nodes;
-	Array<List, s_tableBufSize> _hashTable;
+	OrderedList _orderedList;
+	Array<HashList, s_tableBufSize> _hashTable;
 };
 
 } // namespace

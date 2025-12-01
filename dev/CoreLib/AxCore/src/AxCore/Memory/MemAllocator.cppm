@@ -134,7 +134,7 @@ struct AxDelete {
 		// auto* block = AllocBlockBase::s_fromMem(p);
 		// auto  dataSize = block->data().size();
 		// if (dataSize < AX_SIZEOF(T)) { AX_ASSERT(false); }
-		// MemoryUtil::destructor(p, 1);
+		MemUtil::destructor(p, 1);
 		ax_free(p);
 	}
 

@@ -202,7 +202,7 @@
 				<Size>_size</Size>
 				<HeadPointer>_head</HeadPointer>
 				<NextPointer>_listNode_next</NextPointer>
-				<ValueNode>this</ValueNode>
+				<ValueNode>(_ListNodeOwner*)this</ValueNode>
 			</LinkedListItems>
 		</Expand>
 	</Type>

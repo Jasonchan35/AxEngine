@@ -70,4 +70,18 @@ private:
 	SPtr<WPtrBlock>	_block;
 };
 
+enum class SmartPtrType {
+	None,
+	UPtr,
+	SPtr,
+	WPtr,
+};
+
+template<class T, SmartPtrType E> struct SmartPtr_Struct;
+template<class T> struct SmartPtr_Struct<T, SmartPtrType::UPtr> { using Type = UPtr<T>; };
+template<class T> struct SmartPtr_Struct<T, SmartPtrType::SPtr> { using Type = SPtr<T>; };
+template<class T> struct SmartPtr_Struct<T, SmartPtrType::WPtr> { using Type = WPtr<T>; };
+
+template<class T, SmartPtrType E> using SmartPtr_ = typename SmartPtr_Struct<T, E>::Type; 
+
 } // namespace

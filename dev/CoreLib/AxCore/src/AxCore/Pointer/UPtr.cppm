@@ -54,7 +54,8 @@ public:
 	template<class R>
 	AX_INLINE	void operator=(UPtr<R, DEL> && r) noexcept { move(AX_FORWARD(r)); }
 
-	static  UPtr  s_ref(T* p) noexcept { return UPtr(p); }
+	static UPtr  s_ref(T* p) noexcept { return UPtr(p); }
+	static UPtr  s_ref_DontAddRefCount(T* p) noexcept { return UPtr(p); }
 
 private:
 	//! not allowed in public, please use UPtr_ref or UPtr<T>::s_ref
@@ -63,6 +64,9 @@ private:
 	// not allowed for ownership safety reason
 	// operator T* () { return _p; }
 };
+
+template<class T> constexpr bool Type_IsUPtr = false; 
+template<class T> constexpr bool Type_IsUPtr<UPtr<T>> = true; 
 
 template<class T, class DEL> AX_INLINE bool operator==(const T* a,				const UPtr<T, DEL>& b) { return b == a; }
 template<class T, class DEL> AX_INLINE bool operator==(const std::nullptr_t&,	const UPtr<T, DEL>& b) { return b == nullptr; }
