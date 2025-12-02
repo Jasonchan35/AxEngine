@@ -2,15 +2,15 @@
 #include "AxCore-pch.h"
 
 export module AxCore.Rtti;
+export import AxCore.NameId;
 export import AxCore.WPtr;
 export import AxCore.MetaType;
 
 export namespace ax {
 
 struct Rtti : public NonCopyable {
-	StrView name() const { return _name; }
+	NameId name;
 protected:
-	StrView _name;
 };
 
 template<class T>
@@ -19,7 +19,7 @@ struct Rtti_ : public Rtti {
 	using MetaType = MetaTypeOf<T>;
 	
 	Rtti_() {
-		InfoBase::_name = MetaType::s_name();
+		InfoBase::name = NameId(MetaType::s_name());
 	}
 };
 

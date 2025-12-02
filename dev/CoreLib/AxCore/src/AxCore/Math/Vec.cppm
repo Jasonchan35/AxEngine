@@ -92,6 +92,8 @@ public:
 	static constexpr Int elementCount = N;
 	static constexpr VecSIMD cpuSIMD = SIMD;
 
+	using Num1 = Num1_<T>;
+	
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
 		SIMD_Data	_simd;
@@ -101,6 +103,7 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SIMD_Data & simd) : _simd(simd) {}
 	AX_INLINE constexpr Vec_(Tag::All_, const T& t) : _simd(s_all(t)) {}
+	AX_INLINE constexpr Vec_(const Num1& v) : _simd(v.e00) {}
 	AX_INLINE constexpr Vec_(const T& x_) : _simd(x_) {}
 
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
@@ -141,6 +144,8 @@ public:
 	static constexpr Int elementCount = N;
 	static constexpr VecSIMD cpuSIMD = SIMD;
 
+	using Num2 = Num2_<T>;
+		
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
 		SIMD_Data	_simd;
@@ -150,6 +155,7 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SIMD_Data & simd) : _simd(simd) {}
 	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
+	AX_INLINE constexpr Vec_(const Num2& v) : _simd(v.e00, v.e01) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_) : _simd(x_, y_) {}
 
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
@@ -190,6 +196,8 @@ public:
 	static constexpr Int elementCount = N;
 	static constexpr VecSIMD cpuSIMD = SIMD;
 
+	using Num3 = Num3_<T>;
+		
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
 		SIMD_Data	_simd;
@@ -199,6 +207,7 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SIMD_Data & simd) : _simd(simd) {}
 	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
+	AX_INLINE constexpr Vec_(const Num3& v) : _simd(v.e00, v.e01, v.e02) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_) : _simd(x_, y_, z_) {}
 
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
@@ -239,6 +248,8 @@ public:
 	static constexpr Int elementCount = N;
 	static constexpr VecSIMD cpuSIMD = SIMD;
 
+	using Num4 = Num4_<T>;
+		
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
 		SIMD_Data	_simd;
@@ -248,6 +259,7 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SIMD_Data & simd) : _simd(simd) {}
 	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
+	AX_INLINE constexpr Vec_(const Num4& v) : _simd(v.e00, v.e01, v.e02, v.e03) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
 
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 

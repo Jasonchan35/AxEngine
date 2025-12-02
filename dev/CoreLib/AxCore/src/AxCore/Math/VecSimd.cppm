@@ -1,8 +1,7 @@
 ﻿module;
 #include "AxCore-pch.h"
 export module AxCore.VecSimd;
-export import AxCore.NormInt;
-export import AxCore.Float16;
+export import AxCore.Num;
 
 export namespace ax {
 

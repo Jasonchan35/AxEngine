@@ -31,7 +31,7 @@ public:
 		Rtti* ti = rttiOf<Foo>();
 		AX_UNUSED(ti);
 
-		AX_LOG("name = {}", ti->name());
+		AX_LOG("name = {}", ti->name);
 	}
 };
 
