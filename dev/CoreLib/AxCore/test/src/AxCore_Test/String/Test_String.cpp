@@ -1,6 +1,6 @@
 #include "AxUnitTest.h"
 
-import AxCore.PersistString;
+import AxCore.NameId;
 
 namespace ax {
 
@@ -160,6 +160,12 @@ public:
 		AX_TEST_CHECK(str1 <= str1);
 		AX_TEST_CHECK(str1 >= str1);
 	}
+
+	void test_NameId() {
+		auto a = NameId("Test123");
+		AX_TEST_EQ(a.name(), "Test");
+		AX_TEST_EQ(a.id(),   123);
+	}
 };
 
 } // namespace
@@ -180,5 +186,6 @@ void Test_String() {
 	AX_TEST_RUN_CASE(Test_String::test_case10_string_c_str)
 	//AX_TEST_RUN_CASE(Test_String::test_case11_string_move)
 	AX_TEST_RUN_CASE(Test_String::test_case12_string_comparison_operators)
+	AX_TEST_RUN_CASE(Test_String::test_NameId)
 }
 

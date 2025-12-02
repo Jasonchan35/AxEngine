@@ -47,6 +47,24 @@ template<class T> constexpr bool Type_IsConvertiableToStrViewT	=  std::is_conver
 																|| std::is_convertible_v<T, StrView16>
 																|| std::is_convertible_v<T, StrView32>;
 
+template<class CH, class T>
+struct StrView_ParseHandler {
+	static bool tryParse(StrView_<CH> str, T& obj) {
+		return obj.onStrParse(str);
+	}
+};
+
+template<class CH, class T> requires Type_IsFundamental<T>
+struct StrView_ParseHandler<CH, T> {
+	static bool tryParse(StrView_<CH> str, T& obj) {
+		std::from_chars_result result = std::from_chars(str.begin(), str.end(), obj);
+		if (result.ec == std::errc()) return true;
+		return false;
+	}
+};
+
+template<class CH, class T>
+bool StrView_parse(StrView_<CH> sv, T& obj) { return StrView_ParseHandler<CH, T>::tryParse(sv, obj); }
 
 template <class T>
 class MutStrView_ { //Copyable
@@ -142,6 +160,9 @@ public:
 	AX_INLINE constexpr bool operator>=	(CView r) const	{ return CmpResult_isGreaterOrEqual(compare(r)); }
 	//----------------
 
+	template<class R>
+	bool	tryParse	(R & outValue) const { return StrView_parse(*this, outValue); }
+	
 	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_make(span()); }
 	
 	using  Iter	= T*;
