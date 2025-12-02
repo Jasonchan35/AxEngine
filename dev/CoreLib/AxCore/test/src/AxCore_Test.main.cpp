@@ -5,10 +5,12 @@ import AxCore.UnitTest;
 class AxCore_TestProgram : public ax::UnitTestProgram {
 public:
 	virtual void onRun() override {
-		//---- ALL ----
-		AX_TEST_GROUP(AxCore_Test)
-		//--------
-		// AX_TEST_GROUP(Test_BasicType);
+		constexpr bool test_all = false;
+		if constexpr (test_all) { 
+			AX_TEST_GROUP(AxCore_Test)
+		} else {
+			AX_TEST_GROUP(Test_Rtti);
+		}
 	}
 };
 

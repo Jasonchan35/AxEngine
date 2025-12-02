@@ -2,6 +2,7 @@
 
 import AxCore.WPtr;
 
+
 namespace ax {
 
 class Test_SPtr : public UnitTestClass {

@@ -257,3 +257,22 @@
 #define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 
+//----- Reflection
+
+#define AX_TYPE_INFO(T, BASE) \
+private: \
+	using This = T; \
+	using Base = BASE; \
+private: \
+//------
+
+#define AX_RTTI_CLASS(T, BASE) \
+	AX_TYPE_INFO(T, BASE) \
+public: \
+	static  Rtti* s_rtti ()					{ return rttiOf<T>(); } \
+	virtual Rtti* getRtti() const override	{ return rttiOf<T>(); } \
+private: \
+//-----------
+
+#define AX_META_TYPE(T, BASE) MetaType_<T, BASE, []()->StrView{ return #T; } >
+#define AX_META_FIELD(OBJ, V) MetaField_<OBJ, &OBJ::V, []()->StrView{ return #V; } >

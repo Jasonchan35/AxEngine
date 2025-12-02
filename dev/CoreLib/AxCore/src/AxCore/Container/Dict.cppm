@@ -170,9 +170,9 @@ private:
 	}
 	
 	HashList&	_getList(const HashInt& hash) {
-		auto n = _hashTable.size();
+		auto n = static_cast<HashInt::Value>(_hashTable.size());
 		AX_ASSERT(n > 0);
-		Int index = static_cast<Int>(hash.value % static_cast<HashInt::Value>(n));
+		Int index = static_cast<Int>(hash.value % n);
 		return _hashTable[index];
 	}
 	
