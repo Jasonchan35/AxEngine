@@ -80,9 +80,8 @@ struct HashInt_Handler<T> {
 
 template<class T>
 struct HashInt_Handler<MutStrLit_<T>> {
-	AX_INLINE constexpr static HashInt onHashInt(const MutStrLit_<T>& obj) { return HashInt::s_make(StrView_<T>(obj)); }
+	AX_INLINE constexpr static HashInt onHashInt(const MutStrLit_<T>& obj) { return HashInt::s_make(Span<T>(obj.data(), obj.size())); }
 };
-
 
 template<class T>
 struct HashInt_Handler {

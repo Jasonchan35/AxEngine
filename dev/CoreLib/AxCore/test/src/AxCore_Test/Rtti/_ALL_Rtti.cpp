@@ -3,4 +3,5 @@
 #include "AxUnitTest.h"
 
 void AxCore_Test_Rtti() {
+    AX_TEST_FUNC(Test_Rtti)
 }

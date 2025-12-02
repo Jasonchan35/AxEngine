@@ -17,6 +17,7 @@ struct MetaTypeBase : public NonCopyable {
 
 template<class T, class BASE, StrView (*NAME_FUNC)()>
 struct MetaType_ {
+	using _MetaThis = T;
 	static StrView s_name() { return NAME_FUNC(); }	
 };
 

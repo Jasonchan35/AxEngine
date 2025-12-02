@@ -1,4 +1,24 @@
-﻿#include "AxUnitTest.h"
+﻿#if 1
+#include "AxUnitTest.h"
+//----- Reflection
+
+#define AX_TYPE_INFO(T, BASE) \
+private: \
+	using This = T; \
+	using Base = BASE; \
+private: \
+//------
+
+#define AX_RTTI_CLASS(T, BASE) \
+	AX_TYPE_INFO(T, BASE) \
+public: \
+	static  Rtti* s_rtti ()					{ return rttiOf<T>(); } \
+	virtual Rtti* getRtti() const override	{ return rttiOf<T>(); } \
+private: \
+//-----------
+
+#define AX_META_TYPE(T, BASE) MetaType_<T, BASE, []()->StrView{ return #T; } >
+#define AX_META_FIELD(V) MetaField_<_MetaThis, &_MetaThis::V, []()->StrView{ return #V; } >
 
 import AxCore.MetaType;
 import AxCore.Rtti;
@@ -8,16 +28,19 @@ namespace ax {
 class Test_Rtti : public UnitTestClass {
 public:
 	class Foo {
-		AX_TYPE_INFO(Foo, NoBaseClass)		
+		AX_TYPE_INFO(Foo, NoBaseClass)
 	public:
 		int x, y, z;
+
+		struct MetaType;
+
 		struct MetaType : public AX_META_TYPE(Foo, NoBaseClass) {
-			struct x : public AX_META_FIELD(This, x) {
+			struct x : public AX_META_FIELD(x) {
 			};
-			
 		};
 	};
 
+	
 	class MyObject : public RttiObject {
 		AX_RTTI_CLASS(MyObject, RttiObject)
 	};
@@ -33,6 +56,7 @@ public:
 
 		AX_LOG("name = {}", ti->name);
 	}
+
 };
 
 } // namespace
@@ -41,4 +65,8 @@ void Test_Rtti() {
 	using namespace ax;
 	AX_TEST_RUN_CASE(Test_Rtti::test_case1)
 }
+#else
 
+void Test_Rtti() {}
+
+#endif

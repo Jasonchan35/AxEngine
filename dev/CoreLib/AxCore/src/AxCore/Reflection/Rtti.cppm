@@ -33,7 +33,7 @@ template<class T> struct Rtti_Handler_ {
 template<class T> Rtti* rttiOf() { return Rtti_Handler_<T>::s_rtti(); }
 
 class RttiObject : public WPtrReferenable {
-	AX_TYPE_INFO(RttiObject, NoBaseClass)
+	using This = RttiObject;
 public:
 	struct MetaType : public MetaTypeBase {};
 	

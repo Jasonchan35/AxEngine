@@ -27,12 +27,13 @@ public:
 	const	Key&	key() const		{ return _key; }
 	const HashInt&	hash() const { return _hash; }
 
-	Value	value;
-	
 	friend class DictNode;
 protected:
 	Key		_key;
 	HashInt _hash;
+	
+public:
+	Value	value;
 };
 
 template<class NODE>
@@ -41,7 +42,7 @@ public:
 	using Value = typename NODE::Value;
 	
 	Dict_FindIter(NODE* p) : _node(p) {}
-	explicit AX_NODISCARD AX_INLINE constexpr operator bool() const noexcept { return _node; } 
+	AX_NODISCARD AX_INLINE constexpr explicit operator bool() const noexcept { return _node; } 
 	
 	AX_NODISCARD AX_INLINE constexpr NODE*	node		() noexcept	{ return _node; }
 	AX_NODISCARD AX_INLINE constexpr Value&	value		() noexcept	{ return _node->value; }
@@ -52,7 +53,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr bool	operator==	(const Dict_FindIter & rhs) const noexcept { return _node == rhs._node; }
 	AX_NODISCARD AX_INLINE constexpr bool	operator!=	(const Dict_FindIter & rhs) const noexcept { return _node != rhs._node; }
 
-	AX_NODISCARD AX_INLINE constexpr void	operator++	()	{
+	AX_INLINE constexpr void	operator++	()	{
 		if (!_node) {
 			AX_ASSERT(false); // no more node in the list
 			return;

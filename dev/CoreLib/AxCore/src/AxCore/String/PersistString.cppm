@@ -2,8 +2,13 @@
 #include "AxCore-pch.h"
 
 export module AxCore.PersistString;
+export import AxCore.StrView;
 export import AxCore.Formatter;
 export import AxCore.Dict;
+
+import AxCore.SpinLock;
+import AxCore.GlobalSingleton;
+
 
 export namespace ax {
 
@@ -45,5 +50,59 @@ using PersistStringA  = PersistString_<CharA>;
 using PersistStringW  = PersistString_<CharW>;
 using PersistString16 = PersistString_<Char16>;
 using PersistString32 = PersistString_<Char32>;
+
+
+template<class T>
+class PersistString_<T>::Manager : public NonCopyable {
+	using This = Manager;
+public:
+	Manager() {
+		ax_default_allocator(); // ensure allocator create before this class
+	}
+
+	using PersistStr = PersistString_<T>;
+	
+	using Key   = String_<T>;
+	using Value = StrLit_<T>;
+
+	class MTData {
+	public:
+		Dict<Key, Value> dict;
+	};
+	Thread::SpinLockProtected<MTData> _mtData;
+
+	static This* s_instance() {
+		static GlobalSingleton<This> s;
+		return s.ptr();
+	}
+
+	static StrLit_<T>* s_emptyStrLit() {
+		static StrLit_<T> s;
+		return &s;
+	}
+
+	PersistStr lookup(StrView_<T> strview) {
+		if (!strview) return s_emptyStrLit();
+
+		auto mt = _mtData.scopedLock();
+
+		if (auto* value = mt->dict.find(strview)) {
+			return PersistStr(value);
+		}
+		
+		auto& node = mt->dict.addNode(strview);
+		auto& key = node.key();
+		node.value = StrLit_<T>(key.data(), key.size());
+
+		return PersistStr(&node.value);
+	}
+};
+
+template<class T> inline
+PersistString_<T> PersistString_<T>::s_make(StrView_<T> s) {
+	return Manager::s_instance()->lookup(s);
+}
+
+
 
 } // namespace
