@@ -10,17 +10,33 @@ export namespace ax {
 
 struct Rtti : public NonCopyable {
 	NameId name;
-protected:
+};
+
+struct RttiField : public NonCopyable {
+	NameId name;
 };
 
 template<class T>
 struct Rtti_ : public Rtti {
 	using InfoBase = Rtti;
 	using MetaType = MetaTypeOf<T>;
+
+	Array<RttiField> fields;
+
+	struct OwnField_Handler {
+		template<Int Index, class Field>
+		static void onEach(Rtti_* This) {
+			auto& f = This->fields.emplaceBack();
+			f.name = Field::s_name();
+		}
+	};
 	
 	Rtti_() {
-		InfoBase::name = NameId(MetaType::s_name());
+		InfoBase::name = MetaType::s_name();
+		using OwnFields = typename MetaType::OwnFields;
+		OwnFields::template s_forEachType<OwnField_Handler>(this);
 	}
+
 };
 
 template<class T> struct Rtti_Handler_ {

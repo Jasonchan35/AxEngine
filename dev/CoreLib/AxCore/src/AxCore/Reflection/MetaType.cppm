@@ -6,19 +6,29 @@ export module AxCore.MetaType;
 export import AxCore.BasicType;
 export import AxCore.Tuple;
 export import AxCore.Formatter;
+export import AxCore.NameId;
 
 export namespace ax {
+
+struct NoBaseClass {
+	struct MetaType {
+		static NameId s_name() { return NameId(); }
+	};
+};
 
 struct MetaTypeBase : public NonCopyable {
 	MetaTypeBase() = delete;
 
-	static StrView s_name() { return StrView(); }
+	static NameId s_name() { return NameId(); }
+
+	using OwnFields = Tuple<>;
 };
 
-template<class T, class BASE, StrView (*NAME_FUNC)()>
+template<class T, StrView (*NAME_FUNC)()>
 struct MetaType_ {
 	using _MetaThis = T;
-	static StrView s_name() { return NAME_FUNC(); }	
+	static NameId s_name() { return NameId(NAME_FUNC()); }
+	using OwnFields = Tuple<>;
 };
 
 struct MetaFieldBase : public NonCopyable {
@@ -27,17 +37,15 @@ struct MetaFieldBase : public NonCopyable {
 
 template<class OBJ, auto OBJ::*PTR, StrView (*NAME_FUNC)()>
 struct MetaField_ : public MetaFieldBase {
-	static StrView s_name() { return NAME_FUNC(); }
+	static NameId s_name() { return NameId(NAME_FUNC()); }
 	static Int s_offset() { return offsetof(OBJ, PTR); }
 };
 
 template<class T>
-struct MetaTypeOf_ { using MetaType = T::MetaType; };
-
-template<class T> using MetaTypeOf = typename MetaTypeOf_<T>::MetaType;
-
-struct NoBaseClass {
+struct MetaTypeOf_ {
+	using MetaType = T::MetaType;
 };
 
+template<class T> using MetaTypeOf = typename MetaTypeOf_<T>::MetaType;
 
 } // namespace

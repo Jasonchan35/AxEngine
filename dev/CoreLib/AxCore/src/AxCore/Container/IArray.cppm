@@ -15,10 +15,13 @@ protected:
 	using MSpan = MutSpan<T>;
 	using CSpan =    Span<T>;
 public:
-	constexpr T*  data() { return _storage.data(); }
-	constexpr Int size() const { return _storage.size(); }
-	constexpr Int capacity() const { return _storage.capacity(); }
+	AX_NODISCARD AX_INLINE constexpr T*  data() { return _storage.data(); }
+	AX_NODISCARD AX_INLINE constexpr Int size() const { return _storage.size(); }
+	AX_NODISCARD AX_INLINE constexpr Int capacity() const { return _storage.capacity(); }
+	AX_NODISCARD AX_INLINE constexpr Int sizeInBytes() const noexcept { return size() * AX_SIZEOF(T); }
 
+	AX_NODISCARD AX_INLINE	bool inBound( Int  i ) const	{ return i >= 0 && i < size(); }
+	
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 	
@@ -27,6 +30,9 @@ public:
 	template<class... Args>
 	constexpr void resize(Int newSize, Args&&... args) { Base::_storageResize(newSize, AX_FORWARD(args)...); }
 
+	template< class... Args >
+	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
+	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
 
@@ -40,14 +46,21 @@ public:
 	operator  MutSpan<T>	()			{ return span(); }
 	operator  Span<T>		() const	{ return span(); }
 
-			T & at(Int i)				{ return span().at(i); }
-	const	T & at(Int i) const 		{ return span().at(i); }
+	AX_NODISCARD AX_INLINE constexpr       T& operator[](Int i)       noexcept { return at(i); }
+	AX_NODISCARD AX_INLINE constexpr const T& operator[](Int i) const noexcept { return at(i); }
 
-			T & unsafe_at(Int i)		{ return span().unsafe_at(i); }
-	const	T & unsafe_at(Int i) const	{ return span().unsafe_at(i); }
-	
-			T & operator[](Int i)		{ return span()[i]; }
-	const	T & operator[](Int i) const { return span()[i]; }
+	AX_NODISCARD AX_INLINE constexpr       T& at(Int i)       noexcept			{ _checkBound(i); return unsafe_at(i); }
+	AX_NODISCARD AX_INLINE constexpr const T& at(Int i) const noexcept			{ _checkBound(i); return unsafe_at(i); }
+	AX_NODISCARD AX_INLINE constexpr       T* try_at(Int i)       noexcept		{ return inBound(i) ? &unsafe_at(i) : nullptr; }
+	AX_NODISCARD AX_INLINE constexpr const T* try_at(Int i) const noexcept		{ return inBound(i) ? &unsafe_at(i) : nullptr; }
+	AX_NODISCARD AX_INLINE constexpr       T& back()       noexcept 			{ return at(size() - 1); }
+	AX_NODISCARD AX_INLINE constexpr const T& back() const noexcept 			{ return at(size() - 1); }
+	AX_NODISCARD AX_INLINE constexpr       T& back(Int i)       noexcept		{ return at(size() - i - 1); }
+	AX_NODISCARD AX_INLINE constexpr const T& back(Int i) const noexcept		{ return at(size() - i - 1); }
+	AX_NODISCARD AX_INLINE constexpr       T& unsafe_at(Int i)       noexcept	{ _debug_checkBound(i); return data()[i]; }
+	AX_NODISCARD AX_INLINE constexpr const T& unsafe_at(Int i) const noexcept	{ _debug_checkBound(i); return data()[i]; }
+	AX_NODISCARD AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept	{ return unsafe_at(size() - i - 1); }
+	AX_NODISCARD AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept	{ return unsafe_at(size() - i - 1); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -56,6 +69,15 @@ public:
 	constexpr CIter	begin	() const	{ return data(); }
 	constexpr  Iter	end		()			{ return data() + size(); }
 	constexpr CIter	end		() const	{ return data() + size(); }
+
+private:
+
+	AX_INLINE void _checkBound			( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
+	AX_INLINE void	_debug_checkBound	( Int i ) const {
+#ifdef AX_BUILD_CONFIG_Debug
+		_checkBound(i);
+#endif
+	}	
 };
 
 template<class T> constexpr bool Type_IsIArray = false; 
