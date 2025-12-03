@@ -24,8 +24,8 @@ auto Tuple_join_helper(	const TUPLE0& t0, const IntSequence<INDEX0...>&,
 template<class TUPLE0, class TUPLE1>
 AX_INLINE constexpr
 auto Tuple_join(const TUPLE0& t0, const TUPLE1& t1) {
-	return Tuple_join_helper(	t0, IntSequence_make<TUPLE0::kSize>(),
-								t1, IntSequence_make<TUPLE1::kSize>());
+	return Tuple_join_helper(	t0, IntSequence_make<TUPLE0::Size>(),
+								t1, IntSequence_make<TUPLE1::Size>());
 }
 
 template<class...T> struct Tuple_JoinType_Helper;
@@ -44,8 +44,8 @@ struct Tuple_JoinType_Helper<	TUPLE0, IntSequence<INDEX0...>,
 
 template<class TUPLE0, class TUPLE1>
 struct Tuple_JoinType {
-	using Type = typename Tuple_JoinType_Helper<	TUPLE0, IntSequence_make<TUPLE0::kSize>,
-													TUPLE1, IntSequence_make<TUPLE1::kSize>
+	using Type = typename Tuple_JoinType_Helper<	TUPLE0, IntSequence_make<TUPLE0::Size>,
+													TUPLE1, IntSequence_make<TUPLE1::Size>
 													>::Type;
 };
 
@@ -53,7 +53,7 @@ template<class TUPLE, class FUNC, Int N>
 struct Tuple_ForEach {
 	static void onEach(TUPLE* tuple, FUNC func) {
 		static constexpr Int INDEX = N-1;
-		static_assert(INDEX >= 0 && INDEX < TUPLE::kSize);
+		static_assert(INDEX >= 0 && INDEX < TUPLE::Size);
 
 		Tuple_ForEach<TUPLE, FUNC, INDEX>::onEach(tuple, func);
 		func(INDEX, tuple->template get<INDEX>());
@@ -65,11 +65,11 @@ struct Tuple_ForEach<TUPLE, FUNC, 0> { static void onEach(TUPLE* tuple, FUNC h) 
 template<class TUPLE, class HANDLER, Int N, class... ARGS>
 struct Tuple_ForEachType {
 	static void onEach(ARGS&&... args) {
-		if constexpr (TUPLE::kSize <= 0) {
+		if constexpr (TUPLE::Size <= 0) {
 			return;
 		} else {
 			static constexpr Int INDEX = N-1;
-			static_assert(INDEX >= 0 && INDEX < TUPLE::kSize);
+			static_assert(INDEX >= 0 && INDEX < TUPLE::Size);
 
 			using Elem = typename TUPLE::template Element<INDEX>;
 
@@ -87,7 +87,7 @@ class Tuple : public std::tuple<ELEMENTS ...> {
 	using This = Tuple;
 	using Base = std::tuple<ELEMENTS...>;
 public:
-	static constexpr Int kSize = std::tuple_size<Base>::value;
+	static constexpr Int Size = std::tuple_size<Base>::value;
 
 	AX_INLINE constexpr Tuple(ELEMENTS... args) : Base(AX_FORWARD(args)...) {}
 
@@ -106,17 +106,17 @@ public:
 
 	template<class FUNC>
 	constexpr void forEach(FUNC func) {
-		Tuple_ForEach<This, FUNC, kSize>::onEach(this, func);
+		Tuple_ForEach<This, FUNC, Size>::onEach(this, func);
 	}
 
 	template<class FUNC>
 	constexpr void forEach(FUNC func) const {
-		Tuple_ForEach<const This, FUNC, kSize>::onEach(this, func);
+		Tuple_ForEach<const This, FUNC, Size>::onEach(this, func);
 	}
 
 	template<class HANDLER, class... ARGS>
-	constexpr static void s_forEachType(ARGS&&... args) {
-		Tuple_ForEachType<This, HANDLER, kSize, ARGS...>::onEach(AX_FORWARD(args)...);
+	constexpr static void ForEachType(ARGS&&... args) {
+		Tuple_ForEachType<This, HANDLER, Size, ARGS...>::onEach(AX_FORWARD(args)...);
 	}
 };
 

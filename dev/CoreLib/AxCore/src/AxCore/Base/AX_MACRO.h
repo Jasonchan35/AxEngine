@@ -257,3 +257,5 @@
 #define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 
+//----- NameId
+#define AX_NAME(NAME_STR) ([]() -> const NameId& { static NameId s = NameId::s_compute(NAME_STR); return s; }())

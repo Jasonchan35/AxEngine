@@ -8,15 +8,13 @@ export namespace ax {
 
 template<class CH, class ID>
 class NameId_ { // copyable
-public:
 	using This	= NameId_;
+public:
 	using Id	= ID;
 	using Str	= PersistString_<CH>;
 	using View  = StrView_<CH>;
 
 	NameId_() = default;
-	explicit NameId_(const Str& name, const Id& id) : _name(name), _id(id) {}
-	explicit NameId_(StrView_<CH> str);
 
 	AX_NODISCARD View	name() const	{ return _name; }
 	AX_NODISCARD Id		id() const		{ return _id;   }
@@ -39,7 +37,10 @@ public:
 	AX_NODISCARD HashInt onHashInt() const { return HashInt_get(_name) ^ HashInt_get(_id); }
 	static constexpr Id kNoId = -1;
 
+	static NameId_ s_compute(StrView_<CH> str);
 private:
+	NameId_(const Str& name, const Id& id) : _name(name), _id(id) {}
+
 	Str	_name;
 	Id	_id = kNoId;
 };
@@ -47,8 +48,8 @@ private:
 using NameId = NameId_<Char, Int>;
 
 template<class CH, class ID> inline
-NameId_<CH, ID>::NameId_(StrView_<CH> str) {
-	if (!str) return;
+auto NameId_<CH, ID>::s_compute(StrView_<CH> str) -> This {
+	if (!str) return This();
 
 	auto* s = str.begin();
 	auto* e = str.end();
@@ -66,8 +67,7 @@ NameId_<CH, ID>::NameId_(StrView_<CH> str) {
 		if (!StrView(p, len).tryParse(outId)) { throw Error_ParseString(); }
 	}
 
-	_name = Str::s_make(StrView_<CH>(s, p - s));
-	_id   = outId;
+	return This(Str::s_make(StrView_<CH>(s, p - s)), outId);
 }
 
 } // namespace

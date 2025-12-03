@@ -17,7 +17,7 @@ class PersistString_ { // copyable
 	using This = PersistString_;
 public:
 	PersistString_() = default;
-	
+
 	static PersistString_	s_make(StrView_<T> s);
 	Int			size() const { return _p->size(); }
 	
@@ -38,6 +38,7 @@ public:
 	
 	class Manager;
 	friend class Manager;
+	
 protected:
 	PersistString_(const StrLit_<T>* p) : _p(p) {}
 

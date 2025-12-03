@@ -13,6 +13,7 @@ export namespace ax {
 struct NoBaseClass {
 	struct MetaType {
 		static NameId s_name() { return NameId(); }
+		using OwnFields = Tuple<>;
 	};
 };
 
@@ -37,15 +38,15 @@ struct MetaFieldBase : public NonCopyable {
 
 template<class OBJ, auto OBJ::*PTR, StrView (*NAME_FUNC)()>
 struct MetaField_ : public MetaFieldBase {
-	static NameId s_name() { return NameId(NAME_FUNC()); }
+	static NameId s_name() { return AX_NAME(NAME_FUNC()); }
 	static Int s_offset() { return offsetof(OBJ, PTR); }
 };
 
 template<class T>
-struct MetaTypeOf_ {
+struct MetaTypeOf_Handler_ {
 	using MetaType = T::MetaType;
 };
 
-template<class T> using MetaTypeOf = typename MetaTypeOf_<T>::MetaType;
+template<class T> using MetaTypeOf_ = typename MetaTypeOf_Handler_<T>::MetaType;
 
 } // namespace

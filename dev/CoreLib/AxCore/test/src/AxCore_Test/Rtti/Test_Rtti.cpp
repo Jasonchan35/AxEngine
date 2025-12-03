@@ -12,8 +12,8 @@ private: \
 #define AX_RTTI_CLASS(T, BASE) \
 	AX_TYPE_INFO(T, BASE) \
 public: \
-	static  Rtti* s_rtti ()					{ return rttiOf<T>(); } \
-	virtual Rtti* getRtti() const override	{ return rttiOf<T>(); } \
+	static  Rtti* s_rtti ()				{ return rttiOf<T>(); } \
+	virtual Rtti* rtti() const override	{ return rttiOf<T>(); } \
 private: \
 //-----------
 
@@ -32,37 +32,44 @@ public:
 	class Foo {
 		AX_TYPE_INFO(Foo, NoBaseClass)
 	public:
-		int x, y, z;
-
 		struct MetaType;
+		int x, y, z;
 	};
+
+	template<class T>
+	class Bar : public Foo<T> {
+		AX_TYPE_INFO(Bar, Foo<T>)
+	public:
+		struct MetaType;
+		int bar;
+	}; 
 
 	class MyObject : public RttiObject {
 		AX_RTTI_CLASS(MyObject, RttiObject)
 	};
-	
+
 	void test_case1() {
 		using TestFoo = Foo<void>;
+		using TestBar = Bar<void>;
 		
-		using TI = MetaTypeOf< TestFoo >;
+		using TI = MetaTypeOf_< TestBar >;
 		// AX_TEST_EQ(TI::s_name(),     "Foo");
 		// AX_TEST_EQ(TI::x::s_name(),  "x");
 		//		AX_TEST_EQ(TI::x::s_offset(), 0);
 
-		Rtti* ti = rttiOf< TestFoo >();
+		Rtti* ti = rttiOf< TestBar >();
 		AX_UNUSED(ti);
 
 		AX_LOG("name = {}", ti->name);
 	}
 };
 
+// struct Test_Rtti::MyObject::MetaType : public NoBaseClass::MetaType {};
+
 template<class T>
-struct Test_Rtti::Foo<T>::MetaType : public MetaTypeOf_<NoBaseClass> {
-	// : public MetaType_<Foo<T>, []()->StrView{ return "Foo"; } > {
-//: public AX_META_TYPE(Foo<T>, NoBaseClass) {
+struct Test_Rtti::Foo<T>::MetaType : public NoBaseClass::MetaType {
 	using MetaThis = Foo<T>;
-	static NameId s_name() { return NameId("Foo"); }
-//	static StrView s_name() { return "Foo"; }
+	static NameId s_name() { return AX_NAME("Foo"); }
 
 	struct x : public AX_META_FIELD(x) {};
 	struct y : public AX_META_FIELD(y) {};
@@ -70,6 +77,11 @@ struct Test_Rtti::Foo<T>::MetaType : public MetaTypeOf_<NoBaseClass> {
 	using OwnFields = Tuple<x, y>; 
 };
 
+template<class T>
+struct Test_Rtti::Bar<T>::MetaType : public Foo<T>::MetaType {
+	using MetaThis = Bar<T>;
+//	static NameId s_name() { return NameId("Bar"); }
+};
 
 } // namespace
 

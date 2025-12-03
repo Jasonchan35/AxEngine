@@ -19,7 +19,7 @@ struct RttiField : public NonCopyable {
 template<class T>
 struct Rtti_ : public Rtti {
 	using InfoBase = Rtti;
-	using MetaType = MetaTypeOf<T>;
+	using MetaType = MetaTypeOf_<T>;
 
 	Array<RttiField> fields;
 
@@ -34,7 +34,8 @@ struct Rtti_ : public Rtti {
 	Rtti_() {
 		InfoBase::name = MetaType::s_name();
 		using OwnFields = typename MetaType::OwnFields;
-		OwnFields::template s_forEachType<OwnField_Handler>(this);
+		fields.reserve(OwnFields::Size);
+		OwnFields::template ForEachType<OwnField_Handler>(this);
 	}
 
 };
@@ -53,8 +54,8 @@ class RttiObject : public WPtrReferenable {
 public:
 	struct MetaType : public MetaTypeBase {};
 	
-	static  Rtti* s_rtti ()			{ return rttiOf<This>(); }
-	virtual Rtti* getRtti() const 	{ return rttiOf<This>(); }
+	static  Rtti* s_rtti ()		{ return rttiOf<This>(); }
+	virtual Rtti* rtti() const 	{ return rttiOf<This>(); }
 };
 
 
