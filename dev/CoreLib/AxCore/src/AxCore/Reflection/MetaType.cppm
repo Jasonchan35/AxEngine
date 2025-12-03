@@ -22,7 +22,7 @@ StrViewA ax_metatype_get_class_name() {
 	auto src = StrView_c_str(sig);
 
 #if AX_COMPILER_VC	
-	auto pair = src.split("ax_metatype_get_class_name<class ");
+	auto pair = src.split("ax_metatype_get_class_name<");
 	pair = pair.second.splitBack(">(void)");
 	return pair.first;
 #else

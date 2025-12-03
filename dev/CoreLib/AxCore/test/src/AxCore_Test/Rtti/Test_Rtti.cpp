@@ -11,7 +11,6 @@ namespace ax {
 
 class Test_Rtti : public UnitTestClass {
 public:
-
 	template<class T>
 	class Foo {
 		AX_TYPE_INFO(Foo, NoBaseClass)
@@ -20,7 +19,7 @@ public:
 		int x, y, z;
 	};
 
-	template<class T>
+	template<class T, Int N>
 	class Bar : public Foo<T> {
 		AX_TYPE_INFO(Bar, Foo<T>)
 	public:
@@ -34,7 +33,7 @@ public:
 
 	void test_case1() {
 		using TestFoo = Foo<void>;
-		using TestBar = Bar<void>;
+		using TestBar = Bar<StrView, 99>;
 		
 		using TI = MetaTypeOf_< TestBar >;
 		// AX_TEST_EQ(TI::s_name(),     "Foo");
@@ -61,9 +60,9 @@ struct Test_Rtti::Foo<T>::MetaType : AX_META_TYPE(Foo<T>) {
 //	using OwnFields = Tuple<x, y>; 
 };
 
-template<class T>
-struct Test_Rtti::Bar<T>::MetaType : AX_META_TYPE(Bar<T>) {
-	using MetaThis = Bar<T>;
+template<class T, Int N>
+struct Test_Rtti::Bar<T, N>::MetaType : AX_META_TYPE(AX_WRAP(Bar<T,N>)) {
+//	using MetaThis = Bar<T, N>;
 //	static NameId s_name() { return NameId("Bar"); }
 };
 
