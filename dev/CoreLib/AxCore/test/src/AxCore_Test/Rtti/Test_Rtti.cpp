@@ -1,8 +1,8 @@
-﻿#if 1
-#include "AxUnitTest.h"
+﻿#include "AxCore_Test-pch.h"
 #include "AxCore/Reflection/AxMetaType.h"
 #include "AxCore/Reflection/AxRtti.h"
-//----- Reflection
+
+import AxCore_Test._PCH;
 
 import AxCore.MetaType;
 import AxCore.Rtti;
@@ -16,9 +16,9 @@ public:
 		AX_TYPE_INFO(Foo, NoBaseClass)
 	public:
 		int x, y, z;
-		struct OwnMetaType : AX_OWN_META_TYPE(Foo) {
-			struct x : AX_META_FIELD(x) {};
-			struct y : AX_META_FIELD(y) {};
+		struct MetaTypeInit : AX_META_TYPE_INIT(Foo) {
+			struct x : AX_META_FIELD_INIT(x) {};
+			struct y : AX_META_FIELD_INIT(y) {};
 
 			using OwnFields = Tuple<x,y>;
 		};
@@ -28,13 +28,13 @@ public:
 	class Bar : public Foo<T> {
 		AX_TYPE_INFO(Bar, Foo<T>)
 	public:
-		struct OwnMetaType;
+		struct MetaTypeInit;
 		int bar;
 	}; 
 
 	template<class T, f32 N>
-	class Bar2_NoOwnMetaType : public Foo<T> {
-		AX_TYPE_INFO(Bar2_NoOwnMetaType, Foo<T>)
+	class Bar2_NoInitMetaType : public Foo<T> {
+		AX_TYPE_INFO(Bar2_NoInitMetaType, Foo<T>)
 	public:
 		int bar2;
 	}; 
@@ -47,9 +47,9 @@ public:
 };
 
 template<class T, Int N>
-struct Test_Rtti::Bar<T, N>::OwnMetaType : AX_OWN_META_TYPE(AX_WRAP(Bar<T,N>)) {
+struct Test_Rtti::Bar<T, N>::MetaTypeInit : AX_META_TYPE_INIT(AX_WRAP(Bar<T,N>)) {
 //	static NameId s_name() { return NameId("Bar"); }
-	struct bar : AX_META_FIELD(bar) {};
+	struct bar : AX_META_FIELD_INIT(bar) {};
 	using OwnFields = Tuple<bar>;
 };
 
@@ -74,7 +74,7 @@ void Test_Rtti::test_case1() {
 	}
 
 	{
-		Rtti* ti = rttiOf< Bar2_NoOwnMetaType<float, 1.1f> >();
+		Rtti* ti = rttiOf< Bar2_NoInitMetaType<float, 1.1f> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 2);
 		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
@@ -89,8 +89,3 @@ void Test_Rtti() {
 	using namespace ax;
 	AX_TEST_RUN_CASE(Test_Rtti::test_case1)
 }
-#else
-
-void Test_Rtti() {}
-
-#endif

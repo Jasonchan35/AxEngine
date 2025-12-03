@@ -1,4 +1,5 @@
-#include "AxUnitTest.h"
+#include "AxCore_Test-pch.h"
+import AxCore_Test._PCH;
 
 import AxCore.Vec;
 import AxCore.VecSimd;

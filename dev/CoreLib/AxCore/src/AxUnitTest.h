@@ -2,18 +2,14 @@
 
 #include "AxCore-pch.h"
 
-import AxCore.Format;
-import AxCore.UnitTest;
-import AxCore.Logger;
-
 #define	AX_TEST_GROUP( fn )	\
-	::ax::__ax_internal_log("====== Group [" #fn "] ============"); \
+	::ax::__ax_internal_log("\n====== Group [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----
 
 #define	AX_TEST_FUNC( fn )	\
-	::ax::__ax_internal_log("======= Func [" #fn "] ============"); \
+	::ax::__ax_internal_log("\n======= Func [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----
