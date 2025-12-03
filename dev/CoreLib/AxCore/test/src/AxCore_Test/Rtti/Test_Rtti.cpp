@@ -17,8 +17,8 @@ public:
 	public:
 		int x, y, z;
 		struct OwnMetaType : AX_OWN_META_TYPE(Foo) {
-			struct x : AX_OWN_META_FIELD(x) {};
-			struct y : AX_OWN_META_FIELD(y) {};
+			struct x : AX_META_FIELD(x) {};
+			struct y : AX_META_FIELD(y) {};
 
 			using OwnFields = Tuple<x,y>;
 		};
@@ -49,7 +49,7 @@ public:
 template<class T, Int N>
 struct Test_Rtti::Bar<T, N>::OwnMetaType : AX_OWN_META_TYPE(AX_WRAP(Bar<T,N>)) {
 //	static NameId s_name() { return NameId("Bar"); }
-	struct bar : AX_OWN_META_FIELD(bar) {};
+	struct bar : AX_META_FIELD(bar) {};
 	using OwnFields = Tuple<bar>;
 };
 
@@ -74,7 +74,7 @@ void Test_Rtti::test_case1() {
 	}
 
 	{
-		Rtti* ti = rttiOf< Bar2_NoOwnMetaType<float, 1.1> >();
+		Rtti* ti = rttiOf< Bar2_NoOwnMetaType<float, 1.1f> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 2);
 		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));

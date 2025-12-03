@@ -77,7 +77,7 @@ template<class T>
 struct FinalMetaTypeOf_Handler_ {
 	using ObjThis                        = T;
 	using ObjBase                        = BaseClassOf<T>;
-	using Base_Handler                   = typename FinalMetaTypeOf_Handler_<ObjBase>;
+	using Base_Handler                   = FinalMetaTypeOf_Handler_<ObjBase>;
 	using Base_OwnMetaType               = typename OwnMetaTypeOf_Handler_<ObjBase>::OwnMetaType;
 	using Base_FinalMetaType             = typename Base_Handler::FinalMetaType;
 	using Base_AllFields                 = typename Base_FinalMetaType::AllFields;

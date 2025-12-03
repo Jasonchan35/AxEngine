@@ -11,7 +11,7 @@ private: \
 //------
 
 #define AX_OWN_META_TYPE(T)  public OwnMetaType_Make_<T>
-#define AX_OWN_META_FIELD(V) public MetaField_Make_<_TYPE_INFO_This, decltype(_TYPE_INFO_This::V), &_TYPE_INFO_This::V, ([]()->StrView{ return #V; }) > 
+#define AX_META_FIELD(V) public MetaField_Make_<_TYPE_INFO_This, decltype(_TYPE_INFO_This::V), &_TYPE_INFO_This::V, ([]()->StrView{ return #V; }) > 
 //------
 
 // #define AX_META_TYPE(...)  public MetaType_Make_< __VA_ARGS__, ([]()->StrView{ return #__VA_ARGS__; }) >
