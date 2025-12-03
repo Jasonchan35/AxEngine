@@ -1,24 +1,8 @@
 ﻿#if 1
 #include "AxUnitTest.h"
+#include "AxCore/Reflection/AxMetaType.h"
+#include "AxCore/Reflection/AxRtti.h"
 //----- Reflection
-
-#define AX_TYPE_INFO(T, BASE) \
-private: \
-	using This = T; \
-	using Base = BASE; \
-private: \
-//------
-
-#define AX_RTTI_CLASS(T, BASE) \
-	AX_TYPE_INFO(T, BASE) \
-public: \
-	static  Rtti* s_rtti ()				{ return rttiOf<T>(); } \
-	virtual Rtti* rtti() const override	{ return rttiOf<T>(); } \
-private: \
-//-----------
-
-#define AX_META_TYPE(T, BASE) MetaType_<T, BASE, []()->StrView{ return #T; } >
-#define AX_META_FIELD(V) MetaField_<MetaThis, &MetaThis::V, []()->StrView{ return #V; } >
 
 import AxCore.MetaType;
 import AxCore.Rtti;
@@ -61,24 +45,24 @@ public:
 		AX_UNUSED(ti);
 
 		AX_LOG("name = {}", ti->name);
+		for (auto& field : ti->fields) {
+			AX_LOG("  field {}", field.name);
+		}
 	}
 };
 
 // struct Test_Rtti::MyObject::MetaType : public NoBaseClass::MetaType {};
 
 template<class T>
-struct Test_Rtti::Foo<T>::MetaType : public NoBaseClass::MetaType {
-	using MetaThis = Foo<T>;
-	static NameId s_name() { return AX_NAME("Foo"); }
+struct Test_Rtti::Foo<T>::MetaType : AX_META_TYPE(Foo<T>) {
+	struct x : AX_META_FIELD(x) {};
+	struct y : AX_META_FIELD(y) {};
 
-	struct x : public AX_META_FIELD(x) {};
-	struct y : public AX_META_FIELD(y) {};
-
-	using OwnFields = Tuple<x, y>; 
+//	using OwnFields = Tuple<x, y>; 
 };
 
 template<class T>
-struct Test_Rtti::Bar<T>::MetaType : public Foo<T>::MetaType {
+struct Test_Rtti::Bar<T>::MetaType : AX_META_TYPE(Bar<T>) {
 	using MetaThis = Bar<T>;
 //	static NameId s_name() { return NameId("Bar"); }
 };

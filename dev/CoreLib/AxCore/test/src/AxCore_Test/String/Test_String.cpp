@@ -162,7 +162,7 @@ public:
 	}
 
 	void test_NameId() {
-		auto a = AX_NAME("Test123");
+		auto a = AX_NAMEID("Test123");
 		AX_TEST_EQ(a.name(), "Test");
 		AX_TEST_EQ(a.id(),   123);
 	}

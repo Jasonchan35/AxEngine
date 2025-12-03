@@ -62,8 +62,7 @@ public:
 	}
 
 	using PersistStr = PersistString_<T>;
-	
-	using Key   = String_<T>;
+	using Key   = String_<T, 24>;
 	using Value = StrLit_<T>;
 
 	class MTData {

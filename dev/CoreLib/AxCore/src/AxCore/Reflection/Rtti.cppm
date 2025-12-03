@@ -1,5 +1,6 @@
 ﻿module;
 #include "AxCore-pch.h"
+#include "AxRtti.h"
 
 export module AxCore.Rtti;
 export import AxCore.NameId;
@@ -8,37 +9,20 @@ export import AxCore.MetaType;
 
 export namespace ax {
 
-struct Rtti : public NonCopyable {
-	NameId name;
-};
+struct Rtti;
 
 struct RttiField : public NonCopyable {
+	NameId	name;
+	Rtti*	fieldType = nullptr;
+};
+
+
+struct Rtti : public NonCopyable {
 	NameId name;
-};
-
-template<class T>
-struct Rtti_ : public Rtti {
-	using InfoBase = Rtti;
-	using MetaType = MetaTypeOf_<T>;
-
 	Array<RttiField> fields;
-
-	struct OwnField_Handler {
-		template<Int Index, class Field>
-		static void onEach(Rtti_* This) {
-			auto& f = This->fields.emplaceBack();
-			f.name = Field::s_name();
-		}
-	};
-	
-	Rtti_() {
-		InfoBase::name = MetaType::s_name();
-		using OwnFields = typename MetaType::OwnFields;
-		fields.reserve(OwnFields::Size);
-		OwnFields::template ForEachType<OwnField_Handler>(this);
-	}
-
 };
+
+template<class T> struct Rtti_;
 
 template<class T> struct Rtti_Handler_ {
 	static Rtti* s_rtti() {
@@ -48,6 +32,35 @@ template<class T> struct Rtti_Handler_ {
 };
 
 template<class T> Rtti* rttiOf() { return Rtti_Handler_<T>::s_rtti(); }
+
+
+template<class T>
+struct Rtti_ : public Rtti {
+	using Rtti_Base = Rtti;
+	using T_MetaType = MetaTypeOf_<T>;
+	
+	struct OwnField_Handler {
+		template<Int Index, class Field>
+		static void onEach(Rtti_* This) {
+			auto& f = This->fields.emplaceBack();
+			f.name = Field::s_name();
+
+			using FieldType = typename Field::FieldType;
+			f.fieldType = rttiOf<FieldType>();
+		}
+	};
+	
+	Rtti_() {
+		static_assert(Type_IsBaseOf<MetaTypeBase, T_MetaType>, "MetaType must based on MetaTypeBase");
+		
+		Rtti_Base::name = T_MetaType::s_name();
+		using OwnFields = typename T_MetaType::OwnFields;
+		fields.reserve(OwnFields::Size);
+		OwnFields::template ForEachType<OwnField_Handler>(this);
+	}
+
+};
+
 
 class RttiObject : public WPtrReferenable {
 	using This = RttiObject;

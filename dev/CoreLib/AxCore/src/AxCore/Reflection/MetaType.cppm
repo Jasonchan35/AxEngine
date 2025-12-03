@@ -1,5 +1,6 @@
 ﻿module;
 #include "AxCore-pch.h"
+#include "AxMetaType.h"
 
 export module AxCore.MetaType;
 
@@ -10,43 +11,65 @@ export import AxCore.NameId;
 
 export namespace ax {
 
-struct NoBaseClass {
-	struct MetaType {
-		static NameId s_name() { return NameId(); }
-		using OwnFields = Tuple<>;
-	};
-};
-
 struct MetaTypeBase : public NonCopyable {
 	MetaTypeBase() = delete;
-
 	static NameId s_name() { return NameId(); }
-
 	using OwnFields = Tuple<>;
 };
 
-template<class T, StrView (*NAME_FUNC)()>
-struct MetaType_ {
-	using _MetaThis = T;
-	static NameId s_name() { return NameId(NAME_FUNC()); }
-	using OwnFields = Tuple<>;
-};
-
-struct MetaFieldBase : public NonCopyable {
-	MetaFieldBase() = delete;
-};
-
-template<class OBJ, auto OBJ::*PTR, StrView (*NAME_FUNC)()>
-struct MetaField_ : public MetaFieldBase {
-	static NameId s_name() { return AX_NAME(NAME_FUNC()); }
-	static Int s_offset() { return offsetof(OBJ, PTR); }
+struct NoBaseClass {
+	using MetaType = MetaTypeBase;
 };
 
 template<class T>
 struct MetaTypeOf_Handler_ {
-	using MetaType = T::MetaType;
+	using MetaType = typename T::MetaType;
 };
 
 template<class T> using MetaTypeOf_ = typename MetaTypeOf_Handler_<T>::MetaType;
+
+template<class T, StrView (*NAME_FUNC)() >
+struct MetaType_Make_ : public MetaTypeOf_<typename T::_TYPE_INFO_Base> {
+	using T_Base = typename T::_TYPE_INFO_Base;
+	using Base_MetaType = MetaTypeOf_<T_Base>;
+	
+	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
+
+	~MetaType_Make_() {
+		static_assert(Type_IsBaseOf<MetaTypeBase, Base_MetaType>);
+	}
+}; 
+
+
+struct MetaFieldBase : public NonCopyable {
+	MetaFieldBase() = delete;
+	using OwnFields = Tuple<>;
+};
+
+template<class OBJ, class FIELD, FIELD OBJ::*PTR, StrView (*NAME_FUNC)()>
+struct MetaField_Make_ : public MetaFieldBase {
+	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
+	static Int s_offset() { return offsetof(OBJ, PTR); }
+
+	using FieldType = FIELD;
+};
+
+
+
+template<class T, StrView (*NAME_FUNC)()>
+struct MetaType_Simple_ : public MetaTypeBase {
+	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
+};
+
+AX_SIMPLE_META_TYPE(i8)
+AX_SIMPLE_META_TYPE(i16)
+AX_SIMPLE_META_TYPE(i32)
+AX_SIMPLE_META_TYPE(i64)
+AX_SIMPLE_META_TYPE(u8)
+AX_SIMPLE_META_TYPE(u16)
+AX_SIMPLE_META_TYPE(u32)
+AX_SIMPLE_META_TYPE(u64)
+AX_SIMPLE_META_TYPE(f32)
+AX_SIMPLE_META_TYPE(f64)
 
 } // namespace
