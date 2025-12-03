@@ -156,7 +156,7 @@ public:
 
 	AX_NODISCARD AX_INLINE constexpr bool unroll_and_0(bool (*func)(T a)) const {
 		bool ret = true;
-		if constexpr (N > 1) ret = ret && func(e[0]);
+		if constexpr (N > 0) ret = ret && func(e[0]);
 		if constexpr (N > 1) ret = ret && func(e[1]);
 		if constexpr (N > 2) ret = ret && func(e[2]);
 		if constexpr (N > 3) ret = ret && func(e[3]);
@@ -165,7 +165,7 @@ public:
 
 	AX_NODISCARD AX_INLINE constexpr bool unroll_or(bool (*func)(T a)) const {
 		bool ret = false;
-		if constexpr (N > 1) ret = ret || func(e[0]);
+		if constexpr (N > 0) ret = ret || func(e[0]);
 		if constexpr (N > 1) ret = ret || func(e[1]);
 		if constexpr (N > 2) ret = ret || func(e[2]);
 		if constexpr (N > 3) ret = ret || func(e[3]);
@@ -175,7 +175,7 @@ public:
 	template<VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool unroll_and(VecSIMD_Data_<N, T, R_SIMD> vec, bool (*func)(T a, T b)) const {
 		bool ret = true;
-		if constexpr (N > 1) ret = ret && func(e[0], vec.e[0]);
+		if constexpr (N > 0) ret = ret && func(e[0], vec.e[0]);
 		if constexpr (N > 1) ret = ret && func(e[1], vec.e[1]);
 		if constexpr (N > 2) ret = ret && func(e[2], vec.e[2]);
 		if constexpr (N > 3) ret = ret && func(e[3], vec.e[3]);
@@ -184,7 +184,7 @@ public:
 
 	AX_NODISCARD AX_INLINE constexpr bool unroll_or(Vec vec, bool (*func)(T a, T b)) const {
 		bool ret = false;
-		if constexpr (N > 1) ret = ret || func(e[0], vec.e[0]);
+		if constexpr (N > 0) ret = ret || func(e[0], vec.e[0]);
 		if constexpr (N > 1) ret = ret || func(e[1], vec.e[1]);
 		if constexpr (N > 2) ret = ret || func(e[2], vec.e[2]);
 		if constexpr (N > 3) ret = ret || func(e[3], vec.e[3]);
