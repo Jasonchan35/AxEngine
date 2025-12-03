@@ -12,21 +12,23 @@ export import AxCore.NameId;
 export namespace ax {
 
 template<class T> inline
-consteval
+#if AX_COMPILER_VC
+	consteval
+#else
+	constexpr
+#endif
 StrViewA ax_metatype_get_class_name() {
 	auto* sig = AX_FUNC_SIG;
 	auto src = StrView_c_str(sig);
 
 #if AX_COMPILER_VC	
-	auto t = StrViewA("ax_metatype_get_class_name");
-	if (auto pos = src.find(t)) {
-		return src.sliceFrom(pos.value());
-	} else {
-//		AX_ASSERT(false)
-		return src;
-	}
+	auto pair = src.split("ax_metatype_get_class_name<class ");
+	pair = pair.second.splitBack(">(void)");
+	return pair.first;
 #else
-	return src;
+	auto pair = src.split("ax_metatype_get_class_name() [T = ");
+	pair = pair.second.splitBack("]");
+	return pair.first;
 #endif
 }
 

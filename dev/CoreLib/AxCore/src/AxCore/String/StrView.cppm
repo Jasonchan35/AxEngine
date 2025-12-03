@@ -134,8 +134,14 @@ public:
 	//  sliceBack                       [________ newSize__________]
 	//  sliceFrom     (  offset  )[_________till to end ___________]
 	//  sliceFromBack [________________________________](  offset  )
-	AX_INLINE	constexpr MView	slice			(Int offset, Int newSize) {
-		if (offset < 0 || newSize < 0 || offset + newSize > _size) throw Error_IndexOutOfRange();
+	AX_INLINE constexpr MView	  slice         (Int offset, Int newSize) {
+		if (offset < 0 || newSize < 0 || offset + newSize > _size) {
+			if (std::is_constant_evaluated()) {
+				AX_ASSERT(false);
+			} else {
+				throw Error_IndexOutOfRange();
+			}
+		}
 		return MView(_data + offset, newSize);
 	}
 	AX_INLINE constexpr CView     slice	        (Int offset, Int newSize) const	{ return ax_const_cast(this)->slice(offset, newSize); }

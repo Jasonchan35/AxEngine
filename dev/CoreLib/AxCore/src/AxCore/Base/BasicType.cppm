@@ -302,8 +302,6 @@ private:
 	T* _p = nullptr;
 };
 
-
-
 class Error : public std::exception {
 public:
 	Error() = default;
