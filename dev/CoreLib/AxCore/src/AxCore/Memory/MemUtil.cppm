@@ -19,12 +19,14 @@ struct MemUtil {
 	static constexpr bool isOverlapped(const A* a, Int a_size, const B* b, Int b_size);
 
 	template<class T>
-	static constexpr void copy(T* dst, const T* src, Int n);
+	static constexpr void operatorCopy(T* dst, const T* src, Int n);
 	
 	template< class T, class... Args>
 	static constexpr void constructor( T* p, Int n, Args&&... args);
 
 	template< class T > static constexpr void destructor(T* p, Int n);
+
+	template< class T > static constexpr void copyConstructor(T* dst, const T* src, Int n);
 	template< class T > static constexpr void moveConstructorAndDestructor(T* dst, T* src, Int n);
 
 
@@ -139,7 +141,7 @@ void MemUtil::destructor(T* p, Int n) {
 }
 
 template <class T> AX_INLINE constexpr
-void MemUtil::copy(T* dst, const T* src, Int n) {
+void MemUtil::operatorCopy(T* dst, const T* src, Int n) {
 	if (n <= 0) return;
 	if (MemUtil::isOverlapped(dst, n, src, n)) {
 		throw Error_BufferOverlapped();
@@ -156,7 +158,31 @@ void MemUtil::copy(T* dst, const T* src, Int n) {
 	}
 }
 
-template <class T> inline constexpr
+template <class T>
+constexpr void MemUtil::copyConstructor(T* dst, const T* src, Int n) {
+	if( n <= 0 ) return;
+	if (MemUtil::isOverlapped(dst, n, src, n)) {
+		throw Error_BufferOverlapped();
+	}
+
+	if (std::is_trivially_copy_assignable_v<T>) {
+		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
+	}else{
+		try {
+			auto s = src;
+			auto e = src + n ;
+			for( ; s<e; ++s, ++dst ) {
+				ax_call_constructor<T>(dst, *s);
+			}
+		} catch	(...) {
+			AX_ASSERT(false);
+			// TODO: catch exception and rewind the move here before re-throw
+			throw;
+		}
+	}	
+}
+
+template <class T> constexpr
 void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 	if( n <= 0 ) return;
 	if (MemUtil::isOverlapped(dst, n, src, n)) {

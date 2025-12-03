@@ -11,15 +11,22 @@ export namespace ax {
 
 struct Rtti;
 
-struct RttiField : public NonCopyable {
+struct MutRttiField : public NonCopyable {
 	NameId	name;
 	Rtti*	fieldType = nullptr;
+	Rtti*	fieldOwner = nullptr;
 };
+
+using RttiField = const MutRttiField;
 
 
 struct Rtti : public NonCopyable {
+	Rtti* baseRtti = nullptr;
 	NameId name;
-	Array<RttiField> fields;
+	Array<RttiField*> ownFields;
+	Array<RttiField*> allFields;
+
+	void DebugDump();
 };
 
 template<class T> struct Rtti_;
@@ -33,39 +40,69 @@ template<class T> struct Rtti_Handler_ {
 
 template<class T> Rtti* rttiOf() { return Rtti_Handler_<T>::s_rtti(); }
 
+template<>
+struct Rtti_<NoBaseClass> {
+
+}; 
 
 template<class T>
 struct Rtti_ : public Rtti {
-	using Rtti_Base = Rtti;
-	using T_MetaType = MetaTypeOf_<T>;
+	Rtti_() { _ctor(); }
+private:
+	using ObjThis      = T;
+	using ObjBase      = BaseClassOf<T>;
+
+	using MetaType     = MetaTypeOf_<T>;
+	using BaseMetaType = MetaTypeOf_<ObjBase>;
+
+	static constexpr bool noBase = std::is_same_v<ObjBase, NoBaseClass>; 
 	
 	struct OwnField_Handler {
 		template<Int Index, class Field>
-		static void onEach(Rtti_* This) {
-			auto& f = This->fields.emplaceBack();
-			f.name = Field::s_name();
-
+		static void onEach(Rtti_* rtti) {
+			static MutRttiField field;
+			field.name = Field::s_name();
 			using FieldType = typename Field::FieldType;
-			f.fieldType = rttiOf<FieldType>();
+			field.fieldOwner = rtti;
+			field.fieldType = rttiOf<FieldType>();
+			rtti->ownFields.emplaceBack(&field);
 		}
 	};
-	
-	Rtti_() {
-		static_assert(Type_IsBaseOf<MetaTypeBase, T_MetaType>, "MetaType must based on MetaTypeBase");
+
+	void _ctor() {
+//		static_assert(Type_IsBaseOf<IMetaType, MetaType>, "MetaType must based on IMetaType");
+
+		if constexpr (noBase) {
+			baseRtti = nullptr;
+		} else {
+			baseRtti = rttiOf<ObjBase>();
+		}
 		
-		Rtti_Base::name = T_MetaType::s_name();
-		using OwnFields = typename T_MetaType::OwnFields;
-		fields.reserve(OwnFields::Size);
+		this->name = MetaType::s_name();
+		using OwnFields = typename MetaType::OwnFields;
+		
+		this->ownFields.reserve(OwnFields::Size);
 		OwnFields::template ForEachType<OwnField_Handler>(this);
+		
+		//---- All Fields -----
+		if (baseRtti) {
+			this->allFields.reserve(baseRtti->allFields.size() + OwnFields::Size);
+			this->allFields = baseRtti->allFields;
+		}
+		for (auto* field : this->ownFields) {
+			this->allFields.emplaceBack(field);
+		}
 	}
 
 };
 
 
 class RttiObject : public WPtrReferenable {
-	using This = RttiObject;
+	AX_TYPE_INFO(RttiObject, NoBaseClass)
 public:
-	struct MetaType : public MetaTypeBase {};
+	using _TYPE_INFO_Base = NoBaseClass;
+	
+	struct OwnMetaType : AX_OWN_META_TYPE(This) {};
 	
 	static  Rtti* s_rtti ()		{ return rttiOf<This>(); }
 	virtual Rtti* rtti() const 	{ return rttiOf<This>(); }

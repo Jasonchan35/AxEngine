@@ -15,56 +15,73 @@ public:
 	class Foo {
 		AX_TYPE_INFO(Foo, NoBaseClass)
 	public:
-		struct MetaType;
 		int x, y, z;
+		struct OwnMetaType : AX_OWN_META_TYPE(Foo) {
+			struct x : AX_OWN_META_FIELD(x) {};
+			struct y : AX_OWN_META_FIELD(y) {};
+
+			using OwnFields = Tuple<x,y>;
+		};
 	};
 
 	template<class T, Int N>
 	class Bar : public Foo<T> {
 		AX_TYPE_INFO(Bar, Foo<T>)
 	public:
-		struct MetaType;
+		struct OwnMetaType;
 		int bar;
 	}; 
 
+	template<class T, f32 N>
+	class Bar2_NoOwnMetaType : public Foo<T> {
+		AX_TYPE_INFO(Bar2_NoOwnMetaType, Foo<T>)
+	public:
+		int bar2;
+	}; 
+	
 	class MyObject : public RttiObject {
 		AX_RTTI_CLASS(MyObject, RttiObject)
 	};
 
-	void test_case1() {
-		using TestFoo = Foo<void>;
-		using TestBar = Bar<StrView, 99>;
-		
-		using TI = MetaTypeOf_< TestBar >;
-		// AX_TEST_EQ(TI::s_name(),     "Foo");
-		// AX_TEST_EQ(TI::x::s_name(),  "x");
-		//		AX_TEST_EQ(TI::x::s_offset(), 0);
-
-		Rtti* ti = rttiOf< TestBar >();
-		AX_UNUSED(ti);
-
-		AX_LOG("name = {}", ti->name);
-		for (auto& field : ti->fields) {
-			AX_LOG("  field {}", field.name);
-		}
-	}
-};
-
-// struct Test_Rtti::MyObject::MetaType : public NoBaseClass::MetaType {};
-
-template<class T>
-struct Test_Rtti::Foo<T>::MetaType : AX_META_TYPE(Foo<T>) {
-	struct x : AX_META_FIELD(x) {};
-	struct y : AX_META_FIELD(y) {};
-
-//	using OwnFields = Tuple<x, y>; 
+	void test_case1();
 };
 
 template<class T, Int N>
-struct Test_Rtti::Bar<T, N>::MetaType : AX_META_TYPE(AX_WRAP(Bar<T,N>)) {
-//	using MetaThis = Bar<T, N>;
+struct Test_Rtti::Bar<T, N>::OwnMetaType : AX_OWN_META_TYPE(AX_WRAP(Bar<T,N>)) {
 //	static NameId s_name() { return NameId("Bar"); }
+	struct bar : AX_OWN_META_FIELD(bar) {};
+	using OwnFields = Tuple<bar>;
 };
+
+void Test_Rtti::test_case1() {
+	{
+		Rtti* ti = rttiOf< Foo<void> >();
+//		ti->DebugDump();
+		AX_TEST_EQ(ti->allFields.size(), 2);
+		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
+	}
+		
+	{
+		Rtti* ti = rttiOf< Bar<StrView, 99> >();
+//		ti->DebugDump();
+		AX_TEST_EQ(ti->allFields.size(), 3);
+		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
+		AX_TEST_EQ(ti->allFields[2]->name, AX_NAMEID("bar"));
+		// own fields
+		AX_TEST_EQ(ti->ownFields[0]->name, AX_NAMEID("bar"));
+	}
+
+	{
+		Rtti* ti = rttiOf< Bar2_NoOwnMetaType<float, 1.1> >();
+//		ti->DebugDump();
+		AX_TEST_EQ(ti->allFields.size(), 2);
+		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
+	}
+	
+}
 
 } // namespace
 

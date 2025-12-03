@@ -8,6 +8,7 @@ export namespace ax {
 
 template<class T>
 class IArray : public IArrayStorage<T> {
+	using This = IArray;
 	using Base = IArrayStorage<T>;
 	using Base::_storage;
 protected:
@@ -38,6 +39,8 @@ public:
 
 	constexpr void operator << (const T &  item)  { append(item); }
 	constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
+
+	constexpr void operator=(const This& src) { Base::_storageCopy(src); }
 
 	MSpan	span		()			{ return MutSpan<T>(data(), size()); }
 	CSpan	span		() const	{ return    Span<T>(data(), size()); }

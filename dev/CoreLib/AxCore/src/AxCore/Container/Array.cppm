@@ -16,12 +16,20 @@ using IntArray  = Array<Int>;
 
 template <class T, Int BUF_SIZE>
 class Array : public IArray<T>, InlineStorage<T, BUF_SIZE> {
+	using This = Array;
 	using Base = IArray<T>;
 	using BaseInlineBuffer = InlineStorage<T, BUF_SIZE>;
 	using BaseInlineBuffer::inlineBufPtr;
 public:
 	Array() : Base(inlineBufPtr(), BUF_SIZE) {}
 	virtual	~Array() override { Base::clearAndFree(); }
+
+		  IArray<T>& asIArray()			{ return *this; }
+	const IArray<T>& asIArray() const	{ return *this; }
+	
+	constexpr void operator=(const IArray<T>& src) { asIArray() = src; } 
+	
+	constexpr void operator=(const This& src) { asIArray() = src; } 
 	
 protected:
 	virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }

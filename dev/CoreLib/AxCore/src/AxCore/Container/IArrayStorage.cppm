@@ -28,6 +28,7 @@ protected:
 	constexpr virtual MemAllocResult<T>	onStorageMalloc(Int reqSize) = 0;
 	constexpr virtual void				onStorageFree(T* p) = 0;
 
+	constexpr void _storageCopy(const IArrayStorage<T>& rhs);
 	constexpr void _storageMove(IArrayStorage<T>&& rhs);
 	constexpr bool _storageReserve(Int newCapacity);
 	constexpr void _storageRreserveImpl(Int reqCapacity);
@@ -98,12 +99,27 @@ protected:
 	Storage _storage;
 };
 
+template <class T>
+constexpr void IArrayStorage<T>::_storageCopy(const IArrayStorage<T>& rhs) {
+	if (this == &rhs) { AX_ASSERT(false); return; }
+
+	auto* srcData = rhs._storage.data();
+	auto  srcSize = rhs._storage.size();
+
+	_storageClear();
+	_storageReserve(srcSize);
+
+	auto* dstData = _storage.data();
+	MemUtil::copyConstructor(dstData, srcData, srcSize);
+	_storage.setSize(srcSize);
+}
+
 template< class T > inline
 constexpr void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 	if (this == &rhs) { AX_ASSERT(false); return; }
 
-	auto srcData = rhs._storage.data();
-	auto srcSize = rhs._storage.size();
+	auto* srcData = rhs._storage.data();
+	auto  srcSize = rhs._storage.size();
 	
 	if (rhs._storage.isAllocatedData()) { // move buffer if is allocated data
 		_storageClearAndFree();
@@ -113,7 +129,9 @@ constexpr void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 	} else {
 		_storageClear();
 		_storageReserve(srcSize);
-		MemUtil::moveConstructorAndDestructor(_storage.data(), srcData, srcSize);
+
+		auto* dstData = _storage.data();
+		MemUtil::moveConstructorAndDestructor(dstData, srcData, srcSize);
 		_storage.setSize(srcSize);
 		rhs._storage.setSize(0);
 	}

@@ -252,7 +252,7 @@ constexpr void IString_<T>::append(CView view) {
 	auto oldSize = size();
 	auto newSize = oldSize + view.size();
 	reserve(newSize);
-	MemUtil::copy(data() + oldSize, view.data(), view.size());
+	MemUtil::copyConstructor(data() + oldSize, view.data(), view.size());
 	_storage.setSize(newSize);
 	_setNullTerminator();
 }
@@ -275,7 +275,7 @@ constexpr void IString_<T>::appendList(const std::initializer_list<T> & list) {
 	reserve(newSize);
 	_storage.setSize(newSize);
 	auto* newData = data();
-	MemUtil::copy(newData + oldSize, list.begin(), list.size());
+	MemUtil::copyConstructor(newData + oldSize, list.begin(), list.size());
 	newData[newSize] = 0;	
 }
 

@@ -61,7 +61,7 @@ void UtfUtil::append(IString_<DST>& dst, StrView_<SRC> src) {
 	if constexpr (std::is_same_v<DST, SRC>) {
 		auto old_size = dst.size();
 		dst.resize(old_size + src.size());
-		MemUtil::copy(dst.data() + old_size, src.data(), src.size());
+		MemUtil::rawCopy(dst.data() + old_size, src.data(), src.size());
 	} else {
 		auto		src_len = src.size();
 		const auto* s		= src.begin();
