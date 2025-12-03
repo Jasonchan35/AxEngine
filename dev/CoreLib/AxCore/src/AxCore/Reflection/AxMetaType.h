@@ -10,13 +10,13 @@ public: \
 private: \
 //------
 
-#define AX_OWN_META_TYPE(T)  public OwnMetaType_Make_<T>
-#define AX_META_FIELD(V) public MetaField_Make_<_TYPE_INFO_This, decltype(_TYPE_INFO_This::V), &_TYPE_INFO_This::V, ([]()->StrView{ return #V; }) > 
+#define AX_META_TYPE_INIT(T)  public MetaTypeInit_Helper_<T>
+#define AX_META_FIELD_INIT(V) public InitMetaField_Helper_<_TYPE_INFO_This, decltype(_TYPE_INFO_This::V), &_TYPE_INFO_This::V, ([]()->StrView{ return #V; }) > 
 //------
 
-// #define AX_META_TYPE(...)  public MetaType_Make_< __VA_ARGS__, ([]()->StrView{ return #__VA_ARGS__; }) >
-// #define AX_META_FIELD(...) \
-// 	public MetaField_Make_< \
+// #define AX_META_TYPE_INIT(...)  public MetaTypeInit_Helper_< __VA_ARGS__, ([]()->StrView{ return #__VA_ARGS__; }) >
+// #define AX_META_FIELD_INIT(...) \
+// 	public InitMetaField_Helper_< \
 // 		_TYPE_INFO_This, \
 // 		decltype(_TYPE_INFO_This::__VA_ARGS__), \
 // 		&_TYPE_INFO_This::__VA_ARGS__, \
@@ -24,5 +24,5 @@ private: \
 // 	> \
 // //------
 
-#define AX_SIMPLE_OWN_META_TYPE(T) template<> struct OwnMetaTypeOf_Handler_<T> { using OwnMetaType = OwnMetaType_Simple_<T, ([]()->StrView{ return #T; }) >; };
+#define AX_INIT_META_TYPE_SIMPLE(T) template<> struct MetaTypeInit_Handler_<T> { using MetaTypeInit = MetaTypeInit_Simple_<T, ([]()->StrView{ return #T; }) >; };
 //------

@@ -52,8 +52,8 @@ private:
 	using ObjThis      = T;
 	using ObjBase      = BaseClassOf<T>;
 
-	using MetaType     = MetaTypeOf_<T>;
-	using BaseMetaType = MetaTypeOf_<ObjBase>;
+	using MetaType     = MetaType_Of_<T>;
+	using BaseMetaType = MetaType_Of_<ObjBase>;
 
 	static constexpr bool noBase = std::is_same_v<ObjBase, NoBaseClass>; 
 	
@@ -101,8 +101,7 @@ class RttiObject : public WPtrReferenable {
 	AX_TYPE_INFO(RttiObject, NoBaseClass)
 public:
 	using _TYPE_INFO_Base = NoBaseClass;
-	
-	struct OwnMetaType : AX_OWN_META_TYPE(This) {};
+	struct MetaTypeInit : AX_META_TYPE_INIT(This) {};
 	
 	static  Rtti* s_rtti ()		{ return rttiOf<This>(); }
 	virtual Rtti* rtti() const 	{ return rttiOf<This>(); }

@@ -32,10 +32,11 @@ StrViewA ax_metatype_get_class_name() {
 #endif
 }
 
-struct IOwnMetaType : public NonCopyable {
-	IOwnMetaType() = delete;
+struct IMetaTypeInit : public NonCopyable {
+	IMetaTypeInit() = delete;
 	static NameId s_name() { return NameId(); }
 	using OwnFields = Tuple<>;
+	using OwnAttrs  = Tuple<>;
 };
 
 struct NoBaseClass {};
@@ -53,59 +54,64 @@ struct BaseClassOf_Handler_<T> {
 template<class T> using BaseClassOf = typename BaseClassOf_Handler_<T>::Type;
 
 template<class T>
-struct OwnMetaTypeOf_Handler_ {
-	using OwnMetaType = typename T::OwnMetaType;
+struct MetaTypeInit_Handler_ {
+	using MetaTypeInit = typename T::MetaTypeInit;
 };
 
 template<>
-struct OwnMetaTypeOf_Handler_<NoBaseClass> {
-	using OwnMetaType = IOwnMetaType;
+struct MetaTypeInit_Handler_<NoBaseClass> {
+	using MetaTypeInit = IMetaTypeInit;
 };
 
 template<class T> struct FinalMetaTypeOf_Handler_;
 
 template<>
 struct FinalMetaTypeOf_Handler_<NoBaseClass> {
-	struct FinalMetaType : IOwnMetaType {
+	struct FinalMetaType : IMetaTypeInit {
 		using AllFields = Tuple<>;
+		using AllAttrs  = Tuple<>;
 	};
 };
 
-template<class T> struct OwnMetaType_Make_;
+template<class T> struct MetaTypeInit_Helper_;
 
 template<class T>
 struct FinalMetaTypeOf_Handler_ {
-	using ObjThis                        = T;
-	using ObjBase                        = BaseClassOf<T>;
-	using Base_Handler                   = FinalMetaTypeOf_Handler_<ObjBase>;
-	using Base_OwnMetaType               = typename OwnMetaTypeOf_Handler_<ObjBase>::OwnMetaType;
-	using Base_FinalMetaType             = typename Base_Handler::FinalMetaType;
-	using Base_AllFields                 = typename Base_FinalMetaType::AllFields;
+	using ObjThis                    = T;
+	using ObjBase                    = BaseClassOf<T>;
+	using Base_Handler               = FinalMetaTypeOf_Handler_<ObjBase>;
+	using Base_MetaTypeInit          = typename MetaTypeInit_Handler_<ObjBase>::MetaTypeInit;
+	using Base_FinalMetaType         = typename Base_Handler::FinalMetaType;
+	using Base_AllFields             = typename Base_FinalMetaType::AllFields;
+	using Base_AllAttrs              = typename Base_FinalMetaType::AllAttrs;
+	using Potential_MetaTypeInit     = typename MetaTypeInit_Handler_<ObjThis>::MetaTypeInit;
+	static constexpr bool hasOwnInit = !std::is_same_v<Potential_MetaTypeInit, Base_MetaTypeInit>;
 
-	using Potential_OwnMetaType          = typename OwnMetaTypeOf_Handler_<ObjThis>::OwnMetaType;
-	static constexpr bool hasOwnMetaType = !std::is_same_v<Potential_OwnMetaType, Base_OwnMetaType>;
+	struct Empty_MetaTypeInit : public MetaTypeInit_Helper_<ObjBase> {};
 
-	struct EmptyOwnMetaType : public OwnMetaType_Make_<ObjBase> {};
+	using MetaTypeInit = std::conditional_t<hasOwnInit, Potential_MetaTypeInit, Empty_MetaTypeInit>;
+	using OwnFields    = typename MetaTypeInit::OwnFields;
+	using OwnAttrs     = typename MetaTypeInit::OwnAttrs;
 	
-	using OwnMetaType		 = std::conditional_t<hasOwnMetaType, Potential_OwnMetaType, EmptyOwnMetaType>;
-	using OwnFields          = typename OwnMetaType::OwnFields;
-	
-	struct FinalMetaType : public OwnMetaType {
+	struct FinalMetaType : public MetaTypeInit {
+		//---- Combind all ---
 		using AllFields = typename Base_AllFields::template JoinType<OwnFields>;
+		using AllAttrs  = typename Base_AllAttrs ::template JoinType<OwnAttrs >;
 	};
 };
 
-template<class T> using OwnMetaTypeOf_ = typename OwnMetaTypeOf_Handler_<T>::OwnMetaType;
-template<class T> using MetaTypeOf_		= FinalMetaTypeOf_Handler_<T>::FinalMetaType;
-template<class T> using MetaTypeOfBase_ = FinalMetaTypeOf_Handler_< BaseClassOf<T> >;
+template<class T> using MetaTypeInit_Of_	= typename MetaTypeInit_Handler_<T>::MetaTypeInit;
+template<class T> using MetaType_Of_		= FinalMetaTypeOf_Handler_<T>::FinalMetaType;
+template<class T> using MetaType_OfBase_	= FinalMetaTypeOf_Handler_< BaseClassOf<T> >;
 
 template<class T>
-struct OwnMetaType_Make_ : public MetaTypeOfBase_<T> {
+struct MetaTypeInit_Helper_ : public MetaType_OfBase_<T> {
 	using ObjThis = T;
 	using ObjBase = typename T::_TYPE_INFO_Base;
 	static NameId s_name() { return AX_NAMEID(ax_metatype_get_class_name<T>()); }
 
 	using OwnFields = Tuple<>;
+	using OwnAttrs  = Tuple<>;
 }; 
 
 struct MetaFieldBase : public NonCopyable {
@@ -114,7 +120,7 @@ struct MetaFieldBase : public NonCopyable {
 };
 
 template<class OBJ, class FIELD, FIELD OBJ::*PTR, StrView (*NAME_FUNC)()>
-struct MetaField_Make_ : public MetaFieldBase {
+struct InitMetaField_Helper_ : public MetaFieldBase {
 	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
 	static Int s_offset() { return offsetof(OBJ, PTR); }
 
@@ -122,22 +128,22 @@ struct MetaField_Make_ : public MetaFieldBase {
 };
 
 template<class T, StrView (*NAME_FUNC)()>
-struct OwnMetaType_Simple_ : public IOwnMetaType {
+struct MetaTypeInit_Simple_ : public IMetaTypeInit {
 	using This = T;
 	using Base = NoBaseClass;
 
 	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
 };
 
-AX_SIMPLE_OWN_META_TYPE(i8)
-AX_SIMPLE_OWN_META_TYPE(i16)
-AX_SIMPLE_OWN_META_TYPE(i32)
-AX_SIMPLE_OWN_META_TYPE(i64)
-AX_SIMPLE_OWN_META_TYPE(u8)
-AX_SIMPLE_OWN_META_TYPE(u16)
-AX_SIMPLE_OWN_META_TYPE(u32)
-AX_SIMPLE_OWN_META_TYPE(u64)
-AX_SIMPLE_OWN_META_TYPE(f32)
-AX_SIMPLE_OWN_META_TYPE(f64)
+AX_INIT_META_TYPE_SIMPLE(i8)
+AX_INIT_META_TYPE_SIMPLE(i16)
+AX_INIT_META_TYPE_SIMPLE(i32)
+AX_INIT_META_TYPE_SIMPLE(i64)
+AX_INIT_META_TYPE_SIMPLE(u8)
+AX_INIT_META_TYPE_SIMPLE(u16)
+AX_INIT_META_TYPE_SIMPLE(u32)
+AX_INIT_META_TYPE_SIMPLE(u64)
+AX_INIT_META_TYPE_SIMPLE(f32)
+AX_INIT_META_TYPE_SIMPLE(f64)
 
 } // namespace
