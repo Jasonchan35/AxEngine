@@ -95,18 +95,18 @@ public:
 	//                +--------------------------------------------+
 	//  slice         (  offset  )[______ newSize ____]
 	//  sliceBack                       [________ newSize__________]
-	//  sliceTrim     (  offset  )[_________till to end ___________]
-	//  sliceTrimBack [________________________________](  offset  )
+	//  sliceFrom     (  offset  )[_________till to end ___________]
+	//  sliceFromBack [________________________________](  offset  )
 	AX_INLINE	constexpr MView	slice			(Int offset, Int newSize)		{ return view().slice(offset, newSize); }
 	AX_INLINE	constexpr CView	slice			(Int offset, Int newSize) const	{ return view().slice(offset, newSize); }
 	AX_INLINE	constexpr MView	slice			(IntRange range)				{ return view().slice(range); }
 	AX_INLINE	constexpr CView	slice			(IntRange range) const			{ return view().slice(range); }
 	AX_INLINE	constexpr MView	sliceBack		(Int newSize)			 		{ return view().sliceBack(newSize); }
 	AX_INLINE	constexpr CView	sliceBack		(Int newSize) const	 			{ return view().sliceBack(newSize); }
-	AX_INLINE	constexpr MView	sliceTrim		(Int offset)					{ return view().sliceTrim(offset); }
-	AX_INLINE	constexpr CView	sliceTrim		(Int offset) const				{ return view().sliceTrim(offset); }
-	AX_INLINE	constexpr MView	sliceTrimBack	(Int offset)					{ return view().sliceTrimBack(offset); }
-	AX_INLINE	constexpr CView	sliceTrimBack	(Int offset) const				{ return view().sliceTrimBack(offset); }
+	AX_INLINE	constexpr MView	sliceFrom		(Int offset)					{ return view().sliceFrom(offset); }
+	AX_INLINE	constexpr CView	sliceFrom		(Int offset) const				{ return view().sliceFrom(offset); }
+	AX_INLINE	constexpr MView	sliceFromBack	(Int offset)					{ return view().sliceFromBack(offset); }
+	AX_INLINE	constexpr CView	sliceFromBack	(Int offset) const				{ return view().sliceFromBack(offset); }
 	//----------------------------------	
 	AX_INLINE constexpr CmpResult compare      (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().compare   (r, sc); }
 	AX_INLINE constexpr bool      equals       (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().equals    (r, sc); }
@@ -119,8 +119,24 @@ public:
 	AX_INLINE constexpr bool operator>	(CView r) const noexcept { return view().operator> (r); }
 	AX_INLINE constexpr bool operator<=	(CView r) const noexcept { return view().operator<=(r); }
 	AX_INLINE constexpr bool operator>=	(CView r) const noexcept { return view().operator>=(r); }
-	//-----------------------------------
-	
+	//----------------
+	AX_NODISCARD constexpr Opt<Int>	find			(CView      str, StrCase sc = StrCase::Sensitive) const { return view().find           (str   , sc); }
+	AX_NODISCARD constexpr Opt<Int>	findBack		(CView      str, StrCase sc = StrCase::Sensitive) const { return view().findBack       (str   , sc); }
+	AX_NODISCARD constexpr Opt<Int>	findChar		(const T&    ch, StrCase sc = StrCase::Sensitive) const { return view().findChar       (ch    , sc); }
+	AX_NODISCARD constexpr Opt<Int>	findCharBack	(const T&    ch, StrCase sc = StrCase::Sensitive) const { return view().findCharBack   (ch    , sc); }
+	AX_NODISCARD constexpr Opt<Int>	findAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) const { return view().findAnyChar    (chList, sc); }
+	AX_NODISCARD constexpr Opt<Int>	findAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) const { return view().findAnyCharBack(chList, sc); }
+	//----------------
+	using SplitResult = Pair<MView, MView>;
+	AX_NODISCARD constexpr auto splitByIndex		(Opt<Int> index, Int separatorSize) -> SplitResult { return view().splitByIndex(index, separatorSize); }
+	AX_NODISCARD constexpr auto split				(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().split             (str   , sc); }
+	AX_NODISCARD constexpr auto splitBack			(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitBack         (str   , sc); }
+	AX_NODISCARD constexpr auto splitByChar			(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByChar       (ch    , sc); }
+	AX_NODISCARD constexpr auto splitByCharBack		(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByCharBack   (ch    , sc); }
+	AX_NODISCARD constexpr auto splitByAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyChar    (chList, sc); }
+	AX_NODISCARD constexpr auto splitByAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyCharBack(chList, sc); }
+	//----------------
+
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 

@@ -124,7 +124,7 @@ public:
 		StrView slice2 = str.slice(6, 5);
 		AX_TEST_EQ(slice2, "World");
 
-		StrView slice3 = str.sliceTrim(6);
+		StrView slice3 = str.sliceFrom(6);
 		AX_TEST_EQ(slice3, "World");
 
 		StrView slice4 = str.sliceBack(5);
@@ -155,12 +155,29 @@ public:
 		String str1("abc");
 		String str2("def");
 
-		AX_TEST_CHECK(str1 < str2);
-		AX_TEST_CHECK(str2 > str1);
-		AX_TEST_CHECK(str1 <= str1);
-		AX_TEST_CHECK(str1 >= str1);
+		AX_TEST_LT(  str1, str2);
+		AX_TEST_GT(  str2, str1);
+		AX_TEST_LTEQ(str1, str1);
+		AX_TEST_GTEQ(str1, str1);
 	}
 
+	void test_split() {
+		String str1("apple and orange and banana");
+		String str2("is");
+
+		AX_TEST_EQ(str1.split("and"),							Pair_make(StrView("apple "), StrView(" orange and banana")));
+		AX_TEST_EQ(str1.split("And", StrCase::Ignore),			Pair_make(StrView("apple "), StrView(" orange and banana")));
+	
+		AX_TEST_EQ(str1.splitBack("and"),						Pair_make(StrView("apple and orange "), StrView(" banana")));
+		AX_TEST_EQ(str1.splitBack("And", StrCase::Ignore),		Pair_make(StrView("apple and orange "), StrView(" banana")));
+
+		AX_TEST_EQ(str1.splitByChar('n'),						Pair_make(StrView("apple a"), StrView("d orange and banana")));
+		AX_TEST_EQ(str1.splitByChar('N', StrCase::Ignore),		Pair_make(StrView("apple a"), StrView("d orange and banana")));
+
+		AX_TEST_EQ(str1.splitByCharBack('n'),					Pair_make(StrView("apple and orange and bana"), StrView("a")));
+		AX_TEST_EQ(str1.splitByCharBack('N', StrCase::Ignore),	Pair_make(StrView("apple and orange and bana"), StrView("a")));
+	}
+	
 	void test_NameId() {
 		auto a = AX_NAMEID("Test123");
 		AX_TEST_EQ(a.name(), "Test");
@@ -186,6 +203,7 @@ void Test_String() {
 	AX_TEST_RUN_CASE(Test_String::test_case10_string_c_str)
 	//AX_TEST_RUN_CASE(Test_String::test_case11_string_move)
 	AX_TEST_RUN_CASE(Test_String::test_case12_string_comparison_operators)
+	AX_TEST_RUN_CASE(Test_String::test_split)
 	AX_TEST_RUN_CASE(Test_String::test_NameId)
 }
 

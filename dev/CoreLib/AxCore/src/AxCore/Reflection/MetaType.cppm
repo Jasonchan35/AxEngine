@@ -11,6 +11,25 @@ export import AxCore.NameId;
 
 export namespace ax {
 
+template<class T> inline
+consteval
+StrViewA ax_metatype_get_class_name() {
+	auto* sig = AX_FUNC_SIG;
+	auto src = StrView_c_str(sig);
+
+#if AX_COMPILER_VC	
+	auto t = StrViewA("ax_metatype_get_class_name");
+	if (auto pos = src.find(t)) {
+		return src.sliceFrom(pos.value());
+	} else {
+//		AX_ASSERT(false)
+		return src;
+	}
+#else
+	return src;
+#endif
+}
+
 struct MetaTypeBase : public NonCopyable {
 	MetaTypeBase() = delete;
 	static NameId s_name() { return NameId(); }
@@ -33,7 +52,10 @@ struct MetaType_Make_ : public MetaTypeOf_<typename T::_TYPE_INFO_Base> {
 	using T_Base = typename T::_TYPE_INFO_Base;
 	using Base_MetaType = MetaTypeOf_<T_Base>;
 	
-	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
+//	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
+	static NameId s_name() {
+		return AX_NAMEID(ax_metatype_get_class_name<T>());
+	}
 
 	~MetaType_Make_() {
 		static_assert(Type_IsBaseOf<MetaTypeBase, Base_MetaType>);

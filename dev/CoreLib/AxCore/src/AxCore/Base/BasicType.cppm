@@ -235,7 +235,7 @@ inline void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc(
 }
 
 template<class A, class B> using Pair = std::pair<A, B>;
-
+template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pair(AX_FORWARD(a), AX_FORWARD(b)); }
 
 template<void (*FUNC)()>
 class ScopeFunc0 : public NonCopyable {

@@ -42,6 +42,15 @@ public:
 	}
 };
 
+template <class A, class B, class FMT_CH>
+class FormatHandler<Pair<A,B>, FMT_CH> {
+public:
+	using Obj = Pair<A,B>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << Fmt("({},{})", obj.first, obj.second);
+	}
+};
+
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
 inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, const ARGS&... args) {
 	// std::format only support char and wchar_t format string

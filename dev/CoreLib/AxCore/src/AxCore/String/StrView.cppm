@@ -87,6 +87,7 @@ public:
 	template<Int N>
 	AX_INLINE constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
 
+	static constexpr MView s_empty() { return MutStrView_(); }
 	explicit operator bool() const { return size() > 0; }
 
 	//--------------
@@ -131,8 +132,8 @@ public:
 	//                +--------------------------------------------+
 	//  slice         (  offset  )[______ newSize ____]
 	//  sliceBack                       [________ newSize__________]
-	//  sliceTrim     (  offset  )[_________till to end ___________]
-	//  sliceTrimBack [________________________________](  offset  )
+	//  sliceFrom     (  offset  )[_________till to end ___________]
+	//  sliceFromBack [________________________________](  offset  )
 	AX_INLINE	constexpr MView	slice			(Int offset, Int newSize) {
 		if (offset < 0 || newSize < 0 || offset + newSize > _size) throw Error_IndexOutOfRange();
 		return MView(_data + offset, newSize);
@@ -140,12 +141,12 @@ public:
 	AX_INLINE constexpr CView     slice	        (Int offset, Int newSize) const	{ return ax_const_cast(this)->slice(offset, newSize); }
 	AX_INLINE constexpr MView     slice	        (IntRange range)				{ return slice(range.start, range.size); }
 	AX_INLINE constexpr CView     slice	        (IntRange range) const			{ return slice(range.start, range.size); }
-	AX_INLINE constexpr MView     sliceTrim	    (Int offset)					{ return slice(offset, _size - offset); }
-	AX_INLINE constexpr CView     sliceTrim	    (Int offset) const				{ return slice(offset, _size - offset); }
+	AX_INLINE constexpr MView     sliceFrom	    (Int offset)					{ return slice(offset, _size - offset); }
+	AX_INLINE constexpr CView     sliceFrom	    (Int offset) const				{ return slice(offset, _size - offset); }
 	AX_INLINE constexpr MView     sliceBack	    (Int newSize)			 		{ return slice(_size - newSize, newSize); }
 	AX_INLINE constexpr CView     sliceBack	    (Int newSize) const	 			{ return slice(_size - newSize, newSize); }
-	AX_INLINE constexpr MView     sliceTrimBack	(Int offset)					{ return slice(0, _size - offset); }
-	AX_INLINE constexpr CView     sliceTrimBack	(Int offset) const				{ return slice(0, _size - offset); }
+	AX_INLINE constexpr MView     sliceFromBack	(Int offset)					{ return slice(0, _size - offset); }
+	AX_INLINE constexpr CView     sliceFromBack	(Int offset) const				{ return slice(0, _size - offset); }
 	//----------------
 	inline    constexpr CmpResult compare      (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
 	AX_INLINE constexpr bool      equals       (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return compare(r, sc) == CmpResult::Equal; }
@@ -159,7 +160,22 @@ public:
 	AX_INLINE constexpr bool operator>	(CView r) const	{ return CmpResult_isGreater       (compare(r)); }
 	AX_INLINE constexpr bool operator>=	(CView r) const	{ return CmpResult_isGreaterOrEqual(compare(r)); }
 	//----------------
-
+	AX_NODISCARD constexpr Opt<Int>	find			(CView      str, StrCase sc = StrCase::Sensitive) const;
+	AX_NODISCARD constexpr Opt<Int>	findBack		(CView      str, StrCase sc = StrCase::Sensitive) const;
+	AX_NODISCARD constexpr Opt<Int>	findChar		(const T&    ch, StrCase sc = StrCase::Sensitive) const;
+	AX_NODISCARD constexpr Opt<Int>	findCharBack	(const T&    ch, StrCase sc = StrCase::Sensitive) const;
+	AX_NODISCARD constexpr Opt<Int>	findAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) const;
+	AX_NODISCARD constexpr Opt<Int>	findAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) const;
+	//----------------
+	using SplitResult = Pair<MView, MView>;
+	AX_NODISCARD constexpr auto splitByIndex		(Opt<Int> index, Int separatorSize) -> SplitResult;
+	AX_NODISCARD constexpr auto split				(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult;
+	AX_NODISCARD constexpr auto splitBack			(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult;
+	AX_NODISCARD constexpr auto splitByChar			(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult;
+	AX_NODISCARD constexpr auto splitByCharBack		(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult;
+	AX_NODISCARD constexpr auto splitByAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult;
+	AX_NODISCARD constexpr auto splitByAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult;
+	//----------------
 	template<class R>
 	bool	tryParse	(R & outValue) const { return StrView_parse(*this, outValue); }
 	
@@ -234,7 +250,10 @@ constexpr StrView_<T> StrView_make(std::basic_string_view<T> src) { return StrVi
 template<class T, Int N> AX_INLINE
 constexpr StrView_<T> StrView_make(T (&sz)[N]) { return StrView_<T>(sz, N > 0 ? N-1 : 0); }
 
-template <class T> inline
+template<class T> AX_INLINE
+constexpr StrView_<T> StrView_c_str(const T* sz) { return StrView_<T>(sz, ax_strlen(sz)); }
+
+template <class T>
 constexpr CmpResult MutStrView_<T>::compare(CView r, StrCase sc) const noexcept {
 	if (_size > 0 && _size == r.size() && _data == r.data())
 		return CmpResult::Equal;
@@ -264,7 +283,7 @@ constexpr CmpResult MutStrView_<T>::compare(CView r, StrCase sc) const noexcept 
 	return CmpResult_fromInt(_size - r.size());
 }
 
-template <class T> inline
+template <class T>
 constexpr bool MutStrView_<T>::matchWildcard(CView wildcard, StrCase sc) const noexcept {
 	const auto* p = begin();
 	const auto* e = end();
@@ -296,6 +315,156 @@ constexpr bool MutStrView_<T>::matchWildcard(CView wildcard, StrCase sc) const n
 		return false;
 	}
 	return p == e && w == wEnd;
+}
+
+template <class T>
+constexpr Opt<Int> MutStrView_<T>::find(CView str, StrCase sc) const {
+	Int sliceSize = str.size();
+	if (sliceSize > _size) return std::nullopt;
+	Int loop = size() - str.size() + 1;
+	
+	for (Int i = 0; i < loop; ++i) {
+		auto ret = slice(i, sliceSize).compare(str, sc);
+		if (ret == CmpResult::Equal) {
+			return i;
+		}
+	}
+
+	return std::nullopt;
+}
+
+template <class T>
+constexpr Opt<Int> MutStrView_<T>::findBack(CView str, StrCase sc) const {
+	Int sliceSize = str.size();
+	if (sliceSize > _size) return std::nullopt;
+	Int loop = size() - str.size() + 1;
+
+	static_assert(std::is_signed_v<Int>);
+	for (Int i = loop - 1; i >= 0; --i) {
+		auto ret = slice(i, sliceSize).compare(str, sc);
+		if (ret == CmpResult::Equal) return i;
+	}
+
+	return std::nullopt;
+}
+
+template <class T>
+constexpr Opt<Int> MutStrView_<T>::findChar(const T& ch, StrCase sc) const {
+	Int loop = size();
+	if (sc == StrCase::Ignore) {
+		for (Int i = 0; i < loop; ++i) {
+			if (std::tolower(at(i)) == std::tolower(ch)) return i;
+		}
+	} else {
+		for (Int i = 0; i < loop; ++i) {
+			if (at(i) == ch) return i;
+		}
+	}
+
+	return std::nullopt;
+}
+
+template <class T>
+constexpr Opt<Int> MutStrView_<T>::findCharBack(const T& ch, StrCase sc) const {
+	Int loop = size();
+	
+	if (sc == StrCase::Ignore) {
+		static_assert(std::is_signed_v<Int>);
+		for (Int i = loop-1; i >=0; --i) {
+			if (std::tolower(at(i)) == std::tolower(ch)) return i;
+		}
+	} else {
+		static_assert(std::is_signed_v<Int>);
+		for (Int i = loop-1; i >=0; --i) {
+			if (at(i) == ch) return i;
+		}
+	}
+
+	return std::nullopt;
+}
+
+template <class T>
+constexpr Opt<Int> MutStrView_<T>::findAnyChar(Span<T> chList, StrCase sc) const {
+	Int loop = size();
+	if (sc == StrCase::Ignore) {
+		for (Int i = 0; i < loop; ++i) {
+			for (auto & ch : chList) {
+				if (std::tolower(at(i)) == std::tolower(ch)) return i;
+			}
+		}
+	} else {
+		for (Int i = 0; i < loop; ++i) {
+			for (auto & ch : chList) {
+				if (at(i) == ch) return i;
+			}
+		}
+	}
+
+	return std::nullopt;
+}
+
+template <class T>
+constexpr Opt<Int> MutStrView_<T>::findAnyCharBack(Span<T> chList, StrCase sc) const {
+	Int loop = size();
+	if (sc == StrCase::Ignore) {
+		static_assert(std::is_signed_v<Int>);
+		for (Int i = loop-1; i >=0; --i) {
+			for (auto & ch : chList) {
+				if (std::tolower(at(i)) == std::tolower(ch)) return i;
+			}
+		}
+	} else {
+		static_assert(std::is_signed_v<Int>);
+		for (Int i = loop-1; i >=0; --i) {
+			for (auto & ch : chList) {
+				if (at(i) == ch) return i;
+			}
+		}
+	}
+
+	return std::nullopt;
+}
+
+template <class T>
+constexpr auto MutStrView_<T>::splitByIndex(Opt<Int> index, Int separatorSize) -> SplitResult {
+	if (_size <= 0 || !index || index.value() < 0) {
+		return SplitResult(*this, s_empty());
+	} else if (index.value() >= _size) {
+		return SplitResult(s_empty(), *this);
+	} else {
+		Int second = Math::min(index.value() + separatorSize, _size - 1);
+		return SplitResult(slice(0, index.value()), sliceFrom(second));
+	}
+}
+
+template <class T>
+constexpr auto MutStrView_<T>::split(CView str, StrCase sc) -> SplitResult {
+	return splitByIndex(find(str, sc), str.size());
+}
+
+template <class T>
+constexpr auto MutStrView_<T>::splitBack(CView str, StrCase sc) -> SplitResult {
+	return splitByIndex(findBack(str, sc), str.size());
+}
+
+template <class T>
+constexpr auto MutStrView_<T>::splitByChar(const T& ch, StrCase sc) -> SplitResult {
+	return splitByIndex(findChar(ch, sc), 1);
+}
+
+template <class T>
+constexpr auto MutStrView_<T>::splitByCharBack(const T& ch, StrCase sc) -> SplitResult {
+	return splitByIndex(findCharBack(ch, sc), 1);
+}
+
+template <class T>
+constexpr auto MutStrView_<T>::splitByAnyChar(Span<T> chList, StrCase sc) -> SplitResult {
+	return splitByIndex(findAnyChar(chList, sc), 1);
+}
+
+template <class T>
+constexpr auto MutStrView_<T>::splitByAnyCharBack(Span<T> chList, StrCase sc) -> SplitResult {
+	return splitByIndex(findAnyCharBack(chList, sc), 1);
 }
 
 template<class T> inline

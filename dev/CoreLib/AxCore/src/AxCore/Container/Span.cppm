@@ -77,8 +77,8 @@ public:
 	//                +--------------------------------------------+
 	//  slice         (  offset  )[______ newSize ____]
 	//  sliceBack                       [________ newSize__________]
-	//  sliceTrim     (  offset  )[_________till to end ___________]
-	//  sliceTrimBack [________________________________](  offset  )
+	//  sliceFrom     (  offset  )[_________till to end ___________]
+	//  sliceFromBack [________________________________](  offset  )
 	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(Int offset, Int newSize) {
 		if (offset < 0 || newSize < 0 || offset + newSize > _size) throw Error_IndexOutOfRange();
 		return MSpan(_data + offset, newSize);
@@ -88,10 +88,10 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return slice(range.start, range.size); }
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return slice(_size - newSize, newSize); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return slice(_size - newSize, newSize); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceTrim		(Int offset)					{ return slice(offset, _size - offset); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceTrim		(Int offset) const				{ return slice(offset, _size - offset); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceTrimBack	(Int offset)					{ return slice(0, _size - offset); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceTrimBack	(Int offset) const				{ return slice(0, _size - offset); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFrom		(Int offset)					{ return slice(offset, _size - offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return slice(offset, _size - offset); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return slice(0, _size - offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return slice(0, _size - offset); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
