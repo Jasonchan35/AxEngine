@@ -8,7 +8,7 @@ namespace ax {
 class Test_DateTime : public UnitTestClass {
 public:
 	void test_case1() {
-		auto verbose = s_testRequest().scopedVerbose();
+		// auto verbose = s_testRequest().scopedVerbose();
 		
 		auto timeStr = StrView("2023-07-19 11:22:33");
 

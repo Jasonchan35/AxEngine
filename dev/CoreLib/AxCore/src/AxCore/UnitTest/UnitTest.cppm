@@ -35,7 +35,7 @@ struct UnitTestClass : public NonCopyable {
 
 inline
 bool UnitTest_Validate(bool success, const char* expr_str, const SrcLoc& loc = SrcLoc()) {
-	// bool verbose =  UnitTestProgram::s_get()->testRequest.verbose;
+	bool verbose = UnitTestProgram::s_get()->testRequest.verbose;
 
 	if (success && !verbose)
 		return success;
