@@ -33,6 +33,10 @@ void AxCore_Test_String() {
     AX_TEST_FUNC(Test_String)
 }
 
+void AxCore_Test_Time() {
+    AX_TEST_FUNC(Test_DateTime)
+}
+
 void AxCore_Test() {
     AX_TEST_GROUP(AxCore_Test_Base)
     AX_TEST_GROUP(AxCore_Test_Container)
@@ -40,5 +44,6 @@ void AxCore_Test() {
     AX_TEST_GROUP(AxCore_Test_Pointer)
     AX_TEST_GROUP(AxCore_Test_Rtti)
     AX_TEST_GROUP(AxCore_Test_String)
+    AX_TEST_GROUP(AxCore_Test_Time)
 }
 

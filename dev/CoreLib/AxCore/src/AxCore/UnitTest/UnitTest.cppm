@@ -8,6 +8,11 @@ export namespace ax {
 
 struct UnitTestRequest : public NonCopyable {
 	// JsonValue	options;
+	bool verbose = false;
+
+	AX_NODISCARD ScopeValue<bool> scopedVerbose() {
+		return ScopeValue<bool>(&verbose, true);
+	}
 };
 
 class UnitTestProgram : public NonCopyable {
@@ -30,7 +35,7 @@ struct UnitTestClass : public NonCopyable {
 
 inline
 bool UnitTest_Validate(bool success, const char* expr_str, const SrcLoc& loc = SrcLoc()) {
-	bool verbose = false;
+	// bool verbose =  UnitTestProgram::s_get()->testRequest.verbose;
 
 	if (success && !verbose)
 		return success;

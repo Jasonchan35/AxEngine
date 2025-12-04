@@ -9,6 +9,7 @@ export import <algorithm>;
 export import <bit>;
 export import <cctype>;
 export import <cfloat>;
+export import <chrono>;
 export import <cstdint>;
 export import <cstdlib>;
 export import <exception>;
@@ -26,14 +27,8 @@ export import <tuple>;
 export import <type_traits>;
 export import <utility>;
 
-#if AX_OS_WINDOWS
-export import <WinSock2.h>; // WinSock2.h must include before windows.h to avoid winsock1 define
-export import <WS2tcpip.h>; // struct sockaddr_in6
-export import <windows.h>;
-export import <conio.h>;
-
-#else
-export import <uuid/uuid.h>;
+#if !AX_OS_WINDOWS
+	export import <uuid/uuid.h>;
 #endif
 
 #endif // AX_USE_PRECOMPILE_HEADER

@@ -60,13 +60,17 @@ public:
 	AX_INLINE constexpr String_(String_<T,N> && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
 	
 	template<Int N>
-	AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(StrView_make(sz)); } 
+	AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(sz); } 
 
 	constexpr       IString_<T>& asIString()		{ return *this; }
 	constexpr const IString_<T>& asIString() const	{ return *this; }
 	
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
+	AX_INLINE constexpr void operator=(StrView_<T>    rhs) { Base::operator=(rhs); }
+	AX_INLINE constexpr void operator=(IString_<T> && rhs) { Base::move(AX_FORWARD(rhs)); }
+	AX_INLINE constexpr void operator=(This        && rhs) { Base::move(AX_FORWARD(rhs)); }
+	
 	static constexpr This s_utf(StrViewA  v) { This s; UtfUtil::append(s, v); return s; }
 	static constexpr This s_utf(StrViewW  v) { This s; UtfUtil::append(s, v); return s; }
 	static constexpr This s_utf(StrView8  v) { This s; UtfUtil::append(s, v); return s; }
@@ -74,7 +78,7 @@ public:
 	static constexpr This s_utf(StrView32 v) { This s; UtfUtil::append(s, v); return s; }
 
 	template<class... ARGS>
-	static This s_format(const FormatString_<Char, ARGS...> & fmt, const ARGS&... args) {
+	static This s_format(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
 		This s; s.appendFmt(fmt, AX_FORWARD(args)...); return s;
 	}
 

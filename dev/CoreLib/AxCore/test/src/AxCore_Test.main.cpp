@@ -9,8 +9,9 @@ public:
 		if constexpr (test_all) { 
 			AX_TEST_GROUP(AxCore_Test)
 		} else {
-			AX_TEST_GROUP(Test_Rtti);
+			// AX_TEST_GROUP(Test_Rtti);
 			// AX_TEST_GROUP(Test_String);
+			AX_TEST_GROUP(Test_LinkedList);
 		}
 	}
 };

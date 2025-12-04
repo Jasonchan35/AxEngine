@@ -28,7 +28,7 @@ protected:
 	constexpr virtual MemAllocResult<T>	onStorageMalloc(Int reqSize) = 0;
 	constexpr virtual void				onStorageFree(T* p) = 0;
 
-	constexpr void _storageCopy(const IArrayStorage<T>& rhs);
+	constexpr void _storageCopy(Span<T> rhs);
 	constexpr void _storageMove(IArrayStorage<T>&& rhs);
 	constexpr bool _storageReserve(Int newCapacity);
 	constexpr void _storageRreserveImpl(Int reqCapacity);
@@ -100,11 +100,9 @@ protected:
 };
 
 template <class T>
-constexpr void IArrayStorage<T>::_storageCopy(const IArrayStorage<T>& rhs) {
-	if (this == &rhs) { AX_ASSERT(false); return; }
-
-	auto* srcData = rhs._storage.data();
-	auto  srcSize = rhs._storage.size();
+constexpr void IArrayStorage<T>::_storageCopy(Span<T> rhs) {
+	auto* srcData = rhs.data();
+	auto  srcSize = rhs.size();
 
 	_storageClear();
 	_storageReserve(srcSize);

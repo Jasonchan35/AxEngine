@@ -50,12 +50,11 @@ struct Test_LinkedList : public UnitTestClass {
 
 		AX_LOG("list = {}", list);
 		{
-			TestData src_[] = {103, 101, 0, 1, 3, 100, 4, 104, 102};
-			auto src = Span(src_);
+			auto src = Span({103, 101, 0, 1, 3, 100, 4, 104, 102});
 
 			Int i = 0;
 			for (auto& e : list) {
-				AX_TEST_EQ(e.value, src[i].value);
+				AX_TEST_EQ(e.value, src[i]);
 				i++;
 			}
 		}

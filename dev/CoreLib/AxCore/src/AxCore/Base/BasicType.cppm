@@ -77,6 +77,7 @@ template<class T> constexpr bool Type_IsChar        =  std::is_same_v<std::remov
 
 template<class T> constexpr bool Type_Is_f32        =  std::is_same_v<T, f32>;
 template<class T> constexpr bool Type_Is_f64        =  std::is_same_v<T, f64>;
+template<class T> constexpr bool Type_IsEnum        =  std::is_enum_v<T>;
 
 //--------
 template<Int N>		struct	Type_Int_BySize_Struct;
@@ -153,6 +154,7 @@ template<class T>
 class MutStrLit_ {
 	using This = MutStrLit_;
 public:
+	using std_string_view = std::basic_string_view< std::remove_const_t<T> >;
 	
 	MutStrLit_() noexcept = default;
 
@@ -166,7 +168,8 @@ public:
 	AX_INLINE constexpr const T* c_str() const noexcept { return _size ? _data : &_empty_c_str; }
 	AX_INLINE constexpr T*  data() const noexcept { return _data; }
 	AX_INLINE constexpr Int size() const noexcept { return _size; }
-
+	AX_INLINE constexpr std_string_view to_string_view() const noexcept { return std_string_view(_data, _size); }
+	
 protected:
 	static constexpr T _empty_c_str = 0;	
 	T*  _data = nullptr;
@@ -302,16 +305,30 @@ private:
 	T* _p = nullptr;
 };
 
+struct ScopeEnterOnce : public NonCopyable {
+	struct Scoped : public NonCopyable {
+		Scoped(Scoped && r) noexcept	{ std::swap(_p, r._p); }
+		Scoped(bool& entered) noexcept	{ if (!entered) { _p = &entered; entered = true; } }
+		~Scoped() noexcept { if (_p) *_p = false; }
+
+		explicit operator bool() const { return _p != nullptr; }
+		bool* _p = nullptr;
+	};
+	AX_NODISCARD Scoped enter() { return Scoped(_entered); }
+	bool _entered = false;
+};
+
 class Error : public std::exception {
 public:
 	Error() = default;
 	Error(const SrcLoc& srcLoc) : _srcLoc(srcLoc) {}
+	Error(std::string_view msg, const SrcLoc& srcLoc) : _what(msg), _srcLoc(srcLoc) {}
 
 	virtual char const* what() const override { return _what.c_str(); }
 	
 protected:
-	SrcLoc _srcLoc;
 	std::string _what;
+	SrcLoc _srcLoc;
 };
 
 AX_SIMPLE_ERROR(Error_IndexOutOfRange)
@@ -322,6 +339,8 @@ AX_SIMPLE_ERROR(Error_Allocator)
 AX_SIMPLE_ERROR(Error_Format)
 AX_SIMPLE_ERROR(Error_Utf)
 AX_SIMPLE_ERROR(Error_ParseString)
+AX_SIMPLE_ERROR(Error_Time)
+AX_SIMPLE_ERROR(Error_File)
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {

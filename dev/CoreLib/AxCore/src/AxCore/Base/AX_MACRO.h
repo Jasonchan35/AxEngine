@@ -147,6 +147,7 @@
 	class ERROR_TYPE : public Error { \
 		public: \
 		ERROR_TYPE(const SrcLoc& srcLoc = SrcLoc()) : Error(srcLoc) {} \
+		ERROR_TYPE(std::string_view msg, const SrcLoc& srcLoc = SrcLoc()) : Error(msg, srcLoc) {} \
 	}; \
 //------
 
@@ -212,7 +213,7 @@
 #define AX_ENUM_STR__CASE(V, ...) case CURRENT_ENUM_T::V: return #V;
 
 #define AX_ENUM_STR(LIST, T) \
-	inline StrLit ax_enum_str(const T& v) { \
+	constexpr StrLit _ax_macro_enum_str(const T& v) { \
 		using CURRENT_ENUM_T = T; \
 		switch (v) { \
 			LIST(AX_ENUM_STR__CASE) \
@@ -224,7 +225,7 @@
 #define AX_ENUM_TRY_PARSE__CASE(V, ...) if (str == StrView(#V)) { outValue = CURRENT_ENUM_T::V; return true; }
 
 #define AX_ENUM_TRY_PARSE(LIST, T) \
-	inline bool ax_enum_try_parse(T& outValue, StrView str) { \
+	constexpr bool _ax_macro_enum_try_parse(StrView str, T& outValue) { \
 		using CURRENT_ENUM_T = T; \
 		LIST(AX_ENUM_TRY_PARSE__CASE) \
 		return false; \
@@ -256,6 +257,21 @@
 #define AX_LOG(fmt, ...)			do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Info,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG_FLUSH()				do{ ::ax::Logger::s_get()->flush(); } while(false)
 
 //----- NameId
 #define AX_NAMEID(NAME_STR) ([]() -> const NameId& { static NameId s = NameId::s_compute(NAME_STR); return s; }())
+
+
+#if AX_OS_WINDOWS
+	#define AX_APP_MAIN(T) \
+	// 	int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPWSTR lpCmdLine, int nCmdShow) { return ::ax::App_run<T>(0, nullptr); } \
+	// 	int main(int argc, const char* argv[]) { return ::ax::App_run<T>(argc, argv); } \
+	// //--------
+
+#else
+	#define AX_APP_MAIN(T) \
+	// 	int main(int argc, const char* argv[]) { return ::ax::App_run<T>(argc, argv); } \
+	// //--------
+	
+#endif

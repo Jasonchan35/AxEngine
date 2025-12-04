@@ -3,7 +3,7 @@ module;
 
 export module AxCore.TimeDuration;
 
-import AxCore.BasicType;
+export import AxCore.BasicType;
 
 export namespace ax {
 

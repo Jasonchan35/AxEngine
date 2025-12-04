@@ -16,10 +16,11 @@ protected:
 	using MSpan = MutSpan<T>;
 	using CSpan =    Span<T>;
 public:
-	AX_NODISCARD AX_INLINE constexpr T*  data() { return _storage.data(); }
-	AX_NODISCARD AX_INLINE constexpr Int size() const { return _storage.size(); }
-	AX_NODISCARD AX_INLINE constexpr Int capacity() const { return _storage.capacity(); }
-	AX_NODISCARD AX_INLINE constexpr Int sizeInBytes() const noexcept { return size() * AX_SIZEOF(T); }
+	AX_NODISCARD AX_INLINE constexpr       T*	data()				{ return _storage.data(); }
+	AX_NODISCARD AX_INLINE constexpr const T*	data() const		{ return _storage.data(); }
+	AX_NODISCARD AX_INLINE constexpr 	Int		capacity() const	{ return _storage.capacity(); }
+	AX_NODISCARD AX_INLINE constexpr	Int		size() const		{ return _storage.size(); }
+	AX_NODISCARD AX_INLINE constexpr 	Int		sizeInBytes() const noexcept { return size() * AX_SIZEOF(T); }
 
 	AX_NODISCARD AX_INLINE	bool inBound( Int  i ) const	{ return i >= 0 && i < size(); }
 	
@@ -27,9 +28,10 @@ public:
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 	
 	constexpr void reserve(Int newCapacity) { Base::_storageReserve(newCapacity); }
+	constexpr void reserveMore(Int n)		{ reserve(size() + n); }
 	
-	template<class... Args>
-	constexpr void resize(Int newSize, Args&&... args) { Base::_storageResize(newSize, AX_FORWARD(args)...); }
+	template<class... Args> constexpr void resize(Int newSize, Args&&... args) { Base::_storageResize(newSize, AX_FORWARD(args)...); }
+	template<class... Args> constexpr void resizeMore(Int n,   Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
 
 	template< class... Args >
 	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }

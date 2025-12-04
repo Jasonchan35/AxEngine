@@ -11,8 +11,10 @@ import AxCore.InlineStorage;
 export namespace ax {
 
 template <class T, Int BUF_SIZE = 0> class Array;
-using ByteArray = Array<Byte>;
-using IntArray  = Array<Int>;
+using IByteArray = IArray<Byte>;
+using  ByteArray =  Array<Byte>;
+using IIntArray  = IArray<Int>;
+using  IntArray  =  Array<Int>;
 
 template <class T, Int BUF_SIZE>
 class Array : public IArray<T>, InlineStorage<T, BUF_SIZE> {

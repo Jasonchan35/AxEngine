@@ -63,6 +63,13 @@ struct StrView_ParseHandler<CH, T> {
 	}
 };
 
+template<class CH, class T> requires Type_IsEnum<T>
+struct StrView_ParseHandler<CH, T> {
+	constexpr static bool tryParse(StrView_<CH> str, T& obj) {
+		return _ax_macro_enum_try_parse(str, obj);
+	}
+};
+
 template<class CH, class T>
 bool StrView_parse(StrView_<CH> sv, T& obj) { return StrView_ParseHandler<CH, T>::tryParse(sv, obj); }
 
@@ -83,10 +90,13 @@ public:
 	constexpr MutStrView_() = default;
 	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
 	constexpr MutStrView_(MutStrLit_<T> r) noexcept : _data(r.data()), _size(r.size()) {}
-	
-	template<Int N>
-	AX_INLINE constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
 
+	template <Int N>
+	constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size( N > 0 ? N - 1 : 0) {}
+	
+	AX_INLINE constexpr void setPtr(T* data, Int size) noexcept { _data = data; _size = size; }
+	AX_NODISCARD constexpr bool samePtrAndSize(CSpan r) const noexcept { return _size == r._size && _data == r._data; }
+		
 	static constexpr MView s_empty() { return MutStrView_(); }
 	explicit operator bool() const { return size() > 0; }
 
@@ -154,17 +164,17 @@ public:
 	AX_INLINE constexpr MView     sliceFromBack	(Int offset)					{ return slice(0, _size - offset); }
 	AX_INLINE constexpr CView     sliceFromBack	(Int offset) const				{ return slice(0, _size - offset); }
 	//----------------
-	inline    constexpr CmpResult compare      (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
-	AX_INLINE constexpr bool      equals       (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return compare(r, sc) == CmpResult::Equal; }
+	AX_INLINE constexpr CmpResult compare      (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
+	constexpr bool                equals       (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
 	AX_INLINE constexpr bool      startsWith   (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
 	AX_INLINE constexpr bool      endsWith     (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
 	inline    constexpr bool      matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const noexcept;
-	AX_INLINE constexpr bool operator==	(CView r) const	{ return  equals(r); }
-	AX_INLINE constexpr bool operator!=	(CView r) const	{ return !equals(r); }
-	AX_INLINE constexpr bool operator<	(CView r) const	{ return CmpResult_isLesser        (compare(r)); }
-	AX_INLINE constexpr bool operator<=	(CView r) const	{ return CmpResult_isLesserOrEqual (compare(r)); }
-	AX_INLINE constexpr bool operator>	(CView r) const	{ return CmpResult_isGreater       (compare(r)); }
-	AX_INLINE constexpr bool operator>=	(CView r) const	{ return CmpResult_isGreaterOrEqual(compare(r)); }
+	AX_INLINE constexpr bool      operator==	(CView r) const	{ return  equals(r); }
+	AX_INLINE constexpr bool      operator!=	(CView r) const	{ return !equals(r); }
+	AX_INLINE constexpr bool      operator<		(CView r) const	{ return CmpResult_isLesser        (compare(r)); }
+	AX_INLINE constexpr bool      operator<=	(CView r) const	{ return CmpResult_isLesserOrEqual (compare(r)); }
+	AX_INLINE constexpr bool      operator>		(CView r) const	{ return CmpResult_isGreater       (compare(r)); }
+	AX_INLINE constexpr bool      operator>=	(CView r) const	{ return CmpResult_isGreaterOrEqual(compare(r)); }
 	//----------------
 	AX_NODISCARD constexpr Opt<Int>	find			(CView      str, StrCase sc = StrCase::Sensitive) const;
 	AX_NODISCARD constexpr Opt<Int>	findBack		(CView      str, StrCase sc = StrCase::Sensitive) const;
@@ -208,7 +218,7 @@ template<class T> constexpr bool Type_IsMutStrView = false;
 template<class T> constexpr bool Type_IsMutStrView<MutStrView_<T>> = true;
 
 template<class T> constexpr bool Type_IsStrView = false; 
-template<class T> constexpr bool Type_IsStrView<StrView_<T>> = true; 
+template<class T> constexpr bool Type_IsStrView<StrView_<T>> = true;
 
 // Null-terminated string, should use StrLit or StrView if possible
 template<class T>
@@ -250,43 +260,32 @@ bool MutStrView_<T>::endsWith(CView r, StrCase sc) const noexcept {
 	return ax_const_cast(this)->sliceBack(r.size()).equals(r, sc);
 }
 
-template<class T> AX_INLINE
-constexpr StrView_<T> StrView_make(std::basic_string_view<T> src) { return StrView_<T>(src.data(), src.size()); }
+template <class T>
+AX_NODISCARD AX_INLINE constexpr StrView_<T> StrView_ref(Span<T> src) noexcept {
+	return StrView_<T>(src.data(), src.size());
+}
 
-template<class T, Int N> AX_INLINE
-constexpr StrView_<T> StrView_make(T (&sz)[N]) { return StrView_<T>(sz, N > 0 ? N-1 : 0); }
+template <class T>
+AX_NODISCARD AX_INLINE constexpr StrView_<T> StrView_ref(std::basic_string_view<T> src) noexcept {
+	return StrView_<T>(src.data(), src.size());
+}
 
-template<class T> AX_INLINE
-constexpr StrView_<T> StrView_c_str(const T* sz) { return StrView_<T>(sz, ax_strlen(sz)); }
+template <class T>
+AX_INLINE constexpr StrView_<T> StrView_c_str(const T* sz) noexcept { return StrView_<T>(sz, ax_strlen(sz)); }
 
 template <class T>
 constexpr CmpResult MutStrView_<T>::compare(CView r, StrCase sc) const noexcept {
-	if (_size > 0 && _size == r.size() && _data == r.data())
-		return CmpResult::Equal;
-
-	Int n = Math::min(_size, r.size());
-	const T* p0 = _data;
-	const T* p1 = r.data();
-
 	if (sc == StrCase::Ignore) {
-		Int i = 0;
-		for( i=0; i<n; ++p0, ++p1, i++ ) {
-			auto c0 = std::tolower(*p0);
-			auto c1 = std::tolower(*p1);
-			if (c0 != c1 ) return CmpResult_fromInt(c0 - c1);
-			if (c0 == T(0) || c1 == T(0)) break;
-		}
+		return span().compare(r.span(),	[](auto& a , auto& b) { return CmpResult_fromInt(std::tolower(a) - std::tolower(b)); } );
 	} else {
-		Int i = 0;
-		for( i=0; i<n; ++p0, ++p1, i++ ) {
-			const auto c0 = (*p0);
-			const auto c1 = (*p1);
-			if (c0 != c1 ) return CmpResult_fromInt(c0 - c1);
-			if (c0 == T(0) || c1 == T(0)) break;
-		}
+		return span().compare(r.span(),	[](auto& a , auto& b) { return CmpResult_fromInt(a - b); } );
 	}
+}
 
-	return CmpResult_fromInt(_size - r.size());
+template <class T>
+constexpr bool MutStrView_<T>::equals(CView r, StrCase sc) const noexcept {
+	if (_size != r.size()) return false;
+	return compare(r, sc) == CmpResult::Equal;
 }
 
 template <class T>

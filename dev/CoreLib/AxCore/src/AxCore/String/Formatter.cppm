@@ -51,6 +51,37 @@ public:
 	}
 };
 
+template <class FMT_CH>
+class FormatHandler<std::exception, FMT_CH> {
+public:
+	using Obj = std::exception;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << StrView_c_str(obj.what());
+	}
+};
+
+template <class FMT_CH>
+class FormatHandler<Error, FMT_CH> {
+public:
+	using Obj = Error;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << StrView_c_str(obj.what());
+	}
+};
+
+template<class T> requires Type_IsEnum<T>
+constexpr StrView ax_enum_str(const T& v) { return _ax_macro_enum_str(v); }
+
+template <class T, class FMT_CH> requires Type_IsEnum<T>
+class FormatHandler<T, FMT_CH> {
+public:
+	void onFormat(const T & v, Format_<FMT_CH> & fmt) {
+		fmt << ax_enum_str(v);
+	}
+};
+
+//------------------------
+
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
 inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, const ARGS&... args) {
 	// std::format only support char and wchar_t format string

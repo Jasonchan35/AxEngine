@@ -29,6 +29,7 @@ struct MemUtil {
 	template< class T > static constexpr void copyConstructor(T* dst, const T* src, Int n);
 	template< class T > static constexpr void moveConstructorAndDestructor(T* dst, T* src, Int n);
 
+	template< class T > static constexpr bool equals(const T* dst, const T* src, Int n);
 
 	template<class T> AX_INLINE
 	static constexpr Int sizeInBytes(const T* start, const T* end) {
@@ -193,10 +194,11 @@ void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
 		try {
-			auto s = src;
-			auto e = src + n ;
-			for( ; s<e; ++s, ++dst ) {
-				ax_call_constructor<T>(dst, std::move(*s));
+			auto* s = src;
+			auto* e = src + n ;
+			auto* d = dst;
+			for( ; s<e; ++s, ++d ) {
+				ax_call_constructor<T>(d, std::move(*s));
 				ax_call_destructor(s);
 			}
 		} catch	(...) {
@@ -205,6 +207,17 @@ void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 			throw;
 		}
 	}
+}
+
+template <class T>
+constexpr bool MemUtil::equals(const T* dst, const T* src, Int n) {
+	auto* s = src;
+	auto* e = src + n;
+	auto* d = dst;
+	for (; s<e; ++s, ++d) {
+		if (*s != *d) return true;
+	}
+	return false;
 }
 
 } // namespace

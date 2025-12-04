@@ -5,6 +5,7 @@ export import AxCore.Vec;
 export import AxCore.FixedArray;
 
 export namespace ax {
+
 template<Int N, class T, VecSIMD SIMD> class BBox_;
 template<class T, VecSIMD SIMD = CpuSIMD_Default> using BBox2_ = BBox_<2, T, SIMD>;
 template<class T, VecSIMD SIMD = CpuSIMD_Default> using BBox3_ = BBox_<3, T, SIMD>;

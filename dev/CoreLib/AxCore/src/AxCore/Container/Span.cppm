@@ -2,7 +2,7 @@
 #include "AxCore-pch.h"
 
 export module AxCore.Span;
-export import AxCore.BasicType;
+export import AxCore.BasicMath;
 export import AxCore.Range;
 
 import AxCore.MemoryUtil;
@@ -30,7 +30,10 @@ public:
 	AX_INLINE constexpr MutSpan(T* data, Int size) noexcept : _data(data), _size(size) {}
 
 	template<Int N>
-	AX_INLINE constexpr MutSpan(T (&data)[N]) noexcept : _data(data), _size(N) {}
+	AX_INLINE constexpr MutSpan(T (&p)[N]) noexcept : _data(p), _size(N) {}
+	
+	AX_INLINE constexpr void setPtr(T* data, Int size) noexcept { _data = data; _size = size; }
+	AX_NODISCARD constexpr bool samePtrAndSize(CSpan r) const noexcept { return _size == r._size && _data == r._data; }
 	
 	AX_NODISCARD AX_INLINE constexpr MSpan	span		()       noexcept	{ return MSpan(_data, _size); }
 	AX_NODISCARD AX_INLINE constexpr CSpan	span		() const noexcept	{ return CSpan(_data, _size); }
@@ -61,7 +64,14 @@ public:
 	AX_NODISCARD AX_INLINE constexpr       T* data()       noexcept { return _data; }
 	AX_NODISCARD AX_INLINE constexpr const T* data() const noexcept { return _data; }
 	AX_NODISCARD AX_INLINE constexpr Int      size() const noexcept { return _size; }
-	AX_NODISCARD AX_INLINE constexpr Int	  sizeInBytes() const noexcept { return _size * AX_SIZEOF(T); }
+	AX_NODISCARD AX_INLINE constexpr Int      sizeInBytes() const noexcept { return _size * AX_SIZEOF(T); }
+
+	template<class Func>
+	constexpr CmpResult compare(CSpan r, Func func) const noexcept;
+	constexpr bool	    equals (CSpan r) const noexcept;
+
+	constexpr bool operator==(CSpan r) const noexcept { return  equals(r); }
+	constexpr bool operator!=(CSpan r) const noexcept { return !equals(r); }
 
 	AX_NODISCARD AX_INLINE	constexpr static MSpan		s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
 	AX_NODISCARD AX_INLINE	constexpr static CSpan		s_fromByteSpan		(   ByteSpan	from) noexcept	{ return CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
@@ -112,5 +122,32 @@ protected:
 	T*	_data = nullptr;
 	Int _size = 0;
 };
+
+template <class T>
+constexpr bool MutSpan<T>::equals(CSpan r) const noexcept {
+	if (_size == 0 && r._size == 0) return true;
+	if (_size != r.size()) return false;
+	if (_data != r.data()) return true;
+	return MemUtil::equals(_data, r.data(), _size);
+}
+
+template<class T>
+template<class Func>
+constexpr CmpResult MutSpan<T>::compare(CSpan r, Func func) const noexcept {
+	if (_size == 0 && r._size == 0) return CmpResult::Equal;
+	if (samePtrAndSize(r)) return CmpResult::Equal;
+
+	Int n = Math::min(_size, r.size());
+	const T* p0 = _data;
+	const T* p1 = r.data();
+
+	Int i = 0;
+	for( i=0; i<n; ++p0, ++p1, i++ ) {
+		auto res = func(*p0, *p1);
+		if (res != CmpResult::Equal) return res;
+	}
+
+	return CmpResult_fromInt(_size - r.size());
+}
 
 } // namespace

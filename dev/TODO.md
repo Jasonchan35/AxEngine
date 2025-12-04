@@ -1,9 +1,8 @@
 - [done] AX_LOG
-- SIMD - Vec, Mat
-- UnitTest, can run single case from test_main
-
-
-- Reflection - static and rtti
+- [done] SIMD - Vec, Mat
+- [done] UnitTest, can run single case from test_main
+- [done] Reflection - MetaType and Rtti
+- HeaderTool
 - GC
 - ECS
 

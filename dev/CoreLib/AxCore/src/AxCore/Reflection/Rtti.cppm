@@ -100,6 +100,8 @@ private:
 class RttiObject : public WPtrReferenable {
 	AX_TYPE_INFO(RttiObject, NoBaseClass)
 public:
+	virtual ~RttiObject() = default;
+	
 	using _TYPE_INFO_Base = NoBaseClass;
 	struct MetaTypeInit : AX_META_TYPE_INIT(This) {};
 	

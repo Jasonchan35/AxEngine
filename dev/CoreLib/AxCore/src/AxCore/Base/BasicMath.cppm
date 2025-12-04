@@ -4,7 +4,7 @@ module;
 #include <cfloat>
 
 export module AxCore.BasicMath;
-import AxCore.BasicType;
+export import AxCore.BasicType;
 
 export namespace ax::Math {
 

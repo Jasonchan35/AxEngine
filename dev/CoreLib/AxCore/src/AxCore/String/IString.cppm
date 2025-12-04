@@ -22,6 +22,7 @@ concept CON_IString_ = std::is_base_of_v<IString_<CH>, OBJ>;
 
 template<class T>
 class IString_ : public IArrayStorage<T> {
+	using This = IString_;
 	using Base = IArrayStorage<T>;
 	using Base::_storage;	
 protected:
@@ -44,9 +45,10 @@ public:
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 
 	constexpr void reserve(Int newCapacity);
+	constexpr void reserveMore(Int n) { reserve(size() + n); }
 
-	template<class... Args>
-	constexpr void resize(Int newSize, Args&&... args);
+	template<class... Args> constexpr void resize(Int newSize, Args&&... args);
+	template<class... Args> constexpr void resizeMore(Int n, Args&&... args) { resize(size() + n, forward<Args>(args)...); }
 
 	constexpr explicit operator bool() const { return size() != 0; }
 	constexpr       T* data()			{ return _storage.data(); }
@@ -136,20 +138,31 @@ public:
 	AX_NODISCARD constexpr auto splitByAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyChar    (chList, sc); }
 	AX_NODISCARD constexpr auto splitByAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyCharBack(chList, sc); }
 	//----------------
+	constexpr void replaceChars(const T& from, const T& to);
+	constexpr Int  replaceAll(CView from, CView to, StrCase sc = StrCase::Sensitive);
+	//----------------
 
-	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(std::move(rhs)); }
+	AX_INLINE constexpr void operator=(StrView_<T>    rhs) { Base::_storageCopy(rhs); }
+	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(AX_FORWARD(rhs)); }
 	AX_INLINE constexpr void move(IString_<T> && rhs);
+
+	constexpr This& operator<<(CView  view) { append(view); return *this; }
+	constexpr This& operator<<(const T& ch) { append(ch  ); return *this; }
 
 	constexpr void append(CView view);
 	constexpr void append(const T& ch);
-
-	template<class A> constexpr void operator<<(A & a) { append(a); }
 	
 	template<class... ARGS>
 	constexpr void append_args(ARGS&&... args) { append(args...); }
 
 	constexpr void appendList(const std::initializer_list<T    > & list);
 	constexpr void appendList(const std::initializer_list<CView> & list);
+
+	template<class SRC>
+	AX_INLINE constexpr void set(const SRC& src) { clear(); append(src); }
+	
+	template<class SRC>
+	AX_INLINE constexpr void setUtf(const SRC& src) { clear(); appendUtf(src); }
 	
 	AX_INLINE constexpr void appendUtf(CharA  r) { _appendUtf(r); }
 	AX_INLINE constexpr void appendUtf(CharW  r) { _appendUtf(r); }
@@ -164,7 +177,7 @@ public:
 	constexpr void appendUtf(StrView32 r);
 
 	template<class... ARGS>
-	constexpr void appendFmt(const FormatString_<Char, ARGS...> & fmt, const ARGS&... args) {
+	constexpr void appendFmt(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
 		FmtTo(*this, fmt, AX_FORWARD(args)...);
 	}
 	
@@ -189,6 +202,15 @@ protected:
 
 	template<class R> constexpr void _appendUtf(const R& ch);
 };
+
+template <class T> constexpr 
+void IString_<T>::replaceChars(const T& from, const T& to) {
+	auto* s = data();
+	auto* e = s + size();
+	for ( ; s < e; s++ ) {
+		if (*s == from) *s = to;
+	}
+}
 
 template<class T> inline
 std::ostream& operator << ( std::ostream & s, const IString_<T> & v ) { return s << v.to_string_view(); }
