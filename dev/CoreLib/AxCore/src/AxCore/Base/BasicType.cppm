@@ -247,8 +247,8 @@ struct CharUtil {
 	CharUtil() = delete;
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha	(CH ch) { return std::isalpha(ch); } 
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isDigit	(CH ch) { return std::isdigit(ch); }
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool toUpper	(CH ch) { return std::toupper(ch); }
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool toLower	(CH ch) { return std::tolower(ch); }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr CH   toUpper	(CH ch) { return static_cast<CH>(std::toupper(ch)); }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr CH   toLower	(CH ch) { return static_cast<CH>(std::tolower(ch)); }
 
 	template <class CH>
 	AX_NODISCARD AX_INLINE static constexpr bool equals(CH a, CH b, StrCase sc) { return compare(a, b, sc) == CmpResult::Equal; }
@@ -267,9 +267,11 @@ struct CharUtil {
 	template <StrCase SC, class CH>
 	AX_NODISCARD AX_INLINE static constexpr CmpResult compare_(CH a, CH b) {
 		if constexpr (SC == StrCase::Ignore) {
-			return CmpResult_fromInt(toLower(a) - toLower(b));
+			auto diff = toLower(a) - toLower(b);
+			return CmpResult_fromInt(diff);
 		} else {
-			return CmpResult_fromInt(a - b);
+			auto diff = a - b;
+			return CmpResult_fromInt(diff);
 		}
 	}
 	

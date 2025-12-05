@@ -334,7 +334,8 @@ constexpr Opt<Int> MutStrView_<T>::find(CView str, StrCase sc) const {
 	Int loop = size() - str.size() + 1;
 	
 	for (Int i = 0; i < loop; ++i) {
-		auto ret = slice(i, sliceSize).compare(str, sc);
+		auto tmp = slice(i, sliceSize);
+		auto ret = tmp.compare(str, sc);
 		if (ret == CmpResult::Equal) {
 			return i;
 		}
