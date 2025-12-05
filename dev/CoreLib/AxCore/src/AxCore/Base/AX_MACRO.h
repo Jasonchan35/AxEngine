@@ -259,19 +259,21 @@
 #define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_FLUSH()				do{ ::ax::Logger::s_get()->flush(); } while(false)
 
+#define AX_DUMP(v0)					do{ AX_LOG("AX_DUMP: {}=[{}]", AX_STR(#v0), (v0)); } while(false)
+
 //----- NameId
 #define AX_NAMEID(NAME_STR) ([]() -> const NameId& { static NameId s = NameId::s_compute(NAME_STR); return s; }())
 
 
 #if AX_OS_WINDOWS
 	#define AX_APP_MAIN(T) \
-	// 	int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPWSTR lpCmdLine, int nCmdShow) { return ::ax::App_run<T>(0, nullptr); } \
-	// 	int main(int argc, const char* argv[]) { return ::ax::App_run<T>(argc, argv); } \
+	 	int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPWSTR lpCmdLine, int nCmdShow) { return ::ax::App_run<T>(0, nullptr); } \
+	 	int main(int argc, const char* argv[]) { return ::ax::App_run<T>(argc, argv); } \
 	// //--------
 
 #else
 	#define AX_APP_MAIN(T) \
-	// 	int main(int argc, const char* argv[]) { return ::ax::App_run<T>(argc, argv); } \
+	 	int main(int argc, const char* argv[]) { return ::ax::App_run<T>(argc, argv); } \
 	// //--------
 	
 #endif

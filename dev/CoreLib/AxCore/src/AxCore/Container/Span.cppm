@@ -102,7 +102,15 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return slice(offset, _size - offset); }
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return slice(0, _size - offset); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return slice(0, _size - offset); }
-	
+
+	struct FindResult {
+		FindResult(Int index_, const T& value_) : index(index_), value(value_) {}
+		Int			index;
+		const T&	value;
+	};
+	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const;
+	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	();
+
 	using  Iter	= T*;
 	using CIter	= const T*;
 	
@@ -122,6 +130,35 @@ protected:
 	T*	_data = nullptr;
 	Int _size = 0;
 };
+
+template <class T>
+template<class FuncOp> constexpr
+auto MutSpan<T>::findMin() const -> FindResult {
+	if (_size <= 0) throw Error_InvalidSize();
+
+	auto* pMinValue = _data;
+	auto* p = _data + 1;
+	auto* e = _data + _size;
+	for (; p < e; p++) {
+		if (FuncOp::invoke(*p, *pMinValue)) {
+			pMinValue = p;
+		}
+	}
+	return FindResult(pMinValue - _data, *p);
+}
+
+template <class T>
+template <class FuncOp> constexpr 
+void MutSpan<T>::sort() {
+	// simple sorting, prevent move data if possible
+	for (Int i = 0; i < _size; i++) {
+		Int minIndex = i + sliceFrom(i).findMin<FuncOp>().index;
+		if (minIndex == i) continue;
+
+		std::swap(at(minIndex), at(i));
+		minIndex = i;
+	}
+}
 
 template <class T>
 constexpr bool MutSpan<T>::equals(CSpan r) const noexcept {

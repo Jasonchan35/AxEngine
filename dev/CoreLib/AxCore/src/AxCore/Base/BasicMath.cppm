@@ -100,7 +100,7 @@ template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexp
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isInfinity		( const T& v ) { return NumLimit<T>::hasInfinity && v == infinity<T>;    }
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isNegInfinity	( const T& v ) { return NumLimit<T>::hasInfinity && v == negInfinity<T>; }
 
-template <class T> requires Type_IsInt< T> AX_INLINE T fmod(const T& a, const T& b) { return a % b; }
+template <class T> requires Type_AnyInt< T> AX_INLINE T fmod(const T& a, const T& b) { return a % b; }
 template <class T> requires Type_Is_f32<T> AX_INLINE T fmod(const T& a, const T& b) { return ::fmodf(a, b); }
 template <class T> requires Type_Is_f64<T> AX_INLINE T fmod(const T& a, const T& b) { return ::fmod(a, b); }
 
@@ -110,7 +110,7 @@ struct modf_Result {
 	T frac_part;	// fractional part
 };
 
-template <class T> requires Type_IsInt<T>
+template <class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 	modf_Result<T> o;
 	o.int_part  = v;
@@ -134,7 +134,7 @@ AX_NODISCARD AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 
 template<class T> requires Type_IsFundamental<T>
 AX_NODISCARD AX_INLINE constexpr bool almostEqual(const T& a, const T& b) {
-	if constexpr (Type_IsInt<T>) {
+	if constexpr (Type_AnyInt<T>) {
 		return a == b;
 	} else {
 		auto diff = abs(a - b);
@@ -166,7 +166,7 @@ T	safeDiv	( const T& a, const T& b )	{ return almostZero(b) ? zero<T> : a / b; }
 template< class T > AX_NODISCARD AX_INLINE constexpr
 bool	isInRange	(const T& x, const T& a, const T & b)		{ return x >= a && x <= b; }
 
-template< class T > requires Type_IsInt<T>
+template< class T > requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE constexpr bool	isPow2		( const T& v )	{ return v != 0 && (v & (v - 1)) == 0; }
 
 AX_NODISCARD AX_INLINE constexpr i8	nextPow2	( i8  v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4;                              v++; return max_0(v); }
@@ -186,7 +186,7 @@ constexpr T nextPow2_half(const T& v) {
 	return h >= v ? h : o;
 }
 
-template<class T> requires Type_IsFloat<T>
+template<class T> requires Type_AnyFloat<T>
 AX_NODISCARD AX_INLINE constexpr T alignTo(const T& n, const T& a) {
 	if constexpr(std::is_floating_point_v<T>) {
 		T i = floor( n / a ) * a;
@@ -195,7 +195,7 @@ AX_NODISCARD AX_INLINE constexpr T alignTo(const T& n, const T& a) {
 	}
 }
 
-template<class T> requires Type_IsInt<T>
+template<class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE constexpr T alignTo(const T& n, const T& a) {
 	if constexpr(std::is_unsigned_v<T>) {
 		T r = n % a;

@@ -97,7 +97,7 @@ void Uuid::getString(IString& o) const {
 			o << "-";
 		}
 
-		auto pair = ax_char_u8_to_upper_hex_pair<Char>(data[i]);
+		auto pair = CharUtil::byteToHex<Char>(data[i]);
 		o << pair.first;
 		o << pair.second;
 	}
@@ -120,7 +120,7 @@ bool Uuid::tryParse(StrView str) {
 			continue;
 		}
 
-		auto v = ax_char_hex_to_u8(ch);
+		auto v = CharUtil::hexToByte(ch);
 		if (!v) return false;
 		
 		if (t % 2 == 0) {

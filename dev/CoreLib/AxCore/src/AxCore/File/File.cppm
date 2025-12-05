@@ -4,6 +4,7 @@
 export module AxCore.File;
 export import AxCore.Formatter;
 export import AxCore.Delegate;
+export import AxCore.FilePath;
 
 export namespace ax {
 

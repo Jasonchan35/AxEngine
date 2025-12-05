@@ -117,8 +117,11 @@ public:
 		AX_ASSERT(!_head && !_tail && _size == 0);
 	}
 
-	using Iter  = LinkedList_Iter<false, T, CONFIG>;
-	using CIter = LinkedList_Iter<false, T, CONFIG>;
+	template<class TT>
+	using Iter_ = LinkedList_Iter<false, TT, CONFIG>;
+	
+	using Iter  = Iter_<T>;
+	using CIter = Iter_<const T>;
 
 	AX_INLINE Iter begin()		{ return Iter(_head); }
 	AX_INLINE Iter end()		{ return Iter(nullptr); }
@@ -271,8 +274,10 @@ public:
 	
 	AX_NODISCARD AX_INLINE constexpr Int size() const { return _list.size(); }
 
-	using  Iter = _List::Iter;
-	using CIter = _List::CIter;
+	template<class TT>
+	using Iter_ = typename _List::template Iter_<TT>;
+	using Iter  = Iter_<T>;
+	using CIter = Iter_<const T>;
 	AX_NODISCARD AX_INLINE constexpr Iter  begin()			{ return _list.begin(); }
 	AX_NODISCARD AX_INLINE constexpr Iter  end()			{ return _list.end();   }
 	AX_NODISCARD AX_INLINE constexpr CIter begin() const	{ return _list.begin(); }

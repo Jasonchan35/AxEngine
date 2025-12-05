@@ -46,6 +46,13 @@ private:
 template<class T, class... ARGS>
 using FormatString_ = FormatStringT_<T, std::type_identity_t<ARGS>...>;
 
+template<class... ARGS> using FormatString   = FormatString_<Char  , ARGS...>; 
+template<class... ARGS> using FormatStringA  = FormatString_<CharA , ARGS...>; 
+template<class... ARGS> using FormatStringW  = FormatString_<CharW , ARGS...>; 
+template<class... ARGS> using FormatString8  = FormatString_<Char8 , ARGS...>; 
+template<class... ARGS> using FormatString16 = FormatString_<Char16, ARGS...>; 
+template<class... ARGS> using FormatString32 = FormatString_<Char32, ARGS...>; 
+
 template<class FMT_CH>
 using StdFormatArgs_ = std::basic_format_args<StdFormatContext_<FMT_CH>>;
 

@@ -6,6 +6,7 @@ export module AxCore.IString;
 export import AxCore.IArrayStorage;
 export import AxCore.Format;
 export import AxCore.HashInt;
+export import AxCore.Tuple;
 
 export namespace ax {
 
@@ -17,8 +18,13 @@ using IString8  = IString_<Char8>;
 using IString16 = IString_<Char16>;
 using IString32 = IString_<Char32>;
 
+template<class T, Int N> class String_;
+
 template<class OBJ, class CH>
-concept CON_IString_ = std::is_base_of_v<IString_<CH>, OBJ>;
+concept CON_IString_ = std::is_base_of_v<OBJ, IString_<CH>>;
+
+template<class OBJ, class CH>
+concept CON_StrView_ = std::is_convertible_v<OBJ, StrView_<CH>>;
 
 template<class T>
 class IString_ : public IArrayStorage<T> {
@@ -48,7 +54,9 @@ public:
 	constexpr void reserveMore(Int n) { reserve(size() + n); }
 
 	template<class... Args> constexpr void resize(Int newSize, Args&&... args);
-	template<class... Args> constexpr void resizeMore(Int n, Args&&... args) { resize(size() + n, forward<Args>(args)...); }
+	template<class... Args> constexpr void resizeMore(Int n, Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
+							constexpr void resizeLess(Int n)				 { resize(size() - n); }
+							constexpr void resizeToCapacity() { resize(capacity()); }
 
 	constexpr explicit operator bool() const { return size() != 0; }
 	constexpr       T* data()			{ return _storage.data(); }
@@ -142,24 +150,28 @@ public:
 	constexpr Int  replaceAll(CView from, CView to, StrCase sc = StrCase::Sensitive);
 	//----------------
 
-	AX_INLINE constexpr void operator=(StrView_<T>    rhs) { Base::_storageCopy(rhs); }
+	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { Base::_storageCopy(CView(rhs)); }
+	AX_INLINE constexpr void operator=(MView      rhs) { Base::_storageCopy(rhs); }
+	AX_INLINE constexpr void operator=(CView      rhs) { Base::_storageCopy(rhs); }
+	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::_storageCopy(rhs.view()); }
+
+	// template<Int M>
+	// AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::_storageCopy(rhs.view()); }
+	
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(AX_FORWARD(rhs)); }
+
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 
 	constexpr This& operator<<(CView  view) { append(view); return *this; }
 	constexpr This& operator<<(const T& ch) { append(ch  ); return *this; }
 
-	constexpr void append(CView view);
 	constexpr void append(const T& ch);
 	
-	template<class... ARGS>
-	constexpr void append_args(ARGS&&... args) { append(args...); }
+	template<class SRC> AX_INLINE constexpr void set(const SRC& src) { clear(); append(src); }
 
-	constexpr void appendList(const std::initializer_list<T    > & list);
-	constexpr void appendList(const std::initializer_list<CView> & list);
-
-	template<class SRC>
-	AX_INLINE constexpr void set(const SRC& src) { clear(); append(src); }
+	template<CON_StrView_<T>... ARGS> constexpr void set(const ARGS&... args) { clear(); append(args...); }
+	template<CON_StrView_<T>... ARGS> constexpr void append(const ARGS&... args);
+	
 	
 	template<class SRC>
 	AX_INLINE constexpr void setUtf(const SRC& src) { clear(); appendUtf(src); }
@@ -177,7 +189,7 @@ public:
 	constexpr void appendUtf(StrView32 r);
 
 	template<class... ARGS>
-	constexpr void appendFmt(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
+	constexpr void appendFormat(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
 		FmtTo(*this, fmt, AX_FORWARD(args)...);
 	}
 	
@@ -200,7 +212,9 @@ protected:
 	#endif
 	}
 
-	template<class R> constexpr void _appendUtf(const R& ch);
+	template<class R>
+	constexpr void _appendUtf(const R& ch);
+	constexpr void _appendView(CView view);
 };
 
 template <class T> constexpr 
@@ -267,7 +281,7 @@ constexpr void IString_<T>::move(IString_<T> && rhs) {
 }
 
 template <class T> inline
-constexpr void IString_<T>::append(CView view) {
+constexpr void IString_<T>::_appendView(CView view) {
 	if (isOverlapped(view)) throw Error_BufferOverlapped();
 	if (view.size() <= 0) return;
 	
@@ -290,30 +304,14 @@ constexpr void IString_<T>::append(const T& ch) {
 	newData[newSize] = 0;
 }
 
-template <class T>
-constexpr void IString_<T>::appendList(const std::initializer_list<T> & list) {
-	auto oldSize = size();
-	auto newSize = oldSize + list.size();
-	reserve(newSize);
-	_storage.setSize(newSize);
-	auto* newData = data();
-	MemUtil::copyConstructor(newData + oldSize, list.begin(), list.size());
-	newData[newSize] = 0;	
-}
-
-template <class T>
-constexpr void IString_<T>::appendList(const std::initializer_list<CView>& list) {
+template<class T>
+template<CON_StrView_<T>... ARGS>
+constexpr void IString_<T>::append(const ARGS&... args) {
 	auto newSize = size();
-	for (auto& it : list) {
-		newSize += it.size();
-	}
-	
+	newSize = (newSize + ... +  CView(args).size());
 	reserve(newSize);
-	for (auto& it : list) {
-		append(it);
-	}
+	(_appendView(args), ...);
 }
-
 
 template <class T> AX_INLINE
 constexpr void IString_<T>::_setNullTerminator() {

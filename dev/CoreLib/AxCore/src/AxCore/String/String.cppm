@@ -49,27 +49,40 @@ class String_ : public IString_<T>, InlineStorage<T, BUF_SIZE + 1> // +1 for nul
 	using BaseInlineBuffer = InlineStorage<T, BUF_SIZE + 1>;
 	using BaseInlineBuffer::inlineBufPtr;
 public:
-	using View = StrView_<T>;
+	using MView = MutStrView_<T>;
+	using CView =    StrView_<T>;
 	
 	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
-	AX_INLINE constexpr String_(View view) : String_() { Base::append(view); }
+	AX_INLINE constexpr String_(CView view) : String_() { Base::append(view); }
 	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
 	AX_INLINE constexpr String_(const String_ & rhs) : String_(rhs.view()) {}
+
+	template<CON_StrView_<T>... ARGS>
+	AX_INLINE constexpr String_(const ARGS&... args) : String_() { Base::append(args...); }
 
 	template<Int N>
 	AX_INLINE constexpr String_(String_<T,N> && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
 	
-	template<Int N>
-	AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(sz); } 
+	// template<Int N>
+	// AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(sz); } 
 
 	constexpr       IString_<T>& asIString()		{ return *this; }
 	constexpr const IString_<T>& asIString() const	{ return *this; }
 	
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
-	AX_INLINE constexpr void operator=(StrView_<T>    rhs) { Base::operator=(rhs); }
+	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { Base::operator=(rhs); }
+	AX_INLINE constexpr void operator=(MView      rhs) { Base::operator=(rhs); }
+	AX_INLINE constexpr void operator=(CView      rhs) { Base::operator=(rhs); }
+	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::operator=(rhs); }
+	
+	// template<Int M>
+	// AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::operator=(rhs.view()); }
+	
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { Base::move(AX_FORWARD(rhs)); }
-	AX_INLINE constexpr void operator=(This        && rhs) { Base::move(AX_FORWARD(rhs)); }
+
+	template<Int M>
+	AX_INLINE constexpr void operator=(String_<T,M> && rhs) { Base::move(AX_FORWARD(rhs)); }
 	
 	static constexpr This s_utf(StrViewA  v) { This s; UtfUtil::append(s, v); return s; }
 	static constexpr This s_utf(StrViewW  v) { This s; UtfUtil::append(s, v); return s; }
@@ -79,7 +92,7 @@ public:
 
 	template<class... ARGS>
 	static This s_format(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
-		This s; s.appendFmt(fmt, AX_FORWARD(args)...); return s;
+		This s; s.appendFormat(fmt, AX_FORWARD(args)...); return s;
 	}
 
 protected:

@@ -1,5 +1,10 @@
-﻿module AxCore.FilePath;
+﻿module;
+
+#include "AxCore-pch.h"
+
+module AxCore.FilePath;
 import AxCore.File;
+import AxCore.FixedArray;
 
 namespace ax {
 
@@ -79,7 +84,7 @@ bool FilePath::isAbsPath(const StrView& path) {
 	if (path[0] == '/') return true;
 
 	if (path.size() < 2) return false;
-	if (std::isalpha(path[0]) && path[1] == ':') return true;
+	if (CharUtil::isAlpha(path[0]) && path[1] == ':') return true;
 
 	return false;
 }
@@ -318,11 +323,9 @@ StrView FilePath::currentProcessDir() {
 #endif
 #if AX_OS_WINDOWS
 
-#include <ShlObj_core.h>
-
 void FilePath::getCurrentDir(IString & path) {
 	StringW_N<FilePath::kMaxChar> w;
-	w.resizeToLocalBufSize();
+	w.resizeToCapacity();
 	auto n = GetCurrentDirectory(static_cast<DWORD>(w.size()), w.data());
 	w.resize(n);
 	path.setUtf(w);
@@ -340,7 +343,7 @@ struct FilePath_SHGetFolderPath {
 	FilePath_SHGetFolderPath(int CSIDL) {
 		wchar_t	p[MAX_PATH + 1];
 		HRESULT ret = SHGetFolderPath(nullptr, CSIDL | CSIDL_FLAG_DONT_VERIFY, nullptr, SHGFP_TYPE_CURRENT, p);
-		if( ret != S_OK ) throw Error_Undefined(AX_SRC_LOC);	
+		if( ret != S_OK ) throw Error_Undefined();
 		path = FilePath::absPath(TempString::s_utf(StrView_c_str(p)));
 	}
 	TempString	path;
@@ -358,7 +361,7 @@ StrView FilePath::currentProcessFile() {
 		Obj() {
 			FixedArray<wchar_t, MAX_PATH + 1> tmp;
 			DWORD n = ::GetModuleFileName(nullptr, tmp.data(), MAX_PATH);
-			if (n == 0) throw Error_Undefined(AX_SRC_LOC);
+			if (n == 0) throw Error_Undefined();
 			tmp[n] = 0;
 			path.setUtf(StrView_ref(tmp.slice(0, n)));
 		}
@@ -374,7 +377,7 @@ StrView FilePath::tempDir() {
 			FixedArray<wchar_t, MAX_PATH + 1> tmp;
 			tmp[MAX_PATH] = 0;
 			DWORD n = ::GetTempPath(MAX_PATH, tmp.data());
-			if (n == 0) throw Error_Undefined(AX_SRC_LOC);
+			if (n == 0) throw Error_Undefined();
 			tmp[n] = 0;
 			path.setUtf(StrView_ref(tmp.slice(0, n)));
 		}

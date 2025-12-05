@@ -90,7 +90,8 @@ public:
 	constexpr MutStrView_() = default;
 	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
 	constexpr MutStrView_(MutStrLit_<T> r) noexcept : _data(r.data()), _size(r.size()) {}
-
+//	constexpr MutStrView_(T& ch) noexcept : _data(&ch), _size(1) {}
+	
 	template <Int N>
 	constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size( N > 0 ? N - 1 : 0) {}
 	
@@ -231,6 +232,7 @@ protected:
 public:
 	using CView = MutZStrView_<const T>;
 
+
 	AX_INLINE constexpr MutZStrView_() = default;
 	AX_INLINE constexpr MutZStrView_(T* sz, Int size) : Base(sz, size) {}
 	
@@ -238,6 +240,8 @@ public:
 
 	constexpr const T* c_str() const { return _size ? _data : &_empty_c_str; }
 
+	static constexpr This s_from_c_str(T *sz) { return This(sz, ax_strlen(sz)); } 
+	
 private:
 	static constexpr T _empty_c_str = 0;
 };
@@ -266,6 +270,11 @@ AX_NODISCARD AX_INLINE constexpr StrView_<T> StrView_ref(Span<T> src) noexcept {
 }
 
 template <class T>
+AX_NODISCARD AX_INLINE constexpr StrView_<T> StrView_ref(MutSpan<T> src) noexcept {
+	return StrView_<T>(src.data(), src.size());
+}
+
+template <class T>
 AX_NODISCARD AX_INLINE constexpr StrView_<T> StrView_ref(std::basic_string_view<T> src) noexcept {
 	return StrView_<T>(src.data(), src.size());
 }
@@ -276,9 +285,9 @@ AX_INLINE constexpr StrView_<T> StrView_c_str(const T* sz) noexcept { return Str
 template <class T>
 constexpr CmpResult MutStrView_<T>::compare(CView r, StrCase sc) const noexcept {
 	if (sc == StrCase::Ignore) {
-		return span().compare(r.span(),	[](auto& a , auto& b) { return CmpResult_fromInt(std::tolower(a) - std::tolower(b)); } );
+		return span().compare(r.span(),	[](auto& a , auto& b) { return CharUtil::compare_<StrCase::Ignore>(a,b); } );
 	} else {
-		return span().compare(r.span(),	[](auto& a , auto& b) { return CmpResult_fromInt(a - b); } );
+		return span().compare(r.span(),	[](auto& a , auto& b) { return CharUtil::compare_<StrCase::Sensitive>(a,b); } );
 	}
 }
 
@@ -298,11 +307,7 @@ constexpr bool MutStrView_<T>::matchWildcard(CView wildcard, StrCase sc) const n
 
 	while (p < e && w < wEnd) {
 		if (*w == T('?')) { ++p; ++w; continue; }
-		if (sc == StrCase::Ignore) {
-			if (ax_char_ignore_case_equals(*w, *p)) { ++p; ++w; continue; }
-		}else{
-			if (*w == *p) { ++p; ++w; continue; }
-		}
+		if (CharUtil::equals(*w, *p, sc)) { ++p; ++w; continue; }
 		
 		if (*w == T('*')) {
 			auto w1 = w + 1;
@@ -358,7 +363,7 @@ constexpr Opt<Int> MutStrView_<T>::findChar(const T& ch, StrCase sc) const {
 	Int loop = size();
 	if (sc == StrCase::Ignore) {
 		for (Int i = 0; i < loop; ++i) {
-			if (std::tolower(at(i)) == std::tolower(ch)) return i;
+			if (CharUtil::equals_<StrCase::Ignore>(at(i), ch)) return i;
 		}
 	} else {
 		for (Int i = 0; i < loop; ++i) {
@@ -376,7 +381,7 @@ constexpr Opt<Int> MutStrView_<T>::findCharBack(const T& ch, StrCase sc) const {
 	if (sc == StrCase::Ignore) {
 		static_assert(std::is_signed_v<Int>);
 		for (Int i = loop-1; i >=0; --i) {
-			if (std::tolower(at(i)) == std::tolower(ch)) return i;
+			if (CharUtil::equals_i(at(i), ch)) return i;
 		}
 	} else {
 		static_assert(std::is_signed_v<Int>);
@@ -394,7 +399,7 @@ constexpr Opt<Int> MutStrView_<T>::findAnyChar(Span<T> chList, StrCase sc) const
 	if (sc == StrCase::Ignore) {
 		for (Int i = 0; i < loop; ++i) {
 			for (auto & ch : chList) {
-				if (std::tolower(at(i)) == std::tolower(ch)) return i;
+				if (CharUtil::equals_i(at(i), ch)) return i;
 			}
 		}
 	} else {
@@ -415,7 +420,7 @@ constexpr Opt<Int> MutStrView_<T>::findAnyCharBack(Span<T> chList, StrCase sc) c
 		static_assert(std::is_signed_v<Int>);
 		for (Int i = loop-1; i >=0; --i) {
 			for (auto & ch : chList) {
-				if (std::tolower(at(i)) == std::tolower(ch)) return i;
+				if (CharUtil::equals_i(at(i), ch)) return i;
 			}
 		}
 	} else {

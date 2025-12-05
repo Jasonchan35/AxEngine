@@ -5,6 +5,7 @@ export module AxCore.Dict;
 export import AxCore.LinkedList;
 export import AxCore.Array;
 export import AxCore.SPtr;
+export import AxCore.String;
 
 export namespace ax {
 
@@ -22,18 +23,20 @@ public:
 
 	template<class... ARGS>
 	DictNode(const Key & key, const HashInt& hash, ARGS&&... args)
-		          : _key(key),         _hash(hash),    value(args...) {}
+		          : _key(key),         _hash(hash),    _value(args...) {}
 
 	const	Key&	key() const		{ return _key; }
-	const HashInt&	hash() const { return _hash; }
+	const HashInt&	hash() const	{ return _hash; }
 
-	friend class DictNode;
+			Value&	value()			{ return _value; }
+	const	Value&	value() const	{ return _value; }
+
 protected:
 	Key		_key;
 	HashInt _hash;
 	
 public:
-	Value	value;
+	Value	_value;
 };
 
 template<class NODE>
@@ -45,7 +48,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr explicit operator bool() const noexcept { return _node; } 
 	
 	AX_NODISCARD AX_INLINE constexpr NODE*	node		() noexcept	{ return _node; }
-	AX_NODISCARD AX_INLINE constexpr Value&	value		() noexcept	{ return _node->value; }
+	AX_NODISCARD AX_INLINE constexpr Value&	value		() noexcept	{ return _node->value(); }
 
 	AX_NODISCARD AX_INLINE constexpr Value&	operator*	() noexcept	{ return  value(); }
 	AX_NODISCARD AX_INLINE constexpr Value*	operator->	() noexcept	{ return &value(); }
@@ -106,58 +109,104 @@ struct Dict_DefaultConfig<String_<T,N>, VALUE> : Dict_Config_<String_<T,N>, VALU
 
 template<class KEY, class VALUE, class CONFIG = Dict_DefaultConfig<KEY,VALUE>>
 class Dict : public NonCopyable {
-	using Node = DictNode<KEY, VALUE>;
-	using OrderedList = SPtrLinkedList<Node, Dict_OrderedListConfig>;
-	using HashList    = SPtrLinkedList<Node, Dict_HashListConfig>;
 public:
-	using Key          = KEY;
-	using Value        = VALUE;
-	using InKey        = typename CONFIG::InKey;
-	using FindEnumator = Dict_FindEnumator<Node, InKey>;
-	using FindIter     = Dict_FindIter<Node>;
+	using Node			= DictNode<KEY, VALUE>;
+	using OrderedList	= SPtrLinkedList<Node, Dict_OrderedListConfig>;
+	using HashList		= SPtrLinkedList<Node, Dict_HashListConfig>;
+
+	using Key			= KEY;
+	using Value			= VALUE;
+	using InKey			= typename CONFIG::InKey;
+	using FindEnumator	= Dict_FindEnumator<Node, InKey>;
+	using FindIter		= Dict_FindIter<Node>;
 	static constexpr Int s_tableBufSize = CONFIG::s_tableBufSize;
 
-	void clear() {
+	void clear() { _clear(); }
+
+	template<class... ARGS>
+	AX_INLINE Node& addNode(const InKey & key, ARGS&&... args) { return _addNode(key, AX_FORWARD(args)...); }
+	
+	template<class... ARGS>
+	AX_INLINE Value& add(const InKey & key, ARGS&&... args) { return addNode(key, AX_FORWARD(args)...).value(); }
+
+	AX_INLINE FindEnumator 	findAll	(const InKey& key) { return _findAll_withHas(key, HashInt::s_make(key)); }
+	AX_INLINE Value* 		find	(const InKey& key) { return _find_withHash(  key, HashInt::s_make(key)); }
+
+	AX_INLINE FindEnumator 	findAll_withHash(const InKey& key, HashInt hash) { return _findAll_withHas(key, hash); }
+	AX_INLINE Value* 		find_withHash	(const InKey& key, HashInt hash) { return _find_withHash(  key, hash); }
+
+	AX_NODISCARD AX_INLINE constexpr Int size() const { return _orderedList.size(); }
+
+	template<class TT>
+	using Iter_ = typename OrderedList::template Iter_<TT>;
+	
+	using  Iter = Iter_<      Node>;
+	using CIter = Iter_<const Node>;
+
+	 Iter begin()		{ return _orderedList.begin(); }
+	CIter begin() const	{ return _orderedList.begin(); }
+
+	 Iter end()			{ return _orderedList.end(); }
+	CIter end() const	{ return _orderedList.end(); }
+
+	template<class TT>
+	class KeyIter {
+	public:
+		KeyIter(Iter_<TT> p) : _p(p) {}
+		Value*	operator->()		{ return _p->key(); }
+		Value&	operator*()			{ return _p->key(); }
+		void	operator++()		{ ++_p; }
+		bool operator!=(const KeyIter& r) { return _p != r._p; }
+	private:
+		Iter_<TT> _p;
+	};
+
+	template<class TT>
+	class ForEachKey {
+	public:
+		ForEachKey(Iter_<TT> begin, Iter_<TT> end) : _begin(begin), _end(end) {}
+		KeyIter<TT> begin() { return _begin; }
+		KeyIter<TT> end()   { return _end;   }
+	private:
+		Iter_<TT> _begin = nullptr;
+		Iter_<TT> _end   = nullptr;
+	};
+
+	ForEachKey<      Node>	keys()			{ return ForEachKey<      Node>(begin(), end()); }
+	ForEachKey<const Node>	keys() const	{ return ForEachKey<const Node>(begin(), end()); }
+
+	template<class TT>
+	class ValueIter {
+	public:
+		ValueIter(Iter_<TT> p) : _p(p) {}
+		Value*	operator->()		{ return _p->value(); }
+		Value&	operator*()			{ return _p->value(); }
+		void	operator++()		{ ++_p; }
+		bool operator!=(const ValueIter& r) { return _p != r._p; }
+	private:
+		Iter_<TT> _p;
+	};
+
+	template<class TT>
+	class ForEachValue {
+	public:
+		ForEachValue(Iter_<TT> begin, Iter_<TT> end) : _begin(begin), _end(end) {}
+		ValueIter<TT> begin() { return _begin; }
+		ValueIter<TT> end()   { return _end;   }
+	private:
+		Iter_<TT> _begin = nullptr;
+		Iter_<TT> _end   = nullptr;
+	};
+
+	ForEachValue<      Node>	values()		{ return ForEachValue<      Node>(begin(), end()); }
+	ForEachValue<const Node>	values() const	{ return ForEachValue<const Node>(begin(), end()); }
+
+private:
+	void _clear() {
 		_hashTable.clear();
 		_orderedList.clear();
 	}
 
-	template<class... ARGS>
-	Node& addNode(const InKey & key, ARGS&&... args) {
-		auto hash = HashInt::s_make(key);
-		HashList& hashList = _getListForAdd(hash);
-		SPtr<Node> node = SPtr_new<Node>(AX_ALLOC_REQ, key, hash, AX_FORWARD(args)...);
-		hashList.append(node);
-		return *_orderedList.append(node);
-	}
-
-	template<class... ARGS>
-	Value& add(const InKey & key, ARGS&&... args) { return addNode(key, AX_FORWARD(args)...).value; }
-
-	FindEnumator findAll(const InKey& key, const HashInt& hash) {
-		if (_hashTable.size() <= 0) {
-			return FindEnumator(key, nullptr);
-		}
-		auto& list = _getList(hash);
-		return FindEnumator(key, _findInHashList(list, hash, key));
-	}
-
-	FindEnumator findAll(const InKey& key) {
-		auto hash = HashInt::s_make(key);
-		return findAll(key, hash);
-	}
-	
-	Value* find(const InKey& key) { return find(key, HashInt::s_make(key)); }
-	Value* find(const InKey& key, HashInt hash) {
-		auto enumator = findAll(key, hash);
-		if (auto it = enumator.begin()) {
-			return &it.value(); // return the first element
-		} else {
-			return nullptr;
-		}
-	}
-
-private:
 	HashList& _getListForAdd(const HashInt& hash) {
 		auto n = _orderedList.size();
 		auto newTableSize = _hashTable.size();
@@ -199,6 +248,32 @@ private:
 		}
 		return nullptr;
 	}	
+
+	template<class... ARGS>
+	Node& _addNode(const InKey & key, ARGS&&... args) {
+		auto hash = HashInt::s_make(key);
+		HashList& hashList = _getListForAdd(hash);
+		SPtr<Node> node = SPtr_new<Node>(AX_ALLOC_REQ, key, hash, AX_FORWARD(args)...);
+		hashList.append(node);
+		return *_orderedList.append(node);
+	}
+
+	FindEnumator _findAll_withHas(const InKey& key, HashInt hash) {
+		if (_hashTable.size() <= 0) {
+			return FindEnumator(key, nullptr);
+		}
+		auto& list = _getList(hash);
+		return FindEnumator(key, _findInHashList(list, hash, key));
+	}
+
+	Value* _find_withHash(const InKey& key, HashInt hash) {
+		auto enumator = _findAll_withHas(key, hash);
+		if (auto it = enumator.begin()) {
+			return &it.value(); // return the first element
+		} else {
+			return nullptr;
+		}
+	}
 
 	OrderedList _orderedList;
 	Array<HashList, s_tableBufSize> _hashTable;

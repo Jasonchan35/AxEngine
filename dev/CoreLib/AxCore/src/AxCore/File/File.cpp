@@ -3,8 +3,8 @@
 #include "AxCore-pch.h"
 
 module AxCore.File;
-import AxCore.FileStream;
 import AxCore.Logger;
+import AxCore.FileStream;
 import AxCore.FileMemMap;
 
 namespace ax {

@@ -7,7 +7,7 @@ export import AxCore.BasicType;
 
 export namespace ax::Math {
 
-template <class T> requires Type_IsInt<T>
+template <class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE constexpr Type_Float_From<T> auto_int_to_float(const T& i) { return static_cast<Type_Float_From<T>>(i); }
 
 template<class T>	inline constexpr T		PI_			= T(3.14159265358979323846);
@@ -64,7 +64,7 @@ AX_NODISCARD AX_INLINE double	fmod	( double a, double b ) { return std::fmod(a,b
 AX_NODISCARD AX_INLINE float	frac	( float  v )	{ float  intPart; return modf(v, &intPart); }
 AX_NODISCARD AX_INLINE double	frac	( double v )	{ double intPart; return modf(v, &intPart); }
 
-template<class T> requires Type_IsSInt<T>
+template<class T> requires Type_AnySInt<T>
 AX_NODISCARD AX_INLINE constexpr
 T roundup_div(T x, T d) {
 	auto remind = abs(d) - 1;
@@ -81,12 +81,12 @@ template<class T> AX_INLINE T square(const T& v) { return v * v; }
 
 AX_NODISCARD AX_INLINE float	sqrt(float  n) { return std::sqrt(n); }
 AX_NODISCARD AX_INLINE double	sqrt(double n) { return std::sqrt(n); }
-template<class T> requires Type_IsInt<T>
+template<class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE T		sqrt(T      n) { return static_cast<T>(sqrt(auto_int_to_float(n))); }
 
 AX_NODISCARD AX_INLINE float	cbrt(float  n) { return std::cbrt(n); }
 AX_NODISCARD AX_INLINE double	cbrt(double n) { return std::cbrt(n); }
-template<class T> requires Type_IsInt<T>
+template<class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE T		cbrt(T      n) { return static_cast<T>(cbrt(auto_int_to_float(n))); }
 
 //------- reciprocal square root ---------------
@@ -118,7 +118,7 @@ AX_NODISCARD AX_INLINE double rsqrt_fast(double n) {
 	return y;
 }
 
-template<class T> requires Type_IsInt<T>
+template<class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE T rsqrt_fast(T n) {
 	return static_cast<T>(rsqrt_fast(cast_Int_To_Float(n)));
 }
@@ -134,7 +134,7 @@ AX_NODISCARD AX_INLINE float rsqrt(float v) {
 
 AX_NODISCARD AX_INLINE double rsqrt(double v) { return reciprocal(sqrt(v)); }
 
-template<class T> requires Type_IsInt<T>
+template<class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE T      rsqrt(T      v) { return static_cast<T>(rsqrt(auto_int_to_float(v))); }
 
 template<class T, class WEIGHT = Type_Float_From<T>> AX_NODISCARD AX_INLINE
@@ -146,7 +146,7 @@ T lerp(const T& a, const T& b, const WEIGHT& w) {
 	}
 }
 
-template<class T> requires Type_IsFloat<T>
+template<class T> requires Type_AnyFloat<T>
 AX_NODISCARD AX_INLINE T smoothstep(const T& w) { return (T(-2.0) * w * w * w + T(3.0) * w * w); }
 
 template<class T> AX_NODISCARD AX_INLINE 

@@ -34,7 +34,7 @@ struct UnitTestClass : public NonCopyable {
 };
 
 inline
-bool UnitTest_Validate(bool success, const char* expr_str, const SrcLoc& loc = SrcLoc()) {
+bool UnitTest_Validate(bool success, const char* expr_str, const std::source_location& loc = std::source_location::current()) {
 	bool verbose = UnitTestProgram::s_get()->testRequest.verbose;
 
 	if (success && !verbose)
@@ -45,7 +45,7 @@ bool UnitTest_Validate(bool success, const char* expr_str, const SrcLoc& loc = S
 	snprintf(buf, kBufSize, "%s %s", (success ? "[ OK ]" : "[FAIL]"), expr_str);
 	__ax_internal_log(buf);
 	if (!success) {
-		__ax_internal_assert("", expr_str, loc, buf);
+		__ax_internal_assert("", expr_str, buf, loc);
 	}
 	return success;
 }

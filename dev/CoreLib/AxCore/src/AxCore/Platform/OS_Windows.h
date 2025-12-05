@@ -26,6 +26,7 @@
 #include <shellapi.h>
 #include <conio.h>
 #include <comdef.h> //Com error
+#include <ShlObj_core.h> // SHGetFolderPath
 
 #pragma comment( lib, "Rpcrt4.lib" )
 

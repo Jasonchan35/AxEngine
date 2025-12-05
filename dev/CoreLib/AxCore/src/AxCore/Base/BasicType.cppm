@@ -65,11 +65,11 @@ using Char   = CharA;
 using CharU	 = Char32;
 
 template<class T> constexpr bool Type_IsFundamental =  std::is_fundamental_v<T>;
-template<class T> constexpr bool Type_IsInt         =  std::is_integral_v<T>;
-template<class T> constexpr bool Type_IsSInt        =  std::is_integral_v<T> && std::is_signed_v<T>;
-template<class T> constexpr bool Type_IsUInt        =  std::is_integral_v<T> && std::is_unsigned_v<T>;
-template<class T> constexpr bool Type_IsFloat       =  std::is_floating_point_v<T>;
-template<class T> constexpr bool Type_IsChar        =  std::is_same_v<std::remove_cv_t<T>, CharA>
+template<class T> constexpr bool Type_AnyInt        =  std::is_integral_v<T>;
+template<class T> constexpr bool Type_AnySInt       =  std::is_integral_v<T> && std::is_signed_v<T>;
+template<class T> constexpr bool Type_AnyUInt       =  std::is_integral_v<T> && std::is_unsigned_v<T>;
+template<class T> constexpr bool Type_AnyFloat      =  std::is_floating_point_v<T>;
+template<class T> constexpr bool Type_AnyChar       =  std::is_same_v<std::remove_cv_t<T>, CharA>
                                                     || std::is_same_v<std::remove_cv_t<T>, CharW>
                                                     || std::is_same_v<std::remove_cv_t<T>, Char8>
                                                     || std::is_same_v<std::remove_cv_t<T>, Char16>
@@ -163,12 +163,14 @@ public:
 	template<Int N>
 	AX_INLINE constexpr MutStrLit_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
 	
-	AX_INLINE static constexpr MutStrLit_ s_from_c_str(T* sz) noexcept { return MutStrLit_(sz, sz ? ax_strlen(sz) : 0); }
-	
 	AX_INLINE constexpr const T* c_str() const noexcept { return _size ? _data : &_empty_c_str; }
 	AX_INLINE constexpr T*  data() const noexcept { return _data; }
 	AX_INLINE constexpr Int size() const noexcept { return _size; }
 	AX_INLINE constexpr std_string_view to_string_view() const noexcept { return std_string_view(_data, _size); }
+
+	AX_NODISCARD AX_INLINE constexpr explicit operator bool() const { return _size > 0; } 
+
+	constexpr MutStrLit_ s_from_c_str(T* sz) noexcept { return MutStrLit_(sz, ax_strlen(sz)); }
 	
 protected:
 	static constexpr T _empty_c_str = 0;	
@@ -184,20 +186,25 @@ using StrLit8  = StrLit_<Char8 >;
 using StrLit16 = StrLit_<Char16>;
 using StrLit32 = StrLit_<Char32>;
 
+template<class T> using Opt = std::optional<T>;
+template<class A, class B> using Pair = std::pair<A, B>;
+template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pair(AX_FORWARD(a), AX_FORWARD(b)); }
+
 namespace Tag {
-	class NewObject_{};			inline constexpr NewObject_ 		NewObject = {};
-	class NoInit_{};			inline constexpr NoInit_			NoInit = {};
-	class All_{};				inline constexpr All_				All = {};
+	class NewObject_{};		inline constexpr NewObject_ 	NewObject	= {};
+	class NoInit_{};		inline constexpr NoInit_		NoInit		= {};
+	class All_{};			inline constexpr All_			All			= {};
+	class Pack_{};			inline constexpr Pack_			Pack		= {};
 } // namespace Tag
 
 struct SrcLoc {
 	constexpr SrcLoc(Tag::NoInit_) noexcept {}
 	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) noexcept : _loc(loc) {};
 	
-	constexpr Int    column() const noexcept { return _loc.column(); }
-	constexpr Int    line() const noexcept { return _loc.line(); }
-	constexpr StrLit file() const noexcept { return StrLit::s_from_c_str(_loc.file_name()); }
-	constexpr StrLit function() const noexcept { return StrLit::s_from_c_str(_loc.function_name()); }
+	constexpr Int    		column	() const noexcept	{ return _loc.column(); }
+	constexpr Int    		line	() const noexcept	{ return _loc.line(); }
+	constexpr const char*	file	() const noexcept	{ return _loc.file_name(); }
+	constexpr const char*	function() const noexcept	{ return _loc.function_name(); }
 	
 protected:
 	std::source_location _loc;
@@ -209,10 +216,6 @@ enum class StrCase : u8 {
 };
 
 template<class A, class B> using Type_KeepConst = std::conditional_t< std::is_const_v<A>, const B, B>;
-
-
-template<class T> requires Type_IsChar<T>
-AX_INLINE bool ax_char_ignore_case_equals(const T& a, const T& b) { return std::tolower(a) == std::tolower(b); }
 
 enum class CmpResult : u8 {
 	Equal,
@@ -232,13 +235,68 @@ AX_INLINE constexpr bool CmpResult_isLesserOrEqual (CmpResult a) { return a == C
 AX_INLINE constexpr bool CmpResult_isGreater       (CmpResult a) { return a == CmpResult::Greater; }
 AX_INLINE constexpr bool CmpResult_isGreaterOrEqual(CmpResult a) { return a == CmpResult::Greater || a == CmpResult::Equal; }
 
-inline void ax_assert(bool expr, StrLit exprStr, const SrcLoc & srcLoc = SrcLoc()) {
-	if (expr) return;
-	assert(false);
-}
 
-template<class A, class B> using Pair = std::pair<A, B>;
-template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pair(AX_FORWARD(a), AX_FORWARD(b)); }
+template<class T> struct FuncOp_Equal		{ static constexpr bool invoke(const T& a, const T& b) { return a == b; } };
+template<class T> struct FuncOp_NotEqual	{ static constexpr bool invoke(const T& a, const T& b) { return a != b; } };
+template<class T> struct FuncOp_Less		{ static constexpr bool invoke(const T& a, const T& b) { return a <  b; } };
+template<class T> struct FuncOp_LessEqual	{ static constexpr bool invoke(const T& a, const T& b) { return a <= b; } };
+template<class T> struct FuncOp_Greater		{ static constexpr bool invoke(const T& a, const T& b) { return a >  b; } };
+template<class T> struct FuncOp_GreaterEqual{ static constexpr bool invoke(const T& a, const T& b) { return a >= b; } };
+
+struct CharUtil {
+	CharUtil() = delete;
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha	(CH ch) { return std::isalpha(ch); } 
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isDigit	(CH ch) { return std::isdigit(ch); }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool toUpper	(CH ch) { return std::toupper(ch); }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool toLower	(CH ch) { return std::tolower(ch); }
+
+	template <class CH>
+	AX_NODISCARD AX_INLINE static constexpr bool equals(CH a, CH b, StrCase sc) { return compare(a, b, sc) == CmpResult::Equal; }
+	template <class CH>
+	AX_NODISCARD AX_INLINE static constexpr bool equals_i(CH a, CH b) { return compare_<StrCase::Ignore>(a, b) == CmpResult::Equal; }
+	template <StrCase SC, class CH>
+	AX_NODISCARD AX_INLINE static constexpr bool equals_(CH a, CH b) { return compare_<SC>(a, b) == CmpResult::Equal; }
+	template <class CH>
+	AX_NODISCARD AX_INLINE static constexpr CmpResult compare_i(CH a, CH b) { return compare_<StrCase::Ignore>(a, b); }
+
+	template <class CH>
+	AX_NODISCARD AX_INLINE static constexpr CmpResult compare(CH a, CH b, StrCase sc) {
+		return sc == StrCase::Ignore ? compare_<StrCase::Ignore>(a, b) : compare_<StrCase::Sensitive>(a, b);
+	}
+
+	template <StrCase SC, class CH>
+	AX_NODISCARD AX_INLINE static constexpr CmpResult compare_(CH a, CH b) {
+		if constexpr (SC == StrCase::Ignore) {
+			return CmpResult_fromInt(toLower(a) - toLower(b));
+		} else {
+			return CmpResult_fromInt(a - b);
+		}
+	}
+	
+	template<class CH>
+	AX_NODISCARD AX_INLINE static constexpr bool isHex(CH ch) {
+		if( ch >= '0' && ch <='9' ) return true;
+		if( ch >= 'A' && ch <='F' ) return true;
+		if( ch >= 'a' && ch <='f' ) return true;
+		return false;
+	}
+
+	template<class CH>
+	AX_NODISCARD AX_INLINE static constexpr Opt<u8> hexToByte(CH ch) {
+		if( ch >= '0' && ch <= '9' ) return static_cast<u8>(ch - '0');
+		if( ch >= 'a' && ch <= 'f' ) return static_cast<u8>(ch - 'a' + 10);
+		if( ch >= 'A' && ch <= 'F' ) return static_cast<u8>(ch - 'A' + 10);
+		return std::nullopt;
+	}
+
+	template<class CH>
+	AX_NODISCARD AX_INLINE static constexpr Pair<CH,CH> byteToHex(u8 ch) {
+		constexpr char hex[] = "0123456789ABCDEF";
+		return Pair<CH,CH>(	static_cast<CH>(hex[(ch >> 4) & 0xF]),
+							static_cast<CH>(hex[ ch       & 0xF]));
+	}
+	
+};
 
 template<void (*FUNC)()>
 class ScopeFunc0 : public NonCopyable {
@@ -331,6 +389,7 @@ protected:
 	SrcLoc _srcLoc;
 };
 
+AX_SIMPLE_ERROR(Error_Undefined) // TODO: remove it with better error
 AX_SIMPLE_ERROR(Error_IndexOutOfRange)
 AX_SIMPLE_ERROR(Error_InvalidSize)
 AX_SIMPLE_ERROR(Error_BufferOverlapped)
@@ -354,7 +413,7 @@ template<class DST, class SRC> AX_INLINE
 constexpr DST ax_safe_cast(const SRC& src) {
 	DST dst;
 	if (!ax_try_safe_cast(dst, src)) {
-		throw Error_ValueCast(SrcLoc());
+		throw Error_ValueCast();
 	}
 	return dst;
 }
@@ -400,8 +459,6 @@ constexpr DST ax_bit_cast(const SRC& src) {
 	static_assert(sizeof(DST) == sizeof(SRC));
 	return Wrap(src).dst;
 }
-
-template<class T> using Opt = std::optional<T>;
 
 template<Int... ints> using IntSequence = std::integer_sequence<Int, ints...>;
 template<Int N> using IntSequence_make = std::make_integer_sequence<Int, N>;
@@ -498,25 +555,30 @@ void __ax_internal_forceCrash() {
 	*reinterpret_cast<int*>(1) = 0;
 }
 
-void __ax_internal_assert(const char* title, const char* expr, const SrcLoc& loc, const char* msg) {
+inline void ax_assert(bool expr, StrLit exprStr, const std::source_location & srcLoc = std::source_location::current()) {
+	if (expr) return;
+	assert(false);
+}
+
+inline void __ax_internal_assert(const char* title, const char* expr, const char* msg, const std::source_location& loc = std::source_location::current()) {
 	const int bufLen = 32 * 1024;
 	char buf[bufLen + 1];
 	snprintf(buf, bufLen,
 		"\n%s\n"
 		"  Expr: %s\n"
 		"  Func: %s\n"
-		"Source: %s:%lld\n"
+		"Source: %s:%u:%u\n"
 		"-------------\n"
 		"%s\n",
 		title,
-			expr,
-			loc.function().c_str(),
-			loc.file().c_str(), loc.line(),
-			msg);
+		expr,
+		loc.function_name(),
+		loc.file_name(), loc.line(), loc.column(),
+		msg);
 	buf[bufLen] = 0; //snprintf might not end with zero if exists bufLen limit
 
 #if AX_OS_WINDOWS & _DEBUG
-	if (1 == _CrtDbgReport(_CRT_ASSERT, loc.file().c_str(), static_cast<int>(loc.line()), "bax", "%s", buf)) {
+	if (1 == _CrtDbgReport(_CRT_ASSERT, loc.file_name(), static_cast<int>(loc.line()), "bax", "%s", buf)) {
 		_CrtDbgBreak();
 	}
 #else
@@ -531,29 +593,6 @@ void __ax_internal_assert(const char* title, const char* expr, const SrcLoc& loc
 
 template<class T> using ax_enum_int_t = std::underlying_type_t<T>;
 template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<ax_enum_int_t<T>>(v); }
-
-template<class T> requires Type_IsChar<T>
-AX_INLINE constexpr bool ax_char_is_hex(T ch) {
-	if( ch >= '0' && ch <='9' ) return true;
-	if( ch >= 'A' && ch <='F' ) return true;
-	if( ch >= 'a' && ch <='f' ) return true;
-	return false;
-}
-
-template<class T> requires Type_IsChar<T>
-AX_INLINE constexpr Opt<u8> ax_char_hex_to_u8(T ch) {
-	if( ch >= '0' && ch <= '9' ) return static_cast<u8>(ch - '0');
-	if( ch >= 'a' && ch <= 'f' ) return static_cast<u8>(ch - 'a' + 10);
-	if( ch >= 'A' && ch <= 'F' ) return static_cast<u8>(ch - 'A' + 10);
-	return std::nullopt;
-}
-
-template<class T> requires Type_IsChar<T>
-AX_INLINE constexpr Pair<T,T> ax_char_u8_to_upper_hex_pair(u8 ch) {
-	constexpr char hex[] = "0123456789ABCDEF";
-	return Pair<T,T>(static_cast<T>(hex[(ch >> 4) & 0xF]),
-					 static_cast<T>(hex[ ch       & 0xF]));
-}
 
 struct DebuggerNatvisHex {
 	// UpperCase

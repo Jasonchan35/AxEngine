@@ -47,7 +47,7 @@ public:
 	static bool s_showSourceLocation;
 
 	template<class... Args>
-	void log(const SrcLoc& loc, Level lv, const FormatString_<Char, Args...> & fmt, const Args&... args) {
+	void log(const SrcLoc& loc, Level lv, const FormatString<Args...> & fmt, const Args&... args) {
 		if (!_output) return;
 		TempString tmp;
 		FmtTo(tmp, fmt, args...);

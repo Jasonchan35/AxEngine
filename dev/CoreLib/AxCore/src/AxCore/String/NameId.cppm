@@ -55,7 +55,7 @@ auto NameId_<CH, ID>::s_compute(StrView_<CH> str) -> This {
 	auto* e = str.end();
 	auto* p = e - 1;
 	for (; p >= s; --p) {
-		if (!std::isdigit(*p)) {
+		if (!CharUtil::isDigit(*p)) {
 			++p;
 			break;
 		}

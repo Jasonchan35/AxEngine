@@ -13,9 +13,11 @@ class IArray : public IArrayStorage<T> {
 	using Base::_storage;
 protected:
 	constexpr IArray(T* data, Int initCap) : Base(data, initCap) {}
-	using MSpan = MutSpan<T>;
-	using CSpan =    Span<T>;
 public:
+	using MSpan      = MutSpan<T>;
+	using CSpan      = Span<T>;
+	using FindResult = MSpan::FindResult;
+	
 	AX_NODISCARD AX_INLINE constexpr       T*	data()				{ return _storage.data(); }
 	AX_NODISCARD AX_INLINE constexpr const T*	data() const		{ return _storage.data(); }
 	AX_NODISCARD AX_INLINE constexpr 	Int		capacity() const	{ return _storage.capacity(); }
@@ -32,6 +34,8 @@ public:
 	
 	template<class... Args> constexpr void resize(Int newSize, Args&&... args) { Base::_storageResize(newSize, AX_FORWARD(args)...); }
 	template<class... Args> constexpr void resizeMore(Int n,   Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
+							constexpr void resizeLess(Int n) { resize(size() - n); }
+							constexpr void resizeToCapacity() { resize(capacity()); }
 
 	template< class... Args >
 	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
@@ -66,6 +70,9 @@ public:
 	AX_NODISCARD AX_INLINE constexpr const T& unsafe_at(Int i) const noexcept	{ _debug_checkBound(i); return data()[i]; }
 	AX_NODISCARD AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept	{ return unsafe_at(size() - i - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept	{ return unsafe_at(size() - i - 1); }
+
+	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().findMin<FuncOp>(); }
+	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().sort<FuncOp>(); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;

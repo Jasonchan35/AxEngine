@@ -1,4 +1,7 @@
-﻿module AxCore.FileStream;
+﻿module;
+#include "AxCore-pch.h"
+module AxCore.FileStream;
+import AxCore.Logger;
 
 namespace  ax {
 
@@ -348,13 +351,13 @@ void FileStream::close() {
 
 void FileStream::flush () {
 	BOOL b = FlushFileBuffers( _fd );
-	if( ! b ) throw Error_Undefined(AX_SRC_LOC);
+	if( ! b ) throw Error_Undefined();
 }
 
 UtcTime	FileStream::lastAccessTime 	() {
 	_check_fd();
 	BY_HANDLE_FILE_INFORMATION info;
-	if( ! ::GetFileInformationByHandle( _fd, &info ) ) throw Error_Undefined(AX_SRC_LOC);
+	if( ! ::GetFileInformationByHandle( _fd, &info ) ) throw Error_Undefined();
 	auto t = UtcTime_make(info.ftLastAccessTime);
 	return t;
 }
@@ -363,7 +366,7 @@ UtcTime FileStream::lastWriteTime	() {
 	_check_fd();
 
 	BY_HANDLE_FILE_INFORMATION info;
-	if( ! ::GetFileInformationByHandle( _fd, &info ) ) throw Error_Undefined(AX_SRC_LOC);
+	if( ! ::GetFileInformationByHandle( _fd, &info ) ) throw Error_Undefined();
 	auto t = UtcTime_make(info.ftLastWriteTime);
 	return t;
 }
@@ -412,7 +415,7 @@ FileSize FileStream::getFileSize() {
 
 	DWORD high = 0;
 	DWORD low = ::GetFileSize( _fd, &high );
-	if( low == INVALID_FILE_SIZE ) throw Error_Undefined(AX_SRC_LOC);
+	if( low == INVALID_FILE_SIZE ) throw Error_Undefined();
 
 	u64 tmp = (static_cast<u64>(high) << 32) | low;
 	return ax_safe_cast<FileSize>(tmp);
@@ -439,9 +442,9 @@ void FileStream::readBytes(MutByteSpan buf) {
 		DWORD e = GetLastError();
 //		ax_log_win32_error("FileStream read file", e);
 		switch( e ) {
-			case ERROR_LOCK_VIOLATION: throw Error_Undefined(AX_SRC_LOC);
+			case ERROR_LOCK_VIOLATION: throw Error_Undefined();
 		}
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 }
 
@@ -454,7 +457,7 @@ void FileStream::writeBytes(ByteSpan buf) {
 	DWORD	result = 0;
 	BOOL ret = ::WriteFile( _fd, buf.data(), n, &result, nullptr );
 	if( !ret ) {
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 }
 
@@ -494,14 +497,14 @@ void FileStream::open	( StrView filename, FileMode mode, FileAccess access, File
 //		ax_log_win32_error( "File_open", err );
 		AX_LOG("open file error {}: filename=[{}]", errno, filename);
 		switch( err ) {
-			case ERROR_FILE_NOT_FOUND:		throw AX_ERROR("File not found: {}", filename);
-			case ERROR_PATH_NOT_FOUND:		throw AX_ERROR("File path not found: {}", filename);
-			case ERROR_FILE_EXISTS:			throw AX_ERROR("File exists: {}", filename);
-			case ERROR_ALREADY_EXISTS:		throw AX_ERROR("File already exists: {}", filename);
-			case ERROR_ACCESS_DENIED:		throw AX_ERROR("File access denied: {}", filename);
-			case ERROR_SHARING_VIOLATION:	throw AX_ERROR("File sharing violation: {}", filename);
+			case ERROR_FILE_NOT_FOUND:		throw Error_File(Fmt("File not found: {}",			filename));
+			case ERROR_PATH_NOT_FOUND:		throw Error_File(Fmt("File path not found: {}", 	filename));
+			case ERROR_FILE_EXISTS:			throw Error_File(Fmt("File exists: {}",				filename));
+			case ERROR_ALREADY_EXISTS:		throw Error_File(Fmt("File already exists: {}", 	filename));
+			case ERROR_ACCESS_DENIED:		throw Error_File(Fmt("File access denied: {}",		filename));
+			case ERROR_SHARING_VIOLATION:	throw Error_File(Fmt("File sharing violation: {}",	filename));
 		}
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 }
 
@@ -515,9 +518,9 @@ bool FileStream::_os_lock( DWORD flags ) {
 
 void FileStream::lock( bool exclusive ) {
 	if( exclusive ) {
-		if( ! _os_lock( LOCKFILE_EXCLUSIVE_LOCK ) ) throw Error_Undefined(AX_SRC_LOC);
+		if( ! _os_lock( LOCKFILE_EXCLUSIVE_LOCK ) ) throw Error_Undefined();
 	}else{
-		if( ! _os_lock( 0 ) ) throw Error_Undefined(AX_SRC_LOC);
+		if( ! _os_lock( 0 ) ) throw Error_Undefined();
 	}
 }
 
@@ -535,7 +538,7 @@ void FileStream::unlock() {
     DWORD len = 0xffffffff;
 	OVERLAPPED offset = {};
 	if ( ! ::UnlockFileEx( _fd, 0, len, len, &offset ) ) {
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 }
 
