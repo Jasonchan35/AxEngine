@@ -22,7 +22,7 @@ private:
 };
 
 class AppBase : public RttiObject {
-	AX_RTTI_CLASS(AppBase, RttiObject)
+	AX_RTTI_INFO(AppBase, RttiObject)
 public:
 	static AppBase* s_instance();
 

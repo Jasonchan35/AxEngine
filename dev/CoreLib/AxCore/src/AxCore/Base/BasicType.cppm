@@ -301,6 +301,20 @@ struct CharUtil {
 	
 };
 
+template<class LAMBDA>
+class ScopeLambda : public NonCopyable {
+public:
+	AX_NODISCARD ScopeLambda(LAMBDA && lambda) : _valid(true), _lambda(std::move(lambda)) {}
+	ScopeLambda(ScopeLambda && r) { std::swap(_valid, r._valid); _lambda = std::move(r._lambda); }
+	~ScopeLambda() { if (_valid) { _lambda(); } }
+
+	void detach() { _valid = false; _lambda = std::move(LAMBDA()); }
+	
+private:
+	bool _valid = false;
+	LAMBDA _lambda;
+};
+
 template<void (*FUNC)()>
 class ScopeFunc0 : public NonCopyable {
 public:
@@ -309,6 +323,16 @@ public:
 	~ScopeFunc0() { if (_valid) (*FUNC)(); }
 private:
 	u8 _valid = false;
+};
+
+template<class OBJ, void (OBJ::*FUNC)()>
+class ScopeObjFunc0 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeObjFunc0(OBJ* obj) : _obj(obj) {}
+	ScopeObjFunc0(ScopeObjFunc0 && r) { std::swap(_obj, r._obj); }
+	~ScopeObjFunc0() { if (_obj) (_obj->*FUNC)(); }
+private:
+	OBJ*	_obj = nullptr;
 };
 
 template<class PARAM0, void (*FUNC)(PARAM0)>
@@ -320,16 +344,6 @@ public:
 private:
 	u8		_valid = false;
 	PARAM0	_param0 = {};
-};
-
-template<class OBJ, void (OBJ::*FUNC)()>
-class ScopeObjFunc0 : public NonCopyable {
-public:
-	AX_NODISCARD ScopeObjFunc0(OBJ* obj) : _obj(obj) {}
-	ScopeObjFunc0(ScopeObjFunc0 && r) { std::swap(_obj, r._obj); }
-	~ScopeObjFunc0() { if (_obj) (_obj->*FUNC)(); }
-private:
-	OBJ*	_obj = nullptr;
 };
 
 template<class OBJ, class PARAM0, void (OBJ::*FUNC)(PARAM0)>

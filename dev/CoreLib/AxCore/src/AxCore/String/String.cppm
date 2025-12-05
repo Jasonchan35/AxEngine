@@ -62,8 +62,8 @@ public:
 	template<Int N>
 	AX_INLINE constexpr String_(String_<T,N> && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
 	
-	// template<Int N>
-	// AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(sz); } 
+	template<Int N>
+	AX_INLINE constexpr String_(const T (&sz)[N]) : String_() { Base::append(CView(sz)); } 
 
 	constexpr       IString_<T>& asIString()		{ return *this; }
 	constexpr const IString_<T>& asIString() const	{ return *this; }
@@ -74,6 +74,9 @@ public:
 	AX_INLINE constexpr void operator=(MView      rhs) { Base::operator=(rhs); }
 	AX_INLINE constexpr void operator=(CView      rhs) { Base::operator=(rhs); }
 	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::operator=(rhs); }
+
+	template<Int N>
+	AX_INLINE constexpr void operator=(const T (&sz)[N]) { Base::operator=(CView(sz)); }
 	
 	// template<Int M>
 	// AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::operator=(rhs.view()); }

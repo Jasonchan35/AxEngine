@@ -259,6 +259,10 @@
 #define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_FLUSH()				do{ ::ax::Logger::s_get()->flush(); } while(false)
 
+#define AX_LOG_WIN32_LAST_ERROR(msg)	do{ AX_LOG("Win32 Error {} {}", AX_Win32_Error::s_lastError(), StrView(msg)); }while(false)
+#define AX_LOG_WIN32_HRESULT(code, msg)	do{ AX_LOG("HRESULT Error {} {}", code, AX_Win32_HRESULT(code),  StrView(msg)); }while(false)
+
+
 #define AX_DUMP(v0)					do{ AX_LOG("AX_DUMP: {}=[{}]", AX_STR(#v0), (v0)); } while(false)
 
 //----- NameId

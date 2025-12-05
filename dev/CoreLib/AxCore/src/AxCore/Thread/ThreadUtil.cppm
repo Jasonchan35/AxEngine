@@ -82,42 +82,38 @@ protected:
 	ThreadId_Native _v = ThreadId_Native_kNull;
 };
 
-struct ThreadUtil {
-	ThreadUtil() = delete;
-
 #if 1 // C++11
-	static AX_INLINE void yield() { ::std::this_thread::yield(); }
+	AX_INLINE void yield() { ::std::this_thread::yield(); }
 
 #elif AX_OS_WINDOWS
-	static AX_INLINE void yield() { ::YieldProcessor(); }
+	AX_INLINE void yield() { ::YieldProcessor(); }
 
 #elif AX_OS_LINUX || AX_OS_IOS || AX_OS_MACOSX
-	static AX_INLINE void yield() { ::cpu_relax(); }
+	AX_INLINE void yield() { ::cpu_relax(); }
 
 #elif AX_COMPILER_GCC
-	static AX_INLINE void yield() { __asm__("pause"); }
+	AX_INLINE void yield() { __asm__("pause"); }
 
 #elif 1// pthread
-	static AX_INLINE void yield() { ::pthread_yield(void); }
+	AX_INLINE void yield() { ::pthread_yield(void); }
 #else
 	#error
 #endif
 
-	static void sleep(Nanoseconds nanoseconds) {
-		::std::this_thread::sleep_for(std::chrono::duration<Int, std::nano>(nanoseconds.value));
-	}
+AX_INLINE void sleep(Nanoseconds nanoseconds) {
+	::std::this_thread::sleep_for(std::chrono::duration<Int, std::nano>(nanoseconds.value));
+}
 
-	static void sleep(Microseconds microseconds) {
-		::std::this_thread::sleep_for(std::chrono::duration<Int, std::micro>(microseconds.value));
-	}
+AX_INLINE void sleep(Microseconds microseconds) {
+	::std::this_thread::sleep_for(std::chrono::duration<Int, std::micro>(microseconds.value));
+}
 
-	static void sleep(Milliseconds milliseconds) {
-		::std::this_thread::sleep_for(std::chrono::duration<Int, std::milli>(milliseconds.value));
-	}
+AX_INLINE void sleep(Milliseconds milliseconds) {
+	::std::this_thread::sleep_for(std::chrono::duration<Int, std::milli>(milliseconds.value));
+}
 
-	static void sleep(Seconds seconds) {
-		::std::this_thread::sleep_for(std::chrono::duration<Int>(seconds.value));
-	}
-};
+AX_INLINE void sleep(Seconds seconds) {
+	::std::this_thread::sleep_for(std::chrono::duration<Int>(seconds.value));
+}
 
 } // namespace

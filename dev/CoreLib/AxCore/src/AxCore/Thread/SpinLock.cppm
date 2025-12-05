@@ -48,9 +48,9 @@ private:
 				if (i < 8) continue;
 				//else if (i < 16) __asm__ __volatile__("rep; nop" : : : "memory");
 				else if(i < 32) {
-					ThreadUtil::yield();
+					Thread::yield();
 				} else {
-					ThreadUtil::sleep(Milliseconds(16));
+					Thread::sleep(Milliseconds(16));
 				}
 			}
 		}

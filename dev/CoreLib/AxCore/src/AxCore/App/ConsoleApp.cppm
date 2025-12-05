@@ -7,7 +7,7 @@ export import AxCore.AppBase;
 export namespace ax {
 
 class ConsoleApp : public AppBase {
-	AX_RTTI_CLASS(ConsoleApp, AppBase)
+	AX_RTTI_INFO(ConsoleApp, AppBase)
 public:
 	static void setConsoleTitle(StrView title) {
 #if AX_OS_WINDOWS

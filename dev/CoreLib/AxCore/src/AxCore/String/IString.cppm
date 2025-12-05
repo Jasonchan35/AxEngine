@@ -154,6 +154,9 @@ public:
 	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::_storageCopy(rhs.view()); }
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(AX_FORWARD(rhs)); }
 
+	template<Int N>
+	AX_INLINE constexpr void operator=(const T (&sz)[N]) { Base::_storageCopy(CView(sz)); }
+	
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 
 	constexpr This& operator<<(CView  view) { append(view); return *this; }

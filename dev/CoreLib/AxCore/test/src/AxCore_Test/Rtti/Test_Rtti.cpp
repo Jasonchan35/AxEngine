@@ -40,7 +40,7 @@ public:
 	}; 
 	
 	class MyObject : public RttiObject {
-		AX_RTTI_CLASS(MyObject, RttiObject)
+		AX_RTTI_INFO(MyObject, RttiObject)
 	};
 
 	void test_case1();
