@@ -39,7 +39,7 @@ public:
 	
 	AX_INLINE constexpr Quat_() = default;
 	AX_INLINE constexpr Quat_(const SIMD_Data & simd) : _simd(simd) {}
-	AX_INLINE constexpr Quat_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
+//	AX_INLINE constexpr Quat_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
 	AX_INLINE constexpr Quat_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
 
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 

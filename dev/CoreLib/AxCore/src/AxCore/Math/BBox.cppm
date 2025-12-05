@@ -44,10 +44,13 @@ public:
 	};
 	
 	AX_INLINE constexpr BBox_() = default;
-	AX_INLINE constexpr BBox_(Tag::All_, const T& v) : min(Tag::All, v), max(Tag::All, v) {}
+//	AX_INLINE constexpr BBox_(Tag::All_, const T& v) : min(Tag::All, v), max(Tag::All, v) {}
 	AX_INLINE constexpr BBox_(const T& min_, const T& max_) : min(min_), max(max_) {}
 	AX_INLINE constexpr bool isValid() { return (max - min).isAllPositive(); }
 
+	static constexpr This s_all (const T& v) { return This(Vec::s_all(v), Vec::s_all(v)); }
+	static constexpr This s_zero(const T& v) { return This(Vec::s_zero(), Vec::s_zero()); }
+	
 	constexpr void includePoint(const Vec& pt);
 
 	void getCornerPoints(FixedArray<Vec, Math::s_pow<N>(2)>& outPoints) const;

@@ -190,15 +190,16 @@ template<class T> using Opt = std::optional<T>;
 template<class A, class B> using Pair = std::pair<A, B>;
 template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pair(AX_FORWARD(a), AX_FORWARD(b)); }
 
-namespace Tag {
-	class NewObject_{};		inline constexpr NewObject_ 	NewObject	= {};
-	class NoInit_{};		inline constexpr NoInit_		NoInit		= {};
-	class All_{};			inline constexpr All_			All			= {};
-	class Pack_{};			inline constexpr Pack_			Pack		= {};
-} // namespace Tag
+class NoInit_{}; constexpr NoInit_ NoInit = {};
+
+// namespace Tag {
+// 	class NewObject_{};		inline constexpr NewObject_ 	NewObject	= {};
+// 	class NoInit_{};		inline constexpr NoInit_		NoInit		= {};
+// 	class All_{};			inline constexpr All_			All			= {};
+// } // namespace Tag
 
 struct SrcLoc {
-	constexpr SrcLoc(Tag::NoInit_) noexcept {}
+	constexpr SrcLoc(NoInit_) noexcept {}
 	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) noexcept : _loc(loc) {};
 	
 	constexpr Int    		column	() const noexcept	{ return _loc.column(); }

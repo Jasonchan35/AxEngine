@@ -25,13 +25,13 @@ struct VecSIMD_NumLimit {
 
 	static constexpr bool isExactType   =  T_NumLimit::isExactType;
 	static constexpr bool hasInfinity   =  T_NumLimit::hasInfinity;
-	static constexpr VEC  infinity      =  VEC(Tag::All, T_NumLimit::infinity);
-	static constexpr VEC  negInfinity   =  VEC(Tag::All, T_NumLimit::negInfinity);
-	static constexpr VEC  lowest        =  VEC(Tag::All, T_NumLimit::lowest);
-	static constexpr VEC  min           =  VEC(Tag::All, T_NumLimit::min);
-	static constexpr VEC  max           =  VEC(Tag::All, T_NumLimit::max);
-	static constexpr VEC  epsilon       =  VEC(Tag::All, T_NumLimit::epsilon);
-	static constexpr VEC  NaN           =  VEC(Tag::All, T_NumLimit::NaN);
+	static constexpr VEC  infinity      =  VEC::s_all(T_NumLimit::infinity);
+	static constexpr VEC  negInfinity   =  VEC::s_all(T_NumLimit::negInfinity);
+	static constexpr VEC  lowest        =  VEC::s_all(T_NumLimit::lowest);
+	static constexpr VEC  min           =  VEC::s_all(T_NumLimit::min);
+	static constexpr VEC  max           =  VEC::s_all(T_NumLimit::max);
+	static constexpr VEC  epsilon       =  VEC::s_all(T_NumLimit::epsilon);
+	static constexpr VEC  NaN           =  VEC::s_all(T_NumLimit::NaN);
 };
 
 template<Int N, class T, VecSIMD SIMD>
@@ -46,9 +46,9 @@ public:
 		T			e[N + padding];
 	};
 	
-	static constexpr bool _use_SSE     = SIMD == VecSIMD::SSE;
-	static constexpr bool _use_SSE_f32x4 = N == 4 && _use_SSE && Type_IsSame<T, f32>;
-	static constexpr bool _use_SSE_f64x4 = N == 4 && _use_SSE && Type_IsSame<T, f64>;
+	static constexpr bool _use_SSE			= SIMD == VecSIMD::SSE;
+	static constexpr bool _use_SSE_m128_ps	= (N == 3 || N == 4) && _use_SSE && Type_IsSame<T, f32>;
+	static constexpr bool _use_SSE_m256_pd	= (N == 3 || N == 4) && _use_SSE && Type_IsSame<T, f64>;
 
 	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_() = default;
 	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Register& mm_) : mm(mm_) {}
@@ -81,8 +81,8 @@ public:
 	
 	AX_NODISCARD AX_INLINE constexpr static Vec s_all (T t) {
 		if (!std::is_constant_evaluated()) {
-			if constexpr (_use_SSE_f32x4) return    _mm_set1_ps(t);
-			if constexpr (_use_SSE_f64x4) return _mm256_set1_pd(t);
+			if constexpr (_use_SSE_m128_ps) return    _mm_set1_ps(t);
+			if constexpr (_use_SSE_m256_pd) return _mm256_set1_pd(t);
 		}
 		return s_unroll(t, [](T t){ return t; });
 	}
@@ -100,32 +100,32 @@ public:
 	
 	AX_NODISCARD AX_INLINE constexpr auto operator+(Vec vec) const -> Vec {
 		if (!std::is_constant_evaluated()) {
-			if constexpr (_use_SSE_f32x4) return    _mm_add_ps(mm, vec.mm);
-			if constexpr (_use_SSE_f64x4) return _mm256_add_pd(mm, vec.mm);
+			if constexpr (_use_SSE_m128_ps) return    _mm_add_ps(mm, vec.mm);
+			if constexpr (_use_SSE_m256_pd) return _mm256_add_pd(mm, vec.mm);
 		}
 		return unroll(vec, [](T a, T b) -> T { return a + b; });
 	}
 	
 	AX_NODISCARD AX_INLINE constexpr auto operator-(Vec vec) const -> Vec {
 		if (!std::is_constant_evaluated()) {
-			if constexpr (_use_SSE_f32x4) return    _mm_sub_ps(mm, vec.mm);
-			if constexpr (_use_SSE_f64x4) return _mm256_sub_pd(mm, vec.mm);
+			if constexpr (_use_SSE_m128_ps) return    _mm_sub_ps(mm, vec.mm);
+			if constexpr (_use_SSE_m256_pd) return _mm256_sub_pd(mm, vec.mm);
 		}
 		return unroll(vec, [](T a, T b) -> T { return a - b; });
 	}
 	
 	AX_NODISCARD AX_INLINE constexpr auto operator*(Vec vec) const -> Vec {
 		if (!std::is_constant_evaluated()) {
-			if constexpr (_use_SSE_f32x4) return    _mm_mul_ps(mm, vec.mm);
-			if constexpr (_use_SSE_f64x4) return _mm256_mul_pd(mm, vec.mm);
+			if constexpr (_use_SSE_m128_ps) return    _mm_mul_ps(mm, vec.mm);
+			if constexpr (_use_SSE_m256_pd) return _mm256_mul_pd(mm, vec.mm);
 		}
 		return unroll(vec, [](T a, T b) -> T { return a * b; });
 	}
 
 	AX_NODISCARD AX_INLINE constexpr auto operator/(Vec vec) const -> Vec {
 		if (!std::is_constant_evaluated()) {
-			if constexpr (_use_SSE_f32x4) return    _mm_div_ps(mm, vec.mm);
-			if constexpr (_use_SSE_f64x4) return _mm256_div_pd(mm, vec.mm);
+			if constexpr (_use_SSE_m128_ps) return    _mm_div_ps(mm, vec.mm);
+			if constexpr (_use_SSE_m256_pd) return _mm256_div_pd(mm, vec.mm);
 		}
 		return unroll(vec, [](T a, T b) -> T { return a / b; });
 	}
