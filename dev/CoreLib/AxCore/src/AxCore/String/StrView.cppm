@@ -156,8 +156,8 @@ public:
 		return MView(_data + offset, newSize);
 	}
 	AX_INLINE constexpr CView     slice	        (Int offset, Int newSize) const	{ return ax_const_cast(this)->slice(offset, newSize); }
-	AX_INLINE constexpr MView     slice	        (IntRange range)				{ return slice(range.start, range.size); }
-	AX_INLINE constexpr CView     slice	        (IntRange range) const			{ return slice(range.start, range.size); }
+	AX_INLINE constexpr MView     slice	        (IntRange range)				{ return slice(range.begin(), range.size()); }
+	AX_INLINE constexpr CView     slice	        (IntRange range) const			{ return slice(range.begin(), range.size()); }
 	AX_INLINE constexpr MView     sliceFrom	    (Int offset)					{ return slice(offset, _size - offset); }
 	AX_INLINE constexpr CView     sliceFrom	    (Int offset) const				{ return slice(offset, _size - offset); }
 	AX_INLINE constexpr MView     sliceBack	    (Int newSize)			 		{ return slice(_size - newSize, newSize); }
