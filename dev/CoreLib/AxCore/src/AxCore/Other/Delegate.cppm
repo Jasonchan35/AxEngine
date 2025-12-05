@@ -32,7 +32,7 @@ public:
 	template<class OBJ>		static This s_bindUnowned(OBJ*    obj, MemFunc<OBJ> func)	{ Delegate_ d; d.bindUnowned(obj, func); return d; }
 							// beware lambda capture variable life cycle
 	template<class LAMBDA>	       void   bindLambda(LAMBDA func)						{ _bindLambda(func); }
-	template<class LAMBDA>	static This s_bindLambda(LAMBDA func)						{ _bindLambda(func); }
+	template<class LAMBDA>	static This s_bindLambda(LAMBDA func)						{ Delegate_ d; d.bindLambda(func); return d; }
 
 	void unbindAll() { _unbindAll(); }
 

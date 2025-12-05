@@ -274,6 +274,6 @@
 #else
 	#define AX_APP_MAIN(T) \
 	 	int main(int argc, const char* argv[]) { return ::ax::App_run<T>(argc, argv); } \
-	// //--------
+	//--------
 	
 #endif

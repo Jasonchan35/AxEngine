@@ -152,7 +152,7 @@ template <class FuncOp> constexpr
 void MutSpan<T>::sort() {
 	// simple sorting, prevent move data if possible
 	for (Int i = 0; i < _size; i++) {
-		Int minIndex = i + sliceFrom(i).findMin<FuncOp>().index;
+		Int minIndex = i + sliceFrom(i).template findMin<FuncOp>().index;
 		if (minIndex == i) continue;
 
 		std::swap(at(minIndex), at(i));

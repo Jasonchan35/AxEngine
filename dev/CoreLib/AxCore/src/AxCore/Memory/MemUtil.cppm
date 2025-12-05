@@ -13,7 +13,7 @@ struct MemUtil {
 
 	static constexpr const Int k_size_to_use_system_memcpy = 2048;
 
-	static constexpr void rawCopy(void* dst, const void* src, Int len);
+	static constexpr void rawCopy(void* dst, const void* src, Int n);
 	
 	template <class A, class B>
 	static constexpr bool isOverlapped(const A* a, Int a_size, const B* b, Int b_size);
@@ -93,23 +93,24 @@ void MemUtil::_copyLoop(T* dst, const T* src, Int len) {
 }
 
 AX_INLINE constexpr
-void MemUtil::rawCopy(void* dst, const void* src, Int len) {
-	if (len <= 0) { AX_ASSERT(false); return; }
+void MemUtil::rawCopy(void* dst, const void* src, Int n) {
+	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
+	if (n <= 0) return;
 
-	if (isOverlapped(static_cast<const char*>(dst), len, static_cast<const char*>(src), len)) {
+	if (isOverlapped(static_cast<const char*>(dst), n, static_cast<const char*>(src), n)) {
 		throw Error_BufferOverlapped();
 	}
 
-	if (len > k_size_to_use_system_memcpy) {
-		::memcpy( dst, src, ax_safe_cast_size_t(len) );
+	if (n > k_size_to_use_system_memcpy) {
+		::memcpy( dst, src, ax_safe_cast_size_t(n) );
 		return;
 	}
 	using Block = u64;
 	const Int w = AX_SIZEOF(Block);
-	auto n = len / w;
-	auto r = len % w;
-	auto j = n*w;
-	_copyLoop( reinterpret_cast<Block*>(dst),  reinterpret_cast<const Block*>(src),  n);
+	auto c = n / w;
+	auto r = n % w;
+	auto j = c * w;
+	_copyLoop( reinterpret_cast<Block*>(dst),  reinterpret_cast<const Block*>(src),  c);
 	_copyLoop( reinterpret_cast<Byte*>(dst)+j, reinterpret_cast<const Byte*>(src)+j, r);
 }
 
@@ -122,7 +123,9 @@ bool MemUtil::isOverlapped(const A* a, Int a_size, const B* b, Int b_size) {
 
 template <class T, class ... Args> AX_INLINE constexpr
 void MemUtil::constructor(T* p, Int n, Args&&... args) {
-	if( n <= 0 ) return;
+	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
+	if (n <= 0) return;
+	
 	T* d = p;
 	T* e = p + n;
 	for( ; d<e; ++d ) {
@@ -132,8 +135,10 @@ void MemUtil::constructor(T* p, Int n, Args&&... args) {
 
 template <class T> AX_INLINE constexpr
 void MemUtil::destructor(T* p, Int n) {
-	if (std::is_trivially_destructible_v<T>) return;
+	AX_ASSERT(n >= 0);
 	if (n <= 0) return;
+	
+	if (std::is_trivially_destructible_v<T>) return;
 	T* d = p;
 	T* e = p + n;
 	for( ; d<e; ++d ) {
@@ -143,7 +148,9 @@ void MemUtil::destructor(T* p, Int n) {
 
 template <class T> AX_INLINE constexpr
 void MemUtil::operatorCopy(T* dst, const T* src, Int n) {
+	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
 	if (n <= 0) return;
+	
 	if (MemUtil::isOverlapped(dst, n, src, n)) {
 		throw Error_BufferOverlapped();
 	}
@@ -161,7 +168,9 @@ void MemUtil::operatorCopy(T* dst, const T* src, Int n) {
 
 template <class T>
 constexpr void MemUtil::copyConstructor(T* dst, const T* src, Int n) {
-	if( n <= 0 ) return;
+	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
+	if (n <= 0) return;
+	
 	if (MemUtil::isOverlapped(dst, n, src, n)) {
 		throw Error_BufferOverlapped();
 	}
@@ -185,7 +194,9 @@ constexpr void MemUtil::copyConstructor(T* dst, const T* src, Int n) {
 
 template <class T> constexpr
 void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
-	if( n <= 0 ) return;
+	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
+	if (n <= 0) return;
+	
 	if (MemUtil::isOverlapped(dst, n, src, n)) {
 		throw Error_BufferOverlapped();
 	}
@@ -211,13 +222,16 @@ void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 
 template <class T>
 constexpr bool MemUtil::equals(const T* dst, const T* src, Int n) {
+	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
+	if (n <= 0) return true;
+	
 	auto* s = src;
 	auto* e = src + n;
 	auto* d = dst;
 	for (; s<e; ++s, ++d) {
-		if (*s != *d) return true;
+		if (*s != *d) return false;
 	}
-	return false;
+	return true;
 }
 
 } // namespace

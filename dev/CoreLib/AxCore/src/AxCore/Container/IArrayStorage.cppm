@@ -13,7 +13,7 @@ export import AxCore.MemoryUtil;
 
 export namespace ax {
 
-template<class T>
+	template<class T>
 class IArrayStorage : public NonCopyable {
 protected:
 	static constexpr bool kSmallBufferOptimization = true;

@@ -1,7 +1,6 @@
 module;
 
 #include "AxHeaderTool-pch.h"
-
 module AxHeaderTool.App;
 import AxHeaderTool._PCH;
 import AxHeaderTool.Generator;
@@ -69,4 +68,3 @@ int App::onRun() {
 
 } //namespace
 
-AX_APP_MAIN(ax::AxHeaderTool::App);

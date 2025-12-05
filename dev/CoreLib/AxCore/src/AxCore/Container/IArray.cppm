@@ -71,8 +71,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept	{ return unsafe_at(size() - i - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept	{ return unsafe_at(size() - i - 1); }
 
-	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().findMin<FuncOp>(); }
-	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().sort<FuncOp>(); }
+	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().template findMin<FuncOp>(); }
+	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().template sort<FuncOp>(); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;

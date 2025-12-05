@@ -1,5 +1,6 @@
-#include "AxUnitTest.h"
+// module;  // - main() not allowed to under any module
 
+#include "AxUnitTest.h"
 import AxCore.UnitTest;
 
 class AxCore_TestProgram : public ax::UnitTestProgram {

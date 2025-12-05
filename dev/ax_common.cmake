@@ -91,6 +91,7 @@ function(ax_set_warning_level target_name)
 														-Wno-c++98-compat-pedantic
 														-Wno-exit-time-destructors # maybe ?
 														-Wno-extra-semi-stmt
+														-Wno-invalid-offsetof # IArrayStorage - offsetof(SmallStorage_Dummy, _data)
 														-Wno-gnu-anonymous-struct
 														-Wno-gnu-zero-variadic-macro-arguments
 														-Wno-language-extension-token  # DX12: IID_PPV_ARGS

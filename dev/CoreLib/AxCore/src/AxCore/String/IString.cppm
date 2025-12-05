@@ -18,8 +18,6 @@ using IString8  = IString_<Char8>;
 using IString16 = IString_<Char16>;
 using IString32 = IString_<Char32>;
 
-template<class T, Int N> class String_;
-
 template<class OBJ, class CH>
 concept CON_IString_ = std::is_base_of_v<OBJ, IString_<CH>>;
 
@@ -154,10 +152,6 @@ public:
 	AX_INLINE constexpr void operator=(MView      rhs) { Base::_storageCopy(rhs); }
 	AX_INLINE constexpr void operator=(CView      rhs) { Base::_storageCopy(rhs); }
 	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::_storageCopy(rhs.view()); }
-
-	// template<Int M>
-	// AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::_storageCopy(rhs.view()); }
-	
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(AX_FORWARD(rhs)); }
 
 	AX_INLINE constexpr void move(IString_<T> && rhs);

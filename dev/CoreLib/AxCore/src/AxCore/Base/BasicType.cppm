@@ -555,12 +555,7 @@ void __ax_internal_forceCrash() {
 	*reinterpret_cast<int*>(1) = 0;
 }
 
-inline void ax_assert(bool expr, StrLit exprStr, const std::source_location & srcLoc = std::source_location::current()) {
-	if (expr) return;
-	assert(false);
-}
-
-inline void __ax_internal_assert(const char* title, const char* expr, const char* msg, const std::source_location& loc = std::source_location::current()) {
+inline void __ax_internal_assert(const char* title, const char* expr, const char* msg, const std::source_location& srcLoc = std::source_location::current()) {
 	const int bufLen = 32 * 1024;
 	char buf[bufLen + 1];
 	snprintf(buf, bufLen,
@@ -572,13 +567,13 @@ inline void __ax_internal_assert(const char* title, const char* expr, const char
 		"%s\n",
 		title,
 		expr,
-		loc.function_name(),
-		loc.file_name(), loc.line(), loc.column(),
+		srcLoc.function_name(),
+		srcLoc.file_name(), srcLoc.line(), srcLoc.column(),
 		msg);
 	buf[bufLen] = 0; //snprintf might not end with zero if exists bufLen limit
 
 #if AX_OS_WINDOWS & _DEBUG
-	if (1 == _CrtDbgReport(_CRT_ASSERT, loc.file_name(), static_cast<int>(loc.line()), "bax", "%s", buf)) {
+	if (1 == _CrtDbgReport(_CRT_ASSERT, srcLoc.file_name(), static_cast<int>(srcLoc.line()), "bax", "%s", buf)) {
 		_CrtDbgBreak();
 	}
 #else
@@ -587,8 +582,13 @@ inline void __ax_internal_assert(const char* title, const char* expr, const char
 #else
 	std::wcerr << msg;
 #endif
-	AX_ASSERT(false);
+	assert(false);
 #endif
+}
+
+inline void ax_assert(bool expr, StrLit exprStr, const std::source_location & srcLoc = std::source_location::current()) {
+	if (expr) return;
+	__ax_internal_assert("ax_assert", exprStr.c_str(), "", srcLoc);
 }
 
 template<class T> using ax_enum_int_t = std::underlying_type_t<T>;

@@ -13,8 +13,7 @@ import AxCore.InlineStorage;
 
 export namespace ax {
 
-template<class T> inline
-constexpr Int String_DefaultBufSize = 0;
+template<class T> inline constexpr Int String_DefaultBufSize = 0;
 
 template<class T, Int BUF_SIZE = String_DefaultBufSize<T>>
 class String_;

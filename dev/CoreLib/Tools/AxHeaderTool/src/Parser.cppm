@@ -1,5 +1,4 @@
 module;
-
 #include "AxHeaderTool-pch.h"
 export module AxHeaderTool.Parser;
 export import AxHeaderTool.TypeInfo;
