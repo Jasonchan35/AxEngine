@@ -193,8 +193,17 @@ public:
 	AX_NODISCARD constexpr auto splitByAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult;
 	AX_NODISCARD constexpr auto splitByAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult;
 	//----------------
-	template<class R>
-	bool	tryParse	(R & outValue) const { return StrView_parse(*this, outValue); }
+	constexpr MView extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) {
+		return startsWith(prefix, sc) ? MView(sliceFrom(prefix.size())) : s_empty();
+	}
+
+	constexpr CView extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) const {
+		return ax_const_cast(this)->extractFromPrefix(prefix, sc);
+	}
+	//----------------
+	
+	template<class OBJ>
+	bool	tryParse	(OBJ & outValue) const { return StrView_parse(*this, outValue); }
 	
 	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_make(span()); }
 	
@@ -263,6 +272,9 @@ bool MutStrView_<T>::endsWith(CView r, StrCase sc) const noexcept {
 	if (_size < r.size()) return false;
 	return ax_const_cast(this)->sliceBack(r.size()).equals(r, sc);
 }
+
+template <class T>
+AX_NODISCARD AX_INLINE constexpr StrView_<T> StrView_char(const T& ch) noexcept { return StrView_<T>(&ch, 1); }
 
 template <class T>
 AX_NODISCARD AX_INLINE constexpr StrView_<T> StrView_ref(Span<T> src) noexcept {

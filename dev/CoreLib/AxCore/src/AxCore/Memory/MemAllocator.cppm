@@ -156,14 +156,10 @@ struct AxDelete {
 };
 
 template<class T> AX_INLINE
-void ax_delete(T* p) {
-	AxDelete::deleteObject<T>(p);
-}
+void ax_delete(T* & p) { AxDelete::deleteObject<T>(p); }
 
 template<class T> AX_INLINE
-void ax_delete_array(T* p) {
-	AxDelete::deleteArray<T>(p);
-}
+void ax_delete_array(T* p) { AxDelete::deleteArray<T>(p); }
 
 template<class T> AX_INLINE void ax_no_delete(T*) {}
 

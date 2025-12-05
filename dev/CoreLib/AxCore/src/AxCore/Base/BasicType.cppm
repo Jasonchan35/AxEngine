@@ -186,6 +186,8 @@ using StrLit8  = StrLit_<Char8 >;
 using StrLit16 = StrLit_<Char16>;
 using StrLit32 = StrLit_<Char32>;
 
+AX_INLINE constexpr StrLit ConstStrLit_bool(bool v) { return v ? StrLit("true") : StrLit("false"); }
+
 template<class T> using Opt = std::optional<T>;
 template<class A, class B> using Pair = std::pair<A, B>;
 template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pair(AX_FORWARD(a), AX_FORWARD(b)); }
@@ -417,6 +419,10 @@ AX_SIMPLE_ERROR(Error_Utf)
 AX_SIMPLE_ERROR(Error_ParseString)
 AX_SIMPLE_ERROR(Error_Time)
 AX_SIMPLE_ERROR(Error_File)
+AX_SIMPLE_ERROR(Error_JsonWriter)
+AX_SIMPLE_ERROR(Error_JsonReader)
+AX_SIMPLE_ERROR(Error_JsonValue)
+
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {

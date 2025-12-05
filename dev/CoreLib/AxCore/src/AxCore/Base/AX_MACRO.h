@@ -281,3 +281,7 @@
 	//--------
 	
 #endif
+
+#define AX_JSON_IO(SE, V)				do { SE.named_io(#V, V); } while(false);
+#define AX_JSON_IO_ENUM_AS_INT(SE, V)	do { SE.named_ioEnumAsInt(#V, V); } while(false);
+

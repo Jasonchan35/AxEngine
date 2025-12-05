@@ -33,15 +33,16 @@ public:
 	constexpr void reserveMore(Int n)		{ reserve(size() + n); }
 	
 	template<class... Args> constexpr void resize(Int newSize, Args&&... args) { Base::_storageResize(newSize, AX_FORWARD(args)...); }
-	template<class... Args> constexpr void resizeMore(Int n,   Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
-							constexpr void resizeLess(Int n) { resize(size() - n); }
+	template<class... Args> constexpr void incSize(Int n,   Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
+							constexpr void decSize(Int n) { resize(size() - n); }
 							constexpr void resizeToCapacity() { resize(capacity()); }
 
 	template< class... Args >
-	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
+	AX_INLINE	T* emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return &back(); }
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
+	constexpr void append(Span<T> item);
 
 	constexpr void operator << (const T &  item)  { append(item); }
 	constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
@@ -109,6 +110,14 @@ constexpr void IArray<T>::append(T && item) {
 	auto oldSize = size();
 	reserve(oldSize + 1);
 	ax_call_constructor<T>(data() + oldSize, AX_FORWARD(item));
+	_storage.setSize(oldSize + 1);
+}
+
+template <class T>
+constexpr void IArray<T>::append(Span<T> item) {
+	auto oldSize = size();
+	reserve(oldSize + item.size());
+	MemUtil::copyConstructor(data() + oldSize, item.data(), item.size());
 	_storage.setSize(oldSize + 1);
 }
 

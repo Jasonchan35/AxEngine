@@ -90,11 +90,11 @@ public:
 			return PersistStr(value);
 		}
 		
-		auto& node = mt->dict.addNode(strview);
-		auto& key = node.key();
-		node.value() = StrLit_<T>(key.data(), key.size());
+		auto* node = mt->dict.addNode(strview);
+		auto& key = node->key();
+		node->value() = StrLit_<T>(key.data(), key.size());
 
-		return PersistStr(&node.value());
+		return PersistStr(&node->value());
 	}
 };
 

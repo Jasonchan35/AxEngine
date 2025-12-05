@@ -12,6 +12,9 @@ export namespace ax {
 template<class T> class MutSpan;
 template<class T> using Span = MutSpan<const T>;
 
+template<class T> constexpr bool Type_IsSpan = false;
+template<class T> constexpr bool Type_IsSpan<Span<T>> = true;
+
 using    ByteSpan	=    Span<Byte>;
 using MutByteSpan	= MutSpan<Byte>;
 

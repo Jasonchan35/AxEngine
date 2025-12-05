@@ -92,7 +92,7 @@ void FileStream::appendReadAllBytes ( IByteArray & buf ) {
 	auto old_size  = buf.size();
 	Int data_size = ax_safe_cast<Int>(file_size - cur);
 
-	buf.resizeMore(data_size);
+	buf.incSize(data_size);
 	try{
 		readBytes(buf.span().slice(old_size, data_size));
 	}catch(...){

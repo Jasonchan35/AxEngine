@@ -144,10 +144,15 @@ public:
 	AX_NODISCARD constexpr auto splitByAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyChar    (chList, sc); }
 	AX_NODISCARD constexpr auto splitByAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyCharBack(chList, sc); }
 	//----------------
+	AX_INLINE			MView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive)		{ return view().extractFromPrefix(prefix, sc); }
+	AX_INLINE			CView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) const	{ return view().extractFromPrefix(prefix, sc); }
+	//----------------
 	constexpr void replaceChars(const T& from, const T& to);
 	constexpr Int  replaceAll(CView from, CView to, StrCase sc = StrCase::Sensitive);
 	//----------------
 
+	template<class OBJ> constexpr bool tryParse(OBJ & obj) const { return view().tryParse(obj); }
+	
 	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { Base::_storageCopy(CView(rhs)); }
 	AX_INLINE constexpr void operator=(MView      rhs) { Base::_storageCopy(rhs); }
 	AX_INLINE constexpr void operator=(CView      rhs) { Base::_storageCopy(rhs); }
