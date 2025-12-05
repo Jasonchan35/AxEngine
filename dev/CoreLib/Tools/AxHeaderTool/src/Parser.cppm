@@ -30,17 +30,17 @@ public:
 	void errorUnexpectedChar();
 	void errorUnexpectedToken();
 
-	template<class... Args>
-	void log(const FormatString_<Char>& fmt, const Args&... args) {
+	template<class... ARGS>
+	void log(const FormatString<ARGS...>& fmt, const ARGS&... args) {
 		TempString tmp;
-		tmp.appendFmt(fmt, args...);
+		tmp.appendFormat(fmt, args...);
 		AX_LOG("{}\n{}:{}\n_token=[{}]", tmp, _filename, _lineNumber, _token.str);
 	}
 
-	template<class Format, class... Args>
-	void error(const Format& fmt, const Args&... args) {
+	template<class... ARGS>
+	void error(const FormatString<ARGS...>& fmt, const ARGS&... args) {
 		log(fmt, args...);
-		throw Error_Unknown();
+		throw Error_Undefined();
 	}
 
 	enum class TokenType {

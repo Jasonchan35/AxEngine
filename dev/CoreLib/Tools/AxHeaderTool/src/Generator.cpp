@@ -25,14 +25,14 @@ void Generator::gen(StrView filename) {
 
 		gen_type(type);
 
-		auto dir = Path::dirname(filename);
+		auto dir = FilePath::dirname(filename);
 
 		String typeFilename(type.name);
 		typeFilename.replaceChars(':', '_');
 
 		if (_outImpl) {
 			TempString outFilename(dir, "/", typeFilename, "._gen.cpp");
-			axFile::writeFileIfChanged(outFilename, _outImpl, true, false);
+			File::writeFileIfChanged(outFilename, _outImpl, true, false);
 		}
 	}
 }
@@ -90,7 +90,7 @@ void Generator::gen_type(TypeInfo& type) {
 	}
 	_outImpl.append("\t""{\n");
 	_outImpl.append("\t\t""s_instance = this;\n");
-	_outImpl.appendFormat("\t\t""Int ownFieldCount = {?};\n", type.props.size());
+	_outImpl.appendFormat("\t\t""Int ownFieldCount = {};\n", type.props.size());
 	_outImpl.append("\t\t""auto baseFieldCount = type->_baseClass->fields().size();\n");
 	_outImpl.append("\t\t""_fields.resize(ownFieldCount + baseFieldCount);\n");
 	_outImpl.append("\t\t""_fields.slice(0, baseFieldCount).copyValues(type->_baseClass->fields());\n");
@@ -99,7 +99,7 @@ void Generator::gen_type(TypeInfo& type) {
 
 	Int i = 0;
 	for (auto& prop : type.props.values()) {
-		_outImpl.appendFormat("\t\t""ownFields[{?}] = &field_{?};\n", i, prop.name);
+		_outImpl.appendFormat("\t\t""ownFields[{}] = &field_{};\n", i, prop.name);
 		i++;
 	}
 	_outImpl.append("\n");

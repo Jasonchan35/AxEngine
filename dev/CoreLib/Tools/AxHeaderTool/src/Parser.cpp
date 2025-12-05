@@ -1,5 +1,7 @@
 module;
 
+#include "AxCore.h"
+
 module AxHeaderTool.Parser;
 
 namespace ax::AxHeaderTool {
@@ -8,7 +10,7 @@ void Parser::readFile(StrView filename, TypeDB& typeDB) {
 	_filename = filename;
 	_typeDB = &typeDB;
 
-	axFile::readUtf8(filename, _source);
+	File::readUtf8(filename, _source);
 	_cur = _source.data();
 
 	nextChar();
@@ -43,7 +45,7 @@ void Parser::parseNamespace() {
 	} while (nextToken());
 
 	if (_namespaces.size()) {
-		_namespaces.popBack();
+		_namespaces.resizeLess(1);
 	}
 }
 
@@ -62,7 +64,7 @@ void Parser::parseClass() {
 	readIdentifer(tmp, "class name");
 
 	if (_typeDB->types.find(tmp)) {
-		error("class {?} already exists", tmp);
+		error("class {} already exists", tmp);
 	}
 	auto& outType = _typeDB->types.add(tmp);
 	outType.name = tmp;
@@ -183,7 +185,7 @@ void Parser::parseProp(TypeInfo& outType) {
 	}
 
 	if (outType.props.find(propName)) {
-		error("property [{?}.{?}] already exists", outType.name, displayName);
+		error("property [{}.{}] already exists", outType.name, displayName);
 	}
 
 	auto& prop = outType.props.add(propName);
@@ -222,8 +224,8 @@ void Parser::readAppendTemplateParam(IString & outStr) {
 }
 
 void Parser::skipBlock(IString* appendToStr) {
-	axStrLiteral start;
-	axStrLiteral end;
+	StrLit start;
+	StrLit end;
 	if (_token.str == "{") {
 		start = "{";
 		end = "}";
@@ -237,7 +239,7 @@ void Parser::skipBlock(IString* appendToStr) {
 		start = "<";
 		end = ">";
 	}else{
-		error("unknown block begin {?}", _token.str);
+		error("unknown block begin {}", _token.str);
 	}
 
 	if (appendToStr) {
@@ -269,21 +271,21 @@ void Parser::skipBlock(IString* appendToStr) {
 
 void Parser::readExpectIdentifer(StrView s) {
 	if (!_token.isIdentifier(s)) {
-		error("token [{?}] expected", s);
+		error("token [{}] expected", s);
 	}
 	nextToken();
 }
 
 void Parser::readExpectOp(StrView s) {
 	if (!_token.isOp(s)) {
-		error("token [{?}] expected", s);
+		error("token [{}] expected", s);
 	}
 	nextToken();
 }
 
 void Parser::readIdentifer(IString & s, StrView msg) {
 	if (!_token.isIdentifier()) {
-		error("error read {?}", msg);
+		error("error read {}", msg);
 	}
 	s = _token.str;
 	nextToken();
@@ -367,11 +369,11 @@ bool Parser::_nextToken() {
 		_trimSpaces();
 		if (!_ch) return false;
 
-		if (_ch == '_' || axCStr::isAlpha(_ch)) {
+		if (_ch == '_' || CharUtil::isAlpha(_ch)) {
 			return _parseIdentifier();
 		}
 
-		if (_ch == '+' || _ch == '-' || axCStr::isDigit(_ch)) {
+		if (_ch == '+' || _ch == '-' || CharUtil::isDigit(_ch)) {
 			return _parseNumber();
 		}
 
@@ -389,35 +391,35 @@ bool Parser::_nextToken() {
 			}
 
 			_token.type = TokenType::Op;
-			_token.str += _ch;
+			_token.str << _ch;
 			return true;
 		}
 
 
 		_token.type = TokenType::Op;
-		_token.str += _ch;
+		_token.str << _ch;
 		nextChar();
 		return true;
 	}
 }
 
 void Parser::errorUnexpectedChar() {
-	error("Unexpected character [{?}]", _ch);
+	error("Unexpected character [{}]", _ch);
 }
 
 void Parser::errorUnexpectedToken() {
-	error("Unexpected token [{?}]", _token.str);
+	error("Unexpected token [{}]", _token.str);
 }
 
 bool Parser::_parseIdentifier() {
 	_token.type = TokenType::Identifier;
 
-	_token.str += _ch;
+	_token.str << _ch;
 	nextChar();
 
 	while (_ch) {
-		if (_ch == '_' || axCStr::isAlpha(_ch) || axCStr::isDigit(_ch)) {
-			_token.str += _ch;
+		if (_ch == '_' || CharUtil::isAlpha(_ch) || CharUtil::isDigit(_ch)) {
+			_token.str << _ch;
 			nextChar();
 		}else{
 			break;
@@ -428,7 +430,7 @@ bool Parser::_parseIdentifier() {
 
 bool Parser::_parseNumber() {
 	_token.type = TokenType::Number;
-	_token.str += _ch;
+	_token.str << _ch;
 	nextChar();
 
 	bool hasDot = false;
@@ -439,10 +441,10 @@ bool Parser::_parseNumber() {
 				errorUnexpectedChar();
 			}
 			hasDot = true;
-			_token.str += _ch;
+			_token.str << _ch;
 			nextChar();
-		}else if (axCStr::isDigit(_ch)) {
-			_token.str += _ch;
+		}else if (CharUtil::isDigit(_ch)) {
+			_token.str << _ch;
 			nextChar();
 		}else{
 			break;
@@ -463,21 +465,21 @@ bool Parser::_parseString() {
 				case '\\':
 				case '/':
 				case '"':
-					_token.str += _ch;
+					_token.str << _ch;
 					break;
-				case 'b': _token.str += '\b'; break;
-				case 'f': _token.str += '\f'; break;
-				case 'n': _token.str += '\n'; break;
-				case 'r': _token.str += '\r'; break;
-				case 't': _token.str += '\t'; break;
+				case 'b': _token.str << '\b'; break;
+				case 'f': _token.str << '\f'; break;
+				case 'n': _token.str << '\n'; break;
+				case 'r': _token.str << '\r'; break;
+				case 't': _token.str << '\t'; break;
 				default:
-					throw axError_Undefined(AX_LOC);
+					throw Error_Undefined();
 			}
 		}else if (_ch == '\"') {
 			nextChar();
 			break;
 		}else{
-			_token.str += _ch;
+			_token.str << _ch;
 		}
 	}
 	return true;
@@ -575,7 +577,7 @@ bool Parser::nextChar() {
 }
 
 void Parser::errorUnexpectedEndOfFile(StrView from) {
-	error("unexpected end of file for {?}", from);
+	error("unexpected end of file for {}", from);
 }
 
 void Parser::_trimSpaces() {

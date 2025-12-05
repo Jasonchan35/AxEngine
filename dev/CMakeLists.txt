@@ -42,7 +42,7 @@ project(${PROJECT_NAME} VERSION 0.1.0)
 
 add_subdirectory(CoreLib/AxCore)
 add_subdirectory(CoreLib/AxCore/test)
-# add_subdirectory(CoreLib/Tools/AxHeaderTool)
+add_subdirectory(CoreLib/Tools/AxHeaderTool)
 
 # target_sources(${PROJECT_NAME} PRIVATE ax_common.cmake)
 

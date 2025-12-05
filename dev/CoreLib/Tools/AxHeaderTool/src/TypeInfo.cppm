@@ -24,7 +24,7 @@ void convertToDisplayName(IString& outStr, StrView s) {
 	}
 
 	if (outStr) {
-		outStr[0] = static_cast<Char>(std::toupper(outStr[0]));
+		outStr[0] = static_cast<Char>(CharUtil::toUpper(outStr[0]));
 	}
 }
 
