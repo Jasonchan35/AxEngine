@@ -18,6 +18,103 @@ using MutByteSpan	= MutSpan<Byte>;
 using    IntSpan	=    Span<Int>;
 using MutIntSpan	= MutSpan<Int>;
 
+//! Reverse Enumerator
+template<class T>
+class	Span_RevForEach_ {
+	using This = Span_RevForEach_;
+public:
+	constexpr operator Span_RevForEach_<const T>() const { return Span_RevForEach_<const T>(_begin, _end); }
+	
+	class	Iter {
+	public:
+		constexpr Iter( T* p=nullptr ) : _p(p) {}
+		constexpr operator const T*	()  { return  _p; }
+		constexpr T &		operator*	()	{ return *_p; }
+		constexpr void	operator++	()	{ --_p; }
+		constexpr bool	operator==	( const Iter & rhs )	{ return _p == rhs._p; }
+		constexpr bool	operator!=	( const Iter & rhs )	{ return _p != rhs._p; }
+	private:
+		T*	_p;
+	};
+
+	constexpr Iter	begin	()	const	{ return Iter(_begin); }
+	constexpr Iter	end		()	const	{ return Iter(_end);   }
+
+	constexpr static This s_make(T* begin, T* end) {
+		if (begin && end) {
+			_begin = end   - 1;
+			_end   = begin - 1;
+		} else {
+			_begin = nullptr;
+			_end   = nullptr;
+		}
+	}
+
+private:
+	Span_RevForEach_(T* begin, T* end) : _begin(begin), _end(end) {}
+	
+	T*		_begin;
+	T*		_end;
+};
+
+template<class T>
+class Span_InterleaveForEach_ {
+	using This = Span_InterleaveForEach_;
+public:
+	operator Span_InterleaveForEach_<const T>() const { return Span_InterleaveForEach_<const T>(_begin, _end, _stride); }
+
+	class Iter {
+	public:
+		constexpr Iter( T* p, Int stride ) : _p(p), _stride(stride) {}
+		constexpr operator const T*	()			{ return  _p; }
+		constexpr T&		operator*	()			{ return *_p; }
+		constexpr T*		operator->	()			{ return  _p; }
+		constexpr void	operator++	()			{ _p = MemUtil::addOffsetInBytes(_p, _stride); }
+		constexpr void	operator++	(int)		{ _p = MemUtil::addOffsetInBytes(_p, _stride); }
+		constexpr void	operator+=	(Int n)		{ _p = MemUtil::addOffsetInBytes(_p, _stride * n); }
+		constexpr bool	operator==	(const Iter & rhs)	{ return _p == rhs._p; }
+		constexpr bool	operator!=	(const Iter & rhs)	{ return _p != rhs._p; }
+	protected:
+		T*		_p;
+		Int	_stride; // in bytes
+	};
+
+	constexpr AX_INLINE This slice(IntRange range);
+
+	constexpr AX_INLINE Iter	begin	()	const	{ return Iter(_begin, _stride); }
+	constexpr AX_INLINE Iter	end		()	const	{ return Iter(_end,   _stride); }
+	constexpr AX_INLINE Iter	operator[](Int i)	{ return at(i); }
+
+	constexpr AX_INLINE	Int	size() const {
+		return _stride ? MemUtil::sizeInBytes(_begin, _end) / _stride : 0;
+	}
+
+	constexpr AX_INLINE Iter	at		(Int i);
+
+	constexpr void fillValues(const T& v) {
+		for (auto& dst : *this) {
+			dst = v;
+		}
+	}
+
+	void fillRotateValues(Span<T> values) {
+		if (values.size() == 0) return;
+
+		Int i = 0;
+		for (auto& dst : *this) {
+			dst = values.at(i);
+			i = (i + 1) % values.size();
+		}
+	}
+
+	constexpr explicit Span_InterleaveForEach_(T* begin, T* end, Int stride) : _begin( begin ), _end( end ), _stride(stride) {}
+
+private:
+	T*		_begin;
+	T*		_end;
+	Int		_stride; // in bytes
+};
+
 template<class T>
 class MutSpan { // copyable
 	using This = MutSpan;
@@ -111,13 +208,15 @@ public:
 	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const;
 	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	();
 
-	using  Iter	= T*;
-	using CIter	= const T*;
-	
-	constexpr  Iter	begin	()		 noexcept	{ return _data; }
-	constexpr CIter	begin	() const noexcept	{ return _data; }
-	constexpr  Iter	end		()		 noexcept	{ return _data + _size; }
-	constexpr CIter	end		() const noexcept	{ return _data + _size; }
+	template<class TT> using Iter = TT*; 
+	constexpr Iter<T>		begin	()		 noexcept	{ return _data; }
+	constexpr Iter<const T>	begin	() const noexcept	{ return _data; }
+	constexpr Iter<T>		end		()		 noexcept	{ return _data + _size; }
+	constexpr Iter<const T>	end		() const noexcept	{ return _data + _size; }
+
+	template<class TT> using RevForEach_ = Span_RevForEach_<TT>;
+	constexpr RevForEach_<T>		revForEach	()			{ return  RevForEach( _data, _data + _size ); }
+	constexpr RevForEach_<const T>	revForEach	() const	{ return CRevForEach( _data, _data + _size ); }
 	
 protected:
 	AX_INLINE constexpr void _checkBound(Int i) const { if (!inBound(i)) throw Error_IndexOutOfRange(); }
@@ -231,13 +330,15 @@ public:
 
 	AX_INLINE	constexpr bool		inBound		(Int  i) const		{ return i >= 0 && i < kSize; }
 
-	using  Iter			= T*;
-	using CIter			= const T*;
+	template<class TT> using Iter = TT*; 
+	constexpr Iter<T>		begin	()		 noexcept	{ return _data; }
+	constexpr Iter<const T>	begin	() const noexcept	{ return _data; }
+	constexpr Iter<T>		end		()		 noexcept	{ return _data + N; }
+	constexpr Iter<const T>	end		() const noexcept	{ return _data + N; }
 
-	constexpr  Iter	begin	()			{ return _data; }
-	constexpr CIter	begin	() const	{ return _data; }
-	constexpr  Iter	end		()			{ return _data + kSize; }
-	constexpr CIter	end		() const	{ return _data + kSize; }
+	template<class TT> using RevForEach_ = Span_RevForEach_<TT>;
+	constexpr RevForEach_<T>		revForEach	()			{ return  RevForEach( _data, _data + N ); }
+	constexpr RevForEach_<const T>	revForEach	() const	{ return CRevForEach( _data, _data + N ); }
 
 private:
 	AX_INLINE void _checkBound(Int i) const {
