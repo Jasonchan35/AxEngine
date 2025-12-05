@@ -79,17 +79,30 @@ public:
 		Int	_stride; // in bytes
 	};
 
-	constexpr AX_INLINE This slice(IntRange range);
+	constexpr AX_INLINE This slice(IntRange range) {
+		auto* s = MemUtil::addOffsetInBytes(_begin, range.begin() * _stride);
+		auto* e = MemUtil::addOffsetInBytes(_begin, range.end()   * _stride);
+		if (s < _begin || e < _begin || s > _end || e > _end) {
+			throw Error_IndexOutOfRange();
+		}
+		return This(s, e, _stride);		
+	}
 
 	constexpr AX_INLINE Iter	begin	()	const	{ return Iter(_begin, _stride); }
 	constexpr AX_INLINE Iter	end		()	const	{ return Iter(_end,   _stride); }
 	constexpr AX_INLINE Iter	operator[](Int i)	{ return at(i); }
 
-	constexpr AX_INLINE	Int	size() const {
-		return _stride ? MemUtil::sizeInBytes(_begin, _end) / _stride : 0;
-	}
+	constexpr AX_INLINE	Int	size() const { return _stride ? MemUtil::sizeInBytes(_begin, _end) / _stride : 0; }
 
-	constexpr AX_INLINE Iter	at		(Int i);
+	constexpr AX_INLINE Iter	at		(Int i) {
+		auto* p = MemUtil::addOffsetInBytes(_begin, i * _stride);
+#ifdef AX_BUILD_CONFIG_Debug
+		if (p < _begin || p + 1 > _end) {
+			throw Error_IndexOutOfRange();
+		}
+#endif
+		return Iter(p, _stride);		
+	}
 
 	constexpr void fillValues(const T& v) {
 		for (auto& dst : *this) {
@@ -215,8 +228,8 @@ public:
 	constexpr Iter<const T>	end		() const noexcept	{ return _data + _size; }
 
 	template<class TT> using RevForEach_ = Span_RevForEach_<TT>;
-	constexpr RevForEach_<T>		revForEach	()			{ return  RevForEach( _data, _data + _size ); }
-	constexpr RevForEach_<const T>	revForEach	() const	{ return CRevForEach( _data, _data + _size ); }
+	constexpr auto revForEach	()			{ return RevForEach_<      T>::s_make( _data, _data + _size ); }
+	constexpr auto revForEach	() const	{ return RevForEach_<const T>::s_make( _data, _data + _size ); }
 	
 protected:
 	AX_INLINE constexpr void _checkBound(Int i) const { if (!inBound(i)) throw Error_IndexOutOfRange(); }
@@ -337,8 +350,8 @@ public:
 	constexpr Iter<const T>	end		() const noexcept	{ return _data + N; }
 
 	template<class TT> using RevForEach_ = Span_RevForEach_<TT>;
-	constexpr RevForEach_<T>		revForEach	()			{ return  RevForEach( _data, _data + N ); }
-	constexpr RevForEach_<const T>	revForEach	() const	{ return CRevForEach( _data, _data + N ); }
+	constexpr auto	revForEach	()			{ return RevForEach_<      T>::s_make( _data, _data + N ); }
+	constexpr auto	revForEach	() const	{ return RevForEach_<const T>::s_make( _data, _data + N ); }
 
 private:
 	AX_INLINE void _checkBound(Int i) const {

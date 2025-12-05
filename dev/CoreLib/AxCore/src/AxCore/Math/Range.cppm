@@ -26,9 +26,7 @@ public:
 
 	AX_INLINE constexpr explicit operator bool() const { return size > 0; }
 
-	AX_INLINE constexpr T endValue() const { return start + size; }
-	
-	AX_INLINE constexpr void setMin(const T& newMin) { auto e = endValue(); start = newMin; setEnd(e); }
+	AX_INLINE constexpr void setMin(const T& newMin) { auto e = end(); start = newMin; setEnd(e); }
 	AX_INLINE constexpr void setEnd(const T& newEnd) { size = newEnd - start; }
 
 	AX_INLINE constexpr void trimStart(const T& n) { T t = Math::max_0(size - n); start -= t; size += t; }
@@ -44,23 +42,8 @@ public:
 	AX_NODISCARD constexpr This mul(const T& m) { return Range_(start * m, size * m); }
 	AX_NODISCARD constexpr This div(const T& m) { return Range_(start / m, size / m); }
 
-	class Iter {
-	public:
-		Iter(const T& v) : _v(v) {}
-		operator const T*	()			{ return &_v; }
-		// T&		operator*	()			{ return  _v; }
-		// T*		operator->	()			{ return &_v; }
-		void	operator++	()			{ ++_v; }
-		void	operator++	(int)		{ _v++; }
-		void	operator+=	(Int n)		{ _v += n; }
-		bool	operator==	(const Iter & rhs) const { return _v == rhs._v; }
-		bool	operator!=	(const Iter & rhs) const { return _v != rhs._v; }
-	private:
-		T _v;
-	};
-
-	Iter begin() const	{ return Iter(start); }
-	Iter end() const	{ return Iter(endValue()); }
+	T begin() const	{ return start; }
+	T end() const	{ return start + size; }
 
 private:
 	AX_INLINE
