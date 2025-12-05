@@ -3,7 +3,6 @@ module;
 
 export module AxCore.Logger;
 export import AxCore.Formatter;
-export import AxCore.FixedArray;
 export import AxCore.Array;
 
 export namespace ax {

@@ -4,8 +4,7 @@ module;
 export module AxCore.IArrayStorage;
 
 export import AxCore.BasicType;
-export import AxCore.ByteOrder;
-export import AxCore.FixedSpan;
+export import AxCore.Span;
 export import AxCore.Math;
 
 export import AxCore.Allocator;
@@ -13,7 +12,7 @@ export import AxCore.MemoryUtil;
 
 export namespace ax {
 
-	template<class T>
+template<class T>
 class IArrayStorage : public NonCopyable {
 protected:
 	static constexpr bool kSmallBufferOptimization = true;

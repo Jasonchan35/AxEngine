@@ -2,7 +2,7 @@
 
 export import AxCore.Array;
 export import AxCore.BasicType;
-export import AxCore.FixedArray;
+export import AxCore.Array;
 export import AxCore.Format;
 export import AxCore.Logger;
 export import AxCore.Formatter;

@@ -4,7 +4,7 @@
 
 module AxCore.FilePath;
 import AxCore.File;
-import AxCore.FixedArray;
+import AxCore.Array;
 
 namespace ax {
 

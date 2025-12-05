@@ -2,7 +2,7 @@
 #include "AxCore-pch.h"
 export module AxCore.BBox; // Bounding Box
 export import AxCore.Vec;
-export import AxCore.FixedArray;
+export import AxCore.Array;
 
 export namespace ax {
 
