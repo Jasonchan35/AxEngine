@@ -124,10 +124,10 @@ public:
 	void clear() { _clear(); }
 
 	template<class... ARGS>
-	AX_INLINE Node* addNode(const InKey & key, ARGS&&... args) { return _addNode(key, AX_FORWARD(args)...); }
+	AX_INLINE Node& addNode(const InKey & key, ARGS&&... args) { return _addNode(key, AX_FORWARD(args)...); }
 	
 	template<class... ARGS>
-	AX_INLINE Value* add(const InKey & key, ARGS&&... args) { return &addNode(key, AX_FORWARD(args)...)->value(); }
+	AX_INLINE Value& add(const InKey & key, ARGS&&... args) { return addNode(key, AX_FORWARD(args)...).value(); }
 
 	AX_INLINE FindEnumator 	findAll	(const InKey& key) { return _findAll_withHas(key, HashInt::s_make(key)); }
 	AX_INLINE Value* 		find	(const InKey& key) { return _find_withHash(  key, HashInt::s_make(key)); }
@@ -250,12 +250,12 @@ private:
 	}	
 
 	template<class... ARGS>
-	Node* _addNode(const InKey & key, ARGS&&... args) {
+	Node& _addNode(const InKey & key, ARGS&&... args) {
 		auto hash = HashInt::s_make(key);
 		HashList& hashList = _getListForAdd(hash);
 		SPtr<Node> node = SPtr_new<Node>(AX_ALLOC_REQ, key, hash, AX_FORWARD(args)...);
 		hashList.append(node);
-		return _orderedList.append(node);
+		return *_orderedList.append(node);
 	}
 
 	FindEnumator _findAll_withHas(const InKey& key, HashInt hash) {

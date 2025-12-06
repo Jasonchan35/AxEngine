@@ -278,7 +278,7 @@ template<class R> inline
 void JsonReader::readValue(IArray<R>& outValue) {
 	outValue.clear();
 	readArray([&]() {
-		readValue(*outValue.emplaceBack());
+		readValue(outValue.emplaceBack());
 	});
 }
 

@@ -19,8 +19,8 @@ bool CsvReader_<CH>::nextRow() {
 	if (!_data.inBound(_pos)) return false;
 
 	for (;;) {
-		auto* cell = _row.cells.emplaceBack();
-		if (!_readCell(*cell))
+		auto& cell = _row.cells.emplaceBack();
+		if (!_readCell(cell))
 			break;
 	}
 

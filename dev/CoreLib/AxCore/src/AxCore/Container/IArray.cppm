@@ -38,7 +38,7 @@ public:
 							constexpr void resizeToCapacity() { resize(capacity()); }
 
 	template< class... Args >
-	AX_INLINE	T* emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return &back(); }
+	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);

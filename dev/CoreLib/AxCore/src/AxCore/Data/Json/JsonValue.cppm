@@ -290,7 +290,7 @@ public:
 
 	Value* getOrAddMember(StrView name) {
 		if (auto* m = members.find(name)) return m;
-		return members.add(name);
+		return &members.add(name);
 	}
 
 	Value& operator[](StrView name) { return *getOrAddMember(name); }

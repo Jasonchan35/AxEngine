@@ -64,7 +64,7 @@ void Parser::parseClass() {
 	if (_typeDB->types.find(tmp)) {
 		error("class {} already exists", tmp);
 	}
-	auto& outType = *_typeDB->types.add(tmp);
+	auto& outType = _typeDB->types.add(tmp);
 	outType.name = tmp;
 
 	//--- namespace scope ---
@@ -127,7 +127,7 @@ void Parser::parseProp(TypeInfo& outType) {
 	for (;;) {
 		if (_token.isOp(")")) break;
 
-		auto& attr = *attributes.emplaceBack();
+		auto& attr = attributes.emplaceBack();
 		readIdentifer(attr.name, "read prop attribute");
 
 		if (_token.isOp("(") || _token.isOp("{")) {
@@ -186,7 +186,7 @@ void Parser::parseProp(TypeInfo& outType) {
 		error("property [{}.{}] already exists", outType.name, displayName);
 	}
 
-	auto& prop = *outType.props.add(propName);
+	auto& prop = outType.props.add(propName);
 	prop.name			= propName;
 	prop.varName		= varName;
 	prop.displayName	= displayName;

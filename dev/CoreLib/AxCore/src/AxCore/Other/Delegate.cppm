@@ -11,9 +11,11 @@ template<class RETURN_TYPE, class... ARGS>
 class Delegate_<RETURN_TYPE (ARGS...)> : public NonCopyable {
 	using This = Delegate_;
 public:
-	using ReturnType	= RETURN_TYPE;	
-						using StaticFunc	= ReturnType (*)(ARGS...);
-	template<class OBJ>	using MemFunc		= ReturnType (OBJ::*)(ARGS...);
+	static constexpr bool return_is_void = std::is_void_v<RETURN_TYPE>;
+	using OptReturn = std::conditional_t<return_is_void, void, Opt<RETURN_TYPE>>;
+	
+						using StaticFunc	= RETURN_TYPE (*)(ARGS...);
+	template<class OBJ>	using MemFunc		= RETURN_TYPE (OBJ::*)(ARGS...);
 
 
 	Delegate_() = default;
@@ -36,7 +38,7 @@ public:
 
 	void unbindAll() { _unbindAll(); }
 
-	AX_INLINE Opt<RETURN_TYPE>	invoke(ARGS... args) { return _invokeValid(AX_FORWARD(args)...); }
+	AX_INLINE OptReturn	invoke(ARGS... args) { return _invokeValid(AX_FORWARD(args)...); }
 
 	AX_INLINE bool valid() const { return _functor != nullptr; }
 	AX_INLINE explicit operator bool () const { return valid(); }
@@ -48,12 +50,19 @@ public:
 		}
 	}
 
-	AX_INLINE Opt<RETURN_TYPE> _invokeValid(bool& outCalled, ARGS... args) {
-		if (!_functor) return RETURN_TYPE();
+	AX_INLINE OptReturn _invokeValid(ARGS... args) {
+		if (!_functor) {
+			if constexpr (!return_is_void) {
+				return std::nullopt;
+			} else {
+				return;
+			}
+		}
 		return _functor->onInvoke(AX_FORWARD(args)...);
 	}
 
 private:
+	
 	enum class Type {
 		Unknown,
 		StaticFunctor,
@@ -69,10 +78,10 @@ private:
 		virtual bool hasObject(void* p) const = 0;
 		virtual void copyTo(Delegate_& de) = 0;
 
-		virtual Opt<RETURN_TYPE> onInvoke(ARGS... args) = 0;
+		virtual OptReturn onInvoke(ARGS... args) = 0;
 
 		template<class OBJ, class FUNC>
-		Opt<RETURN_TYPE> doObjInvoke(OBJ* obj, FUNC func, ARGS... args) {
+		OptReturn doObjInvoke(OBJ* obj, FUNC func, ARGS... args) {
 			if (!obj) return std::nullopt;
 
 			if constexpr(std::is_same_v<FUNC, MemFunc<OBJ>>) {
@@ -94,7 +103,7 @@ private:
 		virtual bool valid() const override				{ return true; }
 		virtual bool hasObject(void* p) const override	{ return false; }
 		virtual void copyTo(Delegate_& de) override	{ de._bindStatic(_func); }
-		virtual Opt<RETURN_TYPE> onInvoke(ARGS... args) override { return _func(AX_FORWARD(args)...); }
+		virtual OptReturn onInvoke(ARGS... args) override { return _func(AX_FORWARD(args)...); }
 	};
 
 	template<class LAMBDA>
@@ -106,7 +115,7 @@ private:
 		virtual bool valid() const override				{ return true; }
 		virtual bool hasObject(void* p) const override	{ return false; }
 		virtual void copyTo(Delegate_& de) override	{ de.bindLambda(_func); }
-		virtual Opt<RETURN_TYPE> onInvoke(ARGS... args) override { return _func(AX_FORWARD(args)...); } 
+		virtual OptReturn onInvoke(ARGS... args) override { return _func(AX_FORWARD(args)...); } 
 	};
 
 	template<class OBJ, class FUNC>
@@ -119,7 +128,7 @@ private:
 		virtual bool valid() const override				{ return _obj != nullptr; }
 		virtual bool hasObject(void* p) const override	{ return _obj == p; }
 		virtual void copyTo(Delegate_& de) override	{ if (_obj) de.template _bindObj<UnownedFunctor>(_obj, _func); }
-		virtual Opt<RETURN_TYPE> onInvoke(ARGS... args) override { return Functor::doObjInvoke(_obj, _func, AX_FORWARD(args)...); }
+		virtual OptReturn onInvoke(ARGS... args) override { return Functor::doObjInvoke(_obj, _func, AX_FORWARD(args)...); }
 	};
 
 	template<class OBJ, class FUNC>
@@ -136,7 +145,7 @@ private:
 		virtual bool hasObject(void* p) const override	{ auto sp = obj(); return sp.ptr() == p; }
 		virtual void copyTo(Delegate_& de) override	{ if (auto sp = obj()) de._bindObj<WPtrFunctor>(sp.ptr(), _func); }
 
-		virtual Opt<RETURN_TYPE> onInvoke(ARGS... args) override { return Functor::doObjInvoke(obj().ptr(), _func, AX_FORWARD(args)...); }
+		virtual OptReturn onInvoke(ARGS... args) override { return Functor::doObjInvoke(obj().ptr(), _func, AX_FORWARD(args)...); }
 	};
 
 	void _bindStatic(StaticFunc func) {

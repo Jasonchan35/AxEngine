@@ -75,6 +75,11 @@ public:
 	AX_INLINE constexpr void operator=(CView      rhs) { Base::operator=(rhs); }
 	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::operator=(rhs); }
 
+	AX_INLINE constexpr void operator=(const This & rhs) { Base::operator=(rhs); }
+	
+	template<Int M>
+	AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::operator=(rhs); }
+	
 	template<Int N>
 	AX_INLINE constexpr void operator=(const T (&sz)[N]) { Base::operator=(CView(sz)); }
 	

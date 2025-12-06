@@ -188,11 +188,12 @@ using StrLit32 = StrLit_<Char32>;
 
 AX_INLINE constexpr StrLit ConstStrLit_bool(bool v) { return v ? StrLit("true") : StrLit("false"); }
 
+class NoInit_{}; constexpr NoInit_ NoInit = {};
 template<class T> using Opt = std::optional<T>;
+
 template<class A, class B> using Pair = std::pair<A, B>;
 template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pair(AX_FORWARD(a), AX_FORWARD(b)); }
 
-class NoInit_{}; constexpr NoInit_ NoInit = {};
 
 // namespace Tag {
 // 	class NewObject_{};		inline constexpr NewObject_ 	NewObject	= {};
@@ -443,6 +444,9 @@ constexpr DST ax_safe_cast(const SRC& src) {
 
 constexpr inline Int	ax_safe_cast_Int(size_t src) { return ax_safe_cast<Int>(src); }
 constexpr inline size_t ax_safe_cast_size_t(Int src) { return ax_safe_cast<size_t>(src); }
+#if AX_OS_WINDOWS
+constexpr inline DWORD ax_safe_cast_DWORD(Int src) { return ax_safe_cast<DWORD>(src); }
+#endif
 
 consteval Int ax_consteval_Int(size_t v) { return ax_safe_cast_Int(v); } 
 

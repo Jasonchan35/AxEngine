@@ -211,8 +211,8 @@ void JsonReader::readValue(JsonArray&	outValue) {
 
 	beginArray();
 	while (!endArray()) {
-		auto* e = outValue.emplaceBack();
-		readValue(*e);
+		auto& e = outValue.emplaceBack();
+		readValue(e);
 	}
 }
 
