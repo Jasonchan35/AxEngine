@@ -31,8 +31,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr This operator|(const This& r) const	{ return _union(r); }
 	AX_NODISCARD AX_INLINE constexpr This operator&(const This& r) const	{ return _intersect(r); }
 
-	AX_NODISCARD AX_INLINE constexpr void operator|=(const This& r)	{ *this = _union(r); }
-	AX_NODISCARD AX_INLINE constexpr void operator&=(const This& r)	{ *this = _intersect(r); }
+				 AX_INLINE constexpr void operator|=(const This& r)	{ *this = _union(r); }
+				 AX_INLINE constexpr void operator&=(const This& r)	{ *this = _intersect(r); }
 
 	AX_NODISCARD AX_INLINE constexpr This operator+(const T& m) const { return Range_(_begin + m, _end + m); }
 	AX_NODISCARD AX_INLINE constexpr This operator-(const T& m) const { return Range_(_begin - m, _end - m); }

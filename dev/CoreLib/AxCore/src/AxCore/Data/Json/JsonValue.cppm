@@ -363,7 +363,7 @@ template<class R, VecSIMD R_SIMD> inline
 bool JsonValue::tryGetValue(Vec1_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();
-	if (arr.size != 1) return false;
+	if (arr.size() != 1) return false;
 
 	if (!arr[0].tryGetValue(outValue.cx)) return false;
 	return true;

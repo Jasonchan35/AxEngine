@@ -47,7 +47,7 @@ endfunction()
 function(ax_set_warning_level target_name)
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		# message("ax_set_warning_level MSVC")
-		# target_compile_options(${target_name} PRIVATE /Bt+) 	#show Build Timing
+		target_compile_options(${target_name} PRIVATE /Bt)	 	# show Build Timing
 
 		target_compile_options(${target_name} PRIVATE /utf-8) 	# execution_character_set - otherwise std::format wouldn't check format in compile time for "char"
 		target_compile_options(${target_name} PRIVATE /WX)    	#warning treated as error
@@ -264,11 +264,8 @@ function(ax_target_set_common_properties target_name)
 		$<$<CONFIG:RelWithDebInfo>:AX_BUILD_CONFIG_RelWithDebInfo>
 	)
 
-	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-	else()
-		target_compile_definitions(${target_name} PUBLIC -DAX_USE_PRECOMPILE_HEADER)
-		target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
-	endif()
+	target_compile_definitions(${target_name} PUBLIC -DAX_USE_PRECOMPILE_HEADER)
+	target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
 
 	target_compile_definitions(${target_name} PUBLIC -DUNICODE -D_UNICODE)
 endfunction()

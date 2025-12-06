@@ -5,7 +5,7 @@
 #include <xmmintrin.h>
 #include <immintrin.h>
 
-#if AX_USE_PRECOMPILE_HEADER
+#if  1 // AX_USE_PRECOMPILE_HEADER
 
 #include <algorithm>
 #include <bit>

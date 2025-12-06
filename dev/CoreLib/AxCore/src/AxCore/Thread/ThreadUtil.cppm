@@ -3,8 +3,8 @@ module;
 
 export module AxCore.ThreadUtil;
 
-import AxCore.Format;
-import AxCore.TimeDuration;
+export import AxCore.Format;
+export import AxCore.TimeDuration;
 
 export namespace ax::Thread {
 

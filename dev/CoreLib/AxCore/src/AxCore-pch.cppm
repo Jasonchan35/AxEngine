@@ -3,7 +3,7 @@ module;
 #include "AxCore-pch.h"
 export module AxCore._PCH;
 
-#if !AX_USE_PRECOMPILE_HEADER
+#if 0 // !AX_USE_PRECOMPILE_HEADER
 
 export import <algorithm>;
 export import <bit>;

@@ -1,4 +1,3 @@
-#include "AxCore_Test-pch.h"
 import AxCore_Test._PCH;
 
 namespace ax {

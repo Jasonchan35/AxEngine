@@ -45,11 +45,9 @@ public:
 
 	constexpr static This s_make(T* begin, T* end) {
 		if (begin && end) {
-			_begin = end   - 1;
-			_end   = begin - 1;
+			return This(end - 1, begin - 1);
 		} else {
-			_begin = nullptr;
-			_end   = nullptr;
+			return This(nullptr, nullptr);
 		}
 	}
 

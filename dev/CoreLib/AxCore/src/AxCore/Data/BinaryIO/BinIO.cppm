@@ -1,5 +1,5 @@
 module;
-#include "AxCore-pch.h"
+// #include "AxCore-pch.h"
 
 export module AxCore.BinIO;
 export import AxCore.BinIO_Writer;
