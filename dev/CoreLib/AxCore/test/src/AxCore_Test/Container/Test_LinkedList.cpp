@@ -50,11 +50,25 @@ struct Test_LinkedList : public UnitTestClass {
 
 		AX_LOG("list = {}", list);
 		{
-			auto src = Span({103, 101, 0, 1, 3, 100, 4, 104, 102});
-
+			static constexpr Int src[] = {103, 101, 0, 1, 3, 100, 4, 104, 102};
+			auto span = Span(src);
+			Int n = span.size();
+			
 			Int i = 0;
 			for (auto& e : list) {
 				AX_TEST_EQ(e.value, src[i]);
+				i++;
+			}
+			AX_TEST_EQ(i, n);
+
+			for (auto& e : list.revForEach()) {
+				i--;
+				AX_TEST_EQ(e.value, src[i]);
+			}
+			AX_TEST_EQ(i, 0);
+
+			for (auto& e : span.revForEach()) {
+				AX_TEST_EQ(e, src[n-i-1]);
 				i++;
 			}
 		}

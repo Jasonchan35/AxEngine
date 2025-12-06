@@ -70,6 +70,23 @@ private:
 	Node*	_node = nullptr;
 };
 
+template<bool REV, class T, class CONFIG>
+class LinkedList_ForEach : public NonCopyable {
+	using List = LinkedList<T, CONFIG>;
+	List* _list = nullptr;
+public:
+	LinkedList_ForEach(List* list) : _list(list) {}
+	
+	template<class TT>
+	using Iter_ = LinkedList_Iter<REV, TT, CONFIG>;
+	
+	using Iter  = Iter_<T>;
+	using CIter = Iter_<const T>;
+
+	AX_INLINE Iter begin()		{ return Iter(_list->tail()); }
+	AX_INLINE Iter end()		{ return Iter(nullptr); }
+};
+
 //! Intrusive Linked Array
 template<class T, class CONFIG>
 class LinkedList : public NonCopyable {
@@ -103,11 +120,11 @@ public:
 	AX_INLINE void appendList(LinkedList && r) { _appendMove(AX_FORWARD(r)); }
 
 
-	AX_INLINE 		T*	head()			{ return _head; }
-	AX_INLINE const	T*	head() const	{ return _head; }
+	AX_INLINE 		T*	head()			{ return _head->_listNodeOwner(); }
+	AX_INLINE const	T*	head() const	{ return _head->_listNodeOwner(); }
 
-	AX_INLINE 		T*	tail()			{ return _tail; }
-	AX_INLINE const	T*	tail() const	{ return _tail; }
+	AX_INLINE 		T*	tail()			{ return _tail->_listNodeOwner(); }
+	AX_INLINE const	T*	tail() const	{ return _tail->_listNodeOwner(); }
 
 	AX_INLINE UPtr<T>	popHead() { return _head ? _remove(_head) : nullptr; }
 	AX_INLINE UPtr<T>	popTail() { return _tail ? _remove(_tail) : nullptr; }
@@ -128,6 +145,8 @@ public:
 
 	AX_INLINE CIter begin() const	{ return CIter(_head); }
 	AX_INLINE CIter end()	const	{ return CIter(nullptr); }
+
+	constexpr auto revForEach() { return LinkedList_ForEach<true, T, CONFIG>(this); }
 
 	template<class CH>
 	void onFormat(Format_<CH> & fmt) const {

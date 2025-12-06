@@ -215,6 +215,10 @@ public:
 	constexpr  Iter	end		()		 noexcept	{ return _data + _size; }
 	constexpr CIter	end		() const noexcept	{ return _data + _size; }
 
+	template<class TT> using RevForEach_ = Span_RevForEach_<TT>;
+	constexpr auto revForEach	()			{ return RevForEach_<      T>::s_make( _data, _data + _size ); }
+	constexpr auto revForEach	() const	{ return RevForEach_<const T>::s_make( _data, _data + _size ); }
+
 private:
 	AX_INLINE constexpr void _checkBound		( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
 	AX_INLINE constexpr void _debug_checkBound	( Int i ) const {
