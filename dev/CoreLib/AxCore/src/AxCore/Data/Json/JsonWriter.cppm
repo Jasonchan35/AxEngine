@@ -88,10 +88,10 @@ public:
 	void writeValue(const JsonObject&	value);
 	void writeValue(const JsonArray&	value);
 
-	template<Int N>	void writeValue(const CharA  (&sz)[N])	{ writeValue(StrView_ref(sz)); }
-	template<Int N>	void writeValue(const CharW  (&sz)[N])	{ writeValue(StrView_ref(sz)); }
-	template<Int N>	void writeValue(const Char16 (&sz)[N])	{ writeValue(StrView_ref(sz)); }
-	template<Int N>	void writeValue(const Char32 (&sz)[N])	{ writeValue(StrView_ref(sz)); }
+	template<Int N>	void writeValue(const CharA  (&sz)[N])	{ writeValue(StrView(sz)); }
+	template<Int N>	void writeValue(const CharW  (&sz)[N])	{ writeValue(StrView(sz)); }
+	template<Int N>	void writeValue(const Char16 (&sz)[N])	{ writeValue(StrView(sz)); }
+	template<Int N>	void writeValue(const Char32 (&sz)[N])	{ writeValue(StrView(sz)); }
 
 	template<class R>
 	void writeValue(const IString_<R>& value) { writeValue(value.view()); }

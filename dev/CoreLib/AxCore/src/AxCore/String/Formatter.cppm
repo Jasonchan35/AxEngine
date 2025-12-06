@@ -42,6 +42,30 @@ public:
 	}
 };
 
+template <class T, class FMT_CH>
+class FormatHandler<MutSpan<T>, FMT_CH> {
+public:
+	using Obj = MutSpan<T>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << "[";
+		Int i = 0;
+		for (auto& it : obj) {
+			if (i > 0) fmt << ", ";
+			fmt << it;
+			++i;
+		}
+		fmt << "]";
+	}
+};
+
+template <CON_IsKindOf_IArray OBJ, class FMT_CH> 
+class FormatHandler<OBJ, FMT_CH> {
+public:
+	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) {
+		fmt << obj.span();
+	}
+};
+
 template <class A, class B, class FMT_CH>
 class FormatHandler<Pair<A,B>, FMT_CH> {
 public:

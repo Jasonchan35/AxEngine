@@ -140,6 +140,7 @@ class MutSpan { // copyable
 public:
 
 	AX_INLINE constexpr MutSpan() = default;
+	AX_INLINE constexpr MutSpan(const MutSpan& r) noexcept = default;
 	AX_INLINE constexpr MutSpan(T* data, Int size) noexcept : _data(data), _size(size) {}
 
 	template<Int N>
@@ -184,7 +185,7 @@ public:
 	constexpr bool	    equals (CSpan r) const noexcept;
 
 	constexpr bool operator==(CSpan r) const noexcept { return  equals(r); }
-	constexpr bool operator!=(CSpan r) const noexcept { return !equals(r); }
+//	constexpr bool operator!=(CSpan r) const noexcept { return !equals(r); }
 
 	AX_NODISCARD AX_INLINE	constexpr static MSpan		s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
 	AX_NODISCARD AX_INLINE	constexpr static CSpan		s_fromByteSpan		(   ByteSpan	from) noexcept	{ return CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }

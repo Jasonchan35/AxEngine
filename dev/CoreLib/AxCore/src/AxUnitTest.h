@@ -24,7 +24,7 @@
 	} while (false) \
 //----
 
-#define AX_TEST_CHECK(A) \
+#define AX_TEST_IF(A) \
 	do { \
 		auto tmpTestMsg = Fmt("{}\n  (value: {})", #A, A); \
 		::ax::UnitTest_Validate(bool((A)), tmpTestMsg.c_str()); \

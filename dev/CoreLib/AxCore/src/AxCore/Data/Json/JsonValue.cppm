@@ -66,12 +66,15 @@ public:
 	bool operator==(u32 v) const { return operator==(static_cast<u64>(v)); }
 	bool operator==(u64 v) const { u64 tmp; if (!tryGetValue(tmp)) return false; return v == tmp; }
 
+	template<class R> requires Type_IsFundamental<R>
+	constexpr bool almostEqual(const R& r) const { R tmp; return tryGetValue(tmp) && Math::almostEqual(tmp, r); }
+	
 	bool operator==(StrViewA v) const { if (!isString()) return false; return asString() == v; }
 	
 	bool operator==(const bool & v) const { if (!isBool()) return false; return asBool() == v; }
 
 	template<class R, Int N>
-	bool operator==(const R (&sz)[N]) const { return operator==(StrView_ref(sz)); }
+	bool operator==(const R (&sz)[N]) const { return operator==(StrView(sz)); }
 
 //---------
 	void setUndefined();
@@ -193,7 +196,7 @@ public:
 
 //---------
 	template<class CH>
-	void onFmt(Format_<CH>& ctx) const {
+	void onFormat(Format_<CH>& ctx) const {
 		switch (_type) {
 			case Type::Undefined:	AX_ASSERT(false);	break;
 			case Type::Null:		ctx << nullptr;		break;
@@ -293,13 +296,13 @@ public:
 	Value& operator[](StrView name) { return *getOrAddMember(name); }
 
 	template<class CH>
-	void onFmt(Format_<CH> & ctx) const {
+	void onFormat(Format_<CH> & ctx) const {
 		ctx << "{";
 		{
 			auto indent = ctx.indentScope();
 			for (auto& e : members) {
 				ctx.newline();
-				ctx << e.key() << " : " << e.value;
+				ctx << e.key() << " : " << e.value();
 			}
 		}
 		ctx.newline();

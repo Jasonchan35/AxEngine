@@ -16,6 +16,10 @@ void AxCore_Test_Container() {
     AX_TEST_FUNC(Test_LinkedList)
 }
 
+void AxCore_Test_Data() {
+    AX_TEST_FUNC(Test_Json)
+}
+
 void AxCore_Test_Math() {
     AX_TEST_FUNC(Test_Vec)
 }
@@ -40,6 +44,7 @@ void AxCore_Test_Time() {
 void AxCore_Test() {
     AX_TEST_GROUP(AxCore_Test_Base)
     AX_TEST_GROUP(AxCore_Test_Container)
+    AX_TEST_GROUP(AxCore_Test_Data)
     AX_TEST_GROUP(AxCore_Test_Math)
     AX_TEST_GROUP(AxCore_Test_Pointer)
     AX_TEST_GROUP(AxCore_Test_Rtti)

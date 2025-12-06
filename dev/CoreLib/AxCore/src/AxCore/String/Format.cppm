@@ -77,9 +77,10 @@ public:
 	constexpr Format_(const StdFormatter & formatter_, StdContext & ctx_) : formatter(formatter_), formatContext(ctx_) {}
 	
 	template<class OBJ>
-	constexpr void operator << (const OBJ& obj) {
+	constexpr This& operator << (const OBJ& obj) {
 		FormatHandler<OBJ, FMT_CH> handler;
 		handler.onFormat(obj, *this);
+		return *this;
 	}
 
 	void newline() {

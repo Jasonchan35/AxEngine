@@ -66,7 +66,7 @@ public:
 
 		{
 			auto r = w.getSPtr();
-			AX_TEST_CHECK(r.ptr() == nullptr);
+			AX_TEST_IF(r.ptr() == nullptr);
 		}
 	}
 

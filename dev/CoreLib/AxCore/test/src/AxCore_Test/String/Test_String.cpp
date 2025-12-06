@@ -75,17 +75,17 @@ public:
 		AX_TEST_EQ(str1, str2);
 		AX_TEST_NOT_EQ(str1, str3);
 
-		AX_TEST_CHECK(str1.equals("test"));
-		AX_TEST_CHECK(!str1.equals("TEST"));
+		AX_TEST_IF(str1.equals("test"));
+		AX_TEST_IF(!str1.equals("TEST"));
 	}
 
 	void test_case5_string_startswith_endswith() {
 		String str("Hello World");
 
-		AX_TEST_CHECK(str.startsWith("Hello"));
-		AX_TEST_CHECK(str.endsWith("World"));
-		AX_TEST_CHECK(!str.startsWith("World"));
-		AX_TEST_CHECK(!str.endsWith("Hello"));
+		AX_TEST_IF(str.startsWith("Hello"));
+		AX_TEST_IF(str.endsWith("World"));
+		AX_TEST_IF(!str.startsWith("World"));
+		AX_TEST_IF(!str.endsWith("Hello"));
 	}
 
 	void test_case6_string_clear() {
@@ -94,7 +94,7 @@ public:
 
 		str.clear();
 		AX_TEST_EQ(str.size(), 0);
-		AX_TEST_CHECK(!str);
+		AX_TEST_IF(!str);
 	}
 
 	void test_case7_string_reserve() {
@@ -136,7 +136,7 @@ public:
 		String str("Test");
 
 		const Char* cStr = str.c_str();
-		AX_TEST_CHECK(cStr != nullptr);
+		AX_TEST_IF(cStr != nullptr);
 		AX_TEST_EQ(cStr[0], 'T');
 		AX_TEST_EQ(cStr[4], '\0');
 	}

@@ -25,7 +25,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr 	Int		sizeInBytes() const noexcept { return size() * AX_SIZEOF(T); }
 
 	AX_NODISCARD AX_INLINE	bool inBound( Int  i ) const	{ return i >= 0 && i < size(); }
-	
+
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 	
@@ -44,17 +44,17 @@ public:
 	constexpr void append(T && item);
 	constexpr void append(Span<T> item);
 
-	constexpr void operator << (const T &  item)  { append(item); }
-	constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
+	AX_INLINE constexpr void operator << (const T &  item)  { append(item); }
+	AX_INLINE constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
 
-	constexpr void operator=(const This& src) { Base::_storageCopy(src); }
+	AX_INLINE constexpr void operator=(const This& src) { Base::_storageCopy(src); }
 
-	MSpan	span		()			{ return MutSpan<T>(data(), size()); }
-	CSpan	span		() const	{ return    Span<T>(data(), size()); }
-	CSpan	constSpan	() const	{ return    Span<T>(data(), size()); }
+	AX_NODISCARD AX_INLINE constexpr MSpan	span		()			{ return MutSpan<T>(data(), size()); }
+	AX_NODISCARD AX_INLINE constexpr CSpan	span		() const	{ return    Span<T>(data(), size()); }
+	AX_NODISCARD AX_INLINE constexpr CSpan	constSpan	() const	{ return    Span<T>(data(), size()); }
 
-	operator  MutSpan<T>	()			{ return span(); }
-	operator  Span<T>		() const	{ return span(); }
+	AX_NODISCARD AX_INLINE constexpr operator MSpan()			{ return span(); }
+	AX_NODISCARD AX_INLINE constexpr operator CSpan() const	{ return span(); }
 
 	AX_NODISCARD AX_INLINE constexpr       T& operator[](Int i)       noexcept { return at(i); }
 	AX_NODISCARD AX_INLINE constexpr const T& operator[](Int i) const noexcept { return at(i); }
@@ -74,6 +74,9 @@ public:
 
 	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().template findMin<FuncOp>(); }
 	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().template sort<FuncOp>(); }
+
+	constexpr bool operator==(CSpan r) const noexcept { return  span() == r; }
+
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -96,6 +99,10 @@ private:
 template<class T> constexpr bool Type_IsIArray = false; 
 template<class T> constexpr bool Type_IsIArray<IArray<T>> = true; 
 
+template <typename OBJ>
+concept CON_IsKindOf_IArray = requires (OBJ obj) {
+	[]<typename T>(const IArray<T>&){}(obj); 
+};
 
 template <class T>
 constexpr void IArray<T>::append(const T& item) {

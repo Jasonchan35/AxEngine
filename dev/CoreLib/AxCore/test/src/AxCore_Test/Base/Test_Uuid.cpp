@@ -9,7 +9,7 @@ class Test_Uuid : public UnitTestClass {
 public:
 	void test_case1() {
 		auto uuid = Uuid::s_gen();
-		AX_TEST_CHECK(uuid.isValid());
+		AX_TEST_IF(uuid.isValid());
 		return;
 	}
 	
