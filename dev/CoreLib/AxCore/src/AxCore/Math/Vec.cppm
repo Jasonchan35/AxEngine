@@ -2,14 +2,15 @@
 #include "AxCore-pch.h"
 export module AxCore.Vec;
 export import AxCore.VecSimd;
+export import AxCore.Random;
 
 export namespace  ax {
 
 template<Int N, class T, VecSIMD SIMD> class Vec_;
-template<class T, VecSIMD SIMD = CpuSIMD_Default> using Vec1_ = Vec_<1, T, SIMD>;
-template<class T, VecSIMD SIMD = CpuSIMD_Default> using Vec2_ = Vec_<2, T, SIMD>;
-template<class T, VecSIMD SIMD = CpuSIMD_Default> using Vec3_ = Vec_<3, T, SIMD>;
-template<class T, VecSIMD SIMD = CpuSIMD_Default> using Vec4_ = Vec_<4, T, SIMD>;
+template<class T, VecSIMD SIMD = VecSIMD_Default> using Vec1_ = Vec_<1, T, SIMD>;
+template<class T, VecSIMD SIMD = VecSIMD_Default> using Vec2_ = Vec_<2, T, SIMD>;
+template<class T, VecSIMD SIMD = VecSIMD_Default> using Vec3_ = Vec_<3, T, SIMD>;
+template<class T, VecSIMD SIMD = VecSIMD_Default> using Vec4_ = Vec_<4, T, SIMD>;
 
 using Vec1h			= Vec1_<f16>;
 using Vec1h_SSE		= Vec1_<f16, VecSIMD::SSE>;
@@ -185,6 +186,19 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
+
+	static This s_randomOnCircle(RandomDevice& dev = RandomDevice::s_default()) {
+		auto theta = dev.getRange<T>(0, 1) * 2 * Math::PI_<T>;
+		This v;
+		Math::sincos(theta, v.x, v.y);
+		return v;
+	}
+
+	static Vec2_<T, SIMD> s_randomInsideCircle(RandomDevice& dev = RandomDevice::s_default()) {
+		auto v = s_randomOnCircle(dev);
+		auto r = dev.getRange<T>(0, 1);
+		return v * Math::sqrt(r); // distribution in square root along radius
+	}
 };
 
 template<class T, VecSIMD SIMD>
@@ -237,6 +251,26 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
+
+	static This s_randomOnSphere(RandomDevice& dev = RandomDevice::s_default()) {
+		auto longitude = dev.getRange<T>(0, 1) * 2 * Math::PI_<T>;
+		auto latitude  = acos(dev.getRange<T>(0, 1) * 2 - 1);
+
+		T sinLongitude, cosLongitude;
+		T sinLatitude,  cosLatitude;
+
+		Math::sincos(longitude, sinLongitude, cosLongitude);
+		Math::sincos(latitude, sinLatitude, cosLatitude);
+
+		Vec3_<T, SIMD> v(sinLatitude * cosLongitude, sinLatitude * sinLongitude, cosLatitude);
+		return v;
+	}
+
+	static This s_randomInsideSphere(RandomDevice& dev = RandomDevice::s_default()) {
+		auto v = s_randomOnSphere(dev);
+		auto r = dev.getRange<T>(0, 1);
+		return v * cbrt(r);
+	}
 };
 
 template<class T, VecSIMD SIMD>

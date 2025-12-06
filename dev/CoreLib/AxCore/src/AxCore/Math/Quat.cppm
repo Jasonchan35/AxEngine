@@ -6,7 +6,7 @@ export import AxCore.Mat;
 export namespace ax {
 
 template<Int N, class T, VecSIMD SIMD> class Quat_;
-template<class T, VecSIMD SIMD = CpuSIMD_Default> using Quat4_ = Quat_<4, T, SIMD>;
+template<class T, VecSIMD SIMD = VecSIMD_Default> using Quat4_ = Quat_<4, T, SIMD>;
 
 using Quat4h		= Quat4_<f16>;
 using Quat4h_SSE	= Quat4_<f16, VecSIMD::SSE>;

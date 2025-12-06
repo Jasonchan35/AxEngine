@@ -13,7 +13,7 @@ public:
 	template<class T>
 	void test_VecSimd() {
 		using Vec = VecSIMD_Data_<4, T, VecSIMD::None>;
-		T x = Random::range<T>(1, 100);
+		T x = Random::getRange<T>(1, 100);
 		constexpr Int N = 10;
 		Vec a[N]; 
 		Vec b[N];

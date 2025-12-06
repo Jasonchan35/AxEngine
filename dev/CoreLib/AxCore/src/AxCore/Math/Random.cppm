@@ -13,21 +13,23 @@ public:
 
 	// exclude max
 	template<class T = Int> requires Type_AnyInt<T>
-	T getInt(T max) { return max <= 0 ? 0 : genIntRange(0, max - 1); }
+	T getInt(T max) { return max <= 0 ? 0 : getRange(0, max - 1); }
 	
 	template<class T = Int> requires Type_AnyInt<T>
-	T genRange(const T& min, const T& max) {
-		auto n = max - min + 1;
+	T getRange(const T& min, const T& max) {
+		auto n = max - min;
 		if (n <= 0) return min;
 		return static_cast<T>(_gen_u64() % static_cast<u64>(n)) + min;
 	}
 
 	template<class T = Int> requires Type_AnyFloat<T>
-	T genRange(const T& min, const T& max) {
+	T getRange(const T& min, const T& max) {
 		std::uniform_real_distribution<T> dis(min, max);
 		return dis(_generator);
 	}
 
+	static RandomDevice& s_default() { static RandomDevice s; return s; }
+		
 private:
 	std::random_device	_randDev;
 	std::mt19937_64		_generator {_randDev()};
@@ -36,17 +38,12 @@ private:
 };
 
 struct Random {
-	Random() = delete;
-	
 	// exclude max
-	template<class T = Int> requires Type_AnyInt<T>
-	static T genInt(T max) { return s_device().getInt(max); }
-	
-	template<class T = Int>
-	static T range(const T& min, const T& max) { return s_device().genRange(min, max); }
+	template <class T = Int> requires Type_AnyInt<T>
+	static T getInt(T max, RandomDevice& dev = RandomDevice::s_default()) { return dev.getInt(max); }
 
-private:
-	static RandomDevice& s_device() { static RandomDevice s; return s; }
+	template <class T = Int>
+	static T getRange(const T& min, const T& max, RandomDevice& dev = RandomDevice::s_default()) { return dev.getRange(min, max); }
 };
 
-} // namespace
+}; // namespace ax::Random

@@ -3,6 +3,13 @@
 #include "AxUnitTest.h"
 import AxCore.UnitTest;
 
+void AxCore_Test_File_Test_File_Example_SubDir() {
+}
+
+void AxCore_Test_File_Test_File_Example() {
+    AX_TEST_GROUP(AxCore_Test_File_Test_File_Example_SubDir)
+}
+
 void AxCore_Test_Base() {
     AX_TEST_FUNC(Test_BasicType)
     AX_TEST_FUNC(Test_Enum)
@@ -22,6 +29,7 @@ void AxCore_Test_Data() {
 
 void AxCore_Test_File() {
     AX_TEST_FUNC(Test_File)
+    AX_TEST_GROUP(AxCore_Test_File_Test_File_Example)
 }
 
 void AxCore_Test_Math() {

@@ -8,9 +8,9 @@ export namespace ax {
 
 template<Int N, Int M, class T, VecSIMD SIMD> class Mat_;
 
-template <class T, VecSIMD SIMD = CpuSIMD_Default> using Mat3_	= Mat_<3, 3, T, SIMD>;
-template <class T, VecSIMD SIMD = CpuSIMD_Default> using Mat4_	= Mat_<4, 4, T, SIMD>;
-template <class T, VecSIMD SIMD = CpuSIMD_Default> using Mat4x3_	= Mat_<4, 3, T, SIMD>; 
+template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat3_	= Mat_<3, 3, T, SIMD>;
+template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat4_	= Mat_<4, 4, T, SIMD>;
+template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat4x3_	= Mat_<4, 3, T, SIMD>; 
 
 using Mat4f			= Mat4_<f32>;
 using Mat4f_SSE		= Mat4_<f32, VecSIMD::SSE>;
