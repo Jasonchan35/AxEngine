@@ -22,6 +22,10 @@ public:
 	Delegate_(const Delegate_& r) { if (r._functor) r._functor->copyTo(*this); }
 	Delegate_(Delegate_ && r) { operator=(std::move(r)); }
 
+	// beware lambda capture variable life cycle
+	template<class LAMBDA> requires std::is_invocable_v<LAMBDA, ARGS...>
+	Delegate_(LAMBDA func) { _bindLambda(func); }
+
 	~Delegate_() { unbindAll(); }
 
 							// global or class static function	
@@ -32,13 +36,16 @@ public:
 	template<class OBJ>		static This s_bindWPtr(SPtr<OBJ>& obj, MemFunc<OBJ> func)	{ Delegate_ d; d.bindWPtr(obj, func); return d; }
 	template<class OBJ>		       void   bindUnowned(OBJ*    obj, MemFunc<OBJ> func)	{ _bindObj<UnownedFunctor<OBJ, MemFunc<OBJ>>>(obj, func); }
 	template<class OBJ>		static This s_bindUnowned(OBJ*    obj, MemFunc<OBJ> func)	{ Delegate_ d; d.bindUnowned(obj, func); return d; }
-							// beware lambda capture variable life cycle
-	template<class LAMBDA>	       void   bindLambda(LAMBDA func)						{ _bindLambda(func); }
-	template<class LAMBDA>	static This s_bindLambda(LAMBDA func)						{ Delegate_ d; d.bindLambda(func); return d; }
+	
+	template<class LAMBDA> requires std::is_invocable_v<LAMBDA, ARGS...>
+	void bindLambda(LAMBDA func) { _bindLambda(func); }
+	
+	template<class LAMBDA> requires std::is_invocable_v<LAMBDA, ARGS...>
+	static This s_bindLambda(LAMBDA func) { Delegate_ d; d.bindLambda(func); return d; }
 
 	void unbindAll() { _unbindAll(); }
 
-	AX_INLINE OptReturn	invoke(ARGS... args) { return _invokeValid(AX_FORWARD(args)...); }
+	AX_INLINE OptReturn	invoke(ARGS... args) const { return _invokeValid(AX_FORWARD(args)...); }
 
 	AX_INLINE bool valid() const { return _functor != nullptr; }
 	AX_INLINE explicit operator bool () const { return valid(); }
@@ -50,7 +57,7 @@ public:
 		}
 	}
 
-	AX_INLINE OptReturn _invokeValid(ARGS... args) {
+	AX_INLINE OptReturn _invokeValid(ARGS... args) const {
 		if (!_functor) {
 			if constexpr (!return_is_void) {
 				return std::nullopt;
@@ -78,7 +85,7 @@ private:
 		virtual bool hasObject(void* p) const = 0;
 		virtual void copyTo(Delegate_& de) = 0;
 
-		virtual OptReturn onInvoke(ARGS... args) = 0;
+		virtual OptReturn onInvoke(ARGS... args) const = 0;
 
 		template<class OBJ, class FUNC>
 		OptReturn doObjInvoke(OBJ* obj, FUNC func, ARGS... args) {
@@ -103,7 +110,7 @@ private:
 		virtual bool valid() const override				{ return true; }
 		virtual bool hasObject(void* p) const override	{ return false; }
 		virtual void copyTo(Delegate_& de) override	{ de._bindStatic(_func); }
-		virtual OptReturn onInvoke(ARGS... args) override { return _func(AX_FORWARD(args)...); }
+		virtual OptReturn onInvoke(ARGS... args) const override { return _func(AX_FORWARD(args)...); }
 	};
 
 	template<class LAMBDA>
@@ -115,7 +122,7 @@ private:
 		virtual bool valid() const override				{ return true; }
 		virtual bool hasObject(void* p) const override	{ return false; }
 		virtual void copyTo(Delegate_& de) override	{ de.bindLambda(_func); }
-		virtual OptReturn onInvoke(ARGS... args) override { return _func(AX_FORWARD(args)...); } 
+		virtual OptReturn onInvoke(ARGS... args) const override { return _func(AX_FORWARD(args)...); } 
 	};
 
 	template<class OBJ, class FUNC>
@@ -128,7 +135,7 @@ private:
 		virtual bool valid() const override				{ return _obj != nullptr; }
 		virtual bool hasObject(void* p) const override	{ return _obj == p; }
 		virtual void copyTo(Delegate_& de) override	{ if (_obj) de.template _bindObj<UnownedFunctor>(_obj, _func); }
-		virtual OptReturn onInvoke(ARGS... args) override { return Functor::doObjInvoke(_obj, _func, AX_FORWARD(args)...); }
+		virtual OptReturn onInvoke(ARGS... args) const override { return Functor::doObjInvoke(_obj, _func, AX_FORWARD(args)...); }
 	};
 
 	template<class OBJ, class FUNC>
@@ -145,7 +152,7 @@ private:
 		virtual bool hasObject(void* p) const override	{ auto sp = obj(); return sp.ptr() == p; }
 		virtual void copyTo(Delegate_& de) override	{ if (auto sp = obj()) de._bindObj<WPtrFunctor>(sp.ptr(), _func); }
 
-		virtual OptReturn onInvoke(ARGS... args) override { return Functor::doObjInvoke(obj().ptr(), _func, AX_FORWARD(args)...); }
+		virtual OptReturn onInvoke(ARGS... args) const override { return Functor::doObjInvoke(obj().ptr(), _func, AX_FORWARD(args)...); }
 	};
 
 	void _bindStatic(StaticFunc func) {

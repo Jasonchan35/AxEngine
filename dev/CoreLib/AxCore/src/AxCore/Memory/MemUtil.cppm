@@ -21,15 +21,15 @@ struct MemUtil {
 	template<class T>
 	static constexpr void operatorCopy(T* dst, const T* src, Int n);
 	
-	template< class T, class... Args>
+	template<class T, class... Args>
 	static constexpr void constructor( T* p, Int n, Args&&... args);
 
-	template< class T > static constexpr void destructor(T* p, Int n);
+	template<class T> static constexpr void destructor(T* p, Int n);
 
-	template< class T > static constexpr void copyConstructor(T* dst, const T* src, Int n);
-	template< class T > static constexpr void moveConstructorAndDestructor(T* dst, T* src, Int n);
+	template<class T> static constexpr void copyConstructor(T* dst, const T* src, Int n);
+	template<class T> static constexpr void moveConstructorAndDestructor(T* dst, T* src, Int n);
 
-	template< class T > static constexpr bool equals(const T* dst, const T* src, Int n);
+	template<class T> static constexpr bool equals(const T* dst, const T* src, Int n);
 
 	template<class T> AX_INLINE
 	static constexpr Int sizeInBytes(const T* start, const T* end) {

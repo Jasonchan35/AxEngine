@@ -85,7 +85,7 @@ void Dir_os_remove(StrView path) {
 	}
 }
 
-void FileDir::listEntries(StrView path, bool subDir, FilterFunc filter) {
+void FileDir::listEntries(StrView path, bool subDir, ListEntryDelegate& dg) {
 	TempStringA pathA;
 	pathA.setUtf(path);
 
@@ -105,12 +105,12 @@ void FileDir::listEntries(StrView path, bool subDir, FilterFunc filter) {
 			r = ::readdir( h );
 #else
 			struct dirent	entry;
-			if( 0 != ::readdir_r( h, &entry, &r ) ) {
+			if (0 != ::readdir_r( h, &entry, &r )) {
 				throw Error_Undefined(AX_SRC_LOC);
 			}
 #endif
 
-			if( ! r ) break;
+			if (!r) break;
 
 			entry.hidden = ZStrUtil::startsWith(r->d_name, ".");
 
@@ -134,10 +134,10 @@ void FileDir::listEntries(StrView path, bool subDir, FilterFunc filter) {
 			entry.path.set(path);
 			FilePath::append(entry.path, entry.name);
 
-			filter(entry);
+			dg.invoke(entry);
 
 			if(entry.isDir && subDir) {
-				listEntries(entry.name, subDir, filter );
+				listEntries(entry.name, subDir, dg);
 			}
 		}
 	} catch (...) {
@@ -196,12 +196,30 @@ void File::RevealInExplorer(StrView path, bool insideFolder) {
 	std::system(cmd.c_str());
 }
 
+inline
+Opt<FileAttributes> FileAttributes_from_Win32(DWORD dw) {
+	if (dw == INVALID_FILE_ATTRIBUTES) return std::nullopt;
 
-bool File::exists ( StrView filename ) {
+	FileAttributes o;
+	o.hidden	= dw & FILE_ATTRIBUTE_HIDDEN;
+	o.dir		= dw & FILE_ATTRIBUTE_DIRECTORY;
+	o.readonly	= dw & FILE_ATTRIBUTE_READONLY;
+	o.system    = dw & FILE_ATTRIBUTE_SYSTEM;
+	return o;
+}
+
+Opt<FileAttributes> File::getAttrs(StrView filename) {
 	TempStringW filenameW;
 	filenameW.setUtf(filename);
-	DWORD dwAttrib = ::GetFileAttributes(filenameW.c_str());
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+	DWORD attr = ::GetFileAttributes(filenameW.c_str());
+	return FileAttributes_from_Win32(attr);
+}
+
+bool File::exists ( StrView filename ) {
+	if (auto attr = getAttrs(filename)) {
+		if (!attr->dir) return true;
+	}
+	return false;
 }
 
 void File::rename	( StrView src_name, StrView dst_name ) {
@@ -254,7 +272,7 @@ private:
 	HANDLE _h;
 };
 
-void FileDir::listEntries(StrView inPath, bool subDir, OnEntryCallback& callback) {
+void FileDir::listEntries(StrView inPath, bool subDir, const ListEntryDelegate& dg) {
 	// because 'filter' callback may change the path string outside
 	TempString  path = inPath;
 	auto pathW = TempStringW::s_format(L"{}/*", inPath);
@@ -269,18 +287,16 @@ void FileDir::listEntries(StrView inPath, bool subDir, OnEntryCallback& callback
 		auto filename = StrView_c_str(data.cFileName);
 		if (filename == L"." || filename == L"..") continue;
 
-		FileDirEntry entry;
-		entry.name.setUtf(filename);
-		entry.path.set(path);
-		FilePath::append(entry.path, entry.name);
-		
-		entry.isDir  = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? true : false;
-		entry.hidden = (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN   ) ? true : false;
+		FileEntry entry;
+		entry.filename.setUtf(filename);
+		FilePath::set(entry.fullpath, path, entry.filename);
+		if (auto attr = FileAttributes_from_Win32(data.dwFileAttributes)) {
+			entry.attr = attr.value(); 
+		}
+		dg.invoke(entry);
 
-		callback.onEntry(entry);
-
-		if(entry.isDir && subDir) {
-			listEntries(entry.name, subDir, callback);
+		if(entry.attr.dir && subDir) {
+			listEntries(entry.fullpath, subDir, dg);
 		}
 	}while(::FindNextFile(h, &data));
 
@@ -431,21 +447,13 @@ void FileDir::removeIfExists(StrView path, bool subDir) {
 void FileDir::remove(StrView path, bool subDir) {
 	if (!subDir) return Dir_os_remove(path);
 
-	class Callback : public FileDir::OnEntryCallback {
-		bool _subDir;
-	public:
-		Callback(bool subdir) : _subDir(subdir) {}
-		virtual void onEntry(FileDirEntry& entry) override {
-			if (entry.isDir) {
-				FileDir::remove(entry.name, _subDir);
-			} else {
-				File::remove(entry.name);
-			}
-		}
-	};
-
-	Callback callback(subDir);
-	listEntries(path, false, callback);
+	listEntries(path, false, [&subDir](FileEntry& entry) {
+		if (entry.attr.dir) {
+			FileDir::remove(entry.fullpath, subDir);
+		} else {
+			File::remove(entry.fullpath);
+		}		
+	});
 
 	Dir_os_remove(path);
 }
@@ -461,6 +469,83 @@ void FileDir::create(StrView path, bool subDir) {
 
 	Dir_os_create(path);
 }
+
+class FileGlobHelper : public NonCopyable {
+	using This = FileGlobHelper;
+public:
+	void search(StrView searchPath, const FileEntryDelegate& resultDelegate) {
+		_resultDelegate = &resultDelegate;
+		auto absPath = FilePath::absPath(searchPath);
+
+		auto p = absPath.view();
+		auto start = p.splitByAnyChar("*?").first
+					  .splitByCharBack('/').first;
+
+		_curPath = start;
+		auto remain = p.sliceFrom(start.size() + 1);
+		_step(remain);
+	}
+
+private:
+	void _step(StrView remain) {
+		if (!remain) {
+			FileEntry entry;
+			entry.filename = FilePath::basename(_curPath, true);
+			entry.fullpath = _curPath;
+			if (auto attr =	File::getAttrs(_curPath)) {
+				entry.attr = attr.value(); 
+			}
+			_resultDelegate->invoke(entry);
+			return;
+		}
+
+		auto s = remain.splitByChar('/');
+		_step2(s.first, s.second);
+	}
+
+	void _step2(StrView name, StrView remain) {
+		if (!FileDir::exists(_curPath))
+			return;
+
+		if (name == "**") {
+			_step(remain);
+		}
+
+		auto cb = [&](FileEntry& entry) { _onFileEntry(entry, name, remain); };
+
+		FileDir::ListEntryDelegate dg(cb);
+		FileDir::listEntries(_curPath, false, dg);
+	};
+	
+	void _onFileEntry(FileEntry& entry, StrView name, StrView remain) {
+		if (entry.attr.dir && name == "**") {
+			auto oldSize = _curPath.size();
+			_curPath << '/' << entry.filename;
+
+			_step2(name, remain);
+			// back to last level
+			_curPath.resize(oldSize);
+
+		} else if (entry.filename.matchWildcard(name, StrCase::Sensitive)) {
+			auto oldSize = _curPath.size();
+			_curPath << '/' << entry.filename;
+
+			_step(remain);
+
+			// back to last level
+			_curPath.resize(oldSize);
+		}
+	}	
+
+	String _curPath;
+	const FileEntryDelegate* _resultDelegate = nullptr;
+};
+
+void File::glob(StrView searchPath, const FileEntryDelegate& resultDelegate) {
+	FileGlobHelper helper;
+	helper.search(searchPath, resultDelegate);
+}
+
 
 } // namespace
 

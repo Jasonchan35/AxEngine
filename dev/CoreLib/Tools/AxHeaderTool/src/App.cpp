@@ -36,7 +36,10 @@ int App::onRun() {
 	String	_outGenTypes("template<class HANDLER> inline\n"
 							 "static void generated_node_types(HANDLER& handler) {\n");
 
-	FilePath::glob(inputFiles, tmp, false, true, false);
+	File::glob(tmp, [&inputFiles](FileEntry & entry) {
+		inputFiles.append(entry.fullpath);
+	});
+	
 	inputFiles.sort();
 
 	for (auto& f : inputFiles) {

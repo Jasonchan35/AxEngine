@@ -178,12 +178,17 @@ public:
 	AX_NODISCARD AX_INLINE constexpr Int      size() const noexcept { return _size; }
 	AX_NODISCARD AX_INLINE constexpr Int      sizeInBytes() const noexcept { return _size * AX_SIZEOF(T); }
 
-	template<class Func>
-	constexpr CmpResult compare(CSpan r, Func func) const noexcept;
-	constexpr bool	    equals (CSpan r) const noexcept;
+	template<class R, class Func>
+	constexpr CmpResult compare(Span<R> r, Func func) const noexcept;
+
+	template<class R>
+	constexpr bool	    equals (Span<R> r) const noexcept;
 
 	constexpr bool operator==(CSpan r) const noexcept { return  equals(r); }
 //	constexpr bool operator!=(CSpan r) const noexcept { return !equals(r); }
+
+	template<class R>
+	constexpr bool operator==(Span<R> r) const noexcept { return equals(r); }
 
 	AX_NODISCARD AX_INLINE	constexpr static MSpan		s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
 	AX_NODISCARD AX_INLINE	constexpr static CSpan		s_fromByteSpan		(   ByteSpan	from) noexcept	{ return CSpan(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
@@ -274,18 +279,32 @@ void MutSpan<T>::sort() {
 	}
 }
 
-template <class T>
-constexpr bool MutSpan<T>::equals(CSpan r) const noexcept {
-	if (_size == 0 && r._size == 0) return true;
+template<class T>
+template<class R>
+constexpr bool MutSpan<T>::equals(Span<R> r) const noexcept {
+	if (_size == 0 && r.size() == 0) return true;
 	if (_size != r.size()) return false;
-	if (_data != r.data()) return true;
-	return MemUtil::equals(_data, r.data(), _size);
+	if constexpr (Type_IsSame<R,T>) {
+		if (_data != r.data()) return true;
+	}
+
+	if (!std::is_constant_evaluated()) { AX_ASSERT(_size >= 0); }
+	if (_size <= 0) return true;
+	
+	auto* s = _data;
+	auto* e = _data + _size;
+	auto* d = r.data();
+	for (; s<e; ++s, ++d) {
+		if (*s != *d) return false;
+	}
+	return true;
+
 }
 
 template<class T>
-template<class Func>
-constexpr CmpResult MutSpan<T>::compare(CSpan r, Func func) const noexcept {
-	if (_size == 0 && r._size == 0) return CmpResult::Equal;
+template<class R, class Func>
+constexpr CmpResult MutSpan<T>::compare(Span<R> r, Func func) const noexcept {
+	if (_size == 0 && r.size() == 0) return CmpResult::Equal;
 	if (samePtrAndSize(r)) return CmpResult::Equal;
 
 	Int n = Math::min(_size, r.size());

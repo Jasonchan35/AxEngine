@@ -3,6 +3,7 @@
 
 export module AxCore.FilePath;
 export import AxCore.Formatter;
+export import AxCore.Delegate;
 
 export namespace ax {
 
@@ -87,11 +88,12 @@ public:
 
 	AX_NODISCARD 	static	bool		hasPrefix		(StrView path, StrView prefix, StrCase sc = StrCase::Sensitive);
 
-	static	void		append			(IString& folder, StrView file);
+	template<class... ARGS>
+	static  void		appendTo(IString& outStr, ARGS&&... args) { (_appendTo(outStr, StrView(args)),...); }
 
-	static	void		glob			(IArray<String>& outPaths, StrView searchPath, bool needDir=false, bool needFiles=true, bool needHidden=false);
-	static	void		appendGlob		(IArray<String>& outPaths, StrView searchPath, bool needDir=false, bool needFiles=true, bool needHidden=false);
-
+	template<class... ARGS>
+	static  void		set(IString& outStr, ARGS&&... args) { ( outStr.clear(), appendTo(outStr, AX_FORWARD(args)...)); }
+	
 	static	bool		setCurrentDir	(StrView path);
 	static	void		getCurrentDir	(IString & path);
 	static  TempString	currentDir		()		{ TempString tmp; getCurrentDir(tmp); return tmp; }
@@ -106,6 +108,9 @@ public:
 	AX_NODISCARD	static	StrView		currentProcessFile	();
 	AX_NODISCARD	static	StrView		tempDir				();
 
+private:
+	static	void		_appendTo		(IString& folder, StrView file);
+	
 }; // FilePath
 	
 } // namespace

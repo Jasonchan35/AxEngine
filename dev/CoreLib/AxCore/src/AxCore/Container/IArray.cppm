@@ -75,8 +75,11 @@ public:
 	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().template findMin<FuncOp>(); }
 	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().template sort<FuncOp>(); }
 
-	constexpr bool operator==(CSpan r) const noexcept { return  span() == r; }
+	constexpr bool operator==(CSpan r) const noexcept { return span() == r; }
 
+	template<class R>
+	constexpr bool operator==(Span<R> r) const noexcept { return span() == r; }
+	
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
