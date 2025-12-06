@@ -1,0 +1,365 @@
+module;
+
+export module AxRender.ColorRGBA;
+export import AxRender.ColorType;
+
+export namespace ax {
+
+template<class T>
+class Color_<ColorModel::R, T> {
+	AX_TYPE_INFO(Color_, NoBaseClass)
+public:
+	using Element = T;
+	T r;
+
+	using ColorR	= ColorR_<T>;
+	using ColorRG	= ColorRG_<T>;
+	using ColorRGB	= ColorRGB_<T>;
+	using ColorRGBA = ColorRGBA_<T>;
+	using ColorL	= ColorL_<T>;
+	using ColorLA	= ColorLA_<T>;
+
+	static constexpr ColorModel	kColorModel		= ColorModel::R;
+	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
+	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
+	static constexpr Int		kElementCount	= 1;
+	static constexpr Int		kAlphaBits		= 0;
+
+	using ElemLimit = ColorElemLimit<T>;
+	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
+	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
+	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
+
+	// AX_TYPE_INFO(Color_, NoBaseClass) {
+	// 	static StrView s_name() {
+	// 		static auto s = Fmt("ColorR_<{}>", ax_typeof<T>::s_name());
+	// 		return s;
+	// 	}
+	// 	AX_FIELD_INFO(r) {};
+	// };
+//---
+	AX_INLINE Color_() = default;
+	AX_INLINE explicit Color_(T r_) { set(r_); }
+
+	AX_INLINE constexpr 	  T* data()			{ return &r; }
+	AX_INLINE constexpr const T* data() const	{ return &r; }
+
+	using CSpan =    Span<Element>;
+	using MSpan = MutSpan<Element>;
+
+	using CFixedSpan =    FixedSpan<Element, kElementCount>;
+	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
+
+	AX_INLINE constexpr void set(T r_) { r=r_; }
+
+AX_PRAGMA_GCC(diagnostic push)
+AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
+	AX_INLINE bool	operator==	(const This& rhs) const { return r == rhs.r; }
+	AX_INLINE bool	operator!=	(const This& rhs) const { return r != rhs.r; }
+AX_PRAGMA_GCC(diagnostic pop)
+
+	static const This& kZero		() { static This s(kElemZero()); return s; }
+	static const This& kBlack		() { static This s(kElemZero()); return s; }
+	static const This& kRed			() { static This s(kElemOne ()); return s; }
+	static const This& kDarkRed		() { static This s(kElemHalf()); return s; }
+};
+
+template<class T>
+class Color_<ColorModel::RG, T> {
+	AX_TYPE_INFO(Color_, NoBaseClass)
+public:
+	using Element = T;
+	T r,g;
+
+	using ColorR	= ColorR_<T>;
+	using ColorRG	= ColorRG_<T>;
+	using ColorRGB	= ColorRGB_<T>;
+	using ColorRGBA = ColorRGBA_<T>;
+	using ColorL	= ColorL_<T>;
+	using ColorLA	= ColorLA_<T>;
+
+	static constexpr ColorModel	kColorModel		= ColorModel::RG;
+	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
+	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
+	static constexpr Int		kElementCount	= 1;
+	static constexpr Int		kAlphaBits		= 0;
+
+	using ElemLimit = ColorElemLimit<T>;
+	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
+	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
+	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
+
+	// AX_TYPE_INFO(Color_, NoBaseClass) {
+	// 	static StrView s_name() {
+	// 		static auto s = Fmt("ColorRG_<{}>", ax_typeof<T>::s_name());
+	// 		return s;
+	// 	}
+	//
+	// 	AX_FIELD_INFO(r) {};
+	// 	AX_FIELD_INFO(g) {};
+	// };
+
+//---
+	AX_INLINE Color_() = default;
+	AX_INLINE explicit constexpr Color_(T r_, T g_) { set(r_,g_); }
+
+	AX_INLINE constexpr 	  T* data()			{ return &r; }
+	AX_INLINE constexpr const T* data() const	{ return &r; }
+
+	using CSpan =    Span<Element>;
+	using MSpan = MutSpan<Element>;
+
+	using CFixedSpan =    FixedSpan<Element, kElementCount>;
+	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
+
+	AX_INLINE constexpr void set(T r_, T g_) { r=r_; g=g_; }
+
+AX_PRAGMA_GCC(diagnostic push)
+AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
+	AX_INLINE bool	operator==	(const This& rhs) const { return r == rhs.r && g == rhs.g; }
+	AX_INLINE bool	operator!=	(const This& rhs) const { return r != rhs.r || g != rhs.g; }
+AX_PRAGMA_GCC(diagnostic pop)
+
+//---
+	static const This& kZero		() { static This s(kElemZero(), kElemZero()); return s; }
+	static const This& kBlack		() { static This s(kElemZero(), kElemZero()); return s; }
+	static const This& kRed			() { static This s(kElemOne (), kElemZero()); return s; }
+	static const This& kGreen		() { static This s(kElemZero(), kElemOne ()); return s; }
+	static const This& kYellow		() { static This s(kElemOne (), kElemOne ()); return s; }
+	static const This& kDarkRed		() { static This s(kElemHalf(), kElemZero()); return s; }
+	static const This& kDarkGreen	() { static This s(kElemZero(), kElemHalf()); return s; }
+	static const This& kDarkYellow	() { static This s(kElemHalf(), kElemHalf()); return s; }
+};
+
+template<class T>
+class Color_<ColorModel::RGB, T> {
+	AX_TYPE_INFO(Color_, NoBaseClass)
+public:
+	using Element = T;
+	T r,g,b;
+
+	using ColorR	= ColorR_<T>;
+	using ColorRG	= ColorRG_<T>;
+	using ColorRGB	= ColorRGB_<T>;
+	using ColorRGBA = ColorRGBA_<T>;
+	using ColorL	= ColorL_<T>;
+	using ColorLA	= ColorLA_<T>;
+
+	static constexpr ColorModel	kColorModel		= ColorModel::RGB;
+	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
+	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
+	static constexpr Int		kElementCount	= 1;
+	static constexpr Int		kAlphaBits		= 0;
+
+	using ElemLimit = ColorElemLimit<T>;
+	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
+	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
+	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
+
+	// AX_TYPE_INFO(Color_, NoBaseClass) {
+	// 	static StrView s_name() {
+	// 		static auto s = Fmt("ColorRGB_<{}>", ax_typeof<T>::s_name());
+	// 		return s;
+	// 	}
+	// 	AX_FIELD_INFO(r) {};
+	// 	AX_FIELD_INFO(g) {};
+	// 	AX_FIELD_INFO(b) {};
+	// };
+
+	AX_INLINE Color_() = default;
+	AX_INLINE explicit constexpr Color_(T r_, T g_, T b_) : r(r_), g(g_), b(b_) {}
+
+	AX_INLINE constexpr void set(T r_, T g_, T b_) { r = r_; g = g_; b = b_; }
+	AX_INLINE constexpr void set(const ColorRGB& v) { set(v.r, v.g, v.b); }
+
+	AX_INLINE constexpr 	  T* data()			{ return &r; }
+	AX_INLINE constexpr const T* data() const	{ return &r; }
+
+	using CSpan =    Span<Element>;
+	using MSpan = MutSpan<Element>;
+
+	using CFixedSpan =    FixedSpan<Element, kElementCount>;
+	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
+
+AX_PRAGMA_GCC(diagnostic push)
+AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
+	AX_INLINE constexpr bool	operator==	(const This& rhs) const { return r == rhs.r && g == rhs.g && b == rhs.b; }
+	AX_INLINE constexpr bool	operator!=	(const This& rhs) const { return r != rhs.r || g != rhs.g || b != rhs.b; }
+AX_PRAGMA_GCC(diagnostic pop)
+
+	static const This& kZero		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }
+	static const This& kBlack		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }
+	static const This& kWhite		() { static This s(kElemOne (), kElemOne (), kElemOne ()); return s; }
+	static const This& kRed			() { static This s(kElemOne (), kElemZero(), kElemZero()); return s; }
+	static const This& kGreen		() { static This s(kElemZero(), kElemOne (), kElemZero()); return s; }
+	static const This& kBlue		() { static This s(kElemZero(), kElemZero(), kElemOne ()); return s; }
+	static const This& kYellow		() { static This s(kElemOne (), kElemOne (), kElemZero()); return s; }
+	static const This& kCyan		() { static This s(kElemZero(), kElemOne (), kElemOne ()); return s; }
+	static const This& kMagenta		() { static This s(kElemOne (), kElemZero(), kElemOne ()); return s; }
+	static const This& kGray		() { static This s(kElemHalf(), kElemHalf(), kElemHalf()); return s; }
+	static const This& kDarkRed		() { static This s(kElemHalf(), kElemZero(), kElemZero()); return s; }
+	static const This& kDarkGreen	() { static This s(kElemZero(), kElemHalf(), kElemZero()); return s; }
+	static const This& kDarkBlue	() { static This s(kElemZero(), kElemZero(), kElemHalf()); return s; }
+	static const This& kDarkYellow	() { static This s(kElemHalf(), kElemHalf(), kElemZero()); return s; }
+	static const This& kDarkCyan	() { static This s(kElemZero(), kElemHalf(), kElemHalf()); return s; }
+	static const This& kDarkMagenta	() { static This s(kElemHalf(), kElemZero(), kElemHalf()); return s; }
+
+	void toHexString(IString& s) const;
+
+	template<class R> static constexpr This s_cast(const ColorRGB_<R>& v0) {
+		return s_elemOp(v0, [&](const R& e) { return ColorElemUtil::s_cast<T>(e); });
+	}
+
+	template<class SRC, class FUNC>
+	AX_INLINE constexpr static This s_elemOp(const SRC& v0, FUNC func) {
+		return This(func(v0.r), func(v0.g), func(v0.b));
+	}
+
+};
+
+template<class T>
+class Color_<ColorModel::RGBA, T> {
+	AX_TYPE_INFO(Color_, NoBaseClass)
+public:
+	using Element = T;
+	T r,g,b,a;
+
+	using ColorR	= ColorR_<T>;
+	using ColorRG	= ColorRG_<T>;
+	using ColorRGB	= ColorRGB_<T>;
+	using ColorRGBA = ColorRGBA_<T>;
+	using ColorL	= ColorL_<T>;
+	using ColorLA	= ColorLA_<T>;
+
+	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
+	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
+	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
+	static constexpr Int		kElementCount	= 4;
+	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
+
+	using ElemLimit = ColorElemLimit<T>;
+	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
+	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
+	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
+
+	// AX_TYPE_INFO(Color_, NoBaseClass) {
+	// 	static StrView s_name() {
+	// 		static auto s = Fmt("ColorRGBA_<{}>", ax_typeof<T>::s_name());
+	// 		return s;
+	// 	}
+	// 	AX_FIELD_INFO(r) {};
+	// 	AX_FIELD_INFO(g) {};
+	// 	AX_FIELD_INFO(b) {};
+	// 	AX_FIELD_INFO(a) {};
+	// };
+
+//---
+	AX_INLINE Color_() = default;
+	AX_INLINE explicit constexpr Color_(const T& r_, const T& g_, const T& b_, const T& a_ = kElemOne())
+		: r(r_), g(g_), b(b_), a(a_) {}
+
+	AX_INLINE explicit constexpr Color_(const ColorRGB& v, T a_ = kElemOne()) 
+		: Color_(v.r, v.g, v.b, a) {}
+
+	AX_INLINE constexpr void set(const T& r_, const T& g_, const T& b_, const T& a_ = kElemOne())
+		{ r = r_; g = g_; b = b_; a = a_; }
+
+	AX_INLINE constexpr void set(const ColorRGB& v, T a_ = kElemOne()) 
+		{ set(v.r, v.g, v.b, a); }
+
+	AX_INLINE constexpr 	  T* data()			{ return &r; }
+	AX_INLINE constexpr const T* data() const	{ return &r; }
+
+	using CSpan =    Span<Element>;
+	using MSpan = MutSpan<Element>;
+
+	using CFixedSpan =    FixedSpan<Element, kElementCount>;
+	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
+
+AX_PRAGMA_GCC(diagnostic push)
+AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
+	AX_INLINE constexpr bool	operator==	(const This& rhs) const { return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a; }
+	AX_INLINE constexpr bool	operator!=	(const This& rhs) const { return r != rhs.r || g != rhs.g || b != rhs.b || a != rhs.a; }
+AX_PRAGMA_GCC(diagnostic pop)
+
+	AX_INLINE constexpr bool almostEqual( const This& rhs) const { return Math::almostEqual( *this, rhs); }
+	AX_INLINE constexpr bool exactlyEqual(const This& rhs) const { return Math::exactlyEqual(*this, rhs); }
+
+	static const This& kZero		() { static This s(kElemZero(), kElemZero(), kElemZero(), kElemZero()); return s; }
+	static const This& kBlack		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }
+	static const This& kWhite		() { static This s(kElemOne (), kElemOne (), kElemOne ()); return s; }
+	static const This& kRed			() { static This s(kElemOne (), kElemZero(), kElemZero()); return s; }
+	static const This& kGreen		() { static This s(kElemZero(), kElemOne (), kElemZero()); return s; }
+	static const This& kBlue		() { static This s(kElemZero(), kElemZero(), kElemOne ()); return s; }
+	static const This& kYellow		() { static This s(kElemOne (), kElemOne (), kElemZero()); return s; }
+	static const This& kCyan		() { static This s(kElemZero(), kElemOne (), kElemOne ()); return s; }
+	static const This& kMagenta		() { static This s(kElemOne (), kElemZero(), kElemOne ()); return s; }
+	static const This& kGray		() { static This s(kElemHalf(), kElemHalf(), kElemHalf()); return s; }
+	static const This& kDarkRed		() { static This s(kElemHalf(), kElemZero(), kElemZero()); return s; }
+	static const This& kDarkGreen	() { static This s(kElemZero(), kElemHalf(), kElemZero()); return s; }
+	static const This& kDarkBlue	() { static This s(kElemZero(), kElemZero(), kElemHalf()); return s; }
+	static const This& kDarkYellow	() { static This s(kElemHalf(), kElemHalf(), kElemZero()); return s; }
+	static const This& kDarkCyan	() { static This s(kElemZero(), kElemHalf(), kElemHalf()); return s; }
+	static const This& kDarkMagenta	() { static This s(kElemHalf(), kElemZero(), kElemHalf()); return s; }
+
+	void toHexString(IString& s) const;
+
+	template<class R> static constexpr This s_cast(const ColorRGBA_<R>& v0) {
+		return s_elemOp(v0, [&](const R& e) { return ColorElemUtil::s_cast<T>(e); });
+	}
+
+	template<class SRC, class FUNC>
+	AX_INLINE constexpr static This s_elemOp(const SRC& v0, FUNC func) {
+		return This(func(v0.r), func(v0.g), func(v0.b), func(v0.a));
+	}
+};
+
+template <class T> inline
+void Color_<ColorModel::RGB, T>::toHexString(IString& s) const {
+	s.clear();
+	s.reserve(10);
+	auto tmp = ColorRGBb::s_cast(*this);
+	s.append("#");
+	s.append(CharUtil::byteToHex<Char>(tmp.r.v_int));
+	s.append(CharUtil::byteToHex<Char>(tmp.g.v_int));
+	s.append(CharUtil::byteToHex<Char>(tmp.b.v_int));
+}
+
+template<class T> inline
+void Color_<ColorModel::RGBA, T>::toHexString(IString& s) const {
+	s.clear();
+	s.reserve(10);
+	auto tmp = ColorRGBAb::s_cast(*this);
+	s.append("#");
+	s.append(CharUtil::byteToHex<Char>(tmp.r.v_int));
+	s.append(CharUtil::byteToHex<Char>(tmp.g.v_int));
+	s.append(CharUtil::byteToHex<Char>(tmp.b.v_int));
+	s.append(CharUtil::byteToHex<Char>(tmp.a.v_int));
+}
+
+
+} // namespace ax

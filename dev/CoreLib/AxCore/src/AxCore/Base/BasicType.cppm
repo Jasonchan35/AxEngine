@@ -247,6 +247,16 @@ template<class T> struct FuncOp_LessEqual	{ static constexpr bool invoke(const T
 template<class T> struct FuncOp_Greater		{ static constexpr bool invoke(const T& a, const T& b) { return a >  b; } };
 template<class T> struct FuncOp_GreaterEqual{ static constexpr bool invoke(const T& a, const T& b) { return a >= b; } };
 
+template<class CH> struct CharHex {
+	CH c0, c1;
+	constexpr CharHex() = default;
+	constexpr CharHex(CH c0_, CH c1_) noexcept : c0(c0_), c1(c1_) {}
+
+	constexpr 		CH*	data() noexcept			{ return &c0; }
+	constexpr const	CH*	data() const noexcept	{ return &c0; }
+	consteval		Int	size() const noexcept	{ return 2; }
+};
+
 struct CharUtil {
 	CharUtil() = delete;
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha	(CH ch) { return std::isalpha(ch); } 
@@ -296,10 +306,18 @@ struct CharUtil {
 	}
 
 	template<class CH>
-	AX_NODISCARD AX_INLINE static constexpr Pair<CH,CH> byteToHex(u8 ch) {
+	AX_NODISCARD AX_INLINE static constexpr Opt<u8> hexToByte(CH c0, CH c1) {
+		auto v0 = hexToByte(c0);
+		auto v1 = hexToByte(c1);
+		if (!v0 || !v1) return std::nullopt;
+		return (v0.value() << 4) | v1.value();
+	}
+	
+	template<class CH>
+	AX_NODISCARD AX_INLINE static constexpr CharHex<CH> byteToHex(u8 ch) {
 		constexpr char hex[] = "0123456789ABCDEF";
-		return Pair<CH,CH>(	static_cast<CH>(hex[(ch >> 4) & 0xF]),
-							static_cast<CH>(hex[ ch       & 0xF]));
+		return CharHex(	static_cast<CH>(hex[(ch >> 4) & 0xF]),
+						static_cast<CH>(hex[ ch       & 0xF]));
 	}
 	
 };
@@ -618,8 +636,8 @@ inline void ax_assert(bool expr, StrLit exprStr, const std::source_location & sr
 	__ax_internal_assert("ax_assert", exprStr.c_str(), "", srcLoc);
 }
 
-template<class T> using ax_enum_int_t = std::underlying_type_t<T>;
-template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<ax_enum_int_t<T>>(v); }
+template<class T> using Type_EnumInt = std::underlying_type_t<T>;
+template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<Type_EnumInt<T>>(v); }
 
 struct DebuggerNatvisHex {
 	// UpperCase

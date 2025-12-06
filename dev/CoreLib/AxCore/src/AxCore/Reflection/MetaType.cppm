@@ -100,12 +100,12 @@ struct FinalMetaTypeOf_Handler_ {
 	};
 };
 
-template<class T> using MetaTypeInit_Of_	= typename MetaTypeInit_Handler_<T>::MetaTypeInit;
-template<class T> using MetaType_Of_		= FinalMetaTypeOf_Handler_<T>::FinalMetaType;
-template<class T> using MetaType_OfBase_	= FinalMetaTypeOf_Handler_< BaseClassOf<T> >;
+//template<class T> using MetaTypeInit_Of_	= typename MetaTypeInit_Handler_<T>::MetaTypeInit;
+template<class T> using MetaTypeOf			= FinalMetaTypeOf_Handler_<T>::FinalMetaType;
+// template<class T> using MetaType_OfBase_	= FinalMetaTypeOf_Handler_< BaseClassOf<T> >;
 
 template<class T>
-struct MetaTypeInit_Helper_ : public MetaType_OfBase_<T> {
+struct MetaTypeInit_Helper_ : public MetaTypeOf< BaseClassOf<T> > {
 	using ObjThis = T;
 	using ObjBase = typename T::_TYPE_INFO_Base;
 	static NameId s_name() { return AX_NAMEID(ax_metatype_get_class_name<T>()); }

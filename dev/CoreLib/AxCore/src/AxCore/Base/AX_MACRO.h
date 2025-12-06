@@ -186,14 +186,14 @@
 #define AX_ENUM_ARITHMETIC_OPERATOR_INT(T) \
 	constexpr void operator++(T&  a, int) { a = static_cast<T>(::ax::ax_enum_int(a) + 1); } \
 	constexpr T    operator++(T&  a)      { a = static_cast<T>(::ax::ax_enum_int(a) + 1); return a; } \
-	constexpr T    operator+ (const T&  a, ::ax::ax_enum_int_t<T> b) { return static_cast<T>(::ax::ax_enum_int(a) + b); } \
-	constexpr T    operator- (const T&  a, ::ax::ax_enum_int_t<T> b) { return static_cast<T>(::ax::ax_enum_int(a) - b); } \
-	constexpr T    operator* (const T&  a, ::ax::ax_enum_int_t<T> b) { return static_cast<T>(::ax::ax_enum_int(a) * b); } \
-	constexpr T    operator/ (const T&  a, ::ax::ax_enum_int_t<T> b) { return static_cast<T>(::ax::ax_enum_int(a) / b); } \
-	constexpr void operator+=(T& a, ::ax::ax_enum_int_t<T> b) { a = a + b; } \
-	constexpr void operator-=(T& a, ::ax::ax_enum_int_t<T> b) { a = a - b; } \
-	constexpr void operator*=(T& a, ::ax::ax_enum_int_t<T> b) { a = a * b; } \
-	constexpr void operator/=(T& a, ::ax::ax_enum_int_t<T> b) { a = a / b; } \
+	constexpr T    operator+ (const T&  a, ::ax::Type_EnumInt<T> b) { return static_cast<T>(::ax::ax_enum_int(a) + b); } \
+	constexpr T    operator- (const T&  a, ::ax::Type_EnumInt<T> b) { return static_cast<T>(::ax::ax_enum_int(a) - b); } \
+	constexpr T    operator* (const T&  a, ::ax::Type_EnumInt<T> b) { return static_cast<T>(::ax::ax_enum_int(a) * b); } \
+	constexpr T    operator/ (const T&  a, ::ax::Type_EnumInt<T> b) { return static_cast<T>(::ax::ax_enum_int(a) / b); } \
+	constexpr void operator+=(T& a, ::ax::Type_EnumInt<T> b) { a = a + b; } \
+	constexpr void operator-=(T& a, ::ax::Type_EnumInt<T> b) { a = a - b; } \
+	constexpr void operator*=(T& a, ::ax::Type_EnumInt<T> b) { a = a * b; } \
+	constexpr void operator/=(T& a, ::ax::Type_EnumInt<T> b) { a = a / b; } \
 //--------
 
 #define AX_ENUM_COMPARE_OPERATOR(T) \

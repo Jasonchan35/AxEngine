@@ -163,16 +163,15 @@ public:
 	
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 
-	constexpr This& operator<<(CView  view) { append(view); return *this; }
-	constexpr This& operator<<(const T& ch) { append(ch  ); return *this; }
+	template<class R> constexpr This& operator<<(const R& r) { append(r); return *this; }
 
-	constexpr void append(const T& ch);
-	
 	template<class SRC> AX_INLINE constexpr void set(const SRC& src) { clear(); append(src); }
 
 	template<CON_StrView_<T>... ARGS> constexpr void set(const ARGS&... args) { clear(); append(args...); }
 	template<CON_StrView_<T>... ARGS> constexpr void append(const ARGS&... args);
-	
+
+	constexpr void append(const T& view);
+	constexpr void append(const CharHex<T>& hex) { append(hex.c0); append(hex.c1); }
 	
 	template<class SRC>
 	AX_INLINE constexpr void setUtf(const SRC& src) { clear(); appendUtf(src); }
@@ -215,7 +214,7 @@ protected:
 
 	template<class R>
 	constexpr void _appendUtf(const R& ch);
-	constexpr void _appendView(CView view);
+	constexpr void _append(CView view);
 };
 
 template <class T> constexpr 
@@ -282,7 +281,7 @@ constexpr void IString_<T>::move(IString_<T> && rhs) {
 }
 
 template <class T> inline
-constexpr void IString_<T>::_appendView(CView view) {
+constexpr void IString_<T>::_append(CView view) {
 	if (isOverlapped(view)) throw Error_BufferOverlapped();
 	if (view.size() <= 0) return;
 	
@@ -311,7 +310,7 @@ constexpr void IString_<T>::append(const ARGS&... args) {
 	auto newSize = size();
 	newSize = (newSize + ... +  CView(args).size());
 	reserve(newSize);
-	(_appendView(args), ...);
+	(_append(args), ...);
 }
 
 template <class T> AX_INLINE

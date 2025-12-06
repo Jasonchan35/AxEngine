@@ -225,8 +225,13 @@ public:
 		Int			index;
 		const T&	value;
 	};
-	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const;
-	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	();
+	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult findMin	() const;
+	template<class FuncOp = FuncOp_Less<T>> constexpr void       sort	();
+
+	constexpr void     copyValues(CSpan v, Int offset = 0);
+	constexpr void     fillValues(const T& v);
+	
+	constexpr Opt<Int> getIndexFromElementPtr(const T* element) const;
 
 	template<class TT> using Iter = TT*; 
 	constexpr Iter<T>		begin	()		 noexcept	{ return _data; }
@@ -277,6 +282,29 @@ void MutSpan<T>::sort() {
 		std::swap(at(minIndex), at(i));
 		minIndex = i;
 	}
+}
+
+template<class T> constexpr 
+void MutSpan<T>::copyValues(CSpan v, Int offset) {
+	if (offset < 0 || offset + v.size() > _size) throw Error_IndexOutOfRange();
+	MemUtil::copy(_data + offset, v.data(), v.size());
+}
+
+template<class T> constexpr
+void MutSpan<T>::fillValues(const T& v) {
+	T* p = _data;
+	T* end = _data + _size;
+	for (; p < end; p++) {
+		*p = v;
+	}
+}
+
+template<class T> constexpr
+Opt<Int> MutSpan<T>::getIndexFromElementPtr(const T* element) const {
+	const T* s = _data;
+	const T* e = _data + _size;
+	if (element < s || element >= e) return std::nullopt;
+	return element - _data;
 }
 
 template<class T>

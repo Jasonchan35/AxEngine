@@ -52,8 +52,8 @@ private:
 	using ObjThis      = T;
 	using ObjBase      = BaseClassOf<T>;
 
-	using MetaType     = MetaType_Of_<T>;
-	using BaseMetaType = MetaType_Of_<ObjBase>;
+	using MetaType     = MetaTypeOf<T>;
+	using BaseMetaType = MetaTypeOf<ObjBase>;
 
 	static constexpr bool noBase = std::is_same_v<ObjBase, NoBaseClass>; 
 	

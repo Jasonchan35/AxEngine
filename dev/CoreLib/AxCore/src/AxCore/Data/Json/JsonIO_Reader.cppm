@@ -94,12 +94,12 @@ public:
 
 	template<class T>
 	void ownFields_io(T& obj) {
-		MetaType_Of_<T>::OwnFields::template s_forEachType<ReflectionHandler<T>>(*this, obj);
+		MetaTypeOf<T>::OwnFields::template s_forEachType<ReflectionHandler<T>>(*this, obj);
 	}
 
 	template<class T>
 	void allFields_io(T& obj) {
-		MetaType_Of_<T>::OwnFields::template s_forEachType<ReflectionHandler<T>>(*this, obj);
+		MetaTypeOf<T>::OwnFields::template s_forEachType<ReflectionHandler<T>>(*this, obj);
 	}
 
 	JsonReader reader;

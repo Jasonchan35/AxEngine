@@ -97,9 +97,8 @@ void Uuid::getString(IString& o) const {
 			o << "-";
 		}
 
-		auto pair = CharUtil::byteToHex<Char>(data[i]);
-		o << pair.first;
-		o << pair.second;
+		auto hex = CharUtil::byteToHex<Char>(data[i]);
+		o << hex;
 	}
 }
 

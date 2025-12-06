@@ -10,8 +10,8 @@ public: \
 private: \
 //------
 
-#define AX_META_TYPE_INIT(T)  public MetaTypeInit_Helper_<T>
-#define AX_META_FIELD_INIT(V) public InitMetaField_Helper_<_TYPE_INFO_This, decltype(_TYPE_INFO_This::V), &_TYPE_INFO_This::V, ([]()->StrView{ return #V; }) > 
+#define AX_META_TYPE_INIT(T)  MetaTypeInit_Helper_<T>
+#define AX_META_FIELD_INIT(V) InitMetaField_Helper_<_TYPE_INFO_This, decltype(_TYPE_INFO_This::V), &_TYPE_INFO_This::V, ([]()->StrView{ return #V; }) > 
 //------
 
 // #define AX_META_TYPE_INIT(...)  public MetaTypeInit_Helper_< __VA_ARGS__, ([]()->StrView{ return #__VA_ARGS__; }) >

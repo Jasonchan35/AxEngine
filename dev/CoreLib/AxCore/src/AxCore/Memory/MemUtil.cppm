@@ -19,7 +19,7 @@ struct MemUtil {
 	static constexpr bool isOverlapped(const A* a, Int a_size, const B* b, Int b_size);
 
 	template<class T>
-	static constexpr void operatorCopy(T* dst, const T* src, Int n);
+	static constexpr void copy(T* dst, const T* src, Int n);
 	
 	template<class T, class... Args>
 	static constexpr void constructor( T* p, Int n, Args&&... args);
@@ -147,7 +147,7 @@ void MemUtil::destructor(T* p, Int n) {
 }
 
 template <class T> AX_INLINE constexpr
-void MemUtil::operatorCopy(T* dst, const T* src, Int n) {
+void MemUtil::copy(T* dst, const T* src, Int n) {
 	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
 	if (n <= 0) return;
 	
