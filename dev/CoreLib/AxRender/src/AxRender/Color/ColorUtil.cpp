@@ -1,11 +1,10 @@
 module;
 
-module AxRender.Color;
-import AxRender.ColorUtil;
+module AxRender.ColorUtil;
 
 namespace ax {
 
-template<class DST, class SRC> AX_INLINE
+template<class DST, class SRC> inline
 void ColorUtil::_convertSpan(MutByteSpan dstSpan, ByteSpan srcSpan) {
 	auto dstPixelCount = dstSpan.size() / AX_SIZEOF(DST);
 	auto srcPixelCount = srcSpan.size() / AX_SIZEOF(SRC);

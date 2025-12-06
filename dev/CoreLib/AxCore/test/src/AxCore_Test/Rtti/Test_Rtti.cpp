@@ -15,11 +15,10 @@ public:
 	class Foo {
 		AX_TYPE_INFO(Foo, NoBaseClass)
 	public:
-		int x, y, z;
-		struct MetaTypeInit : AX_META_TYPE_INIT(Foo) {
-			struct x : AX_META_FIELD_INIT(x) {};
-			struct y : AX_META_FIELD_INIT(y) {};
-
+		int x, y;
+		struct MetaTypeInit : AX_META_TYPE() {
+			AX_META_FIELD(x) {};
+			AX_META_FIELD(y) {};
 			using OwnFields = Tuple<x,y>;
 		};
 	};
@@ -46,10 +45,13 @@ public:
 	void test_case1();
 };
 
+//template<class T, Int N>
+//struct Test_Rtti::Bar<T, N>::MetaTypeInit : AX_META_TYPE_INIT(AX_WRAP(Bar<T,N>)) {
+
 template<class T, Int N>
-struct Test_Rtti::Bar<T, N>::MetaTypeInit : AX_META_TYPE_INIT(AX_WRAP(Bar<T,N>)) {
+struct Test_Rtti::Bar<T, N>::MetaTypeInit : AX_META_TYPE() {
 //	static NameId s_name() { return NameId("Bar"); }
-	struct bar : AX_META_FIELD_INIT(bar) {};
+	AX_META_FIELD(bar) {};
 	using OwnFields = Tuple<bar>;
 };
 
@@ -58,27 +60,27 @@ void Test_Rtti::test_case1() {
 		Rtti* ti = rttiOf< Foo<void> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 2);
-		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
-		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
+		AX_TEST_EQ(ti->allFields[0]->name, NameId("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, NameId("y"));
 	}
 		
 	{
 		Rtti* ti = rttiOf< Bar<StrView, 99> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 3);
-		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
-		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
-		AX_TEST_EQ(ti->allFields[2]->name, AX_NAMEID("bar"));
+		AX_TEST_EQ(ti->allFields[0]->name, NameId("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, NameId("y"));
+		AX_TEST_EQ(ti->allFields[2]->name, NameId("bar"));
 		// own fields
-		AX_TEST_EQ(ti->ownFields[0]->name, AX_NAMEID("bar"));
+		AX_TEST_EQ(ti->ownFields[0]->name, NameId("bar"));
 	}
 
 	{
 		Rtti* ti = rttiOf< Bar2_NoInitMetaType<float, 1.1f> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 2);
-		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
-		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
+		AX_TEST_EQ(ti->allFields[0]->name, NameId("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, NameId("y"));
 	}
 	
 }

@@ -260,16 +260,14 @@ public:
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	// AX_TYPE_INFO(Color_, NoBaseClass) {
-	// 	static StrView s_name() {
-	// 		static auto s = Fmt("ColorRGBA_<{}>", ax_typeof<T>::s_name());
-	// 		return s;
-	// 	}
-	// 	AX_FIELD_INFO(r) {};
-	// 	AX_FIELD_INFO(g) {};
-	// 	AX_FIELD_INFO(b) {};
-	// 	AX_FIELD_INFO(a) {};
-	// };
+	struct MetaTypeInit : AX_META_TYPE() {
+		static NameId s_name() { static auto s = NameId(Fmt("ColorRGBA_<{}>", MetaTypeOf<T>::s_name())); return s; }
+		AX_META_FIELD(r) {};
+		AX_META_FIELD(g) {};
+		AX_META_FIELD(b) {};
+		AX_META_FIELD(a) {};
+		using OwnFields = Tuple<r,g,b,a>;
+	};
 
 //---
 	AX_INLINE Color_() = default;

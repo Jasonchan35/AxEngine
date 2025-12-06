@@ -30,12 +30,12 @@ public:
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	// struct MetaTypeInit : public AX_META_TYPE_INIT(This) {
+	// struct MetaTypeInit : AX_META_TYPE() {
 	// 	static NameId s_name() {
 	// 		static NameId s = AX_NAMEID(Fmt("ColorL_<{}>", MetaTypeOf<T>::s_name()));
 	// 		return s;
 	// 	}
-	// 	struct luma : public AX_META_FIELD_INIT(luma) {};
+	// 	struct luma : public AX_META_FIELD(luma) {};
 	// 	using OwnFields = Tuple<luma>;
 	// };
 

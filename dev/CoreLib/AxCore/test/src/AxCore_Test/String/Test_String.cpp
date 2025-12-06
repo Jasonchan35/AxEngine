@@ -180,7 +180,7 @@ public:
 	}
 	
 	void test_NameId() {
-		auto a = AX_NAMEID("Test123");
+		static auto a = NameId("Test123");
 		AX_TEST_EQ(a.name(), "Test");
 		AX_TEST_EQ(a.id(),   123);
 	}

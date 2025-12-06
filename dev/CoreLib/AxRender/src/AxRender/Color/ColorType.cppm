@@ -74,14 +74,14 @@ template<ColorElem E>	using	ColorElem_Type = typename ColorElem_Type_<E>::Type;
 struct ColorElemUtil {
 	template<class DST, class SRC> AX_INLINE static constexpr DST s_cast(const SRC& src);
 
-	AX_INLINE f32	to_f32(UNorm8  v) { return v.to_f32(); }
-	AX_INLINE f32	to_f32(UNorm16 v) { return v.to_f32(); }
-	AX_INLINE f32	to_f32(UNorm32 v) { return v.to_f32(); }
-	AX_INLINE f32	to_f32(f16     v) { return v.to_f32(); }
-	AX_INLINE f32	to_f32(f32     v) { return v; }
-	AX_INLINE f32	to_f32(f64     v) { return static_cast<f32>(v); }
+	static AX_INLINE f32	to_f32(UNorm8  v) { return v.to_f32(); }
+	static AX_INLINE f32	to_f32(UNorm16 v) { return v.to_f32(); }
+	static AX_INLINE f32	to_f32(UNorm32 v) { return v.to_f32(); }
+	static AX_INLINE f32	to_f32(f16     v) { return v.to_f32(); }
+	static AX_INLINE f32	to_f32(f32     v) { return v; }
+	static AX_INLINE f32	to_f32(f64     v) { return static_cast<f32>(v); }
 
-	template<class T> inline T from_f32(f32 v);
+	template<class T> static T from_f32(f32 v);
 	template<class T> AX_INLINE static T grayscale(T r, T g, T b) {
 		return from_f32(to_f32(r) * 0.299f + to_f32(g) * 0.587f + to_f32(b) * 0.114f);
 	}
@@ -378,7 +378,7 @@ struct ColorTypeUtil {
 namespace ax::Math {
 
 template<ColorModel M, class T> AX_INLINE constexpr
-bool almostEqual(const Color_<M,T>& v0, const Color_<M,T>& v1, const T& ep = kEpsilon_<T>) {
+bool almostEqual(const Color_<M,T>& v0, const Color_<M,T>& v1, const T& ep = epsilon<T>) {
 	return ColorTypeUtil<T>::bool_and2(v0, v1,
 		[&](const T& e0, const T& e1) -> bool { return almostEqual(e0, e1, ep); });
 }

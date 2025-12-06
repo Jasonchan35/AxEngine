@@ -15,11 +15,11 @@ public:
 	using View  = StrView_<CH>;
 
 	NameId_() = default;
+	NameId_(StrView_<CH> str);
+	NameId_(const Str& name_, const Id& id_) : _name(name_), _id(id_) {}
 
-	AX_NODISCARD View	name() const	{ return _name; }
-	AX_NODISCARD Id		id() const		{ return _id;   }
-
-	AX_NODISCARD Str	persistName()	{ return _name; }
+	constexpr StrView	name() const { return _name; }
+	constexpr Id		id() const   { return _id; }
 
 	AX_NODISCARD bool operator==(const This& r) const { return _name == r._name && _id == r._id; }
 	AX_NODISCARD bool operator!=(const This& r) const { return !operator==(); }
@@ -36,11 +36,7 @@ public:
 
 	AX_NODISCARD HashInt onHashInt() const { return HashInt_get(_name) ^ HashInt_get(_id); }
 	static constexpr Id kNoId = -1;
-
-	static NameId_ s_compute(StrView_<CH> str);
 private:
-	NameId_(const Str& name, const Id& id) : _name(name), _id(id) {}
-
 	Str	_name;
 	Id	_id = kNoId;
 };
@@ -48,8 +44,8 @@ private:
 using NameId = NameId_<Char, Int>;
 
 template<class CH, class ID> inline
-auto NameId_<CH, ID>::s_compute(StrView_<CH> str) -> This {
-	if (!str) return This();
+NameId_<CH, ID>::NameId_(StrView_<CH> str) {
+	if (!str) return;
 
 	auto* s = str.begin();
 	auto* e = str.end();
@@ -67,7 +63,8 @@ auto NameId_<CH, ID>::s_compute(StrView_<CH> str) -> This {
 		if (!StrView(p, len).tryParse(outId)) { throw Error_ParseString(); }
 	}
 
-	return This(Str::s_make(StrView_<CH>(s, p - s)), outId);
+	_name = Str::s_make(StrView_<CH>(s, p - s));
+	_id   = outId;
 }
 
 } // namespace

@@ -108,7 +108,7 @@ template<class T>
 struct MetaTypeInit_Helper_ : public MetaTypeOf< BaseClassOf<T> > {
 	using ObjThis = T;
 	using ObjBase = typename T::_TYPE_INFO_Base;
-	static NameId s_name() { return AX_NAMEID(ax_metatype_get_class_name<T>()); }
+	static NameId s_name() { static auto s = NameId(ax_metatype_get_class_name<T>()); return s; }
 
 	using OwnFields = Tuple<>;
 	using OwnAttrs  = Tuple<>;
@@ -119,31 +119,31 @@ struct MetaFieldBase : public NonCopyable {
 	using OwnFields = Tuple<>;
 };
 
-template<class OBJ, class FIELD, FIELD OBJ::*PTR, StrView (*NAME_FUNC)()>
-struct InitMetaField_Helper_ : public MetaFieldBase {
-	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
+template<class OBJ, class FIELD, FIELD OBJ::*PTR, NameId (*NAME_FUNC)() >
+struct MetaFieldInit_Helper_ : public MetaFieldBase {
+	static NameId s_name() { static auto s(NAME_FUNC()); return s; }
 	static Int s_offset() { return offsetof(OBJ, PTR); }
 
 	using FieldType = FIELD;
 };
 
-template<class T, StrView (*NAME_FUNC)()>
+template<class T, NameId (*NAME_FUNC)()>
 struct MetaTypeInit_Simple_ : public IMetaTypeInit {
 	using This = T;
 	using Base = NoBaseClass;
 
-	static NameId s_name() { return AX_NAMEID(NAME_FUNC()); }
+	static NameId s_name() { static NameId s(NAME_FUNC()); return s; }
 };
 
-AX_INIT_META_TYPE_SIMPLE(i8)
-AX_INIT_META_TYPE_SIMPLE(i16)
-AX_INIT_META_TYPE_SIMPLE(i32)
-AX_INIT_META_TYPE_SIMPLE(i64)
-AX_INIT_META_TYPE_SIMPLE(u8)
-AX_INIT_META_TYPE_SIMPLE(u16)
-AX_INIT_META_TYPE_SIMPLE(u32)
-AX_INIT_META_TYPE_SIMPLE(u64)
-AX_INIT_META_TYPE_SIMPLE(f32)
-AX_INIT_META_TYPE_SIMPLE(f64)
+AX_META_TYPE_INIT_SIMPLE(i8)
+AX_META_TYPE_INIT_SIMPLE(i16)
+AX_META_TYPE_INIT_SIMPLE(i32)
+AX_META_TYPE_INIT_SIMPLE(i64)
+AX_META_TYPE_INIT_SIMPLE(u8)
+AX_META_TYPE_INIT_SIMPLE(u16)
+AX_META_TYPE_INIT_SIMPLE(u32)
+AX_META_TYPE_INIT_SIMPLE(u64)
+AX_META_TYPE_INIT_SIMPLE(f32)
+AX_META_TYPE_INIT_SIMPLE(f64)
 
 } // namespace

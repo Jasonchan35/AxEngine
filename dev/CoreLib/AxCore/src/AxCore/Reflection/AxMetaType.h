@@ -10,19 +10,19 @@ public: \
 private: \
 //------
 
-#define AX_META_TYPE_INIT(T)  MetaTypeInit_Helper_<T>
-#define AX_META_FIELD_INIT(V) InitMetaField_Helper_<_TYPE_INFO_This, decltype(_TYPE_INFO_This::V), &_TYPE_INFO_This::V, ([]()->StrView{ return #V; }) > 
+#define AX_META_TYPE()		public MetaTypeInit_Helper_<_TYPE_INFO_This>
+
+#define AX_META_FIELD(V) \
+	static NameId _FieldName_##V() { static NameId s(#V); return s; } \
+	struct V :	public MetaFieldInit_Helper_<_TYPE_INFO_This \
+											, decltype(_TYPE_INFO_This::V) \
+											, &_TYPE_INFO_This::V \
+											, _FieldName_##V > \
 //------
 
-// #define AX_META_TYPE_INIT(...)  public MetaTypeInit_Helper_< __VA_ARGS__, ([]()->StrView{ return #__VA_ARGS__; }) >
-// #define AX_META_FIELD_INIT(...) \
-// 	public InitMetaField_Helper_< \
-// 		_TYPE_INFO_This, \
-// 		decltype(_TYPE_INFO_This::__VA_ARGS__), \
-// 		&_TYPE_INFO_This::__VA_ARGS__, \
-// 		([]()->StrView{ return #__VA_ARGS__; }) \
-// 	> \
-// //------
-
-#define AX_INIT_META_TYPE_SIMPLE(T) template<> struct MetaTypeInit_Handler_<T> { using MetaTypeInit = MetaTypeInit_Simple_<T, ([]()->StrView{ return #T; }) >; };
+#define AX_META_TYPE_INIT_SIMPLE(T) \
+		template<> struct MetaTypeInit_Handler_<T> { \
+			static NameId _type_name() { static NameId s(#T); return s; } \
+			using MetaTypeInit = MetaTypeInit_Simple_<T, _type_name>; \
+		}; \
 //------

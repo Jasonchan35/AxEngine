@@ -103,7 +103,7 @@ public:
 	virtual ~RttiObject() = default;
 	
 	using _TYPE_INFO_Base = NoBaseClass;
-	struct MetaTypeInit : AX_META_TYPE_INIT(This) {};
+	struct MetaTypeInit : AX_META_TYPE() {};
 	
 	static  Rtti* s_rtti ()		{ return rttiOf<This>(); }
 	virtual Rtti* rtti() const 	{ return rttiOf<This>(); }
