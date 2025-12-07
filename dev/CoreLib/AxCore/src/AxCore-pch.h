@@ -50,4 +50,4 @@
 #endif
 
 #include "AxCore/Base/AX_MACRO.h"
-#include "AxCore/Reflection/AxRtti.h"
+#include "AxCore/Reflection/Rtti_MACRO.h"

@@ -1,6 +1,6 @@
 ﻿module;
 #include "AxCore-pch.h"
-#include "AxMetaType.h"
+#include "MetaType_MACRO.h"
 
 export module AxCore.MetaType;
 

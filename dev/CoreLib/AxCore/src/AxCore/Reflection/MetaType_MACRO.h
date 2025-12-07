@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#define AX_DOWNCAST_GET_INSTANCE() \
+	AX_INLINE static This* s_instance() { return static_cast<This*>(Base::s_instance()); }
+//---------
+
 #define AX_TYPE_INFO(T, BASE) \
 private: \
 	using This = T; \

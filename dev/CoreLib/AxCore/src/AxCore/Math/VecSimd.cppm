@@ -51,8 +51,19 @@ public:
 	static constexpr bool _use_SSE_m256_pd	= (N == 3 || N == 4) && _use_SSE && Type_IsSame<T, f64>;
 
 	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_() = default;
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const VecSIMD_Data_&) = default;
 	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Register& mm_) : mm(mm_) {}
-
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(AX_ZERO_) {
+		if (!std::is_constant_evaluated()) {
+			if constexpr (_use_SSE_m128_ps) { mm =    _mm_setzero_ps(); return; }
+			if constexpr (_use_SSE_m256_pd) { mm = _mm256_setzero_pd(); return; }
+		}
+		if constexpr (N > 0) e[0] = 0;
+		if constexpr (N > 1) e[1] = 0;
+		if constexpr (N > 2) e[2] = 0;
+		if constexpr (N > 3) e[3] = 0;
+	}
+	
 	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(T t0) : e{t0} {
 		static_assert(N == 1);
 	}
@@ -86,7 +97,7 @@ public:
 		}
 		return s_unroll(t, [](T t){ return t; });
 	}
-	AX_NODISCARD AX_INLINE constexpr static Vec s_zero() { return s_all(0); }
+	AX_NODISCARD AX_INLINE constexpr static Vec s_zero() { return VecSIMD_Data_(AX_ZERO); }
 	AX_NODISCARD AX_INLINE constexpr static Vec s_one () { return s_all(1); }
 
 	template<VecSIMD R_SIMD>

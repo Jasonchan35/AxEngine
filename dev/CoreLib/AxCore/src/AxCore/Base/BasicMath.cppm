@@ -8,14 +8,14 @@ export import AxCore.BasicType;
 
 export namespace ax::Math {
 
-template<class T, Int N> struct s_pos_struct;
-template<class T> struct s_pos_struct<T, 0> { constexpr T compute(const T& v) { return 1; } };
-template<class T> struct s_pos_struct<T, 1> { constexpr T compute(const T& v) { return v; } };
-template<class T> struct s_pos_struct<T, 2> { constexpr T compute(const T& v) { return v * v; } };
-template<class T> struct s_pos_struct<T, 3> { constexpr T compute(const T& v) { return v * v * v; } };
+template<Int N, class T> struct s_pos_struct;
+template<class T> struct s_pos_struct<0,T> { static constexpr T compute(const T& v) { return 1; } };
+template<class T> struct s_pos_struct<1,T> { static constexpr T compute(const T& v) { return v; } };
+template<class T> struct s_pos_struct<2,T> { static constexpr T compute(const T& v) { return v * v; } };
+template<class T> struct s_pos_struct<3,T> { static constexpr T compute(const T& v) { return v * v * v; } };
 
-template<class T, Int N>
-constexpr T s_pow(const T& v) { return s_pos_struct<T, N>::compute(v); } 
+template<Int N, class T>
+constexpr T s_pow(const T& v) { return s_pos_struct<N, T>::compute(v); } 
 
 //-------------------------
 template< class T > constexpr Int sign( const T& a ) {

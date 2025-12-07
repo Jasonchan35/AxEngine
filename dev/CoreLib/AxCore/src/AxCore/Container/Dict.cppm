@@ -123,19 +123,25 @@ public:
 
 	void clear() { _clear(); }
 
+	AX_NODISCARD AX_INLINE constexpr Int size() const { return _orderedList.size(); }
+	
 	template<class... ARGS>
 	AX_INLINE Node& addNode(const InKey & key, ARGS&&... args) { return _addNode(key, AX_FORWARD(args)...); }
 	
 	template<class... ARGS>
 	AX_INLINE Value& add(const InKey & key, ARGS&&... args) { return addNode(key, AX_FORWARD(args)...).value(); }
 
-	AX_INLINE FindEnumator 	findAll	(const InKey& key) { return _findAll_withHas(key, HashInt::s_make(key)); }
-	AX_INLINE Value* 		find	(const InKey& key) { return _find_withHash(  key, HashInt::s_make(key)); }
+	AX_INLINE Value* 		find			(const InKey& key)					{ return _find(key, HashInt::s_make(key)); }
+	AX_INLINE Value* 		find_hash		(const InKey& key, HashInt hash)	{ return _find(key, hash); }
 
-	AX_INLINE FindEnumator 	findAll_withHash(const InKey& key, HashInt hash) { return _findAll_withHas(key, hash); }
-	AX_INLINE Value* 		find_withHash	(const InKey& key, HashInt hash) { return _find_withHash(  key, hash); }
+	AX_INLINE Node* 		findNode		(const InKey& key)					{ return _findNode(key, HashInt::s_make(key)); }
+	AX_INLINE Node* 		findNode_hash	(const InKey& key, HashInt hash)	{ return _findNode(key, hash); }
 
-	AX_NODISCARD AX_INLINE constexpr Int size() const { return _orderedList.size(); }
+	AX_INLINE FindEnumator 	findAll			(const InKey& key)					{ return _findAll(key, HashInt::s_make(key)); }
+	AX_INLINE FindEnumator	findAll_hash	(const InKey& key, HashInt hash)	{ return _findAll(key, hash); }
+	
+	AX_INLINE bool			remove			(const InKey& key)					{ return _remove(key, HashInt::s_make(key)); }
+	AX_INLINE bool			remove_hash		(const InKey& key, HashInt hash)	{ return _remove(key, hash); }
 
 	template<class TT>
 	using Iter_ = typename OrderedList::template Iter_<TT>;
@@ -258,7 +264,7 @@ private:
 		return *_orderedList.append(node);
 	}
 
-	FindEnumator _findAll_withHas(const InKey& key, HashInt hash) {
+	FindEnumator _findAll(const InKey& key, HashInt hash) {
 		if (_hashTable.size() <= 0) {
 			return FindEnumator(key, nullptr);
 		}
@@ -266,15 +272,34 @@ private:
 		return FindEnumator(key, _findInHashList(list, hash, key));
 	}
 
-	Value* _find_withHash(const InKey& key, HashInt hash) {
-		auto enumator = _findAll_withHas(key, hash);
+	Node* _findNode(const InKey& key, HashInt hash) {
+		auto enumator = _findAll(key, hash);
 		if (auto it = enumator.begin()) {
-			return &it.value(); // return the first element
+			return it.node(); // return the first element
 		} else {
 			return nullptr;
 		}
 	}
 
+	Value* _find(const InKey& key, HashInt hash) {
+		if (auto* node = _findNode(key, hash)) {
+			return &node->value();
+		} else {
+			return nullptr;
+		}
+	}
+
+	bool _remove(const InKey& key, HashInt hash) {
+		if (auto* node = _findNode(key, hash)) {
+			_getList(hash).remove(node);
+			_orderedList.remove(node);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	
 	OrderedList _orderedList;
 	Array<HashList, s_tableBufSize> _hashTable;
 };

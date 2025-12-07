@@ -188,7 +188,9 @@ using StrLit32 = StrLit_<Char32>;
 
 AX_INLINE constexpr StrLit ConstStrLit_bool(bool v) { return v ? StrLit("true") : StrLit("false"); }
 
-class NoInit_{}; constexpr NoInit_ NoInit = {};
+class AX_NO_INIT_{};	constexpr AX_NO_INIT_	AX_NO_INIT	= {};
+class AX_ZERO_{};		constexpr AX_ZERO_		AX_ZERO		= {};
+
 template<class T> using Opt = std::optional<T>;
 
 template<class A, class B> using Pair = std::pair<A, B>;
@@ -202,7 +204,7 @@ template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pai
 // } // namespace Tag
 
 struct SrcLoc {
-	constexpr SrcLoc(NoInit_) noexcept {}
+	constexpr SrcLoc(AX_NO_INIT_) noexcept {}
 	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) noexcept : _loc(loc) {};
 	
 	constexpr Int    		column	() const noexcept	{ return _loc.column(); }
@@ -431,7 +433,7 @@ AX_SIMPLE_ERROR(Error_Undefined) // TODO: remove it with better error
 AX_SIMPLE_ERROR(Error_IndexOutOfRange)
 AX_SIMPLE_ERROR(Error_InvalidSize)
 AX_SIMPLE_ERROR(Error_BufferOverlapped)
-AX_SIMPLE_ERROR(Error_ValueCast)
+AX_SIMPLE_ERROR(Error_SafeCast)
 AX_SIMPLE_ERROR(Error_Allocator)
 AX_SIMPLE_ERROR(Error_Format)
 AX_SIMPLE_ERROR(Error_Utf)
@@ -441,7 +443,6 @@ AX_SIMPLE_ERROR(Error_File)
 AX_SIMPLE_ERROR(Error_JsonWriter)
 AX_SIMPLE_ERROR(Error_JsonReader)
 AX_SIMPLE_ERROR(Error_JsonValue)
-
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {
@@ -455,13 +456,30 @@ template<class DST, class SRC> AX_INLINE
 constexpr DST ax_safe_cast(const SRC& src) {
 	DST dst;
 	if (!ax_try_safe_cast(dst, src)) {
-		throw Error_ValueCast();
+		throw Error_SafeCast();
 	}
 	return dst;
 }
 
 constexpr inline Int	ax_safe_cast_Int(size_t src) { return ax_safe_cast<Int>(src); }
 constexpr inline size_t ax_safe_cast_size_t(Int src) { return ax_safe_cast<size_t>(src); }
+
+template<class SRC>
+struct SafeCast {
+	const SRC& src;
+	
+	SafeCast(const SRC& src_) : src(src_) {} 
+	
+	template <typename DST>
+	operator DST() const { // T is deduced here!
+		DST dst;
+		if (!ax_try_safe_cast(dst, src)) {
+			throw Error_SafeCast();
+		}
+		return dst;
+	}
+};
+
 #if AX_OS_WINDOWS
 constexpr inline DWORD ax_safe_cast_DWORD(Int src) { return ax_safe_cast<DWORD>(src); }
 #endif
@@ -663,7 +681,7 @@ struct BitFn {
 	BitFn(T& v) : value(v) {}
 	
 	AX_INLINE constexpr	bool	hasAny	(const T& bits) const	{ return (value & bits) != T(0); }
-	AX_INLINE constexpr	bool	has		(const T& bits) const	{ return (value & bits) == bits; }
+	AX_INLINE constexpr	bool	hasAll	(const T& bits) const	{ return (value & bits) == bits; }
 	AX_INLINE constexpr void	set		(const T& bits, bool b)	{ b ? set(bits) : unset(bits); }
 	AX_INLINE constexpr void	set		(const T& bits)			{ value |=  bits; }
 	AX_INLINE constexpr void	unset	(const T& bits)			{ value &= ~bits; }

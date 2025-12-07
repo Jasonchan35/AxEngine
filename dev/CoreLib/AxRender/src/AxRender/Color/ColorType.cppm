@@ -155,7 +155,7 @@ AX_ENUM_CLASS(AX_ColorModel_ENUM_LIST, ColorModel, u8);
 enum class ColorType : u32;
 struct ColorTypeInfo;
 
-using ColorType_IntType = Enum<ColorType>::IntType;
+using ColorType_IntType = EnumFn<ColorType>::IntType;
 
 AX_INLINE constexpr ColorType ColorType_make(ColorModel model, ColorElem elem) { 
 	return static_cast<ColorType>( ax_enum_int(elem) << 8 | ax_enum_int(model) );

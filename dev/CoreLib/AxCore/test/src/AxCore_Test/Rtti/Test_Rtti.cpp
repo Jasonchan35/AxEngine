@@ -1,6 +1,6 @@
 ﻿#include "AxCore_Test-pch.h"
-#include "AxCore/Reflection/AxMetaType.h"
-#include "AxCore/Reflection/AxRtti.h"
+#include "AxCore/Reflection/MetaType_MACRO.h"
+#include "AxCore/Reflection/Rtti_MACRO.h"
 
 import AxCore_Test._PCH;
 

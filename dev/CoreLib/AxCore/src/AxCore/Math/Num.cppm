@@ -1,6 +1,7 @@
 ﻿module;
 #include "AxCore-pch.h"
 export module AxCore.Num;
+export import AxCore.MetaType;
 export import AxCore.Float16;
 export import AxCore.NormInt;
 

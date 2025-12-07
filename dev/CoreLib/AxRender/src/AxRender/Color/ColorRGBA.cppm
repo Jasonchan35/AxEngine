@@ -225,7 +225,7 @@ public:
 	void toHexString(IString& s) const;
 
 	template<class R, VecSIMD R_SIMD> static constexpr This s_cast(const ColorRGB_<R, R_SIMD>& rhs) {
-		return _simd.s_cast(rhs);
+		return SIMD_Data::s_cast(rhs);
 	}
 };
 
@@ -299,7 +299,7 @@ public:
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 
-	AX_INLINE constexpr bool operator==	(const This& rhs) const { _simd == rhs._simd; }
+	AX_INLINE constexpr bool operator==	(const This& rhs) const { return _simd == rhs._simd; }
 
 	// template<VecSIMD R_SIMD>
 	// AX_INLINE constexpr bool almostEqual( const ColorRGBA_<T, SIMD>& rhs) const { return _simd.almostEqual(rhs._simd); }
@@ -328,7 +328,7 @@ public:
 	void toHexString(IString& s) const;
 
 	template<class R, VecSIMD R_SIMD> static constexpr This s_cast(const ColorRGBA_<R, R_SIMD>& rhs) {
-		return _simd.s_cast(rhs);
+		return SIMD_Data::s_cast(rhs._simd);
 	}
 };
 

@@ -1,5 +1,4 @@
 ﻿module;
-#include "AxCore-pch.h"
 export module AxCore.Vec;
 export import AxCore.VecSimd;
 export import AxCore.Random;
@@ -108,6 +107,8 @@ public:
 	AX_INLINE constexpr Vec_(const Num1& v) : _simd(v.e00) {}
 	AX_INLINE constexpr Vec_(const T& x_) : _simd(x_) {}
 
+	AX_INLINE constexpr void set(const T& x_) { *this = This(x_); }
+	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); } 
@@ -161,6 +162,8 @@ public:
 	AX_INLINE constexpr Vec_(const Num2& v) : _simd(v.e00, v.e01) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_) : _simd(x_, y_) {}
 
+	AX_INLINE constexpr void set(const T& x_, const T& y_) { *this = This(x_,y_); }
+	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); } 
@@ -201,6 +204,20 @@ public:
 		auto r = dev.getRange<T>(0, 1);
 		return v * Math::sqrt(r); // distribution in square root along radius
 	}
+
+#if AX_OS_WINDOWS
+	AX_NODISCARD AX_INLINE static constexpr This s_from(const ::POINT& r) {
+		return This(static_cast<T>(r.x), static_cast<T>(r.y));
+	}
+
+	AX_NODISCARD AX_INLINE constexpr POINT to_POINT() const {
+		POINT o;
+		o.x = static_cast<LONG>(x);
+		o.y = static_cast<LONG>(y);
+		return o;
+	}
+#endif
+	
 };
 
 template<class T, VecSIMD SIMD>
@@ -227,6 +244,8 @@ public:
 	AX_INLINE constexpr Vec_(const Num3& v) : _simd(v.e00, v.e01, v.e02) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_) : _simd(x_, y_, z_) {}
 
+	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_) { *this = This(x_,y_,z_); }
+	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); } 
@@ -303,6 +322,8 @@ public:
 	AX_INLINE constexpr Vec_(const Num4& v) : _simd(v.e00, v.e01, v.e02, v.e03) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
 
+	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { *this = This(x_,y_,z_,w_); }
+	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); } 

@@ -3,13 +3,14 @@
 export module AxCore.Mat; // Matrix
 export import AxCore.Vec;
 export import AxCore.BBox;
+export import AxCore.Rect;
 
 export namespace ax {
 
 template<Int N, Int M, class T, VecSIMD SIMD> class Mat_;
 
-template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat3_	= Mat_<3, 3, T, SIMD>;
-template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat4_	= Mat_<4, 4, T, SIMD>;
+template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat3_		= Mat_<3, 3, T, SIMD>;
+template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat4_		= Mat_<4, 4, T, SIMD>;
 template <class T, VecSIMD SIMD = VecSIMD_Default> using Mat4x3_	= Mat_<4, 3, T, SIMD>; 
 
 using Mat4f			= Mat4_<f32>;
@@ -29,7 +30,7 @@ public:
 	using Vec3		= Vec3_< T, SIMD>;
 	using Vec4		= Vec4_< T, SIMD>;
 	using Mat4		= Mat4_< T, SIMD>;
-	using BBox2		= BBox2_<T, SIMD>;
+	using Rect2		= Rect2_<T, SIMD>;
 
 	static constexpr Int kElementCount = 16;
 
@@ -118,8 +119,8 @@ public:
 	AX_NODISCARD constexpr This inverse3x3			() const;
 	AX_NODISCARD constexpr This inverse3x3Transpose	() const;
 
-	AX_NODISCARD constexpr Vec3 unprojectPoint_slow	(const Vec3& screenPos, const BBox2& viewport) const { return inverse().unprojectPoint_inv(screenPos, viewport); }
-	AX_NODISCARD constexpr Vec3 unprojectPoint_inv	(const Vec3& screenPos, const BBox2& viewport) const;
+	AX_NODISCARD constexpr Vec3 unprojectPoint_slow	(const Vec3& screenPos, const Rect2& viewport) const { return inverse().unprojectPoint_inv(screenPos, viewport); }
+	AX_NODISCARD constexpr Vec3 unprojectPoint_inv	(const Vec3& screenPos, const Rect2& viewport) const;
 
 			//bool operator==			(const This &r) const	{ return cx == r.cx && cy == r.cy && cw == r.cw && cz == r.cz; }
 			//bool operator!=			(const This &r) const	{ return cx != r.cx || cy != r.cy || cw != r.cw || cz != r.cz; }
@@ -201,7 +202,7 @@ auto Mat_<4, 4, T, SIMD>::mulNormal(const Vec3& v) const -> Vec3 {
 }
 
 template<class T, VecSIMD SIMD> AX_NODISCARD constexpr
-auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const BBox2& viewport) const -> Vec3 {
+auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const Rect2& viewport) const -> Vec3 {
 	auto  tmp = Vec4(screenPos, 1);
 	tmp.y = viewport.extents().y - tmp.y; // y is down
 

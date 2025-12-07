@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "AxMetaType.h"
+#include "MetaType_MACRO.h"
 
 #define AX_RTTI_INFO(T, BASE) \
 	AX_TYPE_INFO(T, BASE) \

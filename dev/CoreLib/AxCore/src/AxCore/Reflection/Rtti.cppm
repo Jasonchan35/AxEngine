@@ -1,6 +1,6 @@
 ﻿module;
 #include "AxCore-pch.h"
-#include "AxRtti.h"
+#include "Rtti_MACRO.h"
 
 export module AxCore.Rtti;
 export import AxCore.NameId;
