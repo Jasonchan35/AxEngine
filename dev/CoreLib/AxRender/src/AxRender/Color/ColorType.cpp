@@ -2,7 +2,7 @@ module;
 
 module AxRender.ColorType;
 import AxRender.ColorRGBA;
-import AxRender.ColorHSBA;
+import AxRender.ColorHSVA;
 import AxRender.ColorPacked;
 import AxRender.ColorDXT;
 
@@ -11,18 +11,18 @@ namespace ax {
 template<class T>
 struct ColorTypeInfo_Creator : public ColorTypeInfo {
 	ColorTypeInfo_Creator() {
-		sizeInBytes			= AX_SIZEOF(T);
+		kSizeInBytes		= AX_SIZEOF(T);
 
-		colorModel			= T::kColorModel;
-		colorElem			= T::kColorElem;
-		colorType			= T::kColorType;
+		kColorModel			= T::kColorModel;
+		kColorElem			= T::kColorElem;
+		kColorType			= T::kColorType;
 
-		elementCount		= T::kElementCount;
-		alphaBits			= T::kAlphaBits;
+		kElementCount		= T::kElementCount;
+		kAlphaBits			= T::kAlphaBits;
 
 		if constexpr (T::kColorModel == ColorModel::DXT) {
-			compressedBlockSize = T::kCompressedBlockSize;
-			uncompressedType	= T::kUncompressedType;
+			kCompressedBlockSize	= T::kCompressedBlockSize;
+			kUncompressedType		= T::kUncompressedType;
 		}
 
 		static_assert(T::kColorType == ColorType_make(T::kColorModel, T::kColorElem));

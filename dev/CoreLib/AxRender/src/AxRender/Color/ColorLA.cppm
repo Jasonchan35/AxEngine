@@ -5,25 +5,33 @@ export import AxRender.ColorType;
 
 export namespace ax {
 
-template<class T>
-class Color_<ColorModel::L, T> {
+template<class T, VecSIMD SIMD>
+class Color_<ColorModel::L, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
+	static constexpr Int N = 1;
 public:
+	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { T luma; };
+	};
+
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
-	T luma;
-
-	using ColorR	= ColorR_<T>;
-	using ColorRG	= ColorRG_<T>;
-	using ColorRGB	= ColorRGB_<T>;
-	using ColorRGBA = ColorRGBA_<T>;
-	using ColorL	= ColorL_<T>;
-	using ColorLA	= ColorLA_<T>;
-
-	static constexpr ColorModel	kColorModel		= ColorModel::L;
+	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= 1;
+	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= 0;
+	
+	using ColorR	= ColorR_   <T, SIMD>;
+	using ColorRG	= ColorRG_  <T, SIMD>;
+	using ColorRGB	= ColorRGB_ <T, SIMD>;
+	using ColorRGBA = ColorRGBA_<T, SIMD>;
+	using ColorL	= ColorL_   <T, SIMD>;
+	using ColorLA	= ColorLA_  <T, SIMD>;
+	using Element = T;
 
 	using ElemLimit = ColorElemLimit<T>;
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
@@ -31,11 +39,6 @@ public:
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
 	struct MetaTypeInit : AX_META_TYPE() {
-		static NameId s_name() {
-			static NameId s = AX_NAMEID(Fmt("ColorL_<{}>", MetaTypeOf<T>::s_name()));
-			return s;
-		}
-
 		AX_META_FIELD(luma) {};
 		using OwnFields = Tuple<luma>;
 	};
@@ -69,41 +72,45 @@ public:
 	static const This& kGray		() { static This s(kElemHalf()); return s; }
 };
 
-template<class T>
-class Color_<ColorModel::LA, T> {
+template<class T, VecSIMD SIMD>
+class Color_<ColorModel::LA, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
+	static constexpr Int N = 2;
 public:
-	using Element = T;
-	T luma, a;
+	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { T luma, a; };
+	};
 
-	using ColorR	= ColorR_<T>;
-	using ColorRG	= ColorRG_<T>;
-	using ColorRGB	= ColorRGB_<T>;
-	using ColorRGBA = ColorRGBA_<T>;
-	using ColorL	= ColorL_<T>;
-	using ColorLA	= ColorLA_<T>;
-
-	static constexpr ColorModel	kColorModel		= ColorModel::LA;
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
+	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= 2;
+	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
+	
+	using ColorR	= ColorR_   <T, SIMD>;
+	using ColorRG	= ColorRG_  <T, SIMD>;
+	using ColorRGB	= ColorRGB_ <T, SIMD>;
+	using ColorRGBA = ColorRGBA_<T, SIMD>;
+	using ColorL	= ColorL_   <T, SIMD>;
+	using ColorLA	= ColorLA_  <T, SIMD>;
+	using Element = T;
 
 	using ElemLimit = ColorElemLimit<T>;
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	// AX_TYPE_INFO(Color_, NoBaseClass) {
-	// 	static StrView s_name() {
-	// 		static auto s = Fmt("ColorLA_<{}>", ax_typeof<T>::s_name());
-	// 		return s;
-	// 	}
-	//
-	// 	AX_FIELD_INFO(luma) {};
-	// 	AX_FIELD_INFO(a) {};
-	// };
-
+	struct MetaTypeInit : AX_META_TYPE() {
+		AX_META_FIELD(luma) {};
+		AX_META_FIELD(a) {};
+		using OwnFields = Tuple<luma, a>;
+	};
+	
 	AX_INLINE Color_() = default;
 	AX_INLINE explicit constexpr Color_(T luma_, T a_ = kElemOne) { set(luma_,a_); }
 

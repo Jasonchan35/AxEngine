@@ -5,50 +5,54 @@ export import AxRender.ColorType;
 
 export namespace ax {
 
-template<class T>
-class Color_<ColorModel::R, T> {
+template<class T, VecSIMD SIMD>
+class Color_<ColorModel::R, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
+	static constexpr Int N = 1;
 public:
-	using Element = T;
-	T r;
+	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { T r; };
+	};
 
-	using ColorR	= ColorR_<T>;
-	using ColorRG	= ColorRG_<T>;
-	using ColorRGB	= ColorRGB_<T>;
-	using ColorRGBA = ColorRGBA_<T>;
-	using ColorL	= ColorL_<T>;
-	using ColorLA	= ColorLA_<T>;
-
-	static constexpr ColorModel	kColorModel		= ColorModel::R;
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
+	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= 1;
+	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= 0;
-
+	
+	using ColorR	= ColorR_   <T, SIMD>;
+	using ColorRG	= ColorRG_  <T, SIMD>;
+	using ColorRGB	= ColorRGB_ <T, SIMD>;
+	using ColorRGBA = ColorRGBA_<T, SIMD>;
+	using ColorL	= ColorL_   <T, SIMD>;
+	using ColorLA	= ColorLA_  <T, SIMD>;
+	
 	using ElemLimit = ColorElemLimit<T>;
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	// AX_TYPE_INFO(Color_, NoBaseClass) {
-	// 	static StrView s_name() {
-	// 		static auto s = Fmt("ColorR_<{}>", ax_typeof<T>::s_name());
-	// 		return s;
-	// 	}
-	// 	AX_FIELD_INFO(r) {};
-	// };
-//---
+	struct MetaTypeInit : AX_META_TYPE() {
+		AX_META_FIELD(r) {};
+		using OwnFields = Tuple<r>;
+	};
+
 	AX_INLINE Color_() = default;
-	AX_INLINE explicit Color_(T r_) { set(r_); }
+	AX_INLINE explicit Color_(T r_) : _simd(r) {}
 
 	AX_INLINE constexpr 	  T* data()			{ return &r; }
 	AX_INLINE constexpr const T* data() const	{ return &r; }
 
-	using CSpan =    Span<Element>;
-	using MSpan = MutSpan<Element>;
+	using CSpan =    Span<T>;
+	using MSpan = MutSpan<T>;
 
-	using CFixedSpan =    FixedSpan<Element, kElementCount>;
-	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
 
 	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
@@ -56,13 +60,9 @@ public:
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 
-	AX_INLINE constexpr void set(T r_) { r=r_; }
+	AX_INLINE constexpr void set(T r_) { _simd = SIMD_Data(r_); }
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
-	AX_INLINE bool	operator==	(const This& rhs) const { return r == rhs.r; }
-	AX_INLINE bool	operator!=	(const This& rhs) const { return r != rhs.r; }
-AX_PRAGMA_GCC(diagnostic pop)
+	AX_INLINE bool	operator==	(const This& rhs) const { return _simd == rhs._simd; }
 
 	static const This& kZero		() { static This s(kElemZero()); return s; }
 	static const This& kBlack		() { static This s(kElemZero()); return s; }
@@ -70,53 +70,56 @@ AX_PRAGMA_GCC(diagnostic pop)
 	static const This& kDarkRed		() { static This s(kElemHalf()); return s; }
 };
 
-template<class T>
-class Color_<ColorModel::RG, T> {
+template<class T, VecSIMD SIMD>
+class Color_<ColorModel::RG, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
+	static constexpr Int N = 2;
 public:
-	using Element = T;
-	T r,g;
+	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { T r, g; };
+	};
 
-	using ColorR	= ColorR_<T>;
-	using ColorRG	= ColorRG_<T>;
-	using ColorRGB	= ColorRGB_<T>;
-	using ColorRGBA = ColorRGBA_<T>;
-	using ColorL	= ColorL_<T>;
-	using ColorLA	= ColorLA_<T>;
-
-	static constexpr ColorModel	kColorModel		= ColorModel::RG;
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
+	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= 1;
+	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= 0;
+	
+	using ColorR	= ColorR_   <T, SIMD>;
+	using ColorRG	= ColorRG_  <T, SIMD>;
+	using ColorRGB	= ColorRGB_ <T, SIMD>;
+	using ColorRGBA = ColorRGBA_<T, SIMD>;
+	using ColorL	= ColorL_   <T, SIMD>;
+	using ColorLA	= ColorLA_  <T, SIMD>;
 
 	using ElemLimit = ColorElemLimit<T>;
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	// AX_TYPE_INFO(Color_, NoBaseClass) {
-	// 	static StrView s_name() {
-	// 		static auto s = Fmt("ColorRG_<{}>", ax_typeof<T>::s_name());
-	// 		return s;
-	// 	}
-	//
-	// 	AX_FIELD_INFO(r) {};
-	// 	AX_FIELD_INFO(g) {};
-	// };
+	struct MetaTypeInit : AX_META_TYPE() {
+		AX_META_FIELD(r) {};
+		AX_META_FIELD(g) {};
+		using OwnFields = Tuple<r,g>;
+	};
 
 //---
 	AX_INLINE Color_() = default;
 	AX_INLINE explicit constexpr Color_(T r_, T g_) { set(r_,g_); }
 
-	AX_INLINE constexpr 	  T* data()			{ return &r; }
-	AX_INLINE constexpr const T* data() const	{ return &r; }
+	AX_INLINE constexpr 	  T* data()			{ return _simd.data(); }
+	AX_INLINE constexpr const T* data() const	{ return _simd.data(); }
 
-	using CSpan =    Span<Element>;
-	using MSpan = MutSpan<Element>;
+	using CSpan =    Span<T>;
+	using MSpan = MutSpan<T>;
 
-	using CFixedSpan =    FixedSpan<Element, kElementCount>;
-	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
 
 	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
@@ -126,11 +129,7 @@ public:
 
 	AX_INLINE constexpr void set(T r_, T g_) { r=r_; g=g_; }
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
-	AX_INLINE bool	operator==	(const This& rhs) const { return r == rhs.r && g == rhs.g; }
-	AX_INLINE bool	operator!=	(const This& rhs) const { return r != rhs.r || g != rhs.g; }
-AX_PRAGMA_GCC(diagnostic pop)
+	AX_INLINE bool	operator==	(const This& rhs) const { return _simd == rhs._simd; }
 
 //---
 	static const This& kZero		() { static This s(kElemZero(), kElemZero()); return s; }
@@ -143,40 +142,45 @@ AX_PRAGMA_GCC(diagnostic pop)
 	static const This& kDarkYellow	() { static This s(kElemHalf(), kElemHalf()); return s; }
 };
 
-template<class T>
-class Color_<ColorModel::RGB, T> {
+template<class T, VecSIMD SIMD>
+class Color_<ColorModel::RGB, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
+	static constexpr Int N = 3;
 public:
-	using Element = T;
-	T r,g,b;
+	using Num4 = Num4_<T>;
+	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { T r, g, b; };
+	};
 
-	using ColorR	= ColorR_<T>;
-	using ColorRG	= ColorRG_<T>;
-	using ColorRGB	= ColorRGB_<T>;
-	using ColorRGBA = ColorRGBA_<T>;
-	using ColorL	= ColorL_<T>;
-	using ColorLA	= ColorLA_<T>;
-
-	static constexpr ColorModel	kColorModel		= ColorModel::RGB;
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
+	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= 1;
+	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= 0;
+	
+	using ColorR	= ColorR_   <T, SIMD>;
+	using ColorRG	= ColorRG_  <T, SIMD>;
+	using ColorRGB	= ColorRGB_ <T, SIMD>;
+	using ColorRGBA = ColorRGBA_<T, SIMD>;
+	using ColorL	= ColorL_   <T, SIMD>;
+	using ColorLA	= ColorLA_  <T, SIMD>;
 
 	using ElemLimit = ColorElemLimit<T>;
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	// AX_TYPE_INFO(Color_, NoBaseClass) {
-	// 	static StrView s_name() {
-	// 		static auto s = Fmt("ColorRGB_<{}>", ax_typeof<T>::s_name());
-	// 		return s;
-	// 	}
-	// 	AX_FIELD_INFO(r) {};
-	// 	AX_FIELD_INFO(g) {};
-	// 	AX_FIELD_INFO(b) {};
-	// };
+	struct MetaTypeInit : AX_META_TYPE() {
+		AX_META_FIELD(r) {};
+		AX_META_FIELD(g) {};
+		AX_META_FIELD(b) {};
+		using OwnFields = Tuple<r,g,b>;
+	};
 
 	AX_INLINE Color_() = default;
 	AX_INLINE explicit constexpr Color_(T r_, T g_, T b_) : r(r_), g(g_), b(b_) {}
@@ -187,11 +191,11 @@ public:
 	AX_INLINE constexpr 	  T* data()			{ return &r; }
 	AX_INLINE constexpr const T* data() const	{ return &r; }
 
-	using CSpan =    Span<Element>;
-	using MSpan = MutSpan<Element>;
+	using CSpan =    Span<T>;
+	using MSpan = MutSpan<T>;
 
-	using CFixedSpan =    FixedSpan<Element, kElementCount>;
-	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
 
 	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
@@ -199,11 +203,7 @@ public:
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
-	AX_INLINE constexpr bool	operator==	(const This& rhs) const { return r == rhs.r && g == rhs.g && b == rhs.b; }
-	AX_INLINE constexpr bool	operator!=	(const This& rhs) const { return r != rhs.r || g != rhs.g || b != rhs.b; }
-AX_PRAGMA_GCC(diagnostic pop)
+	AX_INLINE constexpr bool	operator==	(const This& rhs) const { return _simd == rhs._simd; }
 
 	static const This& kZero		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }
 	static const This& kBlack		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }
@@ -224,58 +224,45 @@ AX_PRAGMA_GCC(diagnostic pop)
 
 	void toHexString(IString& s) const;
 
-	template<class R> static constexpr This s_cast(const ColorRGB_<R>& v0) {
-		return s_elemOp(v0, [&](const R& e) { return ColorElemUtil::s_cast<T>(e); });
+	template<class R, VecSIMD R_SIMD> static constexpr This s_cast(const ColorRGB_<R, R_SIMD>& rhs) {
+		return _simd.s_cast(rhs);
 	}
-
-	template<class SRC, class FUNC>
-	AX_INLINE constexpr static This s_elemOp(const SRC& v0, FUNC func) {
-		return This(func(v0.r), func(v0.g), func(v0.b));
-	}
-
 };
 
-template<class T>
-class Color_<ColorModel::RGBA, T> {
+template<class T, VecSIMD SIMD>
+class Color_<ColorModel::RGBA, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
-	using ElementType = T;
-	static constexpr Int elementCount = N;
-
-	//TODO
-	static constexpr VecSIMD SIMD =	VecSIMD_Default;
-	
-	static constexpr VecSIMD vecSIMD = SIMD;
-	
 	using Num4 = Num4_<T>;
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
 		SIMD_Data	_simd;
 		struct { T r, g, b, a; };
 	};
-	
-	using ColorR	= ColorR_<T>;
-	using ColorRG	= ColorRG_<T>;
-	using ColorRGB	= ColorRGB_<T>;
-	using ColorRGBA = ColorRGBA_<T>;
-	using ColorL	= ColorL_<T>;
-	using ColorLA	= ColorLA_<T>;
 
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
+	static constexpr VecSIMD	kVecSIMD		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
 	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
-
+	
+	using ColorR	= ColorR_   <T, SIMD>;
+	using ColorRG	= ColorRG_  <T, SIMD>;
+	using ColorRGB	= ColorRGB_ <T, SIMD>;
+	using ColorRGBA = ColorRGBA_<T, SIMD>;
+	using ColorL	= ColorL_   <T, SIMD>;
+	using ColorLA	= ColorLA_  <T, SIMD>;
+	
 	using ElemLimit = ColorElemLimit<T>;
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
 	struct MetaTypeInit : AX_META_TYPE() {
-		static NameId s_name() { static auto s = NameId(Fmt("ColorRGBA_<{}>", MetaTypeOf<T>::s_name())); return s; }
 		AX_META_FIELD(r) {};
 		AX_META_FIELD(g) {};
 		AX_META_FIELD(b) {};
@@ -303,8 +290,8 @@ public:
 	using CSpan =    Span<T>;
 	using MSpan = MutSpan<T>;
 
-	using CFixedSpan =    FixedSpan<T, elementCount>;
-	using MFixedSpan = MutFixedSpan<T, elementCount>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
 
 	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
@@ -340,18 +327,13 @@ public:
 	
 	void toHexString(IString& s) const;
 
-	template<class R> static constexpr This s_cast(const ColorRGBA_<R>& v0) {
-		return s_elemOp(v0, [&](const R& e) { return ColorElemUtil::s_cast<T>(e); });
-	}
-
-	template<class SRC, class FUNC>
-	AX_INLINE constexpr static This s_elemOp(const SRC& v0, FUNC func) {
-		return This(func(v0.r), func(v0.g), func(v0.b), func(v0.a));
+	template<class R, VecSIMD R_SIMD> static constexpr This s_cast(const ColorRGBA_<R, R_SIMD>& rhs) {
+		return _simd.s_cast(rhs);
 	}
 };
 
-template <class T> inline
-void Color_<ColorModel::RGB, T>::toHexString(IString& s) const {
+template <class T, VecSIMD SIMD> inline
+void Color_<ColorModel::RGB, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
 	s.reserve(10);
 	auto tmp = ColorRGBb::s_cast(*this);
@@ -361,8 +343,8 @@ void Color_<ColorModel::RGB, T>::toHexString(IString& s) const {
 	s.append(CharUtil::byteToHex<Char>(tmp.b.v_int));
 }
 
-template<class T> inline
-void Color_<ColorModel::RGBA, T>::toHexString(IString& s) const {
+template<class T, VecSIMD SIMD> inline
+void Color_<ColorModel::RGBA, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
 	s.reserve(10);
 	auto tmp = ColorRGBAb::s_cast(*this);

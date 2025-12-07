@@ -91,8 +91,8 @@ class Vec_<1, T, SIMD> {
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr Int elementCount = N;
-	static constexpr VecSIMD vecSIMD = SIMD;
+	static constexpr Int kElementCount = N;
+	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using Num1 = Num1_<T>;
 	
@@ -144,8 +144,8 @@ class Vec_<2, T, SIMD> {
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr Int elementCount = N;
-	static constexpr VecSIMD vecSIMD = SIMD;
+	static constexpr Int kElementCount = N;
+	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using Num2 = Num2_<T>;
 		
@@ -210,8 +210,8 @@ class Vec_<3, T, SIMD> {
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr Int elementCount = N;
-	static constexpr VecSIMD vecSIMD = SIMD;
+	static constexpr Int kElementCount = N;
+	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using Num3 = Num3_<T>;
 		
@@ -286,8 +286,8 @@ class Vec_<4, T, SIMD> {
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr Int elementCount = N;
-	static constexpr VecSIMD vecSIMD = SIMD;
+	static constexpr Int kElementCount = N;
+	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using Num4 = Num4_<T>;
 		

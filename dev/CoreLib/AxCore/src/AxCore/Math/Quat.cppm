@@ -24,8 +24,8 @@ class Quat_<4, T, SIMD> {
 	using This = Quat_;
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
-	static constexpr Int elementCount = N;
-	static constexpr VecSIMD vecSIMD = SIMD;
+	static constexpr Int kElementCount = N;
+	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {

@@ -35,8 +35,8 @@ class BBox_ {
 	using This = BBox_;
 public:
 	using Element = T;
-	static constexpr Int     elementCount = N;
-	static constexpr VecSIMD vecSIMD = SIMD;
+	static constexpr Int     kElementCount = N;
+	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using Vec = Vec_<N, T, SIMD>;
 	union {

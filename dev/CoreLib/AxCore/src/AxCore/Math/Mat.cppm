@@ -31,7 +31,7 @@ public:
 	using Mat4		= Mat4_< T, SIMD>;
 	using BBox2		= BBox2_<T, SIMD>;
 
-	static constexpr Int elementCount = 16;
+	static constexpr Int kElementCount = 16;
 
 	Vec4 cx, cy, cz, cw;
 	

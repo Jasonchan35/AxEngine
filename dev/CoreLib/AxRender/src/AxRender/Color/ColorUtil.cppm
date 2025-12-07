@@ -26,17 +26,16 @@ struct ColorConverter<COLOR, COLOR> {
 	static void conv(COLOR& dst, const COLOR& src) { dst = src; }
 };
 
-
-template<class T>
-struct ColorConverter<ColorRGBA_<T>, ColorRGB_<T>> {
-	static void conv(ColorRGBA_<T>& dst, const ColorRGB_<T>& src) {
+template<class T, VecSIMD SIMD>
+struct ColorConverter<ColorRGBA_<T,SIMD>, ColorRGB_<T,SIMD>> {
+	static void conv(ColorRGBA_<T,SIMD>& dst, const ColorRGB_<T,SIMD>& src) {
 		dst.set(src);
 	}
 };
 
-template<class T>
-struct ColorConverter<ColorRGB_<T>, ColorRGBA_<T>> {
-	static void conv(ColorRGB_<T>& dst, const ColorRGBA_<T>& src) {
+template<class T, VecSIMD SIMD>
+struct ColorConverter<ColorRGB_<T,SIMD>, ColorRGBA_<T,SIMD>> {
+	static void conv(ColorRGB_<T,SIMD>& dst, const ColorRGBA_<T,SIMD>& src) {
 		dst.set(src.r, src.g, src.b);
 	}
 };

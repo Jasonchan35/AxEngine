@@ -45,12 +45,14 @@ void ColorUtil::convertSpanByType(ColorType dstType, MutByteSpan dstSpan, ColorT
 	} break; \
 //------
 
-	switch (srcType) {
-		DISPATCH_SRC(ColorRGBb);
-		DISPATCH_SRC(ColorRGBAb);
-		default: throw Error_Undefined();
-	}
+	// switch (srcType) {
+	// 	DISPATCH_SRC(ColorRGBb);
+	// 	DISPATCH_SRC(ColorRGBAb);
+	// 	default: throw Error_Undefined();
+	// }
 
+#undef DISPATCH_DST
+#undef DISPATCH_SRC
 }
 
 } // namespace ax
