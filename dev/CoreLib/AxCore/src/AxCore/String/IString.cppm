@@ -192,6 +192,8 @@ public:
 	constexpr void appendFormat(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
 		FmtTo(*this, fmt, AX_FORWARD(args)...);
 	}
+
+	template<class SE> void onJsonIO_Value(SE& se) { se.io_string(*this); }
 	
 	//----------------------------------
 	

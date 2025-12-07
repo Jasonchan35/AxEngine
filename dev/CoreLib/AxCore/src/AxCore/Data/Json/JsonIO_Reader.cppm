@@ -4,14 +4,17 @@ module;
 export module AxCore.JsonIO_Reader;
 export import AxCore.JsonReader;
 export import AxCore.Rtti;
+export import AxCore.Enum;
 
 export namespace ax {
 
 template<class OBJ, class SE>
-concept CON_onJsonIO_Value = requires(const OBJ& obj, SE & se) {
+concept CON_onJsonIO_Value = requires(OBJ& obj, SE & se) {
 	{ obj.onJsonIO_Value(se) } -> std::same_as<void>;
 };
 
+template<class OBJ, class SE>
+constexpr bool Type_onJsonIO_Value = CON_onJsonIO_Value<OBJ, SE>;
 
 template<class T, class ENABLE_IF = void>
 struct JsonIO_Handler {
@@ -20,7 +23,7 @@ struct JsonIO_Handler {
 		static_assert(!Type_IsSpan<T>,     "please use FixedSpan / IArray for IO, since Span cannot do dynamic resize");
 		static_assert(!Type_IsStrView<T>,  "please use IString for IO, since StrView cannot do dynamic resize");
 
-		if constexpr (CON_onJsonIO_Value<T, SE>) {
+		if constexpr (Type_onJsonIO_Value<T, SE>) {
 			value.onJsonIO_Value(se);
 		} else {
 			if constexpr (se.isReader()) {
@@ -72,9 +75,9 @@ public:
 
 	template<class T> void named_ioEnumAsInt(StrView name, T& value) {
 		static_assert(std::is_enum_v<T>);
-		auto tmp = enumInt(value);
+		auto tmp = ax_enum_int(value);
 		named_io(name, tmp);
-		EnumFn(value) = tmp;
+		EnumFn(value).setInt(tmp);
 	}
 
 	template<class T> void named_io_fixed(StrView name, T& value) { named_io(name, value); }

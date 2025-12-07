@@ -40,15 +40,28 @@ class Array : public IArray<T>, Array_InlineBuffer<T, BUF_SIZE> {
 	using InlineBuffer = Array_InlineBuffer<T, BUF_SIZE>;
 	using InlineBuffer::inlineBufPtr;
 public:
+	using CSpan = Span<T>;
+	
 	Array() : Base(inlineBufPtr(), BUF_SIZE) {}
+	Array(      CSpan        src) : Array() { operator=(src);  }
+	Array(const Array      & src) : Array(src.span()) {}
+	Array(const IArray<T>  & src) : Array(src.span()) {}
+	template<Int M>
+	Array(const Array<T,M> & src) : Array(src.span()) {}
+
+	Array(IArray<T> && src) : Array() { operator=(AX_FORWARD(src)); }
+	Array(Array     && src) : Array(AX_FORWARD(src.asIArray())) {}
+
 	virtual	~Array() override { Base::clearAndFree(); }
 
 		  IArray<T>& asIArray()			{ return *this; }
 	const IArray<T>& asIArray() const	{ return *this; }
-	
-	constexpr void operator=(const IArray<T>& src) { asIArray() = src; } 
-	
-	constexpr void operator=(const This& src) { asIArray() = src; } 
+
+	constexpr void operator=(      CSpan        src) { Base::operator=(src); } 
+	constexpr void operator=(const IArray<T>  & src) { Base::operator=(src); }
+	constexpr void operator=(const Array      & src) { Base::operator=(src.asIArray()); } 
+	template<Int M>
+	constexpr void operator=(const Array<T,M> & src) { Base::operator=(src.asIArray()); } 
 	
 protected:
 	virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
@@ -123,8 +136,8 @@ public:
 	AX_INLINE constexpr		MutSpan<T>	sliceBack	( Int offset )					{ return span().sliceBack(offset); }
 	AX_INLINE constexpr		Span<T>		sliceBack	( Int offset ) const			{ return span().sliceBack(offset); }
 
-	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ span().copyValues(); }
-	AX_INLINE constexpr		void		fillValues	( const T& v )					{ span().fillValues(v); }
+	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ span().copyValues(v, offset); }
+	AX_INLINE constexpr		void		fillValues	(const T& v)					{ span().fillValues(v); }
 
 	//---------------
 	using  Iter			= T*;

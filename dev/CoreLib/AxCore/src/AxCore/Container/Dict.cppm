@@ -23,7 +23,7 @@ public:
 
 	template<class... ARGS>
 	DictNode(const Key & key, const HashInt& hash, ARGS&&... args)
-		          : _key(key),         _hash(hash),    _value(args...) {}
+		          : _key(key),         _hash(hash),   _value(args...) {}
 
 	const	Key&	key() const		{ return _key; }
 	const HashInt&	hash() const	{ return _hash; }

@@ -91,13 +91,15 @@ template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexp
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int  ceil_to_Int(const T& src) { return static_cast<Int>(ceil( src)); }
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int floor_to_Int(const T& src) { return static_cast<Int>(floor(src)); }
 
+template<class T> inline constexpr T infinity_() { return NumLimit<T>::infinity; }
 template<class T> inline constexpr T epsilon		= NumLimit<T>::epsilon;
 template<class T> inline constexpr T NaN			= NumLimit<T>::NaN;
-template<class T> inline constexpr T infinity		= NumLimit<T>::infinity; 
-template<class T> inline constexpr T negInfinity	= NumLimit<T>::negInfinity; 
+template<class T> inline constexpr T negInfinity	= NumLimit<T>::negInfinity;
+
+struct infinity { template<class T> constexpr operator T() const { return infinity_<T>(); } };
 
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isNaN			( const T& v ) { return std::isnan(v); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isInfinity		( const T& v ) { return NumLimit<T>::hasInfinity && v == infinity<T>;    }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isInfinity		( const T& v ) { return NumLimit<T>::hasInfinity && v == infinity_<T>(); }
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isNegInfinity	( const T& v ) { return NumLimit<T>::hasInfinity && v == negInfinity<T>; }
 
 template <class T> requires Type_AnyInt< T> AX_INLINE T fmod(const T& a, const T& b) { return a % b; }

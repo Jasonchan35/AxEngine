@@ -39,7 +39,9 @@ struct IMetaTypeInit : public NonCopyable {
 	using OwnAttrs  = Tuple<>;
 };
 
-struct NoBaseClass {};
+struct NoBaseClass {
+	NoBaseClass() = delete;
+};
 
 template<class T>
 struct BaseClassOf_Handler_ {

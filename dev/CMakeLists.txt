@@ -45,6 +45,7 @@ add_subdirectory(CoreLib/AxCore/test)
 add_subdirectory(CoreLib/Tools/AxHeaderTool)
 add_subdirectory(CoreLib/AxNativeUI)
 add_subdirectory(CoreLib/AxRender)
+add_subdirectory(CoreLib/AxUI)
 
 add_subdirectory(EditorApp)
 

@@ -2,6 +2,13 @@ module;
 
 export module AxRender.Color;
 export import AxRender.ColorUtil;
+export import AxRender.ColorA;
+export import AxRender.ColorBGRA;
+export import AxRender.ColorDXT;
+export import AxRender.ColorHSVA;
+export import AxRender.ColorLA;
+export import AxRender.ColorPacked;
+export import AxRender.ColorRGBA;
 
 export namespace ax {
 

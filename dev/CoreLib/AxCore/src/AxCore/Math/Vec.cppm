@@ -140,6 +140,17 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+
+	using MSpan      =      MutSpan<T>;
+	using CSpan      =         Span<T>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
+
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 };
 
 template<class T, VecSIMD SIMD>
@@ -199,7 +210,18 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 
+	using MSpan      =      MutSpan<T>;
+	using CSpan      =         Span<T>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
+
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
+	
 	static This s_randomOnCircle(RandomDevice& dev = RandomDevice::s_default()) {
 		auto theta = dev.getRange<T>(0, 1) * 2 * Math::PI_<T>;
 		This v;
@@ -239,6 +261,7 @@ public:
 	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using Num3 = Num3_<T>;
+	using Vec2 = Vec2_<T, SIMD>;
 		
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
@@ -251,12 +274,18 @@ public:
 //	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
 	AX_INLINE constexpr Vec_(const Num3& v) : _simd(v.e00, v.e01, v.e02) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_) : _simd(x_, y_, z_) {}
+	AX_INLINE constexpr Vec_(const Vec2& v_, const T& z_) : _simd(v_.x, v_.y, z_) {}
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_) { *this = This(x_,y_,z_); }
+	AX_INLINE constexpr void set(const Vec2& v_, const T& z_) { *this = This(v_.x,v_.y,z_); }
 	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
-	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); } 
+	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SIMD_Data::s_one(); }
+
+	AX_NODISCARD AX_INLINE constexpr Vec2 xy() const { return Vec2(x,y); }
+	AX_NODISCARD AX_INLINE constexpr Vec2 xx() const { return Vec2(x,x); }
+	AX_NODISCARD AX_INLINE constexpr Vec2 yy() const { return Vec2(y,y); }
 
 	template<VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
@@ -285,6 +314,17 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+
+	using MSpan      =      MutSpan<T>;
+	using CSpan      =         Span<T>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
+
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 
 	static This s_randomOnSphere(RandomDevice& dev = RandomDevice::s_default()) {
 		auto longitude = dev.getRange<T>(0, 1) * 2 * Math::PI_<T>;
@@ -318,6 +358,7 @@ public:
 	static constexpr VecSIMD kVecSIMD = SIMD;
 
 	using Num4 = Num4_<T>;
+	using Vec3 = Vec3_<T,SIMD>;
 		
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
@@ -330,8 +371,10 @@ public:
 //	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
 	AX_INLINE constexpr Vec_(const Num4& v) : _simd(v.e00, v.e01, v.e02, v.e03) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
+	AX_INLINE constexpr Vec_(const Vec3& v_, const T& w_) : _simd(v_.x,v_.y,v_.z,w_) {}
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { *this = This(x_,y_,z_,w_); }
+	AX_INLINE constexpr void set(const Vec3& v_, const T& w_) { *this = This(v_.x,v_.y,v_.z,w_); }
 	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
@@ -360,6 +403,17 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SIMD_Data::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+
+	using MSpan      =      MutSpan<T>;
+	using CSpan      =         Span<T>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
+
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 };
 
 } // namespace 

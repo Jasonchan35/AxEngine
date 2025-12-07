@@ -30,7 +30,8 @@ struct SPtr_Config_NonThreadSafe {
 	using LockType     = Thread::NullSpinLock;
 };
 
-class SPtrReferenableBase : public NonCopyable {
+class SPtrReferenableBase {
+	AX_NON_COPYABLE(SPtrReferenableBase)
 protected:
 	SPtrReferenableBase() = default;
 };
@@ -169,6 +170,8 @@ public:
 //	operator T* () && = delete;
 
 	AX_INLINE	void operator=(std::nullptr_t) noexcept	{ unref(); }
+
+	AX_INLINE	void operator=(T* p) noexcept { ref(p); }
 	template<class R> AX_INLINE	void operator=(SPtr<R> &  r) { ref(r.ptr()); }
 	template<class R> AX_INLINE	void operator=(SPtr<R> && r) noexcept { _move(std::move(r)); }
 
@@ -184,6 +187,7 @@ public:
 	AX_NODISCARD AX_INLINE static SPtr<T> s_ref_DontAddRefCount(T* p) noexcept { SPtr<T> o; o._p = p; return o; }
 	
 	friend  class SPtr_Internal<T>;
+	template<class R> friend class SPtr;
 protected:
 	template<class R>
 	AX_INLINE	void _move(SPtr<R> && r) noexcept;

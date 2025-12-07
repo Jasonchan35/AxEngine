@@ -50,6 +50,8 @@ class String_ : public IString_<T>, Array_InlineBuffer<T, BUF_SIZE + 1> // +1 fo
 public:
 	using MView = MutStrView_<T>;
 	using CView =    StrView_<T>;
+
+	static constexpr const This& kEmpty() { static String s; return s; } 
 	
 	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
 	AX_INLINE constexpr String_(CView view) : String_() { Base::append(view); }

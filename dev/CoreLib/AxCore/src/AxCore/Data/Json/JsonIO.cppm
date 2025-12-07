@@ -83,13 +83,13 @@ struct JsonIO_Handler<T> {
 			TempString tmp;
 			se.io(tmp);
 			T t;
-			if (!enumTryParse(t, tmp)) {
+			if (!EnumFn(t).tryParse(tmp)) {
 				AX_ASSERT(false);
 				return;
 			}
 			value = t;
 		} else {
-			se.writer.writeValue(enumStr(value));
+			se.writer.writeValue(EnumFn(value).str());
 		}
 	}
 };

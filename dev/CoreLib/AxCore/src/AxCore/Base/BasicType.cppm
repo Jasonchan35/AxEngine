@@ -2,7 +2,7 @@ module;
 
 #include "AxCore-pch.h"
 export module AxCore.BasicType;
-export import AxCore._PCH;
+export import AxCore.PCH;
 
 export namespace ax {
 
@@ -321,7 +321,24 @@ struct CharUtil {
 		return CharHex(	static_cast<CH>(hex[(ch >> 4) & 0xF]),
 						static_cast<CH>(hex[ ch       & 0xF]));
 	}
-	
+
+	static constexpr char32_t FourCC(char a, char b, char c, char d ) {
+		#if AX_CPU_ENDIAN_LITTLE
+			return static_cast<char32_t>(a)
+				 | static_cast<char32_t>(b) << 8
+				 | static_cast<char32_t>(c) << 16
+				 | static_cast<char32_t>(d) << 24;
+		#elif AX_CPU_ENDIAN_BIG
+			return static_cast<char32_t>(a) << 24
+				 | static_cast<char32_t>(b) << 16
+				 | static_cast<char32_t>(c) << 8
+				 | static_cast<char32_t>(d);
+		#else
+			#error "Unknown Host Endian"
+		#endif
+	}
+
+	static constexpr char32_t FourCC(const char (&c)[5]) { return FourCC(c[0], c[1], c[2], c[3]); }
 };
 
 template<class LAMBDA>
@@ -468,10 +485,10 @@ template<class SRC>
 struct SafeCast {
 	const SRC& src;
 	
-	SafeCast(const SRC& src_) : src(src_) {} 
+	constexpr SafeCast(const SRC& src_) : src(src_) {} 
 	
 	template <typename DST>
-	operator DST() const { // T is deduced here!
+	constexpr operator DST() const { // T is deduced here!
 		DST dst;
 		if (!ax_try_safe_cast(dst, src)) {
 			throw Error_SafeCast();
@@ -844,6 +861,5 @@ struct ByteOrder {
 #endif
 
 };
-
 
 } // namespace

@@ -53,16 +53,16 @@ private:
 	AtomicType _v;
 };
 
-using AtomicInt			= AtomicInt_<Int>;
-using AtomicInt8		= AtomicInt_<i8>;
-using AtomicInt16		= AtomicInt_<i16>;
-using AtomicInt32		= AtomicInt_<i32>;
-using AtomicInt64		= AtomicInt_<i64>;
+using AtomicInt		= AtomicInt_<Int>;
+using AtomicInt8	= AtomicInt_<i8>;
+using AtomicInt16	= AtomicInt_<i16>;
+using AtomicInt32	= AtomicInt_<i32>;
+using AtomicInt64	= AtomicInt_<i64>;
 
-using AtomicUInt		= AtomicInt_<UInt>;
-using AtomicUInt8		= AtomicInt_<u8>;
-using AtomicUInt16		= AtomicInt_<u16>;
-using AtomicUInt32		= AtomicInt_<u32>;
-using AtomicUInt64		= AtomicInt_<u64>;
+using AtomicUInt	= AtomicInt_<UInt>;
+using AtomicUInt8	= AtomicInt_<u8>;
+using AtomicUInt16	= AtomicInt_<u16>;
+using AtomicUInt32	= AtomicInt_<u32>;
+using AtomicUInt64	= AtomicInt_<u64>;
 
 } // namespace

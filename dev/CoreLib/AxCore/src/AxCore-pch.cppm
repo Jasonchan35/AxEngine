@@ -1,7 +1,7 @@
 module;
 
 #include "AxCore-pch.h"
-export module AxCore._PCH;
+export module AxCore.PCH;
 
 #if 0 // !AX_USE_PRECOMPILE_HEADER
 

@@ -27,6 +27,9 @@ public:
 	AX_NODISCARD AX_INLINE constexpr bool operator>=(const This& other) const noexcept { return value >= other.value; }
 
 	AX_NODISCARD AX_INLINE constexpr This operator^ (const This& other) const noexcept { return value ^ other.value; }
+
+	
+	AX_NODISCARD AX_INLINE constexpr void operator^=(const This& other) noexcept { value ^= other.value; }
 	
 	static constexpr This s_fromInt(const Value& v) noexcept { return This(v); }
 

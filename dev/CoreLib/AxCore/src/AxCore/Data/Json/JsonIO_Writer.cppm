@@ -56,7 +56,7 @@ public:
 
 	template<class T> void named_ioEnumAsInt(StrView name, T& value) {
 		static_assert(std::is_enum_v<T>);
-		auto tmp = enumInt(value);
+		auto tmp = ax_enum_int(value);
 		named_io(name, tmp);
 	}
 

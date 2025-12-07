@@ -1,5 +1,4 @@
 ﻿module;
-#include "AxCore-pch.h"
 export module AxCore.Num;
 export import AxCore.MetaType;
 export import AxCore.Float16;
@@ -79,6 +78,97 @@ struct Num_<4,4,T> {
 	T e20, e21, e22, e23;
 	T e30, e31, e32, e33;
 };
+
+//----------
+using Intx1	= Num1_<Int>;
+using Intx2	= Num2_<Int>;
+using Intx3	= Num3_<Int>;
+using Intx4	= Num4_<Int>;
+
+using i8x1	= Num1_<i8>;
+using i8x2	= Num2_<i8>;
+using i8x3	= Num3_<i8>;
+using i8x4	= Num4_<i8>;
+
+using i16x1	= Num1_<i16>;
+using i16x2	= Num2_<i16>;
+using i16x3	= Num3_<i16>;
+using i16x4	= Num4_<i16>;
+
+using i32x1	= Num1_<i32>;
+using i32x2	= Num2_<i32>;
+using i32x3	= Num3_<i32>;
+using i32x4	= Num4_<i32>;
+
+using i64x1	= Num1_<i64>;
+using i64x2	= Num2_<i64>;
+using i64x3	= Num3_<i64>;
+using i64x4	= Num4_<i64>;
+
+using u8x1	= Num1_<u8>;
+using u8x2	= Num2_<u8>;
+using u8x3	= Num3_<u8>;
+using u8x4	= Num4_<u8>;
+
+using u16x1	= Num1_<u16>;
+using u16x2	= Num2_<u16>;
+using u16x3	= Num3_<u16>;
+using u16x4	= Num4_<u16>;
+
+using u32x1	= Num1_<u32>;
+using u32x2	= Num2_<u32>;
+using u32x3	= Num3_<u32>;
+using u32x4	= Num4_<u32>;
+
+using u64x1	= Num1_<u64>;
+using u64x2	= Num2_<u64>;
+using u64x3	= Num3_<u64>;
+using u64x4	= Num4_<u64>;
+
+using f16x1	= Num1_<f16>;
+using f16x2	= Num2_<f16>;
+using f16x3	= Num3_<f16>;
+using f16x4	= Num4_<f16>;
+
+using f32x1	= Num1_<f32>;
+using f32x2	= Num2_<f32>;
+using f32x3	= Num3_<f32>;
+using f32x4	= Num4_<f32>;
+
+using f64x1	= Num1_<f64>;
+using f64x2	= Num2_<f64>;
+using f64x3	= Num3_<f64>;
+using f64x4	= Num4_<f64>;
+
+using UNorm8x1	= Num1_<UNorm8>;
+using UNorm8x2	= Num2_<UNorm8>;
+using UNorm8x3	= Num3_<UNorm8>;
+using UNorm8x4	= Num4_<UNorm8>;
+
+using SNorm8x1	= Num1_<SNorm8>;
+using SNorm8x2	= Num2_<SNorm8>;
+using SNorm8x3	= Num3_<SNorm8>;
+using SNorm8x4	= Num4_<SNorm8>;
+
+using UNorm16x1	= Num1_<UNorm16>;
+using UNorm16x2	= Num2_<UNorm16>;
+using UNorm16x3	= Num3_<UNorm16>;
+using UNorm16x4	= Num4_<UNorm16>;
+
+using SNorm16x1	= Num1_<SNorm16>;
+using SNorm16x2	= Num2_<SNorm16>;
+using SNorm16x3	= Num3_<SNorm16>;
+using SNorm16x4	= Num4_<SNorm16>;
+
+using UNorm32x1	= Num1_<UNorm32>;
+using UNorm32x2	= Num2_<UNorm32>;
+using UNorm32x3	= Num3_<UNorm32>;
+using UNorm32x4	= Num4_<UNorm32>;
+
+using SNorm32x1	= Num1_<SNorm32>;
+using SNorm32x2	= Num2_<SNorm32>;
+using SNorm32x3	= Num3_<SNorm32>;
+using SNorm32x4	= Num4_<SNorm32>;
 
 
 } // namespace

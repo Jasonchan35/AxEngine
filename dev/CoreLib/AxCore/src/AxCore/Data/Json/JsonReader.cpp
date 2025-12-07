@@ -532,7 +532,7 @@ void JsonReader::_readNumericValue(V& outValue) {
 				return;
 
 			} else if (_token.str == "Infinity") {
-				outValue = Math::infinity<V>;
+				outValue = Math::infinity();
 				next();
 				return;
 

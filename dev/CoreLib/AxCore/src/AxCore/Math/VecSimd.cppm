@@ -80,6 +80,9 @@ public:
 		static_assert(N == 4);
 	}
 
+	      T* data()			{ return e; }
+	const T* data() const	{ return e; }
+	
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static Vec s_cast(const VecSIMD_Data_<N, R, R_SIMD>& vec) {
 		Vec ret;

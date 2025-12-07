@@ -47,12 +47,18 @@ public:
 	AX_INLINE constexpr void operator << (const T &  item)  { append(item); }
 	AX_INLINE constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
 
-	AX_INLINE constexpr void operator=(const This& src) { Base::_storageCopy(src); }
+	AX_INLINE constexpr void operator=(      CSpan   src) { Base::_storageCopy(src); }
+	AX_INLINE constexpr void operator=(const This &  src) { Base::_storageCopy(src); }
+	
+	AX_INLINE constexpr void operator=(      This && src) { Base::_storageMove(AX_FORWARD(src)); }
 
 	AX_NODISCARD AX_INLINE constexpr MSpan	span		()			{ return MutSpan<T>(data(), size()); }
 	AX_NODISCARD AX_INLINE constexpr CSpan	span		() const	{ return    Span<T>(data(), size()); }
 	AX_NODISCARD AX_INLINE constexpr CSpan	constSpan	() const	{ return    Span<T>(data(), size()); }
 
+	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan()		{ return span().toByteSpan(); }
+	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan() const	{ return span().toByteSpan(); }
+	
 	AX_NODISCARD AX_INLINE constexpr operator MSpan()			{ return span(); }
 	AX_NODISCARD AX_INLINE constexpr operator CSpan() const	{ return span(); }
 
@@ -72,6 +78,9 @@ public:
 	AX_NODISCARD AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept	{ return unsafe_at(size() - i - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept	{ return unsafe_at(size() - i - 1); }
 
+	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ span().copyValues(v, offset); }
+	AX_INLINE constexpr		void		fillValues	(const T& v)					{ span().fillValues(v); }
+	
 	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().template findMin<FuncOp>(); }
 	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().template sort<FuncOp>(); }
 
@@ -79,7 +88,9 @@ public:
 
 	template<class R>
 	constexpr bool operator==(Span<R> r) const noexcept { return span() == r; }
-	
+	constexpr bool operator==(const This& r) const noexcept { return span() == r.span(); }
+
+	template<class SE> void onJsonIO_Value(SE& se) { se.io_array(*this); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;

@@ -98,8 +98,10 @@ private:
 
 
 class RttiObject : public WPtrReferenable {
+	AX_NON_COPYABLE(RttiObject)
 	AX_TYPE_INFO(RttiObject, NoBaseClass)
 public:
+	RttiObject() = default;
 	virtual ~RttiObject() = default;
 	
 	using _TYPE_INFO_Base = NoBaseClass;
