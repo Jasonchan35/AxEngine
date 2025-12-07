@@ -145,7 +145,7 @@ public:
 };
 
 class RenderGraph : public RenderObject {
-	AX_RTTI_INFO(RenderGraph, RenderObject) {};
+	AX_RTTI_INFO(RenderGraph, RenderObject)
 public:
 	using Pass	= RenderGraph_Pass;
 	using Input	= RenderGraph_Input;

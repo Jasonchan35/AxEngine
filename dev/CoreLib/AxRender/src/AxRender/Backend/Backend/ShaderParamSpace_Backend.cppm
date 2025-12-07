@@ -158,7 +158,7 @@ template<class V> inline
 IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf, const V& value) const {
 	auto srcDataType = DataType_get<V>;
 	if (_dataType != srcDataType)
-		throw AX_ERROR("Shader: assign variable type mismatch, from '{}' to '{}'", srcDataType, _dataType);
+		throw Error_Undefined(Fmt("Shader: assign variable type mismatch, from '{}' to '{}'", srcDataType, _dataType));
 
 	IntRange range(_offset, AX_SIZEOF(value));
 
@@ -177,7 +177,7 @@ IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf,
 
 template<ColorModel M, class E> AX_INLINE
 IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf, const Color_<M, E>& value) const {
-	return assignValueToBuffer(buf, value.toNumTuple());
+	return assignValueToBuffer(buf, value.toNum());
 }
 
 template<class T> AX_INLINE

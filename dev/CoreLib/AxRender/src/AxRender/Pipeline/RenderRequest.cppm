@@ -37,8 +37,8 @@ private:
 	Rect2f	_rect;
 };
 
-class RenderRequest : public RttiObject_NonReferenable {
-	AX_RTTI_INFO(RenderRequest, RttiObject_NonReferenable) {};
+class RenderRequest : public RttiObject {
+	AX_RTTI_INFO(RenderRequest, RttiObject)
 public:
 	RenderSeqId		renderSeqId() const		{ return _renderSeqId; }
 

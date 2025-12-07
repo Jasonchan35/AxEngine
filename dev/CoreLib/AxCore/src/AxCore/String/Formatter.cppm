@@ -58,7 +58,7 @@ public:
 	}
 };
 
-template <CON_IsKindOf_IArray OBJ, class FMT_CH> 
+template <CON_IsIArray OBJ, class FMT_CH> 
 class FormatHandler<OBJ, FMT_CH> {
 public:
 	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) {

@@ -114,7 +114,7 @@ template<class T> constexpr bool Type_IsIArray = false;
 template<class T> constexpr bool Type_IsIArray<IArray<T>> = true; 
 
 template <typename OBJ>
-concept CON_IsKindOf_IArray = requires (OBJ obj) {
+concept CON_IsIArray = requires (OBJ obj) {
 	[]<typename T>(const IArray<T>&){}(obj); 
 };
 

@@ -2,6 +2,7 @@ module;
 export module AxRender.Shader_Backend;
 export import AxRender.ShaderParamSpace_Backend;
 export import AxRender.ResourceHandle_Backend;
+export import AxRender.Shader;
 
 export namespace ax::AxRender {
 
@@ -16,8 +17,8 @@ public:
 	const ShaderStageInfo* stageInfo = nullptr;
 };
 
-class ShaderPass_Backend : public RttiObject_NonReferenable {
-	AX_RTTI_INFO(ShaderPass_Backend, RttiObject_NonReferenable) {};
+class ShaderPass_Backend : public RttiObject {
+	AX_RTTI_INFO(ShaderPass_Backend, RttiObject)
 public:
 	using CreateDesc = ShaderPass_Backend_CreateDesc;
 
@@ -32,13 +33,13 @@ public:
 
 	const ShaderPassInfo*	info() const	{ return _info; }
 
-	bool isCompute() const { return EnumFn(_stageFlags).hasFlags(ShaderStageFlags::Compute); }
+	bool isCompute() const { return EnumFn(_stageFlags).hasAllFlags(ShaderStageFlags::Compute); }
 	
 	template<class R>       R* getParamSpace_(BindSpace s)       { return rttiCastCheck<R>(getParamSpace(s)); }
 	template<class R> const R* getParamSpace_(BindSpace s) const { return rttiCastCheck<R>(getParamSpace(s)); }
 
 	ShaderParamSpace_Backend* getParamSpace(BindSpace s) {
-		auto* p = _shaderParamSpaces.tryGet(ax_enum_int(s));
+		auto* p = _shaderParamSpaces.try_at(ax_enum_int(s));
 		return p ? p->ptr() : nullptr;
 	}
 
@@ -65,7 +66,7 @@ protected:
 };
 
 class Shader_Backend : public Shader {
-	AX_RTTI_INFO(Shader_Backend, Shader) {};
+	AX_RTTI_INFO(Shader_Backend, Shader)
 public:
 	ResourceHandle_Backend<This>	resourceHandle;
 
@@ -87,7 +88,7 @@ public:
 	}
 
 	const ShaderParamSpace_Backend*	getPassParamSpace(Int pass, BindSpace s) const {
-		auto* pp = _passes.tryGet(pass);
+		auto* pp = _passes.try_at(pass);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;
 	}
@@ -97,7 +98,7 @@ public:
 	}
 
 	const ShaderPass_Backend* getPass(Int pass) const {
-		auto* pp = _passes.tryGet(pass);
+		auto* pp = _passes.try_at(pass);
 		return pp ? pp->ptr() : nullptr;
 	}
 
@@ -130,7 +131,7 @@ protected:
 };
 
 inline ShaderPass_Backend* Shader_Backend::getPass(Int i) {
-	if (auto* pp = _passes.tryGet(i)) {
+	if (auto* pp = _passes.try_at(i)) {
 		return pp->ptr();
 	}
 	return nullptr;

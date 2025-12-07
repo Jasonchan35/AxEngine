@@ -24,7 +24,7 @@ public:
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 
 		void		create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam);
-		GpuBuffer*	getUploadedGpuBuffer(RenderRequest* req) { return _dynamicGpuBuffer.getUploadedGpuBuffer(req); }
+		GpuBuffer*	getUploadedGpuBuffer(class RenderRequest* req) { return _dynamicGpuBuffer.getUploadedGpuBuffer(req); }
 		Int			dataSize() const { return _dynamicGpuBuffer.dataSize(); }
 
 		template<class V> bool setVariable(const VarInfo* varInfo, const V& value);

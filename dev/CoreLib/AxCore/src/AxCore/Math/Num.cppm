@@ -40,32 +40,38 @@ using Num4i = Num4_<Int>;
 
 template<class T>
 struct Num_<1,1,T> {
+	using ElementType = T;
 	T e00;
 };
 
 template<class T>
 struct Num_<2,1,T> {
+	using ElementType = T;
 	T e00, e01;
 };
 
 template<class T>
 struct Num_<3,1,T> {
+	using ElementType = T;
 	T e00, e01, e02;
 };
 
 template<class T>
 struct Num_<4,1,T> {
+	using ElementType = T;
 	T e00, e01, e02, e03;
 };
 
 template<class T>
 struct Num_<2,2,T> {
+	using ElementType = T;
 	T e00, e01;
 	T e10, e11;
 };
 
 template<class T>
 struct Num_<3,3,T> {
+	using ElementType = T;
 	T e00, e01, e02;
 	T e10, e11, e12;
 	T e20, e21, e22;
@@ -73,6 +79,7 @@ struct Num_<3,3,T> {
 
 template<class T>
 struct Num_<4,4,T> {
+	using ElementType = T;
 	T e00, e01, e02, e03;
 	T e10, e11, e12, e13;
 	T e20, e21, e22, e23;
@@ -170,5 +177,10 @@ using SNorm32x2	= Num2_<SNorm32>;
 using SNorm32x3	= Num3_<SNorm32>;
 using SNorm32x4	= Num4_<SNorm32>;
 
+
+template <typename OBJ>
+concept CON_IsNum = requires (const OBJ& obj) {
+	[]<Int M, Int N, class T>(const Num_<M,N,T>&){}(obj); 
+};
 
 } // namespace

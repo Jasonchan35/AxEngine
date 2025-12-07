@@ -68,6 +68,8 @@ public:
 	static const This& kBlack		() { static This s(kElemZero()); return s; }
 	static const This& kRed			() { static This s(kElemOne ()); return s; }
 	static const This& kDarkRed		() { static This s(kElemHalf()); return s; }
+
+	Num1_<T>	toNum() const { return Num1_<T>(r); }
 };
 
 template<class T, VecSIMD SIMD>
@@ -140,6 +142,8 @@ public:
 	static const This& kDarkRed		() { static This s(kElemHalf(), kElemZero()); return s; }
 	static const This& kDarkGreen	() { static This s(kElemZero(), kElemHalf()); return s; }
 	static const This& kDarkYellow	() { static This s(kElemHalf(), kElemHalf()); return s; }
+
+	Num2_<T>	toNum() const { return Num2_<T>(r, g); }
 };
 
 template<class T, VecSIMD SIMD>
@@ -147,7 +151,6 @@ class Color_<ColorModel::RGB, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 3;
 public:
-	using Num4 = Num4_<T>;
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
 		SIMD_Data	_simd;
@@ -222,6 +225,7 @@ public:
 	static const This& kDarkCyan	() { static This s(kElemZero(), kElemHalf(), kElemHalf()); return s; }
 	static const This& kDarkMagenta	() { static This s(kElemHalf(), kElemZero(), kElemHalf()); return s; }
 
+	Num3_<T>	toNum() const { return Num3_<T>(r, g, b); }
 	void toHexString(IString& s) const;
 
 	template<class R, VecSIMD R_SIMD> static constexpr This s_cast(const ColorRGB_<R, R_SIMD>& rhs) {
@@ -234,7 +238,6 @@ class Color_<ColorModel::RGBA, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
-	using Num4 = Num4_<T>;
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
 		SIMD_Data	_simd;
@@ -323,7 +326,7 @@ public:
 	static const This& kDarkCyan	() { static This s(kElemZero(), kElemHalf(), kElemHalf()); return s; }
 	static const This& kDarkMagenta	() { static This s(kElemHalf(), kElemZero(), kElemHalf()); return s; }
 
-	Num4_<T>	to_Num() const { return Num4_<T>(r, g, b, a); }
+	Num4_<T>	toNum() const { return Num4_<T>(r, g, b, a); }
 	
 	void toHexString(IString& s) const;
 
