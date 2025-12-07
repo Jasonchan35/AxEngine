@@ -90,8 +90,9 @@ class Vec_<1, T, SIMD> {
 	using This = Vec_;
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
 	static constexpr Int elementCount = N;
-	static constexpr VecSIMD cpuSIMD = SIMD;
+	static constexpr VecSIMD vecSIMD = SIMD;
 
 	using Num1 = Num1_<T>;
 	
@@ -142,8 +143,9 @@ class Vec_<2, T, SIMD> {
 	using This = Vec_;
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
 	static constexpr Int elementCount = N;
-	static constexpr VecSIMD cpuSIMD = SIMD;
+	static constexpr VecSIMD vecSIMD = SIMD;
 
 	using Num2 = Num2_<T>;
 		
@@ -207,8 +209,9 @@ class Vec_<3, T, SIMD> {
 	using This = Vec_;
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
 	static constexpr Int elementCount = N;
-	static constexpr VecSIMD cpuSIMD = SIMD;
+	static constexpr VecSIMD vecSIMD = SIMD;
 
 	using Num3 = Num3_<T>;
 		
@@ -230,6 +233,9 @@ public:
 
 	template<VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
+	
 	AX_NODISCARD AX_INLINE constexpr This operator+(const This& vec) const { return _simd + vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr This operator-(const This& vec) const { return _simd - vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr This operator*(const This& vec) const { return _simd * vec._simd; }
@@ -279,8 +285,9 @@ class Vec_<4, T, SIMD> {
 	using This = Vec_;
 public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
 	static constexpr Int elementCount = N;
-	static constexpr VecSIMD cpuSIMD = SIMD;
+	static constexpr VecSIMD vecSIMD = SIMD;
 
 	using Num4 = Num4_<T>;
 		

@@ -11,5 +11,7 @@ export import AxCore.Formatter;
 export import AxCore.HashInt;
 export import AxCore.Uuid;
 
+export import AxCore.Mat;
+
 export import AxCore.File;
 export import AxCore.ConsoleApp;

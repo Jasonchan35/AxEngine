@@ -255,7 +255,7 @@ AX_INLINE constexpr ColorType_IntType ColorType_int(ColorModel model, ColorElem 
 //-------
 AX_ENUM_CLASS(AX_ColorType_ENUM_LIST, ColorType, ColorType_IntType);
 
-template<ColorModel MODEL, class ELEM> class Color_;
+template<ColorModel MODEL, class ELEM, VecSIMD SIMD = VecSIMD_Default> class Color_;
 
 //e.g. ColorRGBAf = Color_<ColorModel::RGBA, f32>;
 #define E(MODEL,...) \

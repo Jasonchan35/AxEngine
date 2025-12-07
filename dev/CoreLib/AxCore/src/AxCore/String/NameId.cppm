@@ -15,8 +15,10 @@ public:
 	using View  = StrView_<CH>;
 
 	NameId_() = default;
-	NameId_(StrView_<CH> str);
+	NameId_(const NameId_&) = default;
 	NameId_(const Str& name_, const Id& id_) : _name(name_), _id(id_) {}
+
+	static NameId_ s_make(StrView_<CH> str);
 
 	constexpr StrView	name() const { return _name; }
 	constexpr Id		id() const   { return _id; }
@@ -44,8 +46,8 @@ private:
 using NameId = NameId_<Char, Int>;
 
 template<class CH, class ID> inline
-NameId_<CH, ID>::NameId_(StrView_<CH> str) {
-	if (!str) return;
+auto NameId_<CH, ID>::s_make(StrView_<CH> str) -> NameId_ {
+	if (!str) return NameId_();
 
 	auto* s = str.begin();
 	auto* e = str.end();
@@ -63,8 +65,7 @@ NameId_<CH, ID>::NameId_(StrView_<CH> str) {
 		if (!StrView(p, len).tryParse(outId)) { throw Error_ParseString(); }
 	}
 
-	_name = Str::s_make(StrView_<CH>(s, p - s));
-	_id   = outId;
+	return NameId_(Str::s_make(StrView_<CH>(s, p - s)), outId);
 }
 
 } // namespace

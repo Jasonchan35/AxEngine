@@ -36,7 +36,7 @@ class BBox_ {
 public:
 	using Element = T;
 	static constexpr Int     elementCount = N;
-	static constexpr VecSIMD cpuSIMD = SIMD;
+	static constexpr VecSIMD vecSIMD = SIMD;
 
 	using Vec = Vec_<N, T, SIMD>;
 	union {

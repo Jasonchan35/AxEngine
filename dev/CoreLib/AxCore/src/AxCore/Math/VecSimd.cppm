@@ -97,6 +97,11 @@ public:
 	AX_NODISCARD AX_INLINE bool almostZero() const {
 		return unroll_and_0([](T a){ return Math::almostZero(a); });
 	}
+
+	template<VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE bool exactlyEqual(VecSIMD_Data_<N, T, R_SIMD> vec) const {
+		return unroll_and(vec, [](T a, T b){ return Math::exactlyEqual(a, b); });
+	}
 	
 	AX_NODISCARD AX_INLINE constexpr auto operator+(Vec vec) const -> Vec {
 		if (!std::is_constant_evaluated()) {

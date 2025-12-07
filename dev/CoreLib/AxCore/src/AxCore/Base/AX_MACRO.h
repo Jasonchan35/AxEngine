@@ -253,6 +253,9 @@
 
 #define AX_ENUM_FLAGS_CLASS(LIST,T, BASE_TYPE) AX_ENUM_CLASS(LIST, T, BASE_TYPE)
 
+#define AX_NAMEID_FUNC(STR) [](){ static auto name = NameId::s_make(StrView(STR)); return name; }
+#define AX_NAMEID(STR) AX_NAMEID_FUNC(STR)()
+
 //----- Logger
 #define AX_LOG(fmt, ...)			do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Info,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)

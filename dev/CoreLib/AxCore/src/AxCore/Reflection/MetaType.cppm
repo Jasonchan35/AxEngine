@@ -108,7 +108,7 @@ template<class T>
 struct MetaTypeInit_Helper_ : public MetaTypeOf< BaseClassOf<T> > {
 	using ObjThis = T;
 	using ObjBase = typename T::_TYPE_INFO_Base;
-	static NameId s_name() { static auto s = NameId(ax_metatype_get_class_name<T>()); return s; }
+	static NameId s_name() { static auto s = NameId::s_make(ax_metatype_get_class_name<T>()); return s; }
 
 	using OwnFields = Tuple<>;
 	using OwnAttrs  = Tuple<>;
@@ -132,7 +132,7 @@ struct MetaTypeInit_Simple_ : public IMetaTypeInit {
 	using This = T;
 	using Base = NoBaseClass;
 
-	static NameId s_name() { static NameId s(NAME_FUNC()); return s; }
+	static NameId s_name() { static auto s = NAME_FUNC(); return s; }
 };
 
 AX_META_TYPE_INIT_SIMPLE(i8)

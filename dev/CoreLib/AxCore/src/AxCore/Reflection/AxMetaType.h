@@ -13,16 +13,16 @@ private: \
 #define AX_META_TYPE()		public MetaTypeInit_Helper_<_TYPE_INFO_This>
 
 #define AX_META_FIELD(V) \
-	static NameId _FieldName_##V() { static NameId s(#V); return s; } \
+	static NameId _make_field_name_##V() { return NameId::s_make(#V); } \
 	struct V :	public MetaFieldInit_Helper_<_TYPE_INFO_This \
 											, decltype(_TYPE_INFO_This::V) \
 											, &_TYPE_INFO_This::V \
-											, _FieldName_##V > \
+											, _make_field_name_##V > \
 //------
 
 #define AX_META_TYPE_INIT_SIMPLE(T) \
 		template<> struct MetaTypeInit_Handler_<T> { \
-			static NameId _type_name() { static NameId s(#T); return s; } \
+			static NameId _type_name() { return NameId::s_make(#T); } \
 			using MetaTypeInit = MetaTypeInit_Simple_<T, _type_name>; \
 		}; \
 //------

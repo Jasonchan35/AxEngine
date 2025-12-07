@@ -180,7 +180,7 @@ public:
 	}
 	
 	void test_NameId() {
-		static auto a = NameId("Test123");
+		static auto a = NameId::s_make("Test123");
 		AX_TEST_EQ(a.name(), "Test");
 		AX_TEST_EQ(a.id(),   123);
 	}

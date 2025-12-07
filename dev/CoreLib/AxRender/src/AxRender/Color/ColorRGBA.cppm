@@ -238,10 +238,24 @@ AX_PRAGMA_GCC(diagnostic pop)
 template<class T>
 class Color_<ColorModel::RGBA, T> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
+	static constexpr Int N = 4;
 public:
-	using Element = T;
-	T r,g,b,a;
+	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using ElementType = T;
+	static constexpr Int elementCount = N;
 
+	//TODO
+	static constexpr VecSIMD SIMD =	VecSIMD_Default;
+	
+	static constexpr VecSIMD vecSIMD = SIMD;
+	
+	using Num4 = Num4_<T>;
+	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	union {
+		SIMD_Data	_simd;
+		struct { T r, g, b, a; };
+	};
+	
 	using ColorR	= ColorR_<T>;
 	using ColorRG	= ColorRG_<T>;
 	using ColorRGB	= ColorRGB_<T>;
@@ -252,7 +266,7 @@ public:
 	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= 4;
+	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
 
 	using ElemLimit = ColorElemLimit<T>;
@@ -272,13 +286,13 @@ public:
 //---
 	AX_INLINE Color_() = default;
 	AX_INLINE explicit constexpr Color_(const T& r_, const T& g_, const T& b_, const T& a_ = kElemOne())
-		: r(r_), g(g_), b(b_), a(a_) {}
+		: _simd(r_, g_, b_, a_) {}
 
 	AX_INLINE explicit constexpr Color_(const ColorRGB& v, T a_ = kElemOne()) 
 		: Color_(v.r, v.g, v.b, a) {}
 
 	AX_INLINE constexpr void set(const T& r_, const T& g_, const T& b_, const T& a_ = kElemOne())
-		{ r = r_; g = g_; b = b_; a = a_; }
+		{ _simd = SIMD_Data(r_, g_, b_, a_); }
 
 	AX_INLINE constexpr void set(const ColorRGB& v, T a_ = kElemOne()) 
 		{ set(v.r, v.g, v.b, a); }
@@ -286,11 +300,11 @@ public:
 	AX_INLINE constexpr 	  T* data()			{ return &r; }
 	AX_INLINE constexpr const T* data() const	{ return &r; }
 
-	using CSpan =    Span<Element>;
-	using MSpan = MutSpan<Element>;
+	using CSpan =    Span<T>;
+	using MSpan = MutSpan<T>;
 
-	using CFixedSpan =    FixedSpan<Element, kElementCount>;
-	using MFixedSpan = MutFixedSpan<Element, kElementCount>;
+	using CFixedSpan =    FixedSpan<T, elementCount>;
+	using MFixedSpan = MutFixedSpan<T, elementCount>;
 
 	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(data()); }
@@ -298,14 +312,12 @@ public:
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
-	AX_INLINE constexpr bool	operator==	(const This& rhs) const { return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a; }
-	AX_INLINE constexpr bool	operator!=	(const This& rhs) const { return r != rhs.r || g != rhs.g || b != rhs.b || a != rhs.a; }
-AX_PRAGMA_GCC(diagnostic pop)
+	AX_INLINE constexpr bool operator==	(const This& rhs) const { _simd == rhs._simd; }
 
-	AX_INLINE constexpr bool almostEqual( const This& rhs) const { return Math::almostEqual( *this, rhs); }
-	AX_INLINE constexpr bool exactlyEqual(const This& rhs) const { return Math::exactlyEqual(*this, rhs); }
+	// template<VecSIMD R_SIMD>
+	// AX_INLINE constexpr bool almostEqual( const ColorRGBA_<T, SIMD>& rhs) const { return _simd.almostEqual(rhs._simd); }
+	AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
+	AX_INLINE constexpr bool exactlyEqual(const This& rhs) const { return _simd.exactlyEqual(rhs._simd); }
 
 	static const This& kZero		() { static This s(kElemZero(), kElemZero(), kElemZero(), kElemZero()); return s; }
 	static const This& kBlack		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }
@@ -324,6 +336,8 @@ AX_PRAGMA_GCC(diagnostic pop)
 	static const This& kDarkCyan	() { static This s(kElemZero(), kElemHalf(), kElemHalf()); return s; }
 	static const This& kDarkMagenta	() { static This s(kElemHalf(), kElemZero(), kElemHalf()); return s; }
 
+	Num4_<T>	to_Num() const { return Num4_<T>(r, g, b, a); }
+	
 	void toHexString(IString& s) const;
 
 	template<class R> static constexpr This s_cast(const ColorRGBA_<R>& v0) {

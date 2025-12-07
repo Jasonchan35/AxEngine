@@ -60,27 +60,27 @@ void Test_Rtti::test_case1() {
 		Rtti* ti = rttiOf< Foo<void> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 2);
-		AX_TEST_EQ(ti->allFields[0]->name, NameId("x"));
-		AX_TEST_EQ(ti->allFields[1]->name, NameId("y"));
+		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
 	}
 		
 	{
 		Rtti* ti = rttiOf< Bar<StrView, 99> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 3);
-		AX_TEST_EQ(ti->allFields[0]->name, NameId("x"));
-		AX_TEST_EQ(ti->allFields[1]->name, NameId("y"));
-		AX_TEST_EQ(ti->allFields[2]->name, NameId("bar"));
+		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
+		AX_TEST_EQ(ti->allFields[2]->name, AX_NAMEID("bar"));
 		// own fields
-		AX_TEST_EQ(ti->ownFields[0]->name, NameId("bar"));
+		AX_TEST_EQ(ti->ownFields[0]->name, AX_NAMEID("bar"));
 	}
 
 	{
 		Rtti* ti = rttiOf< Bar2_NoInitMetaType<float, 1.1f> >();
 //		ti->DebugDump();
 		AX_TEST_EQ(ti->allFields.size(), 2);
-		AX_TEST_EQ(ti->allFields[0]->name, NameId("x"));
-		AX_TEST_EQ(ti->allFields[1]->name, NameId("y"));
+		AX_TEST_EQ(ti->allFields[0]->name, AX_NAMEID("x"));
+		AX_TEST_EQ(ti->allFields[1]->name, AX_NAMEID("y"));
 	}
 	
 }
