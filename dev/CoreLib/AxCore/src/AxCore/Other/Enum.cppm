@@ -7,13 +7,13 @@ export import AxCore.StrView;
 export namespace ax {
 
 template<class T> requires Type_IsEnum<T>
-class EnumFn {
+class EnumFn_ {
 public:
 	using IntType = Type_EnumInt<T>;
 
 	AX_INLINE constexpr static T s_fromInt(IntType const& v) { return static_cast<T>(v); }
 	
-	AX_INLINE constexpr	EnumFn(T& v) : value(v) {}
+	AX_INLINE constexpr	EnumFn_(T& v) : value(v) {}
 
 	AX_INLINE constexpr operator		T&()		{ return value; }
 	AX_INLINE constexpr operator const	T&() const	{ return value; }

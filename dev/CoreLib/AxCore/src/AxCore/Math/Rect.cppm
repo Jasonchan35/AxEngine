@@ -58,12 +58,12 @@ public:
 	AX_NODISCARD AX_INLINE MutSpan<T>	span()			{ return MutSpan<T>(&x, kElementCount); }
 
 	AX_NODISCARD constexpr Vec2		center		() const { return pos + size / 2; }
-	AX_NODISCARD constexpr T			xCenter		() const { return x + w / 2; }
-	AX_NODISCARD constexpr T			yCenter		() const { return y + h / 2; }
-	AX_NODISCARD constexpr T			xMin		() const { return x; }
-	AX_NODISCARD constexpr T			yMin		() const { return y; }
-	AX_NODISCARD constexpr T			xMax		() const { return x + w; }
-	AX_NODISCARD constexpr T			yMax		() const { return y + h; }
+	AX_NODISCARD constexpr T		xCenter		() const { return x + w / 2; }
+	AX_NODISCARD constexpr T		yCenter		() const { return y + h / 2; }
+	AX_NODISCARD constexpr T		xMin		() const { return x; }
+	AX_NODISCARD constexpr T		yMin		() const { return y; }
+	AX_NODISCARD constexpr T		xMax		() const { return x + w; }
+	AX_NODISCARD constexpr T		yMax		() const { return y + h; }
 
 	AX_NODISCARD constexpr Vec2		xMin_yMin	() const { return Vec2(xMin(), yMin()); }
 	AX_NODISCARD constexpr Vec2		xMax_yMin	() const { return Vec2(xMax(), yMin()); }
@@ -111,6 +111,12 @@ public:
 
 	AX_NODISCARD constexpr This		offset		(const Vec2& v) const				{ return Rect2_(pos + v, size); }
 
+	template<VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
+	
 	AX_NODISCARD constexpr This		operator+	(const Vec2& v) const				{ return offset( v); }
 	AX_NODISCARD constexpr This		operator-	(const Vec2& v) const				{ return offset(-v); }
 
@@ -130,9 +136,7 @@ public:
 				 constexpr void		operator/=	(T s)								{ _simd /= s; }
 				 constexpr void		operator*=	(const Vec2& s)						{ _simd *= s; }
 				 constexpr void		operator/=	(const Vec2& s)						{ _simd /= s; }
-
-				 constexpr bool		operator==	(const This& rhs) const				{ return _simd == rhs._simd; }
-
+	
 	AX_NODISCARD constexpr bool		isValid			() const						{ return w > 0 && h > 0; }
 	AX_NODISCARD constexpr This		unionWith		(const Rect2_& r) const;
 	AX_NODISCARD constexpr This		intersects		(const Rect2_& r) const;

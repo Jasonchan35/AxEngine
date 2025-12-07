@@ -1,6 +1,6 @@
 ﻿module;
 
-#if AX_OS_WINDOWS
+#if AX_NATIVE_UI_WIN32
 
 export module AxNativeUI.Backend_Win32;
 export import AxNativeUI.Backend_Base;
@@ -117,4 +117,4 @@ AX_INLINE Vec2f axWin32_LPARAM_to_Vec2f(LPARAM lp) {
 
 } // namespace ax
 
-#endif // #if AX_OS_WINDOWS
+#endif // #if AX_NATIVE_UI_WIN32

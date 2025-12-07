@@ -61,7 +61,11 @@ public:
 	AX_NODISCARD constexpr Vec2	bottomLeft	() const { return Vec2(left,  bottom); }
 	AX_NODISCARD constexpr Vec2	bottomRight	() const { return Vec2(right, bottom); }
 
-	AX_NODISCARD constexpr bool operator==(const This& rhs) const	{ return _simd == rhs._simd; }
+	template<VecSIMD R_SIMD>
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
 	
 	AX_NODISCARD constexpr This operator+ (const T&    rhs) const { return _simd + rhs; }
 	AX_NODISCARD constexpr This operator- (const T&    rhs) const { return _simd - rhs; }
