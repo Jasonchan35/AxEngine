@@ -41,7 +41,7 @@ b = Byte
 	E(DXT_BC7   ,, _BC7 ) \
 //----
 
-#define AX_ColorElem_Combined_ENUM_LIST(E) \
+#define AX_ColorElem_Packed_ENUM_LIST(E) \
 	E(R5G6B5, )                            \
 	E(R5G5B5A1, )                          \
 	E(R11G11B10, )                         \
@@ -51,7 +51,7 @@ b = Byte
 #define AX_ColorElem_ENUM_LIST_WITHOUT_NONE(E) \
 	AX_ColorElem_Number_ENUM_LIST(E) \
 	AX_ColorElem_DXT_ENUM_LIST(E) \
-	AX_ColorElem_Combined_ENUM_LIST(E) \
+	AX_ColorElem_Packed_ENUM_LIST(E) \
 //-------
 #define AX_ColorElem_ENUM_LIST(E) \
 	E(None,,) \

@@ -137,7 +137,7 @@ DST ColorElemUtil::s_cast(const SRC& src) {
 	AX_ColorModel_Basic_ENUM_LIST(E) \
 	E(Packed,) \
 	E(DXT,) \
-	AX_ColorElem_Combined_ENUM_LIST(E) \
+	AX_ColorElem_Packed_ENUM_LIST(E) \
 //----
 
 #define AX_ColorModel_ENUM_LIST(E) \
