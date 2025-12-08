@@ -1,25 +1,10 @@
 ﻿module;
 
-export module AxNativeUI.Backend_Base;
-export import AxNativeUI.PCH;
-export import AxNativeUI.Screen;
+export module AxNativeUI:NativeUIWindow_Base;
+export import :PCH;
+export import :NativeUIScreen;
 
 export namespace ax {
-
-#define AX_NativeUIApi_ENUM_LIST(E) \
-	E(Unknown,) \
-	E(Win32,) \
-	E(WinRT,) \
-	E(X11,) \
-	E(MacOSX_AppKit,) \
-	E(iOS_UIKit,) \
-//-----
-AX_ENUM_CLASS(AX_NativeUIApi_ENUM_LIST, NativeUIApi, u8);
-
-class NativeUIApp_CreateDesc {
-public:
-	bool peekMessage = false;
-};
 
 struct NativeUIWindow_CreateDesc {
 	NativeUIWindow_CreateDesc()
@@ -109,37 +94,36 @@ private:
 	bool		_active : 1;
 };
 
-class NativeUIApp_Base : public AppBase {
-	AX_RTTI_INFO(NativeUIApp_Base, AppBase)
-public:
-	using CreateDesc = NativeUIApp_CreateDesc;
-	using Time = NativeUIEventTime;
+inline
+NativeUIWindow_Base::NativeUIWindow_Base(CreateDesc& desc) {
+	_active = false;
+}
 
-	NativeUIApp_Base(const CreateDesc& desc);
-	virtual ~NativeUIApp_Base() override;
+inline
+void NativeUIWindow_Base::setActive(bool b) {
+	onNativeSetActive(b);
+}
 
-	virtual void	quit		(int returnCode) = 0;
+inline
+void NativeUIWindow_Base::setVisible(bool b) {
+	onNativeSetVisible(b);
+}
 
-	bool setCursor(NativeUICursorType type) { return onSetNativeCursor(type); }
-	bool setCursorPos(const Vec2f& worldPos) { return onSetNativeCursorPos(worldPos); }
+inline
+void NativeUIWindow_Base::setWorldPos(const Vec2f& pos) {
+	if (_worldRect.pos == pos) return;
+	onNativeSetWorldPos(pos);
+}
 
-	void requestCustomAppEvent();
-	void handleCustomAppEvent(bool force);
+inline
+void NativeUIWindow_Base::setSize(const Vec2f& size) {
+	if (_worldRect.size == size) return;
+	onNativeSetSize(size);
+}
 
-	void updateLayout() { onUpdateLayout(); }
+inline
+void NativeUIWindow_Base::setWindowTitle(StrView title) {
+	onNativeSetWindowTitle(title);
+}
 
-protected:
-	virtual bool onRequestNativeCustomAppEvent() { return false; }
-	virtual void onHandleCustomAppEvent() {}
-	virtual void onUpdateLayout() {}
-	virtual bool onSetNativeCursor(NativeUICursorType type) { return false; }
-	virtual bool onSetNativeCursorPos(const Vec2f& worldPos) { return false; }
-	virtual void onPeekMessage() {}
-
-	CreateDesc _desc;
-
-	bool _pendingCustomAppEvent : 1;
-	int	_returnCode = 0;
-};
-
-} // namespace ax
+} // namespace

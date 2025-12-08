@@ -1,0 +1,25 @@
+﻿module;
+
+#if AX_NATIVE_UI_WIN32
+
+export module AxNativeUI:NativeUI_Win32;
+export import :NativeUIWindow_Base;
+
+export namespace ax {
+
+class NativeUI_Win32 {
+public:
+	enum { AX_WM_USER_HasCustomAppEvent = WM_USER + 1 };
+
+	static NativeUIKeyCode		 s_convertKey(WPARAM vkey);
+	static NativeUIEventModifier s_eventModifier();
+
+	static Vec2f  s_worldToLocalPos(HWND hwnd, const Vec2f& pt);
+	static Vec2f  s_localToWorldPos(HWND hwnd, const Vec2f& pt);
+	static Rect2f s_getWorldRect(HWND hwnd);
+};
+
+
+} // namespace ax
+
+#endif // #if AX_NATIVE_UI_WIN32

@@ -1,7 +1,7 @@
 ﻿module;
 
-export module AxNativeUI.Timer;
-export import AxNativeUI.Event;
+export module AxNativeUI:NativeUITimer;
+export import :NativeUIEvent;
 
 export namespace ax {
 

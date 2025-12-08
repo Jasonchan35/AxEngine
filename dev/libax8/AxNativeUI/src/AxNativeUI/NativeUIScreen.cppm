@@ -1,7 +1,7 @@
 ﻿module;
 
-export module AxNativeUI.Screen;
-export import AxNativeUI.Timer;
+export module AxNativeUI:NativeUIScreen;
+export import :NativeUITimer;
 
 export namespace ax {
 

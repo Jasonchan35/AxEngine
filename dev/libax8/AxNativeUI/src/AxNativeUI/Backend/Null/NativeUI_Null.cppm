@@ -1,7 +1,8 @@
 ﻿module;
 
-export module AxNativeUI.Backend_Null;
-export import AxNativeUI.Backend_Base;
+export module AxNativeUI:NativeUI_Null;
+export import :NativeUIWindow_Base;
+export import :NativeUIApp_Base;
 
 export namespace ax {
 

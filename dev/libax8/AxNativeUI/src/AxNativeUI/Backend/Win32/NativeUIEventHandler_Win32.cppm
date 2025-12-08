@@ -1,0 +1,39 @@
+﻿module;
+
+#if AX_NATIVE_UI_WIN32
+
+export module AxNativeUI:NativeUIEventHandler_Win32;
+export import :NativeUIWindow_Base;
+
+export namespace ax {
+
+class NativeUIEventHandler_Win32 {
+public:
+	enum { AX_WM_USER_HasCustomAppEvent = WM_USER + 1 };
+
+	virtual ~NativeUIEventHandler_Win32() = default;
+
+	virtual void onUIMouseEvent(NativeUIMouseEvent& ev) {}
+	virtual void onUIKeyEvent(NativeUIKeyEvent& ev) {}
+
+	bool handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+private:
+	NativeUIMouseEventButton _mousePressedButtons	  = NativeUIMouseEventButton::None;
+	NativeUIMouseEventButton _lastMousePressedButtons = NativeUIMouseEventButton::None;
+
+	bool _handleMouseEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	bool _handleKeyEvent(  HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+};
+
+
+AX_INLINE Vec2f axWin32_LPARAM_to_Vec2f(LPARAM lp) {
+	auto x = static_cast<i16>(LOWORD(lp));
+	auto y = static_cast<i16>(HIWORD(lp));
+	return Vec2f(x, y);
+}
+
+
+}
+
+#endif
