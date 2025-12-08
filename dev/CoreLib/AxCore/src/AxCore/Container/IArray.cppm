@@ -36,14 +36,15 @@ public:
 	template<class... Args> constexpr void incSize(Int n,   Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
 							constexpr void decSize(Int n) { resize(size() - n); }
 							constexpr void resizeToCapacity() { resize(capacity()); }
+							constexpr void ensureSize(Int n) { if (size() < n) resize(n); }
 
 	template< class... Args >
 	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
-	constexpr void append(Span<T> item);
-
+	constexpr void appendRange(Span<T> item);
+	
 	AX_INLINE constexpr void operator << (const T &  item)  { append(item); }
 	AX_INLINE constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
 
@@ -69,6 +70,11 @@ public:
 	AX_NODISCARD AX_INLINE constexpr const T& at(Int i) const noexcept			{ _checkBound(i); return unsafe_at(i); }
 	AX_NODISCARD AX_INLINE constexpr       T* try_at(Int i)       noexcept		{ return inBound(i) ? &unsafe_at(i) : nullptr; }
 	AX_NODISCARD AX_INLINE constexpr const T* try_at(Int i) const noexcept		{ return inBound(i) ? &unsafe_at(i) : nullptr; }
+
+	//TODO: remove
+	AX_NODISCARD AX_INLINE constexpr       T* tryGet(Int i)       noexcept		{ return try_at(i); }
+	AX_NODISCARD AX_INLINE constexpr const T* tryGet(Int i) const noexcept		{ return try_at(i); }
+	
 	AX_NODISCARD AX_INLINE constexpr       T& back()       noexcept 			{ return at(size() - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& back() const noexcept 			{ return at(size() - 1); }
 	AX_NODISCARD AX_INLINE constexpr       T& back(Int i)       noexcept		{ return at(size() - i - 1); }
@@ -78,11 +84,50 @@ public:
 	AX_NODISCARD AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept	{ return unsafe_at(size() - i - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept	{ return unsafe_at(size() - i - 1); }
 
+	//                +--------------------------------------------+
+	//                |         |                      |           |
+	//                +--------------------------------------------+
+	//  slice         (  offset  )[______ newSize ____]
+	//  sliceBack                       [________ newSize__________]
+	//  sliceFrom     (  offset  )[_________till to end ___________]
+	//  sliceFromBack [________________________________](  offset  )
+	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(Int offset, Int newSize)		{ return span().slice(offset, newSize); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(Int offset, Int newSize) const	{ return span().slice(offset, newSize); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(IntRange range)				{ return span().slice(range); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return span().slice(range); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return span().slice(newSize); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return span().slice(newSize); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFrom		(Int offset)					{ return span().slice(offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return span().slice(offset); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return span().slice(offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return span().slice(offset); }
+
 	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ span().copyValues(v, offset); }
 	AX_INLINE constexpr		void		fillValues	(const T& v)					{ span().fillValues(v); }
 	
 	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().template findMin<FuncOp>(); }
 	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().template sort<FuncOp>(); }
+
+	AX_NODISCARD AX_INLINE constexpr T& ensureAt(Int i)		{ ensureSize(i+1); return at(i); }
+	
+	AX_INLINE constexpr		T&	insertAt	(Int i)				{ return *insertAt(IntRange(i, 1)).data(); }
+	AX_INLINE constexpr		T&	insertAt	(Int i, T && value)	{ auto dst = insertAt(IntRange(i, 1)); *dst.data() = std::move(value); return *dst.data(); }
+	AX_INLINE constexpr	MSpan	insertAt	(IntRange range);
+
+	AX_INLINE constexpr		T	popBack()					{ T tmp = back(); decSize(1); return tmp; }
+	
+	AX_INLINE constexpr	Int		eraseAt	(Int i)				{ return eraseAt(IntRange(i, 1)); }
+	AX_INLINE constexpr	Int		eraseAt	(IntRange range);
+	AX_INLINE constexpr	void	eraseAt_Unordered( Int i );
+
+	template<class FUNC> constexpr Int	eraseIf			(FUNC func);
+	template<class FUNC> constexpr Int	eraseIf_Unordered(FUNC func);
+	template<class FUNC> constexpr Int	eraseAllIf		(FUNC func);
+
+	template<class V> AX_INLINE	constexpr Int	eraseIfEquals( const V& v )				{ return eraseIf([&](auto& e) { return e == v; }); }
+	template<class V> AX_INLINE	constexpr Int	eraseIfEquals_Unordered( const V& v )	{ return eraseIf_Unordered([&](auto& e) { return e == v; }); }
+	template<class V> AX_INLINE constexpr Int	eraseAllIfEquals(const V& v)			{ return eraseAllIf([&](auto& e) { return e == v; }); }
+	
 
 	constexpr bool operator==(CSpan r) const noexcept { return span() == r; }
 
@@ -110,6 +155,65 @@ private:
 	}	
 };
 
+template <class T>
+template <class FUNC> constexpr
+Int IArray<T>::eraseIf(FUNC func) {
+	Int oldSize = size();
+	auto* p = data();
+	for (Int i = 0; i < oldSize; i++) {
+		if (func(p[i])) {
+			eraseAt(i);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+template <class T>
+template <class FUNC> constexpr
+Int IArray<T>::eraseIf_Unordered(FUNC func) {
+	Int oldSize = size();
+	auto* p = data();
+	for (Int i = 0; i < oldSize; i++) {
+		if (func(p[i])) {
+			eraseAt_Unordered(i);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+template <class T>
+template <class FUNC> constexpr 
+Int IArray<T>::eraseAllIf(FUNC func) {
+	Int	erasedCount = 0;
+
+	auto* p = data();
+	auto oldSize = size();
+	
+	auto* src	 = p;
+	auto* end	 = p + oldSize;
+	auto* target = p;
+
+	while(src < end) {
+		if (func(*src)) {
+			erasedCount++;
+			src++;
+			continue;
+		}
+		
+		if (target != src) {
+			*target = std::move(*src);
+		}
+
+		src++;
+		target++;
+	}
+
+	resize(oldSize - erasedCount);
+	return erasedCount;	
+}
+
 template<class T> constexpr bool Type_IsIArray = false; 
 template<class T> constexpr bool Type_IsIArray<IArray<T>> = true; 
 
@@ -135,11 +239,82 @@ constexpr void IArray<T>::append(T && item) {
 }
 
 template <class T>
-constexpr void IArray<T>::append(Span<T> item) {
+constexpr void IArray<T>::appendRange(Span<T> item) {
 	auto oldSize = size();
 	reserve(oldSize + item.size());
 	MemUtil::copyConstructor(data() + oldSize, item.data(), item.size());
 	_storage.setSize(oldSize + 1);
+}
+
+template <class T>
+constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
+	if (range.size <= 0) return;
+	auto oldSize = size();
+	if (range.begin() > oldSize) { AX_ASSERT(false); return; }
+
+	resize(oldSize + range.size());
+
+	auto* p = data();
+
+	auto* src = p + range.begin() + range.size - 1;
+	auto* end = p + oldSize - range.size;
+	auto* dst = end + range.size;
+	auto* tail = p + size();
+	if (end < p || end > tail
+	 || dst < p || dst > tail)
+	{
+		AX_ASSERT(false);
+		throw Error_IndexOutOfRange();
+	}
+
+	MemUtil::moveConstructor(dst, src, range.size());
+	return MutSpan<T>(p, range.size());
+}
+
+template <class T>
+constexpr Int IArray<T>::eraseAt(IntRange range) {
+	if (range.begin() < 0 || range.size() < 0) {
+		AX_ASSERT(false);
+		return 0;
+	}
+
+	auto* p = data();
+	Int oldSize = size();
+	
+	auto* dst = p + range.begin();
+	auto* end = p + oldSize;
+
+	if (dst >= end) { AX_ASSERT(false); return 0; }
+
+	Int erasedCount = 0;
+
+	auto* src = p + range.end();
+	if (src >= end) {
+		AX_ASSERT(src == end);
+		erasedCount = end - dst;
+
+	} else {
+		AX_ASSERT(dst < src);
+
+		for (;src < end; ++src, ++dst) {
+			*dst = std::move(*src);
+		}
+		erasedCount = src - dst;
+	}
+
+	AX_ASSERT(erasedCount == range.size());
+	resize(oldSize - erasedCount);
+	return erasedCount;	
+}
+
+template <class T>
+constexpr void IArray<T>::eraseAt_Unordered(Int i) {
+	_checkBound(i);
+	auto oldSize = size();
+	if (oldSize < 1) { clear(); return; }
+	auto* p = data();
+	p[i] = std::move(p[oldSize - 1]);
+	decSize(1);
 }
 
 } // namespace

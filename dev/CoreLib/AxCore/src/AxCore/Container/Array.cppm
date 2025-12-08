@@ -95,7 +95,7 @@ class FixedArray {
 	using This = FixedArray;
 public:
 	using Element = T;
-	static const Int kElementCount = N;
+	static const Int kSize = N;
 
 	FixedArray() = default;
 

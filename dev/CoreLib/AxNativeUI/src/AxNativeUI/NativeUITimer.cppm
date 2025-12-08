@@ -87,7 +87,7 @@ void NativeUITimer::_start() {
 
 void NativeUITimer::_stop() {
 	if (_p) {
-		NativeUITimerManager::s_instance()->_timerDict.remove(_p);
+		NativeUITimerManager::s_instance()->_timerDict.erase(_p);
 		::KillTimer(nullptr, _p);
 		_p = 0;
 	}

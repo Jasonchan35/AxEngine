@@ -108,6 +108,9 @@ public:
 	AX_INLINE constexpr Vec_(const T& x_) : _simd(x_) {}
 
 	AX_INLINE constexpr void set(const T& x_) { *this = This(x_); }
+
+	constexpr Num1 toNum() const { return Num2(x); }
+	constexpr operator Num1() const { return toNum(); }
 	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
@@ -115,9 +118,9 @@ public:
 
 	template<VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
-	AX_NODISCARD AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
 	
 	AX_NODISCARD AX_INLINE constexpr This operator+(const This& vec) const { return _simd + vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr This operator-(const This& vec) const { return _simd - vec._simd; }
@@ -178,6 +181,9 @@ public:
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_) : _simd(x_, y_) {}
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_) { *this = This(x_,y_); }
+
+	constexpr Num2 toNum() const { return Num2(x,y); }
+	constexpr operator Num2() const { return toNum(); }
 	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
@@ -185,9 +191,9 @@ public:
 
 	template<VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
-	AX_NODISCARD AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
 	
 	AX_NODISCARD AX_INLINE constexpr This operator+(const This& vec) const { return _simd + vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr This operator-(const This& vec) const { return _simd - vec._simd; }
@@ -278,6 +284,9 @@ public:
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_) { *this = This(x_,y_,z_); }
 	AX_INLINE constexpr void set(const Vec2& v_, const T& z_) { *this = This(v_.x,v_.y,z_); }
+
+	constexpr Num3 toNum() const { return Num3(x,y,z); }
+	constexpr operator Num3() const { return toNum(); }
 	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
@@ -289,9 +298,9 @@ public:
 
 	template<VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
-	AX_NODISCARD AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
 	
 	AX_NODISCARD AX_INLINE constexpr This operator+(const This& vec) const { return _simd + vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr This operator-(const This& vec) const { return _simd - vec._simd; }
@@ -369,12 +378,15 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SIMD_Data & simd) : _simd(simd) {}
 //	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
-	AX_INLINE constexpr Vec_(const Num4& v) : _simd(v.e00, v.e01, v.e02, v.e03) {}
+	AX_INLINE constexpr Vec_(const Num4_<T>& v) : _simd(v) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
 	AX_INLINE constexpr Vec_(const Vec3& v_, const T& w_) : _simd(v_.x,v_.y,v_.z,w_) {}
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { *this = This(x_,y_,z_,w_); }
 	AX_INLINE constexpr void set(const Vec3& v_, const T& w_) { *this = This(v_.x,v_.y,v_.z,w_); }
+
+	constexpr Num4 toNum() const { return Num4(x,y,z,w); }
+	constexpr operator Num4() const { return toNum(); }
 	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SIMD_Data::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SIMD_Data::s_zero(); } 
@@ -382,6 +394,10 @@ public:
 
 	template<VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
+	
 	AX_NODISCARD AX_INLINE constexpr This operator+(const This& vec) const { return _simd + vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr This operator-(const This& vec) const { return _simd - vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr This operator*(const This& vec) const { return _simd * vec._simd; }

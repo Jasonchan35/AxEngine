@@ -3,7 +3,7 @@ module AxUI.UIWindow;
 namespace ax::AxUI {
 
 class UIWindow::NativeWin : public NativeUIWindow {
-	AX_RTTI_INFO(NativeWin, NativeUIWindow) {};
+	AX_RTTI_INFO(NativeWin, NativeUIWindow)
 public:
 	NativeWin(UIWindow* owner, CreateDesc& desc) 
 	: Base(desc)

@@ -42,7 +42,7 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_backBufferRenderPass = backBufferRenderPass;
 
 	auto* renderer_ = renderer();
-	if (!renderer_) throw Error_Undefined(AX_SRC_LOC);
+	if (!renderer_) throw Error_Undefined();
 
 	_uptime = renderer_->getCurrentUptime().seconds_f64();
 
@@ -51,7 +51,7 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 		using namespace Math;
 
 		auto* commonMaterial = renderer_->commonMaterial();
-		if (!commonMaterial) throw Error_Undefined(AX_SRC_LOC);
+		if (!commonMaterial) throw Error_Undefined();
 
 		resourcesToKeep.add(commonMaterial);
 
@@ -65,9 +65,9 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 			}
 		};
 
-		setParam(BindSpace::PerFrame, AX_STATIC_NAME("ax_g_time"       ), t);
-		setParam(BindSpace::PerFrame, AX_STATIC_NAME("ax_g_timeSin"    ), timeSin);
-		setParam(BindSpace::PerFrame, AX_STATIC_NAME("ax_g_timeSlowSin"), timeSlowSin);
+		setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_time"       ), t);
+		setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_timeSin"    ), timeSin);
+		setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
 	}
 
 	onFrameBegin();

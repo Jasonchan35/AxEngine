@@ -68,7 +68,7 @@ public:
 	AX_INLINE static constexpr This s_fromFloat(f64 v) { return This(static_cast<f32>(v)); }
 
 	AX_INLINE static constexpr This s_make(f32 v) { return This(v); }
-
+	
 	template<class SE> constexpr void onJsonIO_Value(SE& se) {
 		if constexpr (se.isReader()) {
 			float tmp = 0; se.io(tmp); set(tmp);

@@ -1,18 +1,18 @@
 ﻿module;
 
 export module AxEditor.EditorApp;
-export import AxNativeUI;
+export import AxUI;
 
 export namespace ax::AxEditor {
 
 class EditorWindow : public AxUI::UIWindow {
-	AX_RTTI_INFO(EditorWindow, AxUI::UIWindow) {};
+	AX_RTTI_INFO(EditorWindow, AxUI::UIWindow)
 
 public:
 };
 
 class EditorMainWindow : public EditorWindow {
-	AX_RTTI_INFO(EditorMainWindow, EditorWindow) {};
+	AX_RTTI_INFO(EditorMainWindow, EditorWindow)
 public:
 	EditorMainWindow();
 
@@ -36,7 +36,8 @@ public:
 	virtual void onCreate() override {
 		_mainWin = UPtr_new<EditorMainWindow>(AX_ALLOC_REQ);
 	}
-	
+
+	UPtr<EditorMainWindow>	_mainWin;
 };
 
 } // namespace

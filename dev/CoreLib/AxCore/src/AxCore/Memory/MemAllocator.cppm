@@ -128,7 +128,7 @@ struct AxNoDelete {
 };
 
 struct AxDelete {
-	template<class T>
+	template<class T> requires !std::is_const_v<T>
 	static void deleteObject(T* & p) {
 		if (!p) return;
 		// auto* block = AllocBlockBase::s_fromMem(p);
@@ -136,7 +136,7 @@ struct AxDelete {
 		// if (dataSize < AX_SIZEOF(T)) { AX_ASSERT(false); }
 		MemUtil::destructor(p, 1);
 		ax_free(p);
-		 p = nullptr;
+		p = nullptr;
 	}
 
 	template<class T>
@@ -155,13 +155,14 @@ struct AxDelete {
 	}
 };
 
-template<class T> AX_INLINE
-void ax_delete(T* & p) { AxDelete::deleteObject<T>(p); }
+template<class T> requires !std::is_const_v<T>
+AX_INLINE void ax_delete(T* & p) { AxDelete::deleteObject<T>(p); }
 
-template<class T> AX_INLINE
-void ax_delete_array(T* p) { AxDelete::deleteArray<T>(p); }
+template<class T> requires !std::is_const_v<T>
+AX_INLINE void ax_delete_array(T* p) { AxDelete::deleteArray<T>(p); }
 
-template<class T> AX_INLINE void ax_no_delete(T*) {}
+template<class T> requires !std::is_const_v<T>
+AX_INLINE void ax_no_delete(T*) {}
 
 void* ax_operator_new_handler(size_t sizeInBytes, const MemAllocRequest& req_);
 

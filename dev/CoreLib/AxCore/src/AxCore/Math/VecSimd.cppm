@@ -63,6 +63,11 @@ public:
 		if constexpr (N > 2) e[2] = 0;
 		if constexpr (N > 3) e[3] = 0;
 	}
+
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num1_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num2_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0), v.unsafe_at(0,1)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num3_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0), v.unsafe_at(0,1), v.unsafe_at(0,2)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num4_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0), v.unsafe_at(0,1), v.unsafe_at(0,2), v.unsafe_at(0,3)) {}
 	
 	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(T t0) : e{t0} {
 		static_assert(N == 1);
@@ -86,10 +91,13 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static Vec s_cast(const VecSIMD_Data_<N, R, R_SIMD>& vec) {
 		Vec ret;
+		AX_PRAGMA_VC_WARNING_PUSH()
+		AX_PRAGMA_VC_WARNING_DISABLE(4244) // Warning C4244 : '=': conversion from 'R' to 'T', possible loss of data
 		if constexpr (N > 0) ret.e[0] = static_cast<R>(vec.e[0]);
 		if constexpr (N > 1) ret.e[1] = static_cast<R>(vec.e[1]);
 		if constexpr (N > 2) ret.e[2] = static_cast<R>(vec.e[2]);
 		if constexpr (N > 3) ret.e[3] = static_cast<R>(vec.e[3]);
+		AX_PRAGMA_VC_WARNING_POP()
 		return ret;
 	}
 	

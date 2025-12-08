@@ -74,7 +74,7 @@ public:
 	template<class... ARGS>
 	void setInputs(ARGS&... args) {
 		ColorBuffer* arr[] = {&args...};
-		setInputs(Span_ref(arr));
+		setInputs(Span(arr));
 	}
 
 	void setInputs(Span<ColorBuffer*> inputs);

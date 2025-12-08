@@ -354,6 +354,7 @@ template<class T, Int N> using FixedSpan = MutFixedSpan<const T, N>;
 
 template<class T, Int N>
 class MutFixedSpan {
+	using This = MutFixedSpan;
 public:
 	Int	kSize = N;
 
@@ -390,6 +391,13 @@ public:
 	AX_INLINE 	constexpr 		T &	unsafe_back	( Int i )			{ return unsafe_at( kSize - i - 1 ); }
 	AX_INLINE 	constexpr const T &	unsafe_back	( Int i )  const	{ return unsafe_at( kSize - i - 1 ); }
 
+	AX_INLINE	constexpr bool operator==(const This& rhs) const {
+		for (Int i = 0; i < N; ++i) {
+			if (_data[i] != rhs._data[i]) return false;
+		}
+		return true;
+	}
+	
 	AX_INLINE	constexpr bool		inBound		(Int  i) const		{ return i >= 0 && i < kSize; }
 
 	template<class TT> using Iter = TT*; 

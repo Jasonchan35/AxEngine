@@ -74,6 +74,10 @@ public:
 			AX_ASSERT(block->data.scopedLock()->obj == nullptr);
 		}
 	}
+
+	template<class R> friend class WPtr;
+	template<class R> friend class SPtr_Internal;
+protected:
 	SPtr<WPtrBlock>		_weakPtrBlock;
 };
 
@@ -106,7 +110,8 @@ public:
 		auto refCount = _releaseRefCount(s);
 		AX_ASSERT(refCount >= 0);
 		if (refCount == 0) {
-			ax_delete(s->_p);
+			auto* p = ax_const_cast(s->_p);
+			ax_delete(p);
 		}
 		s->_p = nullptr;
 	}
@@ -117,7 +122,7 @@ private:
 		if constexpr (hasWPtrReferenable) {
 			if (auto* wb = obj->_weakPtrBlock.ptr()) {
 				// lock before release ref count
-				auto wbData   = wb->data.scopedLock();
+				auto wbData   = ax_const_cast(wb)->data.scopedLock();
 				//------				
 				auto refCount = obj->_releaseSPtrRefCount();
 				if (refCount == 0) { 
@@ -175,7 +180,7 @@ public:
 	template<class R> AX_INLINE	void operator=(SPtr<R> &  r) { ref(r.ptr()); }
 	template<class R> AX_INLINE	void operator=(SPtr<R> && r) noexcept { _move(std::move(r)); }
 
-	template<class... ARGS> AX_NODISCARD AX_INLINE
+	template<class... ARGS> AX_INLINE
 	T*	newObject(const MemAllocRequest& req, ARGS&&...args) { return ref(new (req) T(AX_FORWARD(args)...)); }
 
 	template<class R> AX_NODISCARD AX_INLINE bool operator==(const SPtr<R>& r) const { return _p == r._p; }

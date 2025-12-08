@@ -84,6 +84,8 @@ public:
 	Dict_FindEnumator() = default;
 	Dict_FindEnumator(const IN_KEY& key, FindIter begin) : _begin(begin), _key(&key) {}
 
+	operator Dict_FindEnumator<const NODE, const IN_KEY>() { return {_key, _begin}; }
+	
 	explicit operator bool() const { return _begin; }
 
 	FindIter	begin	() { return _begin;  }
@@ -117,7 +119,8 @@ public:
 	using Key			= KEY;
 	using Value			= VALUE;
 	using InKey			= typename CONFIG::InKey;
-	using FindEnumator	= Dict_FindEnumator<Node, InKey>;
+	using  FindEnumator	= Dict_FindEnumator<Node, InKey>;
+	using CFindEnumator	= Dict_FindEnumator<const Node, const InKey>;
 	using FindIter		= Dict_FindIter<Node>;
 	static constexpr Int s_tableBufSize = CONFIG::s_tableBufSize;
 
@@ -131,17 +134,24 @@ public:
 	template<class... ARGS>
 	AX_INLINE Value& add(const InKey & key, ARGS&&... args) { return addNode(key, AX_FORWARD(args)...).value(); }
 
-	AX_INLINE Value* 		find			(const InKey& key)					{ return _find(key, HashInt::s_make(key)); }
-	AX_INLINE Value* 		find_hash		(const InKey& key, HashInt hash)	{ return _find(key, hash); }
+	AX_INLINE		Value* 		find			(const InKey& key)						{ return _find(key, HashInt::s_make(key)); }
+	AX_INLINE const Value* 		find			(const InKey& key) const				{ return ax_const_cast(this)->_find(key, HashInt::s_make(key)); }
+	AX_INLINE		Value* 		find_hash		(const InKey& key, HashInt hash)		{ return _find(key, hash); }
+	AX_INLINE const Value* 		find_hash		(const InKey& key, HashInt hash) const	{ return ax_const_cast(this)->_find(key, hash); }
 
-	AX_INLINE Node* 		findNode		(const InKey& key)					{ return _findNode(key, HashInt::s_make(key)); }
-	AX_INLINE Node* 		findNode_hash	(const InKey& key, HashInt hash)	{ return _findNode(key, hash); }
+	AX_INLINE		Node* 		findNode		(const InKey& key)						{ return _findNode(key, HashInt::s_make(key)); }
+	AX_INLINE const Node* 		findNode		(const InKey& key) const				{ return ax_const_cast(this)->_findNode(key, HashInt::s_make(key)); }
+	AX_INLINE		Node* 		findNode_hash	(const InKey& key, HashInt hash)		{ return _findNode(key, hash); }
+	AX_INLINE const Node* 		findNode_hash	(const InKey& key, HashInt hash) const	{ return ax_const_cast(this)->_findNode(key, hash); }
 
-	AX_INLINE FindEnumator 	findAll			(const InKey& key)					{ return _findAll(key, HashInt::s_make(key)); }
-	AX_INLINE FindEnumator	findAll_hash	(const InKey& key, HashInt hash)	{ return _findAll(key, hash); }
+	AX_INLINE  FindEnumator 	findAll			(const InKey& key)						{ return _findAll(key, HashInt::s_make(key)); }
+	AX_INLINE CFindEnumator 	findAll			(const InKey& key) const				{ return ax_const_cast(this)->_findAll(key, HashInt::s_make(key)); }
+
+	AX_INLINE  FindEnumator		findAll_hash	(const InKey& key, HashInt hash)		{ return _findAll(key, hash); }
+	AX_INLINE CFindEnumator		findAll_hash	(const InKey& key, HashInt hash) const	{ return ax_const_cast(this)->_findAll(key, hash); }
 	
-	AX_INLINE bool			remove			(const InKey& key)					{ return _remove(key, HashInt::s_make(key)); }
-	AX_INLINE bool			remove_hash		(const InKey& key, HashInt hash)	{ return _remove(key, hash); }
+	AX_INLINE bool				erase			(const InKey& key)						{ return _erase(key, HashInt::s_make(key)); }
+	AX_INLINE bool				erase_hash		(const InKey& key, HashInt hash)		{ return _erase(key, hash); }
 
 	template<class TT>
 	using Iter_ = typename OrderedList::template Iter_<TT>;
@@ -289,7 +299,7 @@ private:
 		}
 	}
 
-	bool _remove(const InKey& key, HashInt hash) {
+	bool _erase(const InKey& key, HashInt hash) {
 		if (auto* node = _findNode(key, hash)) {
 			_getList(hash).remove(node);
 			_orderedList.remove(node);

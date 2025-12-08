@@ -10,14 +10,14 @@ namespace ax::AxRender {
 template<class T>
 ResourceTable_Backend<T>::ResourceTable_Backend() {
 	auto frameCount = Renderer::s_instance()->renderRequestCount();
-	if (frameCount < 1) throw Error_Undefined(AX_SRC_LOC);
+	if (frameCount < 1) throw Error_Undefined();
 	_frames.resize(frameCount);
 	_slots.emplaceBack(); // slot 0 for fall back when error
 }
 
 template<class T> inline
-MutexProtected<ResourceTable_Backend<T>>* ResourceTable_Backend<T>::s_get() {
-	MutexProtected<This>* p = nullptr;
+Thread::MutexProtected<ResourceTable_Backend<T>>* ResourceTable_Backend<T>::s_get() {
+	Thread::MutexProtected<This>* p = nullptr;
 	ResourceManager_Backend::s_instance()->getTable(p);
 	return p;
 }
@@ -38,7 +38,7 @@ void ResourceTable_Backend<T>::add(T* obj) {
 	if (_freeSlots.size()) {
 		slotId = _freeSlots.popBack();
 	} else {
-		ax_safe_assign(slotId, _slots.size());
+		slotId = SafeCast(_slots.size());
 		_slots.emplaceBack();
 	}
 

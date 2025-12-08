@@ -3,6 +3,7 @@
 
 export module AxCore.NameId;
 export import AxCore.PersistString;
+export import AxCore.Formatter;
 
 export namespace ax {
 
@@ -34,9 +35,11 @@ public:
 		if (_id >= 0) f << _id;
 	}
 
+	TempString_<CH> toTempString() { return Fmt_<CH, CharA>("{}", *this); }
+
 	AX_NODISCARD bool hasNoId() const { return _id == kNoId; }
 
-	AX_NODISCARD HashInt onHashInt() const { return HashInt_get(_name) ^ HashInt_get(_id); }
+	AX_NODISCARD HashInt onHashInt() const { return HashInt::s_make(_name) ^ HashInt::s_make(_id); }
 	static constexpr Id kNoId = -1;
 private:
 	Str	_name;

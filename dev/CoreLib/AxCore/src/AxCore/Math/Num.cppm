@@ -6,8 +6,79 @@ export import AxCore.NormInt;
 
 export namespace ax {
 
-template<Int M, Int N, class T> struct Num_;
+template<class A, class B>
+concept CON_IsSame = std::is_same_v<A, B>;
 
+template<Int COL, Int ROW, class T> 
+struct Num_ {
+	using ElementType = T;
+	static constexpr Int kColCount = COL;
+	static constexpr Int kRowCount = ROW;
+	static constexpr Int kElementCount = COL * ROW;
+	
+	using MSpan      =      MutSpan<T>;
+	using CSpan      =         Span<T>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
+
+	AX_INLINE constexpr Num_() = default;
+
+	AX_INLINE constexpr Num_(const T& e0)											{ set(e0); }
+	AX_INLINE constexpr Num_(const T& e0, const T& e1)								{ set(e0,e1); }
+	AX_INLINE constexpr Num_(const T& e0, const T& e1, const T& e2)					{ set(e0,e1,e2); }
+	AX_INLINE constexpr Num_(const T& e0, const T& e1, const T& e2, const T& e3)	{ set(e0,e1,e2,e3); }
+	
+	AX_INLINE constexpr void set(const T& e0) {
+		static_assert(kElementCount == 1);
+		_data[0][0] = e0;
+	}
+	
+	AX_INLINE constexpr void set(const T& e0, const T& e1) {
+		static_assert(kElementCount == 2);
+		_data[0][0] = e0;
+		_data[0][1] = e1;
+	}
+	
+	AX_INLINE constexpr void set(const T& e0, const T& e1, const T& e2) {
+		static_assert(kElementCount == 3);
+		_data[0][0] = e0;
+		_data[0][1] = e1;
+		_data[0][2] = e2;
+	}
+	
+	AX_INLINE constexpr void set(const T& e0, const T& e1, const T& e2, const T& e3) {
+		static_assert(kElementCount == 4);
+		_data[0][0] = e0;
+		_data[0][1] = e1;
+		_data[0][2] = e2;
+		_data[0][3] = e3;
+	}
+	
+	AX_NODISCARD AX_INLINE constexpr       T* data()			{ return _data; }
+	AX_NODISCARD AX_INLINE constexpr const T* data() const	{ return _data; }
+	
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(&_data[0][0]); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(&_data[0][0]); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
+
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+
+	AX_INLINE constexpr bool inBound(Int col, Int row = 0) const { return row >= 0 && row < ROW && col >= 0 && col < COL; }
+	
+	AX_INLINE constexpr			T& at			(Int col, Int row = 0)			{ if (!inBound(col, row)) throw Error_IndexOutOfRange(); return unsafe_at(col,row); }
+	AX_INLINE constexpr const	T& at			(Int col, Int row = 0) const	{ if (!inBound(col, row)) throw Error_IndexOutOfRange(); return unsafe_at(col,row); }
+
+	AX_INLINE constexpr			T& unsafe_at	(Int col, Int row = 0)			{ return _data[row][col]; }
+	AX_INLINE constexpr const	T& unsafe_at	(Int col, Int row = 0) const	{ return _data[row][col]; }
+	
+	AX_INLINE constexpr bool operator==(const Num_& other) const { return fixedSpan() == other.fixedSpan(); }
+	
+private:
+	T _data[ROW][COL];
+};
+
+//----------
 template<class T> using Num1_ = Num_<1,1,T>;
 template<class T> using Num2_ = Num_<2,1,T>;
 template<class T> using Num3_ = Num_<3,1,T>;
@@ -38,55 +109,6 @@ using Num2i = Num2_<Int>;
 using Num3i = Num3_<Int>;
 using Num4i = Num4_<Int>;
 
-template<class T>
-struct Num_<1,1,T> {
-	using ElementType = T;
-	T e00;
-};
-
-template<class T>
-struct Num_<2,1,T> {
-	using ElementType = T;
-	T e00, e01;
-};
-
-template<class T>
-struct Num_<3,1,T> {
-	using ElementType = T;
-	T e00, e01, e02;
-};
-
-template<class T>
-struct Num_<4,1,T> {
-	using ElementType = T;
-	T e00, e01, e02, e03;
-};
-
-template<class T>
-struct Num_<2,2,T> {
-	using ElementType = T;
-	T e00, e01;
-	T e10, e11;
-};
-
-template<class T>
-struct Num_<3,3,T> {
-	using ElementType = T;
-	T e00, e01, e02;
-	T e10, e11, e12;
-	T e20, e21, e22;
-};
-
-template<class T>
-struct Num_<4,4,T> {
-	using ElementType = T;
-	T e00, e01, e02, e03;
-	T e10, e11, e12, e13;
-	T e20, e21, e22, e23;
-	T e30, e31, e32, e33;
-};
-
-//----------
 using Intx1	= Num1_<Int>;
 using Intx2	= Num2_<Int>;
 using Intx3	= Num3_<Int>;

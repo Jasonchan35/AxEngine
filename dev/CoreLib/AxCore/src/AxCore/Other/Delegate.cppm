@@ -32,9 +32,10 @@ public:
 	        void   bindStatic(StaticFunc func)		{ _bindStatic(func); }
 	static	This s_bindStatic(StaticFunc func)		{ Delegate_ d; d.bindStatic(func); return d; }
 	
-	template<class OBJ>		       void   bindWPtr(SPtr<OBJ>& obj, MemFunc<OBJ> func)	{ _bindObj<WPtrFunctor<OBJ, MemFunc<OBJ>>>(obj.ptr(), func); }
+	template<class OBJ>		       void   bindWPtr(SPtr<OBJ>& obj, MemFunc<OBJ> func)	{ _bindObj<WPtrFunctor<OBJ>>(obj.ptr(), func); }
 	template<class OBJ>		static This s_bindWPtr(SPtr<OBJ>& obj, MemFunc<OBJ> func)	{ Delegate_ d; d.bindWPtr(obj, func); return d; }
-	template<class OBJ>		       void   bindUnowned(OBJ*    obj, MemFunc<OBJ> func)	{ _bindObj<UnownedFunctor<OBJ, MemFunc<OBJ>>>(obj, func); }
+	
+	template<class OBJ>		       void   bindUnowned(OBJ*    obj, MemFunc<OBJ> func)	{ _bindObj<UnownedFunctor<OBJ>>(obj, func); }
 	template<class OBJ>		static This s_bindUnowned(OBJ*    obj, MemFunc<OBJ> func)	{ Delegate_ d; d.bindUnowned(obj, func); return d; }
 	
 	template<class LAMBDA> requires std::is_invocable_v<LAMBDA, ARGS...>
@@ -59,10 +60,10 @@ public:
 
 	AX_INLINE OptReturn _invokeValid(ARGS... args) const {
 		if (!_functor) {
-			if constexpr (!return_is_void) {
-				return std::nullopt;
-			} else {
+			if constexpr (return_is_void) {
 				return;
+			} else {
+				return std::nullopt;
 			}
 		}
 		return _functor->onInvoke(AX_FORWARD(args)...);
@@ -83,20 +84,20 @@ private:
 		virtual ~Functor() {}
 		virtual bool valid() const = 0;
 		virtual bool hasObject(void* p) const = 0;
-		virtual void copyTo(Delegate_& de) = 0;
+		virtual void copyTo(Delegate_& de) const = 0;
 
 		virtual OptReturn onInvoke(ARGS... args) const = 0;
 
-		template<class OBJ, class FUNC>
-		OptReturn doObjInvoke(OBJ* obj, FUNC func, ARGS... args) {
-			if (!obj) return std::nullopt;
-
-			if constexpr(std::is_same_v<FUNC, MemFunc<OBJ>>) {
-				return (obj->*func)(AX_FORWARD(args)...);
-			} else {
-				static_assert(false);
-				return std::nullopt;
+		template<class OBJ>
+		OptReturn doObjInvoke(OBJ* obj, MemFunc<OBJ> func, ARGS... args) const {
+			if (!obj) {
+				if constexpr (return_is_void) {
+					return;
+				} else {
+					return std::nullopt;
+				}
 			}
+			return (obj->*func)(AX_FORWARD(args)...);
 		}
 
 		Type _type = Type::Unknown;
@@ -109,7 +110,7 @@ private:
 		StaticFunctor(FUNC func) : Functor(Type::StaticFunctor), _func(func) {}
 		virtual bool valid() const override				{ return true; }
 		virtual bool hasObject(void* p) const override	{ return false; }
-		virtual void copyTo(Delegate_& de) override	{ de._bindStatic(_func); }
+		virtual void copyTo(Delegate_& de) const override	{ de._bindStatic(_func); }
 		virtual OptReturn onInvoke(ARGS... args) const override { return _func(AX_FORWARD(args)...); }
 	};
 
@@ -119,38 +120,38 @@ private:
 		FUNC _func;
 
 		LambdaFunctor(FUNC func) : Functor(Type::LambdaFunctor), _func(func) {}
-		virtual bool valid() const override				{ return true; }
-		virtual bool hasObject(void* p) const override	{ return false; }
-		virtual void copyTo(Delegate_& de) override	{ de.bindLambda(_func); }
+		virtual bool valid() const override					{ return true; }
+		virtual bool hasObject(void* p) const override		{ return false; }
+		virtual void copyTo(Delegate_& de) const override	{ de.bindLambda(_func); }
 		virtual OptReturn onInvoke(ARGS... args) const override { return _func(AX_FORWARD(args)...); } 
 	};
 
-	template<class OBJ, class FUNC>
+	template<class OBJ>
 	struct UnownedFunctor : public Functor {
-		OBJ*	_obj  = nullptr;
-		FUNC	_func = nullptr;
+		OBJ*			_obj  = nullptr;
+		MemFunc<OBJ>	_func = nullptr;
 
-		UnownedFunctor(OBJ* obj, FUNC func) : Functor(Type::UnownedFunctor), _obj(obj), _func(func) {}
+		UnownedFunctor(OBJ* obj, MemFunc<OBJ> func) : Functor(Type::UnownedFunctor), _obj(obj), _func(func) {}
 
-		virtual bool valid() const override				{ return _obj != nullptr; }
-		virtual bool hasObject(void* p) const override	{ return _obj == p; }
-		virtual void copyTo(Delegate_& de) override	{ if (_obj) de.template _bindObj<UnownedFunctor>(_obj, _func); }
+		virtual bool valid() const override					{ return _obj != nullptr; }
+		virtual bool hasObject(void* p) const override		{ return _obj == p; }
+		virtual void copyTo(Delegate_& de) const override	{ if (_obj) de.template _bindObj<UnownedFunctor>(_obj, _func); }
 		virtual OptReturn onInvoke(ARGS... args) const override { return Functor::doObjInvoke(_obj, _func, AX_FORWARD(args)...); }
 	};
 
-	template<class OBJ, class FUNC>
+	template<class OBJ>
 	struct WPtrFunctor : public Functor {
-		WPtr<OBJ>	_weak;
-		FUNC		_func = nullptr;
+		WPtr<OBJ>		_weak;
+		MemFunc<OBJ>	_func = nullptr;
 
-		WPtrFunctor(OBJ* obj, FUNC func) : Functor(Type::WPtrFunctor), _weak(obj), _func(func) {}
+		WPtrFunctor(OBJ* obj, MemFunc<OBJ> func) : Functor(Type::WPtrFunctor), _weak(obj), _func(func) {}
 
 		SPtr<      OBJ> obj()		{ return _weak.getSPtr(); }
 		SPtr<const OBJ> obj() const	{ return _weak.getSPtr(); }
 
-		virtual bool valid() const override				{ auto sp = obj(); return sp.ptr() != nullptr; }
-		virtual bool hasObject(void* p) const override	{ auto sp = obj(); return sp.ptr() == p; }
-		virtual void copyTo(Delegate_& de) override	{ if (auto sp = obj()) de._bindObj<WPtrFunctor>(sp.ptr(), _func); }
+		virtual bool valid() const override					{ auto sp = obj(); return sp.ptr() != nullptr; }
+		virtual bool hasObject(void* p) const override		{ auto sp = obj(); return sp.ptr() == p; }
+		virtual void copyTo(Delegate_& de) const override	{ if (auto sp = obj()) de._bindObj<WPtrFunctor>(sp.ptr(), _func); }
 
 		virtual OptReturn onInvoke(ARGS... args) const override { return Functor::doObjInvoke(obj().ptr(), _func, AX_FORWARD(args)...); }
 	};
@@ -161,9 +162,8 @@ private:
 		_functor = new(_functorLocalBuf) StaticFunctor(func);
 	}
 
-	template<class FUNCTOR, class OBJ, class FUNC>
-	void _bindObj(OBJ* obj, FUNC func) {
-		static_assert(std::is_same_v<MemFunc<OBJ>, FUNC>);
+	template<class FUNCTOR, class OBJ>
+	void _bindObj(OBJ* obj, MemFunc<OBJ> func) {
 		unbindAll();
 		static_assert(sizeof(_functorLocalBuf) >= sizeof(FUNCTOR), "_functorLocalBuf is too small");
 		_functor = new(_functorLocalBuf) FUNCTOR(obj, func);
@@ -178,7 +178,7 @@ private:
 	}
 
 	template<class FUNCTOR, class FUNC> 
-	bool _hasFunc(FUNC func) {
+	bool _hasFunc(FUNC func) const {
 		return static_cast<FUNCTOR*>(_functor)->_func == func;
 	}
 

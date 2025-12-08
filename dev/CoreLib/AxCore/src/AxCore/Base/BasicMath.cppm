@@ -171,7 +171,7 @@ bool	isInRange	(const T& x, const T& a, const T & b)		{ return x >= a && x <= b;
 template< class T > requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE constexpr bool	isPow2		( const T& v )	{ return v != 0 && (v & (v - 1)) == 0; }
 
-AX_NODISCARD AX_INLINE constexpr i8	nextPow2	( i8  v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4;                              v++; return max_0(v); }
+AX_NODISCARD AX_INLINE constexpr i8		nextPow2	( i8  v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4;                              v++; return max_0(v); }
 AX_NODISCARD AX_INLINE constexpr i16	nextPow2	( i16 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8;                     v++; return max_0(v); }
 AX_NODISCARD AX_INLINE constexpr i32	nextPow2	( i32 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8; v|=v>>16;           v++; return max_0(v); }
 AX_NODISCARD AX_INLINE constexpr i64	nextPow2	( i64 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8; v|=v>>16; v|=v>>32; v++; return max_0(v); }

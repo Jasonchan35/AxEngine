@@ -160,23 +160,36 @@ void FmtTo(IString_<T> & output, const FormatString_<Char32, ARGS...> & fmt, con
 	return ax_format_to_internal<T, Char32, ARGS...>(output, fmt, AX_FORWARD(args)...);
 }
 
-template<class... ARGS> constexpr
-TempStringA Fmt(FormatString_<CharA, ARGS...> && fmt, const ARGS&... args) { TempStringA str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
-template<class... ARGS> constexpr
-TempStringW Fmt(FormatString_<CharW, ARGS...> && fmt, const ARGS&... args) { TempStringW str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+template<class OUT_CH, class FMT_CH, class... ARGS> constexpr
+TempString_<OUT_CH> Fmt_(FormatString_<FMT_CH, ARGS...> && fmt, const ARGS&... args) { TempString_<OUT_CH> str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
 
-template<class... ARGS> constexpr
-TempString8 Fmt(FormatString_<Char8, ARGS...> && fmt, const ARGS&... args) { TempString8 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+template <class... ARGS>
+constexpr TempStringA Fmt(FormatString_<CharA, ARGS...>&& fmt, const ARGS&... args) {
+	return Fmt_<CharA, CharA>(AX_FORWARD(fmt), AX_FORWARD(args)...);
+}
 
-template<class... ARGS> constexpr
-TempString16 Fmt(FormatString_<Char16, ARGS...> && fmt, const ARGS&... args) { TempString16 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+template <class... ARGS>
+constexpr TempStringW Fmt(FormatString_<CharW, ARGS...>&& fmt, const ARGS&... args) {
+	return Fmt_<CharW, CharW>(AX_FORWARD(fmt), AX_FORWARD(args)...);
+}
 
-template<class... ARGS> constexpr
-TempString32 Fmt(FormatString_<Char32, ARGS...> && fmt, const ARGS&... args) { TempString32 str; FmtTo(str, AX_FORWARD(fmt), AX_FORWARD(args)...); return str; }
+template <class... ARGS>
+constexpr TempString8 Fmt(FormatString_<Char8, ARGS...>&& fmt, const ARGS&... args) {
+	return Fmt_<Char8, Char8>(AX_FORWARD(fmt), AX_FORWARD(args)...);
+}
+
+template <class... ARGS>
+constexpr TempString16 Fmt(FormatString_<Char16, ARGS...>&& fmt, const ARGS&... args) {
+	return Fmt_<Char16, Char16>(AX_FORWARD(fmt), AX_FORWARD(args)...);
+}
+
+template <class... ARGS>
+constexpr TempString32 Fmt(FormatString_<Char32, ARGS...>&& fmt, const ARGS&... args) {
+	return Fmt_<Char32, Char32>(AX_FORWARD(fmt), AX_FORWARD(args)...);
+}
 
 } // namespace
-
 
 //----- global namespace ----------
 

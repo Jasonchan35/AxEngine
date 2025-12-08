@@ -114,7 +114,11 @@ struct MetaTypeInit_Helper_ : public MetaTypeOf< BaseClassOf<T> > {
 
 	using OwnFields = Tuple<>;
 	using OwnAttrs  = Tuple<>;
-}; 
+};
+
+struct MetaAttr {
+	static StrView	name() { return "MetaAttr"; }
+};
 
 struct MetaFieldBase : public NonCopyable {
 	MetaFieldBase() = delete;

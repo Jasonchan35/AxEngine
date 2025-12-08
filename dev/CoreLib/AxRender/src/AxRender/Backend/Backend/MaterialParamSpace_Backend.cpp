@@ -16,7 +16,7 @@ void MaterialParamSpace_Backend_cloneParams(DST& dst, SRC srcSpan) {
 MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 : Base(desc)
 {
-	_shaderParamSpace = rttiCastCheck<ShaderParamSpace_Backend>(desc.paramSpace);
+	_shaderParamSpace = rttiCastCheck<const ShaderParamSpace_Backend>(desc.paramSpace);
 	if (!_shaderParamSpace) {
 		AX_ASSERT(false);
 		return;
@@ -116,7 +116,7 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 
 bool MaterialParamSpace_Backend::setParam(NameId name, StorageBuffer* v) {
 #if AX_RENDER_BINDLESS
-	AX_NOT_IMPLEMENTED();
+	AX_ASSERT(false);
 	return false;
 #else
 	auto* dst = _findParam(_storageBufferParams, name);

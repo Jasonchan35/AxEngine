@@ -64,7 +64,7 @@ public:
 
 	AX_INLINE u8* advance(Int n);
 
-	void io_raw(ByteSpan data) { _buf->append(data); }
+	void io_raw(ByteSpan data) { _buf->appendRange(data); }
 
 private:
 	template<class T> AX_INLINE void _io_fixed(T& value);

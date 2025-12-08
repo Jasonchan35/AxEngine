@@ -5,7 +5,7 @@ export import AxRender.RenderMesh;
 export import AxRender.Material;
 export import AxRender.RenderGraph;
 
-namespace ax::AxRender {
+export namespace ax::AxRender {
 
 class DefaultRenderGraph : public RenderGraph {
 	AX_RTTI_INFO(DefaultRenderGraph, RenderGraph)

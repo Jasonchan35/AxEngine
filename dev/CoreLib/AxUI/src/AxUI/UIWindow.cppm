@@ -5,7 +5,7 @@ export import AxUI.UIRenderView;
 export namespace ax::AxUI {
 
 class UIWindow : public UIView {
-	AX_RTTI_INFO(UIWindow, UIView) {};
+	AX_RTTI_INFO(UIWindow, UIView)
 public:
 
 	UIWindow();

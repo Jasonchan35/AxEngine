@@ -3,6 +3,7 @@ export module AxRender.Material_Backend;
 export import AxRender.Shader_Backend;
 export import AxRender.Texture_Backend;
 export import AxRender.MaterialParamSpace_Backend;
+export import AxRender.Material;
 
 export namespace ax::AxRender {
 
@@ -44,8 +45,8 @@ public:
 	Int passIndex = 0;
 };
 
-class MaterialPass_Backend : public RttiObject_NonReferenable {
-	AX_RTTI_INFO(MaterialPass_Backend, RttiObject_NonReferenable) {};
+class MaterialPass_Backend : public RttiObject {
+	AX_RTTI_INFO(MaterialPass_Backend, RttiObject)
 public:
 	using CreateDesc = MaterialPass_Backend_CreateDesc;
 
@@ -54,7 +55,7 @@ public:
 	const ShaderPass_Backend*	shaderPass() const;
 	const Shader_Backend*		shader() const;
 
-	virtual bool onDrawcall(RenderRequest* req, Cmd_DrawCall& cmd) = 0;
+	virtual bool onDrawcall(class RenderRequest* req, Cmd_DrawCall& cmd) = 0;
 
 	NameId getPropSamplerName(NameId name) const { auto* shd = shader(); return shd ? shd->getPropSamplerName(name) : NameId(); }
 
@@ -66,7 +67,7 @@ public:
 	}
 
 	MaterialParamSpace_Backend* getParamSpace(BindSpace s) {
-		auto* pp = _materialParamSpaces.tryGet(ax_enum_int(s));
+		auto* pp = _materialParamSpaces.try_at(ax_enum_int(s));
 		return pp ? pp->ptr() : nullptr;
 	}
 
@@ -88,7 +89,7 @@ protected:
 };
 
 class Material_Backend : public Material {
-	AX_RTTI_INFO(Material_Backend, Material) {};
+	AX_RTTI_INFO(Material_Backend, Material)
 public:
 	Material_Backend(const CreateDesc& desc);
 	

@@ -1,13 +1,14 @@
 module;
 export module AxRender.RenderContext_Backend;
 export import AxRender.RenderContext;
+export import AxRender.AxImGUI;
 
 export namespace ax::AxRender {
 
 class RenderPass_Backend;
 
 class RenderContext_Backend : public RenderContext {
-	AX_RTTI_INFO(RenderContext_Backend, RenderContext) {};
+	AX_RTTI_INFO(RenderContext_Backend, RenderContext)
 public:
 	RenderContext_Backend(const CreateDesc& desc);
 	virtual ~RenderContext_Backend() override;

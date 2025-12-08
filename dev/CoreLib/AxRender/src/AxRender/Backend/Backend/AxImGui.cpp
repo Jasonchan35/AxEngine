@@ -1,4 +1,5 @@
 module;
+#include <imgui.h>
 module AxRender.AxImGUI;
 import AxRender.Renderer;
 import AxRender.RenderContext;
@@ -12,9 +13,9 @@ AxImGui::~AxImGui() {
 void AxImGui::create(ImFontAtlas* sharedFontAtlas) {
 	destroy();
 
-	if (!IMGUI_CHECKVERSION()) throw AX_ERROR("ImGui version error");
+	if (!IMGUI_CHECKVERSION()) throw Error_Undefined("ImGui version error");
 	_ctx = ImGui::CreateContext(sharedFontAtlas);
-	if (!_ctx) throw AX_ERROR("ImGui error create context");
+	if (!_ctx) throw Error_Undefined("ImGui error create context");
 
 	_vertexBuffer.create<Vertex>();
 	 _indexBuffer.create<Index>();
@@ -86,7 +87,7 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 			{ (R+L)/(L-R),  (T+B)/(B-T),    0.5f,       1.0f }
 		);
 
-		_material->setParam(AX_STATIC_NAME("imguiProjectionMatrix"), projectionMatrix);
+		_material->setParam(AX_NAMEID("imguiProjectionMatrix"), projectionMatrix);
 
 	} else {
 		float L = data->DisplayPos.x;
@@ -101,10 +102,10 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 			{ (R+L)/(L-R),  (T+B)/(B-T),    0.5f,       1.0f }
 		);
 
-		_material->setParam(AX_STATIC_NAME("imguiProjectionMatrix"), projectionMatrix);
+		_material->setParam(AX_NAMEID("imguiProjectionMatrix"), projectionMatrix);
 	}
 
-	_material->setParam(AX_STATIC_NAME("fontTexture"), _fontTex);
+	_material->setParam(AX_NAMEID("fontTexture"), _fontTex);
 
 	auto vertexLayout = _vertexBuffer.vertexLayout();
 	auto vertexStride = vertexLayout->stride;
@@ -232,7 +233,7 @@ int AxImGui::_mouseButton(NativeUIMouseEventButton v) {
 		case Button::Middle:    return 2;
 		case Button::Button4:    return 3;
 		case Button::Button5:    return 4;
-		default: throw Error_Undefined(AX_SRC_LOC);
+		default: throw Error_Undefined();
 	}
 }
 

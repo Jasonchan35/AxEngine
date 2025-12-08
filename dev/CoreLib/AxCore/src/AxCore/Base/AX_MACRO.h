@@ -21,14 +21,30 @@
 #if AX_COMPILER_GCC | AX_COMPILER_CLANG
 	#define AX_PRAGMA_GCC_STRINGIZE(x)	_Pragma(#x)
 	#define AX_PRAGMA_GCC(x)			AX_PRAGMA_GCC_STRINGIZE(GCC x)
+	#define AX_PROGMA_GCC_WARNING_PUSH()				_Pragma("diagnostic push")
+	#define AX_PROGMA_GCC_WARNING_DISABLE(warning_name)	_Pragma("diagnostic " ## warning_name)
+	#define AX_PROGMA_GCC_WARNING_POP()					_Pragma("diagnostic pop")
+
 #else
-	#define AX_PRAGMA_GCC(x)	
+	#define AX_PRAGMA_GCC(x)
+	#define AX_PROGMA_GCC_WARNING_PUSH()
+	#define AX_PROGMA_GCC_WARNING_DISABLE(warning_name)
+	#define AX_PROGMA_GCC_WARNING_POP()
+
 #endif
 
 #if AX_COMPILER_VC
-	#define AX_PROGMA_VC(x)		__pragma(x)
+	#define AX_PRAGMA_VC(x)								__pragma(x)
+	#define AX_PRAGMA_VC_WARNING_PUSH()					__pragma(warning(push)) 
+	#define AX_PRAGMA_VC_WARNING_DISABLE(warning_code)	__pragma(warning(disable: warning_code))
+	#define AX_PRAGMA_VC_WARNING_POP()					__pragma(warning(pop))
+
 #else
-	#define AX_PROGMA_VC(x)
+	#define AX_PRaGMA_VC(x)
+	#define AX_PRaGMA_VC_WARNING_PUSH() 
+	#define AX_PRaGMA_VC_WARNING_DISABLE(warning_code)
+	#define AX_PRaGMA_VC_WARNING_POP()
+
 #endif
 
 #define AX_FORWARD(a) ::std::forward<decltype(a)>(a)

@@ -31,15 +31,15 @@ public:
 	using Texture2DTable = ResourceTable_Backend<Texture2D_Backend>;
 	using Texture3DTable = ResourceTable_Backend<Texture3D_Backend>;
 
-	void getTable(MutexProtected<ShaderTable   >* & o) { o = &shaderTable; }
-	void getTable(MutexProtected<SamplerTable  >* & o) { o = &samplerTable; }
-	void getTable(MutexProtected<Texture2DTable>* & o) { o = &texture2DTable; }
-	void getTable(MutexProtected<Texture3DTable>* & o) { o = &texture3DTable; }
+	void getTable(Thread::MutexProtected<ShaderTable   >* & o) { o = &shaderTable; }
+	void getTable(Thread::MutexProtected<SamplerTable  >* & o) { o = &samplerTable; }
+	void getTable(Thread::MutexProtected<Texture2DTable>* & o) { o = &texture2DTable; }
+	void getTable(Thread::MutexProtected<Texture3DTable>* & o) { o = &texture3DTable; }
 
-	MutexProtected<ShaderTable   > shaderTable;
-	MutexProtected<SamplerTable  > samplerTable;
-	MutexProtected<Texture2DTable> texture2DTable;
-	MutexProtected<Texture3DTable> texture3DTable;
+	Thread::MutexProtected<ShaderTable   > shaderTable;
+	Thread::MutexProtected<SamplerTable  > samplerTable;
+	Thread::MutexProtected<Texture2DTable> texture2DTable;
+	Thread::MutexProtected<Texture3DTable> texture3DTable;
 
 	template<class FUNC>
 	void visit(FUNC func) {
@@ -56,7 +56,7 @@ bool ResourceManager_Backend::getOrNewResource(SPtr<T>&			   sp,
 											   const MemAllocRequest& req,
 											   const CreateDesc&   desc,
 											   const ResourceKey&  key) {
-	MutexProtected<ResourceTable_Backend<T>>* table = nullptr;
+	Thread::MutexProtected<ResourceTable_Backend<T>>* table = nullptr;
 	getTable(table);
 
 	auto tableLock = table->scopedLock();

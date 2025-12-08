@@ -2,6 +2,7 @@ module;
 export module AxRender.RenderRequest_Backend;
 export import AxRender.Renderer;
 export import AxRender.RenderRequest;
+export import AxRender.RenderContext_Backend;
 export import AxRender.GpuBuffer_Backend;
 export import AxRender.Texture_Backend;
 export import AxRender.Material_Backend;
@@ -16,7 +17,7 @@ public:
 };
 
 class RenderRequest_Backend : public RenderRequest {
-	AX_RTTI_INFO(RenderRequest_Backend, RenderRequest) {};
+	AX_RTTI_INFO(RenderRequest_Backend, RenderRequest)
 public:
 	using CreateDesc = RenderRequest_CreateDesc;
 

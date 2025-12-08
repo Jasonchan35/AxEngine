@@ -29,24 +29,24 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 
 
 	if constexpr (std::is_same_v<SamplerParam, T>) {
-		auto str = dst.name().toString();
+		auto str = dst.name().toTempString();
 		if (auto sampler = str.extractFromPrefix("AxSamplerState_")) {
-			_nameToSampler.emplaceBack(Pair<NameId, NameId>(sampler, dst.name()));
+			_nameToSampler.emplaceBack(Pair_make(NameId::s_make(sampler), dst.name()));
 		}
 	}
 
 	if constexpr (std::is_same_v<ConstBuffer, T> ) {
 		for (auto& varInfo : dst.varInfos()) {
-			auto str = varInfo.name().toString();
+			auto str = varInfo.name().toTempString();
 			
 			if (auto sampler = str.extractFromPrefix("AxSamplerState_")) {
-				_nameToSampler.emplaceBack(Pair<NameId, NameId>(sampler, varInfo.name()));
+				_nameToSampler.emplaceBack(Pair_make(NameId::s_make(sampler), varInfo.name()));
 
 			} else if (auto tex2d = str.extractFromPrefix("AxTexture2D_")) {
-				_nameToTexture2D.emplaceBack(Pair<NameId, NameId>(tex2d, varInfo.name()));
+				_nameToTexture2D.emplaceBack(Pair_make(NameId::s_make(tex2d), varInfo.name()));
 
 			} else if (auto tex3d = str.extractFromPrefix("AxTexture3D_")) {
-				_nameToTexture3D.emplaceBack(Pair<NameId, NameId>(tex3d, varInfo.name()));
+				_nameToTexture3D.emplaceBack(Pair_make(NameId::s_make(tex3d), varInfo.name()));
 
 			}
 		}
@@ -83,7 +83,7 @@ void ShaderParamSpace_Backend::StorageBufferParam::create(const Info& info) {
 }
 
 inline void ShaderParamSpace_Backend::ParamBase::create(const Info& info) {
-	_name		= NameId(info.name);
+	_name		= NameId::s_make(info.name);
 	_dataType	= info.dataType;
 	_stageFlags = info.stageFlags;
 	_bindPoint	= info.bindPoint;

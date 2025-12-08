@@ -75,7 +75,7 @@ void Texture2D_Backend::_loadImage(const ImageInfo& info, ByteSpan pixelData) {
 }
 
 void Texture2D_Backend::onCreate(const CreateDesc& desc) {
-	if (desc.pixelData) {
+	if (desc.pixelData.size()) {
 		_loadImage(desc.info, desc.pixelData);
 		return;
 	}

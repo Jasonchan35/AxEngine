@@ -4,7 +4,7 @@ import AxRender.RenderRequest_Backend;
 import AxRender.RenderContext_Backend;
 import AxRender.GpuBuffer_Backend;
 
-export namespace ax::AxRender {
+namespace ax::AxRender {
 
 SPtr<GpuBuffer> GpuBuffer::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	return GpuBuffer_Backend::s_new(req, desc);
@@ -40,7 +40,7 @@ void DynamicGpuBuffer::reset() {
 GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 	AX_ASSERT(_bufferType != GpuBufferType::None);
 
-	if (_dirtyRange.size <= 0 && _gpuBuffer) return _gpuBuffer;
+	if (_dirtyRange.size() <= 0 && _gpuBuffer) return _gpuBuffer;
 
 	auto  dataSize = _data.size();
 	auto uploadRange = _dirtyRange;
@@ -59,7 +59,7 @@ GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 	if (req->inlineUpload.copyDataToGpuBuffer(
 			rttiCastCheck<GpuBuffer_Backend>(_gpuBuffer.ptr()),
 			_data.slice(uploadRange),
-			uploadRange.start))
+			uploadRange.begin()))
 	{
 		_dirtyRange.reset();
 		return _gpuBuffer;
@@ -96,8 +96,8 @@ GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 
 	req->resourcesToKeep.add(uploadBuf_Backend);
 
-	uploadBuf_Backend->copyData(_data.slice(uploadRange), uploadRange.start);
-	rttiCastCheck<GpuBuffer_Backend>(_gpuBuffer.ptr())->copyFromGpuBuffer(req, uploadBuf, uploadRange, uploadRange.start);
+	uploadBuf_Backend->copyData(_data.slice(uploadRange), uploadRange.begin());
+	rttiCastCheck<GpuBuffer_Backend>(_gpuBuffer.ptr())->copyFromGpuBuffer(req, uploadBuf, uploadRange, uploadRange.begin());
 
 	slot.dirtyRange.reset();
 	return _gpuBuffer;

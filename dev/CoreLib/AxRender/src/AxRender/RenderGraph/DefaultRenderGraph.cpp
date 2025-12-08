@@ -34,8 +34,8 @@ DefaultRenderGraph::DefaultRenderGraph() {
 		
 //		_testMeshMaterial->setParam(NameId("color"), Color4f::kRed());
 
-		static NameId tex0("tex0");
-		static NameId tex1("tex1");
+		static NameId tex0 = NameId::s_make("tex0");
+		static NameId tex1 = NameId::s_make("tex1");
 
 		_testMeshMaterial->setParam(tex0, _testTex0);
 		_testMeshMaterial->setParam(tex1, _testTex1);
@@ -54,7 +54,7 @@ DefaultRenderGraph::DefaultRenderGraph() {
 		{ auto& v = vertices.emplaceBack(); v.pos.set( 0.5f,  0.5f, 0); v.uv[0].set(1, 1); }
 
 		u16 indices[] = {0, 1, 2, 2, 1, 3};
-		_testMesh.create(vertices.constSpan(), Span_ref(indices));
+		_testMesh.create(vertices.constSpan(), Span(indices));
 	}
 
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
@@ -79,10 +79,9 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	}
 
 	{
-		UI::Window	win("Testing");
-
-		float f = 10;
-		UI::DragFloat("float", &f);
+//		UI::Window	win("Testing");
+//		float f = 10;
+//		UI::DragFloat("float", &f);
 	}
 
 	req->drawUI();

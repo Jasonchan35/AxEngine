@@ -17,6 +17,9 @@ public:
 template<class T> AX_INLINE constexpr T* ax_const_cast(const T* v) { return const_cast<T*>(v); }
 template<class T> AX_INLINE constexpr T& ax_const_cast(const T& v) { return const_cast<T&>(v); }
 
+template<class T> using Type_EnumInt = std::underlying_type_t<T>;
+template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<Type_EnumInt<T>>(v); }
+
 using u8  = std::uint8_t;
 using u16 = std::uint16_t;
 using u32 = std::uint32_t;
@@ -26,6 +29,24 @@ using i8  = std::int8_t;
 using i16 = std::int16_t;
 using i32 = std::int32_t;
 using i64 = std::int64_t;
+
+using f32  = float;
+using f64  = double;
+using f128 = long double;
+
+using Byte  = u8;
+using Int   = i64;
+using UInt  = u64;
+using Float = f64;
+
+using CharA  = char;
+using Char8  = char8_t;
+using Char16 = char16_t;
+using Char32 = char32_t;
+using CharW  = wchar_t;
+using Char   = CharA;
+using CharU	 = Char32;
+
 
 constexpr i8   i8_max = std::numeric_limits<i8 >::max();
 constexpr i16 i16_max = std::numeric_limits<i16>::max();
@@ -47,22 +68,15 @@ constexpr u16 u16_min = std::numeric_limits<u16>::min();
 constexpr u32 u32_min = std::numeric_limits<u32>::min();
 constexpr u64 u64_min = std::numeric_limits<u64>::min();
 
-using f32  = float;
-using f64  = double;
-using f128 = long double;
+constexpr Int Int_min = std::numeric_limits<Int>::min();
+constexpr Int Int_max = std::numeric_limits<Int>::max();
 
-using Byte  = u8;
-using Int   = i64;
-using UInt  = u64;
-using Float = f64;
+constexpr UInt UInt_min = std::numeric_limits<UInt>::min();
+constexpr UInt UInt_max = std::numeric_limits<UInt>::max();
 
-using CharA  = char;
-using Char8  = char8_t;
-using Char16 = char16_t;
-using Char32 = char32_t;
-using CharW  = wchar_t;
-using Char   = CharA;
-using CharU	 = Char32;
+
+template<class T> constexpr bool Type_isTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<T>;
+template<class T> constexpr bool Type_IsTriviallyDestructible   = std::is_trivially_destructible_v<T>;
 
 template<class T> constexpr bool Type_IsFundamental =  std::is_fundamental_v<T>;
 template<class T> constexpr bool Type_AnyInt        =  std::is_integral_v<T>;
@@ -78,6 +92,14 @@ template<class T> constexpr bool Type_AnyChar       =  std::is_same_v<std::remov
 template<class T> constexpr bool Type_Is_f32        =  std::is_same_v<T, f32>;
 template<class T> constexpr bool Type_Is_f64        =  std::is_same_v<T, f64>;
 template<class T> constexpr bool Type_IsEnum        =  std::is_enum_v<T>;
+
+template<class T>
+struct Type_MaybeEnumInt_Struct { using Type = T; }; 
+
+template<class T>	requires std::is_enum_v<T>
+struct Type_MaybeEnumInt_Struct<T> { using Type = std::underlying_type_t<T>; }; 
+
+template<class T> using Type_MaybeEnumInt = Type_MaybeEnumInt_Struct<T>::Type;
 
 //--------
 template<Int N>		struct	Type_Int_BySize_Struct;
@@ -150,13 +172,14 @@ template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	return i;
 }
 
+//TODO change to consteval, to ensure it's real string literal
 template<class T>
 class MutStrLit_ {
 	using This = MutStrLit_;
 public:
 	using std_string_view = std::basic_string_view< std::remove_const_t<T> >;
 	
-	MutStrLit_() noexcept = default;
+	constexpr MutStrLit_() noexcept = default;
 
 	AX_INLINE constexpr MutStrLit_(T* sz, Int size) noexcept : _data(sz), _size(size) {}
 	
@@ -171,7 +194,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr explicit operator bool() const { return _size > 0; } 
 
 	constexpr MutStrLit_ s_from_c_str(T* sz) noexcept { return MutStrLit_(sz, ax_strlen(sz)); }
-	
+
 protected:
 	static constexpr T _empty_c_str = 0;	
 	T*  _data = nullptr;
@@ -463,8 +486,11 @@ AX_SIMPLE_ERROR(Error_JsonValue)
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {
-	if (!std::in_range<DST>(src)) return false;
+	using DST_NUM = Type_MaybeEnumInt<DST>;
+	using SRC_NUM = Type_MaybeEnumInt<SRC>;
 	
+	if (!std::in_range<DST_NUM>(static_cast<SRC_NUM>(src))) return false;
+
 	dst = static_cast<DST>(src);
 	return true;
 }
@@ -670,9 +696,6 @@ inline void ax_assert(bool expr, StrLit exprStr, const std::source_location & sr
 	if (expr) return;
 	__ax_internal_assert("ax_assert", exprStr.c_str(), "", srcLoc);
 }
-
-template<class T> using Type_EnumInt = std::underlying_type_t<T>;
-template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<Type_EnumInt<T>>(v); }
 
 struct DebuggerNatvisHex {
 	// UpperCase

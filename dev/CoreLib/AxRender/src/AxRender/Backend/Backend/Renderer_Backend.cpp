@@ -1,6 +1,5 @@
 module;
-module Ax.Renderer_Backend;
-import AxRender.Renderer_Backend;
+module AxRender.Renderer_Backend;
 import AxRender.Material_Backend;
 import AxRender.StockObjects;
 import AxRender.RenderRequest_Backend;
@@ -43,7 +42,7 @@ void Renderer_Backend::onCreate() {
 
 //----- render request
 	if (_info.renderRequestCount > AxRenderConfig::kMaxRenderRequestCount)
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 
 	for (Int i = 0; i < _info.renderRequestCount; i++) {
 		auto req = RenderRequest_Backend::s_new(AX_ALLOC_REQ, this, i);
@@ -62,7 +61,7 @@ RenderRequest_Backend* Renderer_Backend::nextRenderRequest() {
 	auto& reqs = _privateData->renderReqests;
 
 	if (reqs.size() <= 0) {
-		throw AX_ERROR("RenderRequest count is 0");
+		throw Error_Undefined("RenderRequest count is 0");
 	}
 
 	_renderSeqId++; // must start with 1, because lastUpdate seqId in resource is 0 by default

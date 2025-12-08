@@ -19,11 +19,10 @@ public:
 	DepthBufferDesc	depthBuffer;
 };
 
-class RenderContext : public RttiObject_NonReferenable {
-	AX_RTTI_INFO(RenderContext, RttiObject_NonReferenable) {};
+class RenderContext : public RttiObject {
+	AX_RTTI_INFO(RenderContext, RttiObject)
 public:
 	using CreateDesc	= RenderContext_CreateDesc;
-	using EventHandler	= RenderContext_EventHandler;
 
 	static UPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 

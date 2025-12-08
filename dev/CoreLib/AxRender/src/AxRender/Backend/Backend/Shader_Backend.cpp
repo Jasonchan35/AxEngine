@@ -12,7 +12,7 @@ namespace ax::AxRender {
 
 ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 	: _shader(desc.shader)
-	, _name(desc.info->name)
+	, _name(NameId::s_make(desc.info->name))
 	, _info(desc.info)
 	, _stageInfo(desc.stageInfo)
 {
@@ -35,7 +35,7 @@ void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
 			return;
 		}
 
-		auto& space = _shaderParamSpaces.autoResizeGet(bindSpace);
+		auto& space = _shaderParamSpaces.ensureAt(bindSpace);
 
 		if (!space) {
 			ShaderParamSpace_CreateDesc blockDesc;
@@ -55,7 +55,7 @@ void ShaderPass_Backend::_createParamSpaces() {
 	_addParamSpace(_stageInfo->samplers);
 
 	for (auto& prop : _shader->info()->declare.props) {
-		NameId propName(prop.name);
+		auto propName = NameId::s_make(prop.name);
 
 		for (auto& space : _shaderParamSpaces) {
 			if (space) space->setPropDefaultValue(propName, prop);
@@ -100,20 +100,20 @@ void Shader_Backend::onLoadFile() {
 
 	for (auto& src : _info.declare.props) {
 		auto& dst = _propNameIds.emplaceBack();
-		dst.name = NameId(src.name);
+		dst.name = NameId::s_make(src.name);
 		dst.prop = &src;
 
 		if (ShaderPropType_isTextureType(src.propType)) {
 			samplerName = src.name;
-			samplerName += "_AxSamplerState";
-			dst.samplerName = NameId(samplerName);
+			samplerName << "_AxSamplerState";
+			dst.samplerName = NameId::s_make(samplerName);
 		}
 	}
 
 	Int n = _info.declare.passes.size();
 
 	if (_info.passStages.size() != n)
-		throw AX_ERROR("Shader PassStages[] size mismatch");
+		throw Error_Undefined("Shader PassStages[] size mismatch");
 
 	_passes.clear();
 	_passes.reserve(n);
