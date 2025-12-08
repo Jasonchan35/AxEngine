@@ -1,4 +1,5 @@
-module AxRender;
+module AxCore;
+import :ColorUtil;
 
 namespace ax {
 

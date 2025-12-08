@@ -2,8 +2,9 @@ module;
 
 #include "ColorType_MACRO.h"
 
-export module AxRender:ColorType;
-export import :PCH;
+export module AxCore:ColorType;
+export import AxCore.Mat;
+export import AxCore.Enum;
 
 export namespace ax {
 

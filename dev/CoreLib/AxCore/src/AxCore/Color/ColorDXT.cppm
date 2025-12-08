@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:ColorDXT;
+export module AxCore:ColorDXT;
 export import :ColorRGBA;
 
 export namespace ax {

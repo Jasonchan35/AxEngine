@@ -2,7 +2,6 @@
 
 export module AxRender:DataType;
 export import :PCH;
-export import :Color;
 
 export namespace ax::AxRender {
 

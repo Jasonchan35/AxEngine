@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:Color;
+export module AxCore:Color;
 export import :ColorUtil;
 export import :ColorA;
 export import :ColorBGRA;

@@ -51,3 +51,4 @@
 
 #include "AxCore/Base/AX_MACRO.h"
 #include "AxCore/Reflection/Rtti_MACRO.h"
+#include "AxCore/Color/ColorType_MACRO.h"

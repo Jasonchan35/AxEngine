@@ -1,6 +1,6 @@
 module;
 
-module AxRender;
+module AxCore;
 import :ColorRGBA;
 import :ColorHSVA;
 import :ColorPacked;

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "AxCore.h"
-#include "AxRender/Color/ColorType_MACRO.h"
 
 #if AX_OS_WINDOWS
 //	#define AX_RENDERER_DX12	1

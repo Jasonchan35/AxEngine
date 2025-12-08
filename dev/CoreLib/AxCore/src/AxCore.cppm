@@ -23,5 +23,6 @@ export import AxCore.NormInt;
 export import AxCore.Uuid;
 export import AxCore.Rtti;
 export import AxCore.WPtr;
+export import :Color;
 
 
