@@ -1,6 +1,6 @@
 module;
-export module AxUI.UIView;
-export import AxUI.PCH;
+export module AxUI:UIView;
+export import :PCH;
 
 export namespace ax::AxUI {
 

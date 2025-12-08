@@ -1,4 +1,5 @@
-module AxUI.UIWindow;
+module AxUI;
+import :UIWindow;
 
 namespace ax::AxUI {
 

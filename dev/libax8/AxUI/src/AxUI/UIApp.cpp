@@ -1,4 +1,5 @@
-module AxUI.UIApp;
+module AxUI;
+import :UIApp;
 
 namespace ax::AxUI {
 

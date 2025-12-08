@@ -1,6 +1,6 @@
 module;
-export module AxUI.UIRenderView;
-export import AxUI.UIView;
+export module AxUI:UIRenderView;
+export import :UIView;
 
 export namespace ax::AxUI {
 

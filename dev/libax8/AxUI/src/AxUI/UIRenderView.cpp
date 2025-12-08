@@ -1,4 +1,5 @@
-module AxUI.UIRenderView;
+module AxUI;
+import :UIRenderView;
 
 namespace ax::AxUI {
 

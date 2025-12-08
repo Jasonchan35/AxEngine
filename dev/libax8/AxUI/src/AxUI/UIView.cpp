@@ -1,5 +1,6 @@
 module;
-module AxUI.UIView;
+module AxUI;
+import :UIView;
 
 namespace ax::AxUI {
 
