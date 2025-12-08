@@ -5,8 +5,8 @@ export import AxRender.ColorRGBA;
 
 export namespace ax {
 
-template<>
-class Color_<ColorModel::DXT, ColorElem_EnumAsType<ColorElem::DXT_BC1>> {
+template<VecSIMD SIMD>
+class Color_<ColorModel::DXT, ColorElem_DXT_BC1, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	using Element = void;
@@ -21,8 +21,8 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBAb;
 };
 
-template<>
-class Color_<ColorModel::DXT, ColorElem_EnumAsType<ColorElem::DXT_BC2>> {
+template<VecSIMD SIMD>
+class Color_<ColorModel::DXT, ColorElem_DXT_BC2, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	using Element = void;
@@ -37,8 +37,8 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBAb;
 };
 
-template<>
-class Color_<ColorModel::DXT, ColorElem_EnumAsType<ColorElem::DXT_BC3>> {
+template<VecSIMD SIMD>
+class Color_<ColorModel::DXT, ColorElem_DXT_BC3, SIMD> {
 public:
 	using Element = void;
 
@@ -52,8 +52,8 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBAb;
 };
 
-template<>
-class Color_<ColorModel::DXT, ColorElem_EnumAsType<ColorElem::DXT_BC4>> {
+template<VecSIMD SIMD>
+class Color_<ColorModel::DXT, ColorElem_DXT_BC4, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	using Element = void;
@@ -68,8 +68,8 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::Lb;
 };
 
-template<>
-class Color_<ColorModel::DXT, ColorElem_EnumAsType<ColorElem::DXT_BC5>> {
+template<VecSIMD SIMD>
+class Color_<ColorModel::DXT, ColorElem_DXT_BC5, SIMD> {
 public:
 	using Element = void;
 
@@ -83,8 +83,8 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGb;
 };
 
-template<>
-class Color_<ColorModel::DXT, ColorElem_EnumAsType<ColorElem::DXT_BC6h>> {
+template<VecSIMD SIMD>
+class Color_<ColorModel::DXT, ColorElem_DXT_BC6h, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	using Element = void;
@@ -100,8 +100,8 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBh;
 };
 
-template<>
-class Color_<ColorModel::DXT, ColorElem_EnumAsType<ColorElem::DXT_BC7>> {
+template<VecSIMD SIMD>
+class Color_<ColorModel::DXT, ColorElem_DXT_BC7, SIMD> {
 public:
 	using Element = void;
 

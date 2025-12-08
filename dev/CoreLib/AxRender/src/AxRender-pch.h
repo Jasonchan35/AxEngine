@@ -1,10 +1,11 @@
 ﻿#pragma once
 
 #include "AxCore.h"
+#include "AxRender/Color/ColorType_MACRO.h"
 
 #if AX_OS_WINDOWS
-	#define AX_RENDERER_DX12	1
-	#define AX_RENDERER_VK		1
+//	#define AX_RENDERER_DX12	1
+//	#define AX_RENDERER_VK		1
 #endif
 
 #define AX_RENDER_BINDLESS		1
@@ -48,3 +49,4 @@
 	E(None,     ) \
 	AX_ShaderPropType_EnumList_WITHOUT_NONE(E) \
 //----
+

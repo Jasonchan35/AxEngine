@@ -6,7 +6,7 @@ export import AxRender.ColorRGBA;
 export namespace ax {
 
 template<>
-class Color_<ColorModel::Packed, ColorElem_EnumAsType<ColorElem::R5G6B5> > {
+class Color_<ColorModel::Packed, ColorElem_R5G6B5> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	union {
@@ -26,7 +26,7 @@ public:
 };
 
 template<>
-class Color_<ColorModel::Packed, ColorElem_EnumAsType<ColorElem::R5G5B5A1> > {
+class Color_<ColorModel::Packed, ColorElem_R5G5B5A1> {
 public:
 	union {
 		struct {
@@ -46,7 +46,7 @@ public:
 };
 
 template<>
-class Color_<ColorModel::Packed, ColorElem_EnumAsType<ColorElem::R11G11B10> > {
+class Color_<ColorModel::Packed, ColorElem_R11G11B10> {
 public:
 	union {
 		struct {
@@ -57,6 +57,7 @@ public:
 		u32 value;
 	};
 	
+	static constexpr Int		kElementCount	= 3;
 	static constexpr ColorModel kColorModel = ColorModel::Packed;
 	static constexpr ColorElem	kColorElem	= ColorElem::R11G11B10;
 	static constexpr ColorType	kColorType	= ColorType_make(kColorModel, kColorElem);
@@ -64,7 +65,7 @@ public:
 };
 
 template<>
-class Color_<ColorModel::Packed, ColorElem_EnumAsType<ColorElem::R10G10B10A2> > {
+class Color_<ColorModel::Packed, ColorElem_R10G10B10A2> {
 public:
 	union {
 		struct {
