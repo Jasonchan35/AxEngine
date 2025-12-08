@@ -4,7 +4,7 @@
 export module AxCore.Allocator;
 
 import AxCore.Math;
-import AxCore.MemoryUtil;
+import AxCore.MemUtil;
 
 #include "AxCore-pch.h"
 export import AxCore.BasicType;

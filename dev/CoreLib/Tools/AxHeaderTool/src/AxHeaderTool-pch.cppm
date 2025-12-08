@@ -1,5 +1,5 @@
 ﻿module;
 
-export module AxHeaderTool._PCH;
+export module AxHeaderTool.PCH;
 
 export import AxCore;

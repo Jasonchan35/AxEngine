@@ -286,6 +286,8 @@ struct CharUtil {
 	CharUtil() = delete;
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha	(CH ch) { return std::isalpha(ch); } 
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isDigit	(CH ch) { return std::isdigit(ch); }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isUpper	(CH ch) { return std::isupper(ch); }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isLower	(CH ch) { return std::islower(ch); }
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr CH   toUpper	(CH ch) { return static_cast<CH>(std::toupper(ch)); }
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr CH   toLower	(CH ch) { return static_cast<CH>(std::tolower(ch)); }
 

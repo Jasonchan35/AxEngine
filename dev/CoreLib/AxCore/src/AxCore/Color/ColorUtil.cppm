@@ -1,6 +1,6 @@
 module;
 
-export module AxCore:ColorUtil;
+export module AxCore.Color:ColorUtil;
 export import :ColorRGBA;
 export import :ColorLA;
 export import :ColorPacked;

@@ -1,7 +1,7 @@
 ﻿module;
 #include "AxCore-pch.h"
 
-export module AxCore.MemoryUtil;
+export module AxCore.MemUtil;
 
 #include "AxCore-pch.h"
 import AxCore.BasicType;

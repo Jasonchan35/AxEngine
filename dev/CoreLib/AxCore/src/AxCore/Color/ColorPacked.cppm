@@ -1,6 +1,6 @@
 module;
 
-export module AxCore:ColorPacked;
+export module AxCore.Color:ColorPacked;
 export import :ColorRGBA;
 
 export namespace ax {

@@ -8,7 +8,7 @@ export import AxCore.Span;
 export import AxCore.Math;
 
 export import AxCore.Allocator;
-export import AxCore.MemoryUtil;
+export import AxCore.MemUtil;
 
 export namespace ax {
 

@@ -1,4 +1,4 @@
-﻿import AxCore_Test._PCH;
+﻿import AxCore_Test.PCH;
 
 import AxCore.HashInt;
 

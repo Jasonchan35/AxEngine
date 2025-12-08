@@ -1,4 +1,4 @@
-﻿export module AxCore_Test._PCH;
+﻿export module AxCore_Test.PCH;
 
 export import AxCore.Format;
 export import AxCore.UnitTest;

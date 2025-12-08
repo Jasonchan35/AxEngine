@@ -5,6 +5,7 @@ export import AxCore.Array;
 export import AxCore.BasicType;
 export import AxCore.BinIO;
 export import AxCore.ConsoleApp;
+export import AxCore.Color;
 export import AxCore.DateTime;
 export import AxCore.Enum;
 export import AxCore.File;
@@ -23,6 +24,5 @@ export import AxCore.NormInt;
 export import AxCore.Uuid;
 export import AxCore.Rtti;
 export import AxCore.WPtr;
-export import :Color;
 
 

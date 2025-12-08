@@ -1,7 +1,7 @@
 module;
 #include "AxHeaderTool-pch.h"
 export module AxHeaderTool.Generator;
-export import AxHeaderTool._PCH;
+export import AxHeaderTool.PCH;
 export import AxHeaderTool.Parser;
 
 export namespace ax::AxHeaderTool {

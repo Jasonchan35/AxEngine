@@ -2,7 +2,7 @@ module;
 
 #include "ColorType_MACRO.h"
 
-export module AxCore:ColorType;
+export module AxCore.Color:ColorType;
 export import AxCore.Mat;
 export import AxCore.Enum;
 

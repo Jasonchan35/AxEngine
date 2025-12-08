@@ -2,7 +2,7 @@
 #include "AxCore/Reflection/MetaType_MACRO.h"
 #include "AxCore/Reflection/Rtti_MACRO.h"
 
-import AxCore_Test._PCH;
+import AxCore_Test.PCH;
 
 import AxCore.MetaType;
 import AxCore.Rtti;

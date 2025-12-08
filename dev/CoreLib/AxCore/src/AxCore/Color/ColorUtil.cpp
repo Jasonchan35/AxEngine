@@ -1,4 +1,4 @@
-module AxCore;
+module AxCore.Color;
 import :ColorUtil;
 
 namespace ax {

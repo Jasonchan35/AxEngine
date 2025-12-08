@@ -1,6 +1,6 @@
 module;
 
-export module AxCore:ColorHSVA;
+export module AxCore.Color:ColorHSVA;
 export import :ColorRGBA;
 
 export namespace ax {

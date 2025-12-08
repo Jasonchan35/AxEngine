@@ -5,7 +5,7 @@ export module AxCore.StrView;
 export import AxCore.BasicType;
 export import AxCore.HashInt;
 export import AxCore.Span;
-import AxCore.Math;
+export import AxCore.Math;
 
 export namespace ax {
 

@@ -2,7 +2,7 @@ module;
 
 #include "AxHeaderTool-pch.h"
 module AxHeaderTool.App;
-import AxHeaderTool._PCH;
+import AxHeaderTool.PCH;
 import AxHeaderTool.Generator;
 
 namespace ax::AxHeaderTool {

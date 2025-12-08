@@ -1,7 +1,7 @@
 module;
 #include "AxHeaderTool-pch.h"
 export module AxHeaderTool.TypeInfo;
-export import AxHeaderTool._PCH;
+export import AxHeaderTool.PCH;
 
 export namespace ax::AxHeaderTool {
 
@@ -12,7 +12,7 @@ void convertToDisplayName(IString& outStr, StrView s) {
 
 	Char last = 0;
 	for (auto ch : s) {
-		if (std::islower(last) && std::isupper(ch)) {
+		if (CharUtil::isLower(last) && CharUtil::isUpper(ch)) {
 			outStr.append(' ');
 		}
 		if (ch == '_')

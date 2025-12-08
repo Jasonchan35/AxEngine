@@ -1,6 +1,7 @@
 module;
 
-module AxCore;
+module AxCore.Color;
+import :ColorType;
 import :ColorRGBA;
 import :ColorHSVA;
 import :ColorPacked;

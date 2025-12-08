@@ -1,6 +1,6 @@
 module;
 
-export module AxCore:ColorLA;
+export module AxCore.Color:ColorLA;
 export import :ColorType;
 
 export namespace ax {
