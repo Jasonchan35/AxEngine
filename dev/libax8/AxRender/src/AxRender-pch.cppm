@@ -11,3 +11,7 @@ struct AxRenderConfig {
 };
 
 } // namespace
+
+export namespace ax::AxRender {
+	AX_RenderObject_LIST(AX_RenderObject_ForwardDeclare, AX_EMPTY, AX_EMPTY);
+}

@@ -7,6 +7,7 @@ export namespace ax::AxRender {
 
 #define AX_RenderApi_ENUM_LIST(E) \
 	E(None,) \
+	E(Null,) \
 	E(DX12,) \
 	E(VK,) \
 //-----

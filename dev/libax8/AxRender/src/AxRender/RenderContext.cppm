@@ -50,7 +50,6 @@ public:
 	virtual Vec2f	worldToLocalPos(const Vec2f& pt) = 0;
 	virtual Vec2f	localToWorldPos(const Vec2f& pt) = 0;
 
-
 	void setImGuiIniFilename(StrView name) { onSetImGuiIniFilename(name); }
 	void loadImGuiIniFile() { onLoadImGuiIniFile(); }
 	void saveImGuiIniFile() { onSaveImGuiIniFile(); }

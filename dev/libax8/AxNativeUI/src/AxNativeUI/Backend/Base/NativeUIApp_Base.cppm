@@ -15,8 +15,7 @@ export namespace ax {
 //-----
 AX_ENUM_CLASS(AX_NativeUIApi_ENUM_LIST, NativeUIApi, u8);
 
-class NativeUIApp_CreateDesc {
-public:
+struct NativeUIApp_CreateDesc {
 	bool peekMessage = false;
 };
 

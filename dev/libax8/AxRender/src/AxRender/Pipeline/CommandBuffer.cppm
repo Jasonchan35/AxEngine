@@ -31,25 +31,25 @@ public:
 	Material*		material		= nullptr;
 	Int				materialPassIndex = 0;
 
-	void setSubMesh(class RenderRequest* req, RenderSubMesh& sm) {
+	void setSubMesh(RenderRequest* req, RenderSubMesh& sm) {
 		primitiveType = sm.primitiveType();
 		setVertexBuffer(req, sm.vertexBuffer);
 		setIndexBuffer( req, sm.indexBuffer);
 	}
 
-	void setVertexBuffer(class RenderRequest* req, VertexBuffer& vb) {
+	void setVertexBuffer(RenderRequest* req, VertexBuffer& vb) {
 		vertexLayout = vb.vertexLayout();
 		vertexCount  = vb.vertexCount();
 		vertexBuffer = vb.getUploadedGpuBuffer(req);
 	}
 
-	void setIndexBuffer(class RenderRequest* req, IndexBuffer& ib) {
+	void setIndexBuffer(RenderRequest* req, IndexBuffer& ib) {
 		indexType    = ib.indexType();
 		indexCount   = ib.indexCount();
 		indexBuffer  = ib.getUploadedGpuBuffer(req);
 	}
 
-	void setMaterialPass(class Material* material_, Int passIndex) {
+	void setMaterialPass(Material* material_, Int passIndex) {
 		material = material_;
 		materialPassIndex = passIndex;
 	}

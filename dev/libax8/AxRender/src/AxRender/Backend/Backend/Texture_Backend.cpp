@@ -12,12 +12,6 @@ SPtr<Sampler> Sampler_Backend::s_new(const MemAllocRequest& req, const CreateDes
 	return o;	
 }
 
-Sampler_Backend::Sampler_Backend(const CreateDesc& desc)
-: Base(desc)
-, resourceHandle(this)
-{}
-
-
 SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<Texture2D_Backend> o;
 	if (ResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
@@ -40,10 +34,20 @@ SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, con
 	return tex;
 }
 
-Texture2D_Backend::Texture2D_Backend(const CreateDesc& desc)
-: Base(desc)
-, resourceHandle(this)
-{}
+SPtr<Texture3D_Backend> Texture3D_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
+	SPtr<Texture3D_Backend> o;
+	if (ResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
+		o->_create(desc);
+	return o;	
+}
+
+SPtr<TextureCube_Backend> TextureCube_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
+	SPtr<TextureCube_Backend> o;
+	if (ResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
+		o->_create(desc);
+	return o;	
+}
+
 
 void Texture2D_Backend::hotReloadFile() {
 	Renderer_Backend::s_instance()->waitAllRenderCompleted();
@@ -85,10 +89,5 @@ void Texture2D_Backend::onCreate(const CreateDesc& desc) {
 		return;
 	}
 }
-
-Texture3D_Backend::Texture3D_Backend(const CreateDesc& desc)
-: Base(desc)
-, resourceHandle(this)
-{}
 
 } // namespace

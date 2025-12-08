@@ -13,7 +13,7 @@ public:
 	ResourceHandle_Backend<This>	resourceHandle;
 
 protected:
-	Sampler_Backend(const CreateDesc& desc);
+	Sampler_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
 
 	void _create(const CreateDesc& desc) { onCreate(desc); }
 	virtual void onCreate(const CreateDesc& desc) {}
@@ -33,7 +33,7 @@ public:
 	ResourceHandle_Backend<This>	resourceHandle;
 
 protected:
-	Texture2D_Backend(const CreateDesc& desc);
+	Texture2D_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
 
 	void _loadFile();
 	void _loadImage(const Image& image) { _loadImage(image.info(), image.pixelData()); }
@@ -53,9 +53,28 @@ protected:
 class Texture3D_Backend : public Texture3D {
 	AX_RTTI_INFO(Texture3D_Backend, Texture3D)
 public:
-	Texture3D_Backend(const CreateDesc& desc);
+	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 
 	ResourceHandle_Backend<This>	resourceHandle;
+
+protected:
+	Texture3D_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
+	void _create(const CreateDesc& desc) { onCreate(desc); }
+	virtual void onCreate(const CreateDesc& desc) {}
+};
+
+class TextureCube_Backend : public TextureCube {
+	AX_RTTI_INFO(TextureCube_Backend, TextureCube)
+public:
+	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+
+	ResourceHandle_Backend<This>	resourceHandle;
+
+protected:
+	TextureCube_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
+	void _create(const CreateDesc& desc) { onCreate(desc); }
+	virtual void onCreate(const CreateDesc& desc) {}
+	
 };
 
 

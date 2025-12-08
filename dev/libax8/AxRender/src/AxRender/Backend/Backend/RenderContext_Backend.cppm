@@ -16,9 +16,9 @@ public:
 	virtual void onRender() override;
 
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) = 0;
+	virtual void onPresentSurface(RenderRequest* req) = 0;
 
 	virtual void onPostCreate(const CreateDesc& desc) override;
-	virtual void onPresentSurface(RenderRequest* req) = 0;
 	virtual void onUIMouseEvent(NativeUIMouseEvent& ev) override;
 	virtual void onUIKeyEvent(NativeUIKeyEvent& ev) override;
 

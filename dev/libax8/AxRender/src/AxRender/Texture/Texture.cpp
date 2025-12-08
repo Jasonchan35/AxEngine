@@ -20,18 +20,12 @@ SPtr<Texture2D> Texture2D::s_new(const MemAllocRequest& req, const ImageInfo& in
 	return Texture2D_Backend::s_new(req, info, pixelData);
 }
 
-Texture2D::Texture2D(const CreateDesc& desc)
-: Base(DataType::Texture2D)
-, _info(desc.info)
-{
-	_assetPath = desc.assetPath;
+SPtr<Texture3D> Texture3D::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
+	return Texture3D_Backend::s_new(req, desc);
 }
 
-Texture3D::Texture3D(const CreateDesc& desc)
-: Base(DataType::Texture3D)
-, _info(desc.info)
-{
-	_assetPath = desc.assetPath;
+SPtr<TextureCube> TextureCube::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
+	return TextureCube_Backend::s_new(req, desc);
 }
 
 } // namespace

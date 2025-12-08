@@ -144,7 +144,11 @@ public:
 friend class Texture2D_ImageIO_Reader;
 protected:
 
-	Texture2D(const CreateDesc& desc);
+	Texture2D(const CreateDesc& desc): Base(DataType::Texture2D), _info(desc.info) {
+		_assetPath = desc.assetPath;
+	}
+
+	
 	ImageInfo	_info;
 };
 
@@ -159,18 +163,33 @@ class Texture3D : public Texture {
 public:
 	using CreateDesc = Texture3D_CreateDesc;
 
-	Texture3D(const CreateDesc& desc);
+	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	
+	Texture3D(const CreateDesc& desc) : Base(DataType::Texture3D), _info(desc.info) {
+		_assetPath = desc.assetPath;
+	}
+
 
 private:
 	ImageInfo	_info;
 };
 
+class TextureCube_CreateDesc : NonCopyable {
+public:
+	StrView			assetPath;
+	ImageInfo		info;
+};
+
 class TextureCube : public Texture {
 	AX_RTTI_INFO(TextureCube, Texture)
 public:
-	using CreateDesc = Texture3D_CreateDesc;
+	using CreateDesc = TextureCube_CreateDesc;
 
-	TextureCube(const CreateDesc& desc);
+	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	
+	TextureCube(const CreateDesc& desc): Base(DataType::TextureCube), _info(desc.info) {
+		_assetPath = desc.assetPath;
+	}
 
 private:
 	ImageInfo	_info;

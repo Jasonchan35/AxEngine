@@ -9,45 +9,6 @@ class RenderRequest_Backend;
 
 template<class T> class BindlessTable;
 
-#define AX_RenderObject_LIST(E, API, SUFFIX) \
-	E(RenderContext				, API, SUFFIX) \
-	E(RenderPass				, API, SUFFIX) \
-	E(RenderColorBuffer			, API, SUFFIX) \
-	E(RenderDepthBuffer			, API, SUFFIX) \
-	E(RenderRequest				, API, SUFFIX) \
-	E(GpuBuffer					, API, SUFFIX) \
-	E(Shader					, API, SUFFIX) \
-	E(ShaderParamSpace			, API, SUFFIX) \
-	E(Material					, API, SUFFIX) \
-	E(MaterialParamSpace		, API, SUFFIX) \
-	E(Sampler					, API, SUFFIX) \
-	E(Texture2D					, API, SUFFIX) \
-//----
-
-#define AX_RenderObject_ForwardDeclare(OBJ, ...)	\
-	class OBJ; \
-	class OBJ ## _Backend; \
-	class OBJ ## _CreateDesc; \
-//---
-AX_RenderObject_LIST(AX_RenderObject_ForwardDeclare, AX_EMPTY, AX_EMPTY);
-
-#define AX_Renderer_NewObject(OBJ, API, SUFFIX) \
-	virtual UPtr<OBJ##_Backend> new##OBJ(const MemAllocRequest& req, const OBJ##_CreateDesc& desc) SUFFIX; \
-	virtual void _newObject(UPtr<OBJ##_Backend> & outObj, const MemAllocRequest& req, const OBJ##_CreateDesc& desc) SUFFIX; \
-//----
-#define AX_Renderer_FunctionInterfaces(API, SUFFIX)	AX_RenderObject_LIST(AX_Renderer_NewObject, API, SUFFIX)
-
-#define AX_Renderer_NewObjectImp(OBJ, API, SUFFIX) \
-	UPtr<OBJ##_Backend> Renderer_##API::new##OBJ(const MemAllocRequest& req, const OBJ##_CreateDesc& desc ) { \
-		return UPtr_new<OBJ##_##API>(req, desc); \
-	} \
-	void Renderer_##API::_newObject(UPtr<OBJ##_Backend> & outObj, const MemAllocRequest& req, const OBJ##_CreateDesc& desc) { \
-		outObj = UPtr_new<OBJ##_##API>(req, desc); \
-	} \
-//----
-#define AX_Renderer_FunctionBodies(API, SUFFIX)	AX_RenderObject_LIST(AX_Renderer_NewObjectImp, API, SUFFIX)
-
-
 class Renderer_Backend : public Renderer {
 	AX_RTTI_INFO(Renderer_Backend, Renderer)
 public:
@@ -56,7 +17,7 @@ public:
 	Renderer_Backend(const CreateDesc& desc);
 	virtual ~Renderer_Backend() override;
 
-	AX_Renderer_FunctionInterfaces(AX_EMPTY, =0)
+	AX_Renderer_FunctionInterfaces_pure()
 
 	RenderRequest_Backend*		nextRenderRequest();
 

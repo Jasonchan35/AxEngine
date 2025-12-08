@@ -52,13 +52,15 @@ public:
 		void add(Sampler_Backend*		p) {     samplers.emplaceBack(p); }
 		void add(Texture2D_Backend*		p) {   texture2Ds.emplaceBack(p); }
 		void add(Texture3D_Backend*		p) {   texture3Ds.emplaceBack(p); }
+		void add(TextureCube_Backend*	p) { textureCubes.emplaceBack(p); }
 
-		void add(SPtr<GpuBuffer_Backend > && p) {   gpuBuffers.emplaceBack(std::move(p)); }
-		void add(SPtr<Material_Backend  > && p) {    materials.emplaceBack(std::move(p)); }
-		void add(SPtr<RenderPass_Backend> && p) { renderPasses.emplaceBack(std::move(p)); }
-		void add(SPtr<Sampler_Backend   > && p) {     samplers.emplaceBack(std::move(p)); }
-		void add(SPtr<Texture2D_Backend > && p) {   texture2Ds.emplaceBack(std::move(p)); }
-		void add(SPtr<Texture3D_Backend > && p) {   texture3Ds.emplaceBack(std::move(p)); }
+		void add(SPtr<GpuBuffer_Backend  > && p) {   gpuBuffers.emplaceBack(std::move(p)); }
+		void add(SPtr<Material_Backend   > && p) {    materials.emplaceBack(std::move(p)); }
+		void add(SPtr<RenderPass_Backend > && p) { renderPasses.emplaceBack(std::move(p)); }
+		void add(SPtr<Sampler_Backend    > && p) {     samplers.emplaceBack(std::move(p)); }
+		void add(SPtr<Texture2D_Backend  > && p) {   texture2Ds.emplaceBack(std::move(p)); }
+		void add(SPtr<Texture3D_Backend  > && p) {   texture3Ds.emplaceBack(std::move(p)); }
+		void add(SPtr<TextureCube_Backend> && p) { textureCubes.emplaceBack(std::move(p)); }
 
 		void clear() {
 			gpuBuffers.clear();
@@ -69,12 +71,13 @@ public:
 			texture3Ds.clear();
 		}
 
-		Array< SPtr<GpuBuffer_Backend > >	gpuBuffers;
-		Array< SPtr<Material_Backend  > >	materials;
-		Array< SPtr<RenderPass_Backend> >	renderPasses;
-		Array< SPtr<Sampler_Backend   > >	samplers;
-		Array< SPtr<Texture2D_Backend > >	texture2Ds;
-		Array< SPtr<Texture3D_Backend > >	texture3Ds;
+		Array< SPtr<GpuBuffer_Backend  > >	gpuBuffers;
+		Array< SPtr<Material_Backend   > >	materials;
+		Array< SPtr<RenderPass_Backend > >	renderPasses;
+		Array< SPtr<Sampler_Backend    > >	samplers;
+		Array< SPtr<Texture2D_Backend  > >	texture2Ds;
+		Array< SPtr<Texture3D_Backend  > >	texture3Ds;
+		Array< SPtr<TextureCube_Backend> >	textureCubes;
 	};
 
 	ResourcesList	resourcesToKeep;

@@ -47,9 +47,10 @@ public:
 	using Handle = ResourceHandle_Backend<T>;
 	using ResourceKey = typename T::ResourceKey;
 
-	static constexpr bool kNeedDescriptorUpdate = std::is_base_of_v<Sampler  , T>
-												| std::is_base_of_v<Texture2D, T>
-												| std::is_base_of_v<Texture3D, T>;
+	static constexpr bool kNeedDescriptorUpdate = std::is_base_of_v<Sampler    , T>
+												| std::is_base_of_v<Texture2D  , T>
+												| std::is_base_of_v<Texture3D  , T>
+												| std::is_base_of_v<TextureCube, T>;
 
 	void add(T* obj);
 	void remove(T* obj);

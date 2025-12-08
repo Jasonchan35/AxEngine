@@ -1,7 +1,8 @@
 ﻿module AxRender;
 
-namespace ax::AxRender {
+import :Renderer_Null;
 
+namespace ax::AxRender {
 
 static Renderer* Renderer_instance = nullptr;
 
@@ -10,11 +11,9 @@ Renderer* Renderer::s_instance() {
 }
 
 UPtr<Renderer> Renderer::s_create(const CreateDesc& desc) {
-#if 1 // TODO
-	return nullptr;	
-#else
 	UPtr<Renderer> o;
 	switch (desc.info.api) {
+		case RenderApi::Null:	o = UPtr_new<Renderer_Null>(AX_ALLOC_REQ, desc); break;
 #if AX_RENDERER_VK
 		case RenderApi::VK:		o = UPtr_new<Renderer_VK>(AX_ALLOC_REQ, desc); break;
 #endif
@@ -26,7 +25,6 @@ UPtr<Renderer> Renderer::s_create(const CreateDesc& desc) {
 
 	o->onCreate();
 	return o;
-#endif	
 }
 
 Renderer::Renderer(const CreateDesc& desc)
@@ -58,15 +56,13 @@ RendererInfo::RendererInfo() {
 #endif
 
 #if AX_OS_WINDOWS
-
-#if AX_RENDERER_VK
-	api = RenderApi::VK;
-#elif AX_RENDERER_DX12
-	api = RenderApi::DX12;
+	#if AX_RENDERER_VK
+		api = RenderApi::VK;
+	#elif AX_RENDERER_DX12
+		api = RenderApi::DX12;
+	#endif
 #endif
-
-#endif
-	AX_ASSERT(api != RenderApi::None);
+//	AX_ASSERT(api != RenderApi::None);
 
 	multithread			= true;
 	enableDebugReport	= isDebug;

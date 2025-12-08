@@ -27,13 +27,25 @@ protected:
 	SPtr<MyRenderGraph>	_renderGraph;
 };
 
-class EditorApp : public NativeUIApp {
-public:
-	virtual int onRun() override {
-		return 0;
+struct EditorApp_CreateDesc : public AxUI::UIApp_CreateDesc {
+	EditorApp_CreateDesc() {
+		rendererDesc.info.api = AxRender::RenderApi::Null; 
 	}
+};
+
+class EditorApp : public AxUI::UIApp {
+	AX_RTTI_INFO(EditorApp, AxUI::UIApp)
+public:
+	using CreateDesc = EditorApp_CreateDesc;
+	
+	EditorApp() : Base(CreateDesc()) {}
+	
+	// virtual int onRun() override {
+	// 	return 0;
+	// }
 
 	virtual void onCreate() override {
+		Base::onCreate();
 		_mainWin = UPtr_new<EditorMainWindow>(AX_ALLOC_REQ);
 	}
 
