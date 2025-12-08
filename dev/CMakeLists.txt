@@ -40,12 +40,12 @@ endif()
 
 project(${PROJECT_NAME} VERSION 0.1.0)
 
-add_subdirectory(CoreLib/AxCore)
-add_subdirectory(CoreLib/AxCore/test)
-add_subdirectory(CoreLib/Tools/AxHeaderTool)
-add_subdirectory(CoreLib/AxNativeUI)
-add_subdirectory(CoreLib/AxRender)
-add_subdirectory(CoreLib/AxUI)
+add_subdirectory(libax8/AxCore)
+add_subdirectory(libax8/AxCore/test)
+add_subdirectory(libax8/Tools/AxHeaderTool)
+add_subdirectory(libax8/AxNativeUI)
+add_subdirectory(libax8/AxRender)
+add_subdirectory(libax8/AxUI)
 
 add_subdirectory(EditorApp)
 

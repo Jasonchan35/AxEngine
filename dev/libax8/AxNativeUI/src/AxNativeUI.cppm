@@ -2,7 +2,7 @@
 
 export module AxNativeUI;
 export import AxNativeUI.PCH;
-export import AxCore;
+export import AxNativeUI.Backend_Win32;
 
 #if AX_NATIVE_UI_WIN32
 	export import AxNativeUI.Backend_Win32;
