@@ -248,7 +248,7 @@ constexpr void IArray<T>::appendRange(Span<T> item) {
 
 template <class T>
 constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
-	if (range.size <= 0) return;
+	if (range.size() <= 0) return;
 	auto oldSize = size();
 	if (range.begin() > oldSize) { AX_ASSERT(false); return; }
 
@@ -256,9 +256,9 @@ constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
 
 	auto* p = data();
 
-	auto* src = p + range.begin() + range.size - 1;
-	auto* end = p + oldSize - range.size;
-	auto* dst = end + range.size;
+	auto* src = p + range.begin() + range.size() - 1;
+	auto* end = p + oldSize - range.size();
+	auto* dst = end + range.size();
 	auto* tail = p + size();
 	if (end < p || end > tail
 	 || dst < p || dst > tail)

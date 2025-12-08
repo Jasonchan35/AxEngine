@@ -218,7 +218,7 @@ NativeUIEventModifier NativeUI_Win32::s_eventModifier() {
 
 Vec2f NativeUI_Win32::s_localToWorldPos(HWND hwnd, const Vec2f& pt) {
 	HWND desktop = nullptr;
-	if (auto parentHwnd = ::GetParent(hwnd)) {
+	if (::GetParent(hwnd)) {
 		POINT tmp = pt.to_POINT();
 		MapWindowPoints(hwnd, desktop, &tmp, 1);
 		return Vec2f::s_from(tmp);
@@ -232,7 +232,7 @@ Vec2f NativeUI_Win32::s_localToWorldPos(HWND hwnd, const Vec2f& pt) {
 
 Vec2f NativeUI_Win32::s_worldToLocalPos(HWND hwnd, const Vec2f& pt) {
 	HWND desktop = nullptr;
-	if (auto parentHwnd = ::GetParent(hwnd)) {
+	if (::GetParent(hwnd)) {
 		POINT tmp = pt.to_POINT();
 		MapWindowPoints(desktop, hwnd, &tmp, 1);
 		return Vec2f::s_from(tmp);

@@ -51,7 +51,9 @@ public:
 	using MView = MutStrView_<T>;
 	using CView =    StrView_<T>;
 
-	static constexpr const This& kEmpty() { static String s; return s; } 
+	// static variable in a constexpr function is a C++23 extension
+	// static constexpr const This& kEmpty() { static String s; return s; } 
+	static const This& kEmpty() { static String s; return s; } 
 	
 	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
 	AX_INLINE constexpr String_(CView view) : String_() { Base::append(view); }
