@@ -1,6 +1,6 @@
 module;
-export module AxRender.RenderPass_Backend;
-export import AxRender.RenderPass;
+export module AxRender:RenderPass_Backend;
+export import :RenderPass;
 
 export namespace ax::AxRender {
 

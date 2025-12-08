@@ -1,6 +1,6 @@
 module;
-export module AxRender.ImageIO;
-export import AxRender.Image;
+export module AxRender:ImageIO;
+export import :Image;
 
 export namespace ax::AxRender {
 

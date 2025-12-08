@@ -1,6 +1,6 @@
 module;
-export module AxRender.ImageIO_DDS;
-export import AxRender.PCH;
+export module AxRender:ImageIO_DDS;
+export import :PCH;
 
 export namespace ax::AxRender {
 

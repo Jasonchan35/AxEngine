@@ -1,9 +1,10 @@
 module;
-module AxRender.Material_Backend;
-import AxRender.RenderContext;
-import AxRender.StockObjects;
-import AxRender.Texture_Backend;
-import AxRender.Renderer_Backend;
+module AxRender;
+import :RenderContext;
+import :StockObjects;
+import :Texture_Backend;
+import :Renderer_Backend;
+import :Material_Backend;
 
 namespace ax::AxRender {
 

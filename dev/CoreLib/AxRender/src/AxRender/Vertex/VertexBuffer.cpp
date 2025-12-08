@@ -1,4 +1,4 @@
-module AxRender.VertexBuffer;
+module AxRender;
 
 namespace ax::AxRender {
 

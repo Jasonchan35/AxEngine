@@ -1,7 +1,7 @@
 module;
-export module AxRender.Shader;
-export import AxRender.ShaderInfo;
-export import AxRender.GpuBuffer;
+export module AxRender:Shader;
+export import :ShaderInfo;
+export import :GpuBuffer;
 
 export namespace ax::AxRender {
 

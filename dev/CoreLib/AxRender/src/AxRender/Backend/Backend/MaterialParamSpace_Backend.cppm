@@ -1,9 +1,9 @@
 module;
-export module AxRender.MaterialParamSpace_Backend;
-export import AxRender.ShaderParamSpace_Backend;
-export import AxRender.MaterialParamSpace;
-export import AxRender.GpuBuffer;
-export import AxRender.Texture;
+export module AxRender:MaterialParamSpace_Backend;
+export import :ShaderParamSpace_Backend;
+export import :MaterialParamSpace;
+export import :GpuBuffer;
+export import :Texture;
 
 export namespace ax::AxRender {
 

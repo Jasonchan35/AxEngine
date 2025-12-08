@@ -1,6 +1,6 @@
 module;
-export module AxRender.Image;
-export import AxRender.DataType;
+export module AxRender:Image;
+export import :DataType;
 
 export namespace ax::AxRender {
 

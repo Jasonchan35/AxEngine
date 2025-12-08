@@ -1,8 +1,8 @@
 ﻿module;
 export module AxRender;
-export import AxRender.PCH;
+export import :PCH;
 
-export import AxRender.Renderer;
-export import AxRender.RenderContext;
-export import AxRender.RenderRequest;
-export import AxRender.DefaultRenderGraph;
+export import :Renderer;
+export import :RenderContext;
+export import :RenderRequest;
+export import :DefaultRenderGraph;

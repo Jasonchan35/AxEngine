@@ -1,7 +1,7 @@
-module AxRender.ImageIO;
-import AxRender.IamgeIO_Render_DDS;
-import AxRender.ImageIO_Reader_PNG;
-//import AxRender.ImageIO_Reader_JPEG;
+module AxRender;
+import :ImageIO_Reader_DDS;
+import :ImageIO_Reader_PNG;
+//import :ImageIO_Reader_JPEG;
 
 namespace ax::AxRender {
 

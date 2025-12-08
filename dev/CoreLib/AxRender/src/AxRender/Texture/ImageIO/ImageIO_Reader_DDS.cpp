@@ -1,5 +1,6 @@
-module AxRender.IamgeIO_Render_DDS;
-import AxRender.ImageIO_DDS;
+module AxRender;
+import :ImageIO_Reader_DDS;
+import :ImageIO_DDS;
 
 namespace ax::AxRender {
 

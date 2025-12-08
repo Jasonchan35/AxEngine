@@ -1,10 +1,10 @@
 module;
 #include <imgui.h>
-export module AxRender.AxImGUI;
-export import AxRender.Vertex;
-export import AxRender.VertexBuffer;
-export import AxRender.GpuBuffer;
-export import AxRender.Material;
+export module AxRender:AxImGui;
+export import :Vertex;
+export import :VertexBuffer;
+export import :GpuBuffer;
+export import :Material;
 
 export namespace ax::AxRender {
 

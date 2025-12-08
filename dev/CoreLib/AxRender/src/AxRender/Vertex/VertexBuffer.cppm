@@ -1,7 +1,7 @@
 module;
-export module AxRender.VertexBuffer;
-export import AxRender.GpuBuffer;
-export import AxRender.VertexLayout;
+export module AxRender:VertexBuffer;
+export import :GpuBuffer;
+export import :VertexLayout;
 
 export namespace ax::AxRender {
 

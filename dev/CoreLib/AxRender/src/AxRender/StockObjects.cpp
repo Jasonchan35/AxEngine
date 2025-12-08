@@ -1,4 +1,4 @@
-module AxRender.StockObjects;
+module AxRender;
 
 namespace ax::AxRender {
 

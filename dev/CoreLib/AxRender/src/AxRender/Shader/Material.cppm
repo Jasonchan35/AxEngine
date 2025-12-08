@@ -1,6 +1,6 @@
 module;
-export module AxRender.Material;
-export import AxRender.Shader;
+export module AxRender:Material;
+export import :Shader;
 
 export namespace ax::AxRender {
 

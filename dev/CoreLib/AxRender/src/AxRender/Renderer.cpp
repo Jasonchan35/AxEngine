@@ -1,4 +1,4 @@
-﻿module AxRender.Renderer;
+﻿module AxRender;
 
 namespace ax::AxRender {
 

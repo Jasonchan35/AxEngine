@@ -1,7 +1,7 @@
 module;
-export module AxRender.RenderPass;
-export import AxRender.RenderObject;
-export import AxRender.RenderBuffer;
+export module AxRender:RenderPass;
+export import :RenderObject;
+export import :RenderBuffer;
 
 export namespace ax::AxRender {
 

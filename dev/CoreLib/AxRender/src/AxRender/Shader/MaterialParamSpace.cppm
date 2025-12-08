@@ -1,6 +1,6 @@
 module;
-export module AxRender.MaterialParamSpace;
-export import AxRender.ShaderParamSpace;
+export module AxRender:MaterialParamSpace;
+export import :ShaderParamSpace;
 
 export namespace ax::AxRender {
 

@@ -1,8 +1,8 @@
 module;
-module AxRender.ResourceHandle_Backend;
-import AxRender.ResourceManager_Backend;
-import AxRender.RenderRequest_Backend;
-import AxRender.RenderContext_Backend;
+module AxRender;
+import :ResourceManager_Backend;
+import :RenderRequest_Backend;
+import :RenderContext_Backend;
 
 
 namespace ax::AxRender {

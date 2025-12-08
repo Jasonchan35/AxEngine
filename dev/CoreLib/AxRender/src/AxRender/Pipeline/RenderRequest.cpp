@@ -1,6 +1,6 @@
-module AxRender.RenderRequest;
-import AxRender.RenderContext;
-import AxRender.RenderMesh;
+module AxRender;
+import :RenderContext;
+import :RenderMesh;
 
 namespace ax::AxRender {
 

@@ -1,7 +1,7 @@
 module;
-export module AxRender.ShaderParamSpace;
-export import AxRender.RenderObject;
-export import AxRender.DataType;
+export module AxRender:ShaderParamSpace;
+export import :RenderObject;
+export import :DataType;
 
 export namespace ax::AxRender {
 

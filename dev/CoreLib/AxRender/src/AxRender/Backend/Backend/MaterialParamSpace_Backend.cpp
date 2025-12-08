@@ -1,6 +1,7 @@
 module;
-module AxRender.MaterialParamSpace_Backend;
-import AxRender.Texture_Backend;
+module AxRender;
+import :Material_Backend;
+import :Texture_Backend;
 
 namespace ax::AxRender {
 

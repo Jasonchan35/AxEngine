@@ -1,11 +1,12 @@
 module;
-module AxRender.RenderRequest_Backend;
-import AxRender.Renderer_Backend;
-import AxRender.Material_Backend;
-import AxRender.RenderPass;
-import AxRender.RenderBuffer;
-import AxRender.RenderContext_Backend;
-import AxRender.ResourceManager_Backend;
+module AxRender;
+import :RenderRequest_Backend;
+import :Renderer_Backend;
+import :Material_Backend;
+import :RenderPass;
+import :RenderBuffer;
+import :RenderContext_Backend;
+import :ResourceManager_Backend;
 
 namespace ax::AxRender {
 

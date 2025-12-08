@@ -1,8 +1,9 @@
 module;
 #include <imgui.h>
-module AxRender.AxImGUI;
-import AxRender.Renderer;
-import AxRender.RenderContext;
+module AxRender;
+import :AxImGui;
+import :Renderer;
+import :RenderContext;
 
 namespace ax::AxRender {
 

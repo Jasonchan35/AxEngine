@@ -1,5 +1,5 @@
-module;
-module AxRender.ResourceManager_Backend;
+module AxRender;
+import :ResourceManager_Backend;
 
 namespace ax::AxRender {
 

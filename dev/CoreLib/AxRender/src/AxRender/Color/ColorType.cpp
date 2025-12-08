@@ -1,10 +1,10 @@
 module;
 
-module AxRender.ColorType;
-import AxRender.ColorRGBA;
-import AxRender.ColorHSVA;
-import AxRender.ColorPacked;
-import AxRender.ColorDXT;
+module AxRender;
+import :ColorRGBA;
+import :ColorHSVA;
+import :ColorPacked;
+import :ColorDXT;
 
 namespace ax {
 
@@ -27,18 +27,18 @@ namespace ax {
 // template class Color_<ColorModel::RGBA, f32    >;
 // template class Color_<ColorModel::RGBA, f64    >;
 
-template class Color_<ColorModel::DXT,		ColorElem_DXT_BC1 		>;
-template class Color_<ColorModel::DXT,		ColorElem_DXT_BC2 		>;
-template class Color_<ColorModel::DXT,		ColorElem_DXT_BC3 		>;
-template class Color_<ColorModel::DXT,		ColorElem_DXT_BC4 		>;
-template class Color_<ColorModel::DXT,		ColorElem_DXT_BC5 		>;
-template class Color_<ColorModel::DXT,		ColorElem_DXT_BC6h		>;
-template class Color_<ColorModel::DXT,		ColorElem_DXT_BC7 		>;
-
-template class Color_<ColorModel::Packed,	ColorElem_R5G6B5     	>;
-template class Color_<ColorModel::Packed,	ColorElem_R5G5B5A1   	>;
-template class Color_<ColorModel::Packed,	ColorElem_R11G11B10  	>;
-template class Color_<ColorModel::Packed,	ColorElem_R10G10B10A2	>;
+// template class Color_<ColorModel::DXT,		ColorElem_DXT_BC1 		>;
+// template class Color_<ColorModel::DXT,		ColorElem_DXT_BC2 		>;
+// template class Color_<ColorModel::DXT,		ColorElem_DXT_BC3 		>;
+// template class Color_<ColorModel::DXT,		ColorElem_DXT_BC4 		>;
+// template class Color_<ColorModel::DXT,		ColorElem_DXT_BC5 		>;
+// template class Color_<ColorModel::DXT,		ColorElem_DXT_BC6h		>;
+// template class Color_<ColorModel::DXT,		ColorElem_DXT_BC7 		>;
+// 
+// template class Color_<ColorModel::Packed,	ColorElem_R5G6B5     	>;
+// template class Color_<ColorModel::Packed,	ColorElem_R5G5B5A1   	>;
+// template class Color_<ColorModel::Packed,	ColorElem_R11G11B10  	>;
+// template class Color_<ColorModel::Packed,	ColorElem_R10G10B10A2	>;
 
 template<class T>
 struct ColorTypeInfo_Creator : public ColorTypeInfo {

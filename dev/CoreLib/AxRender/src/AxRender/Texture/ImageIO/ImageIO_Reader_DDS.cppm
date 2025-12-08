@@ -1,7 +1,7 @@
 module;
 
-export module AxRender.IamgeIO_Render_DDS;
-export import AxRender.ImageIO;
+export module AxRender:ImageIO_Reader_DDS;
+export import :ImageIO;
 
 export namespace ax::AxRender {
 

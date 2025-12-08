@@ -1,8 +1,8 @@
-module AxRender.ShaderParamSpace;
-import AxRender.MaterialParamSpace;
-import AxRender.Renderer_Backend;
-import AxRender.MaterialParamSpace_Backend;
-import AxRender.ShaderParamSpace_Backend;
+module AxRender;
+import :MaterialParamSpace;
+import :Renderer_Backend;
+import :MaterialParamSpace_Backend;
+import :ShaderParamSpace_Backend;
 
 namespace ax::AxRender {
 

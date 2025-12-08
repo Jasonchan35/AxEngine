@@ -1,8 +1,8 @@
 module;
-module AxRender.Shader_Backend;
-import AxRender.StockObjects;
-import AxRender.Renderer_Backend;
-import AxRender.ResourceManager_Backend;
+module AxRender;
+import :StockObjects;
+import :Renderer_Backend;
+import :ResourceManager_Backend;
 
 namespace ax::AxRender {
 

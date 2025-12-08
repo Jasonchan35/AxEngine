@@ -1,7 +1,7 @@
 module;
 #include <imgui.h>
-export module AxRender.Renderer_Backend;
-export import AxRender.Renderer;
+export module AxRender:Renderer_Backend;
+export import :Renderer;
 
 export namespace ax::AxRender {
 

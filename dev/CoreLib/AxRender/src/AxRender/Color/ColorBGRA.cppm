@@ -1,7 +1,7 @@
 module;
 
-export module AxRender.ColorBGRA;
-export import AxRender.ColorRGBA;
+export module AxRender:ColorBGRA;
+export import :ColorRGBA;
 
 export namespace ax {
 

@@ -1,4 +1,4 @@
-module AxRender.RenderState;
+module AxRender;
 
 namespace ax::AxRender {
 

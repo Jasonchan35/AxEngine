@@ -1,7 +1,7 @@
-module AxRender.RenderContext;
-import AxRender.RenderContext_Backend;
-import AxRender.RenderRequest;
-import AxRender.Renderer_Backend;
+module AxRender;
+import :RenderContext_Backend;
+import :RenderRequest;
+import :Renderer_Backend;
 
 namespace ax::AxRender {
 

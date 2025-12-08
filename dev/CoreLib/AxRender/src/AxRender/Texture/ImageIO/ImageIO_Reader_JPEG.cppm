@@ -1,12 +1,22 @@
-#if 0
-
 module;
+
+export module AxRender:ImageIO_Reader_JPEG;
+export import :ImageIO;
+
+export namespace ax::AxRender {
+
+class ImageIO_Reader_JPEG : public NonCopyable {
+};
+
+}// namespace
+
+#if 0
 
 //#include <setjmp.h>
 #include <openjpeg-2.5/openjpeg.h>
 
-export module AxRender.ImageIO_Reader_JPEG;
-export import AxRender.ImageIO;
+export module AxRender:ImageIO_Reader_JPEG;
+export import :ImageIO;
 
 export namespace ax::AxRender {
 

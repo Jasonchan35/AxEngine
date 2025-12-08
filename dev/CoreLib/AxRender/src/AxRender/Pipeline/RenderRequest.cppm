@@ -1,6 +1,6 @@
 module;
-export module AxRender.RenderRequest;
-export import AxRender.CommandBuffer;
+export module AxRender:RenderRequest;
+export import :CommandBuffer;
 
 export namespace ax::AxRender {
 

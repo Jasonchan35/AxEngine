@@ -1,5 +1,5 @@
-module AxRender.ShaderInfo;
-import AxRender.Vertex;
+module AxRender;
+import :Vertex;
 
 namespace ax::AxRender {
 

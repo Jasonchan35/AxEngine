@@ -1,7 +1,7 @@
 module;
 
-export module AxRender.ColorLA;
-export import AxRender.ColorType;
+export module AxRender:ColorLA;
+export import :ColorType;
 
 export namespace ax {
 

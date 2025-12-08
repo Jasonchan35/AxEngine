@@ -1,7 +1,7 @@
 module;
-export module AxRender.RenderGraph;
-export import AxRender.DataType;
-export import AxRender.RenderRequest;
+export module AxRender:RenderGraph;
+export import :DataType;
+export import :RenderRequest;
 
 export namespace ax::AxRender {
 

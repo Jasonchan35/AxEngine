@@ -1,6 +1,7 @@
 module;
-module AxRender.GpuBuffer_Backend;
-import AxRender.Renderer_Backend;
+module AxRender;
+import :GpuBuffer_Backend;
+import :Renderer_Backend;
 
 namespace ax::AxRender {
 

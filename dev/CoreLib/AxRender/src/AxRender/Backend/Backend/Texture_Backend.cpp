@@ -1,7 +1,7 @@
 module;
-module AxRender.Texture_Backend;
-import AxRender.ImageIO;
-import AxRender.ResourceManager_Backend;
+module AxRender;
+import :ImageIO;
+import :ResourceManager_Backend;
 
 namespace ax::AxRender {
 

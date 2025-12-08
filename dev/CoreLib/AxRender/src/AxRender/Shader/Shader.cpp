@@ -1,5 +1,5 @@
-module AxRender.Shader;
-import AxRender.Shader_Backend;
+module AxRender;
+import :Shader_Backend;
 
 namespace ax::AxRender {
 

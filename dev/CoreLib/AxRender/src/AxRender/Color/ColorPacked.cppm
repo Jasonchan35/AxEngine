@@ -1,7 +1,7 @@
 module;
 
-export module AxRender.ColorPacked;
-export import AxRender.ColorRGBA;
+export module AxRender:ColorPacked;
+export import :ColorRGBA;
 
 export namespace ax {
 

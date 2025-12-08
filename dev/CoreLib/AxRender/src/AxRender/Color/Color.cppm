@@ -1,14 +1,14 @@
 module;
 
-export module AxRender.Color;
-export import AxRender.ColorUtil;
-export import AxRender.ColorA;
-export import AxRender.ColorBGRA;
-export import AxRender.ColorDXT;
-export import AxRender.ColorHSVA;
-export import AxRender.ColorLA;
-export import AxRender.ColorPacked;
-export import AxRender.ColorRGBA;
+export module AxRender:Color;
+export import :ColorUtil;
+export import :ColorA;
+export import :ColorBGRA;
+export import :ColorDXT;
+export import :ColorHSVA;
+export import :ColorLA;
+export import :ColorPacked;
+export import :ColorRGBA;
 
 export namespace ax {
 

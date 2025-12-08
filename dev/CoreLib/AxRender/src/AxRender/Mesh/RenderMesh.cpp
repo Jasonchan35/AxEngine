@@ -1,4 +1,4 @@
-module AxRender.RenderMesh;
+module AxRender;
 
 namespace ax::AxRender {
 

@@ -1,9 +1,9 @@
 module;
-module AxRender.ShaderParamSpace_Backend;
-import AxRender.ShaderParamSpace;
-import AxRender.MaterialParamSpace_Backend;
-import AxRender.StockObjects;
-import AxRender.Renderer_Backend;
+module AxRender;
+import :ShaderParamSpace;
+import :MaterialParamSpace_Backend;
+import :StockObjects;
+import :Renderer_Backend;
 
 namespace ax::AxRender {
 
@@ -118,6 +118,7 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 
 		case ShaderPropType::Sampler: {
 			if (auto* param = findSamplerParam(propName)) {
+				AX_UNUSED(param);
 //				param->setPropDefaultValue(propInfo);
 			}
 		} break;

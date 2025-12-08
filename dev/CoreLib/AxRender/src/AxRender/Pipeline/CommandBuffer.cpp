@@ -1,4 +1,4 @@
-module AxRender.CommandBuffer;
+module AxRender;
 
 namespace ax::AxRender {
 

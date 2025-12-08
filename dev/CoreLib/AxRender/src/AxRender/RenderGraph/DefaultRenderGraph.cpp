@@ -1,7 +1,7 @@
-module AxRender.DefaultRenderGraph;
+module AxRender;
 
-import AxRender.CommandBuffer;
-import AxRender.RenderRequest;
+import :CommandBuffer;
+import :RenderRequest;
 
 namespace ax::AxRender {
 

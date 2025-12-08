@@ -1,10 +1,10 @@
-module AxRender.RenderGraph;
-import AxRender.RenderRequest;
-import AxRender.RenderContext;
-import AxRender.RenderRequest_Backend;
-import AxRender.Renderer_Backend;
-import AxRender.RenderContext_Backend;
-import AxRender.RenderPass_Backend;
+module AxRender;
+import :RenderRequest;
+import :RenderContext;
+import :RenderRequest_Backend;
+import :Renderer_Backend;
+import :RenderContext_Backend;
+import :RenderPass_Backend;
 
 namespace ax::AxRender {
 

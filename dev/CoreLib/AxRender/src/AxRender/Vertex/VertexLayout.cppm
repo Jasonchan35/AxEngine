@@ -1,6 +1,6 @@
 module;
-export module AxRender.VertexLayout;
-export import AxRender.DataType;
+export module AxRender:VertexLayout;
+export import :DataType;
 
 export namespace ax::AxRender {
 

@@ -1,8 +1,8 @@
 module;
-export module AxRender.ShaderInfo;
-export import AxRender.RenderState;
-export import AxRender.Vertex;
-export import AxRender.StockObjects;
+export module AxRender:ShaderInfo;
+export import :RenderState;
+export import :Vertex;
+export import :StockObjects;
 
 export namespace ax::AxRender {
 

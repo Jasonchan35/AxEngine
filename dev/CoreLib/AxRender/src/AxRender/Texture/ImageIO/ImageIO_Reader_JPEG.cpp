@@ -4,7 +4,7 @@ module;
 
 #include <openjpeg-2.5/openjpeg.h>
 
-module AxRender.ImageIO_Reader_JPEG;
+module AxRender:ImageIO_Reader_JPEG;
 
 namespace ax::AxRender {
 

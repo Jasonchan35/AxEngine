@@ -1,8 +1,8 @@
 ﻿module;
 
-export module AxRender.DataType;
-export import AxRender.PCH;
-export import AxRender.Color;
+export module AxRender:DataType;
+export import :PCH;
+export import :Color;
 
 export namespace ax::AxRender {
 

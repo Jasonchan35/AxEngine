@@ -1,7 +1,7 @@
 module;
-export module AxRender.ShaderParamSpace_Backend;
-export import AxRender.ShaderParamSpace;
-export import AxRender.ShaderInfo;
+export module AxRender:ShaderParamSpace_Backend;
+export import :ShaderParamSpace;
+export import :ShaderInfo;
 
 export namespace ax::AxRender {
 

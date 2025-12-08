@@ -1,6 +1,6 @@
-module AxRender.Material;
-import AxRender.Material_Backend;
-import AxRender.Renderer_Backend;
+module AxRender;
+import :Material_Backend;
+import :Renderer_Backend;
 
 namespace ax::AxRender {
 

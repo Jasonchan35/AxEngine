@@ -1,8 +1,8 @@
 module;
-export module AxRender.ResourceManager_Backend;
-export import AxRender.Texture_Backend;
-export import AxRender.Shader_Backend;
-export import AxRender.Renderer_Backend;
+export module AxRender:ResourceManager_Backend;
+export import :Texture_Backend;
+export import :Shader_Backend;
+export import :Renderer_Backend;
 
 export namespace ax::AxRender {
 

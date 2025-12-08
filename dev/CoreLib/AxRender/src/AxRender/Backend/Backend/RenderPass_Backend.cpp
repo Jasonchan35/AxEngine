@@ -1,6 +1,7 @@
 module;
-module AxRender.RenderPass_Backend;
-import AxRender.Renderer_Backend;
+module AxRender;
+import :Renderer_Backend;
+import :RenderPass_Backend;
 
 namespace ax::AxRender {
 

@@ -1,6 +1,6 @@
 module;
-export module AxRender.RenderMesh;
-export import AxRender.VertexBuffer;
+export module AxRender:RenderMesh;
+export import :VertexBuffer;
 
 export namespace ax::AxRender {
 

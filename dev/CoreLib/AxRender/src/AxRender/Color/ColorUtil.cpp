@@ -1,6 +1,4 @@
-module;
-
-module AxRender.ColorUtil;
+module AxRender;
 
 namespace ax {
 

@@ -1,6 +1,6 @@
 module;
-export module AxRender.StockObjects;
-export import AxRender.Texture;
+export module AxRender:StockObjects;
+export import :Texture;
 
 export namespace ax::AxRender {
 

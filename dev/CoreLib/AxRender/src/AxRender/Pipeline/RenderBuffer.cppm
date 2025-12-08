@@ -1,6 +1,6 @@
 module;
-export module AxRender.RenderBuffer;
-export import AxRender.Texture;
+export module AxRender:RenderBuffer;
+export import :Texture;
 
 export namespace ax::AxRender {
 

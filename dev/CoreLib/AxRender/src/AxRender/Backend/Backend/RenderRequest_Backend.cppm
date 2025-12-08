@@ -1,12 +1,12 @@
 module;
-export module AxRender.RenderRequest_Backend;
-export import AxRender.Renderer;
-export import AxRender.RenderRequest;
-export import AxRender.RenderContext_Backend;
-export import AxRender.GpuBuffer_Backend;
-export import AxRender.Texture_Backend;
-export import AxRender.Material_Backend;
-export import AxRender.RenderPass_Backend;
+export module AxRender:RenderRequest_Backend;
+export import :Renderer;
+export import :RenderRequest;
+export import :RenderContext_Backend;
+export import :GpuBuffer_Backend;
+export import :Texture_Backend;
+export import :Material_Backend;
+export import :RenderPass_Backend;
 
 export namespace ax::AxRender {
 

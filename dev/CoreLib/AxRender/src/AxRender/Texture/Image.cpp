@@ -1,5 +1,5 @@
-module AxRender.Image;
-import AxRender.ImageIO;
+module AxRender;
+import :ImageIO;
 
 namespace ax::AxRender {
 

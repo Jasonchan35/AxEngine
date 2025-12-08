@@ -1,8 +1,8 @@
 module;
 #include "libpng16/png.h"
 
-export module AxRender.ImageIO_Reader_PNG;
-export import AxRender.ImageIO;
+export module AxRender:ImageIO_Reader_PNG;
+export import :ImageIO;
 
 export namespace ax::AxRender {
 

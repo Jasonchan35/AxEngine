@@ -1,12 +1,12 @@
 module;
-export module AxRender.CommandBuffer;
-export import AxRender.DataType;
-export import AxRender.VertexLayout;
-export import AxRender.GpuBuffer;
-export import AxRender.Material;
-export import AxRender.RenderBuffer;
-export import AxRender.RenderPass;
-export import AxRender.RenderMesh;
+export module AxRender:CommandBuffer;
+export import :DataType;
+export import :VertexLayout;
+export import :GpuBuffer;
+export import :Material;
+export import :RenderBuffer;
+export import :RenderPass;
+export import :RenderMesh;
 
 export namespace ax::AxRender {
 

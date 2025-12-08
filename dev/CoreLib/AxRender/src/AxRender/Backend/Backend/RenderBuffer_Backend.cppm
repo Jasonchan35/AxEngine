@@ -1,6 +1,6 @@
 module;
-export module AxRender.RenderBuffer_Backend;
-export import AxRender.RenderBuffer;
+export module AxRender:RenderBuffer_Backend;
+export import :RenderBuffer;
 
 export namespace ax::AxRender {
 

@@ -1,6 +1,6 @@
-module AxRender.Texture;
-import AxRender.Renderer_Backend;
-import AxRender.Texture_Backend;
+module AxRender;
+import :Renderer_Backend;
+import :Texture_Backend;
 
 namespace ax::AxRender {
 

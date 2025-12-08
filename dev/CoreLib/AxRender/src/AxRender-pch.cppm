@@ -1,5 +1,5 @@
 ﻿module;
-export module AxRender.PCH;
+export module AxRender:PCH;
 export import AxNativeUI;
 
 export namespace ax {

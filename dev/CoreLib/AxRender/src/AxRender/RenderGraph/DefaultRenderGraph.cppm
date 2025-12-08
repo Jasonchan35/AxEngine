@@ -1,9 +1,9 @@
 module;
 
-export module AxRender.DefaultRenderGraph;
-export import AxRender.RenderMesh;
-export import AxRender.Material;
-export import AxRender.RenderGraph;
+export module AxRender:DefaultRenderGraph;
+export import :RenderMesh;
+export import :Material;
+export import :RenderGraph;
 
 export namespace ax::AxRender {
 
