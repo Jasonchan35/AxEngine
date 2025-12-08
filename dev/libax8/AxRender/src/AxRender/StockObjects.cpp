@@ -34,9 +34,11 @@ void StockObjects::s_create() {
 }
 
 void StockObjects::s_destroy() {
-	AX_ASSERT(StockObjects_instance);
-	AxDelete::deleteObject(StockObjects_instance);
-	StockObjects_instance = nullptr;
+//	AX_ASSERT(StockObjects_instance);
+	if (StockObjects_instance) {
+		AxDelete::deleteObject(StockObjects_instance);
+		StockObjects_instance = nullptr;
+	}
 }
 
 StockObjects::Texture2Ds::Texture2Ds() {

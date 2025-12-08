@@ -45,39 +45,31 @@ public:
 
 //	CommandBuffer&	cmdBuf() { return *_cmdBuf; }
 
-	struct ResourcesList {
-		void add(GpuBuffer_Backend*		p) {   gpuBuffers.emplaceBack(p); }
-		void add(Material_Backend*		p) {    materials.emplaceBack(p); }
-		void add(RenderPass_Backend*	p) { renderPasses.emplaceBack(p); }
-		void add(Sampler_Backend*		p) {     samplers.emplaceBack(p); }
-		void add(Texture2D_Backend*		p) {   texture2Ds.emplaceBack(p); }
-		void add(Texture3D_Backend*		p) {   texture3Ds.emplaceBack(p); }
-		void add(TextureCube_Backend*	p) { textureCubes.emplaceBack(p); }
+	class ResourcesList {
+		using All_List = Tuple<
+			Array< SPtr<  GpuBuffer_Backend> >,
+			Array< SPtr<   Material_Backend> >,
+			Array< SPtr< RenderPass_Backend> >,
+			Array< SPtr<    Sampler_Backend> >,
+			Array< SPtr<  Texture2D_Backend> >,
+			Array< SPtr<  Texture3D_Backend> >,
+			Array< SPtr<TextureCube_Backend> >
+		>;
+		
+		All_List _all_list;
+		template<class T> Array<SPtr<T>>& getList() { return _all_list.get< Array<SPtr<T>> >(); }
+//		template<class T> Array<SPtr<T>>& getList() { return std::get< Array<SPtr<T>> >(_all_list); }
 
-		void add(SPtr<GpuBuffer_Backend  > && p) {   gpuBuffers.emplaceBack(std::move(p)); }
-		void add(SPtr<Material_Backend   > && p) {    materials.emplaceBack(std::move(p)); }
-		void add(SPtr<RenderPass_Backend > && p) { renderPasses.emplaceBack(std::move(p)); }
-		void add(SPtr<Sampler_Backend    > && p) {     samplers.emplaceBack(std::move(p)); }
-		void add(SPtr<Texture2D_Backend  > && p) {   texture2Ds.emplaceBack(std::move(p)); }
-		void add(SPtr<Texture3D_Backend  > && p) {   texture3Ds.emplaceBack(std::move(p)); }
-		void add(SPtr<TextureCube_Backend> && p) { textureCubes.emplaceBack(std::move(p)); }
+	public:
+		template<class T> void add(     T  *  p) { getList<T>().emplaceBack(p); }
+		template<class T> void add(SPtr<T> && p) { getList<T>().emplaceBack(std::move(p)); }
 
 		void clear() {
-			gpuBuffers.clear();
-			materials.clear();
-			renderPasses.clear();
-			samplers.clear();
-			texture2Ds.clear();
-			texture3Ds.clear();
+			_all_list.apply([](auto&... list) {
+				(list.clear(),...);
+			});
 		}
-
-		Array< SPtr<GpuBuffer_Backend  > >	gpuBuffers;
-		Array< SPtr<Material_Backend   > >	materials;
-		Array< SPtr<RenderPass_Backend > >	renderPasses;
-		Array< SPtr<Sampler_Backend    > >	samplers;
-		Array< SPtr<Texture2D_Backend  > >	texture2Ds;
-		Array< SPtr<Texture3D_Backend  > >	texture3Ds;
-		Array< SPtr<TextureCube_Backend> >	textureCubes;
+		
 	};
 
 	ResourcesList	resourcesToKeep;

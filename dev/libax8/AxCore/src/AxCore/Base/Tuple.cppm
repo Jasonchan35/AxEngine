@@ -89,15 +89,30 @@ class Tuple : public std::tuple<ELEMENTS ...> {
 public:
 	static constexpr Int Size = std::tuple_size<Base>::value;
 
-	AX_INLINE constexpr Tuple(ELEMENTS... args) : Base(AX_FORWARD(args)...) {}
+	constexpr Tuple() = default;
+	constexpr Tuple(const Tuple&) = default;
+	constexpr Tuple(Tuple&&) = default;
+
+	// when ARGS == 0, conflict with zero argument Tuple()
+	template<class... ARGS> requires (sizeof...(ARGS) > 0 && sizeof...(ARGS) == sizeof...(ELEMENTS))
+	constexpr Tuple(ELEMENTS&&... args) : Base(AX_FORWARD(args)...) {}
 
 	template<Int INDEX> using Element = typename std::tuple_element<INDEX, Base>::type;
 
 	template<Int INDEX> AX_INLINE constexpr       Element<INDEX>& get()       { return std::get<INDEX>(*this); }
 	template<Int INDEX> AX_INLINE constexpr const Element<INDEX>& get() const { return std::get<INDEX>(*this); }
 
+	template<class ELEMENT> AX_INLINE constexpr       ELEMENT& get()       { return std::get<ELEMENT>(*this); }
+	template<class ELEMENT> AX_INLINE constexpr const ELEMENT& get() const { return std::get<ELEMENT>(*this); }
+
+	// FUNC example: [](const auto&...args){  }
+	template<class FUNC> constexpr auto apply(FUNC func) {
+		Base* base = this;
+		std::apply(func, *base);
+	}
+	
 	template<class TUPLE2>
-	auto join(const TUPLE2& tuple2) const {
+	constexpr auto join(const TUPLE2& tuple2) const {
 		return Tuple_join(*this, tuple2);
 	}
 
