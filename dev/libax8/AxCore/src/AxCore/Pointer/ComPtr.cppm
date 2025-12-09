@@ -1,11 +1,9 @@
 module;
-#include "AxCore-pch.h"
 
 export module AxCore.ComPtr;
-
 import AxCore.BasicType;
 
-namespace ax {
+export namespace ax {
 
 template<class T>
 class ComPtr : public NonCopyable {

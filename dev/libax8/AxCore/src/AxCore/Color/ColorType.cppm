@@ -166,7 +166,7 @@ template<ColorModel MODEL, class ELEM, VecSIMD SIMD = VecSIMD_Default> class Col
 
 //e.g. ColorRGBAf = Color_<ColorModel::RGBA, f32>;
 #define E(MODEL,...) \
-	template<class T, VecSIMD SIMD> using Color## MODEL ##_ = Color_<ColorModel::MODEL, T, SIMD>; \
+	template<class T, VecSIMD SIMD = VecSIMD_Default> using Color## MODEL ##_ = Color_<ColorModel::MODEL, T, SIMD>; \
 	using Color## MODEL ##b = Color_<ColorModel::MODEL, UNorm8 >; \
 	using Color## MODEL ##s = Color_<ColorModel::MODEL, UNorm16>; \
 	using Color## MODEL ##h = Color_<ColorModel::MODEL, f16    >; \

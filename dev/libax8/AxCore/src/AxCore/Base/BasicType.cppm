@@ -74,6 +74,7 @@ constexpr Int Int_max = std::numeric_limits<Int>::max();
 constexpr UInt UInt_min = std::numeric_limits<UInt>::min();
 constexpr UInt UInt_max = std::numeric_limits<UInt>::max();
 
+
 namespace  AxTag {
 	class NewObject_{};		constexpr NewObject_	NewObject	= {};
 	class NoInit_{};		constexpr NoInit_		NoInit		= {};
@@ -216,6 +217,7 @@ protected:
 	T*	_data = nullptr;
 	Int _size = 0;
 public:
+	
 	using std_string_view = std::basic_string_view< std::remove_const_t<T> >;
 	using CZView = MutZStrView_<const T>;
 
@@ -239,6 +241,12 @@ public:
 private:
 	static constexpr T _empty_c_str = 0;
 };
+
+template<class T> using ZStrView_ = MutZStrView_<const T>;
+
+template<class T> inline
+ZStrView_<T> ZStrView_c_str(const T* sz) { return ZStrView_<T>(sz, ax_strlen(sz)); }
+
 
 AX_INLINE consteval ZStrViewA  operator ""_sv(const CharA * sz, size_t n)  noexcept { return ZStrViewA (sz, n); }
 AX_INLINE consteval ZStrViewW  operator ""_sv(const CharW * sz, size_t n)  noexcept { return ZStrViewW (sz, n); }
@@ -618,8 +626,13 @@ public:
 	Error(std::string_view msg, const SrcLoc& srcLoc) : _what(msg), _srcLoc(srcLoc) {}
 
 	virtual char const* what() const override { return _what.c_str(); }
+
+	static void s_setEnableAssertion(bool b) { s_enableAssertion = b; }
+	static bool s_getEnableAssertion() { return s_enableAssertion; }
 	
 protected:
+	inline static bool s_enableAssertion = false;
+	
 	std::string _what;
 	SrcLoc _srcLoc;
 };
@@ -635,6 +648,7 @@ AX_SIMPLE_ERROR(Error_Utf)
 AX_SIMPLE_ERROR(Error_ParseString)
 AX_SIMPLE_ERROR(Error_Time)
 AX_SIMPLE_ERROR(Error_File)
+AX_SIMPLE_ERROR(Error_Runtime)
 AX_SIMPLE_ERROR(Error_JsonWriter)
 AX_SIMPLE_ERROR(Error_JsonReader)
 AX_SIMPLE_ERROR(Error_JsonValue)

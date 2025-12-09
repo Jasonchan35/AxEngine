@@ -2,6 +2,10 @@
 
 #include "AxCore/Platform/AX_DETECT_PLATFORM.h"
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+	#define _CRT_SECURE_NO_WARNINGS 1
+#endif
+
 #if  1 // AX_USE_PRECOMPILE_HEADER
 
 #include <algorithm>

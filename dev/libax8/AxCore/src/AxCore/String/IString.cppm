@@ -165,6 +165,7 @@ public:
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 
 	template<class R> constexpr This& operator<<(const R& r) { append(r); return *this; }
+	template<class R> constexpr void  operator+=(const R& r) { append(r); }
 
 	template<class SRC> AX_INLINE constexpr void set(const SRC& src) { clear(); append(src); }
 
