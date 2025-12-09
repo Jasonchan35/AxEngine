@@ -1,6 +1,6 @@
 ﻿module;
 export module AxRender:RenderObject;
-export import :PCH;
+export import :Common;
 
 export namespace ax {
 

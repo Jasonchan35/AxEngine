@@ -2,7 +2,7 @@ module;
 
 #include "AxCore-pch.h"
 export module AxCore.BasicType;
-export import AxCore.PCH;
+export import AxCore.Common;
 
 export namespace ax {
 

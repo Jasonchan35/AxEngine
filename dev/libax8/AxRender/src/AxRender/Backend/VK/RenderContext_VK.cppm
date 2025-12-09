@@ -1,8 +1,8 @@
 ﻿module;
 
-#if AX_RENDERER_VK
-
 export module AxRender:RenderContext_VK;
+
+#if AX_RENDERER_VK
 export import :RenderContext_Backend;
 export import :CommandBuffer_VK;
 

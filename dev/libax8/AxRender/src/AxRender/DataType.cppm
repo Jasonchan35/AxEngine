@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxRender:DataType;
-export import :PCH;
+export import :Common;
 
 export namespace ax::AxRender {
 

@@ -1,6 +1,6 @@
 ﻿module;
 export module AxRender;
-export import :PCH;
+export import :Common;
 
 export import :Renderer;
 export import :RenderContext;

@@ -1,5 +1,5 @@
 ﻿export module AxCore;
-export import AxCore.PCH;
+export import AxCore.Common;
 
 export import AxCore.Array;
 export import AxCore.BasicType;

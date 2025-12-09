@@ -1,8 +1,8 @@
 module;
 
-#if AX_RENDERER_VK
-
 module AxRender;
+
+#if AX_RENDERER_VK
 import :GpuBuffer_VK;
 import :Renderer_VK;
 import :RenderContext_VK;

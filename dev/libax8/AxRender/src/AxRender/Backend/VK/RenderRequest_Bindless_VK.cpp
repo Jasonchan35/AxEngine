@@ -1,7 +1,6 @@
 module AxRender;
 
 #if AX_RENDER_BINDLESS && AX_RENDERER_VK
-
 import :RenderRequest_Bindless_VK;
 import :RenderRequest_VK;
 import :Texture_VK;

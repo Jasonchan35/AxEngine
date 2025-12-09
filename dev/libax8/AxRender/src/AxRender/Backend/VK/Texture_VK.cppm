@@ -1,8 +1,8 @@
 module;
 
-#if AX_RENDERER_VK
-
 export module AxRender:Texture_VK;
+
+#if AX_RENDERER_VK
 export import :AX_Vulkan;
 export import :Texture_Backend;
 export import :GpuBuffer_Backend;

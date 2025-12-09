@@ -264,7 +264,6 @@ function(ax_target_set_common_properties target_name)
 		$<$<CONFIG:RelWithDebInfo>:AX_BUILD_CONFIG_RelWithDebInfo>
 	)
 
-	target_compile_definitions(${target_name} PUBLIC -DAX_USE_PRECOMPILE_HEADER)
 	target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
 
 	target_compile_definitions(${target_name} PUBLIC -DUNICODE -D_UNICODE)

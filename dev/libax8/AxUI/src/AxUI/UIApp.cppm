@@ -1,6 +1,6 @@
 module;
 export module AxUI:UIApp;
-export import :PCH;
+export import :Common;
 
 export namespace ax::AxUI {
 

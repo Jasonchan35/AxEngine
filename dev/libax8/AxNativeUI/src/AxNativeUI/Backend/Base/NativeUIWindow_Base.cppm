@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxNativeUI:NativeUIWindow_Base;
-export import :PCH;
+export import :Common;
 export import :NativeUIScreen;
 
 export namespace ax {

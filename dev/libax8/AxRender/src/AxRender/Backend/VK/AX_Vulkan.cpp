@@ -1,7 +1,8 @@
 module;
 
-#if AX_RENDERER_VK
 module AxRender;
+
+#if AX_RENDERER_VK
 import :AX_Vulkan;
 import :Renderer_VK;
 

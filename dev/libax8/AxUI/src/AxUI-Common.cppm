@@ -1,5 +1,5 @@
 ﻿module;
-export module AxUI:PCH;
+export module AxUI:Common;
 export import AxRender;
 
 export namespace ax::AxUI {

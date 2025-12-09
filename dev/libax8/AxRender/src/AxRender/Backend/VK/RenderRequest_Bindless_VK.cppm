@@ -1,8 +1,8 @@
 module;
 
-#if AX_RENDER_BINDLESS && AX_RENDERER_VK
-
 export module AxRender:RenderRequest_Bindless_VK;
+
+#if AX_RENDER_BINDLESS && AX_RENDERER_VK
 export import :CommandBuffer_VK;
 export import :RenderPass_VK;
 export import :RenderContext_VK;

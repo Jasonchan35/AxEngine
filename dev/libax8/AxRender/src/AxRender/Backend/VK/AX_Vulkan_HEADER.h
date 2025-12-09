@@ -4,6 +4,7 @@
 
 #include <vulkan/vulkan.h>
 #if AX_NATIVE_UI_WIN32
+	#include "AxCore/Platform/AX_OS_WINDOW.h"
 	#include <vulkan/vulkan_win32.h>
 #endif
 

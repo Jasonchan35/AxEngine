@@ -1,4 +1,3 @@
 ﻿#pragma once
 
-#include "AxCore.h"
-#include "AxNativeUI-pch.h"
+#include "AxNativeUI-Common.h"

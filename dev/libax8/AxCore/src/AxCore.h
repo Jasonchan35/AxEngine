@@ -1,3 +1,3 @@
 ﻿#pragma once
 
-#include "AxCore-pch.h"
+#include "AxCore-Common.h"

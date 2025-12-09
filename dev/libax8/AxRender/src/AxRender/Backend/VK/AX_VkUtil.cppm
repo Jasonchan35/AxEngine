@@ -1,12 +1,12 @@
 ﻿module;
 
-#if AX_RENDERER_VK
-
 export module AxRender:AX_VkUtil;
+
+#if AX_RENDERER_VK
 export import :Shader;
 export import :Texture;
 
-export namespace ax::AxRender {
+namespace ax::AxRender {
 
 class AX_VkUtil {
 public:

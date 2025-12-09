@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxNativeUI:NativeUIEvent;
-export import :PCH;
+export import :Common;
 
 export namespace ax {
 

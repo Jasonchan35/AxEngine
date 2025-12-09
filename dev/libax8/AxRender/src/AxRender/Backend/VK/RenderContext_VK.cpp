@@ -1,7 +1,6 @@
 ﻿module AxRender;
 
 #if AX_RENDERER_VK
-
 import :RenderContext_VK;
 import :RenderRequest;
 import :Renderer_VK;

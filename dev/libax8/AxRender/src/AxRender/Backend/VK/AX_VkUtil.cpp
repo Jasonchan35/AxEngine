@@ -1,8 +1,8 @@
 module;
 
-#if AX_RENDERER_VK
-
 module AxRender;
+
+#if AX_RENDERER_VK
 import :AX_VkUtil;
 
 namespace ax::AxRender {
