@@ -1,7 +1,7 @@
 module;
 export module AxRender:RenderPass;
 export import :RenderObject;
-export import :RenderBuffer;
+export import :GpuBuffer;
 
 export namespace ax::AxRender {
 

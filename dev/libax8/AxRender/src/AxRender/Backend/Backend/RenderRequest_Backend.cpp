@@ -4,7 +4,7 @@ import :RenderRequest_Backend;
 import :Renderer_Backend;
 import :Material_Backend;
 import :RenderPass;
-import :RenderBuffer;
+import :GpuBuffer;
 import :RenderContext_Backend;
 import :ResourceManager_Backend;
 

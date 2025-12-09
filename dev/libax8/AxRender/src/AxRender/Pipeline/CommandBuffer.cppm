@@ -4,7 +4,6 @@ export import :DataType;
 export import :VertexLayout;
 export import :GpuBuffer;
 export import :Material;
-export import :RenderBuffer;
 export import :RenderPass;
 export import :RenderMesh;
 
