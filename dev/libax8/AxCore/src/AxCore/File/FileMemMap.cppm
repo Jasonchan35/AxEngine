@@ -111,7 +111,7 @@ inline void FileMemMap::openFile(StrView filename) {
 
 	auto* data = reinterpret_cast<u8*>(mmap(0, nativeSize, PROT_READ, MAP_PRIVATE, _file.nativeFileDescriptor() , 0));
 	if ( data == MAP_FAILED || data == nullptr ) {
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 
 	_span.setPtr(data, size);

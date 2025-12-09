@@ -50,32 +50,4 @@ protected:
 	virtual void onImageIO_ReadResult(class ImageIO_ReadResult& result) = 0;
 };
 
-class Texture3D_Backend : public Texture3D {
-	AX_RTTI_INFO(Texture3D_Backend, Texture3D)
-public:
-	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-
-	ResourceHandle_Backend<This>	resourceHandle;
-
-protected:
-	Texture3D_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
-	void _create(const CreateDesc& desc) { onCreate(desc); }
-	virtual void onCreate(const CreateDesc& desc) {}
-};
-
-class TextureCube_Backend : public TextureCube {
-	AX_RTTI_INFO(TextureCube_Backend, TextureCube)
-public:
-	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-
-	ResourceHandle_Backend<This>	resourceHandle;
-
-protected:
-	TextureCube_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
-	void _create(const CreateDesc& desc) { onCreate(desc); }
-	virtual void onCreate(const CreateDesc& desc) {}
-	
-};
-
-
 } // namespace

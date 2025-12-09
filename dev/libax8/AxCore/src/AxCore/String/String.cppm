@@ -50,6 +50,7 @@ class String_ : public IString_<T>, Array_InlineBuffer<T, BUF_SIZE + 1> // +1 fo
 public:
 	using MView = MutStrView_<T>;
 	using CView =    StrView_<T>;
+	using ZView = MutZStrView_<T>;
 
 	// static variable in a constexpr function is a C++23 extension
 	// static constexpr const This& kEmpty() { static String s; return s; } 
@@ -75,6 +76,7 @@ public:
 	constexpr virtual	~String_() override { Base::clearAndFree(); }
 
 	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { Base::operator=(rhs); }
+	AX_INLINE constexpr void operator=(ZView      rhs) { Base::operator=(rhs); }
 	AX_INLINE constexpr void operator=(MView      rhs) { Base::operator=(rhs); }
 	AX_INLINE constexpr void operator=(CView      rhs) { Base::operator=(rhs); }
 	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::operator=(rhs); }

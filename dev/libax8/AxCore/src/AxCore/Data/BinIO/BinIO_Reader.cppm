@@ -157,7 +157,7 @@ void BinIO_Reader::io_fixed_span(MutFixedSpan<T, N> obj) {
 //	Int len = 0;
 //	io(len);
 //	if (value.size() != len)
-//		throw Error_Undefined(AX_SRC_LOC);
+//		throw Error_Undefined();
 //
 //	for (Int i = 0; i < len; i++) {
 //		io(v[i]);

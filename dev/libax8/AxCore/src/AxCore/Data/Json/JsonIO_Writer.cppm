@@ -82,14 +82,14 @@ public:
 };
 
 template<class T> inline
-void ax_dump_json_impl(const SrcLoc& loc, T& value) {
+void ax_dump_json_impl(T& value, const SrcLoc& loc = SrcLoc()) {
 	TempStringA json;
 	JsonIO_Writer se(json);
 	se.io(value);
 	AX_LOG("AX_DUMP_JSON: {}", json);
 }
 
-#define AX_DUMP_JSON(value) ax_dump_json_impl(AX_SRC_LOC, value);
+#define AX_DUMP_JSON(value) ax_dump_json_impl(value);
 
 template<class T, Int N> inline
 void JsonIO_Writer::io_fixed_span(MutFixedSpan<T, N> value) {

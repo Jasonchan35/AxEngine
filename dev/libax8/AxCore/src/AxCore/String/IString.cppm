@@ -153,6 +153,7 @@ public:
 	template<class OBJ> constexpr bool tryParse(OBJ & obj) const { return view().tryParse(obj); }
 	
 	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { Base::_storageCopy(CView(rhs)); }
+	AX_INLINE constexpr void operator=(ZView      rhs) { Base::_storageCopy(CView(rhs)); }
 	AX_INLINE constexpr void operator=(MView      rhs) { Base::_storageCopy(rhs); }
 	AX_INLINE constexpr void operator=(CView      rhs) { Base::_storageCopy(rhs); }
 	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::_storageCopy(rhs.view()); }
@@ -171,7 +172,7 @@ public:
 	template<CON_StrView_<T>... ARGS> constexpr void append(const ARGS&... args);
 
 	constexpr void append(const T& view);
-	constexpr void append(const CharHex<T>& hex) { append(hex.c0); append(hex.c1); }
+	constexpr void append(const CharHexPair<T>& hex) { append(hex.c0); append(hex.c1); }
 	
 	template<class SRC>
 	AX_INLINE constexpr void setUtf(const SRC& src) { clear(); appendUtf(src); }

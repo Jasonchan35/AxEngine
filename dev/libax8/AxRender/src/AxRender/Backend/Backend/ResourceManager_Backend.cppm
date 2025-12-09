@@ -29,28 +29,20 @@ public:
 	using ShaderTable      = ResourceTable_Backend<Shader_Backend>;
 	using SamplerTable     = ResourceTable_Backend<Sampler_Backend>;
 	using Texture2DTable   = ResourceTable_Backend<Texture2D_Backend>;
-	using Texture3DTable   = ResourceTable_Backend<Texture3D_Backend>;
-	using TextureCubeTable = ResourceTable_Backend<TextureCube_Backend>;
 
 	Thread::MutexProtected<ShaderTable     > shaderTable;
 	Thread::MutexProtected<SamplerTable    > samplerTable;
 	Thread::MutexProtected<Texture2DTable  > texture2DTable;
-	Thread::MutexProtected<Texture3DTable  > texture3DTable;
-	Thread::MutexProtected<TextureCubeTable> textureCubeTable;
 	
 	void getTable(Thread::MutexProtected<ShaderTable     >* & o) { o = &shaderTable; }
 	void getTable(Thread::MutexProtected<SamplerTable    >* & o) { o = &samplerTable; }
 	void getTable(Thread::MutexProtected<Texture2DTable  >* & o) { o = &texture2DTable; }
-	void getTable(Thread::MutexProtected<Texture3DTable  >* & o) { o = &texture3DTable; }
-	void getTable(Thread::MutexProtected<TextureCubeTable>* & o) { o = &textureCubeTable; }
 	
 	template<class FUNC>
 	void visit(FUNC func) {
 		func(shaderTable);
 		func(samplerTable);
 		func(texture2DTable);
-		func(texture3DTable);
-		func(textureCubeTable);
 	}
 
 };

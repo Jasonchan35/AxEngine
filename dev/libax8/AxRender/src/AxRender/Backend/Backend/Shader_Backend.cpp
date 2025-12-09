@@ -126,7 +126,7 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 			}
 		} break;
 		
-		default: Error_Undefined(AX_SRC_LOC);
+		default: Error_Undefined();
 	}
 }
 
@@ -180,7 +180,7 @@ void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
 			return;
 		}
 
-		auto& space = _shaderParamSpaces.ensureAt(bindSpace);
+		auto& space = _shaderParamSpaces.ensureSizeAndGet(bindSpace);
 
 		if (!space) {
 			ShaderParamSpace_CreateDesc blockDesc;

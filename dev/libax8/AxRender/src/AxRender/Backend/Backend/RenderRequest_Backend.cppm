@@ -45,31 +45,39 @@ public:
 
 //	CommandBuffer&	cmdBuf() { return *_cmdBuf; }
 
-	class ResourcesList {
-		using All_List = Tuple<
-			Array< SPtr<  GpuBuffer_Backend> >,
-			Array< SPtr<   Material_Backend> >,
-			Array< SPtr< RenderPass_Backend> >,
-			Array< SPtr<    Sampler_Backend> >,
-			Array< SPtr<  Texture2D_Backend> >,
-			Array< SPtr<  Texture3D_Backend> >,
-			Array< SPtr<TextureCube_Backend> >
-		>;
-		
-		All_List _all_list;
+	struct ResourcesList {
 		template<class T> Array<SPtr<T>>& getList() { return _all_list.get< Array<SPtr<T>> >(); }
-//		template<class T> Array<SPtr<T>>& getList() { return std::get< Array<SPtr<T>> >(_all_list); }
 
-	public:
-		template<class T> void add(     T  *  p) { getList<T>().emplaceBack(p); }
-		template<class T> void add(SPtr<T> && p) { getList<T>().emplaceBack(std::move(p)); }
+		void add(  GpuBuffer_Backend* p) { _add(p); }
+		void add(   Material_Backend* p) { _add(p); }
+		void add( RenderPass_Backend* p) { _add(p); }
+		void add(    Sampler_Backend* p) { _add(p); }
+		void add(  Texture2D_Backend* p) { _add(p); }
+
+		void add(SPtr<  GpuBuffer_Backend> && p) { _add(AX_FORWARD(p)); }
+		void add(SPtr<   Material_Backend> && p) { _add(AX_FORWARD(p)); }
+		void add(SPtr< RenderPass_Backend> && p) { _add(AX_FORWARD(p)); }
+		void add(SPtr<    Sampler_Backend> && p) { _add(AX_FORWARD(p)); }
+		void add(SPtr<  Texture2D_Backend> && p) { _add(AX_FORWARD(p)); }
 
 		void clear() {
 			_all_list.apply([](auto&... list) {
 				(list.clear(),...);
 			});
 		}
+
+	private:
+		template<class T> void _add(     T  *  p) { getList<T>().emplaceBack(p); }
+		template<class T> void _add(SPtr<T> && p) { getList<T>().emplaceBack(std::move(p)); }
 		
+		using All_List = Tuple<
+			Array< SPtr<  GpuBuffer_Backend> >,
+			Array< SPtr<   Material_Backend> >,
+			Array< SPtr< RenderPass_Backend> >,
+			Array< SPtr<    Sampler_Backend> >,
+			Array< SPtr<  Texture2D_Backend> >
+		>;
+		All_List _all_list;
 	};
 
 	ResourcesList	resourcesToKeep;

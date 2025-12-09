@@ -131,6 +131,13 @@ private:
 };
 
 template<class T>
+struct Span_FindResult {
+	Span_FindResult(Int index_, const T& value_) : index(index_), value(value_) {}
+	Int			index;
+	const T&	value;
+};
+
+template<class T>
 class MutSpan { // copyable
 	using This = MutSpan;
 	using MutByte =	typename std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
@@ -141,7 +148,9 @@ public:
 	AX_INLINE constexpr MutSpan() = default;
 	AX_INLINE constexpr MutSpan(const MutSpan& r) noexcept = default;
 	AX_INLINE constexpr MutSpan(T* data, Int size) noexcept : _data(data), _size(size) {}
-
+	// explicit ? 
+	AX_INLINE constexpr MutSpan(T& t) noexcept : _data(&t), _size(1) {}
+	
 	template<Int N>
 	AX_INLINE constexpr MutSpan(T (&p)[N]) noexcept : _data(p), _size(N) {}
 	
@@ -221,16 +230,58 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return slice(0, _size - offset); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return slice(0, _size - offset); }
 
-	struct FindResult {
-		FindResult(Int index_, const T& value_) : index(index_), value(value_) {}
-		Int			index;
-		const T&	value;
-	};
-	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult findMin	() const;
-	template<class FuncOp = FuncOp_Less<T>> constexpr void       sort	();
+	using MFindResult = Span_FindResult<T>;
+	using CFindResult = Span_FindResult<const T>;
 
-	constexpr void     copyValues(CSpan v, Int offset = 0);
-	constexpr void     fillValues(const T& v);
+	template<class TARGET>
+	constexpr Opt<CFindResult> find(const TARGET& target) const {
+		return find(target, ax_op_equal<T,TARGET>);
+	}
+	
+	template<class TARGET, class FUNC>
+	constexpr Opt<CFindResult> find(const TARGET& target, FUNC func) const {
+		static_assert(Type_IsFuncSig<bool (const T&, const TARGET&)>);
+		auto* p = _data;
+		auto* e = _data + _size;
+		for (; p < e; ++p) {
+			if (func(*p, target)) return CFindResult(p - _data, *p);
+		}
+		return std::nullopt;
+	}
+	
+	constexpr CFindResult findMin() const { return findMin(ax_op_less<T>); }
+	
+	template<class FUNC> constexpr CFindResult findMin(FUNC func) const {
+		static_assert(Type_IsFuncSig<bool (const T&, const T&)>);
+		if (_size <= 0) throw Error_InvalidSize();
+
+		auto* pMinValue = _data;
+		auto* p = _data + 1;
+		auto* e = _data + _size;
+		for (; p < e; p++) {
+			if (func(*p, *pMinValue)) {
+				pMinValue = p;
+			}
+		}
+		return CFindResult(pMinValue - _data, *p);
+	}
+	
+	constexpr void sort() { sort(ax_op_less<T,T>); }
+	
+	template<class FUNC> constexpr void sort(FUNC func) {
+		static_assert(Type_IsFuncSig<bool (const T&, const T&)>);
+		// simple sorting, prevent move data if possible
+		for (Int i = 0; i < _size; i++) {
+			Int minIndex = i + sliceFrom(i).findMin(func).index;
+			if (minIndex == i) continue;
+
+			std::swap(at(minIndex), at(i));
+			minIndex = i;
+		}
+	}
+
+	constexpr void copyValues(CSpan v, Int offset = 0);
+	constexpr void fillValues(const T& v);
 	
 	constexpr Opt<Int> getIndexFromElementPtr(const T* element) const;
 
@@ -256,34 +307,59 @@ protected:
 	Int _size = 0;
 };
 
-template <class T>
-template<class FuncOp> constexpr
-auto MutSpan<T>::findMin() const -> FindResult {
-	if (_size <= 0) throw Error_InvalidSize();
+template<class OBJ, class T>
+class Span_BaseFunc {
+	using MSpan = MutSpan<T>;
+	using CSpan =    Span<T>;
+	constexpr MSpan _obj_span()			{ return static_cast<      OBJ*>(this)->span(); }
+	constexpr CSpan _obj_span() const	{ return static_cast<const OBJ*>(this)->span(); }
+public:
+	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan()		{ return _obj_span().toByteSpan(); }
+	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan() const	{ return _obj_span().toByteSpan(); }
 
-	auto* pMinValue = _data;
-	auto* p = _data + 1;
-	auto* e = _data + _size;
-	for (; p < e; p++) {
-		if (FuncOp::invoke(*p, *pMinValue)) {
-			pMinValue = p;
-		}
+	//                +--------------------------------------------+
+	//                |         |                      |           |
+	//                +--------------------------------------------+
+	//  slice         (  offset  )[______ newSize ____]
+	//  sliceBack                       [________ newSize__________]
+	//  sliceFrom     (  offset  )[_________till to end ___________]
+	//  sliceFromBack [________________________________](  offset  )
+	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(Int offset, Int newSize)		{ return _obj_span().slice(offset, newSize); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(Int offset, Int newSize) const	{ return _obj_span().slice(offset, newSize); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(IntRange range)				{ return _obj_span().slice(range); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return _obj_span().slice(range); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return _obj_span().slice(newSize); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return _obj_span().slice(newSize); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFrom		(Int offset)					{ return _obj_span().slice(offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return _obj_span().slice(offset); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return _obj_span().slice(offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return _obj_span().slice(offset); }
+
+	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ _obj_span().copyValues(v, offset); }
+	AX_INLINE constexpr		void		fillValues	(const T& v)					{ _obj_span().fillValues(v); }
+
+	using MFindResult = Span_FindResult<T>;
+	using CFindResult = Span_FindResult<const T>;
+
+	template<class TARGET, class FUNC>
+	constexpr Opt<CFindResult> find(const TARGET& target, FUNC func) const {
+		return _obj_span().template find<TARGET, FUNC>(target, func);
 	}
-	return FindResult(pMinValue - _data, *p);
-}
 
-template <class T>
-template <class FuncOp> constexpr 
-void MutSpan<T>::sort() {
-	// simple sorting, prevent move data if possible
-	for (Int i = 0; i < _size; i++) {
-		Int minIndex = i + sliceFrom(i).template findMin<FuncOp>().index;
-		if (minIndex == i) continue;
-
-		std::swap(at(minIndex), at(i));
-		minIndex = i;
+	template<class TARGET>
+	constexpr Opt<CFindResult> find(const TARGET& target) const {
+		return _obj_span().template find<TARGET>(target);
 	}
-}
+	
+	template<class FUNC>
+	constexpr CFindResult findMin(FUNC func) const	{ return _obj_span().template findMin<FUNC>(func); }
+	constexpr CFindResult findMin() const			{ return _obj_span().findMin(); }
+	
+	template<class FUNC>
+	constexpr void	sort(FUNC func)	{ _obj_span().template sort<FUNC>(func); }
+	constexpr void	sort()			{ _obj_span().sort(); }
+
+};
 
 template<class T> constexpr 
 void MutSpan<T>::copyValues(CSpan v, Int offset) {

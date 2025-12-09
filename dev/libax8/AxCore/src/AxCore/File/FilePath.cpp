@@ -296,10 +296,10 @@ class axPath_NSSearchPath {
 public:
 	axPath_NSSearchPath(NSSearchPathDirectory d) {
 		NSArray *tmp = NSSearchPathForDirectoriesInDomains(d, NSUserDomainMask, YES);
-		if (tmp == nil) throw Error_Undefined(AX_SRC_LOC);
-		if ([tmp count] <= 0) throw Error_Undefined(AX_SRC_LOC);
+		if (tmp == nil) throw Error_Undefined();
+		if ([tmp count] <= 0) throw Error_Undefined();
 		NSString *docu = [tmp objectAtIndex:0];
-		if (docu == nil) throw Error_Undefined(AX_SRC_LOC);
+		if (docu == nil) throw Error_Undefined();
 
 		path.set(StrView_ref(docu));
 	}
@@ -327,7 +327,7 @@ StrView FilePath::currentProcessFile() {
 		Obj() {
 			NSProcessInfo* info = [NSProcessInfo processInfo];
 			NSArray* args = [info arguments];
-			if ([args count ] == 0) throw Error_Undefined(AX_SRC_LOC);
+			if ([args count ] == 0) throw Error_Undefined();
 
 			auto s = (NSString*)[args objectAtIndex:0];
 			path.set(StrView_make(s));
@@ -388,7 +388,7 @@ StrView FilePath::userHomeDir() {
 	struct Obj {
 		Obj() {
 			struct passwd	*p = ::getpwuid( ::getuid() );
-			if (!p) throw Error_Undefined(AX_SRC_LOC);
+			if (!p) throw Error_Undefined();
 			path.setUtf(StrView_c_str(p->pw_dir));
 		}
 		TempString path;
@@ -402,13 +402,13 @@ StrView FilePath::currentProcessFile() {
 		Obj() {
 			char buf[PATH_MAX + 1];
 			ssize_t ret = readlink("/proc/self/exe", buf, PATH_MAX);
-			if (ret == -1) throw Error_Undefined(AX_SRC_LOC);
+			if (ret == -1) throw Error_Undefined();
 
 			// if the /proc/self/exe symlink has been dropped by the kernel for
 			// some reason, then readlink() could also return success but
 			// "(deleted)" as link destination...
 			if (ZStrUtil::equals(buf, "(deleted)")) {
-				 throw Error_Undefined(AX_SRC_LOC);
+				 throw Error_Undefined();
 			}
 
 			buf[ret] = 0;
@@ -431,7 +431,7 @@ void FilePath::getCurrentDir(IString& path) {
 	path.clear();
 	char  tmp[ FilePath::kMaxChar + 1 ];
 	if( ! ::getcwd( tmp, FilePath::kMaxChar ) ) {
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 	tmp[ FilePath::kMaxChar ] = 0;
 	path.setUtf(StrView_c_str(tmp));

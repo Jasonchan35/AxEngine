@@ -111,7 +111,5 @@ void ResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 template class ResourceTable_Backend<Shader_Backend>;
 template class ResourceTable_Backend<Sampler_Backend>;
 template class ResourceTable_Backend<Texture2D_Backend>;
-template class ResourceTable_Backend<Texture3D_Backend>;
-template class ResourceTable_Backend<TextureCube_Backend>;
 
 } // namespace

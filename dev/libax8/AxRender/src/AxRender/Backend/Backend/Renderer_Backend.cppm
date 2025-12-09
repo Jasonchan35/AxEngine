@@ -23,7 +23,6 @@ public:
 
 	virtual void getBindlessTable(BindlessTable<class Sampler_Backend  >* & outList) { outList = nullptr; }
 	virtual void getBindlessTable(BindlessTable<class Texture2D_Backend>* & outList) { outList = nullptr; }
-	virtual void getBindlessTable(BindlessTable<class Texture3D_Backend>* & outList) { outList = nullptr; }
 	virtual void onUpdateBindlessTables(RenderRequest_Backend* req) {}
 
 	struct Limits {

@@ -54,16 +54,6 @@ public:
 	}
 };
 
-#define AX_RENDER_CommandBuffer_FunctionInterfaces(IMP) \
-	virtual void onCommandBegin() IMP; \
-	virtual void onCommandEnd() IMP; \
-	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \
-	virtual void onSetScissorRect(const Rect2f& rect) IMP; \
-	virtual void onRenderPassBegin(RenderPass* pass) IMP; \
-	virtual void onRenderPassEnd() IMP; \
-	virtual void onDrawCall(Cmd_DrawCall& cmd) IMP; \
-//-----
-
 class CommandBuffer : public RenderObject {
 	AX_RTTI_INFO(CommandBuffer, RenderObject)
 public:

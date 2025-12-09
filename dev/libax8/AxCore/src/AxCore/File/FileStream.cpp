@@ -125,13 +125,13 @@ void FileStream::close() {
 
 void FileStream::flush () {
 	int b = ::fsync( _fd );
-	if( b != 0 ) throw Error_Undefined(AX_SRC_LOC);
+	if( b != 0 ) throw Error_Undefined();
 }
 
 UtcTime	FileStream::lastAccessTime 	() {
 	_check_fd();
 	struct stat info;
-	if( 0 != fstat( _fd, &info ) ) throw Error_Undefined(AX_SRC_LOC);
+	if( 0 != fstat( _fd, &info ) ) throw Error_Undefined();
 	UtcTime t;
 
     #if AX_OS_MACOSX || AX_OS_IOS
@@ -145,7 +145,7 @@ UtcTime	FileStream::lastAccessTime 	() {
 UtcTime	FileStream::lastWriteTime	( ) {
 	_check_fd();
 	struct stat info;
-	if( 0 != fstat( _fd, &info ) ) throw Error_Undefined(AX_SRC_LOC);
+	if( 0 != fstat( _fd, &info ) ) throw Error_Undefined();
 	UtcTime t;
 
 	#if AX_OS_MACOSX || AX_OS_IOS
@@ -180,26 +180,26 @@ void FileStream::setLastWriteTime(const UtcTime& t) {
 void FileStream::setPos( FileSize  n ) {
 	_check_fd();
 	off_t ret = lseek( _fd, n, SEEK_SET );
-	if( ret == -1 ) throw Error_Undefined(AX_SRC_LOC);
+	if( ret == -1 ) throw Error_Undefined();
 }
 
 void FileStream::advPos( FileSize  n ) {
 	_check_fd();
 	off_t ret = lseek( _fd, n, SEEK_CUR );
-	if( ret == -1 ) throw Error_Undefined(AX_SRC_LOC);
+	if( ret == -1 ) throw Error_Undefined();
 }
 
 void FileStream::setPosEnd( FileSize  n ) {
 	_check_fd();
 	off_t ret = lseek( _fd, n, SEEK_END );
-	if( ret == -1 ) throw Error_Undefined(AX_SRC_LOC);
+	if( ret == -1 ) throw Error_Undefined();
 }
 
 FileSize FileStream::getPos () {
 	_check_fd();
 	FileSize n = 0;
 	off_t ret = lseek( _fd, n, SEEK_SET );
-	if( ret == -1 ) throw Error_Undefined(AX_SRC_LOC);
+	if( ret == -1 ) throw Error_Undefined();
 	return FileSize( ret );
 }
 
@@ -209,10 +209,10 @@ FileSize FileStream::getFileSize() {
 
 	off_t curr, r;
 
-	curr = lseek( _fd, 0, SEEK_CUR );	if( curr == -1 ) throw Error_Undefined(AX_SRC_LOC);
-	r = lseek( _fd, 0, SEEK_END );		if( r == -1 ) throw Error_Undefined(AX_SRC_LOC);
+	curr = lseek( _fd, 0, SEEK_CUR );	if( curr == -1 ) throw Error_Undefined();
+	r = lseek( _fd, 0, SEEK_END );		if( r == -1 ) throw Error_Undefined();
 	out = r;
-	r = lseek( _fd, curr, SEEK_SET );	if( r == -1 ) throw Error_Undefined(AX_SRC_LOC);
+	r = lseek( _fd, curr, SEEK_SET );	if( r == -1 ) throw Error_Undefined();
 
 	return FileSize( out );
 }
@@ -223,7 +223,7 @@ void FileStream::setFileSize( FileSize newSize ) {
 	FileSize	oldPos = getPos();
 
 	off_t o = newSize;
-	if( 0 != ftruncate( _fd, o ) ) throw Error_Undefined(AX_SRC_LOC);
+	if( 0 != ftruncate( _fd, o ) ) throw Error_Undefined();
 
 	if( oldPos < newSize ) setPos( oldPos );
 }
@@ -233,14 +233,14 @@ void FileStream::readBytes ( Byte* buf, Int sizeInBytes ) {
 
 	if( sizeInBytes <= 0 ) return;
 	auto ret = ::read( _fd, buf, (size_t)sizeInBytes );
-	if( ret <= 0 ) throw Error_Undefined(AX_SRC_LOC);
+	if( ret <= 0 ) throw Error_Undefined();
 }
 
 void FileStream::writeBytes( ByteSpan buf ) {
 	_check_fd();
 	if( buf.size() <= 0 ) return;
 	auto ret = ::write( _fd, buf.data(), (size_t)buf.sizeInBytes() );
-	if( ret <= 0 ) throw Error_Undefined(AX_SRC_LOC);
+	if( ret <= 0 ) throw Error_Undefined();
 }
 
 //----- open file
@@ -261,14 +261,14 @@ void FileStream::_os_open( StrView filename, int access_flag ) {
 	if( _fd == -1 ) {
 		AX_LOG("open file error {}: filename=[{}]", errno, filename);
 		switch( errno ) {
-			case EACCES: throw Error_Undefined(AX_SRC_LOC);
-			case EEXIST: throw Error_Undefined(AX_SRC_LOC);
-			case ENFILE: throw Error_Undefined(AX_SRC_LOC);
-			case EMFILE: throw Error_Undefined(AX_SRC_LOC);
-			case ENOENT: throw Error_Undefined(AX_SRC_LOC);
+			case EACCES: throw Error_Undefined();
+			case EEXIST: throw Error_Undefined();
+			case ENFILE: throw Error_Undefined();
+			case EMFILE: throw Error_Undefined();
+			case ENOENT: throw Error_Undefined();
 			default:
 				AX_ASSERT(false);
-				throw Error_Undefined(AX_SRC_LOC);
+				throw Error_Undefined();
 				break;
 		}
 	}
@@ -307,9 +307,9 @@ bool	FileStream::_os_lock( int flags ) {
 
 void	FileStream::lock( bool exclusive ) {
 	if( exclusive ) {
-		if( ! _os_lock( LOCK_EX ) ) throw Error_Undefined(AX_SRC_LOC);
+		if( ! _os_lock( LOCK_EX ) ) throw Error_Undefined();
 	}else{
-		if( ! _os_lock( LOCK_SH ) ) throw Error_Undefined(AX_SRC_LOC);
+		if( ! _os_lock( LOCK_SH ) ) throw Error_Undefined();
 	}
 }
 

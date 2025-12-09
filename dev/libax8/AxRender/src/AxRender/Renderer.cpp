@@ -2,6 +2,10 @@
 
 import :Renderer_Null;
 
+#if AX_RENDERER_VK
+	import :Renderer_VK;
+#endif
+
 namespace ax::AxRender {
 
 static Renderer* Renderer_instance = nullptr;

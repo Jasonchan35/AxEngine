@@ -83,24 +83,6 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {
 #endif
 }
 
-bool MaterialParamSpace_Backend::setParam(NameId name, Texture3D* tex) {
-#if AX_RENDER_BINDLESS
-	if (!_shaderParamSpace) return false;
-	auto bindlessName = _shaderParamSpace->getTexture3DName(name);
-	if (!bindlessName) return false;
-
-	auto slot = ResourceSlotId::None;
-	if (auto* tex_ = rttiCastCheck<Texture3D_Backend>(tex)) {
-		slot = tex_->resourceHandle.slotId();
-	}
-	return setParam(bindlessName, ax_enum_int(slot));
-
-#else
-	auto* dst = _findParam(_textureParams, name);
-	return dst ? dst->setTexture(tex) : false;
-#endif
-}
-
 bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 #if AX_RENDER_BINDLESS
 	if (!_shaderParamSpace) return false;

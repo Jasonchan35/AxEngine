@@ -7,7 +7,7 @@ export import AxCore.FixedSpan;
 export namespace ax {
 
 template<class T, Int N>
-class FixedArray {
+class FixedArray : public Span_BaseFunc<FixedArray<T,N>, T> {
 	T _data[N];
 	
 	using This = FixedArray;
@@ -15,14 +15,14 @@ public:
 	using Element = T;
 	static const Int kSize = N;
 
-	FixedArray() = default;
+	constexpr FixedArray() = default;
 
-	MutSpan<T>	  span		()			{ return MutSpan<T>(data(), size()); }
-	   Span<T>	  span		() const	{ return    Span<T>(data(), size()); }
-	   Span<T>	  constSpan	() const	{ return    Span<T>(data(), size()); }
+	constexpr MutSpan<T>	  span		()			{ return MutSpan<T>(data(), size()); }
+	constexpr    Span<T>	  span		() const	{ return    Span<T>(data(), size()); }
+	constexpr    Span<T>	  constSpan	() const	{ return    Span<T>(data(), size()); }
 
-	operator  MutSpan<T>	()			{ return span(); }
-	operator  Span<T>		() const	{ return span(); }
+	constexpr operator  MutSpan<T>	()			{ return span(); }
+	constexpr operator  Span<T>		() const	{ return span(); }
 
 	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 	AX_INLINE constexpr    FixedSpan<T, N> fixedSpan() const { return    FixedSpan<T, N>(data()); }
@@ -67,8 +67,8 @@ public:
 	constexpr CIter	end		() const	{ return data() + size(); }
 
 private:
-	AX_INLINE void _checkBound			( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
-	AX_INLINE void	_debug_checkBound	( Int i ) const {
+	AX_INLINE constexpr void _checkBound			( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
+	AX_INLINE constexpr void	_debug_checkBound	( Int i ) const {
 		#ifdef AX_BUILD_CONFIG_Debug
 			_checkBound(i);
 		#endif

@@ -202,7 +202,7 @@ public:
 
 
 template<class DST, class SRC> AX_INLINE
-DST* rttiCast(SRC* src) {
+DST* _rttiCast(SRC* src) {
 	static_assert(std::is_base_of_v<SRC, DST>);
 
 	if constexpr (std::is_same_v<DST, SRC>) return src;
@@ -215,20 +215,18 @@ DST* rttiCast(SRC* src) {
 	return nullptr;
 }
 
-template<class DST, class SRC> AX_INLINE
-const DST* rttiCast(const SRC* src) {
-	return rttiCast<DST, SRC>(ax_const_cast(src));
-}
+template<class DST, class SRC> AX_INLINE       DST* rttiCast(      SRC* src) { return _rttiCast<DST, SRC>(src); }
+template<class DST, class SRC> AX_INLINE const DST* rttiCast(const SRC* src) { return _rttiCast<DST, SRC>(ax_const_cast(src)); }
 
 template<class DST, class SRC> AX_INLINE
 UPtr<DST> rttiCast(UPtr<SRC> && src) {
-	auto dst = UPtr<DST>::s_ref(rttiCast<DST>(src.ptr()));
+	auto dst = UPtr<DST>::s_ref(_rttiCast<DST>(src.ptr()));
 	if (dst) src.detach(); // transfer ownership
 	return dst;
 }
 
 template<class DST, class SRC> AX_INLINE
-DST* rttiCastCheck(SRC* src) {
+DST* _rttiCastCheck(SRC* src) {
 	if (!src) return nullptr;
 
 	if constexpr (std::is_same_v<DST, SRC>) {
@@ -243,6 +241,9 @@ DST* rttiCastCheck(SRC* src) {
 #endif
 	}
 }
+
+template<class DST, class SRC> AX_INLINE        DST* rttiCastCheck(      SRC* src) { return _rttiCastCheck<DST, SRC>(src); }
+template<class DST, class SRC> AX_INLINE  const DST* rttiCastCheck(const SRC* src) { return _rttiCastCheck<DST, SRC>(ax_const_cast(src)); }
 
 } // namespace
 

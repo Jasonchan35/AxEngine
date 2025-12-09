@@ -107,7 +107,7 @@ void DateTime::set(const LocalTime& ts) {
 #elif AX_COMPILER_GCC | AX_COMPILER_CLANG
 
 	if (::gmtime_r(&tmp, &_t) == nullptr)
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 
 #else
 #error "Unsupported compiler"
@@ -126,7 +126,7 @@ void DateTime::set(const UtcTime& ts) {
 #elif AX_COMPILER_GCC | AX_COMPILER_CLANG
 
 	if (::gmtime_r(&tmp, &_t) == nullptr)
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 
 #else
 #error "Unsupported compiler"

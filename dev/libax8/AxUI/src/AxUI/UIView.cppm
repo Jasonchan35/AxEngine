@@ -33,8 +33,8 @@ private:
 	Array<SPtr<UIView>, 4>	_children;
 
 	UIView*	_parent = nullptr;
-	Vec2f	_worldPos = AX_ZERO;
-	Rect2f	_rect = AX_ZERO;
+	Vec2f	_worldPos = AxTag::Zero;
+	Rect2f	_rect = AxTag::Zero;
 
 	bool	_worldPosDirty : 1;
 };

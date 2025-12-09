@@ -106,7 +106,7 @@ public:
 //	AX_INLINE constexpr Vec_(Tag::All_, const T& t) : _simd(s_all(t)) {}
 	AX_INLINE constexpr Vec_(const Num1& v) : _simd(v.e00) {}
 	AX_INLINE constexpr Vec_(const T& x_) : _simd(x_) {}
-	AX_INLINE constexpr Vec_(AX_ZERO_) : _simd(AX_ZERO) {}
+	AX_INLINE constexpr Vec_(AxTag::Zero_) : _simd(AxTag::Zero) {}
 
 	AX_INLINE constexpr void set(const T& x_) { *this = This(x_); }
 
@@ -180,7 +180,7 @@ public:
 //	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SIMD_Data::s_all(vec)) {}
 	AX_INLINE constexpr Vec_(const Num2& v) : _simd(v.e00, v.e01) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_) : _simd(x_, y_) {}
-	AX_INLINE constexpr Vec_(AX_ZERO_) : _simd(AX_ZERO) {}
+	AX_INLINE constexpr Vec_(AxTag::Zero_) : _simd(AxTag::Zero) {}
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_) { *this = This(x_,y_); }
 
@@ -283,7 +283,7 @@ public:
 	AX_INLINE constexpr Vec_(const Num3& v) : _simd(v.e00, v.e01, v.e02) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_) : _simd(x_, y_, z_) {}
 	AX_INLINE constexpr Vec_(const Vec2& v_, const T& z_) : _simd(v_.x, v_.y, z_) {}
-	AX_INLINE constexpr Vec_(AX_ZERO_) : _simd(AX_ZERO) {}
+	AX_INLINE constexpr Vec_(AxTag::Zero_) : _simd(AxTag::Zero) {}
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_) { *this = This(x_,y_,z_); }
 	AX_INLINE constexpr void set(const Vec2& v_, const T& z_) { *this = This(v_.x,v_.y,z_); }
@@ -384,7 +384,7 @@ public:
 	AX_INLINE constexpr Vec_(const Num4_<T>& v) : _simd(v) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
 	AX_INLINE constexpr Vec_(const Vec3& v_, const T& w_) : _simd(v_.x,v_.y,v_.z,w_) {}
-	AX_INLINE constexpr Vec_(AX_ZERO_) : _simd(AX_ZERO) {}
+	AX_INLINE constexpr Vec_(AxTag::Zero_) : _simd(AxTag::Zero) {}
 
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { *this = This(x_,y_,z_,w_); }
 	AX_INLINE constexpr void set(const Vec3& v_, const T& w_) { *this = This(v_.x,v_.y,v_.z,w_); }

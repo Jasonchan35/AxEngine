@@ -32,7 +32,7 @@ public:
 
 	AX_INLINE constexpr void	setInt(const IntType & r) { value = static_cast<T>(r); }
 	
-	AX_INLINE constexpr void	operator=	(AX_ZERO_) { setToZero(); }
+	AX_INLINE constexpr void	operator=	(AxTag::Zero_) { setToZero(); }
 
 	AX_INLINE constexpr StrView	str() const { return enumStr(value); }
 	AX_INLINE constexpr bool	tryParse(StrView view) { return _ax_macro_enum_try_parse(view, value); };

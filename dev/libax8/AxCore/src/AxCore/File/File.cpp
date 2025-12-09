@@ -18,7 +18,7 @@ void File::remove	( StrView filename ) {
 	auto filenameA = TempStringA::s_utf(filename);
 	auto ret = ::remove( filenameA.c_str() );
 	if( ret != 0 ) {
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 }
 
@@ -34,7 +34,7 @@ void File::rename	( StrView src_name, StrView dst_name ) {
 	auto dst = TempStringA::s_utf(dst_name);
 	auto ret = ::rename( src.c_str(), dst.c_str() );
 	if( ret != 0 ) {
-		throw Error_Undefined(AX_SRC_LOC);
+		throw Error_Undefined();
 	}
 }
 
@@ -106,7 +106,7 @@ void FileDir::listEntries(StrView path, bool subDir, ListEntryDelegate& dg) {
 #else
 			struct dirent	entry;
 			if (0 != ::readdir_r( h, &entry, &r )) {
-				throw Error_Undefined(AX_SRC_LOC);
+				throw Error_Undefined();
 			}
 #endif
 
@@ -123,7 +123,7 @@ void FileDir::listEntries(StrView path, bool subDir, ListEntryDelegate& dg) {
 			tmpFullpath.set(path);
 			tmpFullpath.append_c_str(r->d_name);
 			if (stat(r->d_name, &statbuf) == -1) {
-				throw Error_Undefined(AX_SRC_LOC);
+				throw Error_Undefined();
 			}
 			entry.isDir = S_ISDIR(statbuf.st_mode);
 #else

@@ -25,4 +25,6 @@ export import AxCore.Uuid;
 export import AxCore.Rtti;
 export import AxCore.WPtr;
 
+export import AxCore.ZStrUtil;
+
 

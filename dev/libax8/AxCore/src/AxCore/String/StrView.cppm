@@ -25,22 +25,6 @@ using StrView8  = StrView_<Char8 >;
 using StrView16 = StrView_<Char16>;
 using StrView32 = StrView_<Char32>;
 
-template<class T> class MutZStrView_;
-using MutZStrView	= MutZStrView_<Char>;
-using MutZStrViewA	= MutZStrView_<CharA>;
-using MutZStrViewW	= MutZStrView_<CharW>;
-using MutZStrView8	= MutZStrView_<Char8>;
-using MutZStrView16	= MutZStrView_<Char16>;
-using MutZStrView32	= MutZStrView_<Char32>;
-
-template<class T> using ZStrView_ = MutZStrView_<const T>;
-using ZStrView		= ZStrView_<Char>;
-using ZStrViewA		= ZStrView_<CharA>;
-using ZStrViewW		= ZStrView_<CharW>;
-using ZStrView8		= ZStrView_<Char8>;
-using ZStrView16	= ZStrView_<Char16>;
-using ZStrView32	= ZStrView_<Char32>;
-
 template<class T> constexpr bool Type_IsConvertiableToStrViewT	=  std::is_convertible_v<T, StrViewA>
 																|| std::is_convertible_v<T, StrViewW>
 																|| std::is_convertible_v<T, StrView8>
@@ -87,9 +71,10 @@ public:
 	using CView           = MutStrView_<const T>;
 	using std_string_view = std::basic_string_view<std::remove_cv_t<T>>;
 	
-	constexpr MutStrView_() = default;
+	constexpr MutStrView_() noexcept = default;
+	constexpr MutStrView_(const This&) noexcept = default;
 	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
-	constexpr MutStrView_(MutStrLit_<T> r) noexcept : _data(r.data()), _size(r.size()) {}
+	constexpr MutStrView_(MutZStrView_<T> r) noexcept : _data(r.data()), _size(r.size()) {}
 //	constexpr MutStrView_(T& ch) noexcept : _data(&ch), _size(1) {}
 	
 	template <Int N>
@@ -233,37 +218,6 @@ template<class T> constexpr bool Type_IsMutStrView<MutStrView_<T>> = true;
 
 template<class T> constexpr bool Type_IsStrView = false; 
 template<class T> constexpr bool Type_IsStrView<StrView_<T>> = true;
-
-// Null-terminated string, should use StrLit or StrView if possible
-template<class T>
-class MutZStrView_ : public MutStrView_<T> {
-	using This = MutZStrView_;
-	using Base = MutStrView_<T>;
-protected:
-	using Base::_data;
-	using Base::_size;
-public:
-	using CView = MutZStrView_<const T>;
-
-
-	AX_INLINE constexpr MutZStrView_() = default;
-	AX_INLINE constexpr MutZStrView_(T* sz, Int size) : Base(sz, size) {}
-	
-	constexpr CView	constView() const { return CView(_data, _size); }
-
-	constexpr const T* c_str() const { return _size ? _data : &_empty_c_str; }
-
-	static constexpr This s_from_c_str(T *sz) { return This(sz, ax_strlen(sz)); } 
-	
-private:
-	static constexpr T _empty_c_str = 0;
-};
-
-AX_INLINE consteval ZStrViewA  operator ""_sv(const CharA * sz, size_t n)  noexcept { return ZStrViewA (sz, n); }
-AX_INLINE consteval ZStrViewW  operator ""_sv(const CharW * sz, size_t n)  noexcept { return ZStrViewW (sz, n); }
-AX_INLINE consteval ZStrView8  operator ""_sv(const Char8 * sz, size_t n)  noexcept { return ZStrView8 (sz, n); }
-AX_INLINE consteval ZStrView16 operator ""_sv(const Char16* sz, size_t n)  noexcept { return ZStrView16(sz, n); }
-AX_INLINE consteval ZStrView32 operator ""_sv(const Char32* sz, size_t n)  noexcept { return ZStrView32(sz, n); }
 
 template<class T> AX_INLINE	constexpr 
 bool MutStrView_<T>::startsWith(CView r, StrCase sc) const noexcept {

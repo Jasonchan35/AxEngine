@@ -20,12 +20,4 @@ SPtr<Texture2D> Texture2D::s_new(const MemAllocRequest& req, const ImageInfo& in
 	return Texture2D_Backend::s_new(req, info, pixelData);
 }
 
-SPtr<Texture3D> Texture3D::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	return Texture3D_Backend::s_new(req, desc);
-}
-
-SPtr<TextureCube> TextureCube::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	return TextureCube_Backend::s_new(req, desc);
-}
-
 } // namespace

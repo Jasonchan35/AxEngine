@@ -7,7 +7,7 @@ export import AxCore.IArrayStorage;
 export namespace ax {
 
 template<class T>
-class IArray : public IArrayStorage<T> {
+class IArray : public IArrayStorage<T>, public Span_BaseFunc<IArray<T>, T> {
 	using This = IArray;
 	using Base = IArrayStorage<T>;
 	using Base::_storage;
@@ -16,8 +16,7 @@ protected:
 public:
 	using MSpan      = MutSpan<T>;
 	using CSpan      = Span<T>;
-	using FindResult = MSpan::FindResult;
-	
+
 	AX_NODISCARD AX_INLINE constexpr       T*	data()				{ return _storage.data(); }
 	AX_NODISCARD AX_INLINE constexpr const T*	data() const		{ return _storage.data(); }
 	AX_NODISCARD AX_INLINE constexpr 	Int		capacity() const	{ return _storage.capacity(); }
@@ -40,6 +39,9 @@ public:
 
 	template< class... Args >
 	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
+
+	template< class... Args >
+	AX_INLINE	T&	emplaceNew(const MemAllocRequest& req, Args&&... args ) { return emplaceBack(AxTag::NewObject, req, AX_FORWARD(args)...); }
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
@@ -57,11 +59,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr CSpan	span		() const	{ return    Span<T>(data(), size()); }
 	AX_NODISCARD AX_INLINE constexpr CSpan	constSpan	() const	{ return    Span<T>(data(), size()); }
 
-	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan()		{ return span().toByteSpan(); }
-	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan() const	{ return span().toByteSpan(); }
-	
 	AX_NODISCARD AX_INLINE constexpr operator MSpan()			{ return span(); }
-	AX_NODISCARD AX_INLINE constexpr operator CSpan() const	{ return span(); }
+	AX_NODISCARD AX_INLINE constexpr operator CSpan() const		{ return span(); }
 
 	AX_NODISCARD AX_INLINE constexpr       T& operator[](Int i)       noexcept { return at(i); }
 	AX_NODISCARD AX_INLINE constexpr const T& operator[](Int i) const noexcept { return at(i); }
@@ -84,31 +83,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept	{ return unsafe_at(size() - i - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept	{ return unsafe_at(size() - i - 1); }
 
-	//                +--------------------------------------------+
-	//                |         |                      |           |
-	//                +--------------------------------------------+
-	//  slice         (  offset  )[______ newSize ____]
-	//  sliceBack                       [________ newSize__________]
-	//  sliceFrom     (  offset  )[_________till to end ___________]
-	//  sliceFromBack [________________________________](  offset  )
-	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(Int offset, Int newSize)		{ return span().slice(offset, newSize); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(Int offset, Int newSize) const	{ return span().slice(offset, newSize); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(IntRange range)				{ return span().slice(range); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return span().slice(range); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return span().slice(newSize); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return span().slice(newSize); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFrom		(Int offset)					{ return span().slice(offset); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return span().slice(offset); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return span().slice(offset); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return span().slice(offset); }
-
-	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ span().copyValues(v, offset); }
-	AX_INLINE constexpr		void		fillValues	(const T& v)					{ span().fillValues(v); }
-	
-	template<class FuncOp = FuncOp_Less<T>> constexpr FindResult	findMin	() const { return span().template findMin<FuncOp>(); }
-	template<class FuncOp = FuncOp_Less<T>> constexpr void			sort	()	{ span().template sort<FuncOp>(); }
-
-	AX_NODISCARD AX_INLINE constexpr T& ensureAt(Int i)		{ ensureSize(i+1); return at(i); }
+	AX_NODISCARD AX_INLINE constexpr T& ensureSizeAndGet(Int i)		{ ensureSize(i+1); return at(i); }
 	
 	AX_INLINE constexpr		T&	insertAt	(Int i)				{ return *insertAt(IntRange(i, 1)).data(); }
 	AX_INLINE constexpr		T&	insertAt	(Int i, T && value)	{ auto dst = insertAt(IntRange(i, 1)); *dst.data() = std::move(value); return *dst.data(); }

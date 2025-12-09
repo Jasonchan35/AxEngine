@@ -34,21 +34,6 @@ SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, con
 	return tex;
 }
 
-SPtr<Texture3D_Backend> Texture3D_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	SPtr<Texture3D_Backend> o;
-	if (ResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
-		o->_create(desc);
-	return o;	
-}
-
-SPtr<TextureCube_Backend> TextureCube_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	SPtr<TextureCube_Backend> o;
-	if (ResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
-		o->_create(desc);
-	return o;	
-}
-
-
 void Texture2D_Backend::hotReloadFile() {
 	Renderer_Backend::s_instance()->waitAllRenderCompleted();
 	_loadFile();

@@ -89,8 +89,8 @@ protected:
 	virtual	void onRender() {}
 	
 private:
-	Rect2f		_worldRect = AX_ZERO;
-	Margin2f	_padding = AX_ZERO;
+	Rect2f		_worldRect = AxTag::Zero;
+	Margin2f	_padding = AxTag::Zero;
 	bool		_active : 1;
 };
 

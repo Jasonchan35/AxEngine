@@ -27,6 +27,9 @@ public:
 	 // only accept when using same DEL class
 	template<class R> AX_INLINE	UPtr(UPtr<R, DEL> && r) noexcept { move(AX_FORWARD(r)); }
 
+	template<class... ARGS>
+	AX_INLINE	UPtr(AxTag::NewObject_, const MemAllocRequest& req, ARGS&&... args) { newObject(req, AX_FORWARD(args)...); }
+
 	AX_INLINE	~UPtr() noexcept { unref(); }
 
 	operator       T* () &			{ return _p; }

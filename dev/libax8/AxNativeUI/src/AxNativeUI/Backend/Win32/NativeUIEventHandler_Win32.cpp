@@ -81,7 +81,7 @@ bool NativeUIEventHandler_Win32::_handleMouseEvent(HWND hwnd, UINT msg, WPARAM w
 	}	
 
 	auto pressedFn = EnumFn_(_mousePressedButtons);
-	pressedFn = AX_ZERO;
+	pressedFn = AxTag::Zero;
 
 	if (wParam & MK_LBUTTON)  pressedFn.setFlags(Button::Left);
 	if (wParam & MK_MBUTTON)  pressedFn.setFlags(Button::Middle);

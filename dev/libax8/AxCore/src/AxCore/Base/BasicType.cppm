@@ -74,6 +74,11 @@ constexpr Int Int_max = std::numeric_limits<Int>::max();
 constexpr UInt UInt_min = std::numeric_limits<UInt>::min();
 constexpr UInt UInt_max = std::numeric_limits<UInt>::max();
 
+namespace  AxTag {
+	class NewObject_{};		constexpr NewObject_	NewObject	= {};
+	class NoInit_{};		constexpr NoInit_		NoInit		= {};
+	class Zero_{};			constexpr Zero_			Zero		= {};
+} // AxTag
 
 template<class T> constexpr bool Type_isTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<T>;
 template<class T> constexpr bool Type_IsTriviallyDestructible   = std::is_trivially_destructible_v<T>;
@@ -165,6 +170,19 @@ template<>			struct	Type_UInt_From_Struct<u32> { using Type = u32; };
 template<>			struct	Type_UInt_From_Struct<u64> { using Type = u64; };
 template<class T>	using	Type_UInt_From = typename Type_UInt_From_Struct<T>::Type;
 
+template<class FUNC>
+struct Type_IsFuncSig_Struct { static constexpr bool value = false; };
+
+template<class RETURN, class...ARGS>
+struct Type_IsFuncSig_Struct<RETURN (ARGS...)> {
+	using FUNC = RETURN (ARGS...);
+	static constexpr bool value =  std::is_invocable_v<FUNC, ARGS...>
+								&& std::is_same_v<RETURN, std::invoke_result_t<FUNC, ARGS...>>;
+};
+
+template<class FUNC>
+constexpr bool Type_IsFuncSig = Type_IsFuncSig_Struct<FUNC>::value;
+
 template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	if (!sz) return 0;
 	Int i = 0;
@@ -172,33 +190,82 @@ template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	return i;
 }
 
-//TODO change to consteval, to ensure it's real string literal
+template<class T> class MutZStrView_;
+using MutZStrView	= MutZStrView_<Char>;
+using MutZStrViewA	= MutZStrView_<CharA>;
+using MutZStrViewW	= MutZStrView_<CharW>;
+using MutZStrView8	= MutZStrView_<Char8>;
+using MutZStrView16	= MutZStrView_<Char16>;
+using MutZStrView32	= MutZStrView_<Char32>;
+
+template<class T> using ZStrView_ = MutZStrView_<const T>;
+using ZStrView		= ZStrView_<Char>;
+using ZStrViewA		= ZStrView_<CharA>;
+using ZStrViewW		= ZStrView_<CharW>;
+using ZStrView8		= ZStrView_<Char8>;
+using ZStrView16	= ZStrView_<Char16>;
+using ZStrView32	= ZStrView_<Char32>;
+
 template<class T>
-class MutStrLit_ {
-	using This = MutStrLit_;
+class MutZStrView_ {
+	using This = MutZStrView_;
+protected:
+	T*	_data = nullptr;
+	Int _size = 0;
 public:
 	using std_string_view = std::basic_string_view< std::remove_const_t<T> >;
-	
-	constexpr MutStrLit_() noexcept = default;
+	using CZView = MutZStrView_<const T>;
 
-	AX_INLINE constexpr MutStrLit_(T* sz, Int size) noexcept : _data(sz), _size(size) {}
-	
+	AX_INLINE constexpr MutZStrView_() = default;
+	AX_INLINE constexpr MutZStrView_(T* sz, Int size) : _data(sz), _size(size) {}
+
 	template<Int N>
-	AX_INLINE constexpr MutStrLit_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
-	
-	AX_INLINE constexpr const T* c_str() const noexcept { return _size ? _data : &_empty_c_str; }
-	AX_INLINE constexpr T*  data() const noexcept { return _data; }
-	AX_INLINE constexpr Int size() const noexcept { return _size; }
+	AX_INLINE constexpr MutZStrView_(T (&sz)[N]) noexcept : _data(sz), _size(N > 0 ? N-1 : 0) {}
+
 	AX_INLINE constexpr std_string_view to_string_view() const noexcept { return std_string_view(_data, _size); }
 
+	constexpr 		T*	data() noexcept			{ return _data; }
+	constexpr const	T*	data() const noexcept	{ return _data; }
+	constexpr	Int		size() const noexcept	{ return _size; }
+	
+	constexpr CZView	constView() const		{ return CZView(_data, _size); }
+	constexpr const T*	c_str() const			{ return _size ? _data : &_empty_c_str; }
+	
+	static constexpr This s_from_c_str(T *sz) { return This(sz, ax_strlen(sz)); } 
+	
+private:
+	static constexpr T _empty_c_str = 0;
+};
+
+AX_INLINE consteval ZStrViewA  operator ""_sv(const CharA * sz, size_t n)  noexcept { return ZStrViewA (sz, n); }
+AX_INLINE consteval ZStrViewW  operator ""_sv(const CharW * sz, size_t n)  noexcept { return ZStrViewW (sz, n); }
+AX_INLINE consteval ZStrView8  operator ""_sv(const Char8 * sz, size_t n)  noexcept { return ZStrView8 (sz, n); }
+AX_INLINE consteval ZStrView16 operator ""_sv(const Char16* sz, size_t n)  noexcept { return ZStrView16(sz, n); }
+AX_INLINE consteval ZStrView32 operator ""_sv(const Char32* sz, size_t n)  noexcept { return ZStrView32(sz, n); }
+
+//TODO change to consteval, to ensure it's real string literal
+template<class T>
+class MutStrLit_ : public MutZStrView_<T> {
+	using This = MutStrLit_;
+	using Base = MutZStrView_<T>;
+	using Base::_data;
+	using Base::_size;
+public:
+
+	constexpr MutStrLit_() noexcept = default;
+	constexpr MutStrLit_(const This&) noexcept = default;
+
+	AX_INLINE constexpr MutStrLit_(T* sz, Int size) noexcept : Base(sz, size) {}
+	
+	template<Int N>
+	AX_INLINE constexpr MutStrLit_(T (&sz)[N]) noexcept : Base(sz) {}
+	
 	AX_NODISCARD AX_INLINE constexpr explicit operator bool() const { return _size > 0; } 
 
 	constexpr MutStrLit_ s_from_c_str(T* sz) noexcept { return MutStrLit_(sz, ax_strlen(sz)); }
 
 protected:
 	static constexpr T _empty_c_str = 0;	
-	T*  _data = nullptr;
-	Int _size = 0;
 };
 
 template<class T> using StrLit_ = MutStrLit_<const T>;
@@ -211,8 +278,65 @@ using StrLit32 = StrLit_<Char32>;
 
 AX_INLINE constexpr StrLit ConstStrLit_bool(bool v) { return v ? StrLit("true") : StrLit("false"); }
 
-class AX_NO_INIT_{};	constexpr AX_NO_INIT_	AX_NO_INIT	= {};
-class AX_ZERO_{};		constexpr AX_ZERO_		AX_ZERO		= {};
+
+// for internal use, i.e. unit test cannot have high level logger functions
+inline void __ax_internal_log(const char* msg) {
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_INFO, "libax", msg);
+#else
+	std::wcout << msg << std::endl;
+#endif
+}
+
+// for internal use, i.e. unit test cannot have high level logger functions
+inline void __ax_internal_logError(const char* msg) {
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_ERROR, "libax", msg);
+#else
+	std::wcerr << msg;
+#endif
+}
+
+void __ax_internal_forceCrash() {
+	std::cout << "ax_force_crash\n";
+	*reinterpret_cast<int*>(1) = 0;
+}
+
+inline void __ax_internal_assert(const char* title, const char* expr, const char* msg, const std::source_location& srcLoc = std::source_location::current()) {
+	const int bufLen = 32 * 1024;
+	char buf[bufLen + 1];
+	snprintf(buf, bufLen,
+		"\n%s\n"
+		"  Expr: %s\n"
+		"  Func: %s\n"
+		"Source: %s:%u:%u\n"
+		"-------------\n"
+		"%s\n",
+		title,
+		expr,
+		srcLoc.function_name(),
+		srcLoc.file_name(), srcLoc.line(), srcLoc.column(),
+		msg);
+	buf[bufLen] = 0; //snprintf might not end with zero if exists bufLen limit
+
+#if AX_OS_WINDOWS & _DEBUG
+	if (1 == _CrtDbgReport(_CRT_ASSERT, srcLoc.file_name(), static_cast<int>(srcLoc.line()), "bax", "%s", buf)) {
+		_CrtDbgBreak();
+	}
+#else
+#if AX_OS_ANDROID
+	__android_log_write(ANDROID_LOG_ERROR, "libax", buf);
+#else
+	std::wcerr << msg;
+#endif
+	assert(false);
+#endif
+}
+
+inline void ax_assert(bool expr, ZStrView exprStr, const std::source_location & srcLoc = std::source_location::current()) {
+	if (expr) return;
+	__ax_internal_assert("ax_assert", exprStr.c_str(), "", srcLoc);
+}
 
 template<class T> using Opt = std::optional<T>;
 
@@ -227,7 +351,7 @@ template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pai
 // } // namespace Tag
 
 struct SrcLoc {
-	constexpr SrcLoc(AX_NO_INIT_) noexcept {}
+	constexpr SrcLoc(AxTag::NoInit_) noexcept {}
 	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) noexcept : _loc(loc) {};
 	
 	constexpr Int    		column	() const noexcept	{ return _loc.column(); }
@@ -264,24 +388,34 @@ AX_INLINE constexpr bool CmpResult_isLesserOrEqual (CmpResult a) { return a == C
 AX_INLINE constexpr bool CmpResult_isGreater       (CmpResult a) { return a == CmpResult::Greater; }
 AX_INLINE constexpr bool CmpResult_isGreaterOrEqual(CmpResult a) { return a == CmpResult::Greater || a == CmpResult::Equal; }
 
+// template<class A>
+// struct FuncOp {
+// 	template<class B = A> struct Equal			{ static constexpr bool invoke(const A& a, const B& b) { return a == b; } };
+// 	template<class B = A> struct NotEqual		{ static constexpr bool invoke(const A& a, const B& b) { return a != b; } };
+// 	template<class B = A> struct Less			{ static constexpr bool invoke(const A& a, const B& b) { return a <  b; } };
+// 	template<class B = A> struct LessEqual		{ static constexpr bool invoke(const A& a, const B& b) { return a <= b; } };
+// 	template<class B = A> struct Greater		{ static constexpr bool invoke(const A& a, const B& b) { return a >  b; } };
+// 	template<class B = A> struct GreaterEqual	{ static constexpr bool invoke(const A& a, const B& b) { return a >= b; } };
+// };
 
-template<class T> struct FuncOp_Equal		{ static constexpr bool invoke(const T& a, const T& b) { return a == b; } };
-template<class T> struct FuncOp_NotEqual	{ static constexpr bool invoke(const T& a, const T& b) { return a != b; } };
-template<class T> struct FuncOp_Less		{ static constexpr bool invoke(const T& a, const T& b) { return a <  b; } };
-template<class T> struct FuncOp_LessEqual	{ static constexpr bool invoke(const T& a, const T& b) { return a <= b; } };
-template<class T> struct FuncOp_Greater		{ static constexpr bool invoke(const T& a, const T& b) { return a >  b; } };
-template<class T> struct FuncOp_GreaterEqual{ static constexpr bool invoke(const T& a, const T& b) { return a >= b; } };
+template<class A, class B> constexpr bool ax_op_equal			(const A& a, const B& b) { return a == b; }
+template<class A, class B> constexpr bool ax_op_not_equal		(const A& a, const B& b) { return a != b; }
+template<class A, class B> constexpr bool ax_op_less			(const A& a, const B& b) { return a <  b; }
+template<class A, class B> constexpr bool ax_op_less_equal		(const A& a, const B& b) { return a <= b; }
+template<class A, class B> constexpr bool ax_op_greater			(const A& a, const B& b) { return a >  b; }
+template<class A, class B> constexpr bool ax_op_greater_equal	(const A& a, const B& b) { return a >= b; }
 
-template<class CH> struct CharHex {
+template<class CH> struct CharHexPair {
 	CH c0, c1;
-	constexpr CharHex() = default;
-	constexpr CharHex(CH c0_, CH c1_) noexcept : c0(c0_), c1(c1_) {}
+	constexpr CharHexPair() = default;
+	constexpr CharHexPair(CH c0_, CH c1_) noexcept : c0(c0_), c1(c1_) {}
 
 	constexpr 		CH*	data() noexcept			{ return &c0; }
 	constexpr const	CH*	data() const noexcept	{ return &c0; }
 	consteval		Int	size() const noexcept	{ return 2; }
 };
 
+//TODO rename to CharFn
 struct CharUtil {
 	CharUtil() = delete;
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha	(CH ch) { return std::isalpha(ch); } 
@@ -341,10 +475,10 @@ struct CharUtil {
 	}
 	
 	template<class CH>
-	AX_NODISCARD AX_INLINE static constexpr CharHex<CH> byteToHex(u8 ch) {
+	AX_NODISCARD AX_INLINE static constexpr CharHexPair<CH> byteToHex(u8 ch) {
 		constexpr char hex[] = "0123456789ABCDEF";
-		return CharHex(	static_cast<CH>(hex[(ch >> 4) & 0xF]),
-						static_cast<CH>(hex[ ch       & 0xF]));
+		return CharHexPair(	static_cast<CH>(hex[(ch >> 4) & 0xF]),
+							static_cast<CH>(hex[ ch       & 0xF]));
 	}
 
 	static constexpr char32_t FourCC(char a, char b, char c, char d ) {
@@ -364,6 +498,20 @@ struct CharUtil {
 	}
 
 	static constexpr char32_t FourCC(const char (&c)[5]) { return FourCC(c[0], c[1], c[2], c[3]); }
+
+	template<class CH>
+	static constexpr CH translateEscapeSequence(CH c) {
+		switch (c) { // https://en.cppreference.com/w/cpp/language/escape
+			case 'a':  return CH('\a');
+			case 'b':  return CH('\b');
+			case 'f':  return CH('\f');
+			case 'n':  return CH('\n');
+			case 'r':  return CH('\r');
+			case 't':  return CH('\t');
+			case 'v':  return CH('\v');
+		}
+		return c;
+	}
 };
 
 template<class LAMBDA>
@@ -488,13 +636,35 @@ AX_SIMPLE_ERROR(Error_JsonValue)
 
 template<class DST, class SRC> AX_INLINE
 constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {
-	using DST_NUM = Type_MaybeEnumInt<DST>;
-	using SRC_NUM = Type_MaybeEnumInt<SRC>;
-	
-	if (!std::in_range<DST_NUM>(static_cast<SRC_NUM>(src))) return false;
+	if constexpr (std::is_floating_point_v<SRC> && std::is_floating_point_v<DST>) {
+		// float -> float
+		dst = static_cast<DST>(src);
+		return true;
+		
+	} else if constexpr (std::is_integral_v<SRC> && std::is_floating_point_v<DST>) {
+		// int -> float
+		dst = static_cast<DST>(src);
+		return true;
+		
+	} else if constexpr (std::is_floating_point_v<SRC> && std::is_integral_v<DST>) {
+		// float -> int
+		using DST_LIMIT = std::numeric_limits<DST>;
+		using FLOAT = SRC;
+		if (src < static_cast<FLOAT>(DST_LIMIT::lowest())) { AX_ASSERT_MSG(false, "safe_cast"); return false; }
+		if (src > static_cast<FLOAT>(DST_LIMIT::max()   )) { AX_ASSERT_MSG(false, "safe_cast"); return false; }
+		dst = static_cast<DST>(src);
+		return true;
+		
+	} else {
+		// enum/int -> enum/int
+		using DST_INT = Type_MaybeEnumInt<DST>;
+		using SRC_INT = Type_MaybeEnumInt<SRC>;
+		
+		if (!std::in_range<DST_INT>(static_cast<SRC_INT>(src))) { AX_ASSERT_MSG(false, "safe_cast"); return false; }
 
-	dst = static_cast<DST>(src);
-	return true;
+		dst = static_cast<DST>(src);
+		return true;
+	}
 }
 
 template<class DST, class SRC> AX_INLINE
@@ -639,65 +809,6 @@ inline constexpr Float Float_infinity    = NumLimit<Float>::infinity;
 inline constexpr f32   f32_negInfinity   = NumLimit<f32>::negInfinity;
 inline constexpr f64   f64_negInfinity   = NumLimit<f64>::negInfinity;
 inline constexpr Float Float_negInfinity = NumLimit<Float>::negInfinity;
-
-// for internal use, i.e. unit test cannot have high level logger functions
-inline void __ax_internal_log(const char* msg) {
-#if AX_OS_ANDROID
-	__android_log_write(ANDROID_LOG_INFO, "libax", msg);
-#else
-	std::wcout << msg << std::endl;
-#endif
-}
-
-// for internal use, i.e. unit test cannot have high level logger functions
-inline void __ax_internal_logError(const char* msg) {
-#if AX_OS_ANDROID
-	__android_log_write(ANDROID_LOG_ERROR, "libax", msg);
-#else
-	std::wcerr << msg;
-#endif
-}
-
-void __ax_internal_forceCrash() {
-	std::cout << "ax_force_crash\n";
-	*reinterpret_cast<int*>(1) = 0;
-}
-
-inline void __ax_internal_assert(const char* title, const char* expr, const char* msg, const std::source_location& srcLoc = std::source_location::current()) {
-	const int bufLen = 32 * 1024;
-	char buf[bufLen + 1];
-	snprintf(buf, bufLen,
-		"\n%s\n"
-		"  Expr: %s\n"
-		"  Func: %s\n"
-		"Source: %s:%u:%u\n"
-		"-------------\n"
-		"%s\n",
-		title,
-		expr,
-		srcLoc.function_name(),
-		srcLoc.file_name(), srcLoc.line(), srcLoc.column(),
-		msg);
-	buf[bufLen] = 0; //snprintf might not end with zero if exists bufLen limit
-
-#if AX_OS_WINDOWS & _DEBUG
-	if (1 == _CrtDbgReport(_CRT_ASSERT, srcLoc.file_name(), static_cast<int>(srcLoc.line()), "bax", "%s", buf)) {
-		_CrtDbgBreak();
-	}
-#else
-#if AX_OS_ANDROID
-	__android_log_write(ANDROID_LOG_ERROR, "libax", buf);
-#else
-	std::wcerr << msg;
-#endif
-	assert(false);
-#endif
-}
-
-inline void ax_assert(bool expr, StrLit exprStr, const std::source_location & srcLoc = std::source_location::current()) {
-	if (expr) return;
-	__ax_internal_assert("ax_assert", exprStr.c_str(), "", srcLoc);
-}
 
 struct DebuggerNatvisHex {
 	// UpperCase
