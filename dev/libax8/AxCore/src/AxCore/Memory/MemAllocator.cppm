@@ -25,7 +25,7 @@ AX_INLINE void ax_free(void* p) {
 
 class MemAllocRequest : public NonCopyable {
 public:
-	MemAllocRequest(MemAllocator* allocator_, const SrcLoc& srcLoc_ = SrcLoc()) : allocator(allocator_), srcLoc(srcLoc_) {}
+	MemAllocRequest(MemAllocator* allocator_, const SrcLoc& srcLoc_ = SrcLoc::s_current()) : allocator(allocator_), srcLoc(srcLoc_) {}
 	MemAllocator*	allocator = nullptr;
 	Int				dataSize = 0;
 	Int				alignment = AX_SIZEOF(void*);
@@ -78,7 +78,7 @@ class MemAllocator {
 public:
 	
 	template<class T>
-	MemAllocResult<T> allocArray(Int reqSize, Int alignment = AX_ALIGNOF(T), const SrcLoc srcLoc = SrcLoc()) {
+	MemAllocResult<T> allocArray(Int reqSize, Int alignment = AX_ALIGNOF(T), const SrcLoc srcLoc = SrcLoc::s_current()) {
 		constexpr Int kMinByteSize = 64;
 		reqSize = Math::max(reqSize, kMinByteSize / AX_SIZEOF(T));
 		reqSize = Math::nextPow2_half(reqSize);

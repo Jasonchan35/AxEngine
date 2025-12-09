@@ -80,6 +80,9 @@ namespace  AxTag {
 	class Zero_{};			constexpr Zero_			Zero		= {};
 } // AxTag
 
+template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
+template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
+
 template<class T> constexpr bool Type_isTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<T>;
 template<class T> constexpr bool Type_IsTriviallyDestructible   = std::is_trivially_destructible_v<T>;
 
@@ -352,7 +355,9 @@ template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pai
 
 struct SrcLoc {
 	constexpr SrcLoc(AxTag::NoInit_) noexcept {}
-	constexpr SrcLoc(const std::source_location & loc = std::source_location::current()) noexcept : _loc(loc) {};
+	constexpr SrcLoc(const std::source_location & loc) noexcept : _loc(loc) {};
+
+	static constexpr SrcLoc s_current() { return std::source_location::current(); }
 	
 	constexpr Int    		column	() const noexcept	{ return _loc.column(); }
 	constexpr Int    		line	() const noexcept	{ return _loc.line(); }
@@ -608,8 +613,8 @@ struct ScopeEnterOnce : public NonCopyable {
 
 class Error : public std::exception {
 public:
-	Error() = default;
-	Error(const SrcLoc& srcLoc) : _srcLoc(srcLoc) {}
+//	Error() = default;
+	Error(const SrcLoc& srcLoc = SrcLoc::s_current()) : _srcLoc(srcLoc) {}
 	Error(std::string_view msg, const SrcLoc& srcLoc) : _what(msg), _srcLoc(srcLoc) {}
 
 	virtual char const* what() const override { return _what.c_str(); }
@@ -669,10 +674,14 @@ struct SafeCast {
 
 	template<class DST>
 	constexpr inline DST To() const {
-		if (auto result = ax_try_safe_cast_<DST>(src)) {
-			return result.value();
+		if constexpr (Type_IsSame<DST, SRC>) {
+			return src;
+		} else {
+			if (auto result = ax_try_safe_cast_<DST>(src)) {
+				return result.value();
+			}
+			throw Error_SafeCast();
 		}
-		throw Error_SafeCast();
 	}
 	
 	template <typename DST>	constexpr operator DST() const { return To<DST>(); }
@@ -747,9 +756,6 @@ protected:
 	T* _p;
 };
 
-template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
-template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
-
 template<class T> struct NumLimit_Struct {
 	using Type = typename T::_NumLimit;
 };
@@ -773,21 +779,8 @@ struct NumLimit_Struct<T> { using Type = NumLimit_FundamentalType<T>; };
 template<class T>
 using NumLimit = typename NumLimit_Struct<T>::Type;
 
-inline constexpr f32   f32_epsilon       = NumLimit<f32>::epsilon();
-inline constexpr f64   f64_epsilon       = NumLimit<f64>::epsilon();
-inline constexpr Float Float_epsilon     = NumLimit<Float>::epsilon();
 
-inline constexpr f32   f32_NaN           = NumLimit<f32>::NaN();
-inline constexpr f64   f64_NaN           = NumLimit<f64>::NaN();
-inline constexpr Float Float_NaN         = NumLimit<Float>::NaN();
 
-inline constexpr f32   f32_infinity      = NumLimit<f32>::infinity();
-inline constexpr f64   f64_infinity      = NumLimit<f64>::infinity();
-inline constexpr Float Float_infinity    = NumLimit<Float>::infinity();
-
-inline constexpr f32   f32_negInfinity   = NumLimit<f32>::negInfinity();
-inline constexpr f64   f64_negInfinity   = NumLimit<f64>::negInfinity();
-inline constexpr Float Float_negInfinity = NumLimit<Float>::negInfinity();
 
 struct DebuggerNatvisHex {
 	// UpperCase

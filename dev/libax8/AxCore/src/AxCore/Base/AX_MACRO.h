@@ -162,8 +162,8 @@
 #define AX_SIMPLE_ERROR(ERROR_TYPE) \
 	class ERROR_TYPE : public Error { \
 		public: \
-		ERROR_TYPE(const SrcLoc& srcLoc = SrcLoc()) : Error(srcLoc) {} \
-		ERROR_TYPE(std::string_view msg, const SrcLoc& srcLoc = SrcLoc()) : Error(msg, srcLoc) {} \
+		ERROR_TYPE(const SrcLoc& srcLoc = SrcLoc::s_current()) : Error(srcLoc) {} \
+		ERROR_TYPE(std::string_view msg, const SrcLoc& srcLoc = SrcLoc::s_current()) : Error(msg, srcLoc) {} \
 	}; \
 //------
 
@@ -273,9 +273,9 @@
 #define AX_NAMEID(STR) AX_NAMEID_FUNC(STR)()
 
 //----- Logger
-#define AX_LOG(fmt, ...)			do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Info,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
-#define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
-#define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG(fmt, ...)			do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Info,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_FLUSH()				do{ ::ax::Logger::s_get()->flush(); } while(false)
 
 #define AX_LOG_WIN32_LAST_ERROR(msg)	do{ AX_LOG("Win32 Error {} {}", AX_Win32_Error::s_lastError(), StrView(msg)); }while(false)

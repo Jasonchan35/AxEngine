@@ -82,7 +82,7 @@ public:
 };
 
 template<class T> inline
-void ax_dump_json_impl(T& value, const SrcLoc& loc = SrcLoc()) {
+void ax_dump_json_impl(T& value, const SrcLoc& loc = SrcLoc::s_current()) {
 	TempStringA json;
 	JsonIO_Writer se(json);
 	se.io(value);
