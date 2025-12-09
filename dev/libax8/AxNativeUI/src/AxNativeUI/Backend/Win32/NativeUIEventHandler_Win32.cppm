@@ -4,6 +4,7 @@
 
 export module AxNativeUI:NativeUIEventHandler_Win32;
 export import :NativeUIWindow_Base;
+export import :NativeUI_Win32;
 
 export namespace ax {
 

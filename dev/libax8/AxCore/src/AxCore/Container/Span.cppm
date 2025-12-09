@@ -195,7 +195,6 @@ public:
 	constexpr bool	    equals (Span<R> r) const noexcept;
 
 	constexpr bool operator==(CSpan r) const noexcept { return  equals(r); }
-//	constexpr bool operator!=(CSpan r) const noexcept { return !equals(r); }
 
 	template<class R>
 	constexpr bool operator==(Span<R> r) const noexcept { return equals(r); }
@@ -282,7 +281,7 @@ public:
 
 	constexpr void copyValues(CSpan v, Int offset = 0);
 	constexpr void fillValues(const T& v);
-	
+
 	constexpr Opt<Int> getIndexFromElementPtr(const T* element) const;
 
 	template<class TT> using Iter = TT*; 
@@ -314,6 +313,21 @@ class Span_BaseFunc {
 	constexpr MSpan _obj_span()			{ return static_cast<      OBJ*>(this)->span(); }
 	constexpr CSpan _obj_span() const	{ return static_cast<const OBJ*>(this)->span(); }
 public:
+	AX_NODISCARD AX_INLINE constexpr bool isOverlapped(CSpan rhs) const noexcept { return _obj_span().isOverlapped(rhs); }
+
+	template<class R, class Func>
+	constexpr CmpResult compare(Span<R> r, Func func) const noexcept { return _obj_span().compare(r, func); }
+
+	template<class R>
+	constexpr bool	    equals (Span<R> r) const noexcept { return _obj_span().equals(r); }
+
+	constexpr bool operator==(CSpan r) const noexcept { return _obj_span() == r; }
+
+	template<class R>
+	constexpr bool operator==(Span<R> r) const noexcept { return _obj_span() == r; }
+
+
+	
 	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan()		{ return _obj_span().toByteSpan(); }
 	AX_NODISCARD AX_INLINE constexpr ByteSpan	toByteSpan() const	{ return _obj_span().toByteSpan(); }
 
@@ -334,9 +348,6 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return _obj_span().slice(offset); }
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return _obj_span().slice(offset); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return _obj_span().slice(offset); }
-
-	AX_INLINE constexpr		void		copyValues	(Span<T> v, Int offset = 0)		{ _obj_span().copyValues(v, offset); }
-	AX_INLINE constexpr		void		fillValues	(const T& v)					{ _obj_span().fillValues(v); }
 
 	using MFindResult = Span_FindResult<T>;
 	using CFindResult = Span_FindResult<const T>;
@@ -359,6 +370,21 @@ public:
 	constexpr void	sort(FUNC func)	{ _obj_span().template sort<FUNC>(func); }
 	constexpr void	sort()			{ _obj_span().sort(); }
 
+
+	constexpr void copyValues(CSpan v, Int offset = 0)	{ _obj_span().copyValues(v, offset); }
+	constexpr void fillValues(const T& v)				{ _obj_span().fillValues(v); }
+	
+	constexpr Opt<Int> getIndexFromElementPtr(const T* element) const { _obj_span().getIndexFromElementPtr(element); }
+
+	template<class TT> using Iter = TT*; 
+	constexpr Iter<T>		begin	()		 noexcept	{ return _obj_span().begin(); }
+	constexpr Iter<const T>	begin	() const noexcept	{ return _obj_span().begin(); }
+	constexpr Iter<T>		end		()		 noexcept	{ return _obj_span().end(); }
+	constexpr Iter<const T>	end		() const noexcept	{ return _obj_span().end(); }
+
+	template<class TT> using RevForEach_ = Span_RevForEach_<TT>;
+	constexpr auto revForEach	()			{ return _obj_span().revForEach(); }
+	constexpr auto revForEach	() const	{ return _obj_span().revForEach(); }
 };
 
 template<class T> constexpr 

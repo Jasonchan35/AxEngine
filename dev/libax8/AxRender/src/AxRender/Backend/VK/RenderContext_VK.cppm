@@ -50,8 +50,7 @@ protected:
 	Array< UPtr<BackBuffer_VK> >	_backBuffers;
 };
 
-
-
+#if AX_NATIVE_UI_WIN32
 
 class RenderContext_VK_Win32 : public RenderContext_VK_Base {
 	AX_RTTI_INFO(RenderContext_VK_Win32, RenderContext_VK_Base)
@@ -88,15 +87,18 @@ private:
 
 	static const u32 kRenderTimerId = 100;
 };
-	
 
-#if AX_NATIVE_UI_WIN32
-	using RenderContext_VK_Impl = RenderContext_VK_Win32;
-#elif AX_NATIVE_UI_X11
+using RenderContext_VK_Impl = RenderContext_VK_Win32;
+
+// #if AX_NATIVE_UI_WIN32
+#elif AX_NATIVE_UI_X11  
+	
 	using RenderContext_VK_Impl = RenderContext_VK_X11;
 #else
 	#error
 #endif
+
+
 
 class RenderContext_VK : public RenderContext_VK_Impl {
 	AX_RTTI_INFO(RenderContext_VK, RenderContext_VK_Impl)

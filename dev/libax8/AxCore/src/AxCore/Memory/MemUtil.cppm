@@ -30,6 +30,9 @@ struct MemUtil {
 	template<class T> static constexpr void moveConstructor(T* dst, T* src, Int n);
 	template<class T> static constexpr void moveConstructorAndDestructor(T* dst, T* src, Int n);
 
+	template<class T, class R, class FUNC>
+	static constexpr void copyConstructorFunc(T* dst, const R* src, Int n, FUNC func);
+	
 	template<class T> static constexpr bool equals(const T* dst, const T* src, Int n);
 
 	template<class T> AX_INLINE
@@ -236,6 +239,20 @@ void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 			// TODO: catch exception and rewind the move here before re-throw
 			throw;
 		}
+	}
+}
+
+template <class T, class R, class FUNC>
+constexpr void MemUtil::copyConstructorFunc(T* dst, const R* src, Int n, FUNC func) {
+	if( n <= 0 ) return;
+	if (isOverlapped(dst, n, src, n)) {
+		throw Error_BufferOverlapped();
+	}
+
+	auto s = src;
+	auto e = src + n ;
+	for( ; s<e; ++s, ++dst ) {
+		ax_call_constructor(dst, func(*s));
 	}
 }
 

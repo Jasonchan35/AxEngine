@@ -683,16 +683,17 @@ template<class SRC>
 struct SafeCast {
 	const SRC& src;
 	
-	constexpr SafeCast(const SRC& src_) : src(src_) {} 
-	
+	constexpr SafeCast(const SRC& src_) : src(src_) {}
+
 	template <typename DST>
-	constexpr operator DST() const { // T is deduced here!
+	DST castTo() const {
 		DST dst;
-		if (!ax_try_safe_cast(dst, src)) {
-			throw Error_SafeCast();
-		}
+		if (!ax_try_safe_cast(dst, src)) throw Error_SafeCast();
 		return dst;
 	}
+
+	template <typename DST> // T is deduced here!
+	constexpr operator DST() const { return castTo<DST>(); }
 };
 
 #if AX_OS_WINDOWS

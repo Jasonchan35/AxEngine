@@ -45,14 +45,16 @@ public:
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
-	constexpr void appendRange(Span<T> item);
+	constexpr void appendRange(Span<T> src);
+
+	template<class R, class FUNC>
+	constexpr void appendRange(Span<R> src, FUNC func);
 	
-	AX_INLINE constexpr void operator << (const T &  item)  { append(item); }
-	AX_INLINE constexpr void operator << (      T && item)  { append(AX_FORWARD(item)); }
+	AX_INLINE constexpr void operator<<(const T &  item)  { append(item); }
+	AX_INLINE constexpr void operator<<(      T && item)  { append(AX_FORWARD(item)); }
 
 	AX_INLINE constexpr void operator=(      CSpan   src) { Base::_storageCopy(src); }
 	AX_INLINE constexpr void operator=(const This &  src) { Base::_storageCopy(src); }
-	
 	AX_INLINE constexpr void operator=(      This && src) { Base::_storageMove(AX_FORWARD(src)); }
 
 	AX_NODISCARD AX_INLINE constexpr MSpan	span		()			{ return MutSpan<T>(data(), size()); }
@@ -200,25 +202,39 @@ concept CON_IsIArray = requires (OBJ obj) {
 template <class T>
 constexpr void IArray<T>::append(const T& item) {
 	auto oldSize = size();
-	reserve(oldSize + 1);
+	auto newSize = oldSize + 1;
+	reserve(newSize);
 	ax_call_constructor<T>(data() + oldSize, item);
-	_storage.setSize(oldSize + 1);
+	_storage.setSize(newSize);
 }
 
 template <class T>
 constexpr void IArray<T>::append(T && item) {
 	auto oldSize = size();
-	reserve(oldSize + 1);
+	auto newSize = oldSize + 1;
+	reserve(newSize);
 	ax_call_constructor<T>(data() + oldSize, AX_FORWARD(item));
-	_storage.setSize(oldSize + 1);
+	_storage.setSize(newSize);
 }
 
 template <class T>
-constexpr void IArray<T>::appendRange(Span<T> item) {
+constexpr void IArray<T>::appendRange(Span<T> src) {
 	auto oldSize = size();
-	reserve(oldSize + item.size());
-	MemUtil::copyConstructor(data() + oldSize, item.data(), item.size());
-	_storage.setSize(oldSize + 1);
+	auto newSize = oldSize + src.size();
+	reserve(newSize);
+	MemUtil::copyConstructor(data() + oldSize, src.data(), src.size());
+	_storage.setSize(newSize);
+}
+
+template <class T>
+template <class R, class FUNC>
+constexpr void IArray<T>::appendRange(Span<R> src, FUNC func) {
+//	static_assert(std::is_convertible_v<FUNC, const R&>);
+	auto oldSize = size();
+	auto newSize = oldSize + src.size();
+	reserve(newSize);
+	MemUtil::copyConstructorFunc(data() + oldSize, src.data(), src.size(), func);
+	_storage.setSize(newSize);
 }
 
 template <class T>
@@ -227,7 +243,8 @@ constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
 	auto oldSize = size();
 	if (range.begin() > oldSize) { AX_ASSERT(false); return; }
 
-	resize(oldSize + range.size());
+	auto newSize = oldSize + range.size();
+	resize(newSize);
 
 	auto* p = data();
 

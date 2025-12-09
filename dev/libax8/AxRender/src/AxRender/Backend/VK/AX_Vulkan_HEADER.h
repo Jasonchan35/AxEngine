@@ -7,4 +7,18 @@
 	#include <vulkan/vulkan_win32.h>
 #endif
 
+#define AX_VkExtProcList_ENUM_LIST(E) \
+	E(vkCreateDebugReportCallbackEXT) \
+	E(vkDestroyDebugReportCallbackEXT) \
+	E(vkSetDebugUtilsObjectNameEXT) \
+	E(vkSetDebugUtilsObjectTagEXT) \
+	E(vkQueueInsertDebugUtilsLabelEXT) \
+	E(vkCmdBeginDebugUtilsLabelEXT) \
+	E(vkCmdEndDebugUtilsLabelEXT) \
+//	E(vkCmdSetCheckpointNV)	\
+//	E(vkGetQueueCheckpointDataNV) \
+//	E(vkCreateSwapchainKHR) \
+//------
+
+
 #endif

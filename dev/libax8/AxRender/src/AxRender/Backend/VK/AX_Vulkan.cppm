@@ -9,19 +9,6 @@ export namespace ax::AxRender {
 
 enum class AX_VkQueueFamilyIndex : u32 { Invalid = UINT32_MAX };
 
-#define AX_VkExtProcList_ENUM_LIST(E) \
-	E(vkCreateDebugReportCallbackEXT) \
-	E(vkDestroyDebugReportCallbackEXT) \
-	E(vkSetDebugUtilsObjectNameEXT) \
-	E(vkSetDebugUtilsObjectTagEXT) \
-	E(vkQueueInsertDebugUtilsLabelEXT) \
-	E(vkCmdBeginDebugUtilsLabelEXT) \
-	E(vkCmdEndDebugUtilsLabelEXT) \
-//	E(vkCmdSetCheckpointNV)	\
-//	E(vkGetQueueCheckpointDataNV) \
-//	E(vkCreateSwapchainKHR) \
-//------
-
 class AX_VkExtProcList : public NonCopyable {
 public:
 	static void s_create(VkInstance inst);
@@ -247,11 +234,11 @@ public:
 
 	void present(	Span<VkSemaphore>		waitSemaphores,
 					Span<VkSwapchainKHR>	swapchains,
-					Span<u32>				imageIndexInSwapchains);
+					Span<u32>				imageIndexInSwapchains) { return _present(waitSemaphores, swapchains, imageIndexInSwapchains); }
 
 	void present(	VkSemaphore				waitSemaphore,
 					VkSwapchainKHR			swapchain,
-					Int						imageIndexInSwapchain);
+					Span<Int>				imageIndexInSwapchain);
 
 #if AX_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
@@ -259,6 +246,11 @@ public:
 
 friend class AX_VkDevice;
 protected:
+	void _present(	Span<VkSemaphore>		waitSemaphores,
+					Span<VkSwapchainKHR>	swapchains,
+					Span<u32>				imageIndexInSwapchains);
+
+	
 	VkQueue		_handle = VK_NULL_HANDLE;
 	AX_VkDevice*	_dev = nullptr;
 };
