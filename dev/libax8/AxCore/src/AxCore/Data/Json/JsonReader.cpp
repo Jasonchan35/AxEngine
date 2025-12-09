@@ -527,7 +527,7 @@ void JsonReader::_readNumericValue(V& outValue) {
 	if constexpr (std::is_floating_point_v<V>) {
 		if (valueIsString()) {
 			if (_token.str == "NaN") {
-				outValue = Math::NaN<V>;
+				outValue = Math::NaN();
 				next();
 				return;
 
@@ -537,7 +537,7 @@ void JsonReader::_readNumericValue(V& outValue) {
 				return;
 
 			} else if (_token.str == "-Infinity") {
-				outValue = Math::negInfinity<V>;
+				outValue = Math::negInfinity();
 				next();
 				return;
 			}

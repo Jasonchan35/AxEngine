@@ -125,7 +125,7 @@ public:
 			//bool operator==			(const This &r) const	{ return cx == r.cx && cy == r.cy && cw == r.cw && cz == r.cz; }
 			//bool operator!=			(const This &r) const	{ return cx != r.cx || cy != r.cy || cw != r.cw || cz != r.cz; }
 
-	AX_NODISCARD constexpr 		bool almostEqual			(const This &r, const T& ep = Math::epsilon<T>) const;
+	AX_NODISCARD constexpr 		bool almostEqual		(const This &r, const T& ep = Math::epsilon_<T>()) const;
 
 	AX_NODISCARD constexpr 		This operator+			(const T& s) const		{ return This(cx + s, cy + s, cz + s, cw + s); }
 	AX_NODISCARD constexpr 		This operator-			(const T& s) const		{ return This(cx - s, cy - s, cz - s, cw - s); }

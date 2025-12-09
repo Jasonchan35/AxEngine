@@ -10,16 +10,14 @@ export namespace ax::Math {
 template <class T> requires Type_AnyInt<T>
 AX_NODISCARD AX_INLINE constexpr Type_Float_From<T> auto_int_to_float(const T& i) { return static_cast<Type_Float_From<T>>(i); }
 
-template<class T>	inline constexpr T		PI_			= T(3.14159265358979323846);
-template<class T>	inline constexpr T		PI_2_		= PI_<T> * T(2);
-template<class T>	inline constexpr T		PI_half_	= PI_<T> * T(0.5);
+template<class T> AX_INLINE constexpr T	PI_() { return T(3.14159265358979323846); }
 
-inline constexpr Float PI		= PI_<Float>;
-inline constexpr Float PI_2		= PI_2_<Float>;
-inline constexpr Float PI_half	= PI_half_<Float>;
+struct PI {
+	template<class T> AX_INLINE constexpr operator T() const { return PI_<T>(); } 
+};
 
-template<class T> AX_NODISCARD AX_INLINE constexpr T radians	(T deg) { return deg * (PI_<T> / T(180.0)); }
-template<class T> AX_NODISCARD AX_INLINE constexpr T degrees	(T rad) { return rad * (T(180.0) / PI_<T>); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T radians	(T deg) { return deg * (PI_<T>() / T(180.0)); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T degrees	(T rad) { return rad * (T(180.0) / PI_<T>()); }
 
 template< class T > constexpr T	reciprocal( const T& a ) { return safeDiv(T(1), a); }
 

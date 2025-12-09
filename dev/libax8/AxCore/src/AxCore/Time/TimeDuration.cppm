@@ -33,7 +33,7 @@ public:
 	constexpr explicit TimeDuration_(const TimeDuration_<T, R>& v) noexcept { convert(v); }
 
 	AX_INLINE static constexpr This kZero() { return This(0); }
-	AX_INLINE static constexpr This kMax()  { return This(NumLimit<T>::max); }
+	AX_INLINE static constexpr This kMax()  { return This(NumLimit<T>::max()); }
 
 	constexpr This s_f32(f32 s) noexcept { return This(static_cast<T>(s * f32(RATIO))); }
 	constexpr This s_f64(f64 s) noexcept { return This(static_cast<T>(s * f64(RATIO))); }

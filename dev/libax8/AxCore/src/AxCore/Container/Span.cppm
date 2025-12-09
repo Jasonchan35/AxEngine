@@ -374,7 +374,7 @@ public:
 	constexpr void copyValues(CSpan v, Int offset = 0)	{ _obj_span().copyValues(v, offset); }
 	constexpr void fillValues(const T& v)				{ _obj_span().fillValues(v); }
 	
-	constexpr Opt<Int> getIndexFromElementPtr(const T* element) const { _obj_span().getIndexFromElementPtr(element); }
+	constexpr Opt<Int> getIndexFromElementPtr(const T* element) const { return _obj_span().getIndexFromElementPtr(element); }
 
 	template<class TT> using Iter = TT*; 
 	constexpr Iter<T>		begin	()		 noexcept	{ return _obj_span().begin(); }

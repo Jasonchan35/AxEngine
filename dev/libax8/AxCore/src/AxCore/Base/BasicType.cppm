@@ -778,15 +778,15 @@ template<class T> struct NumLimit_Struct {
 
 template<class T>
 struct NumLimit_FundamentalType {
-	static constexpr bool isExactType    =  std::numeric_limits<T>::is_exact;
-	static constexpr bool hasInfinity    =  std::numeric_limits<T>::has_infinity;
-	static constexpr T    infinity       =  std::numeric_limits<T>::infinity();
-	static constexpr T    negInfinity    = -std::numeric_limits<T>::infinity();
-	static constexpr T    lowest         =  std::numeric_limits<T>::lowest();
-	static constexpr T    min            =  std::numeric_limits<T>::min();
-	static constexpr T    max            =  std::numeric_limits<T>::max();
-	static constexpr T    epsilon        =  std::numeric_limits<T>::epsilon();
-	static constexpr T    NaN            =  std::numeric_limits<T>::quiet_NaN();
+	static constexpr bool isExact        =  std::numeric_limits<T>::is_exact;    
+	static constexpr bool hasInfinity    =  std::numeric_limits<T>::has_infinity; 
+	static constexpr T    infinity       () { return  std::numeric_limits<T>::infinity();    }
+	static constexpr T    negInfinity    () { return -std::numeric_limits<T>::infinity();    }
+	static constexpr T    lowest         () { return  std::numeric_limits<T>::lowest();      }
+	static constexpr T    min            () { return  std::numeric_limits<T>::min();         }
+	static constexpr T    max            () { return  std::numeric_limits<T>::max();         }
+	static constexpr T    epsilon        () { return  std::numeric_limits<T>::epsilon();     }
+	static constexpr T    NaN            () { return  std::numeric_limits<T>::quiet_NaN();   }
 };
 
 template<class T> requires Type_IsFundamental<T>
@@ -795,21 +795,21 @@ struct NumLimit_Struct<T> { using Type = NumLimit_FundamentalType<T>; };
 template<class T>
 using NumLimit = typename NumLimit_Struct<T>::Type;
 
-inline constexpr f32   f32_epsilon       = NumLimit<f32>::epsilon;
-inline constexpr f64   f64_epsilon       = NumLimit<f64>::epsilon;
-inline constexpr Float Float_epsilon     = NumLimit<Float>::epsilon;
+inline constexpr f32   f32_epsilon       = NumLimit<f32>::epsilon();
+inline constexpr f64   f64_epsilon       = NumLimit<f64>::epsilon();
+inline constexpr Float Float_epsilon     = NumLimit<Float>::epsilon();
 
-inline constexpr f32   f32_NaN           = NumLimit<f32>::NaN;
-inline constexpr f64   f64_NaN           = NumLimit<f64>::NaN;
-inline constexpr Float Float_NaN         = NumLimit<Float>::NaN;
+inline constexpr f32   f32_NaN           = NumLimit<f32>::NaN();
+inline constexpr f64   f64_NaN           = NumLimit<f64>::NaN();
+inline constexpr Float Float_NaN         = NumLimit<Float>::NaN();
 
-inline constexpr f32   f32_infinity      = NumLimit<f32>::infinity;
-inline constexpr f64   f64_infinity      = NumLimit<f64>::infinity;
-inline constexpr Float Float_infinity    = NumLimit<Float>::infinity;
+inline constexpr f32   f32_infinity      = NumLimit<f32>::infinity();
+inline constexpr f64   f64_infinity      = NumLimit<f64>::infinity();
+inline constexpr Float Float_infinity    = NumLimit<Float>::infinity();
 
-inline constexpr f32   f32_negInfinity   = NumLimit<f32>::negInfinity;
-inline constexpr f64   f64_negInfinity   = NumLimit<f64>::negInfinity;
-inline constexpr Float Float_negInfinity = NumLimit<Float>::negInfinity;
+inline constexpr f32   f32_negInfinity   = NumLimit<f32>::negInfinity();
+inline constexpr f64   f64_negInfinity   = NumLimit<f64>::negInfinity();
+inline constexpr Float Float_negInfinity = NumLimit<Float>::negInfinity();
 
 struct DebuggerNatvisHex {
 	// UpperCase

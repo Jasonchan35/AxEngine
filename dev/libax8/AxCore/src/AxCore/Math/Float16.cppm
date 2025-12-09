@@ -258,13 +258,12 @@ constexpr float Float16::s_overflow() {
 #pragma warning(pop)
 
 struct Float16::_NumLimit {
-	static constexpr bool isExactType    =  false;
+	static constexpr bool isExact = false;
 	
 	// static constexpr f16    lowest         =  std::numeric_limits<f16>::lowest();
 	// static constexpr f16    min            =  std::numeric_limits<f16>::min();
 	// static constexpr f16    max            =  std::numeric_limits<f16>::max();
-		static constexpr f16    epsilon        =  f16::s_epsilon();
-
+		static constexpr f16    epsilon       () { return f16::s_epsilon(); }
 	// TODO
 	// static constexpr f16    NaN            =  std::numeric_limits<f16>::quiet_NaN();
 	// static constexpr bool   hasInfinity    =  std::numeric_limits<f16>::has_infinity;
@@ -276,7 +275,5 @@ struct Float16::_NumLimit {
 	// static constexpr f16    minExponent10  =  std::numeric_limits<f16>::min_exponent10;
 	// static constexpr f16    maxExponent10  =  std::numeric_limits<f16>::max_exponent10;
 };
-
-inline constexpr f16 f16_epsilon = NumLimit<f16>::epsilon;
 
 } // namespace ax

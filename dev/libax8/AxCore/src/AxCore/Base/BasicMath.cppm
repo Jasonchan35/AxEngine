@@ -8,14 +8,14 @@ export import AxCore.BasicType;
 
 export namespace ax::Math {
 
-template<Int N, class T> struct s_pos_struct;
-template<class T> struct s_pos_struct<0,T> { static constexpr T compute(const T& v) { return 1; } };
-template<class T> struct s_pos_struct<1,T> { static constexpr T compute(const T& v) { return v; } };
-template<class T> struct s_pos_struct<2,T> { static constexpr T compute(const T& v) { return v * v; } };
-template<class T> struct s_pos_struct<3,T> { static constexpr T compute(const T& v) { return v * v * v; } };
+template<Int N, class T> struct _s_pow_;
+template<class T> struct _s_pow_<0,T> { static constexpr T compute(const T& v) { return 1; } };
+template<class T> struct _s_pow_<1,T> { static constexpr T compute(const T& v) { return v; } };
+template<class T> struct _s_pow_<2,T> { static constexpr T compute(const T& v) { return v * v; } };
+template<class T> struct _s_pow_<3,T> { static constexpr T compute(const T& v) { return v * v * v; } };
 
 template<Int N, class T>
-constexpr T s_pow(const T& v) { return s_pos_struct<N, T>::compute(v); } 
+constexpr T s_pow(const T& v) { return _s_pow_<N, T>::compute(v); } 
 
 //-------------------------
 template< class T > constexpr Int sign( const T& a ) {
@@ -91,20 +91,29 @@ template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexp
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int  ceil_to_Int(const T& src) { return static_cast<Int>(ceil( src)); }
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int floor_to_Int(const T& src) { return static_cast<Int>(floor(src)); }
 
-template<class T> inline constexpr T infinity_() { return NumLimit<T>::infinity; }
-template<class T> inline constexpr T epsilon		= NumLimit<T>::epsilon;
-template<class T> inline constexpr T NaN			= NumLimit<T>::NaN;
-template<class T> inline constexpr T negInfinity	= NumLimit<T>::negInfinity;
-
+template<class T> inline constexpr T infinity_() { return NumLimit<T>::infinity(); }
 struct infinity { template<class T> constexpr operator T() const { return infinity_<T>(); } };
+
+template<class T> inline constexpr T epsilon_()	{ return NumLimit<T>::epsilon(); }
+struct epsilon { template<class T> constexpr operator T() const { return epsilon_<T>(); } };
+
+template<class T> inline constexpr T NaN_() { return NumLimit<T>::NaN(); }
+struct NaN { template<class T> constexpr operator T() const { return NaN_<T>(); } };
+
+template<class T> inline constexpr T negInfinity_() { return NumLimit<T>::negInfinity(); }
+struct negInfinity { template<class T> constexpr operator T() const { return negInfinity_<T>(); } };
 
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isNaN			( const T& v ) { return std::isnan(v); }
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isInfinity		( const T& v ) { return NumLimit<T>::hasInfinity && v == infinity_<T>(); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isNegInfinity	( const T& v ) { return NumLimit<T>::hasInfinity && v == negInfinity<T>; }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr bool	isNegInfinity	( const T& v ) { return NumLimit<T>::hasInfinity && v == negInfinity_<T>(); }
 
-template <class T> requires Type_AnyInt< T> AX_INLINE T fmod(const T& a, const T& b) { return a % b; }
-template <class T> requires Type_Is_f32<T> AX_INLINE T fmod(const T& a, const T& b) { return ::fmodf(a, b); }
-template <class T> requires Type_Is_f64<T> AX_INLINE T fmod(const T& a, const T& b) { return ::fmod(a, b); }
+template <class T> T fmod(const T& a, const T& b);
+template <> AX_INLINE f32 fmod(const f32& a, const f32& b) { return ::fmodf(a, b); }
+template <> AX_INLINE f64 fmod(const f64& a, const f64& b) { return ::fmod(a, b); }
+
+template <class T> requires Type_AnyInt< T>
+AX_INLINE T fmod(const T& a, const T& b) { return a % b; }
+
 
 template<class T>
 struct modf_Result {
@@ -140,7 +149,7 @@ AX_NODISCARD AX_INLINE constexpr bool almostEqual(const T& a, const T& b) {
 		return a == b;
 	} else {
 		auto diff = abs(a - b);
-		return diff <= epsilon<T>;
+		return diff <= epsilon_<T>();
 	}
 }
 
@@ -176,7 +185,7 @@ AX_NODISCARD AX_INLINE constexpr i16	nextPow2	( i16 v )	{ v--; v|=v>>1; v|=v>>2;
 AX_NODISCARD AX_INLINE constexpr i32	nextPow2	( i32 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8; v|=v>>16;           v++; return max_0(v); }
 AX_NODISCARD AX_INLINE constexpr i64	nextPow2	( i64 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8; v|=v>>16; v|=v>>32; v++; return max_0(v); }
 
-AX_NODISCARD AX_INLINE constexpr u8	nextPow2	( u8  v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4;                              v++; return v; }
+AX_NODISCARD AX_INLINE constexpr u8		nextPow2	( u8  v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4;                              v++; return v; }
 AX_NODISCARD AX_INLINE constexpr u16	nextPow2	( u16 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8;                     v++; return v; }
 AX_NODISCARD AX_INLINE constexpr u32	nextPow2	( u32 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8; v|=v>>16;           v++; return v; }
 AX_NODISCARD AX_INLINE constexpr u64	nextPow2	( u64 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8; v|=v>>16; v|=v>>32; v++; return v; }

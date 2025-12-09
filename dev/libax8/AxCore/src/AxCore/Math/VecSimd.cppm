@@ -23,15 +23,15 @@ template<class VEC, class T>
 struct VecSIMD_NumLimit {
 	using T_NumLimit = NumLimit<T>;
 
-	static constexpr bool isExactType   =  T_NumLimit::isExactType;
+	static constexpr bool isExact       =  T_NumLimit::isExact;
 	static constexpr bool hasInfinity   =  T_NumLimit::hasInfinity;
-	static constexpr VEC  infinity      =  VEC::s_all(T_NumLimit::infinity);
-	static constexpr VEC  negInfinity   =  VEC::s_all(T_NumLimit::negInfinity);
-	static constexpr VEC  lowest        =  VEC::s_all(T_NumLimit::lowest);
-	static constexpr VEC  min           =  VEC::s_all(T_NumLimit::min);
-	static constexpr VEC  max           =  VEC::s_all(T_NumLimit::max);
-	static constexpr VEC  epsilon       =  VEC::s_all(T_NumLimit::epsilon);
-	static constexpr VEC  NaN           =  VEC::s_all(T_NumLimit::NaN);
+	static constexpr VEC  infinity      () { return  VEC::s_all(T_NumLimit::infinity());    }
+	static constexpr VEC  negInfinity   () { return  VEC::s_all(T_NumLimit::negInfinity()); }
+	static constexpr VEC  lowest        () { return  VEC::s_all(T_NumLimit::lowest());      }
+	static constexpr VEC  min           () { return  VEC::s_all(T_NumLimit::min());         }
+	static constexpr VEC  max           () { return  VEC::s_all(T_NumLimit::max());         }
+	static constexpr VEC  epsilon       () { return  VEC::s_all(T_NumLimit::epsilon());     }
+	static constexpr VEC  NaN           () { return  VEC::s_all(T_NumLimit::NaN());         }
 };
 
 template<Int N, class T, VecSIMD SIMD>

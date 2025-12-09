@@ -30,7 +30,7 @@ public:
 	}
 	
 	void test_case1() {
-		AX_TEST_EQ(Math::epsilon<Vec4f>.y, f32_epsilon);
+		AX_TEST_EQ(Math::epsilon_<Vec4f>().y, f32_epsilon);
 		// AX_TEST_EQ(sizeof(Vec3f_NoSIMD), 4 * 3);
 		// AX_TEST_EQ(sizeof(Vec3f_SSE)   , 4 * 4);
 		AX_TEST_EQ(sizeof(Vec4f_Basic), 4 * 4);

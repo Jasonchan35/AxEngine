@@ -28,7 +28,7 @@ private:
 	VkInstance _vkInst = VK_NULL_HANDLE;
 
 	template<class FUNC>
-	inline void _getExtProc(FUNC& outFunc, StrLit name);
+	void _getExtProc(FUNC& outFunc, StrLit name);
 };
 
 class AX_VkPhysicalDevice : public NonCopyable {

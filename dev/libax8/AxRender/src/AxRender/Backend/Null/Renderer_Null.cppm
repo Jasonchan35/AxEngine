@@ -18,7 +18,7 @@ public:
 	Renderer_Null(const CreateDesc& desc) : Base(desc) {}
 	virtual ~Renderer_Null() override { destroy(); }
 
-	AX_Renderer_FunctionInterfaces_override(Null);
+	AX_Renderer_FunctionInterfaces_override(Null)
 };
 
 
@@ -27,10 +27,10 @@ class GpuBuffer_Null : public GpuBuffer_Backend {
 public:
 	GpuBuffer_Null(const CreateDesc& desc) : Base(desc) {}
 
-	virtual MutByteSpan	onMapMemory(IntRange range) { return MutByteSpan(); }
-	virtual void		onUnmapMemory() {}
-	virtual void		onFlush(IntRange range) {}
-	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {}
+	virtual MutByteSpan	onMapMemory(IntRange range) override { return MutByteSpan(); }
+	virtual void		onUnmapMemory() override {}
+	virtual void		onFlush(IntRange range) override {}
+	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override {}
 };
 
 class RenderColorBuffer_Null : public RenderColorBuffer_Backend {
@@ -68,7 +68,7 @@ class Texture2D_Null : public Texture2D_Backend {
 public:
 	Texture2D_Null(const CreateDesc& desc) : Base(desc) {}
 
-	virtual void onImageIO_ReadResult(class ImageIO_ReadResult& result) {}
+	virtual void onImageIO_ReadResult(class ImageIO_ReadResult& result) override {}
 };
 
 class ShaderParamSpace_Null : public ShaderParamSpace_Backend {
@@ -93,7 +93,7 @@ class Shader_Null : public Shader_Backend {
 	AX_RTTI_INFO(Shader_Null, Shader_Backend)
 public:
 	Shader_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual UPtr<ShaderPass_Backend > onNewPass (const ShaderPass_Backend_CreateDesc& desc) {
+	virtual UPtr<ShaderPass_Backend > onNewPass (const ShaderPass_Backend_CreateDesc& desc) override {
 		return UPtr_new<ShaderPass_Null>(AX_ALLOC_REQ, desc);
 	}
 };
@@ -102,14 +102,14 @@ class MaterialPass_Null : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Null, MaterialPass_Backend)
 public:
 	MaterialPass_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual bool onDrawcall(class RenderRequest* req, Cmd_DrawCall& cmd) { return false; }
+	virtual bool onDrawcall(class RenderRequest* req, Cmd_DrawCall& cmd) override { return false; }
 };
 
 class Material_Null : public Material_Backend {
 	AX_RTTI_INFO(Material_Null, Material_Backend)
 public:
 	Material_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_Backend_CreateDesc& desc) {
+	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_Backend_CreateDesc& desc) override {
 		return UPtr_new<MaterialPass_Null>(AX_ALLOC_REQ, desc);
 	}
 };

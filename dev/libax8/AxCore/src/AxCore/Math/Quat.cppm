@@ -115,7 +115,7 @@ Quat4_<T> slerp(const Quat4_<T> & a, const Quat4_<T> & b, T weight) {
 	}
 
 	// Perform a linear interpolation when cosTheta is close to 1 to avoid side effect of sin(angle) becoming a zero denominator
-	if(cosTheta > T(1) - Math::epsilon<T>) {
+	if(cosTheta > T(1) - Math::epsilon_<T>()) {
 		// Linear interpolation
 		return ax_lerp(a, z, weight);
 	} else {
