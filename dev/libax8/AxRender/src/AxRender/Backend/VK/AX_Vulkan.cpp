@@ -489,7 +489,7 @@ void AX_VkDevice::_setObjectDebugTag(VkObjectType objectType, void* objectHandle
 	info.objectType		= objectType;
 	info.objectHandle	= reinterpret_cast<u64>(objectHandle);
 	info.tagName		= tagName;
-	info.tagSize		= ax_safe_cast_size_t(tag.size());
+	info.tagSize		= SafeCast(tag.size());
 	info.pTag			= tag.data();
 
 	auto* ext = AX_VkExtProcList::s_instance();
@@ -659,7 +659,7 @@ bool AX_VkSemaphore::wait(u64 value, Nanoseconds timeout /*= Nanoseconds::kMax()
 	info.semaphoreCount		 = 1;
 	info.pSemaphores		 = &_handle;
 	info.pValues			 = &value;
-	auto err				 = vkWaitSemaphores(*_dev, &info, ax_safe_cast<u64>(timeout.value));
+	auto err				 = vkWaitSemaphores(*_dev, &info, SafeCast(timeout.value));
 	if (err == VK_TIMEOUT) return false;
 	if (err == VK_SUCCESS) return true;
 
@@ -1097,7 +1097,7 @@ AX_VkDeviceMemory& AX_VkDeviceMemory::createForImage(AX_VkImage& img, VkMemoryPr
 
 	auto req = img.getMemoryRequirements();
 	auto* dev = img.device();
-	_create(*dev, ax_safe_cast_Int(req.size), req.memoryTypeBits, requireMask);
+	_create(*dev, SafeCast(req.size), req.memoryTypeBits, requireMask);
 
 	auto err = vkBindImageMemory(*dev, img, _handle, 0);
 	AX_VkUtil::throwIfError(err);
@@ -1110,7 +1110,7 @@ AX_VkDeviceMemory& AX_VkDeviceMemory::createForBuffer(AX_VkBuffer& buf, VkMemory
 
 	auto req = buf.getMemoryRequirements();
 	auto* dev = buf.device();
-	_create(*dev, ax_safe_cast_Int(req.size), req.memoryTypeBits, requireMask);
+	_create(*dev, SafeCast(req.size), req.memoryTypeBits, requireMask);
 
 	auto err = vkBindBufferMemory(*dev, buf, _handle, 0);
 	AX_VkUtil::throwIfError(err);
@@ -1141,7 +1141,7 @@ MutByteSpan AX_VkDeviceMemory::mapMemory(IntRange range, VkMemoryMapFlags flags)
 
 	auto err = vkMapMemory(*_dev, _handle, offset, size, flags, &outPtr);
 	AX_VkUtil::throwIfError(err);
-	return MutByteSpan(reinterpret_cast<Byte*>(outPtr), ax_safe_cast_Int(size));
+	return MutByteSpan(reinterpret_cast<Byte*>(outPtr), SafeCast(size));
 }
 
 void AX_VkDeviceMemory::unmapMemory() {
@@ -1327,7 +1327,7 @@ void AX_VkShaderModule::create(AX_VkDevice& dev, ByteSpan byteCode) {
 	info.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	info.pNext		= nullptr;
 	info.flags		= 0;
-	info.codeSize	= ax_safe_cast<size_t>(byteCode.size()); 
+	info.codeSize	= SafeCast(byteCode.size()); 
 	info.pCode		= reinterpret_cast<const uint32_t*>(byteCode.data());
 
 	auto err = vkCreateShaderModule(dev, &info, AX_VkUtil::allocCallbacks(), &_handle);

@@ -107,7 +107,7 @@ RenderPass_Backend* RenderContext_VK_Base::onAcquireBackBufferRenderPass(RenderR
 		}
 	}
 
-	auto backBufferIndex = ax_safe_cast_Int(swapChainImageIndex);
+	Int backBufferIndex = SafeCast(swapChainImageIndex);
 	auto* backBuf = _getBackBuffer(backBufferIndex);
 	if (!backBuf) {
 		AX_ASSERT(false);

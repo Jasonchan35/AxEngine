@@ -47,8 +47,8 @@ void ImageIO_Reader_JPEG::s_skip_input_data (j_decompress_ptr cinfo, long num_by
 	if (num_bytes > 0) {
 AX_PRAGMA_GCC(diagnostic push)
 AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
-		cinfo->src->next_input_byte += ax_safe_cast_size_t(num_bytes);
-		cinfo->src->bytes_in_buffer -= ax_safe_cast_size_t(num_bytes);
+		cinfo->src->next_input_byte += SafeCast(num_bytes);
+		cinfo->src->bytes_in_buffer -= SafeCast(num_bytes);
 AX_PRAGMA_GCC(diagnostic pop)
 	}
 }
@@ -76,7 +76,7 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 	_srcMgr.resync_to_restart = jpeg_resync_to_restart; // use default method
 	_srcMgr.term_source = s_term_source;
 
-	_srcMgr.bytes_in_buffer = ax_safe_cast_size_t(inData.size());
+	_srcMgr.bytes_in_buffer = SafeCast(inData.size());
 	_srcMgr.next_input_byte = reinterpret_cast<const JOCTET*>(inData.data());
 
 	_cinfo.src = &_srcMgr;

@@ -635,72 +635,50 @@ AX_SIMPLE_ERROR(Error_JsonReader)
 AX_SIMPLE_ERROR(Error_JsonValue)
 
 template<class DST, class SRC> AX_INLINE
-constexpr bool ax_try_safe_cast(DST& dst, const SRC& src) noexcept {
+constexpr Opt<DST> ax_try_safe_cast_(const SRC& src) noexcept {
 	if constexpr (std::is_floating_point_v<SRC> && std::is_floating_point_v<DST>) {
 		// float -> float
-		dst = static_cast<DST>(src);
-		return true;
+		return static_cast<DST>(src);
 		
 	} else if constexpr (std::is_integral_v<SRC> && std::is_floating_point_v<DST>) {
 		// int -> float
-		dst = static_cast<DST>(src);
-		return true;
+		return static_cast<DST>(src);
 		
 	} else if constexpr (std::is_floating_point_v<SRC> && std::is_integral_v<DST>) {
 		// float -> int
 		using DST_LIMIT = std::numeric_limits<DST>;
 		using FLOAT = SRC;
-		if (src < static_cast<FLOAT>(DST_LIMIT::lowest())) { AX_ASSERT_MSG(false, "safe_cast"); return false; }
-		if (src > static_cast<FLOAT>(DST_LIMIT::max()   )) { AX_ASSERT_MSG(false, "safe_cast"); return false; }
-		dst = static_cast<DST>(src);
-		return true;
+		if (src < static_cast<FLOAT>(DST_LIMIT::lowest())) { AX_ASSERT_MSG(false, "safe_cast"); return std::nullopt; }
+		if (src > static_cast<FLOAT>(DST_LIMIT::max()   )) { AX_ASSERT_MSG(false, "safe_cast"); return std::nullopt; }
+		return static_cast<DST>(src);
 		
 	} else {
 		// enum/int -> enum/int
 		using DST_INT = Type_MaybeEnumInt<DST>;
 		using SRC_INT = Type_MaybeEnumInt<SRC>;
 		
-		if (!std::in_range<DST_INT>(static_cast<SRC_INT>(src))) { AX_ASSERT_MSG(false, "safe_cast"); return false; }
-
-		dst = static_cast<DST>(src);
-		return true;
+		if (!std::in_range<DST_INT>(static_cast<SRC_INT>(src))) { AX_ASSERT_MSG(false, "safe_cast"); return std::nullopt; }
+		return static_cast<DST>(src);
 	}
 }
-
-template<class DST, class SRC> AX_INLINE
-constexpr DST ax_safe_cast(const SRC& src) {
-	DST dst;
-	if (!ax_try_safe_cast(dst, src)) {
-		throw Error_SafeCast();
-	}
-	return dst;
-}
-
-constexpr inline Int	ax_safe_cast_Int(size_t src) { return ax_safe_cast<Int>(src); }
-constexpr inline size_t ax_safe_cast_size_t(Int src) { return ax_safe_cast<size_t>(src); }
 
 template<class SRC>
 struct SafeCast {
 	const SRC& src;
-	
 	constexpr SafeCast(const SRC& src_) : src(src_) {}
 
-	template <typename DST>
-	DST castTo() const {
-		DST dst;
-		if (!ax_try_safe_cast(dst, src)) throw Error_SafeCast();
-		return dst;
+	template<class DST>
+	constexpr inline DST To() const {
+		if (auto result = ax_try_safe_cast_<DST>(src)) {
+			return result.value();
+		}
+		throw Error_SafeCast();
 	}
-
-	template <typename DST> // T is deduced here!
-	constexpr operator DST() const { return castTo<DST>(); }
+	
+	template <typename DST>	constexpr operator DST() const { return To<DST>(); }
 };
 
-#if AX_OS_WINDOWS
-constexpr inline DWORD ax_safe_cast_DWORD(Int src) { return ax_safe_cast<DWORD>(src); }
-#endif
-
-consteval Int ax_consteval_Int(size_t v) { return ax_safe_cast_Int(v); } 
+consteval Int ax_consteval_Int(size_t v) { return SafeCast(v); } 
 
 template<class T, class... Args > AX_INLINE
 T* ax_call_constructor(T* p, Args&&... args ) {

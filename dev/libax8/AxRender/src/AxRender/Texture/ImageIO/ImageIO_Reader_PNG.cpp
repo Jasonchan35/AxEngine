@@ -123,8 +123,8 @@ void ImageIO_Reader_PNG::load(ImageIO::Callback callback, ByteSpan inData) {
 		throw Error_Undefined();
 	}
 
-	Int width  = ax_safe_cast_Int(in_width);
-	Int height = ax_safe_cast_Int(in_height);
+	Int width  = SafeCast(in_width);
+	Int height = SafeCast(in_height);
 
 	Int pixelSize = ColorTypeInfo::s_get(out_color_type).kSizeInBytes;
 	Int strideInBytes = in_width * pixelSize;
@@ -172,7 +172,7 @@ void ImageIO_Reader_PNG::_s_onRead( png_structp png, png_bytep dest, png_size_t 
 void ImageIO_Reader_PNG::_onRead(png_bytep dest, png_size_t len) {
 AX_PRAGMA_GCC(diagnostic push)
 AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
-	Int n = ax_safe_cast_Int(len);
+	Int n = SafeCast(len);
 	if (_readPtr + n > _inData.end()) {
 		throw Error_Undefined();
 	}

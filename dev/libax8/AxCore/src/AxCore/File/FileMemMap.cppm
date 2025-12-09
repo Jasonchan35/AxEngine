@@ -107,7 +107,7 @@ inline void FileMemMap::openFile(StrView filename) {
 	auto size = _file.getFileSize();
 	if (size <= 0) return;
 
-	size_t nativeSize = ax_safe_cast_size_t(size);
+	size_t nativeSize = SafeCast(size);
 
 	auto* data = reinterpret_cast<u8*>(mmap(0, nativeSize, PROT_READ, MAP_PRIVATE, _file.nativeFileDescriptor() , 0));
 	if ( data == MAP_FAILED || data == nullptr ) {
@@ -119,7 +119,7 @@ inline void FileMemMap::openFile(StrView filename) {
 
 inline void FileMemMap::close() {
 	if (_span.data()) {
-		size_t nativeSize = ax_safe_cast_size_t(_span.size());
+		size_t nativeSize = SafeCast(_span.size());
 		
 		void* data = ax_const_cast(_span.data());
 		munmap(data, nativeSize);

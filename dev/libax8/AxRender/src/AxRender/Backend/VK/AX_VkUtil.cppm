@@ -34,8 +34,8 @@ public:
 	static bool formatHasDepth	(VkFormat f);
 	static bool formatHasStencil(VkFormat f);
 
-	static uint32_t		castUInt32(Int v) 		{ return ax_safe_cast<uint32_t>(v); }
-	static VkDeviceSize	castVkDeviceSize(Int v)	{ return ax_safe_cast<VkDeviceSize>(v); }
+	static uint32_t		castUInt32(Int v) 		{ return SafeCast(v); }
+	static VkDeviceSize	castVkDeviceSize(Int v)	{ return SafeCast(v); }
 
 	template<class R>
 	static VkOffset2D	castVkOffset2D(const Vec2_<R>& v) {

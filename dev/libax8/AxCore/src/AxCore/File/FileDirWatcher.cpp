@@ -75,7 +75,7 @@ void FileDirWatcher::_onChangeNotification(DWORD errorCode, DWORD bytesTransferr
 	BOOL success = ::ReadDirectoryChangesW(
 							hDir, 
 							_buffer.data(),
-							ax_safe_cast_DWORD(_buffer.size()),
+							SafeCast(_buffer.size()),
 							_watchSubDir, 
 							FILE_NOTIFY_CHANGE_CREATION |
 							FILE_NOTIFY_CHANGE_FILE_NAME | 

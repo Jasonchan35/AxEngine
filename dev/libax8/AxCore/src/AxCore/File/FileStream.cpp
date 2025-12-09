@@ -49,7 +49,7 @@ void FileStream::appendReadAllUtf8 ( IStringA& buf ) {
 	if( cur > file_size ) throw Error_File();
 
 	auto old_size = buf.size();
-	Int data_size = ax_safe_cast<Int>(file_size - cur);
+	Int data_size = SafeCast(file_size - cur);
 
 	try{
 		buf.resizeMore(data_size);
@@ -90,7 +90,7 @@ void FileStream::appendReadAllBytes ( IByteArray & buf ) {
 	if( cur > file_size ) throw Error_File();
 
 	auto old_size  = buf.size();
-	Int data_size = ax_safe_cast<Int>(file_size - cur);
+	Int data_size = SafeCast(file_size - cur);
 
 	buf.incSize(data_size);
 	try{
@@ -383,13 +383,13 @@ FileSize FileStream::getPos() {
 	LONG  hi = 0;
 	DWORD low = SetFilePointer( _fd, 0, &hi, FILE_CURRENT );
 	i64	value = low | ( static_cast<i64>(hi) << 32 );
-	return ax_safe_cast<FileSize>(value);
+	return SafeCast(value);
 }
 
 void FileStream::setPos( FileSize n ) {
 	_check_fd();
 
-	auto tmp = ax_safe_cast<i64>(n);
+	i64 tmp = SafeCast(n);
 	LONG hi = tmp >> 32;
 	SetFilePointer( _fd, static_cast<LONG>(tmp), &hi, FILE_BEGIN );
 }
@@ -397,7 +397,7 @@ void FileStream::setPos( FileSize n ) {
 void FileStream::advPos( FileSize n ) {
 	_check_fd();
 
-	auto tmp = ax_safe_cast<i64>(n);
+	i64 tmp = SafeCast(n);
 	LONG hi = tmp >> 32;
 	SetFilePointer( _fd, static_cast<LONG>(tmp), &hi, FILE_CURRENT );
 }
@@ -405,7 +405,7 @@ void FileStream::advPos( FileSize n ) {
 void FileStream::setPosEnd(FileSize n) {
 	_check_fd();
 
-	auto tmp = ax_safe_cast<i64>(n);
+	i64 tmp = SafeCast(n);
 	LONG hi = tmp >> 32;
 	SetFilePointer( _fd, static_cast<LONG>(tmp), &hi, FILE_END );
 }
@@ -418,7 +418,7 @@ FileSize FileStream::getFileSize() {
 	if( low == INVALID_FILE_SIZE ) throw Error_Undefined();
 
 	u64 tmp = (static_cast<u64>(high) << 32) | low;
-	return ax_safe_cast<FileSize>(tmp);
+	return SafeCast(tmp);
 }
 
 void	FileStream::setFileSize		( FileSize newSize ) {
@@ -435,7 +435,7 @@ void FileStream::readBytes(MutByteSpan buf) {
 	_check_fd();
 
 	if (buf.size() <= 0 ) return;
-	DWORD	n = ax_safe_cast<DWORD>(buf.size());
+	DWORD	n = SafeCast(buf.size());
 	DWORD	result = 0;
 	BOOL ret = ::ReadFile( _fd, buf.data(), n, &result, nullptr );
 	if( !ret ) {
@@ -453,7 +453,7 @@ void FileStream::writeBytes(ByteSpan buf) {
 
 	if( buf.size() <= 0 ) return;
 
-	DWORD	n = ax_safe_cast<DWORD>(buf.sizeInBytes());
+	DWORD	n = SafeCast(buf.sizeInBytes());
 	DWORD	result = 0;
 	BOOL ret = ::WriteFile( _fd, buf.data(), n, &result, nullptr );
 	if( !ret ) {

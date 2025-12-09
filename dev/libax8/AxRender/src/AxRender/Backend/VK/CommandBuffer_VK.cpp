@@ -103,7 +103,7 @@ void CommandBuffer_VK::onDrawCall(Cmd_DrawCall& cmd) {
 
 	} else if (auto* ib = rttiCastCheck<GpuBuffer_VK>(cmd.indexBuffer)) {
 		vkCmdBindIndexBuffer(_cmdBuf, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(cmd.indexType));
-		vkCmdDrawIndexed(_cmdBuf, indexCount, instanceCount, indexStart, ax_safe_cast<i32>(vertexStart), instanceStart);
+		vkCmdDrawIndexed(_cmdBuf, indexCount, instanceCount, indexStart, SafeCast(vertexStart), instanceStart);
 
 	} else {
 		AX_ASSERT(false);
