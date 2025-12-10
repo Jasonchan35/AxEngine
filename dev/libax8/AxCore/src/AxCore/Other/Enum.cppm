@@ -7,12 +7,12 @@ export import AxCore.StrView;
 export namespace ax {
 
 template<class T> requires Type_IsEnum<T>
-class EnumFn_ {
-public:
+struct EnumFn_ {
 	using IntType = Type_EnumInt<T>;
 
 	AX_INLINE constexpr static T s_fromInt(IntType const& v) { return static_cast<T>(v); }
-	
+
+	AX_INLINE constexpr	EnumFn_(AxTag::Zero_) : value(static_cast<T>(0)) {}
 	AX_INLINE constexpr	EnumFn_(T& v) : value(v) {}
 
 	AX_INLINE constexpr operator		T&()		{ return value; }
@@ -37,9 +37,9 @@ public:
 	AX_INLINE constexpr StrView	str() const { return _ax_macro_enum_str(value); }
 	AX_INLINE constexpr bool	tryParse(StrView view) { return _ax_macro_enum_try_parse(view, value); };
 
-	AX_INLINE constexpr bool operator==(const T& r) const { return r == value; }
+	AX_INLINE constexpr bool	operator==(const T& r) const { return r == value; }
 
-	template<class SE> void onJsonIO_Value(SE& se) { IntType tmp; se.io(tmp); setInt(tmp); }
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { IntType tmp; se.io(tmp); setInt(tmp); }
 
 	T& value;
 };

@@ -38,22 +38,14 @@
 #define	AX_FUNC_NAME			__FUNCTION__
 #define AX_FUNC_SIG				__FUNCSIG__
 
-#define AX_DEPRECATED			__declspec(deprecated)
-
 #define AX_COMPILER_VC_VER 		_MSVC_LANG
 
-#if AX_LANG_CPP_17
-	#define AX_FALLTHROUGH	//	[[fallthrough]]
-	#define AX_NODISCARD		[[nodiscard]]
-#else
-	#define AX_FALLTHROUGH
-	#define AX_NODISCARD
-#endif
+//#define AX_ALIGN(N)			__declspec(align(N)) 
+//#define AX_ALIGN(N)			alignas(N) //c++11
 
-//#define AX_ALIGN(N)				__declspec(align(N)) 
-//#define AX_ALIGN(N)				alignas(N) //c++11
+#define AX_OPTIMIZE_OFF()		__pragma(optimize("", off))
 
-#define AX_OPTIMIZE_OFF()			__pragma(optimize("", off))
+//#define AX_DEPRECATED			__declspec(deprecated)
 
 #if 0 // AX_BUILD_CONFIG_Debug
 	#define	AX_INLINE			inline

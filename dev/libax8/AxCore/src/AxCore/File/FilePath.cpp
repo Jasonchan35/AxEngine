@@ -347,8 +347,6 @@ StrView FilePath::currentProcessFile() {
 
 #if AX_OS_LINUX
 
-#include <linux/limits.h>
-
 StrView FilePath::userAppDataDir() {
 	struct Obj {
 		Obj() {

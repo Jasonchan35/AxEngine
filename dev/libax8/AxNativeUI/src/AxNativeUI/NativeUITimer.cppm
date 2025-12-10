@@ -24,7 +24,7 @@ private:
 
 
 #if AX_OS_WINDOWS
-	static void CALLBACK s_onTimer(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+	static void CALLBACK s_onTimer(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) noexcept;
 	UINT_PTR _p = 0;
 	
 #elif AX_OS_MACOSX || AX_OS_IOS
@@ -93,7 +93,7 @@ void NativeUITimer::_stop() {
 	}
 }
 
-void CALLBACK NativeUITimer::s_onTimer(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) {
+void CALLBACK NativeUITimer::s_onTimer(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) noexcept {
 	if (!idEvent) {
 		AX_ASSERT(false);
 		return;

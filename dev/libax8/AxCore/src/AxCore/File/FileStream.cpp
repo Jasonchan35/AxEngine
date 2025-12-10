@@ -106,8 +106,6 @@ void FileStream::appendReadAllBytes ( IByteArray & buf ) {
 #endif
 #if AX_OS_UNIX || AX_OS_MINGW || AX_OS_CYGWIN
 
-#include <sys/stat.h>
-
 FileStream::FileStream() {
 	_fd = -1;
 }

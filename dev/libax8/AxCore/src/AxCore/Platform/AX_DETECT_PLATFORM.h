@@ -32,6 +32,47 @@ AxDetectPlatform:
     #error "AX_COMPILER_XXX should be specified"
 #endif
 
+#if AX_LANG_CPP_11
+	#define AX_CONSTEXPR		constexpr 
+#else
+	#define AX_CONSTEXPR 
+#endif
+
+#if AX_LANG_CPP_17
+	#define AX_FALLTHROUGH		[[fallthrough]];
+	#define AX_NODISCARD		[[nodiscard]]
+	#define AX_DEPRECATED		[[deprecated]]
+	#define AX_DEPRECATED_(STR)	[[deprecated(STR)]]
+#else
+	#define AX_FALLTHROUGH
+	#define AX_NODISCARD
+	#define AX_DEPRECATED
+	#define AX_DEPRECATED_(STR)
+#endif
+
+#if AX_LANG_CPP_20
+	#define AX_LIKELY		[[likely]]
+	#define AX_UNLIKELY		[[unlikely]]
+	#define	AX_CONSTEVAL	consteval
+	#define AX_CONSTINIT	constinit
+#else
+	#define AX_LIKELY
+	#define AX_UNLIKELY
+	#define	AX_CONSTEVAL
+	#define AX_CONSTINIT
+#endif
+
+
+#define AX_COMPILER_VER __cplusplus
+
+#if AX_LANG_CPP_20
+	#define	AX_CONSTEVAL 	consteval	
+#else
+	#define AX_CONSTEVAL	constexpr
+#endif
+
+
+
 //======== Detect CPU =============
 
 // check CPU define

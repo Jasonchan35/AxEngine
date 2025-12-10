@@ -49,35 +49,20 @@
 
 // #define nullptr	NULL
 
-#define	AX_FUNC_NAME				__FUNCTION__
+#define	AX_FUNC_NAME			__FUNCTION__
 #define AX_FUNC_SIG				__PRETTY_FUNCTION__
-//#define AX_FUNC_SIG					__FUNCSIG__
+//#define AX_FUNC_SIG			__FUNCSIG__
 
-#define AX_DEPRECATED( f )		f __attribute__( (deprecated) )
+//#define AX_ALIGN(N)			__attribute__((aligned(N)))
+//#define AX_ALIGN(N)			alignas(N) //c++11
 
-#define AX_COMPILER_VER __cplusplus
-
-#if AX_LANG_CPP_17
-	#define AX_FALLTHROUGH		// [[fallthrough]]
-	#define AX_NODISCARD		[[nodiscard]]
-#else
-	#define AX_FALLTHROUGH
-	#define AX_NODISCARD
-#endif
-
-#if AX_LANG_CPP_20
-	#define	AX_CONSTEVAL 	consteval	
-#else
-	#define AX_CONSTEVAL	constexpr
-#endif
-
-//#define AX_ALIGN(N)				__attribute__((aligned(N)))
-//#define AX_ALIGN(N)				alignas(N) //c++11
+//#define AX_DEPRECATED(f)		f __attribute__( (deprecated) )
 
 #if AX_BUILD_CONFIG_Debug
 	#define	AX_INLINE		inline
 #else
-	#define	AX_INLINE		inline __attribute__( (always_inline) )
+//	#define	AX_INLINE		inline __attribute__( (always_inline) )
+	#define	AX_INLINE		[[alway]]
 #endif
 
 //#define AX_THREAD_LOCAL	__thread
@@ -126,7 +111,6 @@
 
 #if __SSE2__
 	#define AX_CPU_FEATURE_SSE2			1
-	#include <xmmintrin.h>
 #endif
 
 #if __SSE3__

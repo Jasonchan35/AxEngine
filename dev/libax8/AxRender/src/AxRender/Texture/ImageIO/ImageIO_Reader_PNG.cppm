@@ -14,7 +14,7 @@ public:
 	void load(ImageIO::Callback callback, ByteSpan inData);
 
 private:
-	static	void _s_onRead(png_structp png, png_bytep dest, png_size_t len);
+	static	void _s_onRead(png_structp png, png_bytep dest, png_size_t len) noexcept;
 			void _onRead(png_bytep dest, png_size_t len);
 			void _setReadFilter(ColorType out_type, Int in_type, Int in_bit, bool in_palette_has_alpha);
 			bool _error_longjmp_restore_point();

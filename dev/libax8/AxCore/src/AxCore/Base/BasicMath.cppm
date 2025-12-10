@@ -1,8 +1,5 @@
 module;
 
-
-#include <cfloat>
-
 export module AxCore.BasicMath;
 export import AxCore.BasicType;
 

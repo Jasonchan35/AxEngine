@@ -1,10 +1,5 @@
 module;
 
-
-#if AX_OS_WINDOWS
-	#include <windows.h>
-#endif
-
 export module AxCore.Mutex;
 
 import AxCore.BasicType;

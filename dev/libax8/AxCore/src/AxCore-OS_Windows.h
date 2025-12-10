@@ -18,6 +18,9 @@
 	#define NOMINMAX 1 // no min and max macro in windows.h
 #endif
 
+AX_VC_WARNING_PUSH_AND_DISABLE(5039)
+// warning C5039: pointer or reference to potentially throwing function passed to 'extern "C"' function under -EHc. 
+// Undefined behavior may occur if this function throws an exception.
 
 #include <WinSock2.h> // WinSock2.h must include before windows.h to avoid winsock1 define
 #include <WS2tcpip.h> // struct sockaddr_in6
@@ -25,10 +28,17 @@
 #include <rpc.h> // uuid
 #include <shellapi.h>
 #include <conio.h>
-#include <comdef.h> //Com error
 #include <ShlObj_core.h> // SHGetFolderPath
 
+AX_VC_WARNING_PUSH_AND_DISABLE(5204)
+// comdef.h(489,1): warning C5204: 'Font': class has virtual functions, but its trivial destructor is not virtual; instances of objects derived from 
+#include <comdef.h> //Com error
+AX_VC_WARNING_POP()
+
+
 #pragma comment( lib, "Rpcrt4.lib" )
+
+AX_VC_WARNING_POP()
 
 #ifdef small
 	#undef small // char

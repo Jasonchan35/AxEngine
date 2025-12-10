@@ -1,5 +1,7 @@
 module;
+
 #include "libpng16/png.h"
+
 module AxRender;
 import :ImageIO_Reader_PNG;
 
@@ -25,8 +27,15 @@ bool ImageIO_Reader_PNG::_error_longjmp_restore_point() {
 		#pragma warning(disable: 4611) // interaction between '_setjmp' and C++ object destruction is non-portable
 	#endif
 
+	
 	// longjmp() to here from pngReportError()
+	
+	AX_VC_WARNING_PUSH_AND_DISABLE(5039)
+	//  Warning C5039 : 'png_set_longjmp_fn': pointer or reference to potentially throwing function passed to 'extern "C"' function under -EHc.
+	//  Undefined behavior may occur if this function throws an exception.
+
 	return setjmp(png_jmpbuf(_png)) != 0;
+	AX_VC_WARNING_POP()
 
 	#if AX_COMPILER_VC
 		#pragma warning(pop) 
@@ -160,10 +169,11 @@ void ImageIO_Reader_PNG::load(ImageIO::Callback callback, ByteSpan inData) {
 	callback.invoke(result);
 }
 
-void ImageIO_Reader_PNG::_s_onRead( png_structp png, png_bytep dest, png_size_t len ) {
+void ImageIO_Reader_PNG::_s_onRead( png_structp png, png_bytep dest, png_size_t len ) noexcept {
 	auto* p = reinterpret_cast<This*>(png_get_io_ptr( png ));
 	if( !p ) {
-		throw Error_Undefined();
+		AX_ASSERT_MSG(false, "ImageIO_Reader_PNG::_s_onRead - unable to get This");
+		return;
 	}
 	p->_onRead(dest, len);
 }

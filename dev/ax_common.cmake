@@ -52,9 +52,49 @@ function(ax_set_warning_level target_name)
 		target_compile_options(${target_name} PRIVATE /utf-8) 	# execution_character_set - otherwise std::format wouldn't check format in compile time for "char"
 		target_compile_options(${target_name} PRIVATE /WX)    	#warning treated as error
 		target_compile_options(${target_name} PRIVATE /W4)   	#warning level 4
+#		target_compile_options(${target_name} PRIVATE /Wall)   	#warning level all
 		target_compile_options(${target_name} PRIVATE /we6244)  #warning C6244: local declaration of <variable> hides previous declaration
 		target_compile_options(${target_name} PRIVATE /we6246)  #warning C6246: Local declaration of <variable> hides declaration of same name in outer scope
+
+		# re-enable warning disabled by default to level 4
+		# VS2017 or later
+		target_compile_options(${target_name} PRIVATE /w45038)  # data member 'member1' will be initialized after data member 'member2'
+		target_compile_options(${target_name} PRIVATE /w45039)  # 'function': pointer or reference to potentially throwing function passed to extern C function under -EHc. Undefined behavior may occur if this function throws an exception.
+		target_compile_options(${target_name} PRIVATE /w45041)  # 'member-name': out-of-line definition for constexpr static data member is not needed and is deprecated in C++17
+		target_compile_options(${target_name} PRIVATE /w45042)  # 'function': function declarations at block scope cannot be specified 'inline' in standard C++; remove 'inline' specifier 
+#		target_compile_options(${target_name} PRIVATE /w45045)  # Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+
+		# VS2019 or later
+		target_compile_options(${target_name} PRIVATE /w45052)  # Keyword 'keyword-name' was introduced in C++ version and requires use of the 'option' command-line option
+		target_compile_options(${target_name} PRIVATE /w45204)  # A class with virtual functions has non-virtual trivial destructor
+		target_compile_options(${target_name} PRIVATE /w45214)  # applying 'keyword' to an operand with a volatile qualified type is deprecated in C++20
+		target_compile_options(${target_name} PRIVATE /w45215)  # 'function-parameter' a function parameter with a volatile qualified type is deprecated in C++20
+		target_compile_options(${target_name} PRIVATE /w45216)  # 'return-type' a volatile qualified return type is deprecated in C++20
+		target_compile_options(${target_name} PRIVATE /w45217)  # a structured binding declaration that includes volatile is deprecated in C++20
+		target_compile_options(${target_name} PRIVATE /w45219)  # implicit conversion from 'type-1' to 'type-2', possible loss of data
+		target_compile_options(${target_name} PRIVATE /w45220)  # 'member': a non-static data member with a volatile qualified type no longer implies that compiler generated copy/move constructors and copy/move assignment operators are not trivial
+		target_compile_options(${target_name} PRIVATE /w45233)  # explicit lambda capture 'identifier' is not used
+		target_compile_options(${target_name} PRIVATE /w45240)  # attribute-name': attribute is ignored in this syntactic position  
+		target_compile_options(${target_name} PRIVATE /w45243)  # 'type-name': using incomplete class 'class-name' can cause potential one definition rule violation due to ABI limitation
+		target_compile_options(${target_name} PRIVATE /w45245)  # 'function': unreferenced function with internal linkage has been removed
+		target_compile_options(${target_name} PRIVATE /w45246)  # 'member': the initialization of a subobject should be wrapped in braces
+		target_compile_options(${target_name} PRIVATE /w45247)  # Section 'section-name' is reserved for C++ dynamic initialization. Manually creating the section will interfere with C++ dynamic initialization and may lead to undefined behavior
+		target_compile_options(${target_name} PRIVATE /w45248)  # Section 'section-name' is reserved for C++ dynamic initialization. Variable manually put into the section may be optimized out and its order relative to compiler generated dynamic initializers is unspecified
 		
+		# VS2022 or later
+		target_compile_options(${target_name} PRIVATE /w45249)  # 'bitfield' of type 'enumeration_name' has named enumerators with values that cannot be represented in the given bit field width of 'bitfield_width'
+		target_compile_options(${target_name} PRIVATE /w45250)  # 'function_name': intrinsic function not declared.
+		target_compile_options(${target_name} PRIVATE /w45251)  # segment-name changed after including header 
+		target_compile_options(${target_name} PRIVATE /w45254)  # language feature 'terse static assert' requires compiler flag '/std:c++17
+		target_compile_options(${target_name} PRIVATE /w45256)  # 'enumeration': a non-defining declaration of an enumeration with a fixed underlying type is only permitted as a standalone declaration
+		target_compile_options(${target_name} PRIVATE /w45258)  # explicit capture of 'symbol' is not required for this use
+		target_compile_options(${target_name} PRIVATE /w45259)  # 'specialized-type': explicit specialization requires 'template <>'
+		target_compile_options(${target_name} PRIVATE /w45262)  # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]] when a break statement is intentionally omitted between cases
+		target_compile_options(${target_name} PRIVATE /w45263)  # calling 'std::move' on a temporary object prevents copy elision
+		target_compile_options(${target_name} PRIVATE /w45264)  # 'variable-name': 'const' variable is not used
+		target_compile_options(${target_name} PRIVATE /w45266)  # 'const' qualifier on return type has no effect
+#		target_compile_options(${target_name} PRIVATE /w45267)  # definition of implicit copy constructor/assignment operator for 'type' is deprecated because it has a user-provided assignment operator/copy constructor
+
 		# disable warning
 		target_compile_options(${target_name} PRIVATE /wd4100)	#warning C4100: unreferenced formal parameter in function
 		target_compile_options(${target_name} PRIVATE /wd4127) 	#warning C4127: conditional expression is constant		

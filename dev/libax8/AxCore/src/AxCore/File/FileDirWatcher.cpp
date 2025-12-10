@@ -14,8 +14,8 @@ namespace ax {
 #endif
 #if AX_OS_WINDOWS
 
-void CALLBACK FileDirWatcher::_s_onChangeNotification(
-	DWORD errorCode, DWORD bytesTransferred, LPOVERLAPPED lpOverlapped) 
+void CALLBACK FileDirWatcher::_s_onChangeNotification (
+	DWORD errorCode, DWORD bytesTransferred, LPOVERLAPPED lpOverlapped) noexcept 
 {
 	auto* p = reinterpret_cast<FileDirWatcher*>(lpOverlapped->hEvent);
 	p->_onChangeNotification(errorCode, bytesTransferred);
@@ -118,7 +118,7 @@ void FileDirWatcher::create(StrView path, bool watchSubDir) {
 		nullptr, 
 		reinterpret_cast<UINT_PTR>(this),
 		200,
-		[]( HWND hwnd, UINT msg, UINT_PTR timer, DWORD currentSystemTime) {
+		[]( HWND hwnd, UINT msg, UINT_PTR timer, DWORD currentSystemTime) noexcept {
 			// Enter an Alertable Wait State: 
 			// The completion routine will only be called 
 			// when the thread is in an alertable wait state

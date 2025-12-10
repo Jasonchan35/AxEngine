@@ -1,0 +1,11 @@
+[SearchableFiles.include]
+*
+
+[SearchableFiles.ignore]
+/externals/
+/build/
+/_build/
+/_vcpkg/
+
+**/.git
+**/.svn

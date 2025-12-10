@@ -28,9 +28,9 @@ protected:
 
 private:
 #if AX_OS_WINDOWS
-	static	BOOL	WINAPI s_winConsoleCtrlHandler(DWORD dwCtrlType);
+	static	BOOL	WINAPI s_winConsoleCtrlHandler(DWORD dwCtrlType) noexcept;
 	static	void	WINAPI s_winServiceMain(DWORD dwNumServicesArgs, LPWSTR *lpServiceArgVectors);
-	static	DWORD	WINAPI s_winServiceStatusHandler(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext);
+	static	DWORD	WINAPI s_winServiceStatusHandler(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext) noexcept;
 
 	void _winServiceMain(DWORD dwNumServicesArgs, LPWSTR *lpServiceArgVectors);
 	void _setWinServiceStatus(DWORD status);

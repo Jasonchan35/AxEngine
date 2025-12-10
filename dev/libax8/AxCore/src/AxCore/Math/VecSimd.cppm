@@ -6,10 +6,11 @@ export import AxCore.Num;
 export namespace ax {
 
 #define AX_NumSIMD_ENUM_LIST(E) \
-E(None,) \
-E(SSE,)  \
+	E(None,) \
+	E(SSE,)  \
 //---
 AX_ENUM_CLASS(AX_NumSIMD_ENUM_LIST, VecSIMD, u8)
+
 inline constexpr VecSIMD VecSIMD_Default = VecSIMD::SSE;
 
 class VecSimd_NullReg {};

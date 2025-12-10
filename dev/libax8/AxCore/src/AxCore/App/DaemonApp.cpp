@@ -83,7 +83,7 @@ void DaemonApp::_winServiceMain(DWORD dwNumServicesArgs, LPWSTR *lpServiceArgVec
 	_setWinServiceStatus(SERVICE_STOPPED);
 }
 
-BOOL WINAPI DaemonApp::s_winConsoleCtrlHandler(DWORD dwCtrlType) {
+BOOL WINAPI DaemonApp::s_winConsoleCtrlHandler(DWORD dwCtrlType) noexcept {
 	switch (dwCtrlType) {
 		case CTRL_C_EVENT:
 		case CTRL_BREAK_EVENT:
@@ -97,7 +97,7 @@ BOOL WINAPI DaemonApp::s_winConsoleCtrlHandler(DWORD dwCtrlType) {
 	return false;
 }
 
-DWORD WINAPI DaemonApp::s_winServiceStatusHandler(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext) {
+DWORD WINAPI DaemonApp::s_winServiceStatusHandler(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext) noexcept {
 	switch (dwControl) {
 		case SERVICE_CONTROL_STOP:
 		case SERVICE_CONTROL_SHUTDOWN:

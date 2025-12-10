@@ -76,6 +76,7 @@ private:
 
 class MemAllocator {
 public:
+	virtual ~MemAllocator() = default;
 	
 	template<class T>
 	MemAllocResult<T> allocArray(Int reqSize, Int alignment = AX_ALIGNOF(T), const SrcLoc srcLoc = SrcLoc::s_current()) {

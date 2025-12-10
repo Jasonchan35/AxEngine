@@ -54,7 +54,7 @@ private:
 	HANDLE hDir = INVALID_HANDLE_VALUE;
 	Array<Byte>	_buffer;
 	OVERLAPPED _overlapped = {};
-	static void CALLBACK _s_onChangeNotification(DWORD errorCode, DWORD bytesTransferred, LPOVERLAPPED lpOverlapped);
+	static void CALLBACK _s_onChangeNotification(DWORD errorCode, DWORD bytesTransferred, LPOVERLAPPED lpOverlapped) noexcept;
 	void _onChangeNotification(DWORD errorCode, DWORD bytesTransferred);
 #endif
 	String	_path;

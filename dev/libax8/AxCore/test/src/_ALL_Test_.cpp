@@ -12,7 +12,6 @@ void AxCore_Test_File_Test_File_Example() {
 
 void AxCore_Test_Base() {
     AX_TEST_FUNC(Test_BasicType)
-    AX_TEST_FUNC(Test_Enum)
     AX_TEST_FUNC(Test_HashInt)
     AX_TEST_FUNC(Test_Math)
     AX_TEST_FUNC(Test_Uuid)
@@ -35,6 +34,10 @@ void AxCore_Test_File() {
 
 void AxCore_Test_Math() {
     AX_TEST_FUNC(Test_Vec)
+}
+
+void AxCore_Test_Other() {
+    AX_TEST_FUNC(Test_Enum)
 }
 
 void AxCore_Test_Pointer() {
@@ -60,6 +63,7 @@ void AxCore_Test() {
     AX_TEST_GROUP(AxCore_Test_Data)
     AX_TEST_GROUP(AxCore_Test_File)
     AX_TEST_GROUP(AxCore_Test_Math)
+    AX_TEST_GROUP(AxCore_Test_Other)
     AX_TEST_GROUP(AxCore_Test_Pointer)
     AX_TEST_GROUP(AxCore_Test_Rtti)
     AX_TEST_GROUP(AxCore_Test_String)

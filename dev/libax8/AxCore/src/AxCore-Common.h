@@ -6,6 +6,10 @@
 	#define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
+#include "AxCore/Base/AX_MACRO.h"
+#include "AxCore/Reflection/Rtti_MACRO.h"
+#include "AxCore/Color/ColorType_MACRO.h"
+
 #if  1 // AX_USE_PRECOMPILE_HEADER
 
 #include <algorithm>
@@ -51,6 +55,6 @@
 	#include <sys/stat.h>
 #endif
 
-#include "AxCore/Base/AX_MACRO.h"
-#include "AxCore/Reflection/Rtti_MACRO.h"
-#include "AxCore/Color/ColorType_MACRO.h"
+#if AX_OS_LINUX
+	#include <linux/limits.h>
+#endif

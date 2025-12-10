@@ -40,6 +40,8 @@
 	#define AX_VC_WARNING_PUSH()					__pragma(warning(push)) 
 	#define AX_VC_WARNING_DISABLE(warning_code)		__pragma(warning(disable: warning_code))
 	#define AX_VC_WARNING_POP()						__pragma(warning(pop))
+
+	#define AX_VC_WARNING_PUSH_AND_SET_LEVEL(LV)	__pragma(warning(push, LV)) 
 	#define AX_VC_WARNING_PUSH_AND_DISABLE(warning_code) \
 		AX_VC_WARNING_PUSH() \
 		AX_VC_WARNING_DISABLE(warning_code) \
@@ -49,6 +51,8 @@
 	#define AX_VC_WARNING_PUSH() 
 	#define AX_VC_WARNING_DISABLE(warning_code)
 	#define AX_VC_WARNING_POP()
+
+	#define AX_VC_WARNING_PUSH_AND_SET_LEVEL(LV)
 	#define AX_VC_WARNING_PUSH_AND_DISABLE(warning_code)
 
 #endif
