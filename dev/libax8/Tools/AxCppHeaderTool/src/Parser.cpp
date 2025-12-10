@@ -1,5 +1,5 @@
 module;
-#include "AxHeaderTool-pch.h"
+
 module AxHeaderTool.Parser;
 
 namespace ax::AxHeaderTool {

@@ -1,6 +1,6 @@
 module;
 
-#include "AxHeaderTool-pch.h"
+
 module AxHeaderTool.App;
 import AxHeaderTool.PCH;
 import AxHeaderTool.Generator;

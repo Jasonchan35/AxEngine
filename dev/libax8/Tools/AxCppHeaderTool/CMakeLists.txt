@@ -1,4 +1,4 @@
-set(PROJECT_NAME AxHeaderTool)
+set(PROJECT_NAME AxCppHeaderTool)
 message("==== ${PROJECT_NAME} ====")
 project(${PROJECT_NAME})
 

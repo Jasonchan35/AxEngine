@@ -1,5 +1,5 @@
 module;
-#include "AxHeaderTool-pch.h"
+
 export module AxHeaderTool.App;
 export import AxHeaderTool.PCH;
 

@@ -46,7 +46,7 @@ add_subdirectory(libax8/AxNativeUI)
 add_subdirectory(libax8/AxRender)
 add_subdirectory(libax8/AxUI)
 add_subdirectory(libax8/Tools/AxFileTool)
-add_subdirectory(libax8/Tools/AxHeaderTool)
+add_subdirectory(libax8/Tools/AxCppHeaderTool)
 add_subdirectory(libax8/Tools/AxShaderTool)
 add_subdirectory(EditorApp)
 

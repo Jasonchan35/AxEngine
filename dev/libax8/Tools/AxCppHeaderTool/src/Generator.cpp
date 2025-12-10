@@ -1,5 +1,5 @@
 module;
-#include "AxHeaderTool-pch.h"
+
 module AxHeaderTool.Generator;
 
 namespace ax::AxHeaderTool {
