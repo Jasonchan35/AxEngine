@@ -131,17 +131,22 @@ public:
 	AX_NODISCARD constexpr Opt<Int>	findBack		(CView      str, StrCase sc = StrCase::Sensitive) const { return view().findBack       (str   , sc); }
 	AX_NODISCARD constexpr Opt<Int>	findChar		(const T&    ch, StrCase sc = StrCase::Sensitive) const { return view().findChar       (ch    , sc); }
 	AX_NODISCARD constexpr Opt<Int>	findCharBack	(const T&    ch, StrCase sc = StrCase::Sensitive) const { return view().findCharBack   (ch    , sc); }
-	AX_NODISCARD constexpr Opt<Int>	findAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) const { return view().findAnyChar    (chList, sc); }
-	AX_NODISCARD constexpr Opt<Int>	findAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) const { return view().findAnyCharBack(chList, sc); }
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr Opt<Int>	findChar		(FUNC      func, StrCase sc = StrCase::Sensitive) const { return view().findChar       (func  , sc); }
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr Opt<Int>	findCharBack	(FUNC      func, StrCase sc = StrCase::Sensitive) const { return view().findCharBack   (func  , sc); }
 	//----------------
 	using SplitResult = Pair<MView, MView>;
 	AX_NODISCARD constexpr auto splitByIndex		(Opt<Int> index, Int separatorSize) -> SplitResult { return view().splitByIndex(index, separatorSize); }
-	AX_NODISCARD constexpr auto split				(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().split             (str   , sc); }
-	AX_NODISCARD constexpr auto splitBack			(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitBack         (str   , sc); }
-	AX_NODISCARD constexpr auto splitByChar			(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByChar       (ch    , sc); }
-	AX_NODISCARD constexpr auto splitByCharBack		(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByCharBack   (ch    , sc); }
-	AX_NODISCARD constexpr auto splitByAnyChar		(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyChar    (chList, sc); }
-	AX_NODISCARD constexpr auto splitByAnyCharBack	(Span<T> chList, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByAnyCharBack(chList, sc); }
+	AX_NODISCARD constexpr auto split				(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().split             (str , sc); }
+	AX_NODISCARD constexpr auto splitBack			(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitBack         (str , sc); }
+	AX_NODISCARD constexpr auto splitByChar			(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByChar       (ch  , sc); }
+	AX_NODISCARD constexpr auto splitByCharBack		(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByCharBack   (ch  , sc); }
+
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr auto splitByChar			(FUNC      func, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByChar       (func, sc); }
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr auto splitByCharBack		(FUNC      func, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByCharBack   (func, sc); }
 	//----------------
 	AX_INLINE			MView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive)		{ return view().extractFromPrefix(prefix, sc); }
 	AX_INLINE			CView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) const	{ return view().extractFromPrefix(prefix, sc); }

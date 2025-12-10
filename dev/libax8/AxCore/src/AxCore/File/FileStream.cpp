@@ -257,7 +257,7 @@ void FileStream::_os_open( StrView filename, int access_flag ) {
 
 	_fd = ::open( filenameA.c_str(), access_flag, mode );
 	if( _fd == -1 ) {
-		AX_LOG("open file error {}: filename=[{}]", errno, filename);
+		AX_LOG("open file error {}: filename=[{}] cwd=[{}]", errno, filename, FilePath::currentDir());
 		switch( errno ) {
 			case EACCES: throw Error_Undefined();
 			case EEXIST: throw Error_Undefined();
@@ -493,7 +493,7 @@ void FileStream::open	( StrView filename, FileMode mode, FileAccess access, File
 	if( _fd == INVALID_HANDLE_VALUE ) {
 		DWORD err = GetLastError();
 //		ax_log_win32_error( "File_open", err );
-		AX_LOG("open file error {}: filename=[{}]", errno, filename);
+		AX_LOG("open file error {}: filename=[{}] cwd=[{}]", errno, filename, FilePath::currentDir());
 		switch( err ) {
 			case ERROR_FILE_NOT_FOUND:		throw Error_File(Fmt("File not found: {}",			filename));
 			case ERROR_PATH_NOT_FOUND:		throw Error_File(Fmt("File path not found: {}", 	filename));

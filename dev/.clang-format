@@ -1,0 +1,45 @@
+BasedOnStyle: Microsoft 
+UseTab: Always
+TabWidth: 4
+#UseCRLF: false
+
+PointerAlignment: Left
+AccessModifierOffset: -4
+
+IndentCaseLabels: true
+NamespaceIndentation: None
+
+SortIncludes: true
+SortUsingDeclarations: true
+
+#------------
+AlignAfterOpenBracket: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
+AlignEscapedNewlines: true
+AlignOperands: true
+AlignTrailingComments: true
+
+#------------
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLambdasOnASingleLine: true
+AllowShortLoopsOnASingleLine: false
+
+#------------
+BreakBeforeBraces: Attach
+BreakConstructorInitializers: BeforeComma
+BreakBeforeBinaryOperators: NonAssignment
+
+CompactNamespaces: true
+
+AlwaysBreakTemplateDeclarations: Yes
+SpaceAfterTemplateKeyword: false
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+
+BinPackParameters: false
+BinPackArguments: false

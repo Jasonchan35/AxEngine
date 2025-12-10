@@ -477,8 +477,10 @@ public:
 		_resultDelegate = &resultDelegate;
 		auto absPath = FilePath::absPath(searchPath);
 
+		auto isWildcard = [](Char c) -> bool { return c == '*' || c == '?'; };
+		
 		auto p = absPath.view();
-		auto start = p.splitByAnyChar("*?").first
+		auto start = p.splitByChar_(isWildcard).first
 					  .splitByCharBack('/').first;
 
 		_curPath = start;

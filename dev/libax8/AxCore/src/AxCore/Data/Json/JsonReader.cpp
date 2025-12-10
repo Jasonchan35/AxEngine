@@ -465,7 +465,7 @@ bool JsonReader::_nextToken() {
 		auto c = _token.str[0];
 		if (isdigit(c) || c == '+' || c == '-' || c == '.') {
 
-			if (_token.str.findAnyChar(".")) {
+			if (_token.str.findChar('.')) {
 				_token.type = TokenType::f64;
 			} else if (c == '-') {
 				_token.type = TokenType::u64;

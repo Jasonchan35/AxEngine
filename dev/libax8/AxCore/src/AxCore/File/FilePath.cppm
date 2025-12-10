@@ -31,20 +31,17 @@ enum class FileShareMode {
 struct FilePath {
 	FilePath() = delete;
 
-	static constexpr Int  kMaxChar          = 512;
-	static constexpr Char kUnixSeperator    = '/';
-	static constexpr Char kWindowsSeperator = '\\';
+	static constexpr Int  kMaxChar = 512;
+	static constexpr Char kUnixPathSeperator	= '/';
+	static constexpr Char kWindowsPathSeperator	= '\\';
 
 #if AX_OS_WINDOWS
-	static constexpr Char kNativeSeperator = kWindowsSeperator;
+	static constexpr Char kNativePathSeperator = kWindowsPathSeperator;
 #else
-	static constexpr Char kNativeSeperator = kUnixSeperator;
+	static constexpr Char kNativePathSeperator = kUnixPathSeperator;
 #endif
-
-private:
-	static constexpr Char _kSeperators[] = {kWindowsSeperator, kUnixSeperator};
-public:	
-	static constexpr Span<Char> kSeperators = {_kSeperators};
+	
+	static constexpr bool isPathSeperator(Char c) { return c == kUnixPathSeperator || c == kNativePathSeperator; }
 
 	struct SplitResult {
 		StrView driver;

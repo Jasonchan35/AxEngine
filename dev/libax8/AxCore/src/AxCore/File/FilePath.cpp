@@ -18,7 +18,7 @@ FilePath::SplitResult FilePath::split(StrView path) {
 		p = s.second;
 	}
 
-	s = p.splitByAnyCharBack("\\/");
+	s = p.splitByChar_(isPathSeperator);
 	if (s.second) {
 		o.dir = s.first;
 		p = s.second;
@@ -32,12 +32,12 @@ FilePath::SplitResult FilePath::split(StrView path) {
 }
 
 StrView FilePath::dirname ( StrView path ) {
-	auto s = path.splitByAnyCharBack("\\/");
+	auto s = path.splitByCharBack_(isPathSeperator);
 	return s.second ? s.first : StrView();
 }
 
 StrView FilePath::basename ( StrView path, bool withExtension ) {
-	auto s = path.splitByAnyCharBack("\\/");
+	auto s = path.splitByCharBack_(isPathSeperator);
 	auto f = s.second ? s.second : s.first;
 	if (withExtension) return f;
 	s = f.splitByCharBack('.');
@@ -47,7 +47,7 @@ StrView FilePath::basename ( StrView path, bool withExtension ) {
 StrView	FilePath::extension ( StrView path ) {
 	//	remove dir first to avoid corner case like: "/aaa/bbb/ccc.here/eee"
 	//	while should return "" instead or "here/eee"
-	auto s = path.splitByAnyCharBack("\\/");
+	auto s = path.splitByCharBack_(isPathSeperator);
 	auto f = s.second ? s.second : s.first;
 
 	s = f.splitByCharBack('.');
@@ -56,12 +56,12 @@ StrView	FilePath::extension ( StrView path ) {
 
 void FilePath::getUnixPath(IString& outPath, StrView inPath) {
 	outPath = inPath;
-	outPath.replaceChars('\\', '/');
+	outPath.replaceChars(kWindowsPathSeperator, kUnixPathSeperator);
 }
 
 void FilePath::getWinPath(IString& outPath, StrView inPath) {
 	outPath = inPath;
-	outPath.replaceChars('/', '\\');
+	outPath.replaceChars(kUnixPathSeperator, kWindowsPathSeperator);
 }
 
 TempString FilePath::changeExtension(StrView path, StrView new_extension ) {
@@ -114,13 +114,13 @@ void FilePath::getAbsPath(IString& out_str, StrView path) {
 
 	StrView p = path;
 	while (p) {
-		auto s = p.splitByAnyChar("\\/");
+		auto s = p.splitByChar_(isPathSeperator);
 		if (s.first == ".") {
 			//skip '.'
 		}else if (!s.first) {
 			//skip '/'
 		}else if (s.first == "..") {
-			auto idx = out_str.view().findAnyCharBack("\\/");
+			auto idx = out_str.view().findCharBack_(isPathSeperator);
 			if (!idx) {
 				out_str.clear(); //no more parent folder
 				return;

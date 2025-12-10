@@ -174,18 +174,17 @@ template<>			struct	Type_UInt_From_Struct<u32> { using Type = u32; };
 template<>			struct	Type_UInt_From_Struct<u64> { using Type = u64; };
 template<class T>	using	Type_UInt_From = typename Type_UInt_From_Struct<T>::Type;
 
-template<class FUNC>
+template<class FUNC, class FUNC_SIG>
 struct Type_IsFuncSig_Struct { static constexpr bool value = false; };
 
-template<class RETURN, class...ARGS>
-struct Type_IsFuncSig_Struct<RETURN (ARGS...)> {
-	using FUNC = RETURN (ARGS...);
-	static constexpr bool value =  std::is_invocable_v<FUNC, ARGS...>
+template<class FUNC, class RETURN, class...ARGS>
+struct Type_IsFuncSig_Struct<FUNC, RETURN (ARGS...)> {
+	static constexpr bool value =  std::is_invocable_v< FUNC, ARGS...>
 								&& std::is_same_v<RETURN, std::invoke_result_t<FUNC, ARGS...>>;
 };
 
-template<class FUNC>
-constexpr bool Type_IsFuncSig = Type_IsFuncSig_Struct<FUNC>::value;
+template<class FUNC, class FUNC_SIG>
+constexpr bool Type_IsFuncSig = Type_IsFuncSig_Struct<FUNC, FUNC_SIG>::value;
 
 template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	if (!sz) return 0;
