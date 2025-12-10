@@ -16,11 +16,10 @@ void ColorUtil::_convertSpan(MutByteSpan dstSpan, ByteSpan srcSpan) {
 	for (Int i = 0; i < srcPixelCount; i++) {
 		Conv::conv(*dstData, *srcData);
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+		AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 		++srcData;
 		++dstData;
-AX_PRAGMA_GCC(diagnostic pop)
+		AX_GCC_WARNING_POP()
 	}
 };
 

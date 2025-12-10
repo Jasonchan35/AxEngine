@@ -19,31 +19,37 @@
 #define AX_LINE		static_cast<::ax::Int>(__LINE__)
 
 #if AX_COMPILER_GCC | AX_COMPILER_CLANG
-	#define AX_PRAGMA_GCC_STRINGIZE(x)					_Pragma(#x)
-	#define AX_PRAGMA_GCC(x)							AX_PRAGMA_GCC_STRINGIZE(GCC x)
-	#define AX_PRAGMA_GCC_WARNING_PUSH()				_Pragma("diagnostic push")
-	#define AX_PRAGMA_GCC_WARNING_DISABLE(warning_name)	_Pragma("diagnostic " ## warning_name)
-	#define AX_PRAGMA_GCC_WARNING_POP()					_Pragma("diagnostic pop")
-
+	#define AX_GCC_PRAGMA(x)						_Pragma(#x)
+	#define AX_GCC_WARNING_PUSH()					AX_GCC_PRAGMA(GCC diagnostic push)
+	#define AX_GCC_WARNING_POP()					AX_GCC_PRAGMA(GCC diagnostic pop)
+	#define AX_GCC_WARNING_DISABLE(warning_name)	AX_GCC_PRAGMA(GCC diagnostic ignored warning_name)
+	#define AX_GCC_WARNING_PUSH_AND_DISABLE(warning_name) \
+		AX_GCC_WARNING_PUSH() \
+		AX_GCC_WARNING_DISABLE(warning_name) \
+	//------
 #else
-	#define AX_PRAGMA_GCC(x)
-	#define AX_PRAGMA_GCC_WARNING_PUSH()
-	#define AX_PRAGMA_GCC_WARNING_DISABLE(warning_name)
-	#define AX_PRAGMA_GCC_WARNING_POP()
-
+	#define AX_GCC_PRAGMA(x)
+	#define AX_GCC_WARNING_PUSH()
+	#define AX_GCC_WARNING_POP()
+	#define AX_GCC_WARNING_DISABLE(warning_name)
+	#define AX_GCC_WARNING_PUSH_AND_DISABLE(warning_name)
 #endif
 
 #if AX_COMPILER_VC
-	#define AX_PRAGMA_VC(x)								__pragma(x)
-	#define AX_PRAGMA_VC_WARNING_PUSH()					__pragma(warning(push)) 
-	#define AX_PRAGMA_VC_WARNING_DISABLE(warning_code)	__pragma(warning(disable: warning_code))
-	#define AX_PRAGMA_VC_WARNING_POP()					__pragma(warning(pop))
+	#define AX_VC_PRAGMA(x)							__pragma(x)
+	#define AX_VC_WARNING_PUCH()					__pragma(warning(push)) 
+	#define AX_VC_WARNING_DISABLE(warning_code)		__pragma(warning(disable: warning_code))
+	#define AX_VC_WARNING_POP()						__pragma(warning(pop))
+	#define AX_VC_WARNING_PUSH_AND_DISABLE(warning_code) \
+		AX_VC_WARNING_PUSH() \
+		AX_VC_WARNING_DISABLE(warning_code) \
 
 #else
-	#define AX_PRAGMA_VC(x)
-	#define AX_PRAGMA_VC_WARNING_PUSH() 
-	#define AX_PRAGMA_VC_WARNING_DISABLE(warning_code)
-	#define AX_PRAGMA_VC_WARNING_POP()
+	#define AX_VC_PRAGMA(x)
+	#define AX_VC_WARNING_PUCH() 
+	#define AX_VC_WARNING_DISABLE(warning_code)
+	#define AX_VC_WARNING_POP()
+	#define AX_VC_WARNING_PUSH_AND_DISABLE(warning_code)
 
 #endif
 

@@ -131,11 +131,8 @@ public:
 
 	AX_INLINE constexpr void set(T luma_, T a_ = kElemOne) { luma=luma_; a=a_; }
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
 	AX_INLINE constexpr bool	operator==	(const This& rhs) const { return luma == rhs.luma && a == rhs.a; }
 	AX_INLINE constexpr bool	operator!=	(const This& rhs) const { return luma != rhs.luma || a != rhs.a; }
-AX_PRAGMA_GCC(diagnostic pop)
 
 	static const This& kZero		() { static This s(kElemZero()); return s; }
 	static const This& kBlack		() { static This s(kElemZero()); return s; }

@@ -91,13 +91,13 @@ public:
 	template <class R, VecSIMD R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static Vec s_cast(const VecSIMD_Data_<N, R, R_SIMD>& vec) {
 		Vec ret;
-		AX_PRAGMA_VC_WARNING_PUSH()
-		AX_PRAGMA_VC_WARNING_DISABLE(4244) // Warning C4244 : '=': conversion from 'R' to 'T', possible loss of data
+		AX_VC_WARNING_PUCH()
+		AX_VC_WARNING_DISABLE(4244) // Warning C4244 : '=': conversion from 'R' to 'T', possible loss of data
 		if constexpr (N > 0) ret.e[0] = static_cast<R>(vec.e[0]);
 		if constexpr (N > 1) ret.e[1] = static_cast<R>(vec.e[1]);
 		if constexpr (N > 2) ret.e[2] = static_cast<R>(vec.e[2]);
 		if constexpr (N > 3) ret.e[3] = static_cast<R>(vec.e[3]);
-		AX_PRAGMA_VC_WARNING_POP()
+		AX_VC_WARNING_POP()
 		return ret;
 	}
 	

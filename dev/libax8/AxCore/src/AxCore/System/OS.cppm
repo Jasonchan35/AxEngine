@@ -15,8 +15,8 @@ public:
 	static	StrView	platformName();
 	static	double	uptime	();
 
-	static	ZStrView	getenv(ZStrView	name);
-	static	void		setenv(StrView name, StrView value);
+	static	String	getenv(StrView	name);
+	static	void	setenv(StrView name, StrView value);
 };
 
 } // namespace ax 

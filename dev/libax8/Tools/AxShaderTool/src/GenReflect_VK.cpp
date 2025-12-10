@@ -4,7 +4,9 @@ module;
 	module AxShaderTool;
 #else
 
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wmicrosoft-enum-value") // INVALID_VALUE  = 0xFFFFFFFF,
 #include "spirv_reflect.c"
+AX_GCC_WARNING_POP()
 
 module AxShaderTool;
 

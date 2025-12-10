@@ -162,9 +162,7 @@ public:
 };
 
 
-
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 
 
 template<class T> AX_INLINE
@@ -667,7 +665,7 @@ T* _ZStrUtil_T_Impl<T>::findCaseChar(T* sz, T ch) {
 	return nullptr;
 }
 
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 
 
 } // namespace

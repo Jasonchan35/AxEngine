@@ -165,10 +165,9 @@ bool almostZero(const T& a) {
 
 template<class T> AX_NODISCARD AX_INLINE constexpr
 bool exactlyEqual(const T& a, const T& b) {
-	AX_PRAGMA_GCC(diagnostic push)
-	AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
+	AX_GCC_WARNING_PUSH_AND_DISABLE("-Wfloat-equal")
 	return a == b; 
-	AX_PRAGMA_GCC(diagnostic pop)
+	AX_GCC_WARNING_POP()
 }
 
 template< class T > AX_NODISCARD AX_INLINE constexpr

@@ -45,11 +45,10 @@ boolean ImageIO_Reader_JPEG::s_fill_input_buffer (j_decompress_ptr cinfo) {
 
 void ImageIO_Reader_JPEG::s_skip_input_data (j_decompress_ptr cinfo, long num_bytes) {
 	if (num_bytes > 0) {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 		cinfo->src->next_input_byte += SafeCast(num_bytes);
 		cinfo->src->bytes_in_buffer -= SafeCast(num_bytes);
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 	}
 }
 
@@ -140,12 +139,11 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 		if (src_color_type == out_color_type) {
 			for (Int y = 0; y < height; y++) {
 
-				AX_PRAGMA_GCC(diagnostic push)
-				AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+				AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 				JSAMPLE* scanline[1] = {
 					reinterpret_cast<JSAMPLE*>(outData + y * dstStrideInBytes)
 				};
-				AX_PRAGMA_GCC(diagnostic pop)
+				AX_GCC_WARNING_POP()
 
 				//-------
 				if (error_exit_longjmp_restore_point()) {
@@ -168,10 +166,9 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 					throw Error_Undefined();
 				}
 
-				AX_PRAGMA_GCC(diagnostic push)
-				AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+				AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 				auto outRow = MutByteSpan(outData + y * dstStrideInBytes, dstStrideInBytes);
-				AX_PRAGMA_GCC(diagnostic pop)
+				AX_GCC_WARNING_POP()
 
 				ColorUtil::convertSpanByType(out_color_type, outRow, src_color_type, tmpRow);
 			}

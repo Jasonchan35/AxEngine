@@ -144,10 +144,9 @@ void ImageIO_Reader_PNG::load(ImageIO::Callback callback, ByteSpan inData) {
 		rows.resize(height);
 
 		for (Int y = 0; y < height; y++) {
-			AX_PRAGMA_GCC(diagnostic push)
-			AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+			AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 			rows[y] = reinterpret_cast<png_bytep>(outData + y * strideInBytes);
-			AX_PRAGMA_GCC(diagnostic pop)
+			AX_GCC_WARNING_POP()
 		}
 
 		png_set_rows(_png, _info, rows.data());
@@ -170,15 +169,14 @@ void ImageIO_Reader_PNG::_s_onRead( png_structp png, png_bytep dest, png_size_t 
 }
 
 void ImageIO_Reader_PNG::_onRead(png_bytep dest, png_size_t len) {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 	Int n = SafeCast(len);
 	if (_readPtr + n > _inData.end()) {
 		throw Error_Undefined();
 	}
 	MemUtil::rawCopy(dest, _readPtr, n);
 	_readPtr += n;
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 }
 
 void ImageIO_Reader_PNG::_setReadFilter(ColorType out_color_type, Int in_color_type, Int in_bit, bool in_palette_has_alpha) {

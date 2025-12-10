@@ -54,11 +54,8 @@ public:
 
 	AX_INLINE constexpr void set(T b_, T g_, T r_, T a_ = kElemOne) { b=b_; g=g_; r=r_; a=a_; }
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wfloat-equal")
 	AX_INLINE bool	operator==	(const This& rhs) const { return b == rhs.b && g == rhs.g && r == rhs.r && a == rhs.a; }
 	AX_INLINE bool	operator!=	(const This& rhs) const { return b != rhs.b || g != rhs.g || r != rhs.r || a != rhs.a; }
-AX_PRAGMA_GCC(diagnostic pop)
 
 	static const This& kZero		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }
 	static const This& kBlack		() { static This s(kElemZero(), kElemZero(), kElemZero()); return s; }

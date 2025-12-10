@@ -111,12 +111,10 @@ public:
 	AX_INLINE const u8* advance(Int n);
 
 	void io_raw(MutByteSpan data) {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+		AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 		auto* src = advance(data.size());
 		std::copy(src, src + data.size(), data.data());
-
-AX_PRAGMA_GCC(diagnostic pop)
+		AX_GCC_WARNING_POP()
 	}
 
 private:
@@ -131,9 +129,8 @@ private:
 };
 
 AX_INLINE const u8* BinIO_Reader::advance(Int n) {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
-
+	AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
+	
 	if (remain() < n) {
 		throw Error_Undefined();
 	}
@@ -141,7 +138,7 @@ AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
 	_cur += n;
 	return old;
 
-AX_PRAGMA_GCC(diagnostic pop)
+	AX_GCC_WARNING_POP()
 
 }
 

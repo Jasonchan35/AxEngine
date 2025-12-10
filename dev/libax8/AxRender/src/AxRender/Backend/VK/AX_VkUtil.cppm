@@ -61,18 +61,16 @@ public:
 		return o;
 	}
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wold-style-cast")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wold-style-cast")
 	static u32 makeApiVersion(u32 variant, u32 major, u32 minor, u32 patch) { return VK_MAKE_API_VERSION(variant, major, minor, patch); }
 	static u32 makeApiVersionMajor(u32 variant) { return VK_API_VERSION_MAJOR(variant); }
 	static u32 makeApiVersionMinor(u32 variant) { return VK_API_VERSION_MINOR(variant); }
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 
 	static void setFloat4(float d[4], const Color4f& s) {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 		d[0] = s.r; d[1] = s.g; d[2] = s.b; d[3] = s.a;
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 
 	}
 

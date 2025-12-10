@@ -8,8 +8,24 @@ import AxCore.ZStrUtil;
 
 namespace ax {
 
-ZStrView OS::getenv(ZStrView name) {
-	return ZStrView_c_str(std::getenv(name.c_str()));
+String OS::getenv(StrView name) {
+#if AX_OS_WINDOWS
+	auto nameW = TempStringW::s_utf(name);
+	size_t requiredSize;
+	_wgetenv_s(&requiredSize, nullptr, 0, nameW.c_str());
+	if (requiredSize == 0) return String();
+
+	TempStringW tmp;
+	tmp.resize(SafeCast(requiredSize));
+	_wgetenv_s(&requiredSize, tmp.data(), tmp.size(), nameW.c_str());
+
+	return String::s_utf(tmp);
+
+#else
+	auto nameA = TempStringA::s_utf(name);
+	return ZStrView_c_str(std::getenv(nameA.c_str()));
+
+#endif
 }
 
 void OS::setenv(StrView name, StrView value) {

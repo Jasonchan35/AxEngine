@@ -77,14 +77,13 @@ private:
 
 AX_INLINE
 u8* BinIO_Writer::advance(Int n) {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+	AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 
 	Int oldSize = _buf->size();
 	_buf->resize(oldSize + n);
 	return _buf->data() + oldSize;
 
-AX_PRAGMA_GCC(diagnostic pop)
+	AX_GCC_WARNING_POP()
 }
 
 template<class T, Int N> inline

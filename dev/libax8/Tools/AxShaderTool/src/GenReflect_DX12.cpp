@@ -53,14 +53,13 @@ private:
 GenReflect_DX12::GenReflect_DX12() {
 	HRESULT hr;
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wlanguage-extension-token")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wlanguage-extension-token")
 	hr = DxcCreateInstance(CLSID_DxcLibrary,  IID_PPV_ARGS(_dxcLib.ptrForInit()));
 	throwIfError(hr);
 
 	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(_dxc.ptrForInit()));
 	throwIfError(hr);
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 
 }
 
@@ -284,11 +283,10 @@ void GenReflect_DX12::_compileReflect(StrView outFilename, IDxcBlob* byteCode, S
 
 	HRESULT hr;
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wlanguage-extension-token")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wlanguage-extension-token")
 	hr = DxcCreateInstance(CLSID_DxcContainerReflection, IID_PPV_ARGS(container.ptrForInit()));
 	throwIfError(hr);
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 
 	
 
@@ -299,10 +297,9 @@ AX_PRAGMA_GCC(diagnostic pop)
 	hr = container->FindFirstPartKind(FourCC("DXIL"), &shaderIdx);
 	throwIfError(hr);
 
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wlanguage-extension-token")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wlanguage-extension-token")
 	hr = container->GetPartReflection(shaderIdx, IID_PPV_ARGS(reflect.ptrForInit()));
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 
 	if (checkError(hr)) {
 		D3D12_SHADER_DESC desc;

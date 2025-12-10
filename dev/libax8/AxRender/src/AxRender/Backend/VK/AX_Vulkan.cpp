@@ -265,8 +265,7 @@ bool AX_VkPhysicalDevice::findComputeQueueFamilyIndex(AX_VkQueueFamilyIndex& out
 }
 
 bool AX_VkPhysicalDevice::findMemoryTypeIndex(AX_VkQueueFamilyIndex& outIndex, VkFlags typeBits, VkMemoryPropertyFlags requireMask) const {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 
 	// Search memory types to find first index with those properties
 	for (u32 i = 0; i < VK_MAX_MEMORY_TYPES; i++) {
@@ -282,7 +281,7 @@ AX_PRAGMA_GCC(diagnostic ignored "-Wunsafe-buffer-usage")
 	// No memory types matched, return failure
 	return false;
 
-AX_PRAGMA_GCC(diagnostic push)
+AX_GCC_WARNING_POP()
 }
 
 AX_VkPhysicalDevice::Features::Features() {
@@ -1587,10 +1586,9 @@ AX_VkExtProcList* AX_VkExtProcList::s_instance() {
 
 template<class FUNC> inline
 void AX_VkExtProcList::_getExtProc(FUNC& outFunc, StrLit name) {
-AX_PRAGMA_GCC(diagnostic push)
-AX_PRAGMA_GCC(diagnostic ignored "-Wcast-function-type-strict")
+AX_GCC_WARNING_PUSH_AND_DISABLE("-Wcast-function-type-strict")
 	outFunc = reinterpret_cast<FUNC>(vkGetInstanceProcAddr(_vkInst, name.c_str()));
-AX_PRAGMA_GCC(diagnostic pop)
+AX_GCC_WARNING_POP()
 }
 
 void AX_VkDebugReportCallbackEXT::create(VkInstance inst, PFN_vkDebugReportCallbackEXT callback) {
