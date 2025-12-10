@@ -37,7 +37,7 @@
 
 #if AX_COMPILER_VC
 	#define AX_VC_PRAGMA(x)							__pragma(x)
-	#define AX_VC_WARNING_PUCH()					__pragma(warning(push)) 
+	#define AX_VC_WARNING_PUSH()					__pragma(warning(push)) 
 	#define AX_VC_WARNING_DISABLE(warning_code)		__pragma(warning(disable: warning_code))
 	#define AX_VC_WARNING_POP()						__pragma(warning(pop))
 	#define AX_VC_WARNING_PUSH_AND_DISABLE(warning_code) \
@@ -46,7 +46,7 @@
 
 #else
 	#define AX_VC_PRAGMA(x)
-	#define AX_VC_WARNING_PUCH() 
+	#define AX_VC_WARNING_PUSH() 
 	#define AX_VC_WARNING_DISABLE(warning_code)
 	#define AX_VC_WARNING_POP()
 	#define AX_VC_WARNING_PUSH_AND_DISABLE(warning_code)
