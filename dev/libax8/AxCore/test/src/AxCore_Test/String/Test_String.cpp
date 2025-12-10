@@ -136,9 +136,10 @@ public:
 		String str("Test");
 
 		const Char* cStr = str.c_str();
-		AX_TEST_IF(cStr != nullptr);
-		AX_TEST_EQ(cStr[0], 'T');
-		AX_TEST_EQ(cStr[4], '\0');
+		if (AX_TEST_IF(cStr != nullptr)) {
+			AX_TEST_EQ(cStr[0], 'T');
+			AX_TEST_EQ(cStr[4], '\0');
+		}
 	}
 
 	/*

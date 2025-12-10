@@ -12,8 +12,8 @@ public:
 			constexpr	HashInt const_fnv1a_64_result = HashInt::s_make(inputData);
 						HashInt       fnv1a_64_result = HashInt::s_make(inputData);
 			u64 k = 0x5e41ec79612fa7f3ull;
-			AX_TEST_IF(const_fnv1a_64_result.value == k);
-			AX_TEST_IF(      fnv1a_64_result.value == k);
+			AX_TEST_EQ(const_fnv1a_64_result.value, k);
+			AX_TEST_EQ(      fnv1a_64_result.value, k);
 		}
 	}
 };

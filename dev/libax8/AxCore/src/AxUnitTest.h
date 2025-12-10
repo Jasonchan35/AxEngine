@@ -25,10 +25,12 @@
 //----
 
 #define AX_TEST_IF(A) \
-	do { \
+	[&]() -> bool { \
+		bool success = bool(A); \
 		auto tmpTestMsg = Fmt("{}\n  (value: {})", #A, A); \
-		::ax::UnitTest_Validate(bool((A)), tmpTestMsg.c_str()); \
-	} while (false) \
+		::ax::UnitTest_Validate(success, tmpTestMsg.c_str()); \
+		return success; \
+	}() \
 //----
 
 #define AX_TEST_EQ(A, B) \

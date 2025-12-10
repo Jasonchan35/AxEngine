@@ -19,6 +19,7 @@ void AxCore_Test_Base() {
 }
 
 void AxCore_Test_Container() {
+    AX_TEST_FUNC(Test_Array)
     AX_TEST_FUNC(Test_Dict)
     AX_TEST_FUNC(Test_LinkedList)
 }

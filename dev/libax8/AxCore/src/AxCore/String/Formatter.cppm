@@ -58,6 +58,15 @@ public:
 	}
 };
 
+template <class T, class FMT_CH>
+class FormatHandler<Span_FindResult<T>, FMT_CH> {
+public:
+	using Obj = Span_FindResult<T>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << "([" << obj.index << "], " << obj.value << ")";
+	}
+};
+
 template <CON_IsIArray OBJ, class FMT_CH> 
 class FormatHandler<OBJ, FMT_CH> {
 public:
@@ -90,6 +99,19 @@ public:
 	using Obj = Error;
 	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
 		fmt << StrView_c_str(obj.what());
+	}
+};
+
+template <class V, class FMT_CH>
+class FormatHandler<Opt<V>, FMT_CH> {
+public:
+	using Obj = Opt<V>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		if (!obj) {
+			fmt << "nullopt";
+		} else {
+			fmt << *obj;
+		}
 	}
 };
 

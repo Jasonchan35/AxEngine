@@ -72,7 +72,7 @@ public:
 			Int arrValue[] = {0, 1, 2, 3, 4};
 			AX_TEST_EQ(arr, Span(arrValue));
 
-			AX_TEST_IF(jv.isObject());
+			if (!AX_TEST_IF(jv.isObject())) return;
 
 			auto& obj = jv.asObject();
 			AX_TEST_EQ(obj["m_name"]	,"John");

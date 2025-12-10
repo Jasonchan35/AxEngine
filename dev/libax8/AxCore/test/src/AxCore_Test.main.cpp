@@ -13,7 +13,7 @@ public:
 			// AX_TEST_GROUP(Test_Rtti);
 			// AX_TEST_GROUP(Test_String);
 			// AX_TEST_GROUP(Test_LinkedList);
-			AX_TEST_GROUP(Test_File);
+			AX_TEST_GROUP(Test_Array);
 		}
 	}
 };

@@ -365,7 +365,7 @@ struct SrcLoc {
 	constexpr SrcLoc(AxTag::NoInit_) noexcept {}
 	constexpr SrcLoc(const std::source_location & loc) noexcept : _loc(loc) {};
 
-	static constexpr SrcLoc s_current() { return std::source_location::current(); }
+	static constexpr SrcLoc s_current(const std::source_location & loc = std::source_location::current()) { return loc; }
 	
 	constexpr Int    		column	() const noexcept	{ return _loc.column(); }
 	constexpr Int    		line	() const noexcept	{ return _loc.line(); }

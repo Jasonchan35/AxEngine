@@ -9,7 +9,6 @@ public:
 	void test_case1() {
 		auto uuid = Uuid::s_gen();
 		AX_TEST_IF(uuid.isValid());
-		return;
 	}
 	
 };

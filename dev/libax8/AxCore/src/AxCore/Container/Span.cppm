@@ -132,9 +132,15 @@ private:
 
 template<class T>
 struct Span_FindResult {
-	Span_FindResult(Int index_, const T& value_) : index(index_), value(value_) {}
-	Int			index;
-	const T&	value;
+	Int	index;
+	T&	value;
+
+	using CResult = Span_FindResult<const T>;
+	
+	constexpr Span_FindResult(Int index_, T& value_) : index(index_), value(value_) {}
+	
+	constexpr CResult constResult() const { return CResult(index, value); }
+	constexpr operator CResult() const { return constResult(); }
 };
 
 template<class T>
@@ -232,25 +238,26 @@ public:
 	using MFindResult = Span_FindResult<T>;
 	using CFindResult = Span_FindResult<const T>;
 
-	template<class TARGET>
-	constexpr Opt<CFindResult> find(const TARGET& target) const {
-		return find(target, ax_op_equal<T,TARGET>);
+	template<class R>
+	constexpr Opt<MFindResult> find(const R& r) {
+		return find_([&r](const T& e){ return e == r; });
 	}
 	
-	template<class TARGET, class FUNC>
-	constexpr Opt<CFindResult> find(const TARGET& target, FUNC func) const {
-		static_assert(Type_IsFuncSig<bool (const T&, const TARGET&)>);
+	template<class FUNC>
+	constexpr Opt<MFindResult> find_(FUNC func) {
+		static_assert(Type_IsFuncSig<bool (const T&)>);
 		auto* p = _data;
 		auto* e = _data + _size;
 		for (; p < e; ++p) {
-			if (func(*p, target)) return CFindResult(p - _data, *p);
+			if (func(*p)) return CFindResult(p - _data, *p);
 		}
 		return std::nullopt;
 	}
-	
-	constexpr CFindResult findMin() const { return findMin(ax_op_less<T>); }
-	
-	template<class FUNC> constexpr CFindResult findMin(FUNC func) const {
+
+	template<class R>    constexpr Opt<CFindResult> find(const R& r) const { return ax_const_cast(this)->find(r); }
+	template<class FUNC> constexpr Opt<CFindResult> find_(FUNC func) const { return ax_const_cast(this)->find_(func); }
+
+	template<class FUNC> constexpr MFindResult findMin_(FUNC func) {
 		static_assert(Type_IsFuncSig<bool (const T&, const T&)>);
 		if (_size <= 0) throw Error_InvalidSize();
 
@@ -262,8 +269,12 @@ public:
 				pMinValue = p;
 			}
 		}
-		return CFindResult(pMinValue - _data, *p);
+		return MFindResult(pMinValue - _data, *p);
 	}
+
+	template<class FUNC> constexpr CFindResult findMin_(FUNC func) const { ax_const_cast(this)->findMin_(func); }
+	constexpr MFindResult findMin()			{ return findMin_(ax_op_less<T>); }
+	constexpr CFindResult findMin() const	{ return ax_const_cast(this)->findMin_(); }
 	
 	constexpr void sort() { sort(ax_op_less<T,T>); }
 	
@@ -271,7 +282,7 @@ public:
 		static_assert(Type_IsFuncSig<bool (const T&, const T&)>);
 		// simple sorting, prevent move data if possible
 		for (Int i = 0; i < _size; i++) {
-			Int minIndex = i + sliceFrom(i).findMin(func).index;
+			Int minIndex = i + sliceFrom(i).findMin_(func).index;
 			if (minIndex == i) continue;
 
 			std::swap(at(minIndex), at(i));
