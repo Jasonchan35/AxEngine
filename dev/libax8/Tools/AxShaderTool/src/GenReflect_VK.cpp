@@ -4,9 +4,8 @@ module;
 	module AxShaderTool;
 #else
 
-#include "spirv_reflect.h"
 #include "spirv_reflect.c"
-#include "AxRender/Backend/VK/AX_VkUtil.h"
+
 module AxShaderTool;
 
 import :GenReflect_VK;
@@ -19,13 +18,13 @@ struct VarNameToSemantic {
 		static VarNameToSemantic s;
 		auto* p = s._dict.find(name);
 		if (!p) {
-			throw AX_ERROR("Cannot resolve vertex semantic from name '{}'", name);
+			throw Error_Undefined(Fmt("Cannot resolve vertex semantic from name '{}'", name));
 		}
 		return *p;
 	}
 
 private:
-	StringDict<VertexSemantic>	_dict;
+	Dict<String, VertexSemantic>	_dict;
 
 	void _add(StrView name, VertexSemantic s, u16 count) {
 		for (u16 i = 0; i < count; i++) {
@@ -75,11 +74,11 @@ DataType getDataType(const SpvReflectTypeDescription& src) {
 
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_BOOL) {
 			AX_ASSERT(false);
-			throw AX_ERROR("unsupport bool-matrix");
+			throw Error_Undefined("unsupport bool-matrix");
 		}
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_INT) {
 			AX_ASSERT(false);
-			throw AX_ERROR("unsupport int-matrix");
+			throw Error_Undefined("unsupport int-matrix");
 		}
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 			if (mat.row_count == 4 && mat.column_count == 4) {
@@ -226,11 +225,11 @@ template<class PARAM>
 void GenReflect_VK_EX::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	dst.stageFlags = outInfo.stageFlags;
 	dst.name  = StrView_c_str(binding->name);
-	ax_safe_assign(dst.bindSpace, binding->set);
-	ax_safe_assign(dst.bindPoint, binding->binding);
+	dst.bindSpace = SafeCast(binding->set);
+	dst.bindPoint = SafeCast(binding->binding);
 
 	if (binding->array.dims_count == 1) {
-		ax_safe_assign(dst.bindCount, binding->array.dims[0]);
+		dst.bindCount = SafeCast(binding->array.dims[0]);
 	} else {
 		dst.bindCount = 1;
 	}
@@ -265,7 +264,7 @@ void GenReflect_VK_EX::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflec
 	dst.name = StrView_c_str(typeDesc->type_name);
 
 	auto& block = binding->block;
-	ax_safe_assign(dst.dataSize, block.size);
+	dst.dataSize = SafeCast(block.size);
 
 	u32 memberCount = block.member_count;
 	for (u32 i = 0; i < memberCount; i++) {

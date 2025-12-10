@@ -9,8 +9,44 @@ export namespace ax {
 template<class A, class B>
 concept CON_IsSame = std::is_same_v<A, B>;
 
+template<Int COL, Int ROW, class T> struct Num_Data {
+	T _data[ROW][COL];
+};
+
+template<class T> struct Num_Data<1,1,T> {
+	union {
+		struct { T x; };
+		T _data[1][1];
+	};
+};
+
+template<class T> struct Num_Data<2,1,T> {
+	union {
+		struct { T x,y; };
+		T _data[1][2];
+	};
+};
+
+template<class T> struct Num_Data<3,1,T> {
+	union {
+		struct { T x,y,z; };
+		T _data[1][3];
+	};
+};
+
+
+template<class T> struct Num_Data<4,1,T> {
+	union {
+		struct { T x,y,z,w; };
+		T _data[1][4];
+	};
+};
+
 template<Int COL, Int ROW, class T> 
-struct Num_ {
+struct Num_ : public Num_Data<COL, ROW, T> {
+	using Data = Num_Data<COL, ROW, T>;
+	using Data::_data;
+	
 	using ElementType = T;
 	static constexpr Int kColCount = COL;
 	static constexpr Int kRowCount = ROW;
@@ -73,9 +109,6 @@ struct Num_ {
 	AX_INLINE constexpr const	T& unsafe_at	(Int col, Int row = 0) const	{ return _data[row][col]; }
 	
 	AX_INLINE constexpr bool operator==(const Num_& other) const { return fixedSpan() == other.fixedSpan(); }
-	
-private:
-	T _data[ROW][COL];
 };
 
 //----------

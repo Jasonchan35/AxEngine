@@ -123,10 +123,10 @@ inline
 VkShaderStageFlagBits AX_VkUtil::getVkShaderStageFlagBits(ShaderStageFlags f) {
 	using SRC = ShaderStageFlags;
 	u64 o = 0;
-	if (EnumFn(f).hasAllFlags(SRC::Vertex		)) o |= VK_SHADER_STAGE_VERTEX_BIT;
-	if (EnumFn(f).hasAllFlags(SRC::Pixel		)) o |= VK_SHADER_STAGE_FRAGMENT_BIT;
-	if (EnumFn(f).hasAllFlags(SRC::Geometry		)) o |= VK_SHADER_STAGE_GEOMETRY_BIT;
-	if (EnumFn(f).hasAllFlags(SRC::Compute		)) o |= VK_SHADER_STAGE_COMPUTE_BIT;
+	if (EnumFn(f).hasFlags(SRC::Vertex		)) o |= VK_SHADER_STAGE_VERTEX_BIT;
+	if (EnumFn(f).hasFlags(SRC::Pixel		)) o |= VK_SHADER_STAGE_FRAGMENT_BIT;
+	if (EnumFn(f).hasFlags(SRC::Geometry	)) o |= VK_SHADER_STAGE_GEOMETRY_BIT;
+	if (EnumFn(f).hasFlags(SRC::Compute		)) o |= VK_SHADER_STAGE_COMPUTE_BIT;
 	return static_cast<VkShaderStageFlagBits>(o);
 }
 

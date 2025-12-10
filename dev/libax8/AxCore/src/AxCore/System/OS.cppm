@@ -3,7 +3,7 @@ module;
 export module AxCore.OS;
 export import AxCore.String;
 
-namespace ax {
+export namespace ax {
 
 class OS {
 public:

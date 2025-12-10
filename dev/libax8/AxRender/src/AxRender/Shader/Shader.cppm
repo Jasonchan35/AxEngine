@@ -143,7 +143,7 @@ public:
 
 		AX_JSON_IO_ENUM_AS_INT(se, stageFlags);
 
-		if (EnumFn_(stageFlags).hasAllFlags(ShaderStageFlags::Compute)) {
+		if (EnumFn_(stageFlags).hasFlags(ShaderStageFlags::Compute)) {
 			AX_JSON_IO(se, csWorkgroupSize);
 		}
 

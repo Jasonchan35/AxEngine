@@ -1,4 +1,5 @@
 module AxShaderTool;
+
 import :GenReflect_DX12;
 import :GenReflect_VK;
 import :ShaderInfoParser;
@@ -305,7 +306,7 @@ int AxShaderTool::onRun() {
 
 		if (auto v = a.extractFromPrefix("-api=")) {
 			if (! EnumFn(opt.api).tryParse(v)) {
-				throw Error(Fmt("'-api={}' unknown api", v));
+				throw Error_Undefined(Fmt("'-api={}' unknown api", v));
 			}
 			continue;
 		}
@@ -335,13 +336,17 @@ int AxShaderTool::onRun() {
 	if (opt.genNinja) {
 		genNinja_Shader(opt.out, opt.file);
 
+#if AX_RENDERER_VK
 	} else if (opt.genReflect_VK) {
 		GenReflect_VK_EX c;
 		c.generate(opt.out, opt.file);
+#endif
 
+#if AX_RENDERER_DX12		
 	} else if (opt.genReflect_DX12) {
 		GenReflect_DX12 c;
 		c.compile(opt.out, opt.file, opt.profile, opt.entry, opt.include_dirs, opt.keepUnusedVariable);
+#endif
 
 	} else if (opt.genResultInfo) {
 		GenResultInfo c;

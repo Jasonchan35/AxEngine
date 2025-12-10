@@ -1,5 +1,4 @@
 module;
-#include "AxCore-pch.h"
 module AxCore.JsonWriter;
 
 namespace ax {
@@ -84,11 +83,6 @@ void JsonWriter::writeMemberName(StrView name) {
 void JsonWriter::writeNull() {
 	preWriteValue();
 	_json->append("null");
-}
-
-void JsonWriter::writeValue(StrView value) {
-	preWriteValue();
-	_writeQuoteString(value);
 }
 
 void JsonWriter::writeValue(bool value) {
@@ -183,7 +177,7 @@ void JsonWriter::_writeQuoteUtfString(StrView_<R> v) {
 			_writeEncodeStringChar(ch);
 		}
 	} else {
-		TempStringA tmp;
+		StringA tmp;
 		for (auto& ch : v) {
 			tmp.setUtf(ch);
 			for (auto& t : tmp) {

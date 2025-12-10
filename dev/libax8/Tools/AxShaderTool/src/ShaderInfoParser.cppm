@@ -50,18 +50,18 @@ private:
 	String _logString(StrView msg);
 
 	template<class Format, class... Args>
-	void log(const Format& fmt, const Args&... args) {
-		_logString(Fmt(fmt, args...));
+	void log(FormatString<Args...> && fmt, const Args&... args) {
+		_logString(Fmt(AX_FORWARD(fmt), args...));
 	}
 
 	template<class Format, class... Args>
-	TempString logString(const Format& fmt, const Args&... args) {
-		return _logString(Fmt(fmt, args...));
+	TempString logString(FormatString<Args...> && fmt, const Args&... args) {
+		return _logString(Fmt(AX_FORWARD(fmt), args...));
 	}
 
 	template<class... Args>
-	Error_Runtime _makeError(const FormatString<const Args&...>& fmt, const Args&... args) {
-		return Error_Runtime(_logString(Fmt(fmt, args...)));
+	Error_Runtime _makeError(FormatString<Args...> && fmt, const Args&... args) {
+		return Error_Runtime(_logString(Fmt(AX_FORWARD(fmt), args...)));
 	}
 
 	Error_Runtime _makeErrorUnexpectedChar();
@@ -92,9 +92,9 @@ private:
 	template<class T> void readEnum(T& v);
 	template<class V> void readNumber(V& v);
 
-	template<class V> void readNumber(Vec2_<V>& v);
-	template<class V> void readNumber(Vec3_<V>& v);
-	template<class V> void readNumber(Vec4_<V>& v);
+	template<class V> void readNumber(Num2_<V>& v);
+	template<class V> void readNumber(Num3_<V>& v);
+	template<class V> void readNumber(Num4_<V>& v);
 
 	template<class V> void readColor(ColorRGB_<V>& v);
 	template<class V> void readColor(ColorRGBA_<V>& v);
@@ -123,7 +123,7 @@ void ShaderInfoParser::readEnum(T& v) {
 		return;
 	}
 
-	if (!EnumFn(v).TryParse(_token.str)) {
+	if (!EnumFn(v).tryParse(_token.str)) {
 		throw _makeError("parse enum {}", _token.str);
 	}
 	nextToken();
@@ -140,14 +140,14 @@ void ShaderInfoParser::readNumber(V& v) {
 }
 
 template<class V> inline
-void ShaderInfoParser::readNumber(Vec2_<V>& v) {
+void ShaderInfoParser::readNumber(Num2_<V>& v) {
 	expectOp("[");	readNumber(v.x);
 	expectOp(",");	readNumber(v.y);
 	expectOp("]");
 }
 
 template<class V> inline
-void ShaderInfoParser::readNumber(Vec3_<V>& v) {
+void ShaderInfoParser::readNumber(Num3_<V>& v) {
 	expectOp("[");	readNumber(v.x);
 	expectOp(",");	readNumber(v.y);
 	expectOp(",");	readNumber(v.z);
@@ -155,7 +155,7 @@ void ShaderInfoParser::readNumber(Vec3_<V>& v) {
 }
 
 template<class V> inline
-void ShaderInfoParser::readNumber(Vec4_<V>& v) {
+void ShaderInfoParser::readNumber(Num4_<V>& v) {
 	expectOp("[");	readNumber(v.x);
 	expectOp(",");	readNumber(v.y);
 	expectOp(",");	readNumber(v.z);

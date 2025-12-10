@@ -7,6 +7,7 @@
 #endif
 
 #if AX_RENDERER_VK
+	#include "AxRender-Vulkan.h"
 	#include "spirv_reflect.h"
 #endif
 

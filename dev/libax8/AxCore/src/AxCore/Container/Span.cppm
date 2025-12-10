@@ -249,7 +249,7 @@ public:
 		auto* p = _data;
 		auto* e = _data + _size;
 		for (; p < e; ++p) {
-			if (func(*p)) return CFindResult(p - _data, *p);
+			if (func(*p)) return MFindResult(p - _data, *p);
 		}
 		return std::nullopt;
 	}

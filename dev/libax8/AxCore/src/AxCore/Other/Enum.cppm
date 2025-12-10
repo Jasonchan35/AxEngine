@@ -25,7 +25,7 @@ public:
 	AX_INLINE constexpr void 	unsetFlags	(const T& f) { value = static_cast<T>(ax_enum_int(value) & ~ax_enum_int(f)); }
 	AX_INLINE constexpr void 	toggleFlags	(const T& f) { value = static_cast<T>(ax_enum_int(value) ^  ax_enum_int(f)); }
 
-	AX_INLINE constexpr bool	hasAllFlags	(const T& f) { return ax_enum_int(f) == (ax_enum_int(value) & ax_enum_int(f)); }
+	AX_INLINE constexpr bool	hasFlags	(const T& f) { return ax_enum_int(f) == (ax_enum_int(value) & ax_enum_int(f)); }
 	AX_INLINE constexpr bool	hasAnyFlags	(const T& f) { return IntType(0) != (ax_enum_int(value) & ax_enum_int(f)); }
 
 	AX_INLINE constexpr			IntType& toInt()		{ return static_cast<IntType>(value); }
@@ -34,7 +34,7 @@ public:
 	
 	AX_INLINE constexpr void	operator=	(AxTag::Zero_) { setToZero(); }
 
-	AX_INLINE constexpr StrView	str() const { return enumStr(value); }
+	AX_INLINE constexpr StrView	str() const { return _ax_macro_enum_str(value); }
 	AX_INLINE constexpr bool	tryParse(StrView view) { return _ax_macro_enum_try_parse(view, value); };
 
 	AX_INLINE constexpr bool operator==(const T& r) const { return r == value; }

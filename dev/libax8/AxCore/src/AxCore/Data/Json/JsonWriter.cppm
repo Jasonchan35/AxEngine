@@ -1,5 +1,4 @@
 module;
-#include "AxCore-pch.h"
 
 export module AxCore.JsonWriter;
 export import AxCore.Logger;
@@ -79,10 +78,10 @@ public:
 	void writeValue(std::nullptr_t)		{ writeNull(); }
 	void writeValue(bool		value);
 
-	void writeValue(StrViewA	value);
-	void writeValue(StrViewW	value);
-	void writeValue(StrView16	value);
-	void writeValue(StrView32	value);
+	void writeValue(StrViewA	value)	{ preWriteValue(); _writeQuoteString(value); }
+	void writeValue(StrViewW	value)	{ preWriteValue(); _writeQuoteString(value); }
+	void writeValue(StrView16	value)	{ preWriteValue(); _writeQuoteString(value); }
+	void writeValue(StrView32	value)	{ preWriteValue(); _writeQuoteString(value); }
 
 	void writeValue(const JsonValue&	value);
 	void writeValue(const JsonObject&	value);
