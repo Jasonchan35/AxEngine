@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "AxCore-Common.h"
 
 #define	AX_TEST_GROUP( fn )	\
 	::ax::__ax_internal_log("\n====== Group [" #fn "] ============"); \
