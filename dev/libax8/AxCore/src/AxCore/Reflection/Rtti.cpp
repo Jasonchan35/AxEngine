@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "AxCore-pch.h"
+
 module AxCore.Rtti;
 import AxCore.Logger;
 

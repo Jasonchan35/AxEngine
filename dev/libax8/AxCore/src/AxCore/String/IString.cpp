@@ -1,6 +1,6 @@
 module;
 
-#include "AxCore-pch.h"
+
 module AxCore.IString;
 
 import AxCore.UtfUtil;

@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 
 export module AxCore.Float16;
 export import AxCore.BasicMath;

@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 export module AxCore.VecSimd;
 export import AxCore.Num;
 

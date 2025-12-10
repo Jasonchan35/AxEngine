@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 
 export module AxCore.FileStream;
 export import AxCore.FilePath;

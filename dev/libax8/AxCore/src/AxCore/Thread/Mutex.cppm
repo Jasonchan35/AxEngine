@@ -1,5 +1,5 @@
 module;
-#include "AxCore-pch.h"
+
 
 #if AX_OS_WINDOWS
 	#include <windows.h>

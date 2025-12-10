@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 #include "AxCore/Reflection/Rtti_MACRO.h"
 
 export module AxCore.AppBase;

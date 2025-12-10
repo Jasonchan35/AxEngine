@@ -1,4 +1,4 @@
-﻿#include "AxCore_Test-pch.h"
+﻿
 #include "AxCore/Reflection/MetaType_MACRO.h"
 #include "AxCore/Reflection/Rtti_MACRO.h"
 

@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 export module AxCore.HashInt;
 export import AxCore.BasicType;
 export import AxCore.Span;

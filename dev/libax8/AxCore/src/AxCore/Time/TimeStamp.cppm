@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 
 export module AxCore.TimeStamp;
 export import AxCore.TimeDuration;

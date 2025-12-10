@@ -1,6 +1,6 @@
 module;
 
-#include "AxCore-pch.h"
+
 export module AxCore.BasicType;
 export import AxCore.Common;
 

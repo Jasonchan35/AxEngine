@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 export module AxCore.Mat; // Matrix
 export import AxCore.Vec;
 export import AxCore.BBox;

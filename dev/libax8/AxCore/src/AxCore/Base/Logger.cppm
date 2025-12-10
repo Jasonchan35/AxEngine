@@ -1,5 +1,5 @@
 module;
-#include "AxCore-pch.h"
+
 
 export module AxCore.Logger;
 export import AxCore.Formatter;

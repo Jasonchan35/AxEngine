@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 #include "Rtti_MACRO.h"
 
 export module AxCore.Rtti;

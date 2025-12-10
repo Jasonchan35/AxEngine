@@ -1,5 +1,5 @@
 module;
-#include "AxCore-pch.h"
+
 module AxCore.CsvReader;
 
 namespace ax {

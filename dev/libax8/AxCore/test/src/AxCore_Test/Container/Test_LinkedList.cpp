@@ -1,4 +1,4 @@
-﻿#include "AxCore_Test-pch.h"
+﻿
 import AxCore_Test.PCH;
 
 import AxCore.LinkedList;

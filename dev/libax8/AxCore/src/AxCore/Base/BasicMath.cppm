@@ -1,6 +1,6 @@
 module;
 
-#include "AxCore-pch.h"
+
 #include <cfloat>
 
 export module AxCore.BasicMath;

@@ -1,5 +1,5 @@
 ﻿module;
-#include "AxCore-pch.h"
+
 export module AxCore.MultiDelegate;
 export import AxCore.Delegate;
 import AxCore.LinkedList;
