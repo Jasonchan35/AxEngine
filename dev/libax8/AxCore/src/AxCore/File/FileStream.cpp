@@ -53,7 +53,7 @@ void FileStream::appendReadAllUtf8 ( IStringA& buf ) {
 	Int newSize = oldSize + dataSize; 
 
 	try{
-		buf.ensureCapacity(newSize);
+		buf.resize(newSize);
 		auto mutByteSpan = buf.toMutByteSpan();
 		readBytes(mutByteSpan.slice(oldSize, dataSize));
 
