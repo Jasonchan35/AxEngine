@@ -620,9 +620,10 @@ struct ScopeEnterOnce : public NonCopyable {
 
 class Error : public std::exception {
 public:
-//	Error() = default;
-	Error(const SrcLoc& srcLoc = SrcLoc::s_current()) : _srcLoc(srcLoc) {}
-	Error(std::string_view msg, const SrcLoc& srcLoc) : _what(msg), _srcLoc(srcLoc) {}
+	Error(std::string_view msg, const SrcLoc& srcLoc) : _what(msg), _srcLoc(srcLoc) {
+		AX_ASSERT(false);
+	}
+	Error(const SrcLoc& srcLoc) : Error(std::string_view(), srcLoc) {}
 
 	virtual char const* what() const override { return _what.c_str(); }
 

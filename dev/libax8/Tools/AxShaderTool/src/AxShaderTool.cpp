@@ -46,7 +46,7 @@ void AxShaderTool::genNinja_Shaders(StrView outdir, const Array<String>& files) 
 
 	for (auto& f : files) {
 		auto absFilename = FilePath::absPath(f);
-		outStr.append(Fmt("build {}/shaderResult.json: build_shader {} | $AxShaderTool \n", f, f));
+		outStr.append(Fmt("build {}/shaderResult.json: build_shader {} | ${{AxShaderTool}} \n", f, f));
 	}
 
 	File::writeFileIfChanged(Fmt("{}/build.ninja", outdir), outStr, true);
@@ -83,12 +83,16 @@ void AxShaderTool::genNinja_Shader(StrView outdir, StrView filename) {
 	outStr.append(Fmt("SourceFile={}\n\n", filename));
 
 	auto func = [&](RenderApi api) {
-		outStr.append(Fmt("build {}/shaderResult.json: build_api_shader {} | $AxShaderTool ${{SourceFile}}\n", api, api));
+		outStr.append(Fmt("build {}/shaderResult.json: build_api_shader {} | ${{AxShaderTool}} ${{SourceFile}}\n", api, api));
 		genNinja_Shader_API(api, parser.info, outdir, filename);
 	};
 
+#if AX_RENDERER_VK	
 	func(RenderApi::VK);
+#endif
+#if AX_RENDERER_DX12
 	func(RenderApi::DX12);
+#endif
 
 	auto outFilename = Fmt("{}/build.ninja", outdir);
 	File::writeFileIfChanged(outFilename, outStr, true);
@@ -132,21 +136,25 @@ void AxShaderTool::genNinja_Shader_API(RenderApi api, ShaderDeclareInfo& info, S
 //---
 	for (auto& pass : info.passes) {
 		switch (api) {
+#if AX_RENDERER_DX12			
 			case RenderApi::DX12: writeNinja_DX12Pass  (outStr, depFileList, pass, absSourceFilename); break;
+#endif
+#if AX_RENDERER_VK
 			case RenderApi::VK:   writeNinja_VulkanPass(outStr, depFileList, pass, absSourceFilename); break;
+#endif				
 			default: break;
 		}		
 	}
 
 	outStr.append(	"rule build_result_info\n"
-					"  command = $anon_bin/AxShaderTool $\n"
+					"  command = ${AxShaderTool} $\n"
 					"    -genResultInfo $\n"
 					"    -api=$param_api $\n"
 					"    -file=\"$in\" $\n"
 					"    -out=\"$out\" $\n"
 					"\n\n");
 
-	outStr.append("build shaderResult.json: build_result_info ../info.json | $AxShaderTool ");
+	outStr.append("build shaderResult.json: build_result_info ../info.json | ${AxShaderTool} ");
 	for (auto& f : depFileList) {
 		outStr.append(Fmt(" {}", f));
 	}
@@ -158,12 +166,13 @@ void AxShaderTool::genNinja_Shader_API(RenderApi api, ShaderDeclareInfo& info, S
 	File::writeFileIfChanged(outFilename, outStr, true);
 }
 
+#if AX_RENDERER_DX12
 void AxShaderTool::writeNinja_DX12Pass(IString& outStr, IArray<String>& outJsonFileList, ShaderPassInfo& pass, StrView sourceFile) {
 
 	outStr.append(	"#---- DX12 ----\n"
 					"rule build_dx12_bin_json\n"
 					"  depfile = $out.d\n"
-					"  command = $anon_bin/AxShaderTool $\n"
+					"  command = \"${AxShaderTool}\" $\n"
 					"    -genReflect_DX12 $\n");
 
 	if (opt.keepUnusedVariable) {
@@ -177,7 +186,7 @@ void AxShaderTool::writeNinja_DX12Pass(IString& outStr, IArray<String>& outJsonF
 					"    -file=\"$in\""
 					"\n\n"
 					"rule build_dx12_bin\n"
-					"  command = $windows_sdk_bin/dxc $\n"
+					"  command = \"$windows_sdk_bin/dxc\" $\n"
 #if AX_RENDER_BINDLESS
 					"    -DAX_RENDER_BINDLESS=1 $\n"
 #endif
@@ -197,7 +206,7 @@ void AxShaderTool::writeNinja_DX12Pass(IString& outStr, IArray<String>& outJsonF
 		String outJsonFilename = Fmt("DX12-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
 		outJsonFileList.append(outJsonFilename);
 
-		outStr.append(Fmt("build {}: build_dx12_bin_json ${{SourceFile}} | $AxShaderTool\n", outJsonFilename, pass.name, stageFlags));
+		outStr.append(Fmt("build {}: build_dx12_bin_json ${{SourceFile}} | ${{AxShaderTool}}\n", outJsonFilename, pass.name, stageFlags));
 		outStr.append(Fmt("  param_entry_point = {}\n", entryPoint));
 		outStr.append(Fmt("  param_profile     = {}\n", profile));
 		outStr.append("\n");
@@ -213,12 +222,14 @@ void AxShaderTool::writeNinja_DX12Pass(IString& outStr, IArray<String>& outJsonF
 	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "ps_6_0");
 	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "gs_6_0");
 }
+#endif // #if AX_RENDERER_DX12
 
+#if AX_RENDERER_VK
 void AxShaderTool::writeNinja_VulkanPass(IString& outStr, IArray<String>& outJsonFileList, ShaderPassInfo& pass, StrView sourceFile) {
 	outStr.append(	"#---- Vulkan ----\n"
 					"rule build_vk_bin\n"
 					"  depfile = $out.d\n"
-					"  command = $vulkan_sdk/Bin/glslc $\n"
+					"  command = \"$vulkan_sdk/Bin/glslc\" $\n"
 					"    -x hlsl $\n"
 					"    -fshader-stage=$param_shader_stage $\n"
 					"    -fentry-point=$param_entry_point $\n"
@@ -234,7 +245,7 @@ void AxShaderTool::writeNinja_VulkanPass(IString& outStr, IArray<String>& outJso
 
 #if 0
 	outStr.append(	"rule build_vk_reflect\n"
-					"  command = $vulkan_sdk/Bin/spirv-cross $\n"
+					"  command = \"$vulkan_sdk/Bin/spirv-cross\" $\n"
 					"    --reflect $\n"
 					"    --remove-unused-variables $\n"
 					"    --hlsl-auto-binding sampler $\n" // assign register id "Texture2D NAME : register(t ## REG); "
@@ -244,7 +255,7 @@ void AxShaderTool::writeNinja_VulkanPass(IString& outStr, IArray<String>& outJso
 #endif
 
 	outStr.append(	"rule build_vk_bin_json\n"
-					"  command = $anon_bin/AxShaderTool $\n"
+					"  command = \"${AxShaderTool}\" $\n"
 					"    -genReflect_VK $\n"
 					"    -file=\"$in\""
 					"    -out=\"$out\" $\n"
@@ -255,7 +266,7 @@ void AxShaderTool::writeNinja_VulkanPass(IString& outStr, IArray<String>& outJso
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
 		if (!entryPoint) return;
 
-		outStr.append(Fmt("build VK-{0}-{1}.bin: build_vk_bin ${{SourceFile}} | $AxShaderTool\n", pass.name, stageFlags));
+		outStr.append(Fmt("build VK-{0}-{1}.bin: build_vk_bin ${{SourceFile}} | ${{AxShaderTool}}\n", pass.name, stageFlags));
 		outStr.append(Fmt("  param_shader_stage = {}\n", profile));
 		outStr.append(Fmt("  param_entry_point  = {}\n", entryPoint));
 		outStr.append("\n");
@@ -276,9 +287,10 @@ void AxShaderTool::writeNinja_VulkanPass(IString& outStr, IArray<String>& outJso
 	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "fragment");
 	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "geometry");
 }
+#endif // #if AX_RENDERER_VK
 
 void AxShaderTool::showHelp() {
-	AX_LOG(	"==== AxShaderTool Help: ====\n"
+	AX_LOG(	"\n==== AxShaderTool Help: ====\n"
 			"  AxShaderTool -genNinja        -file=<file/folder> -out=<folder>\n"
 			"  AxShaderTool -genReflect_DX12 -file=<filename>    -out=<folder> -profile=<profile_name> -entry=<entry_func_name> \n"
 			"  AxShaderTool -genReflect_VK   -file=<filename>    -out=<outFilename> \n"
@@ -294,11 +306,16 @@ int AxShaderTool::onRun() {
 		auto& a = args[i];
 
 		if (a == "-genNinja"			) { opt.genNinja			= true; continue; }
-		if (a == "-genReflect_VK"		) { opt.genReflect_VK		= true; continue; }
-		if (a == "-genReflect_DX12"		) { opt.genReflect_DX12		= true; continue; }
 		if (a == "-genResultInfo"		) { opt.genResultInfo		= true; continue; }
 		if (a == "-keepUnusedVariable"	) { opt.keepUnusedVariable	= true; continue; }
 		if (a == "-quiet"				) { opt.quiet				= true; continue; }
+		
+#if AX_RENDERER_VK		
+		if (a == "-genReflect_VK"		) { opt.genReflect_VK		= true; continue; }
+#endif
+#if AX_RENDERER_DX12
+		if (a == "-genReflect_DX12"		) { opt.genReflect_DX12		= true; continue; }
+#endif		
 
 		if (auto v = a.extractFromPrefix("-file=")) {
 			opt.file = v;
@@ -342,7 +359,10 @@ int AxShaderTool::onRun() {
 		return -1;
 	}
 
-	if (!opt.file) { showHelp(); return -1; }
+	if (!opt.file) {
+		AX_LOG("missing -file=<input file>");
+		showHelp(); return -1;
+	}
 
 	if (opt.genNinja) {
 		genNinja_Shader(opt.out, opt.file);
@@ -364,6 +384,7 @@ int AxShaderTool::onRun() {
 		c.run(opt.out, opt.file, opt.api);
 
 	}else{
+		AX_LOG("missing generator");
 		showHelp();
 		return -1;
 	}
