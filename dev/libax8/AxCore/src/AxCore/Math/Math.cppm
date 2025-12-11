@@ -1,9 +1,8 @@
 module;
 
-
 export module AxCore.Math;
 export import AxCore.BasicMath;
-export import AxCore.BasicType;
+export import AxCore.BitFn;
 
 export namespace ax::Math {
 

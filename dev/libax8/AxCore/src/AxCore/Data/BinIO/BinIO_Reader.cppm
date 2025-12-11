@@ -3,6 +3,7 @@ module;
 
 export module AxCore.BinIO_Reader;
 export import AxCore.Logger;
+export import AxCore.ByteOrder;
 
 export namespace ax {
 

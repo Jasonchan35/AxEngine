@@ -2,9 +2,7 @@
 
 
 export module AxCore.MemUtil;
-
-
-import AxCore.BasicType;
+export import AxCore.SafeCast;
 
 export namespace ax {
 

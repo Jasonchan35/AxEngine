@@ -2,12 +2,8 @@
 
 
 export module AxCore.Allocator;
-
-import AxCore.Math;
-import AxCore.MemUtil;
-
-
-export import AxCore.BasicType;
+export import AxCore.Math;
+export import AxCore.MemUtil;
 
 export namespace ax {
 

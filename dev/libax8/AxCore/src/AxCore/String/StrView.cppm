@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxCore.StrView;
-export import AxCore.BasicType;
+export import AxCore.CharUtil;
 export import AxCore.HashInt;
 export import AxCore.Span;
 export import AxCore.Math;

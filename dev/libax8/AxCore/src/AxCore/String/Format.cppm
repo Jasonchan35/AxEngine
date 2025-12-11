@@ -3,6 +3,7 @@
 
 export module AxCore.Format;
 export import AxCore.StrView;
+export import AxCore.Scope;
 
 export namespace ax {
 

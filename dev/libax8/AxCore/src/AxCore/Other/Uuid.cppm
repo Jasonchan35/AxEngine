@@ -3,6 +3,7 @@
 
 export module AxCore.Uuid;
 export import AxCore.String;
+export import AxCore.ByteOrder;
 
 export namespace ax {
 
