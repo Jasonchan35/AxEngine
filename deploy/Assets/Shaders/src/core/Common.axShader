@@ -1,0 +1,58 @@
+#if ShaderInfo
+
+_GlobalCommonShader
+
+Properties {
+}
+
+Pass "Pass0" { // Forward
+	// Queue	= "Transparent"
+	// Cull		= None
+	// Wireframe = true
+
+	// BlendRGB   = {Add, One, OneMinusSrcAlpha}
+	// BlendAlpha =	{Add, One, OneMinusSrcAlpha }
+
+	// DepthTest = Less
+
+	VsFunc = vs_main
+	PsFunc = ps_main
+}
+#endif	
+
+#include <Ax/Common.hlsl>
+
+struct VS_Input {
+	sem_pos(float4)
+};
+
+struct PS_Input {
+	sem_sv_pos(float4)
+};
+
+float foo;
+
+Sampler_Texture2D(foo_tex2d);
+
+float AX_ConstBuffer_dummy_func() {
+	// try to access one memeber per cbuffer
+
+	return foo
+		+ tex2D(foo_tex2d, float2(0,0)).x
+		+ ax_g_test
+		+ ax_g_deltaTime.x 
+		+ ax_object_mvp[0][0];
+}
+
+PS_Input vs_main(VS_Input i) {
+	PS_Input o;
+	o.sv_pos = i.pos;
+	return o;
+}
+
+float4 ps_main(PS_Input i) : SV_Target {
+	float4 o = float4(0,0,0,0);
+	o.x += AX_ConstBuffer_dummy_func();
+	return o;
+}
+ 

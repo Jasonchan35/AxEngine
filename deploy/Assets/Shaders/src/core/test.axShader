@@ -1,0 +1,48 @@
+#if ShaderInfo
+Properties {
+	Color4f		ambient
+	f32			shininess
+}
+
+Pass "Pass0" { // Forward
+	// Queue	= "Transparent"
+	// Cull		= None
+	// Wireframe = true
+
+	// BlendRGB   = {Add, One, OneMinusSrcAlpha}
+	// BlendAlpha =	{Add, One, OneMinusSrcAlpha }
+
+	// DepthTest = Less
+
+	VsFunc = vs_main
+	PsFunc = ps_main
+}
+#endif	
+
+#include <Ax/Common.hlsl>
+
+static float2 pos[3] = {
+	float2(0.0, -0.5),
+	float2(-0.5, 0.5),
+	float2(0.5,  0.5),
+};
+
+struct VS_Input {
+	sem_sv_vertexId(uint)
+};
+
+struct PS_Input {
+	sem_sv_pos(float4)
+};
+
+PS_Input vs_main(VS_Input i) {
+	PS_Input o;
+	o.sv_pos = float4(pos[i.sv_vertexId], 0, 1);
+	return o;
+}
+
+float4 ps_main(PS_Input i) : SV_Target {
+	float4 o = float4(0, 0.5f, 1, 1);
+	return o;
+}
+ 

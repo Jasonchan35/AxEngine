@@ -1,0 +1,6 @@
+**/*.ninja_log
+build/**/build.ninja
+build/**/*.bin.d
+build/**/*.bin.json.d
+build/**/*.bin.json
+build/**/*.reflect.json

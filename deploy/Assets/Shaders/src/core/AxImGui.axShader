@@ -1,0 +1,48 @@
+#if ShaderInfo
+Properties {
+}
+
+Pass "Pass0" {
+	// Queue	"Transparent"
+	Cull		=	None
+	DepthTest	=	Always
+//		DepthWrite	false
+
+	BlendRGB 	= [Add, One, OneMinusSrcAlpha]
+	BlendAlpha	= [Add, One, OneMinusSrcAlpha]
+	
+	VsFunc = vs_main
+	PsFunc = ps_main
+}
+#endif
+
+#include <Ax/Common.hlsl>
+ 
+struct VS_Input {
+	sem_pos(float2)
+	sem_color0(float4)
+	sem_uv0(float2)
+};
+
+struct PS_Input {
+	sem_sv_pos(float4)
+	sem_color0(float4)
+	sem_uv0(float2)
+};
+
+float4x4 imguiProjectionMatrix; 
+
+Sampler_Texture2D(fontTexture);
+
+PS_Input vs_main(VS_Input i) {
+	PS_Input o;
+	o.sv_pos = mul(imguiProjectionMatrix, float4(i.pos.xy, 0.f, 1.f));
+	o.color0 = i.color0;
+	o.uv0  = i.uv0;
+	return o;
+}
+
+float4 ps_main(PS_Input i) : SV_TARGET {
+	float4 o = i.color0 * tex2D(fontTexture, i.uv0).r;
+	return o;
+}

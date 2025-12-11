@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"name": "Assets",
+			"path": "."
+		}, {
+			"name": "ImportedAssets",
+			"path": "../../ImportedAssets"
+		}		
+	],
+	"settings": {
+		"files.associations": {
+			"*.axShader" : "hlsl",
+			"*.axComputeShader" : "hlsl"
+		}
+
+	}
+}
