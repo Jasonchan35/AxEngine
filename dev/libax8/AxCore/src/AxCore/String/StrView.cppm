@@ -95,24 +95,23 @@ public:
 	AX_INLINE constexpr	bool		inBound(Int i) const				{ return i >= 0 && i < size(); }
 	AX_INLINE constexpr			T&	operator[]	(Int i)					{ return at(i); }
 	AX_INLINE constexpr	const	T&	operator[]	(Int i) const			{ return at(i); }
-	AX_INLINE constexpr			T&	at			(Int i)					{ _checkBound(i); return unsafe_at(i); }
-	AX_INLINE constexpr	const	T&	at			(Int i) const			{ _checkBound(i); return unsafe_at(i); }
+	AX_INLINE constexpr			T&	at			(Int i)					{ _checkBound(i); return at_noBoundCheck(i); }
+	AX_INLINE constexpr	const	T&	at			(Int i) const			{ _checkBound(i); return at_noBoundCheck(i); }
 	AX_INLINE constexpr 		T&	back		(Int i = 0)				{ return at( size()-i-1 ); }
 	AX_INLINE constexpr const	T&	back		(Int i = 0) const		{ return at( size()-i-1 ); }
-	AX_INLINE constexpr 		T&	unsafe_at	(Int i)	noexcept		{ _debug_checkBound(i); return data()[i]; }
-	AX_INLINE constexpr const	T&	unsafe_at	(Int i) const noexcept	{ _debug_checkBound(i); return data()[i]; }
-	AX_INLINE constexpr 		T&	unsafe_back	(Int i)					{ return unsafe_at( size()-i-1 ); }
-	AX_INLINE constexpr const	T&	unsafe_back	(Int i)  const			{ return unsafe_at( size()-i-1 ); }
+	AX_INLINE constexpr 		T&	at_noBoundCheck	(Int i)	noexcept		{ _debug_boundCheck(i); return data()[i]; }
+	AX_INLINE constexpr const	T&	at_noBoundCheck	(Int i) const noexcept	{ _debug_boundCheck(i); return data()[i]; }
+	AX_INLINE constexpr 		T&	back_noBoundCheck	(Int i)					{ return at_noBoundCheck( size()-i-1 ); }
+	AX_INLINE constexpr const	T&	back_noBoundCheck	(Int i)  const			{ return at_noBoundCheck( size()-i-1 ); }
 	//---------------
 	AX_INLINE constexpr CView	constView	() const noexcept	{ return CView(data(), size()); }
 	AX_INLINE constexpr CView	view		() const noexcept	{ return CView(data(), size()); }
 	AX_INLINE constexpr MView	view		()       noexcept	{ return MView(data(), size()); }
-	AX_INLINE constexpr operator CView() const noexcept { return constView(); }
+	AX_INLINE constexpr operator CView() const noexcept			{ return constView(); }
 
 	AX_INLINE constexpr CSpan constSpan() const noexcept	{ return CSpan(data(), size()); }
 	AX_INLINE constexpr CSpan      span() const noexcept	{ return CSpan(data(), size()); }
 	AX_INLINE constexpr MSpan      span() noexcept			{ return MSpan(data(), size()); }
-	AX_INLINE constexpr operator CSpan() const noexcept { return constSpan(); }
 	//---------------
 	AX_INLINE constexpr static MView	s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MView(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
 	AX_INLINE constexpr void			  fromMutByteSpan	(MutByteSpan	from) noexcept	{ *this = s_fromMutByteSpan(from); }
@@ -238,7 +237,7 @@ public:
 
 private:
 	AX_INLINE constexpr void _checkBound		( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
-	AX_INLINE constexpr void _debug_checkBound	( Int i ) const {
+	AX_INLINE constexpr void _debug_boundCheck	( Int i ) const {
 #ifdef _DEBUG
 		_checkBound(i);
 #endif
@@ -249,6 +248,80 @@ private:
 
 	template<class FUNC>
 	AX_NODISCARD constexpr Opt<Int>	_findCharBack	(FUNC func) const;
+};
+
+template<class OBJ, class T>
+class StrView_BaseFunc {
+	using CSpan           = Span<T>;
+	using MSpan           = MutSpan<T>;
+	using CView           = StrView_<T>;
+	using MView           = MutStrView_<T>;
+	using ZView           = ZStrView_<T>;
+
+	constexpr MView _obj_view()			{ return static_cast<      OBJ*>(this)->view(); }
+	constexpr CView _obj_view() const	{ return static_cast<const OBJ*>(this)->view(); }
+	
+public:	
+	template<class R>
+	AX_INLINE constexpr bool	isOverlapped(StrView_<R> r) const	{ return toByteSpan().isOverlapped(r.toByteSpan()); }
+	
+	AX_INLINE constexpr MutByteSpan toMutByteSpan()			{ return _obj_view().toMutByteSpan(); }
+	AX_INLINE constexpr    ByteSpan    toByteSpan() const	{ return _obj_view().toByteSpan(); }
+	
+	//                +--------------------------------------------+
+	//                |         |                      |           |
+	//                +--------------------------------------------+
+	//  slice         (  offset  )[______ newSize ____]
+	//  sliceBack                       [________ newSize__________]
+	//  sliceFrom     (  offset  )[_________till to end ___________]
+	//  sliceFromBack [________________________________](  offset  )
+	AX_INLINE	constexpr MView	slice			(Int offset, Int newSize)		{ return _obj_view().slice(offset, newSize); }
+	AX_INLINE	constexpr CView	slice			(Int offset, Int newSize) const	{ return _obj_view().slice(offset, newSize); }
+	AX_INLINE	constexpr MView	slice			(IntRange range)				{ return _obj_view().slice(range); }
+	AX_INLINE	constexpr CView	slice			(IntRange range) const			{ return _obj_view().slice(range); }
+	AX_INLINE	constexpr MView	sliceBack		(Int newSize)			 		{ return _obj_view().sliceBack(newSize); }
+	AX_INLINE	constexpr CView	sliceBack		(Int newSize) const	 			{ return _obj_view().sliceBack(newSize); }
+	AX_INLINE	constexpr MView	sliceFrom		(Int offset)					{ return _obj_view().sliceFrom(offset); }
+	AX_INLINE	constexpr CView	sliceFrom		(Int offset) const				{ return _obj_view().sliceFrom(offset); }
+	AX_INLINE	constexpr MView	sliceFromBack	(Int offset)					{ return _obj_view().sliceFromBack(offset); }
+	AX_INLINE	constexpr CView	sliceFromBack	(Int offset) const				{ return _obj_view().sliceFromBack(offset); }
+	//----------------------------------	
+	AX_INLINE constexpr CmpResult compare      (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().compare   (r, sc); }
+	AX_INLINE constexpr bool      equals       (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().equals    (r, sc); }
+	AX_INLINE constexpr bool      startsWith   (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().startsWith(r, sc); }
+	AX_INLINE constexpr bool      endsWith     (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().endsWith  (r, sc); }
+	AX_INLINE constexpr bool      matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().matchWildcard(wildcard, sc); }
+	AX_INLINE constexpr bool operator==	(CView r) const noexcept { return _obj_view().operator==(r); }
+	AX_INLINE constexpr bool operator!=	(CView r) const noexcept { return _obj_view().operator!=(r); }
+	AX_INLINE constexpr bool operator<	(CView r) const noexcept { return _obj_view().operator< (r); }
+	AX_INLINE constexpr bool operator>	(CView r) const noexcept { return _obj_view().operator> (r); }
+	AX_INLINE constexpr bool operator<=	(CView r) const noexcept { return _obj_view().operator<=(r); }
+	AX_INLINE constexpr bool operator>=	(CView r) const noexcept { return _obj_view().operator>=(r); }
+	//----------------
+	AX_NODISCARD constexpr Opt<Int>	find			(CView      str, StrCase sc = StrCase::Sensitive) const { return _obj_view().find           (str   , sc); }
+	AX_NODISCARD constexpr Opt<Int>	findBack		(CView      str, StrCase sc = StrCase::Sensitive) const { return _obj_view().findBack       (str   , sc); }
+	AX_NODISCARD constexpr Opt<Int>	findChar		(const T&    ch, StrCase sc = StrCase::Sensitive) const { return _obj_view().findChar       (ch    , sc); }
+	AX_NODISCARD constexpr Opt<Int>	findCharBack	(const T&    ch, StrCase sc = StrCase::Sensitive) const { return _obj_view().findCharBack   (ch    , sc); }
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr Opt<Int>	findChar		(FUNC      func, StrCase sc = StrCase::Sensitive) const { return _obj_view().findChar       (func  , sc); }
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr Opt<Int>	findCharBack	(FUNC      func, StrCase sc = StrCase::Sensitive) const { return _obj_view().findCharBack   (func  , sc); }
+	//----------------
+	using SplitResult = Pair<MView, MView>;
+	AX_NODISCARD constexpr auto splitByIndex		(Opt<Int> index, Int separatorSize) -> SplitResult { return _obj_view().splitByIndex(index, separatorSize); }
+	AX_NODISCARD constexpr auto split				(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return _obj_view().split             (str , sc); }
+	AX_NODISCARD constexpr auto splitBack			(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return _obj_view().splitBack         (str , sc); }
+	AX_NODISCARD constexpr auto splitByChar			(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return _obj_view().splitByChar       (ch  , sc); }
+	AX_NODISCARD constexpr auto splitByCharBack		(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return _obj_view().splitByCharBack   (ch  , sc); }
+
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr auto splitByChar			(FUNC func, StrCase sc = StrCase::Sensitive) -> SplitResult { return _obj_view().splitByChar       (func, sc); }
+	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
+	AX_NODISCARD constexpr auto splitByCharBack		(FUNC func, StrCase sc = StrCase::Sensitive) -> SplitResult { return _obj_view().splitByCharBack   (func, sc); }
+	//----------------
+	AX_INLINE			MView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive)		{ return _obj_view().extractFromPrefix(prefix, sc); }
+	AX_INLINE			CView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) const	{ return _obj_view().extractFromPrefix(prefix, sc); }
+	//----------------
 };
 
 template<class T> constexpr bool Type_IsMutStrView = false;

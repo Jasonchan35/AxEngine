@@ -34,8 +34,8 @@ public:
 	AX_INLINE constexpr	 	  T &	at			( Int i )			{ return fixedSpan().at(i); }
 	AX_INLINE constexpr	const T &	at			( Int i ) const		{ return fixedSpan().at(i); }
 
-	AX_INLINE constexpr	 		T *	try_at		(Int i)				{ return fixedSpan().try_at(i); }
-	AX_INLINE constexpr	const	T *	try_at		(Int i) const		{ return fixedSpan().try_at(i); }
+	AX_INLINE constexpr	 		T *	tryGetElement		(Int i)				{ return fixedSpan().tryGetElement(i); }
+	AX_INLINE constexpr	const	T *	tryGetElement		(Int i) const		{ return fixedSpan().tryGetElement(i); }
 
 	//-----------------------
 	AX_INLINE constexpr		Int		size		() const			{ return N; }
@@ -68,7 +68,7 @@ public:
 
 private:
 	AX_INLINE constexpr void _checkBound			( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
-	AX_INLINE constexpr void	_debug_checkBound	( Int i ) const {
+	AX_INLINE constexpr void	_debug_boundCheck	( Int i ) const {
 		#ifdef AX_BUILD_CONFIG_Debug
 			_checkBound(i);
 		#endif

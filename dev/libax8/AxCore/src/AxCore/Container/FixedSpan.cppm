@@ -33,8 +33,8 @@ public:
 	AX_INLINE	constexpr		T &	at			( Int i )			{ _checkBound(i); return _data[i]; }
 	AX_INLINE	constexpr const T &	at			( Int i ) const		{ _checkBound(i); return _data[i]; }
 
-	AX_INLINE	constexpr		T *	try_at		( Int i )			{ return inBound(i) ? &_data[i] : nullptr; }
-	AX_INLINE	constexpr const T *	try_at		( Int i ) const		{ return inBound(i) ? &_data[i] : nullptr; }
+	AX_INLINE	constexpr		T *	tryGetElement		( Int i )			{ return inBound(i) ? &_data[i] : nullptr; }
+	AX_INLINE	constexpr const T *	tryGetElement		( Int i ) const		{ return inBound(i) ? &_data[i] : nullptr; }
 	
 	AX_INLINE 	constexpr 		T &	back		()					{ return at( kSize-1 ); }
 	AX_INLINE 	constexpr const T &	back		() const			{ return at( kSize-1 ); }
@@ -42,11 +42,11 @@ public:
 	AX_INLINE 	constexpr 		T &	back		( Int i )			{ return at( kSize-i-1 ); }
 	AX_INLINE 	constexpr const T &	back		( Int i ) const		{ return at( kSize-i-1 ); }
 
-	AX_INLINE 	constexpr 		T &	unsafe_at	( Int i ) 			{ _debug_checkBound(i); return _data[i]; }
-	AX_INLINE 	constexpr const T &	unsafe_at	( Int i ) const		{ _debug_checkBound(i); return _data[i]; }
+	AX_INLINE 	constexpr 		T &	at_noBoundCheck	( Int i ) 			{ _debug_boundCheck(i); return _data[i]; }
+	AX_INLINE 	constexpr const T &	at_noBoundCheck	( Int i ) const		{ _debug_boundCheck(i); return _data[i]; }
 
-	AX_INLINE 	constexpr 		T &	unsafe_back	( Int i )			{ return unsafe_at( kSize - i - 1 ); }
-	AX_INLINE 	constexpr const T &	unsafe_back	( Int i )  const	{ return unsafe_at( kSize - i - 1 ); }
+	AX_INLINE 	constexpr 		T &	back_noBoundCheck	( Int i )			{ return at_noBoundCheck( kSize - i - 1 ); }
+	AX_INLINE 	constexpr const T &	back_noBoundCheck	( Int i )  const	{ return at_noBoundCheck( kSize - i - 1 ); }
 
 	AX_INLINE	constexpr bool operator==(const This& rhs) const {
 		for (Int i = 0; i < N; ++i) {
@@ -71,7 +71,7 @@ private:
 	AX_INLINE void _checkBound(Int i) const {
 		if (!inBound(i)) throw Error_IndexOutOfRange();
 	}
-	AX_INLINE void _debug_checkBound(Int i) const {
+	AX_INLINE void _debug_boundCheck(Int i) const {
 #ifdef _DEBUG
 		_checkBound(i);
 #endif

@@ -6,7 +6,7 @@ import AxCore.UnitTest;
 class AxCore_TestProgram : public ax::UnitTestProgram {
 public:
 	virtual void onRun() override {
-		constexpr bool test_all = false;
+		constexpr bool test_all = true;
 		if constexpr (test_all) { 
 			AX_TEST_GROUP(AxCore_Test)
 		} else {

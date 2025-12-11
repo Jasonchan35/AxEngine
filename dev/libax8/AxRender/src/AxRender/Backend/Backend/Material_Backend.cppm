@@ -232,7 +232,7 @@ public:
 	}
 
 	MaterialParamSpace_Backend* getParamSpace(BindSpace s) {
-		auto* pp = _materialParamSpaces.try_at(ax_enum_int(s));
+		auto* pp = _materialParamSpaces.tryGetElement(ax_enum_int(s));
 		return pp ? pp->ptr() : nullptr;
 	}
 

@@ -65,10 +65,10 @@ public:
 		if constexpr (N > 3) e[3] = 0;
 	}
 
-	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num1_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num2_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0), v.unsafe_at(0,1)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num3_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0), v.unsafe_at(0,1), v.unsafe_at(0,2)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num4_<T>& v) : VecSIMD_Data_(v.unsafe_at(0,0), v.unsafe_at(0,1), v.unsafe_at(0,2), v.unsafe_at(0,3)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num1_<T>& v) : VecSIMD_Data_(v.at_noBoundCheck(0,0)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num2_<T>& v) : VecSIMD_Data_(v.at_noBoundCheck(0,0), v.at_noBoundCheck(0,1)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num3_<T>& v) : VecSIMD_Data_(v.at_noBoundCheck(0,0), v.at_noBoundCheck(0,1), v.at_noBoundCheck(0,2)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(const Num4_<T>& v) : VecSIMD_Data_(v.at_noBoundCheck(0,0), v.at_noBoundCheck(0,1), v.at_noBoundCheck(0,2), v.at_noBoundCheck(0,3)) {}
 	
 	AX_NODISCARD AX_INLINE constexpr VecSIMD_Data_(T t0) : e{t0} {
 		static_assert(N == 1);

@@ -176,18 +176,18 @@ public:
 	AX_NODISCARD AX_INLINE constexpr       T& operator[](Int i)       noexcept { return at(i); }
 	AX_NODISCARD AX_INLINE constexpr const T& operator[](Int i) const noexcept { return at(i); }
 
-	AX_NODISCARD AX_INLINE constexpr       T& at(Int i)       noexcept			{ _checkBound(i); return unsafe_at(i); }
-	AX_NODISCARD AX_INLINE constexpr const T& at(Int i) const noexcept			{ _checkBound(i); return unsafe_at(i); }
-	AX_NODISCARD AX_INLINE constexpr       T* try_at(Int i)       noexcept		{ return inBound(i) ? &unsafe_at(i) : nullptr; }
-	AX_NODISCARD AX_INLINE constexpr const T* try_at(Int i) const noexcept		{ return inBound(i) ? &unsafe_at(i) : nullptr; }
-	AX_NODISCARD AX_INLINE constexpr       T& back()       noexcept 			{ return at(_size - 1); }
-	AX_NODISCARD AX_INLINE constexpr const T& back() const noexcept 			{ return at(_size - 1); }
-	AX_NODISCARD AX_INLINE constexpr       T& back(Int i)       noexcept		{ return at(_size - i - 1); }
-	AX_NODISCARD AX_INLINE constexpr const T& back(Int i) const noexcept		{ return at(_size - i - 1); }
-	AX_NODISCARD AX_INLINE constexpr       T& unsafe_at(Int i)       noexcept	{ _debug_checkBound(i); return _data[i]; }
-	AX_NODISCARD AX_INLINE constexpr const T& unsafe_at(Int i) const noexcept	{ _debug_checkBound(i); return _data[i]; }
-	AX_NODISCARD AX_INLINE constexpr       T& unsafe_back(Int i)       noexcept	{ return unsafe_at(_size - i - 1); }
-	AX_NODISCARD AX_INLINE constexpr const T& unsafe_back(Int i) const noexcept	{ return unsafe_at(_size - i - 1); }
+	AX_NODISCARD AX_INLINE constexpr       T& at(Int i)       noexcept					{ _checkBound(i); return at_noBoundCheck(i); }
+	AX_NODISCARD AX_INLINE constexpr const T& at(Int i) const noexcept					{ _checkBound(i); return at_noBoundCheck(i); }
+	AX_NODISCARD AX_INLINE constexpr       T* tryGetElement(Int i)       noexcept		{ return inBound(i) ? &at_noBoundCheck(i) : nullptr; }
+	AX_NODISCARD AX_INLINE constexpr const T* tryGetElement(Int i) const noexcept		{ return inBound(i) ? &at_noBoundCheck(i) : nullptr; }
+	AX_NODISCARD AX_INLINE constexpr       T& back()       noexcept 					{ return at(_size - 1); }
+	AX_NODISCARD AX_INLINE constexpr const T& back() const noexcept 					{ return at(_size - 1); }
+	AX_NODISCARD AX_INLINE constexpr       T& back(Int i)       noexcept				{ return at(_size - i - 1); }
+	AX_NODISCARD AX_INLINE constexpr const T& back(Int i) const noexcept				{ return at(_size - i - 1); }
+	AX_NODISCARD AX_INLINE constexpr       T& at_noBoundCheck(Int i)       noexcept		{ _debug_boundCheck(i); return _data[i]; }
+	AX_NODISCARD AX_INLINE constexpr const T& at_noBoundCheck(Int i) const noexcept		{ _debug_boundCheck(i); return _data[i]; }
+	AX_NODISCARD AX_INLINE constexpr       T& back_noBoundCheck(Int i)       noexcept	{ return at_noBoundCheck(_size - i - 1); }
+	AX_NODISCARD AX_INLINE constexpr const T& back_noBoundCheck(Int i) const noexcept	{ return at_noBoundCheck(_size - i - 1); }
 
 	AX_NODISCARD AX_INLINE constexpr       T* data()       noexcept { return _data; }
 	AX_NODISCARD AX_INLINE constexpr const T* data() const noexcept { return _data; }
@@ -306,7 +306,7 @@ public:
 	
 protected:
 	AX_INLINE constexpr void _checkBound(Int i) const { if (!inBound(i)) throw Error_IndexOutOfRange(); }
-	AX_INLINE constexpr void _debug_checkBound( Int i ) const {
+	AX_INLINE constexpr void _debug_boundCheck( Int i ) const {
 #if _DEBUG
 		_checkBound(i);
 #endif

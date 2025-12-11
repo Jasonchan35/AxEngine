@@ -24,7 +24,7 @@ template<class OBJ, class CH>
 concept CON_StrView_ = std::is_convertible_v<OBJ, StrView_<CH>>;
 
 template<class T>
-class IString_ : public IArrayStorage<T> {
+class IString_ : public IArrayStorage<T>, public StrView_BaseFunc<IString_<T>, T> {
 	using This = IString_;
 	using Base = IArrayStorage<T>;
 	using Base::_storage;	
@@ -40,6 +40,7 @@ public:
 	using MutByte         = std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
 	using std_string_view = std::basic_string_view<std::remove_cv_t<T>>;
 
+	
 	const T* c_str() const { return zview().c_str(); }
 	constexpr std_string_view to_string_view() const noexcept { return std_string_view(data(), size()); }
 	constexpr operator std_string_view() const noexcept { return to_string_view(); }
@@ -64,26 +65,25 @@ public:
 	constexpr Int sizeInBytes() const	{ return size() * AX_SIZEOF(T); }
 
 	AX_INLINE constexpr		T	popBack()	{ T tmp = back(); decSize(1); return tmp; }
-	
-	template<class R>
-	AX_INLINE constexpr bool	isOverlapped(StrView_<R> r) const	{ return toByteSpan().isOverlapped(r.toByteSpan()); }
-	AX_INLINE constexpr	bool	inBound(Int i) const				{ return i >= 0 && i < size(); }
-	AX_INLINE constexpr			T&	operator[]	(Int i)				{ return at(i); }
-	AX_INLINE constexpr	const	T&	operator[]	(Int i) const		{ return at(i); }
-	AX_INLINE constexpr			T&	at			(Int i)				{ _checkBound(i); return unsafe_at(i); }
-	AX_INLINE constexpr	const	T&	at			(Int i) const		{ _checkBound(i); return unsafe_at(i); }
-	AX_INLINE constexpr 		T&	back		(Int i = 0)			{ return at( size()-i-1 ); }
-	AX_INLINE constexpr const	T&	back		(Int i = 0) const	{ return at( size()-i-1 ); }
-	AX_INLINE constexpr 		T&	unsafe_at	(Int i)				{ _debug_checkBound(i); return data()[i]; }
-	AX_INLINE constexpr const	T&	unsafe_at	(Int i) const		{ _debug_checkBound(i); return data()[i]; }
-	AX_INLINE constexpr 		T&	unsafe_back	(Int i)				{ return unsafe_at( size()-i-1 ); }
-	AX_INLINE constexpr const	T&	unsafe_back	(Int i)  const		{ return unsafe_at( size()-i-1 ); }
 
+	template<class R>
+	AX_INLINE constexpr bool		isOverlapped(StrView_<R> r) const	{ return view().isOverlapped(r); }
+	AX_INLINE constexpr	bool		inBound(Int i) const				{ return i >= 0 && i < size(); }
+	AX_INLINE constexpr			T&	operator[]	(Int i)					{ return at(i); }
+	AX_INLINE constexpr	const	T&	operator[]	(Int i) const			{ return at(i); }
+	AX_INLINE constexpr			T&	at			(Int i)					{ _checkBound(i); return at_noBoundCheck(i); }
+	AX_INLINE constexpr	const	T&	at			(Int i) const			{ _checkBound(i); return at_noBoundCheck(i); }
+	AX_INLINE constexpr 		T&	back		(Int i = 0)				{ return at( size()-i-1 ); }
+	AX_INLINE constexpr const	T&	back		(Int i = 0) const		{ return at( size()-i-1 ); }
+	AX_INLINE constexpr 		T&	at_noBoundCheck	(Int i)	noexcept		{ _debug_boundCheck(i); return data()[i]; }
+	AX_INLINE constexpr const	T&	at_noBoundCheck	(Int i) const noexcept	{ _debug_boundCheck(i); return data()[i]; }
+	AX_INLINE constexpr 		T&	back_noBoundCheck	(Int i)					{ return at_noBoundCheck( size()-i-1 ); }
+	AX_INLINE constexpr const	T&	back_noBoundCheck	(Int i)  const			{ return at_noBoundCheck( size()-i-1 ); }
 	//---------------
 	AX_INLINE constexpr CView	constView	() const noexcept	{ return CView(data(), size()); }
 	AX_INLINE constexpr CView	view		() const noexcept	{ return CView(data(), size()); }
 	AX_INLINE constexpr MView	view		()       noexcept	{ return MView(data(), size()); }
-	AX_INLINE constexpr operator CView() const noexcept { return constView(); }
+	AX_INLINE constexpr operator CView() const noexcept			{ return constView(); }
 
 	AX_INLINE constexpr CSpan constSpan() const noexcept	{ return CSpan(data(), size()); }
 	AX_INLINE constexpr CSpan      span() const noexcept	{ return CSpan(data(), size()); }
@@ -93,82 +93,24 @@ public:
 	AX_INLINE constexpr ZView zview() const noexcept	{ return ZView(data(), size()); }
 	AX_INLINE constexpr operator ZView() const noexcept	{ return zview(); }
 	//---------------
-
-	AX_NODISCARD AX_INLINE constexpr HashInt onHashInt() const noexcept { return HashInt::s_make(span()); }
 	
-	AX_INLINE constexpr MutSpan<MutByte> toMutByteSpan()		{ return view().toMutByteSpan(); }
-	AX_INLINE constexpr    Span<MutByte>    toByteSpan() const	{ return view().toByteSpan(); }
-	
-	//                +--------------------------------------------+
-	//                |         |                      |           |
-	//                +--------------------------------------------+
-	//  slice         (  offset  )[______ newSize ____]
-	//  sliceBack                       [________ newSize__________]
-	//  sliceFrom     (  offset  )[_________till to end ___________]
-	//  sliceFromBack [________________________________](  offset  )
-	AX_INLINE	constexpr MView	slice			(Int offset, Int newSize)		{ return view().slice(offset, newSize); }
-	AX_INLINE	constexpr CView	slice			(Int offset, Int newSize) const	{ return view().slice(offset, newSize); }
-	AX_INLINE	constexpr MView	slice			(IntRange range)				{ return view().slice(range); }
-	AX_INLINE	constexpr CView	slice			(IntRange range) const			{ return view().slice(range); }
-	AX_INLINE	constexpr MView	sliceBack		(Int newSize)			 		{ return view().sliceBack(newSize); }
-	AX_INLINE	constexpr CView	sliceBack		(Int newSize) const	 			{ return view().sliceBack(newSize); }
-	AX_INLINE	constexpr MView	sliceFrom		(Int offset)					{ return view().sliceFrom(offset); }
-	AX_INLINE	constexpr CView	sliceFrom		(Int offset) const				{ return view().sliceFrom(offset); }
-	AX_INLINE	constexpr MView	sliceFromBack	(Int offset)					{ return view().sliceFromBack(offset); }
-	AX_INLINE	constexpr CView	sliceFromBack	(Int offset) const				{ return view().sliceFromBack(offset); }
-	//----------------------------------	
-	AX_INLINE constexpr CmpResult compare      (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().compare   (r, sc); }
-	AX_INLINE constexpr bool      equals       (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().equals    (r, sc); }
-	AX_INLINE constexpr bool      startsWith   (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().startsWith(r, sc); }
-	AX_INLINE constexpr bool      endsWith     (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return view().endsWith  (r, sc); }
-	AX_INLINE constexpr bool      matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const noexcept { return view().matchWildcard(wildcard, sc); }
-	AX_INLINE constexpr bool operator==	(CView r) const noexcept { return view().operator==(r); }
-	AX_INLINE constexpr bool operator!=	(CView r) const noexcept { return view().operator!=(r); }
-	AX_INLINE constexpr bool operator<	(CView r) const noexcept { return view().operator< (r); }
-	AX_INLINE constexpr bool operator>	(CView r) const noexcept { return view().operator> (r); }
-	AX_INLINE constexpr bool operator<=	(CView r) const noexcept { return view().operator<=(r); }
-	AX_INLINE constexpr bool operator>=	(CView r) const noexcept { return view().operator>=(r); }
-	//----------------
-	AX_NODISCARD constexpr Opt<Int>	find			(CView      str, StrCase sc = StrCase::Sensitive) const { return view().find           (str   , sc); }
-	AX_NODISCARD constexpr Opt<Int>	findBack		(CView      str, StrCase sc = StrCase::Sensitive) const { return view().findBack       (str   , sc); }
-	AX_NODISCARD constexpr Opt<Int>	findChar		(const T&    ch, StrCase sc = StrCase::Sensitive) const { return view().findChar       (ch    , sc); }
-	AX_NODISCARD constexpr Opt<Int>	findCharBack	(const T&    ch, StrCase sc = StrCase::Sensitive) const { return view().findCharBack   (ch    , sc); }
-	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
-	AX_NODISCARD constexpr Opt<Int>	findChar		(FUNC      func, StrCase sc = StrCase::Sensitive) const { return view().findChar       (func  , sc); }
-	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
-	AX_NODISCARD constexpr Opt<Int>	findCharBack	(FUNC      func, StrCase sc = StrCase::Sensitive) const { return view().findCharBack   (func  , sc); }
-	//----------------
-	using SplitResult = Pair<MView, MView>;
-	AX_NODISCARD constexpr auto splitByIndex		(Opt<Int> index, Int separatorSize) -> SplitResult { return view().splitByIndex(index, separatorSize); }
-	AX_NODISCARD constexpr auto split				(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().split             (str , sc); }
-	AX_NODISCARD constexpr auto splitBack			(CView      str, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitBack         (str , sc); }
-	AX_NODISCARD constexpr auto splitByChar			(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByChar       (ch  , sc); }
-	AX_NODISCARD constexpr auto splitByCharBack		(const T&    ch, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByCharBack   (ch  , sc); }
-
-	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
-	AX_NODISCARD constexpr auto splitByChar			(FUNC      func, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByChar       (func, sc); }
-	template<class FUNC> requires std::is_invocable_v<FUNC, const T&>
-	AX_NODISCARD constexpr auto splitByCharBack		(FUNC      func, StrCase sc = StrCase::Sensitive) -> SplitResult { return view().splitByCharBack   (func, sc); }
-	//----------------
-	AX_INLINE			MView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive)		{ return view().extractFromPrefix(prefix, sc); }
-	AX_INLINE			CView	extractFromPrefix(CView prefix, StrCase sc = StrCase::Sensitive) const	{ return view().extractFromPrefix(prefix, sc); }
-	//----------------
 	constexpr void replaceChars(const T& from, const T& to);
 	constexpr Int  replaceAll(CView from, CView to, StrCase sc = StrCase::Sensitive);
 	//----------------
 
 	template<class OBJ> constexpr bool tryParse(OBJ & obj) const { return view().tryParse(obj); }
 	
-	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { Base::_storageCopy(CView(rhs)); }
-	AX_INLINE constexpr void operator=(ZView      rhs) { Base::_storageCopy(CView(rhs)); }
-	AX_INLINE constexpr void operator=(MView      rhs) { Base::_storageCopy(rhs); }
-	AX_INLINE constexpr void operator=(CView      rhs) { Base::_storageCopy(rhs); }
-	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::_storageCopy(rhs.view()); }
+	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { copy(rhs); }
+	AX_INLINE constexpr void operator=(ZView      rhs) { copy(rhs); }
+	AX_INLINE constexpr void operator=(MView      rhs) { copy(rhs); }
+	AX_INLINE constexpr void operator=(CView      rhs) { copy(rhs); }
+	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { copy(rhs); }
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(AX_FORWARD(rhs)); }
-
-	template<Int N>
-	AX_INLINE constexpr void operator=(const T (&sz)[N]) { Base::_storageCopy(CView(sz)); }
 	
+	template<Int N>
+	AX_INLINE constexpr void operator=(const T (&sz)[N]) { copy(sz); }
+	
+	AX_INLINE constexpr void copy(CView rhs) { Base::_storageCopy(rhs.span()); _setNullTerminator(); }
 	AX_INLINE constexpr void move(IString_<T> && rhs);
 
 	template<class R> constexpr This& operator<<(const R& r) { append(r); return *this; }
@@ -217,7 +159,7 @@ public:
 protected:
 	AX_INLINE constexpr void _setNullTerminator();
 	AX_INLINE constexpr void _checkBound		( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
-	AX_INLINE constexpr void _debug_checkBound	( Int i ) const {
+	AX_INLINE constexpr void _debug_boundCheck	( Int i ) const {
 	#ifdef _DEBUG
 		_checkBound(i);
 	#endif

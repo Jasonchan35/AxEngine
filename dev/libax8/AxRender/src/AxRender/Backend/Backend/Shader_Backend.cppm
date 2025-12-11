@@ -72,7 +72,7 @@ public:
 
 		Span<VarInfo>	varInfos() const { return _varInfos; }
 
-		const VarInfo*	getVarInfo(Int i) const { return _varInfos.try_at(i); }
+		const VarInfo*	getVarInfo(Int i) const { return _varInfos.tryGetElement(i); }
 		const VarInfo*  findVarInfo(NameId name) const {
 			for (auto& v : _varInfos) {
 				if (v.name() == name) return &v;
@@ -221,7 +221,7 @@ public:
 	template<class R> const R* getParamSpace_(BindSpace s) const { return rttiCastCheck<R>(getParamSpace(s)); }
 
 	ShaderParamSpace_Backend* getParamSpace(BindSpace s) {
-		auto* p = _shaderParamSpaces.try_at(ax_enum_int(s));
+		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(s));
 		return p ? p->ptr() : nullptr;
 	}
 
@@ -270,7 +270,7 @@ public:
 	}
 
 	const ShaderParamSpace_Backend*	getPassParamSpace(Int pass, BindSpace s) const {
-		auto* pp = _passes.try_at(pass);
+		auto* pp = _passes.tryGetElement(pass);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;
 	}
@@ -280,7 +280,7 @@ public:
 	}
 
 	const ShaderPass_Backend* getPass(Int pass) const {
-		auto* pp = _passes.try_at(pass);
+		auto* pp = _passes.tryGetElement(pass);
 		return pp ? pp->ptr() : nullptr;
 	}
 
@@ -313,7 +313,7 @@ protected:
 };
 
 inline ShaderPass_Backend* Shader_Backend::getPass(Int i) {
-	if (auto* pp = _passes.try_at(i)) {
+	if (auto* pp = _passes.tryGetElement(i)) {
 		return pp->ptr();
 	}
 	return nullptr;

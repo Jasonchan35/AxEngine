@@ -102,11 +102,11 @@ struct Num_ : public Num_Data<COL, ROW, T> {
 
 	AX_INLINE constexpr bool inBound(Int col, Int row = 0) const { return row >= 0 && row < ROW && col >= 0 && col < COL; }
 	
-	AX_INLINE constexpr			T& at			(Int col, Int row = 0)			{ if (!inBound(col, row)) throw Error_IndexOutOfRange(); return unsafe_at(col,row); }
-	AX_INLINE constexpr const	T& at			(Int col, Int row = 0) const	{ if (!inBound(col, row)) throw Error_IndexOutOfRange(); return unsafe_at(col,row); }
+	AX_INLINE constexpr			T& at			(Int col, Int row = 0)			{ if (!inBound(col, row)) throw Error_IndexOutOfRange(); return at_noBoundCheck(col,row); }
+	AX_INLINE constexpr const	T& at			(Int col, Int row = 0) const	{ if (!inBound(col, row)) throw Error_IndexOutOfRange(); return at_noBoundCheck(col,row); }
 
-	AX_INLINE constexpr			T& unsafe_at	(Int col, Int row = 0)			{ return _data[row][col]; }
-	AX_INLINE constexpr const	T& unsafe_at	(Int col, Int row = 0) const	{ return _data[row][col]; }
+	AX_INLINE constexpr			T& at_noBoundCheck	(Int col, Int row = 0)			{ return _data[row][col]; }
+	AX_INLINE constexpr const	T& at_noBoundCheck	(Int col, Int row = 0) const	{ return _data[row][col]; }
 	
 	AX_INLINE constexpr bool operator==(const Num_& other) const { return fixedSpan() == other.fixedSpan(); }
 };
