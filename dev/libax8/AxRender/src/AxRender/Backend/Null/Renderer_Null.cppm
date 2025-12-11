@@ -7,6 +7,7 @@ export import :RenderPass_Backend;
 export import :RenderRequest_Backend;
 export import :Texture_Backend;
 export import :Material_Backend;
+export import :ImageIO;
 
 export namespace ax::AxRender {
 
@@ -68,7 +69,12 @@ class Texture2D_Null : public Texture2D_Backend {
 public:
 	Texture2D_Null(const CreateDesc& desc) : Base(desc) {}
 
-	virtual void onImageIO_ReadResult(class ImageIO_ReadResult& result) override {}
+	virtual void onImageIO_ReadResult(class ImageIO_ReadResult& result) override {
+		auto dataSize = result.desc.dataSize;
+		ByteArray buf;
+		buf.resize(dataSize);
+		result.copyPixelsTo(buf);
+	}
 };
 
 class ShaderParamSpace_Null : public ShaderParamSpace_Backend {

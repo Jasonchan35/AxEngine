@@ -1,10 +1,9 @@
-#if 0
-
 module;
 
-#include <openjpeg-2.5/openjpeg.h>
+#include <jpeglib.h>
 
-module AxRender:ImageIO_Reader_JPEG;
+module AxRender;
+import :ImageIO_JPEG;
 
 namespace ax::AxRender {
 
@@ -24,18 +23,10 @@ void ImageIO_Reader_JPEG::s_error_exit (j_common_ptr cinfo) {
 bool ImageIO_Reader_JPEG::error_exit_longjmp_restore_point() {
 	// !!! call this function before any libjpeg C-function that might longjmp()
 	// to avoid any C++ destructor or exception try/catch block happen in between
-
-	#if AX_COMPILER_VC
-		#pragma warning(push) 
-		#pragma warning(disable: 4611) // interaction between '_setjmp' and C++ object destruction is non-portable
-	#endif
-
+	AX_VC_WARNING_PUSH_AND_DISABLE(4611) // interaction between '_setjmp' and C++ object destruction is non-portable
 	// longjmp() to here from error_exit()
 	return setjmp(_setjmp_buffer) != 0;
-
-	#if AX_COMPILER_VC
-		#pragma warning(pop) 
-	#endif
+	AX_VC_WARNING_POP()
 }
 
 boolean ImageIO_Reader_JPEG::s_fill_input_buffer (j_decompress_ptr cinfo) {
@@ -46,16 +37,17 @@ boolean ImageIO_Reader_JPEG::s_fill_input_buffer (j_decompress_ptr cinfo) {
 void ImageIO_Reader_JPEG::s_skip_input_data (j_decompress_ptr cinfo, long num_bytes) {
 	if (num_bytes > 0) {
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
-		cinfo->src->next_input_byte += SafeCast(num_bytes);
-		cinfo->src->bytes_in_buffer -= SafeCast(num_bytes);
+		cinfo->src->next_input_byte += SafeCastTo<size_t>(num_bytes);
+		cinfo->src->bytes_in_buffer -= SafeCastTo<size_t>(num_bytes);
 AX_GCC_WARNING_POP()
 	}
 }
 
 ImageIO_Reader_JPEG::ImageIO_Reader_JPEG() {
-	ax_bzero_struct(_cinfo);
-	ax_bzero_struct(_errMgr);
-	ax_bzero_struct(_srcMgr);
+	_cinfo  = {}; 
+	_errMgr = {};
+	_srcMgr = {};
+	_cinfo.client_data = this;
 }
 
 ImageIO_Reader_JPEG::~ImageIO_Reader_JPEG() {
@@ -82,18 +74,18 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 
 	//-------
 	if (error_exit_longjmp_restore_point()) {
-		throw Error_Undefined();
+		throw Error_Undefined("error jpeg_read_header");
 	}
-	if (opj_read_header(&_cinfo, TRUE) != JPEG_HEADER_OK) {
-		throw Error_Undefined();
+	if (int code = jpeg_read_header(&_cinfo, TRUE); code != JPEG_HEADER_OK) {
+		throw Error_Undefined(Fmt("error jpeg_read_header return={}", code));
 	}
 
 	//-------
 	if (error_exit_longjmp_restore_point()) {
-		throw Error_Undefined();
+		throw Error_Undefined("error jpeg_start_decompress");
 	}
 	if (jpeg_start_decompress(&_cinfo) != TRUE) {
-		throw Error_Undefined();
+		throw Error_Undefined("error jpeg_start_decompress return");
 	}
 	
 	_cinfo.out_color_space = JCS_RGB;
@@ -102,7 +94,7 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 	Int height = SafeCast(_cinfo.output_height);
 
 	if (width <= 0 || height <= 0) {
-		throw Error_Undefined();
+		throw Error_Undefined("jpeg image size is 0");
 	}
 
 	int srcPixelSize = _cinfo.output_components;
@@ -175,14 +167,12 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 		}
 	};
 
-	callback(result);
+	callback.invoke(result);
 
-	if (opj_finish_decompress(&_cinfo) != TRUE) {
-		throw Error_Undefined();
+	if (jpeg_finish_decompress(&_cinfo) != TRUE) {
+		throw Error_Undefined("jpeg_finish_decompress");
 	}
 }
 
 
 } //namespace
-
-#endif

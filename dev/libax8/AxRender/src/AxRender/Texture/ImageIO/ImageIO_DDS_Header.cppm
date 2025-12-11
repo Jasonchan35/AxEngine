@@ -1,5 +1,5 @@
 module;
-export module AxRender:ImageIO_DDS;
+export module AxRender:ImageIO_DDS_Header;
 export import :Common;
 
 export namespace ax::AxRender {

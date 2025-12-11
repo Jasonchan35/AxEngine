@@ -11,8 +11,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI)
 find_package(PNG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC PNG::PNG)
 
-find_package(OpenJpeg REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC openjp2)
+find_package(JPEG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC JPEG::JPEG)
 
 find_package(Freetype REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC Freetype::Freetype)

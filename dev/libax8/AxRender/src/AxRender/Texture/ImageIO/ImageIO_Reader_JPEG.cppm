@@ -1,21 +1,9 @@
 module;
 
-export module AxRender:ImageIO_Reader_JPEG;
-export import :ImageIO;
-
-export namespace ax::AxRender {
-
-class ImageIO_Reader_JPEG : public NonCopyable {
-};
-
-}// namespace
-
-#if 0
-
 //#include <setjmp.h>
-#include <openjpeg-2.5/openjpeg.h>
+#include <jpeglib.h>
 
-export module AxRender:ImageIO_Reader_JPEG;
+export module AxRender:ImageIO_JPEG;
 export import :ImageIO;
 
 export namespace ax::AxRender {
@@ -37,23 +25,14 @@ private:
 
 	bool error_exit_longjmp_restore_point();
 
+	jmp_buf _setjmp_buffer;
+	
 	jpeg_decompress_struct _cinfo;
 	ByteSpan _data;
 	ByteSpan _remain;
 
 	jpeg_source_mgr _srcMgr;
-	jpeg_error_mgr _errMgr;
-
-#if AX_COMPILER_VC
-	#pragma warning(push) 
-	#pragma warning(disable: 4324) // structure was padded due to alignment specifier
-#endif
-	jmp_buf _setjmp_buffer;
-#if AX_COMPILER_VC
-	#pragma warning(pop) 
-#endif
+	jpeg_error_mgr	_errMgr;
 };
 
 } //namespace
-
-#endif

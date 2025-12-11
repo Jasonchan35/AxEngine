@@ -1,7 +1,7 @@
 module AxRender;
-import :ImageIO_Reader_DDS;
-import :ImageIO_Reader_PNG;
-//import :ImageIO_Reader_JPEG;
+import :ImageIO_DDS;
+import :ImageIO_PNG;
+import :ImageIO_JPEG;
 
 namespace ax::AxRender {
 
@@ -22,7 +22,7 @@ void ImageIO::loadFile(Callback callback, StrView filename, ImageFileType fileTy
 
 void ImageIO::loadMem(Callback callback, ByteSpan inData, ImageFileType fileType) {
 	switch (fileType) {
-//		case ImageFileType::JPEG:	{ ImageIO_Reader_JPEG rd; rd.load(callback, inData); } break;
+		case ImageFileType::JPEG:	{ ImageIO_Reader_JPEG rd; rd.load(callback, inData); } break;
 		case ImageFileType::PNG:	{ ImageIO_Reader_PNG  rd; rd.load(callback, inData); } break;
 		case ImageFileType::DDS:	{ ImageIO_Reader_DDS  rd; rd.load(callback, inData); } break;
 
