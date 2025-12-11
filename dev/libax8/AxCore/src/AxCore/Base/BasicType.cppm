@@ -268,14 +268,6 @@ template<class T> using ZStrView_ = MutZStrView_<const T>;
 template<class T> inline
 ZStrView_<T> ZStrView_c_str(const T* sz) { return ZStrView_<T>(sz, ax_strlen(sz)); }
 
-
-AX_INLINE consteval ZStrViewA  operator ""_sv(const CharA * sz, size_t n)  noexcept { return ZStrViewA (sz, n); }
-AX_INLINE consteval ZStrViewW  operator ""_sv(const CharW * sz, size_t n)  noexcept { return ZStrViewW (sz, n); }
-AX_INLINE consteval ZStrView8  operator ""_sv(const Char8 * sz, size_t n)  noexcept { return ZStrView8 (sz, n); }
-AX_INLINE consteval ZStrView16 operator ""_sv(const Char16* sz, size_t n)  noexcept { return ZStrView16(sz, n); }
-AX_INLINE consteval ZStrView32 operator ""_sv(const Char32* sz, size_t n)  noexcept { return ZStrView32(sz, n); }
-
-//TODO change to consteval, to ensure it's real string literal
 template<class T>
 class MutStrLit_ : public MutZStrView_<T> {
 	using This = MutStrLit_;
@@ -284,19 +276,23 @@ class MutStrLit_ : public MutZStrView_<T> {
 	using Base::_size;
 public:
 
-	constexpr MutStrLit_() noexcept = default;
-	constexpr MutStrLit_(const This&) noexcept = default;
-
-	AX_INLINE constexpr MutStrLit_(T* sz, Int size) noexcept : Base(sz, size) {}
+	// consteval - only construct from compile time and ensure the lifespan is permanent
+	consteval MutStrLit_() noexcept = default;
+	consteval MutStrLit_(const This&) noexcept = default;
 	
 	template<Int N>
-	AX_INLINE constexpr MutStrLit_(T (&sz)[N]) noexcept : Base(sz) {}
-	
+	AX_INLINE consteval MutStrLit_(T (&sz)[N]) noexcept : Base(sz) {}
+
+	static consteval MutStrLit_ s_from_c_str(T* sz) noexcept { return MutStrLit_(sz, ax_strlen(sz)); }
+	static consteval MutStrLit_ s_make(const T* data, Int size) noexcept { return MutStrLit_(data, size); }
+
+	// constexpr is ok for PersistString, because it's lifespan is guaranteed until the end of the program.
+	static constexpr MutStrLit_ s_from_PersistString(T* sz, Int size) noexcept { return MutStrLit_(sz, ax_strlen(sz)); }
+
 	AX_NODISCARD AX_INLINE constexpr explicit operator bool() const { return _size > 0; } 
-
-	constexpr MutStrLit_ s_from_c_str(T* sz) noexcept { return MutStrLit_(sz, ax_strlen(sz)); }
-
 protected:
+	AX_INLINE constexpr MutStrLit_(T* sz, Int size) noexcept : Base(sz, size) {}
+	
 	static constexpr T _empty_c_str = 0;	
 };
 
@@ -309,6 +305,12 @@ using StrLit16 = StrLit_<Char16>;
 using StrLit32 = StrLit_<Char32>;
 
 AX_INLINE constexpr StrLit ConstStrLit_bool(bool v) { return v ? StrLit("true") : StrLit("false"); }
+
+AX_INLINE consteval StrLitA  operator ""_sv(const CharA * sz, size_t n)  noexcept { return StrLitA ::s_make(sz, n); }
+AX_INLINE consteval StrLitW  operator ""_sv(const CharW * sz, size_t n)  noexcept { return StrLitW ::s_make(sz, n); }
+AX_INLINE consteval StrLit8  operator ""_sv(const Char8 * sz, size_t n)  noexcept { return StrLit8 ::s_make(sz, n); }
+AX_INLINE consteval StrLit16 operator ""_sv(const Char16* sz, size_t n)  noexcept { return StrLit16::s_make(sz, n); }
+AX_INLINE consteval StrLit32 operator ""_sv(const Char32* sz, size_t n)  noexcept { return StrLit32::s_make(sz, n); }
 
 
 // for internal use, i.e. unit test cannot have high level logger functions
