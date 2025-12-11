@@ -1,7 +1,5 @@
 module;
 
-#include "ColorType_MACRO.h"
-
 export module AxCore.Color:ColorType;
 export import AxCore.Mat;
 export import AxCore.Enum;
@@ -239,5 +237,6 @@ template<ColorModel MODEL, class ELEM>
 struct _IsColor_< Color_<MODEL, ELEM> > : std::true_type {};
 
 template<class T> constexpr bool IsColor_ = _IsColor_<T>::value;
+
 
 } // namespace ax

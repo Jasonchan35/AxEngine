@@ -62,11 +62,11 @@ public:
 
 	AX_INLINE	const Info&		info			() const { return _info; }
 
-	template<class COLOR> AX_INLINE	MutSpan<COLOR>	row(Int y)			{ _checkType(COLOR::kColorType); return row_noCheck<COLOR>(y); }
-	template<class COLOR> AX_INLINE	   Span<COLOR>	row(Int y) const	{ _checkType(COLOR::kColorType); return row_noCheck<COLOR>(y); }
+	template<class COLOR> AX_INLINE	MutSpan<COLOR>	row(Int y)			{ _typeCheck(COLOR::kColorType); return row_noTypeCheck<COLOR>(y); }
+	template<class COLOR> AX_INLINE	   Span<COLOR>	row(Int y) const	{ _typeCheck(COLOR::kColorType); return row_noTypeCheck<COLOR>(y); }
 
-	template<class COLOR> AX_INLINE MutSpan<COLOR>	row_noCheck(Int y)			{ return MutSpan<COLOR>(reinterpret_cast<      COLOR*>(rowBytes(y).data()), width()); }
-	template<class COLOR> AX_INLINE    Span<COLOR>	row_noCheck(Int y) const	{ return    Span<COLOR>(reinterpret_cast<const COLOR*>(rowBytes(y).data()), width()); }
+	template<class COLOR> AX_INLINE MutSpan<COLOR>	row_noTypeCheck(Int y)			{ return MutSpan<COLOR>(reinterpret_cast<      COLOR*>(rowBytes(y).data()), width()); }
+	template<class COLOR> AX_INLINE    Span<COLOR>	row_noTypeCheck(Int y) const	{ return    Span<COLOR>(reinterpret_cast<const COLOR*>(rowBytes(y).data()), width()); }
 
 	template<class COLOR> AX_INLINE		  COLOR&	pixel(Int x, Int y)			{ return row<COLOR>(y)[x]; }
 	template<class COLOR> AX_INLINE	const COLOR&	pixel(Int x, Int y) const	{ return row<COLOR>(y)[x]; }
@@ -83,7 +83,7 @@ public:
 	void copy(const Image& src);
 
 protected:
-	void _checkType(ColorType colorType) const { if (colorType != _info.colorType) throw Error_Undefined(); }
+	void _typeCheck(ColorType colorType) const { if (colorType != _info.colorType) throw Error_Undefined(); }
 
 	Info			_info;
 	Array<Byte>		_pixelData;
@@ -91,10 +91,10 @@ protected:
 
 template<class COLOR> inline
 void Image::fill(const COLOR& color) {
-	_checkType(COLOR::kColorType);
+	_typeCheck(COLOR::kColorType);
 	Int ny = _info.size.y;
 	for (Int y = 0; y < ny; y++) {
-		for (auto& p : row_noCheck<COLOR>(y)) {
+		for (auto& p : row_noTypeCheck<COLOR>(y)) {
 			p = color;
 		}
 	}
