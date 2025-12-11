@@ -39,16 +39,16 @@ void Image::copy(const Image& src) {
 }
 
 void Image::loadFile(StrView filename, ImageFileType fileType) {
-	ImageIO::loadFile([this](ImageIO_ReadResult& result){
-		this->create(result.desc);
-		result.copyPixelsTo(this->_pixelData);
+	ImageIO::loadFile([this](ImageIO_ReadHandler& handler){
+		this->create(handler.desc);
+		handler.readPixelsTo(this->_pixelData);
 	}, filename, fileType);
 }
 
 void Image::loadMem(ByteSpan inData, ImageFileType fileType) {
-	ImageIO::loadMem([this](ImageIO_ReadResult& result){
-		this->create(result.desc);
-		result.copyPixelsTo(this->_pixelData);
+	ImageIO::loadMem([this](ImageIO_ReadHandler& handler){
+		this->create(handler.desc);
+		handler.readPixelsTo(this->_pixelData);
 	}, inData, fileType);
 }
 

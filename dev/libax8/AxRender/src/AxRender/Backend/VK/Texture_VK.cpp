@@ -37,8 +37,8 @@ void Sampler_VK::onCreate(const CreateDesc& desc) {
 	_sampler.create(dev, info);
 }
 
-void Texture2D_VK::onImageIO_ReadResult(ImageIO_ReadResult& result) {
-	auto& info = result.desc.info;
+void Texture2D_VK::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
+	auto& info = handler.desc.info;
 	_info = info;
 
 	auto& dev = Renderer_VK::s_instance()->device();
@@ -52,12 +52,12 @@ void Texture2D_VK::onImageIO_ReadResult(ImageIO_ReadResult& result) {
 	_devMem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	_view.create(_image);
 
-	auto dataSize = result.desc.dataSize;
+	auto dataSize = handler.desc.dataSize;
 
 	_uploadBuffer = GpuBuffer_Backend::s_new(AX_ALLOC_REQ, "Texture2D_VK-upload", GpuBufferType::StagingToGpu, dataSize);
 
 	auto map = _uploadBuffer->mapMemory(IntRange(0, dataSize));
-	result.copyPixelsTo(map.data());
+	handler.readPixelsTo(map.data());
 }
 
 void Texture2D_VK::_bindImage(RenderRequest_VK* req, VkDescriptorImageInfo& outInfo) {

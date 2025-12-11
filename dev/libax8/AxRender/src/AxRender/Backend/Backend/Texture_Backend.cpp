@@ -47,20 +47,20 @@ void Texture2D_Backend::hotCreateFromImage(const ImageInfo& info, ByteSpan pixel
 void Texture2D_Backend::_loadFile() {
 	if (_assetPath) {
 		resourceHandle.markDirty();
-		ImageIO::loadFile([&](ImageIO_ReadResult& result) {
-			_onImageIO_ReadResult(result);
+		ImageIO::loadFile([&](ImageIO_ReadHandler& handler) {
+			_onImageIO_ReadHandler(handler);
 		}, _assetPath);
 	}
 }
 
 void Texture2D_Backend::_loadImage(const ImageInfo& info, ByteSpan pixelData) {
-	ImageIO_ReadResult result;
-	result.desc.info = info;
-	result.desc.dataSize = pixelData.size();
-	result.copyPixelsFunc = [&](MutByteSpan outSpan) {
+	ImageIO_ReadHandler handler;
+	handler.desc.info = info;
+	handler.desc.dataSize = pixelData.size();
+	handler.readPixelsFunc = [&](MutByteSpan outSpan) {
 		outSpan.copyValues(pixelData);
 	};
-	_onImageIO_ReadResult(result);
+	_onImageIO_ReadHandler(handler);
 }
 
 void Texture2D_Backend::onCreate(const CreateDesc& desc) {

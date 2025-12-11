@@ -26,7 +26,7 @@ class Texture2D_VK : public Texture2D_Backend {
 public:
 	Texture2D_VK(const CreateDesc& desc) : Base(desc) {}
 
-	virtual void onImageIO_ReadResult(ImageIO_ReadResult& result) override;
+	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) override;
 
 	void _bindImage(class RenderRequest_VK* req, VkDescriptorImageInfo& outInfo);
 private:

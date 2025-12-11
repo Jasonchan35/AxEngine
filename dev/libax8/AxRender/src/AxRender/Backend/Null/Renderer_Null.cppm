@@ -69,11 +69,11 @@ class Texture2D_Null : public Texture2D_Backend {
 public:
 	Texture2D_Null(const CreateDesc& desc) : Base(desc) {}
 
-	virtual void onImageIO_ReadResult(class ImageIO_ReadResult& result) override {
-		auto dataSize = result.desc.dataSize;
+	virtual void onImageIO_ReadHandler(class ImageIO_ReadHandler& handler) override {
+		auto dataSize = handler.desc.dataSize;
 		ByteArray buf;
 		buf.resize(dataSize);
-		result.copyPixelsTo(buf);
+		handler.readPixelsTo(buf);
 	}
 };
 

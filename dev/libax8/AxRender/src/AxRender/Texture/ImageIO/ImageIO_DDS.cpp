@@ -305,21 +305,21 @@ void ImageIO_Reader_DDS::load(ImageIO::Callback callback, ByteSpan inData) {
 	Int blockSize = ColorTypeInfo::s_get(colorType).kCompressedBlockSize;
 	Int strideInBytes = Math::max(1U, ((hdr.dwWidth + 3)/4)) * blockSize;
 
-	ImageIO_ReadResult result;
+	ImageIO_ReadHandler handler;
 
-	result.desc.info.colorType		= colorType;
-	result.desc.info.size			= Vec3i(hdr.dwWidth, hdr.dwHeight, 0);
-	result.desc.info.mipLevels		= mipLevels;
-	result.desc.info.strideInBytes	= strideInBytes;
-	result.desc.dataSize			= de.remain();
+	handler.desc.info.colorType		= colorType;
+	handler.desc.info.size			= Vec3i(hdr.dwWidth, hdr.dwHeight, 0);
+	handler.desc.info.mipLevels		= mipLevels;
+	handler.desc.info.strideInBytes	= strideInBytes;
+	handler.desc.dataSize			= de.remain();
 
 	auto srcSpan = ByteSpan(de.cur(), de.remain());
 
-	result.copyPixelsFunc = [&](MutByteSpan outSpan) {
+	handler.readPixelsFunc = [&](MutByteSpan outSpan) {
 		outSpan.copyValues(srcSpan);
 	};
 
-	callback.invoke(result);
+	callback.invoke(handler);
 }
 
 } // namespace

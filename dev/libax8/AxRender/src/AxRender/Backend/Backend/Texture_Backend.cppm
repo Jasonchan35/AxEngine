@@ -42,12 +42,12 @@ protected:
 	void _create(const CreateDesc& desc) { onCreate(desc); }
 	virtual void onCreate(const CreateDesc& desc);
 
-	void _onImageIO_ReadResult(class ImageIO_ReadResult& result) {
+	void _onImageIO_ReadHandler(class ImageIO_ReadHandler& handler) {
 		resourceHandle.markDirty();
-		onImageIO_ReadResult(result);
+		onImageIO_ReadHandler(handler);
 	}
 
-	virtual void onImageIO_ReadResult(class ImageIO_ReadResult& result) = 0;
+	virtual void onImageIO_ReadHandler(class ImageIO_ReadHandler& handler) = 0;
 };
 
 } // namespace

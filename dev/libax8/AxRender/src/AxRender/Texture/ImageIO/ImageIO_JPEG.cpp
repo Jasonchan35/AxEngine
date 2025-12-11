@@ -116,15 +116,15 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 	auto srcStrideInBytes = width * srcPixelSize;
 	auto dstStrideInBytes = width * outInfo.kSizeInBytes;
 
-	ImageIO_ReadResult result;
+	ImageIO_ReadHandler handler;
 
-	result.desc.info.colorType		= out_color_type;
-	result.desc.info.size			= Vec3i(width, height, 0);
-	result.desc.info.mipLevels		= 1;
-	result.desc.info.strideInBytes  = dstStrideInBytes;
-	result.desc.dataSize			= result.desc.info.computeDataSize();
+	handler.desc.info.colorType		= out_color_type;
+	handler.desc.info.size			= Vec3i(width, height, 0);
+	handler.desc.info.mipLevels		= 1;
+	handler.desc.info.strideInBytes  = dstStrideInBytes;
+	handler.desc.dataSize			= handler.desc.info.computeDataSize();
 
-	result.copyPixelsFunc = [&](MutByteSpan outSpan) {
+	handler.readPixelsFunc = [&](MutByteSpan outSpan) {
 		u8* outData = outSpan.data();
 
 		// no conversion is needed, decode directly to image buffer
@@ -167,7 +167,7 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 		}
 	};
 
-	callback.invoke(result);
+	callback.invoke(handler);
 
 	if (jpeg_finish_decompress(&_cinfo) != TRUE) {
 		throw Error_Undefined("jpeg_finish_decompress");

@@ -130,15 +130,15 @@ void ImageIO_Reader_PNG::load(ImageIO::Callback callback, ByteSpan inData) {
 	Int pixelSize = ColorTypeInfo::s_get(out_color_type).kSizeInBytes;
 	Int strideInBytes = in_width * pixelSize;
 
-	ImageIO_ReadResult result;
+	ImageIO_ReadHandler handler;
 
-	result.desc.info.colorType		= out_color_type;
-	result.desc.info.size			= Vec3i(width, height, 0);
-	result.desc.info.mipLevels		= 1;
-	result.desc.info.strideInBytes  = strideInBytes;
-	result.desc.dataSize			= result.desc.info.computeDataSize();
+	handler.desc.info.colorType		= out_color_type;
+	handler.desc.info.size			= Vec3i(width, height, 0);
+	handler.desc.info.mipLevels		= 1;
+	handler.desc.info.strideInBytes	= strideInBytes;
+	handler.desc.dataSize			= handler.desc.info.computeDataSize();
 
-	result.copyPixelsFunc = [&](MutByteSpan outSpan) {
+	handler.readPixelsFunc = [&](MutByteSpan outSpan) {
 		u8* outData = outSpan.data();
 
 		Array<png_bytep, 4096> rows;
@@ -158,7 +158,7 @@ void ImageIO_Reader_PNG::load(ImageIO::Callback callback, ByteSpan inData) {
 		png_read_image(_png, rows.data());
 	};
 
-	callback.invoke(result);
+	callback.invoke(handler);
 }
 
 void ImageIO_Reader_PNG::_s_onRead( png_structp png, png_bytep dest, png_size_t len ) noexcept {
