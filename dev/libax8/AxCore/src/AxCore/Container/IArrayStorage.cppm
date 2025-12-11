@@ -29,8 +29,7 @@ protected:
 
 	constexpr void _storageCopy(Span<T> rhs);
 	constexpr void _storageMove(IArrayStorage<T>&& rhs);
-	constexpr bool _storageReserve(Int newCapacity);
-	constexpr void _storageRreserveImpl(Int reqCapacity);
+	constexpr bool _storageEnsureCapacity(Int newCapacity);
 	
 	template<class... Args>
 	constexpr void _storageResize(Int newSize, Args&&... args);
@@ -96,6 +95,9 @@ protected:
 	};
 
 	Storage _storage;
+
+private:
+	constexpr void _storageEnsureCapacity_Impl(Int reqCapacity);
 };
 
 template <class T>
@@ -104,7 +106,7 @@ constexpr void IArrayStorage<T>::_storageCopy(Span<T> rhs) {
 	auto  srcSize = rhs.size();
 
 	_storageClear();
-	_storageReserve(srcSize);
+	_storageEnsureCapacity(srcSize);
 
 	auto* dstData = _storage.data();
 	MemUtil::copyConstructor(dstData, srcData, srcSize);
@@ -125,7 +127,7 @@ constexpr void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 		rhs._storageResetToLocalBuf();
 	} else {
 		_storageClear();
-		_storageReserve(srcSize);
+		_storageEnsureCapacity(srcSize);
 
 		auto* dstData = _storage.data();
 		MemUtil::moveConstructorAndDestructor(dstData, srcData, srcSize);
@@ -136,15 +138,15 @@ constexpr void IArrayStorage<T>::_storageMove(IArrayStorage<T> && rhs) {
 
 
 template <class T> AX_INLINE
-constexpr bool IArrayStorage<T>::_storageReserve(Int newCapacity) {
+constexpr bool IArrayStorage<T>::_storageEnsureCapacity(Int newCapacity) {
 	auto oldCap = _storage.capacity();
 	if (newCapacity <= oldCap) return false;
-	_storageRreserveImpl(newCapacity);
+	_storageEnsureCapacity_Impl(newCapacity);
 	return true;
 }
 
 template <class T> inline
-constexpr void IArrayStorage<T>::_storageRreserveImpl(Int reqCapacity) {
+constexpr void IArrayStorage<T>::_storageEnsureCapacity_Impl(Int reqCapacity) {
 	auto  memoryBlock  = onStorageMalloc(reqCapacity);
 	auto  newCapacity  = memoryBlock.size();
 	if (newCapacity < reqCapacity) throw Error_Allocator();
@@ -177,7 +179,7 @@ constexpr void IArrayStorage<T>::_storageResize(Int newSize, Args&&... args) {
 		auto n   = oldSize  - newSize;
 		MemUtil::destructor(dst, n);
 	}else{
-		_storageReserve(newSize);
+		_storageEnsureCapacity(newSize);
 		auto* newData = _storage.data();
 		MemUtil::constructor(newData + oldSize, newSize - oldSize, AX_FORWARD(args)...);
 	}

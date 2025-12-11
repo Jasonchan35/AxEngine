@@ -164,9 +164,9 @@ bool RenderGraph::_rebuild() {
 
 	if (_passes.size() <= 0) return false;
 
-	      pending.reserve(_passes.size());
-	     depended.reserve(_passes.size());
-	_resultPasses.reserve(_passes.size());
+	      pending.ensureCapacity(_passes.size());
+	     depended.ensureCapacity(_passes.size());
+	_resultPasses.ensureCapacity(_passes.size());
 
 // reset
 	for (auto& pass : _passes) {

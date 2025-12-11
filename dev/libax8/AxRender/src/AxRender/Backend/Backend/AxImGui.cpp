@@ -115,8 +115,8 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 	AX_ASSERT(vertexStride == AX_SIZEOF(ImDrawVert));
 	AX_ASSERT( indexStride == sizeof(u16));
 
-	_vertexBuffer.reserveBuffer(data->TotalVtxCount);
-	 _indexBuffer.reserveBuffer(data->TotalIdxCount);
+	_vertexBuffer.ensureBufferCapacity(data->TotalVtxCount);
+	 _indexBuffer.ensureBufferCapacity(data->TotalIdxCount);
 
 	auto scissorRectScope = req->scissorRectScope();
 

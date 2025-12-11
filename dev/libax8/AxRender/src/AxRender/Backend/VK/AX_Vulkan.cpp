@@ -1177,7 +1177,7 @@ void AX_VkDeviceMemory::_create(AX_VkDevice& dev, Int bufferSize, AX_VkQueueFami
 
 void AX_VkDeviceMemory::_fillVkMappedMemoryRange(IArray<VkMappedMemoryRange>& outArray, Span<IntRange> ranges) {
 	outArray.clear();
-	outArray.reserve(ranges.size());
+	outArray.ensureCapacity(ranges.size());
 
 	if (_bufferSize <= 0) return;
 

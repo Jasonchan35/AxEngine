@@ -189,7 +189,7 @@ void GenReflect_VK_EX::_genVertexInputs(ShaderStageInfo& outInfo, const spv_refl
 	inputVars.resize(count);
 	spirvReflect.EnumerateInputVariables(&count, inputVars.data());
 	
-	outInfo.inputs.reserve(inputVars.size());
+	outInfo.inputs.ensureCapacity(inputVars.size());
 
 	for (auto& v : inputVars) {
 		auto& dst = outInfo.inputs.emplaceBack();

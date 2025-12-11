@@ -22,7 +22,7 @@ public:
 	void addVertices(Span<VERTEX> data) { addVertices(data.toByteSpan(), VERTEX::s_layout()); }
 	void addVertices(ByteSpan   data, VertexLayout vertexLayout);
 
-	void reserveBuffer(Int n) { _buffer.reserveData(n * _vertexLayout->stride); }
+	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * _vertexLayout->stride); }
 
 private:
 	VertexLayout		_vertexLayout;
@@ -46,7 +46,7 @@ public:
 	void addIndices(Span<INDEX> data) { addIndices(data.toByteSpan(), IndexType_get<INDEX>); }
 	void addIndices(ByteSpan data, IndexType indexType);
 
-	void reserveBuffer(Int n) { _buffer.reserveData(n * IndexType_stride(_indexType)); }
+	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * IndexType_stride(_indexType)); }
 
 private:
 	IndexType			_indexType = IndexType::None;

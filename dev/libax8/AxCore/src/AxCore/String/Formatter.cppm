@@ -143,7 +143,7 @@ inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_
 	}
 
 	auto func = [&](const StdFormatArgs_<FMT_CH> & format_args) {
-		output.reserve(output.size() + fmt.size() + format_args._Estimate_required_capacity());
+		output.ensureCapacity(output.size() + fmt.size() + format_args._Estimate_required_capacity());
 		std::vformat_to(IStringBackInserter_<STR_CH>(output), out_fmt.to_string_view(), format_args);
 	};
 	

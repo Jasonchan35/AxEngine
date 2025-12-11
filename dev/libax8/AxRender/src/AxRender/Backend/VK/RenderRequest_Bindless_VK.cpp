@@ -78,7 +78,7 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 			_temp.copySlots.sort([](auto& a, auto& b){ return a < b; });
 
 			u32 lastSlotId = 0;
-			_temp.copySets.reserve(_temp.copySlots.size());
+			_temp.copySets.ensureCapacity(_temp.copySlots.size());
 
 			for (auto& slotId : _temp.copySlots) {
 				if (slotId == lastSlotId) continue; // skip duplicated id
@@ -120,7 +120,7 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 
 	if constexpr (isSampler) {
 		auto& samplersList = srcList.getList<Sampler_Backend>();
-		_temp.imageInfos.reserve(samplersList.size()); // ensure the element pointer not change
+		_temp.imageInfos.ensureCapacity(samplersList.size()); // ensure the element pointer not change
 		for (auto& sampler_ : samplersList) {
 			auto* sampler = rttiCastCheck<Sampler_VK>(sampler_.ptr());
 			if (!sampler) continue;
@@ -134,7 +134,7 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 
 	} else if constexpr (isTexture2D) {
 		auto& tex2dList = srcList.getList<Texture2D_Backend>();
-		_temp.imageInfos.reserve(tex2dList.size()); // ensure the element pointer not change
+		_temp.imageInfos.ensureCapacity(tex2dList.size()); // ensure the element pointer not change
 		for (auto& tex_ : tex2dList) {
 			auto* tex = rttiCastCheck<Texture2D_VK>(tex_.ptr());
 			if (!tex) continue;

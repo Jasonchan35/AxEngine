@@ -26,7 +26,7 @@ int AxFileTool::onRun() {
 
 		if (a == "-platform_os") {
 			i++;
-			auto name = OS::platformName();
+			auto name = System::platformName();
 			StdOutput::write(name);
 			StdOutput::write("\n");
 			continue;

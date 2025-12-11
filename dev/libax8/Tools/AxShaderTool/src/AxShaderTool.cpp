@@ -96,14 +96,25 @@ void AxShaderTool::genNinja_Shader(StrView outdir, StrView filename) {
 
 void AxShaderTool::writeNinja_Header(IString& outStr) {
 	auto writeEnvVar = [&](ZStrView name) {
-		auto v = FilePath::absPath(OS::getenv(name));
+		auto env = System::envVariable(name);
+		if (!env) {
+			AX_LOG("Env Var \"{}\" not found", name);
+			return;
+		}
+
+		if (!env.value()) {
+			AX_LOG("Env Var \"{}\" is empty", name);
+			return;
+		}
+
+		auto v = FilePath::absPath(env.value());
 		outStr.append(Fmt("{}={}\n", name, v));
 	};
 
 	writeEnvVar("ninja");
 	writeEnvVar("vulkan_sdk");
 	writeEnvVar("windows_sdk_bin");
-	writeEnvVar("anon_bin");
+	writeEnvVar("AxEngine_bin");
 	writeEnvVar("AxIncludeDir");
 	writeEnvVar("AxShaderTool");
 	outStr.append("\n\n");

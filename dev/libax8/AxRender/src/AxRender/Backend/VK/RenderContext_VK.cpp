@@ -69,7 +69,7 @@ void RenderContext_VK_Base::_createSwapChain() {
 		_swapChain.getImages(_backBufImages);
 
 		_backBuffers.clear();
-		_backBuffers.reserve(_backBufImages.size());
+		_backBuffers.ensureCapacity(_backBufImages.size());
 
 		for (Int i = 0; i < _backBufImages.size(); i++) {
 			auto& backBuf = _backBuffers.emplaceNew(AX_ALLOC_REQ);

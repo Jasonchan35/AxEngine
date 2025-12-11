@@ -338,7 +338,7 @@ public:
 template <class T, VecSIMD SIMD> inline
 void Color_<ColorModel::RGB, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
-	s.reserve(10);
+	s.ensureCapacity(10);
 	auto tmp = ColorRGBb::s_cast(*this);
 	s.append("#");
 	s.append(CharUtil::byteToHex<Char>(tmp.r.v_int));
@@ -349,7 +349,7 @@ void Color_<ColorModel::RGB, T, SIMD>::toHexString(IString& s) const {
 template<class T, VecSIMD SIMD> inline
 void Color_<ColorModel::RGBA, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
-	s.reserve(10);
+	s.ensureCapacity(10);
 	auto tmp = ColorRGBAb::s_cast(*this);
 	s.append("#");
 	s.append(CharUtil::byteToHex<Char>(tmp.r.v_int));

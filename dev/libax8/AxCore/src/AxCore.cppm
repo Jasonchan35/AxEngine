@@ -23,7 +23,7 @@ export import AxCore.Mat;
 export import AxCore.Mutex;
 export import AxCore.NormInt;
 export import AxCore.Uuid;
-export import AxCore.OS;
+export import AxCore.System;
 export import AxCore.Rtti;
 export import AxCore.WPtr;
 

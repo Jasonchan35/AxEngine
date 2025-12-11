@@ -101,7 +101,7 @@ public:
 		String str;
 		Int oldCapacity = str.capacity();
 
-		str.reserve(100);
+		str.ensureCapacity(100);
 		Int newCapacity = str.capacity();
 		AX_TEST_GTEQ(newCapacity, 100);
 		AX_TEST_GTEQ(newCapacity, oldCapacity);
@@ -185,6 +185,24 @@ public:
 		AX_TEST_EQ(a.name(), "Test");
 		AX_TEST_EQ(a.id(),   123);
 	}
+
+	void test_utf() {
+		StringA strA = "1234567890123456789012345678901234567890";
+		auto strW  = StringW::s_utf(strA);
+		auto str8  = String8::s_utf(strA);
+		auto str16 = String16::s_utf(strA);
+		auto str32 = String32::s_utf(strA);
+
+		AX_TEST_EQ(strW , AX_STR_W( "1234567890123456789012345678901234567890"));
+		AX_TEST_EQ(str8 , AX_STR_8( "1234567890123456789012345678901234567890"));
+		AX_TEST_EQ(str16, AX_STR_16("1234567890123456789012345678901234567890"));
+		AX_TEST_EQ(str32, AX_STR_32("1234567890123456789012345678901234567890"));
+
+		AX_TEST_EQ(StringA::s_utf(strW ), strA);
+		AX_TEST_EQ(StringA::s_utf(str8 ), strA);
+		AX_TEST_EQ(StringA::s_utf(str16), strA);
+		AX_TEST_EQ(StringA::s_utf(str32), strA);
+	}
 };
 
 } // namespace
@@ -207,5 +225,6 @@ void Test_String() {
 	AX_TEST_RUN_CASE(Test_String::test_case12_string_comparison_operators)
 	AX_TEST_RUN_CASE(Test_String::test_split)
 	AX_TEST_RUN_CASE(Test_String::test_NameId)
+	AX_TEST_RUN_CASE(Test_String::test_utf)
 }
 

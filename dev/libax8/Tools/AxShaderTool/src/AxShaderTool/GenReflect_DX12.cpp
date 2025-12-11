@@ -339,7 +339,7 @@ AX_GCC_WARNING_POP()
 void GenReflect_DX12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 
-	outInfo.inputs.reserve(desc.InputParameters);
+	outInfo.inputs.ensureCapacity(desc.InputParameters);
 
 	for (UINT i=0; i<desc.InputParameters; i++) {
 		auto& dst = outInfo.inputs.emplaceBack();
@@ -393,7 +393,7 @@ void GenReflect_DX12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 
-	outInfo.constBuffers.reserve(desc.BoundResources);
+	outInfo.constBuffers.ensureCapacity(desc.BoundResources);
 
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
@@ -418,7 +418,7 @@ void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 
 		ax_safe_assign(outCB.dataSize , bufDesc.Size);
 
-		outCB.variables.reserve(bufDesc.Variables);
+		outCB.variables.ensureCapacity(bufDesc.Variables);
 		for (UINT j=0; j<bufDesc.Variables; j++) {
 			auto cbv = cb->GetVariableByIndex(j);
 			D3D12_SHADER_VARIABLE_DESC varDesc;
@@ -489,7 +489,7 @@ void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 void GenReflect_DX12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 
-	outInfo.textures.reserve(desc.BoundResources);
+	outInfo.textures.ensureCapacity(desc.BoundResources);
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);
@@ -531,7 +531,7 @@ void GenReflect_DX12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 
 void GenReflect_DX12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
-	outInfo.samplers.reserve(desc.BoundResources);
+	outInfo.samplers.ensureCapacity(desc.BoundResources);
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);
@@ -551,7 +551,7 @@ void GenReflect_DX12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 
 void GenReflect_DX12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
-	outInfo.storageBuffers.reserve(desc.BoundResources);
+	outInfo.storageBuffers.ensureCapacity(desc.BoundResources);
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);

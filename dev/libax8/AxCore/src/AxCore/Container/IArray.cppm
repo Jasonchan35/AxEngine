@@ -28,8 +28,8 @@ public:
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 	
-	constexpr void reserve(Int newCapacity) { Base::_storageReserve(newCapacity); }
-	constexpr void reserveMore(Int n)		{ reserve(size() + n); }
+//	constexpr void reserve(Int newCapacity) { ensureCapacity(newCapacity); }
+	constexpr void ensureCapacity(Int newCapacity) { Base::_storageEnsureCapacity(newCapacity); }
 	
 	template<class... Args> constexpr void resize(Int newSize, Args&&... args) { Base::_storageResize(newSize, AX_FORWARD(args)...); }
 	template<class... Args> constexpr void incSize(Int n,   Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
@@ -203,7 +203,7 @@ template <class T>
 constexpr void IArray<T>::append(const T& item) {
 	auto oldSize = size();
 	auto newSize = oldSize + 1;
-	reserve(newSize);
+	ensureCapacity(newSize);
 	ax_call_constructor<T>(data() + oldSize, item);
 	_storage.setSize(newSize);
 }
@@ -212,7 +212,7 @@ template <class T>
 constexpr void IArray<T>::append(T && item) {
 	auto oldSize = size();
 	auto newSize = oldSize + 1;
-	reserve(newSize);
+	ensureCapacity(newSize);
 	ax_call_constructor<T>(data() + oldSize, AX_FORWARD(item));
 	_storage.setSize(newSize);
 }
@@ -221,7 +221,7 @@ template <class T>
 constexpr void IArray<T>::appendRange(Span<T> src) {
 	auto oldSize = size();
 	auto newSize = oldSize + src.size();
-	reserve(newSize);
+	ensureCapacity(newSize);
 	MemUtil::copyConstructor(data() + oldSize, src.data(), src.size());
 	_storage.setSize(newSize);
 }
@@ -232,7 +232,7 @@ constexpr void IArray<T>::appendRange(Span<R> src, FUNC func) {
 //	static_assert(std::is_convertible_v<FUNC, const R&>);
 	auto oldSize = size();
 	auto newSize = oldSize + src.size();
-	reserve(newSize);
+	ensureCapacity(newSize);
 	MemUtil::copyConstructorFunc(data() + oldSize, src.data(), src.size(), func);
 	_storage.setSize(newSize);
 }

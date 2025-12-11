@@ -93,7 +93,7 @@ public:
 
 	Int dataSize() const { return _data.size(); }
 
-	void reserveData(Int s) { _data.reserve(s); }
+	void ensureDataCapacity(Int s) { _data.ensureCapacity(s); }
 
 	void setData(ByteSpan src, Int offset = 0);
 	void appendData(ByteSpan src);

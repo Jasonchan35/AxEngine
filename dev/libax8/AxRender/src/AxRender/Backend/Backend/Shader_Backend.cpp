@@ -75,7 +75,7 @@ inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
 	_defaultValues.resize(info.dataSize);
 	_defaultValues.fillValues(0);
 
-	_varInfos.reserve(info.variables.size());
+	_varInfos.ensureCapacity(info.variables.size());
 	for (auto& src : info.variables) {
 		_varInfos.emplaceBack(src);
 	}
@@ -239,7 +239,7 @@ void Shader_Backend::onLoadFile() {
 	_isGlobalCommonShader = _info.declare.isGlobalCommonShader;
 
 	_propNameIds.clear();
-	_propNameIds.reserve(_info.declare.props.size());
+	_propNameIds.ensureCapacity(_info.declare.props.size());
 
 	TempString samplerName;
 
@@ -261,7 +261,7 @@ void Shader_Backend::onLoadFile() {
 		throw Error_Undefined("Shader PassStages[] size mismatch");
 
 	_passes.clear();
-	_passes.reserve(n);
+	_passes.ensureCapacity(n);
 
 	for (Int i = 0; i < n; i++) {
 		ShaderPass_Backend::CreateDesc passDesc;

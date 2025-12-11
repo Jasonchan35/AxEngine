@@ -44,17 +44,18 @@ void FileStream::appendReadAllUtf8 ( IStringA& buf ) {
 	_check_fd();
 
 	FileSize cur = getPos();
-	FileSize file_size = getFileSize();
+	FileSize fileSize = getFileSize();
 
-	if( cur > file_size ) throw Error_File();
+	if( cur > fileSize ) throw Error_File();
 
-	auto old_size = buf.size();
-	Int data_size = SafeCast(file_size - cur);
+	Int oldSize = buf.size();
+	Int dataSize = SafeCast(fileSize - cur);
+	Int newSize = oldSize + dataSize; 
 
 	try{
-		buf.resizeMore(data_size);
+		buf.ensureCapacity(newSize);
 		auto mutByteSpan = buf.toMutByteSpan();
-		readBytes(mutByteSpan.slice(old_size, data_size));
+		readBytes(mutByteSpan.slice(oldSize, dataSize));
 
 	}catch(...) {
 		buf.clear();

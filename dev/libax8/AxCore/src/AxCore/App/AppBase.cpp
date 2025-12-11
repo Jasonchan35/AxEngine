@@ -124,7 +124,7 @@ AppArgments::AppArgments(int argc, const char* argv[]) {
 		}
 	#endif
 
-	_argsView.reserve(_argsStr.size());
+	_argsView.ensureCapacity(_argsStr.size());
 	for (auto& e : _argsStr) {
 		_argsView.append(e.view());
 	}

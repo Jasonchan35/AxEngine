@@ -47,13 +47,14 @@ public:
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
 
-	constexpr void reserve(Int newCapacity);
-	constexpr void reserveMore(Int n) { reserve(size() + n); }
+//	constexpr void reserve(Int newCapacity) { ensureCapacity(newCapacity); }
+	constexpr void ensureCapacity(Int newCapacity) { Base::_storageEnsureCapacity(newCapacity); }
 
 	template<class... Args> constexpr void resize(Int newSize, Args&&... args);
-	template<class... Args> constexpr void resizeMore(Int n, Args&&... args) { resize(size() + n, AX_FORWARD(args)...); }
-							constexpr void resizeLess(Int n)				 { resize(size() - n); }
+	template<class... Args> constexpr void incSize(Int n, Args&&... args)	{ resize(size() + n, AX_FORWARD(args)...); }
+							constexpr void decSize(Int n)					{ resize(size() - n); }
 							constexpr void resizeToCapacity() { resize(capacity()); }
+							constexpr void ensureSize(Int n) { if (size() < n) resize(n); }
 
 	constexpr explicit operator bool() const { return size() != 0; }
 	constexpr       T* data()			{ return _storage.data(); }
@@ -61,6 +62,8 @@ public:
 	constexpr Int capacity() const		{ return _storage.capacity(); }
 	constexpr Int size() const			{ return _storage.size(); }
 	constexpr Int sizeInBytes() const	{ return size() * AX_SIZEOF(T); }
+
+	AX_INLINE constexpr		T	popBack()	{ T tmp = back(); decSize(1); return tmp; }
 	
 	template<class R>
 	AX_INLINE constexpr bool	isOverlapped(StrView_<R> r) const	{ return toByteSpan().isOverlapped(r.toByteSpan()); }
@@ -270,12 +273,6 @@ protected:
 	OutIString* _s = nullptr;
 };
 
-
-template <class T> AX_INLINE
-constexpr void IString_<T>::reserve(Int newCapacity) {
-	Base::_storageReserve(newCapacity);
-}
-
 template <class T>
 template <class ... Args> AX_INLINE
 constexpr void IString_<T>::resize(Int newSize, Args&&... args) {
@@ -296,7 +293,7 @@ constexpr void IString_<T>::_append(CView view) {
 	
 	auto oldSize = size();
 	auto newSize = oldSize + view.size();
-	reserve(newSize);
+	ensureCapacity(newSize);
 	MemUtil::copyConstructor(data() + oldSize, view.data(), view.size());
 	_storage.setSize(newSize);
 	_setNullTerminator();
@@ -306,7 +303,7 @@ template <class T> AX_INLINE
 constexpr void IString_<T>::append(const T& ch) {
 	auto oldSize = size();
 	auto newSize = oldSize + 1;
-	reserve(newSize);
+	ensureCapacity(newSize);
 	_storage.setSize(newSize);
 	auto* newData = data();
 	newData[oldSize] = ch;
@@ -318,7 +315,7 @@ template<CON_StrView_<T>... ARGS>
 constexpr void IString_<T>::append(const ARGS&... args) {
 	auto newSize = size();
 	newSize = (newSize + ... +  CView(args).size());
-	reserve(newSize);
+	ensureCapacity(newSize);
 	(_append(args), ...);
 }
 

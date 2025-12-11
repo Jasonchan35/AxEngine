@@ -154,7 +154,7 @@ axStatus axExecute::exec( const char* cmd, int& cmd_ret ) {
 		
 		const size_t buf_increment = 16*1024;
 		
-		st = in_buf.reserve( buf_increment );		if( !st ) return st;
+		st = in_buf.ensureCapacity( buf_increment );		if( !st ) return st;
 		in_buf.setCapacityIncrement( buf_increment );
 
 		int c;
@@ -449,11 +449,11 @@ axStatus axExecute::exec( const char* cmd, int& cmd_ret ) {
 	Node	stderr_node;
 
 	const size_t buf_increment = 16*1024;
-	st = stdin_node.buf.reserve ( buf_increment );				if( !st ) return st;
+	st = stdin_node.buf.ensureCapacity ( buf_increment );		if( !st ) return st;
 	stdin_node.buf.setCapacityIncrement ( buf_increment );		if( !st ) return st;
 	
-	st = stdout_node.buf.reserve( buf_increment );				if( !st ) return st;
-	st = stderr_node.buf.reserve( buf_increment );				if( !st ) return st;
+	st = stdout_node.buf.ensureCapacity( buf_increment );		if( !st ) return st;
+	st = stderr_node.buf.ensureCapacity( buf_increment );		if( !st ) return st;
 
 	stdin_node.type  = Node::t_stdin;
 	stdout_node.type = Node::t_stdout;

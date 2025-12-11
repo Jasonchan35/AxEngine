@@ -7,7 +7,7 @@ export namespace ax::AxHeaderTool {
 inline
 void convertToDisplayName(IString& outStr, StrView s) {
 	outStr.clear();
-	outStr.reserve(s.size());
+	outStr.ensureCapacity(s.size());
 
 	Char last = 0;
 	for (auto ch : s) {

@@ -136,7 +136,7 @@ void Material_Backend::setShader(Shader* shader_) {
 	_passes.clear();
 	Int passCount = shader->passes().size();
 
-	_passes.reserve(passCount);
+	_passes.ensureCapacity(passCount);
 
 	for (Int i = 0; i < passCount; i++) {
 		MaterialPass_Backend_CreateDesc passDesc;

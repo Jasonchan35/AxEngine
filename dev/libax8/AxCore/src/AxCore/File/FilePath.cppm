@@ -28,10 +28,12 @@ enum class FileShareMode {
 	ReadWrite,
 };
 
+constexpr Int FilePath_kMaxLangth = 512;
+using FilePathString = String_N<FilePath_kMaxLangth>;
+
 struct FilePath {
 	FilePath() = delete;
 
-	static constexpr Int  kMaxChar = 512;
 	static constexpr Char kUnixPathSeperator	= '/';
 	static constexpr Char kWindowsPathSeperator	= '\\';
 
@@ -53,11 +55,15 @@ struct FilePath {
 	AX_NODISCARD	static	SplitResult	split			(StrView path);
 
 	// e.g. changeExtension( "a.txt", ".doc" );
-	AX_NODISCARD	static	TempString	changeExtension	(StrView path, StrView ext);
+	AX_NODISCARD	static	FilePathString	changeExtension	(StrView path, StrView ext);
 
-	AX_NODISCARD	static	StrView		dirname			(StrView path);
-	AX_NODISCARD	static	StrView		basename		(StrView path, bool withExtension);
-	AX_NODISCARD	static	StrView		extension		(StrView path);
+					static	void	getDirname		(IString& outStr, StrView path);
+					static	void	getBasename		(IString& outStr, StrView path, bool withExtension);
+					static	void	getExtension	(IString& outStr, StrView path);
+	
+	AX_NODISCARD	static	FilePathString	dirname			(StrView path)						{ FilePathString tmp; getDirname(tmp, path); return tmp; }
+	AX_NODISCARD	static	FilePathString	basename		(StrView path, bool withExtension)	{ FilePathString tmp; getBasename(tmp, path, withExtension); return tmp; }
+	AX_NODISCARD	static	FilePathString	extension		(StrView path)						{ FilePathString tmp; getExtension(tmp, path); return tmp; }
 
 	static void getUnixPath(IString& outPath, StrView inPath);
 	static void getWinPath(IString& outPath, StrView inPath);
@@ -69,9 +75,9 @@ struct FilePath {
 	#endif
 	}
 
-	AX_NODISCARD	static	TempString	unixPath		(StrView inPath) { TempString tmp; getUnixPath(tmp, inPath); return tmp; }
-	AX_NODISCARD	static	TempString	winPath			(StrView inPath) { TempString tmp; getWinPath( tmp, inPath); return tmp; }
-	AX_NODISCARD	static	TempString	nativePath		(StrView inPath) { TempString tmp; getNativePath( tmp, inPath); return tmp; }
+	AX_NODISCARD	static	FilePathString	unixPath		(StrView inPath) { FilePathString tmp; getUnixPath(tmp, inPath); return tmp; }
+	AX_NODISCARD	static	FilePathString	winPath			(StrView inPath) { FilePathString tmp; getWinPath( tmp, inPath); return tmp; }
+	AX_NODISCARD	static	FilePathString	nativePath		(StrView inPath) { FilePathString tmp; getNativePath( tmp, inPath); return tmp; }
 
 	AX_NODISCARD	static	bool		isAbsPath		(const StrView& path);
 
@@ -79,9 +85,9 @@ struct FilePath {
 	static	void		getAbsPath		(IString& out_str, StrView path);
 	static	void		getRelPath		(IString& out_str, StrView path, StrView relativeTo);
 
-	AX_NODISCARD	static	TempString	fullPath		(StrView dir, StrView path)				{ TempString tmp; getFullPath(tmp, dir, path);			return tmp; }
-	AX_NODISCARD	static	TempString	absPath			(StrView path)							{ TempString tmp; getAbsPath(tmp, path);				return tmp; }
-	AX_NODISCARD	static	TempString	relPath			(StrView path, StrView relativeTo)		{ TempString tmp; getRelPath(tmp, path, relativeTo);	return tmp; }
+	AX_NODISCARD	static	FilePathString	fullPath		(StrView dir, StrView path)				{ FilePathString tmp; getFullPath(tmp, dir, path);			return tmp; }
+	AX_NODISCARD	static	FilePathString	absPath			(StrView path)							{ FilePathString tmp; getAbsPath(tmp, path);				return tmp; }
+	AX_NODISCARD	static	FilePathString	relPath			(StrView path, StrView relativeTo)		{ FilePathString tmp; getRelPath(tmp, path, relativeTo);	return tmp; }
 
 	AX_NODISCARD 	static	bool		hasPrefix		(StrView path, StrView prefix, StrCase sc = StrCase::Sensitive);
 
@@ -93,7 +99,7 @@ struct FilePath {
 	
 	static	bool		setCurrentDir	(StrView path);
 	static	void		getCurrentDir	(IString & path);
-	static  TempString	currentDir		()		{ TempString tmp; getCurrentDir(tmp); return tmp; }
+	static  FilePathString	currentDir		()		{ FilePathString tmp; getCurrentDir(tmp); return tmp; }
 
 	AX_NODISCARD	static	StrView		userAppDataDir		();
 	AX_NODISCARD	static	StrView		userLocalAppDataDir	();

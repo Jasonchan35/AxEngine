@@ -1,7 +1,5 @@
 ﻿module;
 
-
-
 module AxCore.FilePath;
 import AxCore.File;
 import AxCore.Array;
@@ -31,27 +29,30 @@ FilePath::SplitResult FilePath::split(StrView path) {
 	return o;
 }
 
-StrView FilePath::dirname ( StrView path ) {
+void FilePath::getDirname (IString& outStr, StrView path ) {
 	auto s = path.splitByCharBack_(isPathSeperator);
-	return s.second ? s.first : StrView();
+	outStr = s.second ? s.first : StrView();
 }
 
-StrView FilePath::basename ( StrView path, bool withExtension ) {
+void FilePath::getBasename(IString& outStr, StrView path, bool withExtension ) {
 	auto s = path.splitByCharBack_(isPathSeperator);
 	auto f = s.second ? s.second : s.first;
-	if (withExtension) return f;
-	s = f.splitByCharBack('.');
-	return s.first;
+	if (withExtension) {
+		outStr = f;
+	} else {
+		s = f.splitByCharBack('.');
+		outStr = s.first;
+	}
 }
 
-StrView	FilePath::extension ( StrView path ) {
+void FilePath::getExtension(IString& outStr, StrView path ) {
 	//	remove dir first to avoid corner case like: "/aaa/bbb/ccc.here/eee"
 	//	while should return "" instead or "here/eee"
 	auto s = path.splitByCharBack_(isPathSeperator);
 	auto f = s.second ? s.second : s.first;
 
 	s = f.splitByCharBack('.');
-	return s.second;
+	outStr = s.second;
 }
 
 void FilePath::getUnixPath(IString& outPath, StrView inPath) {
@@ -64,8 +65,8 @@ void FilePath::getWinPath(IString& outPath, StrView inPath) {
 	outPath.replaceChars(kUnixPathSeperator, kWindowsPathSeperator);
 }
 
-TempString FilePath::changeExtension(StrView path, StrView new_extension ) {
-	TempString tmp;
+FilePathString FilePath::changeExtension(StrView path, StrView new_extension ) {
+	FilePathString tmp;
 
 	tmp = dirname(path);
 
@@ -93,7 +94,7 @@ void FilePath::getFullPath(IString& out_str, StrView dir, StrView path) {
 	if (isAbsPath(path)) {
 		getAbsPath(out_str, path); // normalize '.' or '..'
 	}else{
-		TempString tmp;
+		FilePathString tmp;
 		tmp << dir << '/' << path;
 		getAbsPath(out_str, tmp);
 	}
@@ -197,13 +198,13 @@ void FilePath::_appendTo(IString& folder, StrView file) {
 StrView FilePath::appResourcesDir() {
 	struct Obj {
 		Obj() {
-			TempString tmp(currentProcessDir());
+			FilePathString tmp(currentProcessDir());
 		#if AX_OS_MACOSX
 			tmp.append("/../Resources");
 		#endif
 			FilePath::getAbsPath(path, tmp);
 		}
-		TempString path;
+		FilePathString path;
 	};
 
 	static Obj obj;
@@ -220,7 +221,7 @@ StrView FilePath::currentProcessDir() {
 #if AX_OS_WINDOWS
 
 void FilePath::getCurrentDir(IString & path) {
-	StringW_N<FilePath::kMaxChar> w;
+	StringW_N<FilePath_kMaxLangth> w;
 	w.resizeToCapacity();
 	auto n = GetCurrentDirectory(static_cast<DWORD>(w.size()), w.data());
 	w.resize(n);
@@ -240,9 +241,9 @@ struct FilePath_SHGetFolderPath {
 		wchar_t	p[MAX_PATH + 1];
 		HRESULT ret = SHGetFolderPath(nullptr, CSIDL | CSIDL_FLAG_DONT_VERIFY, nullptr, SHGFP_TYPE_CURRENT, p);
 		if( ret != S_OK ) throw Error_Undefined();
-		path = FilePath::absPath(TempString::s_utf(StrView_c_str(p)));
+		path = FilePath::absPath(FilePathString::s_utf(StrView_c_str(p)));
 	}
-	TempString	path;
+	FilePathString	path;
 };
 } // namespace
 
@@ -261,7 +262,7 @@ StrView FilePath::currentProcessFile() {
 			tmp[n] = 0;
 			path.setUtf(StrView_ref(tmp.slice(0, n)));
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -277,7 +278,7 @@ StrView FilePath::tempDir() {
 			tmp[n] = 0;
 			path.setUtf(StrView_ref(tmp.slice(0, n)));
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -304,7 +305,7 @@ public:
 		path.set(StrView_ref(docu));
 	}
 
-	TempString path;
+	FilePathString path;
 };
 
 StrView FilePath::userAppDataDir	() { static axPath_NSSearchPath s(NSApplicationSupportDirectory);	return s.path; }
@@ -316,7 +317,7 @@ StrView FilePath::userHomeDir		() {
 		Obj() {
 			path.set(StrView_make(NSHomeDirectory()));
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -332,7 +333,7 @@ StrView FilePath::currentProcessFile() {
 			auto s = (NSString*)[args objectAtIndex:0];
 			path.set(StrView_make(s));
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -352,7 +353,7 @@ StrView FilePath::userAppDataDir() {
 		Obj() {
 			FmtTo(path, "{}/{}", userHomeDir(), basename(currentProcessFile(), false));
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static const Obj obj;
 	return obj.path;
@@ -364,7 +365,7 @@ StrView FilePath::userDocumentDir() {
 			path = userHomeDir();
 			path.append("/Documents");
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -376,7 +377,7 @@ StrView FilePath::userDesktopDir() {
 			path = userHomeDir();
 			path.append("/Desktop");
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -389,7 +390,7 @@ StrView FilePath::userHomeDir() {
 			if (!p) throw Error_Undefined();
 			path.setUtf(StrView_c_str(p->pw_dir));
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -412,7 +413,7 @@ StrView FilePath::currentProcessFile() {
 			buf[ret] = 0;
 			path.setUtf(StrView_c_str(buf));
 		}
-		TempString path;
+		FilePathString path;
 	};
 	static Obj obj;
 	return obj.path;
@@ -427,11 +428,11 @@ StrView FilePath::currentProcessFile() {
 
 void FilePath::getCurrentDir(IString& path) {
 	path.clear();
-	char  tmp[ FilePath::kMaxChar + 1 ];
-	if( ! ::getcwd( tmp, FilePath::kMaxChar ) ) {
+	char  tmp[ FilePath_kMaxLangth + 1 ];
+	if( ! ::getcwd( tmp, FilePath_kMaxLangth ) ) {
 		throw Error_Undefined();
 	}
-	tmp[ FilePath::kMaxChar ] = 0;
+	tmp[ FilePath_kMaxLangth ] = 0;
 	path.setUtf(StrView_c_str(tmp));
 }
 

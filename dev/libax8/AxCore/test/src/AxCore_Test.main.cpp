@@ -14,7 +14,7 @@ public:
 			// AX_TEST_GROUP(Test_String);
 			// AX_TEST_GROUP(Test_LinkedList);
 			// AX_TEST_GROUP(Test_Array);
-			AX_TEST_GROUP(Test_Enum);
+			AX_TEST_GROUP(Test_String);
 		}
 	}
 };

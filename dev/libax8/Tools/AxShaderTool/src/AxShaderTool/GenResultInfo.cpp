@@ -7,7 +7,7 @@ namespace ax::AxRender {
 void GenResultInfo::run(StrView outFilename, StrView filename, RenderApi api) {
 	JsonIO::readFile(filename, _resultInfo.declare);
 
-	_resultInfo.passStages.reserve(_resultInfo.declare.passes.size());
+	_resultInfo.passStages.ensureCapacity(_resultInfo.declare.passes.size());
 
 	auto apiPath = Fmt("{}/{}", filename, api);
 
