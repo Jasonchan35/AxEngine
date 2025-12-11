@@ -51,7 +51,7 @@ GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 	if (!req) { AX_ASSERT(false); return nullptr; }
 
 	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataSize) {
-		uploadRange = IntRange(0, dataSize); // upload all for new buffer
+		uploadRange = IntRange(dataSize); // upload all for new buffer
 		_gpuBuffer = GpuBuffer::s_new(AX_ALLOC_REQ, _name, _bufferType, dataSize);
 	}
 
@@ -88,7 +88,7 @@ GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 	auto& uploadBuf = slot.uploadBuffer;
 
 	if (!uploadBuf || uploadBuf->bufferSize() < dataSize) {
-		uploadRange = IntRange(0, dataSize); // upload all for new buffer
+		uploadRange = IntRange(dataSize); // upload all for new buffer
 		uploadBuf = GpuBuffer::s_new(AX_ALLOC_REQ, Fmt("{}-upload", _name), GpuBufferType::StagingToGpu, dataSize);
 	}
 

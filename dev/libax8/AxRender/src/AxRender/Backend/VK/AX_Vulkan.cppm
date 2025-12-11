@@ -592,7 +592,7 @@ public:
 
 	void copyData(ByteSpan data, Int offset = 0, VkMemoryMapFlags flags = 0);
 
-	MutByteSpan mapMemory(VkMemoryMapFlags flags = 0) { return mapMemory(IntRange(0, _bufferSize), flags); }
+	MutByteSpan mapMemory(VkMemoryMapFlags flags = 0) { return mapMemory(IntRange(_bufferSize), flags); }
 	MutByteSpan mapMemory(IntRange range, VkMemoryMapFlags flags = 0);
 	void  unmapMemory();
 

@@ -1124,7 +1124,7 @@ void AX_VkDeviceMemory::copyData(
 	VkMemoryMapFlags flags
 ) {
 	if (data.size() <= 0) return;
-	auto span = mapMemory(IntRange(offset, data.size()), flags);
+	auto span = mapMemory(IntRange::s_beginSize(offset, data.size()), flags);
 	try {
 		span.copyValues(data);
 	} catch (...) {
@@ -1187,7 +1187,7 @@ void AX_VkDeviceMemory::_fillVkMappedMemoryRange(IArray<VkMappedMemoryRange>& ou
 	for (auto& src : ranges) {
 		if (src.size() <= 0) continue;
 
-		if (!IntRange(0, _bufferSize).contains(src))
+		if (!IntRange(_bufferSize).contains(src))
 			throw Error_Undefined();
 
 		auto& dst  = outArray.emplaceBack();

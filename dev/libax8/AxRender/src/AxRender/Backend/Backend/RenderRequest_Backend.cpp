@@ -142,7 +142,7 @@ bool RenderRequest_Backend::InlineUpload::copyDataToGpuBuffer(GpuBuffer_Backend*
 	if (dataSize > _limitPerEach) return false;
 	if (dataSize > remainSize()) return false;
 
-	IntRange uploadRange(_used, dataSize);
+	IntRange uploadRange = IntRange::s_beginSize(_used, dataSize);
 
 	{
 		auto map = _gpuBuffer->mapMemory(uploadRange);

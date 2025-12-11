@@ -10,7 +10,7 @@ SPtr<GpuBuffer_Backend> GpuBuffer_Backend::s_new(const MemAllocRequest& req, con
 }
 
 void GpuBuffer_Backend::copyData(ByteSpan data, Int offset) {
-	auto map = mapMemory(IntRange(offset, data.size()));
+	auto map = mapMemory(IntRange::s_beginSize(offset, data.size()));
 	map->copyValues(data);
 }
 

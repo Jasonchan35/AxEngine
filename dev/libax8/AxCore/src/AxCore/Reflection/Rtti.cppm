@@ -73,6 +73,9 @@ using RttiField = const MutRttiField;
 
 template<class T> struct Rtti_Handler_ {
 	static Rtti* s_rtti() {
+		static_assert(!std::is_const_v<T>);
+		static_assert(!std::is_reference_v<T>);
+		static_assert(!std::is_pointer_v<T>);
 		static Rtti_<T> s;
 		return &s;
 	}
@@ -82,7 +85,7 @@ template<> struct Rtti_Handler_<NoBaseClass> {
 	static Rtti* s_rtti() { return nullptr; }
 };
 
-template<class T> Rtti* rttiOf() { return Rtti_Handler_<T>::s_rtti(); }
+template<class T> Rtti* rttiOf() { return Rtti_Handler_<std::remove_cv_t<T>>::s_rtti(); }
 
 struct Rtti : public NonCopyable {
 	template<class R>
@@ -233,7 +236,10 @@ DST* _rttiCastCheck(SRC* src) {
 		return src;
 	} else {
 #if _DEBUG
-		auto* dst = rttiCast<DST>(src); 
+		auto* dst = rttiCast<DST>(src);
+		if (!dst) {
+			dst = rttiCast<DST>(src);
+		}
 		AX_ASSERT(dst);
 		return dst;
 #else

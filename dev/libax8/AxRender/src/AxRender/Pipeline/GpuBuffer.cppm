@@ -42,7 +42,7 @@ public:
 	
 	GpuBufferType	bufferType() const	{ return _bufferType; }
 	Int				bufferSize() const	{ return _bufferSize; }
-	IntRange		bufferRange() const { return IntRange(0, _bufferSize); }
+	IntRange		bufferRange() const { return IntRange(_bufferSize); }
 
 
 protected:
@@ -142,7 +142,7 @@ void DynamicGpuBuffer::setData(ByteSpan src, Int offset) {
 		throw Error_IndexOutOfRange();
 	}
 
-	auto range = IntRange(offset, src.size());
+	auto range = IntRange::s_beginSize(offset, src.size());
 	_data.copyValues(src, offset);
 	markDirty(range);
 }
@@ -151,7 +151,7 @@ inline
 void DynamicGpuBuffer::appendData(ByteSpan src) {
 	if (src.size() <= 0) return;
 
-	IntRange range(_data.size(), src.size());
+	auto range = IntRange::s_beginSize(_data.size(), src.size());
 	_data.resize(range.end());
 	markDirty(range);
 	setData(src, range.begin());

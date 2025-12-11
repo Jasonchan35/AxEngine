@@ -169,7 +169,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr operator CSpan() const noexcept { return constSpan(); }
 
 	AX_NODISCARD AX_INLINE constexpr bool inBound(Int      i) const noexcept { return i >= 0 && i < _size; }
-	AX_NODISCARD AX_INLINE constexpr bool inBound(IntRange r) const noexcept { return IntRange(0, _size).contains(r); }
+	AX_NODISCARD AX_INLINE constexpr bool inBound(IntRange r) const noexcept { return IntRange(_size).contains(r); }
 
 	AX_NODISCARD AX_INLINE constexpr bool isOverlapped(CSpan rhs) const noexcept { return MemUtil::isOverlapped(_data, _size, rhs.data(), rhs.size()); }
 

@@ -164,7 +164,7 @@ IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf,
 	if (_dataType != srcDataType)
 		throw Error_Undefined(Fmt("Shader: assign variable type mismatch, from '{}' to '{}'", srcDataType, _dataType));
 
-	IntRange range(_offset, AX_SIZEOF(value));
+	IntRange range = IntRange::s_beginSize(_offset, AX_SIZEOF(value));
 
 	if (!buf.inBound(range)) throw Error_Undefined();
 
@@ -172,7 +172,7 @@ IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf,
 	auto* dst = reinterpret_cast<V*>(buf.data() + range.begin());
 	AX_GCC_WARNING_POP()
 
-	if (Math::exactlyEqual(*dst, value)) return IntRange(0, 0);
+	if (Math::exactlyEqual(*dst, value)) return IntRange(0);
 
 	*dst = value;
 	return range;

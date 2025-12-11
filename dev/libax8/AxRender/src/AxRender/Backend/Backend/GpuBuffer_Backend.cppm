@@ -32,7 +32,7 @@ public:
 		MutByteSpan		_data;
 	};
 
-	AX_NODISCARD MapScope mapMemory() { return mapMemory(IntRange(0, bufferSize())); }
+	AX_NODISCARD MapScope mapMemory() { return mapMemory(IntRange(bufferSize())); }
 	AX_NODISCARD MapScope mapMemory(IntRange range);
 
 	void flush(IntRange range);
