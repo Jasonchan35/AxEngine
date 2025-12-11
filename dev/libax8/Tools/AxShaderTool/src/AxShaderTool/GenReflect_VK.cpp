@@ -165,7 +165,7 @@ DataType getDataType(const SpvReflectTypeDescription& src) {
 	return DataType::None;
 }
 
-void GenReflect_VK_EX::generate(StrView outFilename, StrView filename) {
+void GenReflect_VK_EX::generate(StrView outFilename, StrView filename, RenderApi api) {
 	FileMemMap	spv_data(filename);
 
 	spv_reflect::ShaderModule spirvReflect(spv_data.size(), spv_data.data());

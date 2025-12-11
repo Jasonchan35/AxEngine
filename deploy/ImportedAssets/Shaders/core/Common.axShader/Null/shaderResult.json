@@ -1,0 +1,191 @@
+{
+  "declare": {
+    "isGlobalCommonShader": true, 
+    "props": [], 
+    "passes": [{
+        "name": "Pass0", 
+        "vsFunc": "vs_main", 
+        "psFunc": "ps_main", 
+        "gsFunc": "", 
+        "renderState": {
+          "cull": "Back", 
+          "blend": {
+            "rgb": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "alpha": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "constColor": [0, 0, 0, 0]
+          }, 
+          "depthTest": {
+            "op": "LessEqual", 
+            "writeMask": true
+          }, 
+          "antialiasedLine": false, 
+          "wireframe": false
+        }
+      }]
+  }, 
+  "passStages": [{
+      "bindless": true, 
+      "stageFlags": 3, 
+      "inputs": [{
+          "semantic": "POSITION", 
+          "dataType": "f32x4"
+        }], 
+      "constBuffers": [{
+          "name": "$Global", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": 2, 
+          "bindSpace": 0, 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "dataSize": 16, 
+          "variables": [{
+              "name": "foo", 
+              "offset": 0, 
+              "dataType": "f32", 
+              "rowMajor": true
+            }, {
+              "name": "AxSamplerState_foo_tex2d", 
+              "offset": 4, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxTexture2D_foo_tex2d", 
+              "offset": 8, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }]
+        }, {
+          "name": "AX_ConstBuffer_Global", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": 2, 
+          "bindSpace": 1, 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "dataSize": 16, 
+          "variables": [{
+              "name": "ax_g_test", 
+              "offset": 0, 
+              "dataType": "f32", 
+              "rowMajor": true
+            }]
+        }, {
+          "name": "AX_ConstBuffer_PerFrame", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": 2, 
+          "bindSpace": 2, 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "dataSize": 208, 
+          "variables": [{
+              "name": "ax_g_time", 
+              "offset": 0, 
+              "dataType": "f32", 
+              "rowMajor": true
+            }, {
+              "name": "ax_g_timeSin", 
+              "offset": 16, 
+              "dataType": "f32x4", 
+              "rowMajor": true
+            }, {
+              "name": "ax_g_timeSlowSin", 
+              "offset": 32, 
+              "dataType": "f32x4", 
+              "rowMajor": true
+            }, {
+              "name": "ax_g_deltaTime", 
+              "offset": 48, 
+              "dataType": "f32x4", 
+              "rowMajor": true
+            }, {
+              "name": "ax_g_worldSpaceCameraPos", 
+              "offset": 64, 
+              "dataType": "f32x4", 
+              "rowMajor": true
+            }, {
+              "name": "ax_g_cameraProjection", 
+              "offset": 80, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_g_cameraInvProjection", 
+              "offset": 144, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }]
+        }, {
+          "name": "AX_ConstBuffer_PerObject", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": 2, 
+          "bindSpace": 3, 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "dataSize": 512, 
+          "variables": [{
+              "name": "ax_object_mvp", 
+              "offset": 0, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_object_mv", 
+              "offset": 64, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_object_mv_t", 
+              "offset": 128, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_object_mv_it", 
+              "offset": 192, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_object_v", 
+              "offset": 256, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_object_vp", 
+              "offset": 320, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_object_m", 
+              "offset": 384, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "ax_object_m_i", 
+              "offset": 448, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }]
+        }], 
+      "storageBuffers": [], 
+      "textures": [{
+          "name": "AxBindless_Texture2D", 
+          "dataType": "Texture2D", 
+          "stageFlags": 2, 
+          "bindSpace": 1, 
+          "bindPoint": 2, 
+          "bindCount": 16384
+        }], 
+      "samplers": [{
+          "name": "AxBindless_SamplerState", 
+          "dataType": "SamplerState", 
+          "stageFlags": 2, 
+          "bindSpace": 1, 
+          "bindPoint": 1, 
+          "bindCount": 1024
+        }]
+    }]
+}

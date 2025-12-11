@@ -11,7 +11,7 @@ export namespace ax::AxRender {
 
 class GenReflect_VK_EX : public NonCopyable {
 public:
-	void generate(StrView outFilename, StrView filename);
+	void generate(StrView outFilename, StrView filename, RenderApi api);
 //	void _genEntryPoint		(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {}
 	void _genVertexInputs	(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect);
 	void _genBindings		(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect);
