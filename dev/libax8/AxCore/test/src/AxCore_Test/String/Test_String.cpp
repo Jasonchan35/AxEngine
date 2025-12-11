@@ -203,6 +203,23 @@ public:
 		AX_TEST_EQ(StringA::s_utf(str16), strA);
 		AX_TEST_EQ(StringA::s_utf(str32), strA);
 	}
+	
+	// StrView to_StrviewTest(No_rvalue_<StrView> v) {
+	// 	return v;
+	// }
+	StrView to_StrviewTest(No_rvalue_<StrView> v) {
+		return v;
+	}
+
+	void test_NoRValue_StrView() {
+#if 0 // should issue compilation error
+		auto sv1 = to_StrviewTest(String("1234"));
+		AX_DUMP(sv1);
+#endif
+		auto str = String("1234");
+		auto sv2 = to_StrviewTest(str);
+		AX_DUMP(sv2);
+	}
 };
 
 } // namespace
@@ -226,5 +243,7 @@ void Test_String() {
 	AX_TEST_RUN_CASE(Test_String::test_split)
 	AX_TEST_RUN_CASE(Test_String::test_NameId)
 	AX_TEST_RUN_CASE(Test_String::test_utf)
+
+	AX_TEST_RUN_CASE(Test_String::test_NoRValue_StrView)
 }
 

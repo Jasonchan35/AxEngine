@@ -88,7 +88,6 @@ public:
 	AX_INLINE constexpr CSpan constSpan() const noexcept	{ return CSpan(data(), size()); }
 	AX_INLINE constexpr CSpan      span() const noexcept	{ return CSpan(data(), size()); }
 	AX_INLINE constexpr MSpan      span() noexcept			{ return MSpan(data(), size()); }
-//	AX_INLINE constexpr operator CSpan() const noexcept { return constSpan(); }
 	//---------------
 
 	AX_INLINE constexpr ZView zview() const noexcept	{ return ZView(data(), size()); }

@@ -4,7 +4,11 @@
 - [done] Reflection - MetaType and Rtti
 - [done] HeaderTool
 - rename AxHeaderTool -> AxCppHeaderTool
-- EnumFlag, Enum union int
+- Type_EnumFlag<>
+
+- consteval StrLit
+- rename AxTag::Zero_ ?
+
 - GC
 - ECS
 

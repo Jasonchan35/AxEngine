@@ -254,7 +254,7 @@ void UtfUtil::_encodeUtf< Char8 >( IString_<Char8>& dst, CharU ch) {
 
 	{
 		AX_ASSERT(false);
-		dst.append(CharA(static_cast<uint8_t>(v)));
+		dst.append(Char8(static_cast<uint8_t>(v)));
 	}
 }
 

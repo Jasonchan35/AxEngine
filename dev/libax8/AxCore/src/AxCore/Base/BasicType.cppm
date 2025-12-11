@@ -81,6 +81,28 @@ namespace  AxTag {
 	class Zero_{};			constexpr Zero_			Zero		= {};
 } // AxTag
 
+template <class T>
+	struct No_rvalue_ {
+	T value;
+
+	template<class IN_OBJ>
+	constexpr No_rvalue_(IN_OBJ&& obj) requires std::is_lvalue_reference_v<IN_OBJ&&>
+	: value(obj) {}
+
+	constexpr No_rvalue_(T && v) : value(v) {}
+		
+	constexpr operator       T&()       { return value; }
+	constexpr operator const T&() const { return value; }
+
+	AX_INLINE 		T* operator->()			{ return &value; }
+	AX_INLINE const	T* operator->() const	{ return &value; }
+
+	AX_INLINE 		T& operator* ()			{ return value; }
+	AX_INLINE const	T& operator* () const	{ return value; }
+
+	AX_INLINE explicit operator bool() const	{ return bool(value);  }
+};
+
 template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
 template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
 

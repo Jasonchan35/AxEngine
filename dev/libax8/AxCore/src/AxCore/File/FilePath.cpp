@@ -29,33 +29,33 @@ FilePath::SplitResult FilePath::split(StrView path) {
 	return o;
 }
 
-void FilePath::getDirname (IString& outStr, StrView path ) {
-	auto s = path.splitByCharBack_(isPathSeperator);
-	outStr = s.second ? s.first : StrView();
+StrView FilePath::dirname_sv(No_rvalue_<StrView> path) {
+	auto s = path->splitByCharBack_(isPathSeperator);
+	return s.second ? s.first : StrView();
 }
 
-void FilePath::getBasename(IString& outStr, StrView path, bool withExtension ) {
-	auto s = path.splitByCharBack_(isPathSeperator);
+StrView FilePath::basename_sv(No_rvalue_<StrView> path, bool withExtension) {
+	auto s = path->splitByCharBack_(isPathSeperator);
 	auto f = s.second ? s.second : s.first;
 	if (withExtension) {
-		outStr = f;
+		return f;
 	} else {
 		s = f.splitByCharBack('.');
-		outStr = s.first;
+		return s.first;
 	}
 }
 
-void FilePath::getExtension(IString& outStr, StrView path ) {
+StrView FilePath::extension_sv(No_rvalue_<StrView> path) {
 	//	remove dir first to avoid corner case like: "/aaa/bbb/ccc.here/eee"
 	//	while should return "" instead or "here/eee"
-	auto s = path.splitByCharBack_(isPathSeperator);
+	auto s = path->splitByCharBack_(isPathSeperator);
 	auto f = s.second ? s.second : s.first;
 
 	s = f.splitByCharBack('.');
-	outStr = s.second;
+	return s.second;
 }
 
-void FilePath::getUnixPath(IString& outPath, StrView inPath) {
+void   FilePath::getUnixPath(IString& outPath, StrView inPath) {
 	outPath = inPath;
 	outPath.replaceChars(kWindowsPathSeperator, kUnixPathSeperator);
 }
@@ -66,9 +66,7 @@ void FilePath::getWinPath(IString& outPath, StrView inPath) {
 }
 
 FilePathString FilePath::changeExtension(StrView path, StrView new_extension ) {
-	FilePathString tmp;
-
-	tmp = dirname(path);
+	FilePathString tmp = dirname(path);
 
 	if (tmp) {
 		tmp << "/";

@@ -57,14 +57,18 @@ struct FilePath {
 	// e.g. changeExtension( "a.txt", ".doc" );
 	AX_NODISCARD	static	FilePathString	changeExtension	(StrView path, StrView ext);
 
-					static	void	getDirname		(IString& outStr, StrView path);
-					static	void	getBasename		(IString& outStr, StrView path, bool withExtension);
-					static	void	getExtension	(IString& outStr, StrView path);
+	AX_NODISCARD	static			StrView	dirname_sv	(No_rvalue_<StrView> path);
+	AX_NODISCARD	static			StrView	basename_sv	(No_rvalue_<StrView> path, bool withExtension);
+	AX_NODISCARD	static			StrView	extension_sv(No_rvalue_<StrView> path);
 	
-	AX_NODISCARD	static	FilePathString	dirname			(StrView path)						{ FilePathString tmp; getDirname(tmp, path); return tmp; }
-	AX_NODISCARD	static	FilePathString	basename		(StrView path, bool withExtension)	{ FilePathString tmp; getBasename(tmp, path, withExtension); return tmp; }
-	AX_NODISCARD	static	FilePathString	extension		(StrView path)						{ FilePathString tmp; getExtension(tmp, path); return tmp; }
-
+	AX_NODISCARD	static	FilePathString	dirname		(StrView path)						{ return dirname_sv(path); }
+	AX_NODISCARD	static	FilePathString	basename	(StrView path, bool withExtension)	{ return basename_sv(path, withExtension); }
+	AX_NODISCARD	static	FilePathString	extension	(StrView path)						{ return extension_sv(path); }
+	
+	static	void	getDirname		(IString& outStr, StrView path)						{ outStr = dirname(path); };
+	static	void	getBasename		(IString& outStr, StrView path, bool withExtension) { outStr = basename(path, withExtension); };
+	static	void	getExtension	(IString& outStr, StrView path)						{ outStr = extension(path); };
+	
 	static void getUnixPath(IString& outPath, StrView inPath);
 	static void getWinPath(IString& outPath, StrView inPath);
 	static void getNativePath(IString& outPath, StrView inPath) {
@@ -113,7 +117,6 @@ struct FilePath {
 
 private:
 	static	void		_appendTo		(IString& folder, StrView file);
-	
 }; // FilePath
 	
 } // namespace

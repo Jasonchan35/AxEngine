@@ -42,7 +42,7 @@ void ResourceManager_Backend::hotReloadFile(StrView filename) {
 	}
 
 	if (basenameWithExt == "shaderResult.json") {
-		auto shaderAssetPath = FilePath::dirname(FilePath::dirname(filename));
+		auto shaderAssetPath = FilePath::dirname_sv(FilePath::dirname_sv(filename));
 		auto table = shaderTable.scopedLock();
 		if (auto* shader = table->findObject(shaderAssetPath)) {
 			AX_LOG("Hot reload shader {}", shaderAssetPath);
