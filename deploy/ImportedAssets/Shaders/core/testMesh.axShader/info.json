@@ -1,0 +1,72 @@
+{
+  "isGlobalCommonShader": false, 
+  "props": [{
+      "name": "color", 
+      "propType": "Color4f", 
+      "displayName": "", 
+      "asset": "", 
+      "defaultValue": [1, 1, 1, 1]
+    }, {
+      "name": "global_shininess", 
+      "propType": "f32", 
+      "displayName": "", 
+      "asset": "", 
+      "defaultValue": 0
+    }, {
+      "name": "tex0", 
+      "propType": "Texture2D", 
+      "displayName": "Texture0", 
+      "asset": "asset path", 
+      "defaultValue": "White", 
+      "samplerState": {
+        "filter": "Bilinear", 
+        "wrapU": "Repeat", 
+        "wrapV": "Clamp", 
+        "wrapW": "Repeat", 
+        "minLOD": 0, 
+        "maxLOD": "Infinity"
+      }
+    }, {
+      "name": "tex1", 
+      "propType": "Texture2D", 
+      "displayName": "Texture1", 
+      "asset": "", 
+      "defaultValue": "Blue", 
+      "samplerState": {
+        "filter": "Bilinear", 
+        "wrapU": "Repeat", 
+        "wrapV": "Repeat", 
+        "wrapW": "Repeat", 
+        "minLOD": 0, 
+        "maxLOD": "Infinity"
+      }
+    }], 
+  "passes": [{
+      "name": "Pass0", 
+      "vsFunc": "vs_main", 
+      "psFunc": "ps_main", 
+      "gsFunc": "", 
+      "renderState": {
+        "cull": "None", 
+        "blend": {
+          "rgb": {
+            "op": "Add", 
+            "srcFactor": "One", 
+            "dstFactor": "OneMinusSrcAlpha"
+          }, 
+          "alpha": {
+            "op": "Add", 
+            "srcFactor": "One", 
+            "dstFactor": "OneMinusSrcAlpha"
+          }, 
+          "constColor": [0, 0, 0, 0]
+        }, 
+        "depthTest": {
+          "op": "Less", 
+          "writeMask": true
+        }, 
+        "antialiasedLine": false, 
+        "wireframe": false
+      }
+    }]
+}

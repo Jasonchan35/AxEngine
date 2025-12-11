@@ -1,0 +1,8 @@
+{
+  "declare": {
+    "isGlobalCommonShader": false, 
+    "props": [], 
+    "passes": []
+  }, 
+  "passStages": []
+}
