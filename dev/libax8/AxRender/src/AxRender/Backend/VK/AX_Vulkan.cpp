@@ -1124,7 +1124,7 @@ void AX_VkDeviceMemory::copyData(
 	VkMemoryMapFlags flags
 ) {
 	if (data.size() <= 0) return;
-	auto span = mapMemory(IntRange::s_beginSize(offset, data.size()), flags);
+	auto span = mapMemory(Range_BeginSize(offset, data.size()), flags);
 	try {
 		span.copyValues(data);
 	} catch (...) {

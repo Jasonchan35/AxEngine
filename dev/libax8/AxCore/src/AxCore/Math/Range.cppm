@@ -13,7 +13,7 @@ class Range_ {
 	T	_begin = 0;
 	T	_end   = 0;
 
-	// please use s_beginEnd() or s_beginSize()
+	// please use Range_BeginEnd() or Range_BeginSize()
 	AX_INLINE constexpr Range_(const T& begin_, const T& end_) noexcept : _begin(begin_), _end(end_) {}
 public:
 
@@ -76,6 +76,26 @@ private:
 	}
 };
 
+using IntRange = Range_<Int>;
+
+template<class T>
+AX_NODISCARD AX_INLINE constexpr Range_<T> Range_BeginEnd(const T& begin, const T& end) noexcept {
+	return Range_<T>::s_beginEnd(begin, end);
+}
+
+template<class T>
+AX_NODISCARD AX_INLINE constexpr Range_<T> Range_BeginSize(const T& begin, const T& size) noexcept {
+	return Range_<T>::s_beginSize(begin, size);
+}
+
+AX_NODISCARD AX_INLINE constexpr IntRange IntRange_BeginEnd(const Int& begin, const Int& end) noexcept {
+	return IntRange::s_beginEnd(begin, end);
+}
+
+AX_NODISCARD AX_INLINE constexpr IntRange IntRange_BeginSize(const Int& begin, const Int& end) noexcept {
+	return IntRange::s_beginSize(begin, end);
+}
+
 template<class T>
 class RangeEx_  {
 	using This = RangeEx_;
@@ -88,7 +108,5 @@ class RangeEx_  {
 public:
 	
 };
-
-using IntRange = Range_<Int>;
 
 } // namespace

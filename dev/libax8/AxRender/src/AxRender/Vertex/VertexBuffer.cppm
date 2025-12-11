@@ -95,7 +95,7 @@ void IndexBuffer::addIndices(ByteSpan data, IndexType indexType) {
 	Int newDataBytes   = newIndexCount * stride;
 
 	_buffer.appendData(data.slice(0, newDataBytes));
-	_buffer.markDirty(IntRange::s_beginSize(_indexCount * stride, newDataBytes));
+	_buffer.markDirty(Range_BeginSize(_indexCount * stride, newDataBytes));
 	_indexCount += newIndexCount;
 }
 

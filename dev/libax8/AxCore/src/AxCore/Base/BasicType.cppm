@@ -422,16 +422,6 @@ AX_INLINE constexpr bool CmpResult_isLesserOrEqual (CmpResult a) { return a == C
 AX_INLINE constexpr bool CmpResult_isGreater       (CmpResult a) { return a == CmpResult::Greater; }
 AX_INLINE constexpr bool CmpResult_isGreaterOrEqual(CmpResult a) { return a == CmpResult::Greater || a == CmpResult::Equal; }
 
-// template<class A>
-// struct FuncOp {
-// 	template<class B = A> struct Equal			{ static constexpr bool invoke(const A& a, const B& b) { return a == b; } };
-// 	template<class B = A> struct NotEqual		{ static constexpr bool invoke(const A& a, const B& b) { return a != b; } };
-// 	template<class B = A> struct Less			{ static constexpr bool invoke(const A& a, const B& b) { return a <  b; } };
-// 	template<class B = A> struct LessEqual		{ static constexpr bool invoke(const A& a, const B& b) { return a <= b; } };
-// 	template<class B = A> struct Greater		{ static constexpr bool invoke(const A& a, const B& b) { return a >  b; } };
-// 	template<class B = A> struct GreaterEqual	{ static constexpr bool invoke(const A& a, const B& b) { return a >= b; } };
-// };
-
 template<class A, class B> constexpr bool ax_op_equal			(const A& a, const B& b) { return a == b; }
 template<class A, class B> constexpr bool ax_op_not_equal		(const A& a, const B& b) { return a != b; }
 template<class A, class B> constexpr bool ax_op_less			(const A& a, const B& b) { return a <  b; }
@@ -449,7 +439,6 @@ template<class CH> struct CharHexPair {
 	consteval		Int	size() const noexcept	{ return 2; }
 };
 
-//TODO rename to CharFn
 struct CharUtil {
 	CharUtil() = delete;
 	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha	(CH ch) { return std::isalpha(ch); } 
