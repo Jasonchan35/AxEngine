@@ -2,6 +2,6 @@
 
 #include "AX_APP_MAIN.h"
 
-import AxEditor.EditorApp;
+import AxEditor;
 AX_APP_MAIN(ax::AxEditor::EditorApp);
 

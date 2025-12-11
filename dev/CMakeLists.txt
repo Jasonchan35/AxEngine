@@ -46,10 +46,15 @@ add_subdirectory(libax8/AxCore/test)
 add_subdirectory(libax8/AxNativeUI)
 add_subdirectory(libax8/AxRender)
 add_subdirectory(libax8/AxUI)
+
 add_subdirectory(libax8/Tools/AxFileTool)
 add_subdirectory(libax8/Tools/AxCppHeaderTool)
 add_subdirectory(libax8/Tools/AxShaderTool)
-add_subdirectory(EditorApp)
+
+add_subdirectory(libax8/AxEngine)
+add_subdirectory(libax8/AxEditor)
+
+add_subdirectory(AxEditorApp)
 
 # target_sources(${PROJECT_NAME} PRIVATE ax_common.cmake)
 

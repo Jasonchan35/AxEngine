@@ -1,14 +1,19 @@
-﻿module AxEditor.EditorApp;
+module;
+
+module AxEditor;
+import :EditorMainWindow;
+import :EditorApp;
 
 namespace ax::AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
-	setWindowTitle("AnonEditor");
+	setWindowTitle("AxEditor");
 
 	if (auto* rc = renderContext()) {
 		rc->setImGuiIniFilename(".imgui_EditorMainWindow.ini");
 		rc->loadImGuiIniFile();
 	}
+
 
 	_renderGraph.newObject(AX_ALLOC_REQ);
 	_renderGraph->win = this;
@@ -19,4 +24,4 @@ void EditorMainWindow::onWindowCloseButton() {
 	EditorApp::s_instance()->quit(0);
 }
 
-} // namespace 
+} //namespace
