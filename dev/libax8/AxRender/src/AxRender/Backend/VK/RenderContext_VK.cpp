@@ -16,6 +16,12 @@ RenderContext_VK_Base::RenderContext_VK_Base(const CreateDesc& desc)
 	_viewportIsBottomUp = true;
 }
 
+RenderContext_VK_Base::~RenderContext_VK_Base() {
+	if (auto* renderer = Renderer_VK::s_instance()) {
+		renderer->device().waitIdle(); // wait all commandQueue is done
+	}
+}
+
 void RenderContext_VK_Base::onPostCreate(const CreateDesc& desc) {
 	Base::onPostCreate(desc);
 

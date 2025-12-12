@@ -12,6 +12,7 @@ class RenderContext_VK_Base : public RenderContext_Backend {
 	AX_RTTI_INFO(RenderContext_VK_Base, RenderContext_Backend)
 public:
 	RenderContext_VK_Base(const CreateDesc& desc);
+	virtual ~RenderContext_VK_Base();
 
 	AX_VkSurfaceKHR&	surface() { return _surface; }
 
