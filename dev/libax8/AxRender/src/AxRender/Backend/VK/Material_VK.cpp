@@ -142,10 +142,10 @@ void MaterialParamSpace_VK::_nextDescriptorSet(RenderRequest_VK* req, const Shad
 			dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
 		};
 
-		helper(constBuffers().size(),			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-		helper(textureParams().size(),			VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
-		helper(samplerParams().size(),			VK_DESCRIPTOR_TYPE_SAMPLER);
-		helper(storageBufferParams().size(),	VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+		helper(constBuffers_totalBindCount(),			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+		helper(textureParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
+		helper(samplerParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLER);
+		helper(storageBufferParams_totalBindCount(),	VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
 
 		_descriptorSets.resize(renderRequestCount);
 

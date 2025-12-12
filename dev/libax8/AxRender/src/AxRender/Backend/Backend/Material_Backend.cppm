@@ -48,12 +48,12 @@ public:
 
 	struct ParamBase {
 		void	  create(const ShaderParamSpace_Backend::ParamBase& shaderParam);
-	protected:
 	};
 
 	struct ConstBuffer : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
+		Int			bindCount() const { return _shaderParam->bindCount(); }
 
 		void		create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam);
 		GpuBuffer*	getUploadedGpuBuffer(class RenderRequest* req) { return _dynamicGpuBuffer.getUploadedGpuBuffer(req); }
@@ -70,6 +70,7 @@ public:
 		NameId		name() const { return _shaderParam->name(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		DataType	dataType() const { return _shaderParam->dataType(); }
+		Int			bindCount() const { return _shaderParam->bindCount(); }
 
 		void		create(const ShaderParamSpace_Backend::TextureParam& shaderParam);
 		Texture*	texture() { return _texture; }
@@ -82,6 +83,7 @@ public:
 	struct SamplerParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
+		Int			bindCount() const { return _shaderParam->bindCount(); }
 
 		void		create(const ShaderParamSpace_Backend::SamplerParam& shaderParam);
 		Sampler*	sampler() { return _sampler; }
@@ -94,6 +96,7 @@ public:
 	struct StorageBufferParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
+		Int			bindCount() const { return _shaderParam->bindCount(); }
 
 		void		   create(const ShaderParamSpace_Backend::StorageBufferParam& shaderParam);
 		StorageBuffer* storageBuffer() { return _storageBuffer; }
@@ -105,6 +108,13 @@ public:
 		const ShaderParamSpace_Backend::StorageBufferParam* _shaderParam = nullptr;
 		SPtr<StorageBuffer>									_storageBuffer;
 	};
+
+	template<class PARAM>
+	static Int s_totalBindCount(Span<PARAM> params) {
+		Int total = 0;
+		for (auto& param : params) { total += param.bindCount(); }
+		return total;
+	}
 
 	bool setParam(NameId name, const i32&		v) { return _setVariable(name, v); }
 	bool setParam(NameId name, const i32x2&		v) { return _setVariable(name, v); }
@@ -143,6 +153,11 @@ public:
 	Span<SamplerParam>			samplerParams() const		{ return _samplerParams;       }
 	Span<StorageBufferParam>	storageBufferParams() const	{ return _storageBufferParams; }
 
+	Int constBuffers_totalBindCount() const			{ return s_totalBindCount(_constBuffers.span()); }
+	Int textureParams_totalBindCount() const		{ return s_totalBindCount(_textureParams.span()); }
+	Int samplerParams_totalBindCount() const		{ return s_totalBindCount(_samplerParams.span()); }
+	Int storageBufferParams_totalBindCount() const	{ return s_totalBindCount(_storageBufferParams.span()); }
+	
 	BindSpace	bindSpace() const { return _shaderParamSpace->bindSpace(); }
 
 	const ShaderParamSpace_Backend* shaderParamSpace() const { return _shaderParamSpace.ptr(); }
@@ -150,9 +165,9 @@ public:
 protected:
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
-	template<class T> T* _findParam(IArray<T>& arr, NameId name);
-	template<class V> bool _setVariable(NameId name, const V& v);
-	template<class V> bool _setTextureParam(NameId name, V* v);
+	template<class T> T*	_findParam(IArray<T>& arr, NameId name);
+	template<class V> bool	_setVariable(NameId name, const V& v);
+	template<class V> bool	_setTextureParam(NameId name, V* v);
 
 	Array<ConstBuffer,        1>	_constBuffers;
 	Array<StorageBufferParam, 0>	_storageBufferParams;

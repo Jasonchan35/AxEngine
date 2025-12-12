@@ -23,10 +23,9 @@ public:
 
 	ImageInfo() =default;
 
-	ImageInfo(ColorType colorType_, const Vec2i& size_, Int mipLevels_ = 1) {
-		colorType = colorType_;
-		size	  = Vec3i(size_, 0);
-		mipLevels = mipLevels_;
+	ImageInfo(ColorType colorType_, const Vec2i& size_, Int mipLevels_ = 1)
+		: colorType(colorType_), size(size_, 0), mipLevels(mipLevels_)
+	{
 		computeDataSize();
 	}
 
