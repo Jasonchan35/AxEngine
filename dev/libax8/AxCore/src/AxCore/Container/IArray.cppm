@@ -45,10 +45,11 @@ public:
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
-	constexpr void appendRange(Span<T> src);
+	constexpr void appendRange(IArray<T> && src);
 
+	constexpr void appendRange(Span<T> src);
 	template<class R, class FUNC>
-	constexpr void appendRange(Span<R> src, FUNC func);
+	constexpr void appendRange(Span<R> src, FUNC func = [](const T& v){ return v; });
 	
 	AX_INLINE constexpr void operator<<(const T &  item)  { append(item); }
 	AX_INLINE constexpr void operator<<(      T && item)  { append(AX_FORWARD(item)); }
@@ -215,6 +216,16 @@ constexpr void IArray<T>::append(T && item) {
 	ensureCapacity(newSize);
 	ax_call_constructor<T>(data() + oldSize, AX_FORWARD(item));
 	_storage.setSize(newSize);
+}
+
+template<class T>
+constexpr void IArray<T>::appendRange(IArray<T> && src) {
+	auto oldSize = size();
+	auto newSize = oldSize + src.size();
+	ensureCapacity(newSize);
+	MemUtil::moveConstructor(data() + oldSize, src.data(), src.size());
+	_storage.setSize(newSize);
+	src.clear();
 }
 
 template <class T>

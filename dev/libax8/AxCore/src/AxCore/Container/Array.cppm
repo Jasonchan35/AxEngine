@@ -58,7 +58,15 @@ public:
 	constexpr void operator=(const Array      & src) { Base::operator=(src.asIArray()); } 
 	template<Int M>
 	constexpr void operator=(const Array<T,M> & src) { Base::operator=(src.asIArray()); } 
+
+	constexpr void appendRange(Span<T> src) { Base::appendRange(src); }
+
+	template<class R, class FUNC>
+	constexpr void appendRange(Span<R> src, FUNC func = [](const T& v){ return v; } ) { Base::appendRange(src, func); }
 	
+	template<Int M>
+	constexpr void appendRange(Array<T,M> && src) { Base::appendRange(std::move(src.asIArray())); }
+
 protected:
 	virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
 	virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) override;

@@ -50,10 +50,12 @@ public:
 	AX_INLINE	void move(UPtr<R, DEL> && r) noexcept;
 
 	AX_INLINE	bool operator==(const T* p) const noexcept { return _p == p; }
-	AX_INLINE	bool operator!=(const T* p) const noexcept { return _p != p; }
+//	AX_INLINE	bool operator!=(const T* p) const noexcept { return _p != p; }
 
+	AX_INLINE	bool operator==(std::nullptr_t) const noexcept { return _p == nullptr; }
+	
 	AX_INLINE	void operator=(UPtr && r) noexcept { move(AX_FORWARD(r)); }
-
+	
 	template<class R>
 	AX_INLINE	void operator=(UPtr<R, DEL> && r) noexcept { move(AX_FORWARD(r)); }
 
