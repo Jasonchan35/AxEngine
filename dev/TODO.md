@@ -5,6 +5,12 @@
 
 - ECS
 
+- func(SPtr<T> & obj) <-- should always use & for SPtr<T> ?
+
+- using Ref<T> = SPtr<T, NonNullable>
+- using WeakRef<T> = WPtr<T>
+- using Ref<T> = GCPtr<T>
+
 - InlineBuffer memory overrun detect signture
 - Allocator
 
