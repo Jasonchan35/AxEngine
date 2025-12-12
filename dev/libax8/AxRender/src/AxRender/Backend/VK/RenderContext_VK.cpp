@@ -67,13 +67,16 @@ void RenderContext_VK_Base::_createSwapChain() {
 
 	{	// init Back Buffers
 		_swapChain.getImages(_backBufImages);
+		Int resultBackBufferCount = _backBufImages.size();
+		
+		_backBuffers.resize(resultBackBufferCount);
 
-		_backBuffers.clear();
-		_backBuffers.ensureCapacity(_backBufImages.size());
-
-		for (Int i = 0; i < _backBufImages.size(); i++) {
-			auto& backBuf = _backBuffers.emplaceNew(AX_ALLOC_REQ);
-			backBuf->create(this, dev, i, frameSize);
+		for (Int i = 0; i < resultBackBufferCount; i++) {
+			auto& dst = _backBuffers[i];
+			if (!dst) {
+				dst.newObject(AX_ALLOC_REQ);
+			}
+			dst->createOrUpdate(this, dev, i, frameSize);
 		}
 	}
 }
@@ -89,7 +92,9 @@ RenderPass_Backend* RenderContext_VK_Base::onAcquireBackBufferRenderPass(RenderR
 		auto err = _swapChain.acquireNextImage(	swapChainImageIndex, 
 												req->_imageAcquiredSemaphore_vk, 
 												VK_NULL_HANDLE);
-		if (err == VK_ERROR_OUT_OF_DATE_KHR) {
+		if (err == VK_SUCCESS) {
+			break;
+		} else if (err == VK_ERROR_OUT_OF_DATE_KHR) {
 			// demo->swapchain is out of date (e.g. the window was resized) and
 			// must be recreated:
 			_createSwapChain();
@@ -98,8 +103,6 @@ RenderPass_Backend* RenderContext_VK_Base::onAcquireBackBufferRenderPass(RenderR
 		} else if (err == VK_SUBOPTIMAL_KHR) {
 			// demo->swapchain is not as optimal as it could be, but the platform's
 			// presentation engine will still present the image correctly.
-			break;
-		} else if (err == VK_SUCCESS) {
 			break;
 		} else {
 			AX_VkUtil::throwIfError(err);
@@ -120,18 +123,10 @@ void RenderContext_VK_Base::onPresentSurface(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_VK>(req_);
 	if (!req) { AX_ASSERT(false); return; }
 
+	const bool presentQueueIsSeparated = _surface.isPresentQueueIsSeparated();
+
 	AX_VkDeviceQueue::WaitSemaphores waitSem(req->_imageAcquiredSemaphore_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 	auto& graphSemaphore = req->_graphSemaphore_vk;
-
-	Array<VkCommandBuffer, 2>	cmdBuffers;
-	cmdBuffers.append(req->_uploadCmdBuf_vk);
-	cmdBuffers.append(req->_graphCmdBuf_vk);
-
-	req->_completedFence_vk.reset();
-	_graphQueue.submit( waitSem,
-						cmdBuffers,
-						graphSemaphore.handle(),
-						req->_completedFence_vk.handle());
 
 	auto* backBuf = req->backBufferRenderPass();
 	if (!backBuf) { AX_ASSERT(false); return; }
@@ -140,12 +135,23 @@ void RenderContext_VK_Base::onPresentSurface(RenderRequest* req_) {
 	if (!colorBuffer) { AX_ASSERT(false); return; }
 
 	auto& backBufferRef = colorBuffer->backBufferRef();
-
 	auto* backBuffer	   = _getBackBuffer(backBufferRef.index);
 	auto& presentCmdBuf	   = backBuffer->_presentCmdBuf_vk;
 	auto& presentSemaphore = backBuffer->_presentSemaphore_vk;
 
-	if (_surface.isPresentQueueIsSeparated()) {
+
+	Array<VkCommandBuffer, 2>	cmdBuffers;
+	cmdBuffers.append(req->_uploadCmdBuf_vk);
+	cmdBuffers.append(req->_graphCmdBuf_vk);
+
+	req->_completedFence_vk.reset();
+	
+	_graphQueue.submit( waitSem,
+						cmdBuffers,
+						presentQueueIsSeparated ? graphSemaphore.handle() : presentSemaphore.handle(),
+						req->_completedFence_vk.handle());
+
+	if (presentQueueIsSeparated) {
 		// If we are using separate queues, change image ownership to the
 		// present queue before presenting, waiting for the draw complete
 		// semaphore and signaling the ownership released semaphore when finished
@@ -161,22 +167,15 @@ void RenderContext_VK_Base::onPresentSurface(RenderRequest* req_) {
 								presentSemaphore.handle());
 	}
 
-	{
-		VkSemaphore waitSemaphore;
-		if (_surface.isPresentQueueIsSeparated()) {
-			 // If we are using separate queues we have to wait for image ownership
-			waitSemaphore = presentSemaphore.handle();
-		} else {
-			waitSemaphore = graphSemaphore.handle();
-		}
-
-		_graphQueue.present(waitSemaphore, _swapChain, backBufferRef.index);
-	}
+	_graphQueue.present(presentSemaphore, _swapChain, backBufferRef.index);
 }
 
-void RenderContext_VK_Base::BackBuffer_VK::create(
-	RenderContext_VK_Base* renderContext, AX_VkDevice& dev, Int index, Vec2i frameSize)
-{
+void RenderContext_VK_Base::BackBuffer_VK::createOrUpdate(
+	RenderContext_VK_Base* renderContext,
+	AX_VkDevice&           dev,
+	Int                    index,
+	Vec2i                  frameSize
+) {
 	auto backBufferName = Fmt("BackBuffer_{}-color", index);
 	dev.setObjectDebugName(renderContext->_backBufImages[index], backBufferName);
 
@@ -193,9 +192,12 @@ void RenderContext_VK_Base::BackBuffer_VK::create(
 
 	auto& surface = renderContext->_surface;
 
-	if (surface.isPresentQueueIsSeparated()) {
+	if (!_presentSemaphore_vk) {
 		_presentSemaphore_vk.create(dev);
-			_presentCmdBuf_vk.create(dev, surface.presentQueueFamilyIndex());
+	}
+	
+	if (!_presentCmdBuf_vk) {
+		_presentCmdBuf_vk.create(dev, surface.presentQueueFamilyIndex());
 
 #if AX_DEBUG_NAME
 		_presentSemaphore_vk.setDebugName(Fmt("RenderReq_{}-presentSemaphore", index));

@@ -24,7 +24,7 @@ protected:
 	virtual void onPostCreate(const CreateDesc& desc) override;
 
 	struct BackBuffer_VK : public BackBuffer {
-		void create(RenderContext_VK_Base* renderContext, AX_VkDevice& dev, Int index, Vec2i frameSize);
+		void createOrUpdate(RenderContext_VK_Base* renderContext, AX_VkDevice& dev, Int index, Vec2i frameSize);
 
 		CommandBuffer_VK	_presentCmdBuf_vk;
 		AX_VkSemaphore		_presentSemaphore_vk;

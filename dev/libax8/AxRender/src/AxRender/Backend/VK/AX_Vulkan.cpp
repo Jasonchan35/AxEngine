@@ -169,10 +169,10 @@ void AX_VkSurfaceKHR::_onCreate() {
 		_graphQueueFamilyIndex = _dev->graphQueueFamilyIndex();
 
 		if (checkQueueFamilySupportPresent(_graphQueueFamilyIndex)) {
-			_presentQueueFamilyIndex = _graphQueueFamilyIndex;
+			_presentQueueFamilyIndex = _graphQueueFamilyIndex; // graphQueue can do preset too
 
-		} else if (!findQueueFamilySupportPresent(_presentQueueFamilyIndex)) {
-			throw Error_Undefined();
+		} else if (findQueueFamilySupportPresent(_presentQueueFamilyIndex)) {
+			throw Error_Undefined("Vulkan cannot find queue support present");
 		}
 	}
 }
