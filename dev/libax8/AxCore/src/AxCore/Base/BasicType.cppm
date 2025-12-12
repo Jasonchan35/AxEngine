@@ -74,6 +74,16 @@ constexpr Int Int_max = std::numeric_limits<Int>::max();
 constexpr UInt UInt_min = std::numeric_limits<UInt>::min();
 constexpr UInt UInt_max = std::numeric_limits<UInt>::max();
 
+constexpr f32 f32_min	= std::numeric_limits<f32>::min();
+constexpr f32 f32_max	= std::numeric_limits<f32>::max();
+constexpr f32 f32_inf	= std::numeric_limits<f32>::infinity();
+constexpr f32 f32_nan	= std::numeric_limits<f32>::quiet_NaN();
+
+constexpr f64 f64_min	= std::numeric_limits<f64>::min();
+constexpr f64 f64_max	= std::numeric_limits<f64>::max();
+constexpr f64 f64_inf	= std::numeric_limits<f64>::infinity();
+constexpr f64 f64_nan	= std::numeric_limits<f64>::quiet_NaN();
+
 
 namespace  AxTag {
 	class NewObject_{};		constexpr NewObject_	NewObject	= {};
