@@ -653,7 +653,41 @@ AX_VkSemaphore& AX_VkSemaphore::create(AX_VkDevice& dev) {
 	return *this;
 }
 
-bool AX_VkSemaphore::wait(u64 value, Nanoseconds timeout /*= Nanoseconds::kMax()*/) {
+void AX_VkTimelineSemaphore::destroy() {
+	if (_handle) {
+		vkDestroySemaphore(*_dev, _handle, AX_VkUtil::allocCallbacks());
+		_handle = VK_NULL_HANDLE;
+		_dev = nullptr;
+	}
+}
+
+void AX_VkTimelineSemaphore::signal(u64 value) {
+	VkSemaphoreSignalInfo info = {};
+	info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO;
+	info.semaphore = _handle;
+	info.value = value;
+	auto err = vkSignalSemaphore(*_dev, &info);
+	AX_VkUtil::throwIfError(err);
+}
+
+AX_VkTimelineSemaphore& AX_VkTimelineSemaphore::create(AX_VkDevice& dev, u64 initialValue) {
+	destroy();
+	_dev = &dev;
+	VkSemaphoreCreateInfo info = {};
+	VkSemaphoreTypeCreateInfo typeInfo = {};
+	typeInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
+	typeInfo.pNext = nullptr;
+	typeInfo.initialValue = initialValue;
+	
+	info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	info.pNext = &typeInfo;
+	info.flags = 0;
+	auto err = vkCreateSemaphore(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
+	AX_VkUtil::throwIfError(err);
+	return *this;
+}
+
+bool AX_VkTimelineSemaphore::wait(u64 value, Nanoseconds timeout) {
 	VkSemaphoreWaitInfo info = {};
 	info.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
 	info.semaphoreCount		 = 1;
@@ -1477,7 +1511,7 @@ void AX_VkDeviceQueue::submit(
 	Span<VkSemaphore>			signalSemaphores,
 	VkFence						fenceToSignal /*= VK_NULL_HANDLE*/
 ) {
-	auto waitSem   = waitSemaphores.samaphores();
+	auto waitSem   = waitSemaphores.semaphores();
 	auto waitStage = waitSemaphores.dstStageFlags();
 
 	AX_ASSERT(waitSem.size() == waitStage.size());

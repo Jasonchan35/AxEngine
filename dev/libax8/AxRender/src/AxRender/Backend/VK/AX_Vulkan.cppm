@@ -212,16 +212,16 @@ public:
 		WaitSemaphores(VkSemaphore sem, VkPipelineStageFlags dstStage) { add(sem, dstStage); }
 
 		void add(VkSemaphore sem, VkPipelineStageFlags dstStage) {
-			_samaphores.emplaceBack(sem);
+			_semaphores.emplaceBack(sem);
 			_dstStageFlags.emplaceBack(dstStage);
 		}
 
-		Span<VkSemaphore>			samaphores() const	  { return _samaphores; }
+		Span<VkSemaphore>			semaphores() const	  { return _semaphores; }
 		Span<VkPipelineStageFlags>	dstStageFlags() const { return _dstStageFlags; }
 
 	private:
 		static const Int N = 16;
-		Array<VkSemaphore,			N>	_samaphores;
+		Array<VkSemaphore,			N>	_semaphores;
 		Array<VkPipelineStageFlags, N>	_dstStageFlags;
 	};
 
@@ -342,6 +342,27 @@ public:
 	AX_VkSemaphore& create(AX_VkDevice& dev);
 	void destroy();
 
+#if AX_DEBUG_NAME
+	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
+#endif
+
+private:
+	VkSemaphore		_handle = VK_NULL_HANDLE;
+	AX_VkDevice*	_dev = nullptr;
+};
+
+class AX_VkTimelineSemaphore : public NonCopyable {
+public:
+	const VkSemaphore& handle() { return _handle; }
+	operator const VkSemaphore&() { return _handle; }
+
+	AX_VkTimelineSemaphore() = default;
+	~AX_VkTimelineSemaphore() { destroy(); }
+
+	AX_VkTimelineSemaphore& create(AX_VkDevice& dev, u64 initialValue);
+	void destroy();
+
+	void signal(u64 value);
 	bool wait(u64 value, Nanoseconds timeout = Nanoseconds::kMax());
 
 #if AX_DEBUG_NAME
