@@ -8,7 +8,7 @@ export namespace ax {
 template<class T, VecSIMD SIMD>
 class Color_<ColorModel::HSVA, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
-	static constexpr Int N = 4;	
+	static constexpr Int N = 4;
 public:
 	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
 	union {
@@ -19,7 +19,7 @@ public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr VecSIMD	kVecSIMD		= SIMD;
-	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
+	static constexpr ColorModel	kColorModel		= ColorModel::HSVA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
 	static constexpr Int		kElementCount	= N;

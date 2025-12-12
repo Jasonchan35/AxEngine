@@ -27,6 +27,7 @@ public:
 
 template<>
 class Color_<ColorModel::Packed, ColorElem_R5G5B5A1> {
+	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	union {
 		struct {
@@ -47,6 +48,7 @@ public:
 
 template<>
 class Color_<ColorModel::Packed, ColorElem_R11G11B10> {
+	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	union {
 		struct {
@@ -66,6 +68,7 @@ public:
 
 template<>
 class Color_<ColorModel::Packed, ColorElem_R10G10B10A2> {
+	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	union {
 		struct {

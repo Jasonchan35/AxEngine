@@ -19,7 +19,7 @@ public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr VecSIMD	kVecSIMD		= SIMD;
-	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
+	static constexpr ColorModel	kColorModel		= ColorModel::L;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
 	static constexpr Int		kElementCount	= N;
@@ -86,7 +86,7 @@ public:
 	using _NumLimit = VecSIMD_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr VecSIMD	kVecSIMD		= SIMD;
-	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
+	static constexpr ColorModel	kColorModel		= ColorModel::LA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
 	static constexpr Int		kElementCount	= N;

@@ -8,13 +8,14 @@ export namespace ax {
 template<class T>
 class Color_<ColorModel::BGRA, T> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
+	static constexpr Int N = 4;
 public:
 	using Element = T;
 	T b,g,r,a;
 
 	static constexpr ColorModel	kColorModel		= ColorModel::BGRA;
 	static constexpr ColorType	kColorType		= ColorType_make<T>(kColorModel);
-	static constexpr Int		kElementCount	= 4;
+	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
 
 	using ElemLimit = ColorElemLimit<T>;
