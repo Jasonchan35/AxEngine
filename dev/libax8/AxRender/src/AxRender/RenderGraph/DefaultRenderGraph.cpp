@@ -16,8 +16,8 @@ DefaultRenderGraph::DefaultRenderGraph() {
 	}
 
 	if (1) {
-//		_testTex0  = Texture2D::s_newFromFile(AX_ALLOC_REQ, "images/test/uvCheckerPalette.png");
-		// _testTex0 = Texture2D::s_newFromFile(AX_ALLOC_REQ, "images/test/uvChecker_BC7.dds");
+//		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvCheckerPalette.png");
+//		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvChecker_BC7.dds");
 		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvChecker.jpg");
 		_testTex1 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/radial_gradient.png");
 
