@@ -232,11 +232,11 @@ template<ColorType t> using  ColorType_Type = typename ColorType_Type_<t>::Type;
 // #undef E
 
 
-template<class> struct _IsColor_ : std::false_type {};
-template<ColorModel MODEL, class ELEM>
-struct _IsColor_< Color_<MODEL, ELEM> > : std::true_type {};
+template<class T> constexpr bool IsColor_ = false;
 
-template<class T> constexpr bool IsColor_ = _IsColor_<T>::value;
+template<ColorModel MODEL, class ELEM>
+constexpr bool IsColor_< Color_<MODEL, ELEM> > = true;
+
 
 
 } // namespace ax
