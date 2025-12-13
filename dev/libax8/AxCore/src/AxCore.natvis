@@ -155,17 +155,17 @@
 
 	<!-- ax::IArayStorage<*>::Storage -->
 	<Type Name="ax::IArrayStorage&lt;*&gt;::Storage">
-		<DisplayString Condition=" _small._isSmall">size={_small._size }/s{_small._capacity}</DisplayString>
-		<DisplayString Condition="!_small._isSmall">size={_normal._size}/{_normal._capacity}</DisplayString>
+		<DisplayString Condition=" _small.isSmall">size={_small.size }/s{_small.capacity}</DisplayString>
+		<DisplayString Condition="!_small.isSmall">size={_normal.size}/{_normal.capacity}</DisplayString>
 		<Expand>
-			<Item Name="data" Condition=" _small._isSmall">&amp;((SmallStorage_Dummy&amp;)_small)._data[0]</Item>
-			<Item Name="data" Condition="!_small._isSmall">_normal._data</Item>
+			<Item Name="data" Condition=" _small.isSmall">&amp;((SmallStorage_Dummy&amp;)_small).data[0]</Item>
+			<Item Name="data" Condition="!_small.isSmall">_normal.data</Item>
 
-			<Item Name="size" Condition=" _small._capacity &amp; 0x80">_small._size</Item>
-			<Item Name="size" Condition="~_small._capacity &amp; 0x80">_normal._size</Item>
+			<Item Name="size" Condition=" _small.capacity &amp; 0x80"> _small.size</Item>
+			<Item Name="size" Condition="~_small.capacity &amp; 0x80">_normal.size</Item>
 
-			<Item Name="capacity" Condition=" _small._isSmall"> _small._capacity</Item>
-			<Item Name="capacity" Condition="!_small._isSmall">_normal._capacity</Item>
+			<Item Name="capacity" Condition=" _small.isSmall"> _small.capacity</Item>
+			<Item Name="capacity" Condition="!_small.isSmall">_normal.capacity</Item>
 
 			<Item Name="kSmallExtraCapacity">kSmallExtraCapacity</Item>
 			<Item Name="kSmallDataOffset"   >kSmallDataOffset</Item>
@@ -180,14 +180,14 @@
 			<Synthetic Name="Elements">
 				<DisplayString> </DisplayString>
 				<Expand>
-					<ArrayItems Condition="_storage._small._isSmall">
-						<Size>_storage._small._size</Size>
-						<ValuePointer>&amp;((SmallStorage_Dummy&amp;)_storage._small)._data[0]</ValuePointer>
+					<ArrayItems Condition="_storage._small.isSmall">
+						<Size>_storage._small.size</Size>
+						<ValuePointer>&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]</ValuePointer>
 					</ArrayItems>
 
-					<ArrayItems Condition="!_storage._small._isSmall">
-						<Size>_storage._normal._size</Size>
-						<ValuePointer>_storage._normal._data</ValuePointer>
+					<ArrayItems Condition="!_storage._small.isSmall">
+						<Size>_storage._normal.size</Size>
+						<ValuePointer>_storage._normal.data</ValuePointer>
 					</ArrayItems>
 				</Expand>
 			</Synthetic>
@@ -207,7 +207,6 @@
 		</Expand>
 	</Type>
 
-
 	<!-- MutStrView_<*> -->
 	<Type Name="ax::MutStrView_&lt;*&gt;">
 		<DisplayString>size={_size} {_data, [_size]na}</DisplayString>
@@ -219,21 +218,21 @@
 
 	<!-- ax::IString_<*> -->
 	<Type Name="ax::IString_&lt;*&gt;">
-		<DisplayString Condition="_storage._small._isSmall">
+		<DisplayString Condition="_storage._small.isSmall">
 			{_storage} {
-				&amp;((SmallStorage_Dummy&amp;)_storage._small)._data[0]
-				, [_storage._small._size]na 
+				&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]
+				, [_storage._small.size]na 
 			}
 		</DisplayString>
-		<DisplayString Condition="!_storage._small._isSmall">
-			{_storage} {_storage._normal._data, [_storage._normal._size]na}
+		<DisplayString Condition="!_storage._small.isSmall">
+			{_storage} {_storage._normal.data, [_storage._normal.size]na}
 		</DisplayString>
 
-		<StringView  Condition="_storage._small._isSmall">
-			&amp;((SmallStorage_Dummy&amp;)_storage._small)._data[0]
+		<StringView  Condition="_storage._small.isSmall">
+			&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]
 		</StringView>
-		<StringView  Condition="!_storage._small._isSmall">
-			_storage._normal._data, [_storage._normal._size]na
+		<StringView  Condition="!_storage._small.isSmall">
+			_storage._normal.data, [_storage._normal.size]na
 		</StringView>
 		<Expand>
 			<Item Name="_storage">_storage</Item>

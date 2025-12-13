@@ -31,8 +31,8 @@ protected:
 	constexpr void _storageMove(IArrayStorage<T>&& rhs);
 	constexpr bool _storageEnsureCapacity(Int newCapacity);
 	
-	template<class... Args>
-	constexpr void _storageResize(Int newSize, Args&&... args);
+	template<class... ARGS>
+	constexpr void _storageResize(Int newSize, ARGS&&... args);
 
 	constexpr void _storageClear();
 	constexpr void _storageClearAndFree();
@@ -40,26 +40,26 @@ protected:
 
 	
 	struct NormalStorage {
-		u64                  _isSmall         : 1; // share between normal and small storage
-		u64                  _capacity        : 63;
-		u64                  _isAllocatedData : 1;
-		u64                  _size            : 63;
-		T*                   _data;
+		u64                  isSmall         : 1; // share between normal and small storage
+		u64                  capacity        : 63;
+		u64                  isAllocatedData : 1;
+		u64                  size            : 63;
+		T*                   data;
 		static constexpr u64 kCapacityMax = u64_max >> 1;
 		constexpr void       setCapacity(Int v);
 	};
 
 	struct SmallStorage {
-		u16                  _isSmall  : 1; // share between normal and small storage
-		u16                  _capacity : 15;
-		u16                  _size;
+		u16                  isSmall  : 1; // share between normal and small storage
+		u16                  capacity : 15;
+		u16                  size;
 		static constexpr u16 kCapacityMax = u16_max >> 1;
 		constexpr void       setCapacity(Int v);
 	};
 
 	struct SmallStorage_Dummy {
 		SmallStorage small_storagea;
-		T _data[1];
+		T data[1];
 	};
 	
 	union Storage {
@@ -68,7 +68,7 @@ protected:
 		NormalStorage _normal;
 
 		static constexpr bool kSmallBufferOptimization = IArrayStorage::kSmallBufferOptimization;
-		static constexpr Int  kSmallDataOffset    = offsetof(SmallStorage_Dummy, _data);
+		static constexpr Int  kSmallDataOffset    = offsetof(SmallStorage_Dummy, data);
 		static constexpr Int  kSmallExtraCapacity = Math::max_0<Int>(AX_SIZEOF(NormalStorage) - kSmallDataOffset) / AX_SIZEOF(T);
 
 
@@ -77,8 +77,8 @@ protected:
 
 		constexpr void resetToLocalBuf(T* data, Int initCap);
 		
-		AX_INLINE constexpr bool isSmall() const { return _small._isSmall; }
-		AX_INLINE constexpr bool isAllocatedData() const { return !isSmall() && _normal._isAllocatedData; }
+		AX_INLINE constexpr bool isSmall() const { return _small.isSmall; }
+		AX_INLINE constexpr bool isAllocatedData() const { return !isSmall() && _normal.isAllocatedData; }
 		AX_INLINE constexpr Int capacity() const;
 
 		AX_INLINE constexpr T* small_data() {
@@ -87,8 +87,8 @@ protected:
 		}
 		
 		AX_INLINE constexpr const T* data() const noexcept { return ax_const_cast(this)->data(); }
-		AX_INLINE constexpr T*       data()		  noexcept { return isSmall() ? small_data() : _normal._data; }
-		AX_INLINE constexpr Int      size() const noexcept { return isSmall() ? _small._size : _normal._size; }
+		AX_INLINE constexpr T*       data()		  noexcept { return isSmall() ? small_data() : _normal.data; }
+		AX_INLINE constexpr Int      size() const noexcept { return isSmall() ? _small.size : _normal.size; }
 		
 		constexpr void setSize(Int v) noexcept;
 		constexpr void setAllocDataPtr(T* data, Int cap) noexcept;
@@ -211,9 +211,9 @@ constexpr void IArrayStorage<T>::_storageResetToLocalBuf() {
 template <class T> AX_INLINE
 constexpr Int IArrayStorage<T>::Storage::capacity() const {
 	if constexpr (kSmallBufferOptimization) {
-		return isSmall() ? _small._capacity : _normal._capacity;
+		return isSmall() ? _small.capacity : _normal.capacity;
 	} else {
-		return _normal._capacity;
+		return _normal.capacity;
 	}
 }
 
@@ -224,18 +224,18 @@ constexpr void IArrayStorage<T>::Storage::setSize(Int v) noexcept {
 	
 	if (isSmall()) {
 		AX_ASSERT(v <= u16_max);
-		_small._size = static_cast<u16>(v);
+		_small.size = static_cast<u16>(v);
 	} else {
-		_normal._size = v;
+		_normal.size = v;
 	}
 }
 
 template <class T> AX_INLINE
 constexpr void IArrayStorage<T>::Storage::setAllocDataPtr(T* data, Int cap) noexcept {
 	auto oldSize = size();
-	_normal._size = oldSize;
-	_normal._data = data;
-	_normal._isAllocatedData = true;
+	_normal.size = oldSize;
+	_normal.data = data;
+	_normal.isAllocatedData = true;
 	_normal.setCapacity(cap);
 }
 
@@ -243,8 +243,8 @@ template <class T> AX_INLINE
 constexpr void IArrayStorage<T>::SmallStorage::setCapacity(Int v) {
 	if constexpr (kSmallBufferOptimization) {
 		if (v < 0 || v + Storage::kSmallExtraCapacity > kCapacityMax) throw Error_InvalidSize();
-		_isSmall = true;
-		_capacity = static_cast<u16>(v + Storage::kSmallExtraCapacity);
+		isSmall = true;
+		capacity = static_cast<u16>(v + Storage::kSmallExtraCapacity);
 	} else {
 		AX_ASSERT(false);
 	}
@@ -253,20 +253,20 @@ constexpr void IArrayStorage<T>::SmallStorage::setCapacity(Int v) {
 template <class T> AX_INLINE
 constexpr void IArrayStorage<T>::NormalStorage::setCapacity(Int v) {
 	if (v < 0 || v >= kCapacityMax) throw Error_InvalidSize();
-	_isSmall = false;
-	_capacity = v;
+	isSmall = false;
+	capacity = v;
 }
 
 template <class T> AX_INLINE
 constexpr void IArrayStorage<T>::Storage::resetToLocalBuf(T* data, Int initCap) {
 	if (kSmallBufferOptimization && initCap <= SmallStorage::kCapacityMax) {
 		_small.setCapacity(initCap);
-		_small._size = 0;
+		_small.size = 0;
 	} else {
 		_normal.setCapacity(initCap);
-		_normal._size = 0;
-		_normal._isAllocatedData = false;
-		_normal._data = data;
+		_normal.size = 0;
+		_normal.isAllocatedData = false;
+		_normal.data = data;
 	}
 }
 

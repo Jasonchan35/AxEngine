@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	Span_RevForEach_(T* begin, T* end) : _begin(begin), _end(end) {}
+	constexpr Span_RevForEach_(T* begin, T* end) : _begin(begin), _end(end) {}
 	
 	T*		_begin;
 	T*		_end;
@@ -63,7 +63,7 @@ template<class T>
 class Span_InterleaveForEach_ {
 	using This = Span_InterleaveForEach_;
 public:
-	operator Span_InterleaveForEach_<const T>() const { return Span_InterleaveForEach_<const T>(_begin, _end, _stride); }
+	constexpr operator Span_InterleaveForEach_<const T>() const { return Span_InterleaveForEach_<const T>(_begin, _end, _stride); }
 
 	class Iter {
 	public:
@@ -77,7 +77,7 @@ public:
 		constexpr bool	operator==	(const Iter & rhs)	{ return _p == rhs._p; }
 		constexpr bool	operator!=	(const Iter & rhs)	{ return _p != rhs._p; }
 	protected:
-		T*		_p;
+		T*	_p;
 		Int	_stride; // in bytes
 	};
 
@@ -112,7 +112,7 @@ public:
 		}
 	}
 
-	void fillRotateValues(Span<T> values) {
+	constexpr void fillRotateValues(Span<T> values) {
 		if (values.size() == 0) return;
 
 		Int i = 0;

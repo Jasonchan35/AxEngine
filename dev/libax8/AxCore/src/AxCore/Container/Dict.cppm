@@ -112,16 +112,16 @@ struct Dict_DefaultConfig<String_<T,N>, VALUE> : Dict_Config_<String_<T,N>, VALU
 template<class KEY, class VALUE, class CONFIG = Dict_DefaultConfig<KEY,VALUE>>
 class Dict : public NonCopyable {
 public:
-	using Node			= DictNode<KEY, VALUE>;
-	using OrderedList	= SPtrLinkedList<Node, Dict_OrderedListConfig>;
-	using HashList		= SPtrLinkedList<Node, Dict_HashListConfig>;
+	using Node				= DictNode<KEY, VALUE>;
+	using OrderedList		= SPtrLinkedList<Node, Dict_OrderedListConfig>;
+	using HashList			= SPtrLinkedList<Node, Dict_HashListConfig>;
 
-	using Key			= KEY;
-	using Value			= VALUE;
-	using InKey			= typename CONFIG::InKey;
-	using  FindEnumator	= Dict_FindEnumerator<Node, InKey>;
-	using CFindEnumator	= Dict_FindEnumerator<const Node, const InKey>;
-	using FindIter		= Dict_FindIter<Node>;
+	using Key				= KEY;
+	using Value				= VALUE;
+	using InKey				= typename CONFIG::InKey;
+	using  FindEnumerator	= Dict_FindEnumerator<Node, InKey>;
+	using CFindEnumerator	= Dict_FindEnumerator<const Node, const InKey>;
+	using FindIter			= Dict_FindIter<Node>;
 	static constexpr Int s_tableBufSize = CONFIG::s_tableBufSize;
 
 	void clear() { _clear(); }
@@ -144,11 +144,11 @@ public:
 	AX_INLINE		Node* 		findNode_hash	(const InKey& key, HashInt hash)		{ return _findNode(key, hash); }
 	AX_INLINE const Node* 		findNode_hash	(const InKey& key, HashInt hash) const	{ return ax_const_cast(this)->_findNode(key, hash); }
 
-	AX_INLINE  FindEnumator 	findAll			(const InKey& key)						{ return _findAll(key, HashInt::s_make(key)); }
-	AX_INLINE CFindEnumator 	findAll			(const InKey& key) const				{ return ax_const_cast(this)->_findAll(key, HashInt::s_make(key)); }
+	AX_INLINE  FindEnumerator 	findAll			(const InKey& key)						{ return _findAll(key, HashInt::s_make(key)); }
+	AX_INLINE CFindEnumerator 	findAll			(const InKey& key) const				{ return ax_const_cast(this)->_findAll(key, HashInt::s_make(key)); }
 
-	AX_INLINE  FindEnumator		findAll_hash	(const InKey& key, HashInt hash)		{ return _findAll(key, hash); }
-	AX_INLINE CFindEnumator		findAll_hash	(const InKey& key, HashInt hash) const	{ return ax_const_cast(this)->_findAll(key, hash); }
+	AX_INLINE  FindEnumerator	findAll_hash	(const InKey& key, HashInt hash)		{ return _findAll(key, hash); }
+	AX_INLINE CFindEnumerator	findAll_hash	(const InKey& key, HashInt hash) const	{ return ax_const_cast(this)->_findAll(key, hash); }
 	
 	AX_INLINE bool				erase			(const InKey& key)						{ return _erase(key, HashInt::s_make(key)); }
 	AX_INLINE bool				erase_hash		(const InKey& key, HashInt hash)		{ return _erase(key, hash); }
@@ -274,12 +274,12 @@ private:
 		return *_orderedList.append(node);
 	}
 
-	FindEnumator _findAll(const InKey& key, HashInt hash) {
+	FindEnumerator _findAll(const InKey& key, HashInt hash) {
 		if (_hashTable.size() <= 0) {
-			return FindEnumator(key, nullptr);
+			return FindEnumerator(key, nullptr);
 		}
 		auto& list = _getList(hash);
-		return FindEnumator(key, _findInHashList(list, hash, key));
+		return FindEnumerator(key, _findInHashList(list, hash, key));
 	}
 
 	Node* _findNode(const InKey& key, HashInt hash) {
