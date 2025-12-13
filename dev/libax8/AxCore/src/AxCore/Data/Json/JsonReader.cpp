@@ -39,7 +39,7 @@ bool JsonReader::isEndObject() {
 
 bool JsonReader::endObject() {
 	if (_valueType != ValueType::EndObject) {
-		if (onUnhandledMemeber()) return false;
+		if (onUnhandledMember()) return false;
 
 		if (!_levels.size()) {
 			error("invalid level when end object");
@@ -82,7 +82,7 @@ bool JsonReader::skipUnhandledMember(bool showWarning) {
 	return true;
 }
 
-bool JsonReader::onUnhandledMemeber() {
+bool JsonReader::onUnhandledMember() {
 	if (!unhandledMember()) return false;
 	warning("unhandled object member \"{}\"", _token.str);
 	skipValue();

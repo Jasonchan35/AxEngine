@@ -29,7 +29,7 @@ public:
 
 	JsonReader(StrView json, StrView filenameForErrorMessage);
 
-	void readJson(StrView json, StrView filename);
+	void readJson(StrView json, StrView filenameForErrorMessage);
 
 	ValueType valueType() { return _valueType; }
 
@@ -128,7 +128,7 @@ public:
 
 	bool unhandledMember();
 	bool skipUnhandledMember(bool showWarning);
-	bool onUnhandledMemeber();
+	bool onUnhandledMember();
 
 private:
 	template<class V> void _readNumericValue(V&	outValue);

@@ -12,7 +12,7 @@ public:
 	FileMemMap() = default;
 	FileMemMap(StrView filename) { openFile(filename); }
 
-	FileMemMap(FileMemMap && r) { operator=(AX_FORWARD(r)); }
+	FileMemMap(FileMemMap && r) noexcept { operator=(AX_FORWARD(r)); }
 
 	~FileMemMap();
 
@@ -30,7 +30,7 @@ public:
 
 	StrView		filename() const { return _file.filename(); }
 
-	void operator=(FileMemMap && r);
+	void operator=(FileMemMap && r) noexcept;
 
 private:
 	FileStream	_file;
@@ -44,7 +44,7 @@ private:
 //-----------
 
 inline
-void FileMemMap::operator=(FileMemMap&& r) {
+void FileMemMap::operator=(FileMemMap&& r) noexcept {
 	close();
 	_file = std::move(r._file);
 #if AX_OS_WINDOWS
@@ -77,7 +77,7 @@ inline void FileMemMap::openFile(StrView filename) {
 		throw Error_File();
 	}
 
-	auto* data = reinterpret_cast<Byte*>(MapViewOfFile(_mapping, FILE_MAP_READ, 0, 0, 0));
+	auto* data = static_cast<Byte*>(MapViewOfFile(_mapping, FILE_MAP_READ, 0, 0, 0));
 	if (!data) {
 		throw Error_File();
 	}

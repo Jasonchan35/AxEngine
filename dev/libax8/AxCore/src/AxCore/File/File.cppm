@@ -49,7 +49,7 @@ struct File {
 
 	static void		copy					(StrView dstFilename, StrView srcFilename);
 
-	static void		RevealInExplorer		(StrView path,  bool insideFolder = false);
+	static void		revealInExplorer		(StrView path,  bool insideFolder = false);
 
 	enum WriteFileResult {
 		None,

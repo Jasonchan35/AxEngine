@@ -101,16 +101,16 @@ template <class T>
 
 	constexpr No_rvalue_(T && v) : value(v) {}
 		
-	constexpr operator       T&()       { return value; }
-	constexpr operator const T&() const { return value; }
+	constexpr operator			T&()       { return value; }
+	constexpr operator const	T&() const { return value; }
 
-	AX_INLINE 		T* operator->()			{ return &value; }
-	AX_INLINE const	T* operator->() const	{ return &value; }
+	AX_INLINE constexpr			T* operator->()			{ return &value; }
+	AX_INLINE constexpr const	T* operator->() const	{ return &value; }
 
-	AX_INLINE 		T& operator* ()			{ return value; }
-	AX_INLINE const	T& operator* () const	{ return value; }
+	AX_INLINE constexpr			T& operator* ()			{ return value; }
+	AX_INLINE constexpr const	T& operator* () const	{ return value; }
 
-	AX_INLINE explicit operator bool() const	{ return static_cast<bool>(value);  }
+	AX_INLINE explicit constexpr operator bool() const	{ return static_cast<bool>(value);  }
 };
 
 template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;

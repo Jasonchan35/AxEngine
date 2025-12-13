@@ -11,13 +11,13 @@ template<class T> struct BinIO_Handler;
 
 template<class T>
 struct BinIO_Handler {
-	template<class SE> void onIO(SE& se, T& value) {
+	template<class SE> static void onIO(SE& se, T& value) {
 		static_assert(!Type_IsSpan<T>,
 			"please use FixedSpan / IArray for IO, since Span cannot do dynamic resize");
 		static_assert(!Type_IsStrView<T>, 
 			"please use IString for IO, since StrView cannot do dynamic resize");
 
-		value.onBinaryIO(se);
+		value.onBinIO(se);
 	}
 };
 

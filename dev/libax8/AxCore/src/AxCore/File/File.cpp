@@ -180,7 +180,7 @@ void File::moveToRecycleBin	( StrView filename ) {
 	if( 0 != SHFileOperation( &op ) ) throw Error_File();
 }
 
-void File::RevealInExplorer(StrView path, bool insideFolder) {
+void File::revealInExplorer(StrView path, bool insideFolder) {
 	if (!File::exists(path) && !FileDir::exists(path)) return;
 
 	auto fullpath = FilePath::absPath(path);
@@ -255,10 +255,10 @@ bool FileDir::exists(StrView path) {
 	return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-class Dir_Win32Handle : public NonCopyable {
+class FileDir_Win32Handle : public NonCopyable {
 public:
-	Dir_Win32Handle(HANDLE h = INVALID_HANDLE_VALUE) : _h(h) {}
-	~Dir_Win32Handle() { unref(); }
+	FileDir_Win32Handle(HANDLE h = INVALID_HANDLE_VALUE) : _h(h) {}
+	~FileDir_Win32Handle() { unref(); }
 
 	void set(HANDLE h) { unref(); _h = h; }
 	void unref() { if(isValid()) {::FindClose(_h); _h = INVALID_HANDLE_VALUE; } }
@@ -278,7 +278,7 @@ void FileDir::listEntries(StrView inPath, bool subDir, const ListEntryDelegate& 
 	auto pathW = TempStringW::s_format(L"{}/*", inPath);
 
 	WIN32_FIND_DATA data;
-	Dir_Win32Handle h(::FindFirstFile(pathW.c_str(), &data));
+	FileDir_Win32Handle h(::FindFirstFile(pathW.c_str(), &data));
 	if (!h.isValid()) {
 		throw Error_File();
 	}

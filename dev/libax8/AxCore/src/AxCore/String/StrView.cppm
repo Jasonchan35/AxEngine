@@ -83,7 +83,7 @@ public:
 	AX_NODISCARD constexpr bool samePtrAndSize(CSpan r) const noexcept { return _size == r._size && _data == r._data; }
 		
 	static constexpr MView s_empty() { return MutStrView_(); }
-	explicit operator bool() const { return size() > 0; }
+	explicit constexpr operator bool() const { return size() > 0; }
 
 	//--------------
 	AX_INLINE constexpr       T*	data()       noexcept 				{ return _data; }

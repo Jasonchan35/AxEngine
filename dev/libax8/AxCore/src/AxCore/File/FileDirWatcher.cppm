@@ -49,9 +49,9 @@ public:
 private:
 
 #if AX_OS_WINDOWS
-	static const Int _MaxBufferSize = 256 * 1024;
+	static constexpr Int kMaxBufferSize = 256 * 1024;
 
-	HANDLE hDir = INVALID_HANDLE_VALUE;
+	HANDLE _hDir = INVALID_HANDLE_VALUE;
 	Array<Byte>	_buffer;
 	OVERLAPPED _overlapped = {};
 	static void CALLBACK _s_onChangeNotification(DWORD errorCode, DWORD bytesTransferred, LPOVERLAPPED lpOverlapped) noexcept;

@@ -24,7 +24,7 @@ public:
 	bool		isOpened			() const;
 
 	void		lock				( bool exclusive );
-	bool		trylock				( bool exclusive );
+	bool		tryLock				( bool exclusive );
 	void		unlock				();
 
 	void		setPos				( FileSize n );
@@ -39,28 +39,28 @@ public:
 	void		readBytes			(MutByteSpan buf);
 	void		writeBytes			(   ByteSpan buf);
 
-	void		writeText			( StrView s );
-	void		writeUtf8			( const StrViewA& s );
+	void		writeText			( StrView buf );
+	void		writeUtf8			( const StrViewA& buf );
 
-	void		readAllBytes		( IByteArray& out_buf )	{ out_buf.clear(); appendReadAllBytes(out_buf); }
-	void		appendReadAllBytes	( IByteArray& out_buf );
+	void		readAllBytes		( IByteArray& buf )	{ buf.clear(); appendReadAllBytes(buf); }
+	void		appendReadAllBytes	( IByteArray& buf );
 
-	void		readAllText			( IString& out_buf )	{ out_buf.clear(); appendReadAllText(out_buf); }
-	void		appendReadAllText	( IString& out_buf );
+	void		readAllText			( IString& buf )	{ buf.clear(); appendReadAllText(buf); }
+	void		appendReadAllText	( IString& buf );
 
-	void		readAllUtf8			( IStringA & out_buf )	{ out_buf.clear(); appendReadAllUtf8(out_buf); }
-	void		appendReadAllUtf8	( IStringA & out_buf );
+	void		readAllUtf8			( IStringA & buf )	{ buf.clear(); appendReadAllUtf8(buf); }
+	void		appendReadAllUtf8	( IStringA & buf );
 
 	void		flush			();
 
 	StrView	filename		() const { return _filename; }
 
 	FileStream();
-	FileStream(FileStream && r) { operator=(AX_FORWARD(r)); }
+	FileStream(FileStream && r) noexcept { operator=(AX_FORWARD(r)); }
 
 	~FileStream();
 
-	void operator=(FileStream && r);
+	void operator=(FileStream && r) noexcept;
 
 #if AX_OS_WINDOWS
 public:

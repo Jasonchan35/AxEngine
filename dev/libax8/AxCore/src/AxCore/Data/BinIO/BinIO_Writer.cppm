@@ -31,7 +31,7 @@ public:
 
 	template<class T, Int N> void io_fixed_span(FixedSpan<T, N> value);
 	template<class T> void io_array(IArray<T>& obj);
-	template<class T> void io_string(IString_<T>& value);
+	template<class T> void io_string(IString_<T>& obj);
 
 	template<class T> AX_INLINE
 	BinIO_Writer& operator<<(T& value) { io(value); return *this; }

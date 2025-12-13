@@ -17,12 +17,12 @@ namespace ax {
 void CALLBACK FileDirWatcher::_s_onChangeNotification (
 	DWORD errorCode, DWORD bytesTransferred, LPOVERLAPPED lpOverlapped) noexcept 
 {
-	auto* p = reinterpret_cast<FileDirWatcher*>(lpOverlapped->hEvent);
+	auto* p = static_cast<FileDirWatcher*>(lpOverlapped->hEvent);
 	p->_onChangeNotification(errorCode, bytesTransferred);
 }
 
 void FileDirWatcher::_onChangeNotification(DWORD errorCode, DWORD bytesTransferred) {
-	if (hDir == INVALID_HANDLE_VALUE) return;
+	if (_hDir == INVALID_HANDLE_VALUE) return;
 
 //	AX_LOG("bytesTransferred = {}", bytesTransferred);
 	if (bytesTransferred > 0) {
@@ -66,14 +66,14 @@ void FileDirWatcher::_onChangeNotification(DWORD errorCode, DWORD bytesTransferr
 
 // Start up another ReadDirectoryChangesW
 
-	_buffer.resize(_MaxBufferSize);
+	_buffer.resize(kMaxBufferSize);
 	DWORD bytesReturned = 0;
 
 	_overlapped = {};
 	_overlapped.hEvent = this; // not used, if CompletionRoutine used, so it's free to use it as user pointer
 
 	BOOL success = ::ReadDirectoryChangesW(
-							hDir, 
+							_hDir, 
 							_buffer.data(),
 							SafeCast(_buffer.size()),
 							_watchSubDir, 
@@ -100,7 +100,7 @@ void FileDirWatcher::create(StrView path, bool watchSubDir) {
 
 	auto pathW = TempStringW::s_utf(FilePath::winPath(_path));
 
-	hDir = ::CreateFile(pathW.c_str(),										// Directory to watch
+	_hDir = ::CreateFile(pathW.c_str(),										// Directory to watch
 						FILE_LIST_DIRECTORY,									// Access type
 						FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, // Share mode
 						nullptr,												// Security attributes
@@ -108,7 +108,7 @@ void FileDirWatcher::create(StrView path, bool watchSubDir) {
 						FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,		// File attributes
 						nullptr);												// Template file
 
-	if (hDir == INVALID_HANDLE_VALUE) {
+	if (_hDir == INVALID_HANDLE_VALUE) {
 		throw Error_FileDirWatcher();
 	}
 
@@ -127,9 +127,9 @@ void FileDirWatcher::create(StrView path, bool watchSubDir) {
 }
 
 void FileDirWatcher::destroy() {
-	if (hDir != INVALID_HANDLE_VALUE) {
-		::CloseHandle(hDir);
-		hDir = INVALID_HANDLE_VALUE;
+	if (_hDir != INVALID_HANDLE_VALUE) {
+		::CloseHandle(_hDir);
+		_hDir = INVALID_HANDLE_VALUE;
 	}
 
 	::KillTimer(nullptr, reinterpret_cast<UINT_PTR>(this));

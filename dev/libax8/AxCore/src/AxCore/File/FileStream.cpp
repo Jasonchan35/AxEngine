@@ -5,7 +5,7 @@ import AxCore.Logger;
 
 namespace  ax {
 
-void FileStream::operator=(FileStream && r) {
+void FileStream::operator=(FileStream && r) noexcept {
 	close();
 	_fd = r._fd;
 	_filename = std::move(r._filename);
@@ -40,7 +40,7 @@ void FileStream::openWrite(StrView filename, bool truncate) {
 	}
 }
 
-void FileStream::appendReadAllUtf8 ( IStringA& buf ) {
+void FileStream::appendReadAllUtf8(IStringA& buf) {
 	_check_fd();
 
 	FileSize cur = getPos();
@@ -63,27 +63,27 @@ void FileStream::appendReadAllUtf8 ( IStringA& buf ) {
 	}
 }
 
-void FileStream::appendReadAllText ( IString & out_buf ) {
+void FileStream::appendReadAllText(IString & buf) {
 	#if AX_TYPE_CHAR_DEFINE == 'A'
-		appendReadAllUtf8( out_buf );
+		appendReadAllUtf8( buf );
 	#else
 		TempStringA tmp;
 		appendReadAllUtf8( tmp );
-		out_buf.appendUtf( tmp );
+		buf.appendUtf( tmp );
 	#endif
 }
 
-void FileStream::writeText ( StrView buf ) {
+void FileStream::writeText(StrView buf) {
 	TempStringA bufA;
 	bufA.setUtf(buf);
 	writeUtf8(bufA);
 }
 
-void FileStream::writeUtf8 ( const StrViewA& buf ) {
+void FileStream::writeUtf8(const StrViewA& buf) {
 	writeBytes( buf.toByteSpan() );
 }
 
-void FileStream::appendReadAllBytes ( IByteArray & buf ) {
+void FileStream::appendReadAllBytes(IByteArray & buf) {
 	FileSize cur = getPos();
 
 	FileSize	file_size = getFileSize();
@@ -438,12 +438,12 @@ void FileStream::readBytes(MutByteSpan buf) {
 	DWORD	result = 0;
 	BOOL ret = ::ReadFile( _fd, buf.data(), n, &result, nullptr );
 	if( !ret ) {
-		DWORD e = GetLastError();
+		const DWORD e = GetLastError();
 //		ax_log_win32_error("FileStream read file", e);
-		switch( e ) {
-			case ERROR_LOCK_VIOLATION: throw Error_Undefined();
+		switch (e) {
+			case ERROR_LOCK_VIOLATION:	throw Error_Undefined();
+			default:					throw Error_Undefined();
 		}
-		throw Error_Undefined();
 	}
 }
 
@@ -495,23 +495,23 @@ void FileStream::open	( StrView filename, FileMode mode, FileAccess access, File
 		DWORD err = GetLastError();
 //		ax_log_win32_error( "File_open", err );
 		AX_LOG("open file error {}: filename=[{}] cwd=[{}]", errno, filename, FilePath::currentDir());
-		switch( err ) {
+		switch (err) {
 			case ERROR_FILE_NOT_FOUND:		throw Error_File(Fmt("File not found: {}",			filename));
 			case ERROR_PATH_NOT_FOUND:		throw Error_File(Fmt("File path not found: {}", 	filename));
 			case ERROR_FILE_EXISTS:			throw Error_File(Fmt("File exists: {}",				filename));
 			case ERROR_ALREADY_EXISTS:		throw Error_File(Fmt("File already exists: {}", 	filename));
 			case ERROR_ACCESS_DENIED:		throw Error_File(Fmt("File access denied: {}",		filename));
 			case ERROR_SHARING_VIOLATION:	throw Error_File(Fmt("File sharing violation: {}",	filename));
+			default:						throw Error_Undefined();
 		}
-		throw Error_Undefined();
 	}
 }
 
 bool FileStream::_os_lock( DWORD flags ) {
 	_check_fd();
 
-    OVERLAPPED offset = {};
-	const DWORD len = 0xffffffff;
+    OVERLAPPED      offset = {};
+	constexpr DWORD len    = 0xffffffff;
 	return 0 != ::LockFileEx( _fd, flags, 0, len, len, &offset );
 }
 
@@ -523,7 +523,7 @@ void FileStream::lock( bool exclusive ) {
 	}
 }
 
-bool FileStream::trylock( bool exclusive ) {
+bool FileStream::tryLock( bool exclusive ) {
 	if( exclusive ) {
 	    return _os_lock( LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY );
 	}else{

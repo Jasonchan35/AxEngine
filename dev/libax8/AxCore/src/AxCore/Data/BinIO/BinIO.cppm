@@ -17,7 +17,7 @@ struct BinIO {
 template<class T>
 struct BinIO_Handler< IArray<T> > {
 	template<class SE>
-	void onIO(SE& se, IArray<T>& v) {
+	static void onIO(SE& se, IArray<T>& v) {
 		if constexpr (se.isReader()) {
 			Int len = 0;
 			se.io(len);
