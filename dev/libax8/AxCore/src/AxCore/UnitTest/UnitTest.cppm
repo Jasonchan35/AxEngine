@@ -43,7 +43,7 @@ bool UnitTest_Validate(bool success, const char* expr_str, const std::source_loc
 	const int kBufSize = 4096;
 	char buf[kBufSize + 1];
 	snprintf(buf, kBufSize, "%s %s", (success ? "[ OK ]" : "[FAIL]"), expr_str);
-	__ax_internal_log(buf);
+	ax_internal_log(buf);
 	if (!success) {
 		__ax_internal_assert("", expr_str, buf, loc);
 	}
@@ -65,7 +65,7 @@ inline void UnitTest_RunCase(const char* funcName, void (TEST_CLASS::*testFunc)(
 	const int kBufSize = 4096;
 	char msg[kBufSize + 1];
 	snprintf(msg, kBufSize, "---- RunCase [%s] ---------", funcName);
-	__ax_internal_log(msg);
+	ax_internal_log(msg);
 
 	try {
 		TEST_CLASS obj;		
@@ -73,17 +73,17 @@ inline void UnitTest_RunCase(const char* funcName, void (TEST_CLASS::*testFunc)(
 
 	} catch (const Error& e) {
 		snprintf(msg, kBufSize, "\n  uncatched ax::Error occur %s", e.what());
-		__ax_internal_log(msg);
+		ax_internal_log(msg);
 		AX_ASSERT(false);
 
 	} catch (const std::exception& e) {
 		snprintf(msg, kBufSize, "\n  uncatched std::exception occur %s", e.what());
-		__ax_internal_log(msg);
+		ax_internal_log(msg);
 		AX_ASSERT(false);
 
 	} catch (...) {
 		snprintf(msg, kBufSize, "\n  uncatched exception occur");
-		__ax_internal_log(msg);
+		ax_internal_log(msg);
 		AX_ASSERT(false);
 	}
 	//	TestClass o;

@@ -3,13 +3,13 @@
 #include "AxCore-Common.h"
 
 #define	AX_TEST_GROUP( fn )	\
-	::ax::__ax_internal_log("\n====== Group [" #fn "] ============"); \
+	::ax::ax_internal_log("\n====== Group [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----
 
 #define	AX_TEST_FUNC( fn )	\
-	::ax::__ax_internal_log("\n======= Func [" #fn "] ============"); \
+	::ax::ax_internal_log("\n======= Func [" #fn "] ============"); \
 	void fn(); \
 	fn(); \
 //----

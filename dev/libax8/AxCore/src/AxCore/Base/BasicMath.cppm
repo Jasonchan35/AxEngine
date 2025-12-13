@@ -5,14 +5,14 @@ export import AxCore.BasicType;
 
 export namespace ax::Math {
 
-template<Int N, class T> struct _s_pow_;
-template<class T> struct _s_pow_<0,T> { static constexpr T compute(const T& v) { return 1; } };
-template<class T> struct _s_pow_<1,T> { static constexpr T compute(const T& v) { return v; } };
-template<class T> struct _s_pow_<2,T> { static constexpr T compute(const T& v) { return v * v; } };
-template<class T> struct _s_pow_<3,T> { static constexpr T compute(const T& v) { return v * v * v; } };
+template<Int N, class T> struct pow_IMPL;
+template<class T> struct pow_IMPL<0,T> { static constexpr T compute(const T& v) { return 1; } };
+template<class T> struct pow_IMPL<1,T> { static constexpr T compute(const T& v) { return v; } };
+template<class T> struct pow_IMPL<2,T> { static constexpr T compute(const T& v) { return v * v; } };
+template<class T> struct pow_IMPL<3,T> { static constexpr T compute(const T& v) { return v * v * v; } };
 
 template<Int N, class T>
-constexpr T s_pow(const T& v) { return _s_pow_<N, T>::compute(v); } 
+constexpr T pow_(const T& v) { return pow_IMPL<N, T>::compute(v); } 
 
 //-------------------------
 template< class T > constexpr Int sign( const T& a ) {
@@ -22,11 +22,31 @@ template< class T > constexpr Int sign( const T& a ) {
 	return (a > 0) ? 1 : 0;
 }
 
-template <class T>                                inline constexpr T zero    = T::s_zero();
-template <class T> requires Type_IsFundamental<T> inline constexpr T zero<T> = T(0);
+template<class T>
+struct zero_T { static constexpr T get() { return T::s_zero(); } };
 
-template <class T>                                inline constexpr T one     = T::s_one();
-template <class T> requires Type_IsFundamental<T> inline constexpr T one<T>  = T(1);
+template<class T> requires Type_IsFundamental<T>
+struct zero_T<T> { static constexpr T get() { return T(0); } };
+
+template<class T>
+constexpr T zero_() { return zero_T<T>::get(); }
+
+struct zero { // auto return type
+	template<class T> constexpr operator T() const { return zero_<T>(); }
+};
+
+template<class T>
+struct one_T { static constexpr T get() { return T::s_one(); } };
+
+template<class T> requires Type_IsFundamental<T>
+struct one_T<T> { static constexpr T get() { return T(1); } };
+
+template<class T>
+constexpr T one_() { return one_T<T>::get(); }
+
+struct one {
+	template<class T> constexpr operator T() const { return one_<T>(); }
+};
 
 template< class T >                                AX_INLINE constexpr T	abs	( const T& a )	{ return a.abs(); }
 template< class T > requires Type_IsFundamental<T> AX_INLINE constexpr T	abs	( const T& a )	{ return a >= T(0) ? a : -a ; }
@@ -41,15 +61,15 @@ template<class T> AX_NODISCARD AX_INLINE T max	( const T& a, const T& b, const T
 template<class T> AX_NODISCARD AX_INLINE T min	( const T& a, const T& b, const T& c, const T& d )		{ return min(min(a,b), min(c,d)); }
 template<class T> AX_NODISCARD AX_INLINE T max	( const T& a, const T& b, const T& c, const T& d )		{ return max(max(a,b), max(c,d)); }
 
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	min_0	( const T& a )	{ return min(a, zero<T>); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	max_0	( const T& a )	{ return max(a, zero<T>); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	min_0	( const T& a )	{ return min(a, zero_<T>()); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	max_0	( const T& a )	{ return max(a, zero_<T>()); }
 
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	min_1	( const T& a )	{ return min(a, one<T>); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	max_1	( const T& a )	{ return max(a, one<T>); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	min_1	( const T& a )	{ return min(a, one_<T>()); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	max_1	( const T& a )	{ return max(a, one_<T>()); }
 
 //! x clamped to the range [a,b]
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp	( const T& x, const T& a, const T & b )	{ return max(a, min(b,x)); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp_01( const T& x )							{ return clamp(x, zero<T>(), one<T>()); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp_01( const T& x )							{ return clamp(x, zero_<T>(), one_<T>()); }
 
 //--------------
 template<class T> AX_INLINE constexpr void min_itself		(T& x, const T& a ) { x = min(x, a); }
@@ -83,10 +103,10 @@ AX_NODISCARD AX_INLINE double	floor	( double a )	{ return std::floor(a); }
 	AX_NODISCARD AX_INLINE double round	( double a )	{ return std::round(a); }
 #endif
 
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int trunc_to_Int(const T& src) { return static_cast<Int>(trunc(src)); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int round_to_Int(const T& src) { return static_cast<Int>(round(src)); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int  ceil_to_Int(const T& src) { return static_cast<Int>(ceil( src)); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int floor_to_Int(const T& src) { return static_cast<Int>(floor(src)); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int truncToInt(const T& src) { return static_cast<Int>(trunc(src)); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int roundToInt(const T& src) { return static_cast<Int>(round(src)); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int  ceilToInt(const T& src) { return static_cast<Int>(ceil( src)); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr Int floorToInt(const T& src) { return static_cast<Int>(floor(src)); }
 
 template<class T> inline constexpr T infinity_() { return NumLimit<T>::infinity(); }
 struct infinity { template<class T> constexpr operator T() const { return infinity_<T>(); } };
@@ -157,7 +177,7 @@ AX_NODISCARD AX_INLINE constexpr bool almostEqual(const A& a, const B& b) {
 
 template<class T> AX_NODISCARD AX_INLINE constexpr
 bool almostZero(const T& a) {
-	return (almostEqual(a, zero<T>));
+	return (almostEqual(a, zero_<T>()));
 }
 
 template<class T> AX_NODISCARD AX_INLINE constexpr
@@ -168,7 +188,7 @@ bool exactlyEqual(const T& a, const T& b) {
 }
 
 template< class T > AX_NODISCARD AX_INLINE constexpr
-T	safeDiv	( const T& a, const T& b )	{ return almostZero(b) ? zero<T> : a / b; }
+T	safeDiv	( const T& a, const T& b )	{ return almostZero(b) ? zero_<T>() : a / b; }
 
 template< class T > AX_NODISCARD AX_INLINE constexpr
 bool	isInRange	(const T& x, const T& a, const T & b)		{ return x >= a && x <= b; }
@@ -193,18 +213,14 @@ constexpr T nextPow2_half(const T& v) {
 	return h >= v ? h : o;
 }
 
-template<class T> requires Type_AnyFloat<T>
+template<class T>
 AX_NODISCARD AX_INLINE constexpr T alignTo(const T& n, const T& a) {
 	if constexpr(std::is_floating_point_v<T>) {
 		T i = floor( n / a ) * a;
 		if (almostEqual(i,n)) return i;
 		return (n > 0) ? i+a : i-a;
-	}
-}
-
-template<class T> requires Type_AnyInt<T>
-AX_NODISCARD AX_INLINE constexpr T alignTo(const T& n, const T& a) {
-	if constexpr(std::is_unsigned_v<T>) {
+			
+	} else if constexpr(std::is_unsigned_v<T>) {
 		T r = n % a;
 		if( r == 0 ) return n;
 		return n + (a-r);

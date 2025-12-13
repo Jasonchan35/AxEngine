@@ -24,8 +24,6 @@ protected:
 	virtual void onStop() {}
 	virtual void onTick() { Thread::sleep(Milliseconds(100)); }
 
-	void setAppName(StrView name) { _name = name; }
-
 private:
 #if AX_OS_WINDOWS
 	static	BOOL	WINAPI s_winConsoleCtrlHandler(DWORD dwCtrlType) noexcept;
@@ -40,7 +38,7 @@ private:
 
 	SERVICE_STATUS_HANDLE _winServiceStatusHandle = nullptr;
 #else
-	static 	void s_singalHandler(int sig);
+	static 	void s_signalHandler(int sig);
 	bool _setupDaemon();
 
 #endif
@@ -48,7 +46,6 @@ private:
 	virtual int onRun() final;
 	void _daemonRun();
 
-	String	_name;
 	bool	_quitApp = false;
 };
 

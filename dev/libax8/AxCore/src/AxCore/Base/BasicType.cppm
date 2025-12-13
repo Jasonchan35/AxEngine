@@ -110,7 +110,7 @@ template <class T>
 	AX_INLINE 		T& operator* ()			{ return value; }
 	AX_INLINE const	T& operator* () const	{ return value; }
 
-	AX_INLINE explicit operator bool() const	{ return bool(value);  }
+	AX_INLINE explicit operator bool() const	{ return static_cast<bool>(value);  }
 };
 
 template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
@@ -324,7 +324,7 @@ AX_INLINE consteval StrLit32 operator ""_sv(const Char32* sz, size_t n)  noexcep
 
 
 // for internal use, i.e. unit test cannot have high level logger functions
-inline void __ax_internal_log(const char* msg) {
+inline void ax_internal_log(const char* msg) {
 #if AX_OS_ANDROID
 	__android_log_write(ANDROID_LOG_INFO, "libax", msg);
 #else
@@ -333,7 +333,7 @@ inline void __ax_internal_log(const char* msg) {
 }
 
 // for internal use, i.e. unit test cannot have high level logger functions
-inline void __ax_internal_logError(const char* msg) {
+inline void ax_internal_log_error(const char* msg) {
 #if AX_OS_ANDROID
 	__android_log_write(ANDROID_LOG_ERROR, "libax", msg);
 #else
@@ -341,13 +341,13 @@ inline void __ax_internal_logError(const char* msg) {
 #endif
 }
 
-void __ax_internal_forceCrash() {
+void ax_internal_force_crash() {
 	std::cout << "ax_force_crash\n";
 	*reinterpret_cast<int*>(1) = 0;
 }
 
 inline void __ax_internal_assert(const char* title, const char* expr, const char* msg, const std::source_location& srcLoc = std::source_location::current()) {
-	const int bufLen = 32 * 1024;
+	constexpr int bufLen = 32 * 1024;
 	char buf[bufLen + 1];
 	snprintf(buf, bufLen,
 		"\n%s\n"
@@ -456,8 +456,8 @@ consteval Int ax_consteval_Int(size_t v) {
 	return o;
 } 
 
-template<class T, class... Args > AX_INLINE
-T* ax_call_constructor(T* p, Args&&... args ) {
+template<class T, class... ARGS > AX_INLINE
+T* ax_call_constructor(T* p, ARGS&&... args ) {
 	return ::new(p) T(AX_FORWARD(args)...);
 }
 
@@ -466,7 +466,7 @@ void ax_call_destructor(T* p ) noexcept {
 	p->~T();
 }
 
-template<Int... ints> using IntSequence = std::integer_sequence<Int, ints...>;
+template<Int... ARGS> using IntSequence = std::integer_sequence<Int, ARGS...>;
 template<Int N> using IntSequence_make = std::make_integer_sequence<Int, N>;
 
 template<class T>

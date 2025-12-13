@@ -19,7 +19,7 @@ AppBase::AppBase() {
 	AppBase_instance = this;
 
 #if AX_OS_WINDOWS
-	const int tmpSize = 2048;
+	constexpr int tmpSize = 2048;
 	wchar_t	tmp[tmpSize];
 
 	auto len = GetModuleFileNameW(nullptr, tmp, tmpSize);
@@ -55,7 +55,7 @@ StrView AppBase::currentExecuteFilename() const {
 }
 
 Span<StrView> AppBase::commandArguments() const { 
-	auto* p = AppArgments::s_instance();
+	auto* p = AppArguments::s_instance();
 	return p ? p->args() : Span<StrView>();
 }
 
@@ -90,13 +90,13 @@ int	AppBase::_run() {
 
 //--------------
 
-static AppArgments* AppArgments_instance;
+static AppArguments* AppArgments_instance;
 
-AppArgments* AppArgments::s_instance() {
+AppArguments* AppArguments::s_instance() {
 	return AppArgments_instance;
 }
 
-AppArgments::AppArgments(int argc, const char* argv[]) {
+AppArguments::AppArguments(int argc, const char* argv[]) {
 	AX_ASSERT(!AppArgments_instance);
 	AppArgments_instance = this;
 
@@ -130,7 +130,7 @@ AppArgments::AppArgments(int argc, const char* argv[]) {
 	}
 }
 
-AppArgments::~AppArgments() {
+AppArguments::~AppArguments() {
 	AX_ASSERT(AppArgments_instance == this);
 	AppArgments_instance = nullptr;
 }

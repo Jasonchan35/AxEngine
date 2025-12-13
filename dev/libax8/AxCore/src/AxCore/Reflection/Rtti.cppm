@@ -159,12 +159,12 @@ private:
 		this->_name = MetaType::s_name();
 		using OwnFields = typename MetaType::OwnFields;
 		
-		this->_ownFields.ensureCapacity(OwnFields::Size);
+		this->_ownFields.ensureCapacity(OwnFields::kSize);
 		OwnFields::template ForEachType<OwnField_Handler>(this);
 		
 		//---- All Fields -----
 		if (_base) {
-			this->_allFields.ensureCapacity(_base->_allFields.size() + OwnFields::Size);
+			this->_allFields.ensureCapacity(_base->_allFields.size() + OwnFields::kSize);
 			this->_allFields = _base->_allFields;
 		}
 		for (auto* field : this->_ownFields) {

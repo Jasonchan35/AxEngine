@@ -61,11 +61,11 @@
 #define AX_ASSERT(EXPR) ::ax::ax_assert((EXPR), #EXPR)
 #define AX_ASSERT_MSG(EXPR, MSG) ::ax::ax_assert((EXPR), MSG)
 
-#define _AX_JOIN_WORD_IMPL( w0,w1)		w0##w1
-#define _AX_JOIN_WORD3_IMPL(w0,w1,w2)	w0##w1##w2
+#define AX_JOIN_WORD_INTERNAL_IMPL( w0,w1)		w0##w1
+#define AX_JOIN_WORD3_INTERNAL_IMPL(w0,w1,w2)	w0##w1##w2
 
-#define AX_JOIN_WORD( w0,w1)			_AX_JOIN_WORD_IMPL( w0, w1)
-#define AX_JOIN_WORD3(w0,w1,w2)			_AX_JOIN_WORD3_IMPL(w0, w1, w2)
+#define AX_JOIN_WORD( w0,w1)			AX_JOIN_WORD_INTERNAL_IMPL( w0, w1)
+#define AX_JOIN_WORD3(w0,w1,w2)			AX_JOIN_WORD3_INTERNAL_IMPL(w0, w1, w2)
 
 
 #if 0 // AX_COMPILER_VC

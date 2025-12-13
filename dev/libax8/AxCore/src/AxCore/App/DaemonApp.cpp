@@ -5,22 +5,22 @@ import AxCore.Logger;
 
 namespace ax {
 
-static DaemonApp* axDaemon_instance = nullptr;
+static DaemonApp* Daemon_instance = nullptr;
 
 DaemonApp* DaemonApp::s_instance() {
-	return axDaemon_instance;
+	return Daemon_instance;
 }
 
 DaemonApp::DaemonApp() {
-	_name = "DaemonApp";
+	_appName = "DaemonApp";
 
-	AX_ASSERT(axDaemon_instance == nullptr);
-	axDaemon_instance = this;
+	AX_ASSERT(Daemon_instance == nullptr);
+	Daemon_instance = this;
 }
 
 DaemonApp::~DaemonApp() {
-	if (axDaemon_instance == this) {
-		axDaemon_instance = nullptr;
+	if (Daemon_instance == this) {
+		Daemon_instance = nullptr;
 	}
 }
 
@@ -40,13 +40,13 @@ void DaemonApp::_daemonRun() {
 #if AX_OS_WINDOWS
 
 int DaemonApp::onRun() {
-	bool console = true;
+	constexpr bool console = true;
 
 	if (console) {
 		::SetConsoleCtrlHandler(s_winConsoleCtrlHandler, true);
 		_daemonRun();
 	} else {
-		auto name = TempStringW::s_utf(_name);
+		auto name = TempStringW::s_utf(_appName);
 
 		FixedArray<SERVICE_TABLE_ENTRY, 2> entries;
 		entries[0].lpServiceName = name.data();
@@ -70,7 +70,7 @@ void DaemonApp::s_winServiceMain(DWORD dwNumServicesArgs, LPWSTR *lpServiceArgVe
 }
 
 void DaemonApp::_winServiceMain(DWORD dwNumServicesArgs, LPWSTR *lpServiceArgVectors) {
-	auto name = TempStringW::s_utf(_name);
+	auto name = TempStringW::s_utf(_appName);
 	_winServiceStatusHandle = ::RegisterServiceCtrlHandlerEx(name.c_str(), s_winServiceStatusHandler, nullptr);
 	if (!_winServiceStatusHandle) {
 		_setWinServiceStatus(SERVICE_STOPPED);
@@ -122,28 +122,35 @@ void DaemonApp::_setWinServiceStatus(DWORD status) {
 }
 
 void DaemonApp::installWinService(StrView params, bool autoStart, StrView description) {
-	SC_HANDLE mgr, svc;
-	wchar_t	  moduleFilename[MAX_PATH];
+	wchar_t   moduleFilename[MAX_PATH];
 
 	if (::GetModuleFileName(nullptr, moduleFilename, MAX_PATH) == MAX_PATH) {
 		AX_LOG_WIN32_LAST_ERROR("");
 		throw Error_Undefined();
 	}
 
-	mgr = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
+	SC_HANDLE mgr = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
 	if (!mgr) {
 		AX_LOG_WIN32_LAST_ERROR("");
 		throw Error_Undefined();
 	}
 
 	auto cmd = Fmt(L"\"{} {}\"", moduleFilename, params);
-	auto name = TempStringW::s_utf(_name);
+	auto name = TempStringW::s_utf(_appName);
 
-	svc = CreateService(mgr, name.c_str(), name.c_str(), SERVICE_ALL_ACCESS,
-						SERVICE_WIN32_OWN_PROCESS | SERVICE_INTERACTIVE_PROCESS,
-						autoStart ? SERVICE_AUTO_START : SERVICE_DEMAND_START,
-						SERVICE_ERROR_NORMAL, cmd.c_str(), nullptr, nullptr,
-						nullptr, nullptr, nullptr);
+	SC_HANDLE svc = CreateService(mgr,
+	                              name.c_str(),
+	                              name.c_str(),
+	                              SERVICE_ALL_ACCESS,
+	                              SERVICE_WIN32_OWN_PROCESS | SERVICE_INTERACTIVE_PROCESS,
+	                              autoStart ? SERVICE_AUTO_START : SERVICE_DEMAND_START,
+	                              SERVICE_ERROR_NORMAL,
+	                              cmd.c_str(),
+	                              nullptr,
+	                              nullptr,
+	                              nullptr,
+	                              nullptr,
+	                              nullptr);
 	if (!svc) {
 		AX_LOG_WIN32_LAST_ERROR("");
 		throw Error_Undefined();
@@ -182,16 +189,15 @@ void DaemonApp::installWinService(StrView params, bool autoStart, StrView descri
 }
 
 void DaemonApp::removeWinService() {
-	SC_HANDLE mgr, svc;
 
-	mgr = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
+	SC_HANDLE mgr = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
 	if (!mgr) {
 		AX_LOG_WIN32_LAST_ERROR("");
 		throw Error_Undefined();
 	}
 
-	auto name = TempStringW::s_utf(_name);
-	svc		  = OpenService(mgr, name.c_str(), SERVICE_ALL_ACCESS);
+	auto      name = TempStringW::s_utf(_appName);
+	SC_HANDLE svc  = OpenService(mgr, name.c_str(), SERVICE_ALL_ACCESS);
 	if (!svc) {
 		AX_LOG_WIN32_LAST_ERROR("");
 		throw Error_Undefined();
@@ -204,12 +210,12 @@ void DaemonApp::removeWinService() {
 		throw Error_Undefined();
 	}
 
-	AX_LOG("Service [{}] removed", _name);
+	AX_LOG("Service [{}] removed", _appName);
 }
 
 #else // AX_OS_WINDOWS
 
-void DaemonApp::s_singalHandler(int sig) {
+void DaemonApp::s_signalHandler(int sig) {
 	switch (sig) {
 		case SIGINT:
 		case SIGTERM: {
@@ -221,7 +227,7 @@ void DaemonApp::s_singalHandler(int sig) {
 bool DaemonApp::_setupDaemon() {
 	umask(0);
 
-	// become seesion leader to lose TTY control
+	// become session leader to lose TTY control
 	pid_t pid = fork();
 	if (pid < 0) {
 		throw Error_Undefined();

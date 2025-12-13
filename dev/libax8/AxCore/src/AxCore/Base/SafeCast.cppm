@@ -53,8 +53,7 @@ template<class SRC>
 struct SafeCast {
 	const SRC& src;
 	constexpr SafeCast(const SRC& src_) : src(src_) {}
-	template<class DST> constexpr inline DST To() const { return SafeCastTo<DST>(src); }
-	template <typename DST>	constexpr operator DST() const { return To<DST>(); }
+	template <typename DST>	constexpr operator DST() const { return SafeCastTo<DST>(src); }
 };
 
 } // namespace

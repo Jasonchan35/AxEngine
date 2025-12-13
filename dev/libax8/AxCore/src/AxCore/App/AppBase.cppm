@@ -8,12 +8,12 @@ import AxCore.Logger;
 
 export namespace ax {
 
-class AppArgments : public NonCopyable {
+class AppArguments : public NonCopyable {
 public:
-	static AppArgments* s_instance();
+	static AppArguments* s_instance();
 
-	AppArgments(int argc, const char* argv[]);
-	~AppArgments();
+	AppArguments(int argc, const char* argv[]);
+	~AppArguments();
 
 	Span<StrView>	args() const { return _argsView; }
 private:
@@ -42,7 +42,7 @@ public:
 
 	int	_run();
 
-private:
+protected:
 	String	_currentExecFilename;
 	String	_appName;
 };
@@ -50,7 +50,7 @@ private:
 template<class T> inline
 int App_run(int argc, const char* argv[]) {
 	try {
-		AppArgments arg(argc, argv);
+		AppArguments arg(argc, argv);
 		T app;
 		int ret = app._run();
 		return ret;

@@ -152,7 +152,7 @@ inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_
 		func(std::make_format_args<StdFormatContext_<FMT_CH>>(args...));
 	} catch (std::exception& e) {
 		auto msg = TempString::s_format("Format: Exception: {}, ArgCount={} format_string=[{}])", e.what(), sizeof...(args), out_fmt);
-		__ax_internal_logError(msg.c_str());
+		ax_internal_log_error(msg.c_str());
 		throw Error_Format();
 	}
 }

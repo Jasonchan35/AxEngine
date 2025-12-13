@@ -21,11 +21,11 @@ public:
 	void test_format_custom_type() {
 		CustmoData data;
 		auto str = Fmt("{}", data);
-		__ax_internal_log(str.c_str());
+		ax_internal_log(str.c_str());
 
 		FmtTo(str, L" {}", StrView("strA"));
 		//			FmtTo(str,  " {}", u"str16");
-		__ax_internal_log(str.c_str());
+		ax_internal_log(str.c_str());
 	}
 
 	template<class T>
@@ -44,13 +44,13 @@ public:
 		FmtTo(str, " {}", AX_STR_32("arg32"));
 
 		auto msg = TempStringA::s_utf(str);
-		__ax_internal_log(msg.c_str());
+		ax_internal_log(msg.c_str());
 	}	
 	
 	void test_case1() {
 		{
 			auto ret = Fmt("int=[{:6}] sz=[{:6}] wsz=[{:6}]", 1, "abc", L"wchar");
-			__ax_internal_log(ret.c_str());
+			ax_internal_log(ret.c_str());
 //			AX_LOG("test {}", 123);
 		}
 		{
@@ -58,7 +58,7 @@ public:
 			IString& istr = str;
 			StrView  sv = str;
 			auto ret = Fmt("sv=[{:6}] istr=[{:6}] str=[{:6}]", sv, istr, str);
-			__ax_internal_log(ret.c_str());
+			ax_internal_log(ret.c_str());
 		}
 		{
 			AX_TEST_EQ(Fmt("[{:4}][{:4.1}]", 1, 0.123), "[   1][ 0.1]");

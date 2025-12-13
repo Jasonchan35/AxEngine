@@ -18,7 +18,7 @@ UnitTestProgram* UnitTestProgram::s_get() {
 int UnitTestProgram::run() {
 	onRun();
 
-	__ax_internal_log("\n\n==== Program Ended ==== \n");
+	ax_internal_log("\n\n==== Program Ended ==== \n");
 
 #if 1 // AX_COMPILER_VC
 	if (ax_is_debugger_present()) {
@@ -29,7 +29,7 @@ int UnitTestProgram::run() {
 }
 
 int UnitTestProgram::waitKeyPress() {
-	__ax_internal_log(" ! Press Any Key to Exit\n\n");
+	ax_internal_log(" ! Press Any Key to Exit\n\n");
 	
 #if AX_OS_WINDOWS
 	return _getch();

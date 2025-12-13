@@ -139,7 +139,7 @@ T lerp(const T& a, const T& b, const WEIGHT& w) {
 	if constexpr (std::is_integral_v<T>) {
 		return static_cast<T>(round(static_cast<WEIGHT>(a) + w * static_cast<WEIGHT>(b - a)));
 	} else {
-		return (one<T> - w) * a + w * b;
+		return (one_<T>() - w) * a + w * b;
 	}
 }
 
@@ -152,14 +152,14 @@ T step(const T& a, const T& x) { return x >= a ? T(1) : T(0); }
 template<class T> AX_NODISCARD AX_INLINE
 T inv_lerp(const T& from, const T& to, const T& value) {
 	if constexpr (std::is_integral_v<T>) {
-		return round_to_Int(inv_lerp(static_cast<f64>(from), static_cast<f64>(to), static_cast<f64>(value)));
+		return roundToInt(inv_lerp(static_cast<f64>(from), static_cast<f64>(to), static_cast<f64>(value)));
 	} else {
 		return (value - from) / (to - from);
 	}
 }
 
 template<class T> AX_NODISCARD AX_INLINE T easeIn (const T& a) { return a * a; }
-template<class T> AX_NODISCARD AX_INLINE T easeOut(const T& a) { return one<T> - a * a; }
+template<class T> AX_NODISCARD AX_INLINE T easeOut(const T& a) { return one_<T>() - a * a; }
 
 
 } // namespace

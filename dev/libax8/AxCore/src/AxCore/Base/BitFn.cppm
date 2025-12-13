@@ -49,13 +49,13 @@ private:
 
 	AX_INLINE constexpr Int	_highest() const {
 #if AX_COMPILER_VC
-		if constexpr (std::is_same_v<T, i32>() || std::is_const_v<T, u32>()) {
+		if constexpr (std::is_same_v<T, i32>() || std::is_same_v<T, u32>()) {
 			unsigned int index = 0;
 			if (!_BitScanForward(&index, value))
 				return -1;
 			return static_cast<Int>(index);
 		}
-		if constexpr (std::is_same_v<T, i64>() || std::is_const_v<T, u64>()) {
+		if constexpr (std::is_same_v<T, i64>() || std::is_same_v<T, u64>()) {
 			unsigned int index = 0;
 			if (!_BitScanForward64(&index, value))
 				return -1;
@@ -64,12 +64,12 @@ private:
 #endif
 
 #if AX_COMPILER_GCC
-		if constexpr (std::is_same_v<T, i32>() || std::is_const_v<T, u32>()) {
+		if constexpr (std::is_same_v<T, i32>() || std::is_same_v<T, u32>()) {
 			int r = __builtin_ffs(value);
 			if (r == 0) return -1;
 			return static_cast<Int>(r - 1);
 		}
-		if constexpr (std::is_same_v<T, i64>() || std::is_const_v<T, u64>()) {
+		if constexpr (std::is_same_v<T, i64>() || std::is_same_v<T, u64>()) {
 			int r = __builtin_ffsl(value);
 			if (r == 0) return -1;
 			return static_cast<Int>(r - 1);
@@ -78,7 +78,7 @@ private:
 		Int result = -1;
 		Int n = AX_SIZEOF(T) * 8;
 		T m = T(1);
-		for (Int i = 0; i < n; i++) {
+		for (Int i = 0; i < n; ++i) {
 			if (hasAny(m)) result = i;
 			m <<= 1;
 		}
@@ -89,7 +89,7 @@ private:
 		Int result = -1;
 		Int n = AX_SIZEOF(T) * 8;
 		T m = T(1 << (n-1));
-		for (Int i = n-1; i > 0; i--) {
+		for (Int i = n-1; i > 0; --i) {
 			if (hasAny(m)) result = i;
 			m >>= 1;
 		}
