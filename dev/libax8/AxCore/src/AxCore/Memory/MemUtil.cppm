@@ -157,7 +157,7 @@ void MemUtil::copy(T* dst, const T* src, Int n) {
 		throw Error_BufferOverlapped();
 	}
 
-	if constexpr (Type_isTriviallyCopyAssignable<T>) {
+	if constexpr (Type_IsTriviallyCopyAssignable<T>) {
 		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
 		auto s = src;
@@ -177,7 +177,7 @@ constexpr void MemUtil::copyConstructor(T* dst, const T* src, Int n) {
 		throw Error_BufferOverlapped();
 	}
 
-	if constexpr (Type_isTriviallyCopyAssignable<T>) {
+	if constexpr (Type_IsTriviallyCopyAssignable<T>) {
 		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
 		try {
@@ -201,7 +201,7 @@ constexpr void MemUtil::moveConstructor(T* dst, T* src, Int n) {
 		throw Error_BufferOverlapped();
 	}
 
-	if constexpr (Type_isTriviallyCopyAssignable<T>) {
+	if constexpr (Type_IsTriviallyCopyAssignable<T>) {
 		MemUtil::rawCopy(dst, src, n);
 	}else{
 		auto s = src;
@@ -221,7 +221,7 @@ void MemUtil::moveConstructorAndDestructor(T* dst, T* src, Int n) {
 		throw Error_BufferOverlapped();
 	}
 
-	if constexpr (Type_isTriviallyCopyAssignable<T>) {
+	if constexpr (Type_IsTriviallyCopyAssignable<T>) {
 		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
 		try {

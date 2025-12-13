@@ -12,17 +12,17 @@ public:
 	void seed(Int s) { _generator.seed(static_cast<UInt>(s)); }
 
 	// exclude max
-	template<class T = Int> requires Type_AnyInt<T>
+	template<class T = Int> requires Type_IsIntType<T>
 	T getInt(T max) { return max <= 0 ? 0 : getRange(0, max - 1); }
 	
-	template<class T = Int> requires Type_AnyInt<T>
+	template<class T = Int> requires Type_IsIntType<T>
 	T getRange(const T& min, const T& max) {
 		auto n = max - min;
 		if (n <= 0) return min;
 		return static_cast<T>(_gen_u64() % static_cast<u64>(n)) + min;
 	}
 
-	template<class T = Int> requires Type_AnyFloat<T>
+	template<class T = Int> requires Type_IsFloatType<T>
 	T getRange(const T& min, const T& max) {
 		std::uniform_real_distribution<T> dis(min, max);
 		return dis(_generator);
@@ -39,7 +39,7 @@ private:
 
 struct Random {
 	// exclude max
-	template <class T = Int> requires Type_AnyInt<T>
+	template <class T = Int> requires Type_IsIntType<T>
 	static T getInt(T max, RandomDevice& dev = RandomDevice::s_default()) { return dev.getInt(max); }
 
 	template <class T = Int>

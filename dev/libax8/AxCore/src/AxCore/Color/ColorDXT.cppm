@@ -5,7 +5,7 @@ export import :ColorRGBA;
 
 export namespace ax {
 
-template<VecSIMD SIMD>
+template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC1, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
@@ -21,7 +21,7 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBAb;
 };
 
-template<VecSIMD SIMD>
+template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC2, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
@@ -37,7 +37,7 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBAb;
 };
 
-template<VecSIMD SIMD>
+template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC3, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
@@ -53,7 +53,7 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBAb;
 };
 
-template<VecSIMD SIMD>
+template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC4, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
@@ -69,7 +69,7 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::Lb;
 };
 
-template<VecSIMD SIMD>
+template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC5, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
@@ -85,7 +85,7 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGb;
 };
 
-template<VecSIMD SIMD>
+template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC6h, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
@@ -102,7 +102,7 @@ public:
 	static constexpr ColorType	kUncompressedType = ColorType::RGBh;
 };
 
-template<VecSIMD SIMD>
+template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC7, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 public:

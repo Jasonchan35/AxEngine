@@ -4,30 +4,30 @@ export import AxCore.Margin;
 
 export namespace ax {
 
-template<class T, VecSIMD SIMD = VecSIMD_Default> class Rect2_;
+template<class T, VecSimd SIMD = VecSimd_Default> class Rect2_;
 using Rect2h = Rect2_<f16>;
 using Rect2f = Rect2_<f32>;
 using Rect2d = Rect2_<f64>;
 using Rect2i = Rect2_<Int>;
 using Rect2s = Rect2_<i16>;
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Rect2_ {
 	AX_TYPE_INFO(Rect2_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr Int kElementCount = N;
-	static constexpr VecSIMD kVecSIMD = SIMD;
+	static constexpr VecSimd kVecSimd = SIMD;
 
 	using Vec2		= Vec2_<T, SIMD>;
 	using Vec4		= Vec4_<T, SIMD>;
 	using Margin2	= Margin2_<T, SIMD>;
 		
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { Vec2 pos, size; };
 		struct { T x, y, w, h; };
 	};	
@@ -45,14 +45,14 @@ public:
 
 	AX_INLINE constexpr Rect2_() = default;
 	AX_INLINE constexpr Rect2_(AxTag::Zero_) : _simd(AxTag::Zero) {}
-	AX_INLINE constexpr Rect2_(const SIMD_Data & simd) : _simd(simd) {}
+	AX_INLINE constexpr Rect2_(const SimdData & simd) : _simd(simd) {}
 	AX_INLINE constexpr Rect2_(T x_, T y_, T w_, T h_) : _simd(x_,y_,w_,h_) {}
 	AX_INLINE constexpr Rect2_(const Vec2& pos_, const Vec2& size_) : pos(pos_), size(size_) {}
 
 	constexpr void	set			(T x_, T y_, T w_, T h_)				{ _simd(x_,y_,w_,h_); }
 	constexpr void	set			(const Vec2& pos_, const Vec2& size_)	{ pos = pos_; size = size_; }
 
-	static constexpr This s_zero() { return SIMD_Data::s_zero(); }
+	static constexpr This s_zero() { return SimdData::s_zero(); }
 
 	AX_NODISCARD AX_INLINE    Span<T>	span() const	{ return    Span<T>(&x, kElementCount); }
 	AX_NODISCARD AX_INLINE MutSpan<T>	span()			{ return MutSpan<T>(&x, kElementCount); }
@@ -111,7 +111,7 @@ public:
 
 	AX_NODISCARD constexpr This		offset		(const Vec2& v) const				{ return Rect2_(pos + v, size); }
 
-	template<VecSIMD R_SIMD>
+	template<VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
@@ -152,8 +152,8 @@ public:
 					abs(w), abs(h));
 	}
 
-	template<class R, VecSIMD R_SIMD> AX_NODISCARD AX_INLINE constexpr 
-	static Rect2_ s_cast(const Rect2_<R, R_SIMD>& rhs) { return SIMD_Data::s_cast(rhs._simd); }
+	template<class R, VecSimd R_SIMD> AX_NODISCARD AX_INLINE constexpr 
+	static Rect2_ s_cast(const Rect2_<R, R_SIMD>& rhs) { return SimdData::s_cast(rhs._simd); }
 
 #if AX_OS_WINDOWS
 	AX_NODISCARD AX_INLINE static constexpr This s_from(const ::RECT& r) {
@@ -173,7 +173,7 @@ public:
 
 };
 
-template<class T, VecSIMD SIMD> constexpr 
+template<class T, VecSimd SIMD> constexpr 
 Margin2_<T, SIMD> Rect2_<T, SIMD>::diff(const Rect2_ & inner) const {
 	return Margin2_<T, SIMD>(inner.yMin() - yMin(),
 							xMax() - inner.xMax(),
@@ -181,7 +181,7 @@ Margin2_<T, SIMD> Rect2_<T, SIMD>::diff(const Rect2_ & inner) const {
 							inner.xMin() - xMin());
 }
 
-template<class T, VecSIMD SIMD> constexpr 
+template<class T, VecSimd SIMD> constexpr 
 bool Rect2_<T, SIMD>::isIntersected(const Rect2_& r) const {
 	if (!isValid() || !r.isValid()) return false;
 
@@ -190,7 +190,7 @@ bool Rect2_<T, SIMD>::isIntersected(const Rect2_& r) const {
 	return true;
 }
 
-template<class T, VecSIMD SIMD> constexpr 
+template<class T, VecSimd SIMD> constexpr 
 Rect2_<T, SIMD> Rect2_<T, SIMD>::unionWith(const Rect2_& r) const {
 	if (!r.isValid()) return *this;
 	if (!isValid()) return r;
@@ -203,7 +203,7 @@ Rect2_<T, SIMD> Rect2_<T, SIMD>::unionWith(const Rect2_& r) const {
 	return This(topLeft, bottomRight - topLeft);
 }
 
-template<class T, VecSIMD SIMD> constexpr 
+template<class T, VecSimd SIMD> constexpr 
 Rect2_<T, SIMD> Rect2_<T, SIMD>::intersects(const Rect2_& r) const {
 	if (!isIntersected(r)) return This(0,0,0,0);
 

@@ -10,6 +10,7 @@ template<class A, class B>
 concept CON_IsSame = std::is_same_v<A, B>;
 
 template<Int COL, Int ROW, class T> struct Num_Data {
+protected:
 	T _data[ROW][COL];
 };
 

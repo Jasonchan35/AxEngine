@@ -7,37 +7,37 @@ export import AxCore.Math;
 
 export namespace ax {
 
-template<Int N, class T, VecSIMD SIMD> class BBox_;
-template<class T, VecSIMD SIMD = VecSIMD_Default> using BBox2_ = BBox_<2, T, SIMD>;
-template<class T, VecSIMD SIMD = VecSIMD_Default> using BBox3_ = BBox_<3, T, SIMD>;
+template<Int N, class T, VecSimd SIMD> class BBox_;
+template<class T, VecSimd SIMD = VecSimd_Default> using BBox2_ = BBox_<2, T, SIMD>;
+template<class T, VecSimd SIMD = VecSimd_Default> using BBox3_ = BBox_<3, T, SIMD>;
 
 using BBox2h		= BBox2_<f16>;
-using BBox2h_SSE	= BBox2_<f16, VecSIMD::SSE>;
-using BBox2h_Basic	= BBox2_<f16, VecSIMD::None>;
+using BBox2h_SSE	= BBox2_<f16, VecSimd::SSE>;
+using BBox2h_Basic	= BBox2_<f16, VecSimd::None>;
 using BBox2f		= BBox2_<f32>;
-using BBox2f_SSE	= BBox2_<f32, VecSIMD::SSE>;
-using BBox2f_Basic	= BBox2_<f32, VecSIMD::None>;
+using BBox2f_SSE	= BBox2_<f32, VecSimd::SSE>;
+using BBox2f_Basic	= BBox2_<f32, VecSimd::None>;
 using BBox2d		= BBox2_<f64>;
-using BBox2d_SSE	= BBox2_<f64, VecSIMD::SSE>;
-using BBox2d_Basic	= BBox2_<f64, VecSIMD::None>;
+using BBox2d_SSE	= BBox2_<f64, VecSimd::SSE>;
+using BBox2d_Basic	= BBox2_<f64, VecSimd::None>;
 
 using BBox3h		= BBox3_<f16>;
-using BBox3h_SSE	= BBox3_<f16, VecSIMD::SSE>;
-using BBox3h_Basic	= BBox3_<f16, VecSIMD::None>;
+using BBox3h_SSE	= BBox3_<f16, VecSimd::SSE>;
+using BBox3h_Basic	= BBox3_<f16, VecSimd::None>;
 using BBox3f		= BBox3_<f32>;
-using BBox3f_SSE	= BBox3_<f32, VecSIMD::SSE>;
-using BBox3f_Basic	= BBox3_<f32, VecSIMD::None>;
+using BBox3f_SSE	= BBox3_<f32, VecSimd::SSE>;
+using BBox3f_Basic	= BBox3_<f32, VecSimd::None>;
 using BBox3d		= BBox3_<f64>;
-using BBox3d_SSE	= BBox3_<f64, VecSIMD::SSE>;
-using BBox3d_Basic	= BBox3_<f64, VecSIMD::None>;
+using BBox3d_SSE	= BBox3_<f64, VecSimd::SSE>;
+using BBox3d_Basic	= BBox3_<f64, VecSimd::None>;
 
-template<Int N, class T, VecSIMD SIMD>
+template<Int N, class T, VecSimd SIMD>
 class BBox_ {
 	using This = BBox_;
 public:
 	using Element = T;
 	static constexpr Int     kElementCount = N;
-	static constexpr VecSIMD kVecSIMD = SIMD;
+	static constexpr VecSimd kVecSimd = SIMD;
 
 	using Vec = Vec_<N, T, SIMD>;
 	union {
@@ -54,10 +54,10 @@ public:
 	
 	constexpr void includePoint(const Vec& pt);
 
-	void getCornerPoints(FixedArray<Vec, Math::pow_<N>(2)>& outPoints) const;
+	constexpr void getCornerPoints(FixedArray<Vec, Math::pow_<N>(2)>& outPoints) const;
 };
 
-template <Int N, class T, VecSIMD SIMD> inline
+template <Int N, class T, VecSimd SIMD> constexpr
 void BBox_<N, T, SIMD>::getCornerPoints(FixedArray<Vec, Math::pow_<N>(2)>& outPoints) const {
 	auto& a = min;
 	auto& b = max;
@@ -87,7 +87,7 @@ void BBox_<N, T, SIMD>::getCornerPoints(FixedArray<Vec, Math::pow_<N>(2)>& outPo
 	}
 }
 
-template<Int N, class T, VecSIMD SIMD> AX_INLINE constexpr 
+template<Int N, class T, VecSimd SIMD> AX_INLINE constexpr 
 void BBox_<N,T,SIMD>::includePoint(const Vec& pt) {
 	if (!isValid()) {
 		min = pt;

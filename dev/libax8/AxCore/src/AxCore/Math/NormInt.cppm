@@ -16,51 +16,51 @@ using SNorm32 = NormInt_<i32>;
 
 template<class T> struct NormIntTraits;
 template<> struct NormIntTraits<u8> {
-	using IntType   = u8;
-	using FloatType = f32;
-	using BigIntType = u64;
-	static const IntType kIntMin  = 0;
-	static const IntType kIntMax  = UINT8_MAX;
+	using IntType                    = u8;
+	using FloatType                  = f32;
+	using BigIntType                 = u64;
+	static constexpr IntType kIntMin = 0;
+	static constexpr IntType kIntMax = UINT8_MAX;
 };
 
 template<> struct NormIntTraits<u16> {
-	using IntType   = u16;
-	using FloatType = f32;
-	using BigIntType = u64;
-	static const IntType kIntMin  = 0;
-	static const IntType kIntMax  = UINT16_MAX;
+	using IntType                    = u16;
+	using FloatType                  = f32;
+	using BigIntType                 = u64;
+	static constexpr IntType kIntMin = 0;
+	static constexpr IntType kIntMax = UINT16_MAX;
 };
 
 template<> struct NormIntTraits<u32> {
-	using IntType   = u32;
-	using FloatType = f32;
-	using BigIntType = u64;
-	static const IntType kIntMin  = 0;
-	static const IntType kIntMax  = UINT32_MAX;
+	using IntType                    = u32;
+	using FloatType                  = f32;
+	using BigIntType                 = u64;
+	static constexpr IntType kIntMin = 0;
+	static constexpr IntType kIntMax = UINT32_MAX;
 };
 
 template<> struct NormIntTraits<i8> {
-	using IntType   = i8;
-	using FloatType = f32;
-	using BigIntType = i64;
-	static const IntType kIntMin  = 0;
-	static const IntType kIntMax  = INT8_MAX;
+	using IntType                    = i8;
+	using FloatType                  = f32;
+	using BigIntType                 = i64;
+	static constexpr IntType kIntMin = 0;
+	static constexpr IntType kIntMax = INT8_MAX;
 };
 
 template<> struct NormIntTraits<i16> {
-	using IntType   = i16;
-	using FloatType = f32;
-	using BigIntType = i64;
-	static const IntType kIntMin  = 0;
-	static const IntType kIntMax  = INT16_MAX;
+	using IntType                    = i16;
+	using FloatType                  = f32;
+	using BigIntType                 = i64;
+	static constexpr IntType kIntMin = 0;
+	static constexpr IntType kIntMax = INT16_MAX;
 };
 
 template<> struct NormIntTraits<i32> {
-	using IntType   = i32;
-	using FloatType = f32;
-	using BigIntType = i64;
-	static const IntType kIntMin  = 0;
-	static const IntType kIntMax  = INT32_MAX;
+	using IntType                    = i32;
+	using FloatType                  = f32;
+	using BigIntType                 = i64;
+	static constexpr IntType kIntMin = 0;
+	static constexpr IntType kIntMax = INT32_MAX;
 };
 
 // Normalized value
@@ -148,7 +148,7 @@ private:
 	}
 };
 
-template<class T> struct Type_Float_From_Struct< NormInt_<T> >  { using Type = typename NormInt_<T>::FloatType; };
+template<class T> struct Type_FloatTypeFrom_T< NormInt_<T> >  { using Type = typename NormInt_<T>::FloatType; };
 
 template<class T> struct IsNormInt_Helper : std::false_type {};
 template<class T> struct IsNormInt_Helper< NormInt_<T> > : std::true_type {};

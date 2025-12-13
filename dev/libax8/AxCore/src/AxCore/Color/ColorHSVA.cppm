@@ -5,20 +5,20 @@ export import :ColorRGBA;
 
 export namespace ax {
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::HSVA, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T h, s, v, a; };
 	};
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::HSVA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
@@ -57,7 +57,7 @@ public:
 	AX_INLINE constexpr    Span<T> span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MutSpan<T> span()			{ return fixedSpan(); }
 
-	AX_INLINE constexpr void set(T h_, T s_, T v_, T a_ = kElemOne) { _simd = SIMD_Data(h_,s_,v_,a_); }
+	AX_INLINE constexpr void set(T h_, T s_, T v_, T a_ = kElemOne) { _simd = SimdData(h_,s_,v_,a_); }
 	AX_INLINE bool	operator==	(const This& rhs) const { return _simd == rhs._simd; }
 };
 

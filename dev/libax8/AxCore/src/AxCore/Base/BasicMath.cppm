@@ -128,7 +128,7 @@ template <class T> T fmod(const T& a, const T& b);
 template <> AX_INLINE f32 fmod(const f32& a, const f32& b) { return ::fmodf(a, b); }
 template <> AX_INLINE f64 fmod(const f64& a, const f64& b) { return ::fmod(a, b); }
 
-template <class T> requires Type_AnyInt< T>
+template <class T> requires Type_IsIntType< T>
 AX_INLINE T fmod(const T& a, const T& b) { return a % b; }
 
 
@@ -138,7 +138,7 @@ struct modf_Result {
 	T frac_part;	// fractional part
 };
 
-template <class T> requires Type_AnyInt<T>
+template <class T> requires Type_IsIntType<T>
 AX_NODISCARD AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 	modf_Result<T> o;
 	o.int_part  = v;
@@ -162,7 +162,7 @@ AX_NODISCARD AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 
 template<class T> requires Type_IsFundamental<T>
 AX_NODISCARD AX_INLINE constexpr bool almostEqual(const T& a, const T& b) {
-	if constexpr (Type_AnyInt<T>) {
+	if constexpr (Type_IsIntType<T>) {
 		return a == b;
 	} else {
 		auto diff = abs(a - b);
@@ -193,7 +193,7 @@ T	safeDiv	( const T& a, const T& b )	{ return almostZero(b) ? zero_<T>() : a / b
 template< class T > AX_NODISCARD AX_INLINE constexpr
 bool	isInRange	(const T& x, const T& a, const T & b)		{ return x >= a && x <= b; }
 
-template< class T > requires Type_AnyInt<T>
+template< class T > requires Type_IsIntType<T>
 AX_NODISCARD AX_INLINE constexpr bool	isPow2		( const T& v )	{ return v != 0 && (v & (v - 1)) == 0; }
 
 AX_NODISCARD AX_INLINE constexpr i8		nextPow2	( i8  v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4;                              v++; return max_0(v); }

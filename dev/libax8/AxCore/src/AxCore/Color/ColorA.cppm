@@ -5,21 +5,21 @@ export import :ColorType;
 
 export namespace ax {
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::A, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 1;	
 public:
 	using Num4 = Num4_<T>;
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T a; };
 	};	
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::A;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);

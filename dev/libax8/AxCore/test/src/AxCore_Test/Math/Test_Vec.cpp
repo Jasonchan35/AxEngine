@@ -12,7 +12,7 @@ public:
 
 	template<class T>
 	void test_VecSimd() {
-		using Vec = VecSIMD_Data_<4, T, VecSIMD::None>;
+		using Vec = VecSimd_Data_<4, T, VecSimd::None>;
 		T x = Random::getRange<T>(1, 100);
 		constexpr Int N = 10;
 		Vec a[N]; 
@@ -64,7 +64,7 @@ public:
 		}
 	}
 	
-	template<class T, VecSIMD SIMD>
+	template<class T, VecSimd SIMD>
 	struct SIMD_Test {
 		using Vec1 = Vec1_<T, SIMD>; 
 		using Vec2 = Vec2_<T, SIMD>; 
@@ -124,8 +124,8 @@ public:
 	
 	template<class T>
 	void test_SSE() {
-		SIMD_Test<T, VecSIMD::None>	basic;
-		SIMD_Test<T, VecSIMD::SSE>	sse;
+		SIMD_Test<T, VecSimd::None>	basic;
+		SIMD_Test<T, VecSimd::SSE>	sse;
 		AX_TEST_ALMOST_EQ(basic.add1, sse.add1);
 		AX_TEST_ALMOST_EQ(basic.add2, sse.add2);
 		AX_TEST_ALMOST_EQ(basic.add3, sse.add3);
@@ -169,8 +169,8 @@ void Test_Vec_Func() {
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
 }
 
-template class Vec_<4, f32, VecSIMD::None>;
-template class Vec_<4, f32, VecSIMD::SSE>;
+template class Vec_<4, f32, VecSimd::None>;
+template class Vec_<4, f32, VecSimd::SSE>;
 
 } // namespace
 

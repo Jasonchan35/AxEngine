@@ -153,13 +153,13 @@ public:
 	bool tryGetValue(u32	& outValue) const noexcept { return _tryGetNumericValue(outValue); }
 	bool tryGetValue(u64	& outValue) const noexcept { return _tryGetNumericValue(outValue); }
 
-	template<class R, VecSIMD SIMD> bool tryGetValue(Vec1_< R, SIMD>& outValue) const noexcept;
-	template<class R, VecSIMD SIMD> bool tryGetValue(Vec2_< R, SIMD>& outValue) const noexcept;
-	template<class R, VecSIMD SIMD> bool tryGetValue(Vec3_< R, SIMD>& outValue) const noexcept;
-	template<class R, VecSIMD SIMD> bool tryGetValue(Vec4_< R, SIMD>& outValue) const noexcept;
-	template<class R, VecSIMD SIMD> bool tryGetValue(BBox2_<R, SIMD>& outValue) const noexcept;
-	template<class R, VecSIMD SIMD> bool tryGetValue(Quat4_<R, SIMD>& outValue) const noexcept;
-	template<class R, VecSIMD SIMD> bool tryGetValue(Mat4_< R, SIMD>& outValue) const noexcept;
+	template<class R, VecSimd SIMD> bool tryGetValue(Vec1_< R, SIMD>& outValue) const noexcept;
+	template<class R, VecSimd SIMD> bool tryGetValue(Vec2_< R, SIMD>& outValue) const noexcept;
+	template<class R, VecSimd SIMD> bool tryGetValue(Vec3_< R, SIMD>& outValue) const noexcept;
+	template<class R, VecSimd SIMD> bool tryGetValue(Vec4_< R, SIMD>& outValue) const noexcept;
+	template<class R, VecSimd SIMD> bool tryGetValue(BBox2_<R, SIMD>& outValue) const noexcept;
+	template<class R, VecSimd SIMD> bool tryGetValue(Quat4_<R, SIMD>& outValue) const noexcept;
+	template<class R, VecSimd SIMD> bool tryGetValue(Mat4_< R, SIMD>& outValue) const noexcept;
 
 			JsonObject*	tryGetObject()			{ return isObject() ? _value.v_object	: nullptr; }
 	const	JsonObject*	tryGetObject() const	{ return isObject() ? _value.v_object	: nullptr; }
@@ -359,7 +359,7 @@ IString* JsonValue::tryGetMemberStringPtr(StrView memberName) {
 	return m->tryGetStringPtr();
 }
 
-template<class R, VecSIMD R_SIMD> inline
+template<class R, VecSimd R_SIMD> inline
 bool JsonValue::tryGetValue(Vec1_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();
@@ -369,7 +369,7 @@ bool JsonValue::tryGetValue(Vec1_<R, R_SIMD>& outValue) const noexcept {
 	return true;
 }
 
-template<class R, VecSIMD R_SIMD> inline
+template<class R, VecSimd R_SIMD> inline
 bool JsonValue::tryGetValue(Vec2_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();
@@ -380,7 +380,7 @@ bool JsonValue::tryGetValue(Vec2_<R, R_SIMD>& outValue) const noexcept {
 	return true;
 }
 
-template<class R, VecSIMD R_SIMD> inline
+template<class R, VecSimd R_SIMD> inline
 bool JsonValue::tryGetValue(Vec3_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();
@@ -392,7 +392,7 @@ bool JsonValue::tryGetValue(Vec3_<R, R_SIMD>& outValue) const noexcept {
 	return true;
 }
 
-template<class R, VecSIMD R_SIMD> inline
+template<class R, VecSimd R_SIMD> inline
 bool JsonValue::tryGetValue(Vec4_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();
@@ -405,7 +405,7 @@ bool JsonValue::tryGetValue(Vec4_<R, R_SIMD>& outValue) const noexcept {
 	return true;
 }
 
-template<class R, VecSIMD R_SIMD> inline
+template<class R, VecSimd R_SIMD> inline
 bool JsonValue::tryGetValue(BBox2_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();
@@ -416,7 +416,7 @@ bool JsonValue::tryGetValue(BBox2_<R, R_SIMD>& outValue) const noexcept {
 	return true;
 }
 
-template<class R, VecSIMD R_SIMD> inline
+template<class R, VecSimd R_SIMD> inline
 bool JsonValue::tryGetValue(Quat4_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();
@@ -429,7 +429,7 @@ bool JsonValue::tryGetValue(Quat4_<R, R_SIMD>& outValue) const noexcept {
 	return true;
 }
 
-template<class R, VecSIMD R_SIMD> inline
+template<class R, VecSimd R_SIMD> inline
 bool JsonValue::tryGetValue(Mat4_<R, R_SIMD>& outValue) const noexcept {
 	if (!isArray()) return false;
 	auto& arr = asArray();

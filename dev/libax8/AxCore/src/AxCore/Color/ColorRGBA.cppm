@@ -5,20 +5,20 @@ export import :ColorType;
 
 export namespace ax {
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::R, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 1;
 public:
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T r; };
 	};
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::R;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
@@ -60,7 +60,7 @@ public:
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 
-	AX_INLINE constexpr void set(T r_) { _simd = SIMD_Data(r_); }
+	AX_INLINE constexpr void set(T r_) { _simd = SimdData(r_); }
 
 	AX_INLINE bool	operator==	(const This& rhs) const { return _simd == rhs._simd; }
 
@@ -72,20 +72,20 @@ public:
 	Num1_<T>	toNum() const { return Num1_<T>(r); }
 };
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::RG, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 2;
 public:
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T r, g; };
 	};
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::RG;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
@@ -146,20 +146,20 @@ public:
 	Num2_<T>	toNum() const { return Num2_<T>(r, g); }
 };
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGB, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 3;
 public:
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T r, g, b; };
 	};
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::RGB;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
@@ -228,25 +228,25 @@ public:
 	Num3_<T>	toNum() const { return Num3_<T>(r, g, b); }
 	void toHexString(IString& s) const;
 
-	template<class R, VecSIMD R_SIMD> static constexpr This s_cast(const ColorRGB_<R, R_SIMD>& rhs) {
-		return SIMD_Data::s_cast(rhs);
+	template<class R, VecSimd R_SIMD> static constexpr This s_cast(const ColorRGB_<R, R_SIMD>& rhs) {
+		return SimdData::s_cast(rhs);
 	}
 };
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGBA, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T r, g, b, a; };
 	};
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
@@ -282,7 +282,7 @@ public:
 		: Color_(v.r, v.g, v.b, a) {}
 
 	AX_INLINE constexpr void set(const T& r_, const T& g_, const T& b_, const T& a_ = kElemOne())
-		{ _simd = SIMD_Data(r_, g_, b_, a_); }
+		{ _simd = SimdData(r_, g_, b_, a_); }
 
 	AX_INLINE constexpr void set(const ColorRGB& v, T a_ = kElemOne()) 
 		{ set(v.r, v.g, v.b, a); }
@@ -304,7 +304,7 @@ public:
 
 	AX_INLINE constexpr bool operator==	(const This& rhs) const { return _simd == rhs._simd; }
 
-	// template<VecSIMD R_SIMD>
+	// template<VecSimd R_SIMD>
 	// AX_INLINE constexpr bool almostEqual( const ColorRGBA_<T, SIMD>& rhs) const { return _simd.almostEqual(rhs._simd); }
 	AX_INLINE constexpr bool almostZero(  const This& rhs) const { return _simd.almostZero(rhs._simd); }
 	AX_INLINE constexpr bool exactlyEqual(const This& rhs) const { return _simd.exactlyEqual(rhs._simd); }
@@ -330,12 +330,12 @@ public:
 	
 	void toHexString(IString& s) const;
 
-	template<class R, VecSIMD R_SIMD> static constexpr This s_cast(const ColorRGBA_<R, R_SIMD>& rhs) {
-		return SIMD_Data::s_cast(rhs._simd);
+	template<class R, VecSimd R_SIMD> static constexpr This s_cast(const ColorRGBA_<R, R_SIMD>& rhs) {
+		return SimdData::s_cast(rhs._simd);
 	}
 };
 
-template <class T, VecSIMD SIMD> inline
+template <class T, VecSimd SIMD> inline
 void Color_<ColorModel::RGB, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
 	s.ensureCapacity(10);
@@ -346,7 +346,7 @@ void Color_<ColorModel::RGB, T, SIMD>::toHexString(IString& s) const {
 	s.append(CharUtil::byteToHex<Char>(tmp.b.v_int));
 }
 
-template<class T, VecSIMD SIMD> inline
+template<class T, VecSimd SIMD> inline
 void Color_<ColorModel::RGBA, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
 	s.ensureCapacity(10);

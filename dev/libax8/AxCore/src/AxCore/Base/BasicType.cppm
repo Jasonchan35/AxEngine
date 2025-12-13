@@ -116,15 +116,15 @@ template <class T>
 template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
 template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
 
-template<class T> constexpr bool Type_isTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<T>;
+template<class T> constexpr bool Type_IsTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<T>;
 template<class T> constexpr bool Type_IsTriviallyDestructible   = std::is_trivially_destructible_v<T>;
 
 template<class T> constexpr bool Type_IsFundamental =  std::is_fundamental_v<T>;
-template<class T> constexpr bool Type_AnyInt        =  std::is_integral_v<T>;
-template<class T> constexpr bool Type_AnySInt       =  std::is_integral_v<T> && std::is_signed_v<T>;
-template<class T> constexpr bool Type_AnyUInt       =  std::is_integral_v<T> && std::is_unsigned_v<T>;
-template<class T> constexpr bool Type_AnyFloat      =  std::is_floating_point_v<T>;
-template<class T> constexpr bool Type_AnyChar       =  std::is_same_v<std::remove_cv_t<T>, CharA>
+template<class T> constexpr bool Type_IsIntType     =  std::is_integral_v<T>;
+template<class T> constexpr bool Type_IsSIntType    =  std::is_integral_v<T> && std::is_signed_v<T>;
+template<class T> constexpr bool Type_IsUIntType    =  std::is_integral_v<T> && std::is_unsigned_v<T>;
+template<class T> constexpr bool Type_IsFloatType   =  std::is_floating_point_v<T>;
+template<class T> constexpr bool Type_IsCharType    =  std::is_same_v<std::remove_cv_t<T>, CharA>
                                                     || std::is_same_v<std::remove_cv_t<T>, CharW>
                                                     || std::is_same_v<std::remove_cv_t<T>, Char8>
                                                     || std::is_same_v<std::remove_cv_t<T>, Char16>
@@ -143,80 +143,80 @@ struct Type_MaybeEnumInt_Struct<T> { using Type = std::underlying_type_t<T>; };
 template<class T> using Type_MaybeEnumInt = Type_MaybeEnumInt_Struct<T>::Type;
 
 //--------
-template<Int N>		struct	Type_Int_BySize_Struct;
-template<>			struct	Type_Int_BySize_Struct<1> { using Type = i8 ; };
-template<>			struct	Type_Int_BySize_Struct<2> { using Type = i16; };
-template<>			struct	Type_Int_BySize_Struct<4> { using Type = i32; };
-template<>			struct	Type_Int_BySize_Struct<8> { using Type = i64; };
-template<Int N>		using	Type_Int_BySize = typename Type_Int_BySize_Struct<N>::Type;
+template<Int N>		struct	Type_IntTypeBySize_T;
+template<>			struct	Type_IntTypeBySize_T<1> { using Type = i8 ; };
+template<>			struct	Type_IntTypeBySize_T<2> { using Type = i16; };
+template<>			struct	Type_IntTypeBySize_T<4> { using Type = i32; };
+template<>			struct	Type_IntTypeBySize_T<8> { using Type = i64; };
+template<Int N>		using	Type_IntTypeBySize = typename Type_IntTypeBySize_T<N>::Type;
 
-template<Int N>		struct	Type_UInt_BySize_Struct;
-template<>			struct	Type_UInt_BySize_Struct<1> { using Type = u8 ; };
-template<>			struct	Type_UInt_BySize_Struct<2> { using Type = u16; };
-template<>			struct	Type_UInt_BySize_Struct<4> { using Type = u32; };
-template<>			struct	Type_UInt_BySize_Struct<8> { using Type = u64; };
-template<Int N>		using	Type_UInt_BySize = typename Type_UInt_BySize_Struct<N>::Type;
+template<Int N>		struct	Type_UIntTypeBySize_T;
+template<>			struct	Type_UIntTypeBySize_T<1> { using Type = u8 ; };
+template<>			struct	Type_UIntTypeBySize_T<2> { using Type = u16; };
+template<>			struct	Type_UIntTypeBySize_T<4> { using Type = u32; };
+template<>			struct	Type_UIntTypeBySize_T<8> { using Type = u64; };
+template<Int N>		using	Type_UIntTypeBySize = typename Type_UIntTypeBySize_T<N>::Type;
 
-template<Int N>		struct	Type_Char_BySize_Struct;
-template<>			struct	Type_Char_BySize_Struct<1> { using Type = CharA ; };
-template<>			struct	Type_Char_BySize_Struct<2> { using Type = Char16; };
-template<>			struct	Type_Char_BySize_Struct<4> { using Type = Char32; };
-template<Int N>		using	Type_Char_BySize =typename  Type_Char_BySize_Struct<N>::Type;
+template<Int N>		struct	Type_CharTypeBySize_T;
+template<>			struct	Type_CharTypeBySize_T<1> { using Type = CharA ; };
+template<>			struct	Type_CharTypeBySize_T<2> { using Type = Char16; };
+template<>			struct	Type_CharTypeBySize_T<4> { using Type = Char32; };
+template<Int N>		using	Type_CharTypeBySize =typename  Type_CharTypeBySize_T<N>::Type;
 
-template<Int N>		struct	Type_Float_BySize_Struct;
-template<>			struct	Type_Float_BySize_Struct<4 > { using Type = f32;  };
-template<>			struct	Type_Float_BySize_Struct<8 > { using Type = f64;  };
-template<>			struct	Type_Float_BySize_Struct<16> { using Type = f128; };
-template<Int N>		using	Type_Float_BySize = typename Type_Float_BySize_Struct<N>::Type;
+template<Int N>		struct	Type_FloatTypeBySize_T;
+template<>			struct	Type_FloatTypeBySize_T<4 > { using Type = f32;  };
+template<>			struct	Type_FloatTypeBySize_T<8 > { using Type = f64;  };
+template<>			struct	Type_FloatTypeBySize_T<16> { using Type = f128; };
+template<Int N>		using	Type_FloatTypeBySize = typename Type_FloatTypeBySize_T<N>::Type;
 
 //-----------------------
-template<class T>	struct	Type_Float_From_Struct;
-template<>			struct	Type_Float_From_Struct<i8  > { using Type = f32;  };
-template<>			struct	Type_Float_From_Struct<i16 > { using Type = f32;  };
-template<>			struct	Type_Float_From_Struct<i32 > { using Type = f64;  };
-template<>			struct	Type_Float_From_Struct<i64 > { using Type = f64;  };
-template<>			struct	Type_Float_From_Struct<u8  > { using Type = f32;  };
-template<>			struct	Type_Float_From_Struct<u16 > { using Type = f32;  };
-template<>			struct	Type_Float_From_Struct<u32 > { using Type = f64;  };
-template<>			struct	Type_Float_From_Struct<u64 > { using Type = f64;  };
-template<>			struct	Type_Float_From_Struct<f32 > { using Type = f32;  };
-template<>			struct	Type_Float_From_Struct<f64 > { using Type = f64;  };
-template<>			struct	Type_Float_From_Struct<f128> { using Type = f128; };
-template<class T>	using	Type_Float_From = typename Type_Float_From_Struct<T>::Type;
+template<class T>	struct	Type_FloatTypeFrom_T;
+template<>			struct	Type_FloatTypeFrom_T<i8  > { using Type = f32;  };
+template<>			struct	Type_FloatTypeFrom_T<i16 > { using Type = f32;  };
+template<>			struct	Type_FloatTypeFrom_T<i32 > { using Type = f64;  };
+template<>			struct	Type_FloatTypeFrom_T<i64 > { using Type = f64;  };
+template<>			struct	Type_FloatTypeFrom_T<u8  > { using Type = f32;  };
+template<>			struct	Type_FloatTypeFrom_T<u16 > { using Type = f32;  };
+template<>			struct	Type_FloatTypeFrom_T<u32 > { using Type = f64;  };
+template<>			struct	Type_FloatTypeFrom_T<u64 > { using Type = f64;  };
+template<>			struct	Type_FloatTypeFrom_T<f32 > { using Type = f32;  };
+template<>			struct	Type_FloatTypeFrom_T<f64 > { using Type = f64;  };
+template<>			struct	Type_FloatTypeFrom_T<f128> { using Type = f128; };
+template<class T>	using	Type_FloatTypeFrom = typename Type_FloatTypeFrom_T<T>::Type;
 
-template<class T>	struct	Type_SInt_From_Struct;
-template<>			struct	Type_SInt_From_Struct<i8 > { using Type = i8;  };
-template<>			struct	Type_SInt_From_Struct<i16> { using Type = i16; };
-template<>			struct	Type_SInt_From_Struct<i32> { using Type = i32; };
-template<>			struct	Type_SInt_From_Struct<i64> { using Type = i64; };
-template<>			struct	Type_SInt_From_Struct<u8 > { using Type = i8;  };
-template<>			struct	Type_SInt_From_Struct<u16> { using Type = i16; };
-template<>			struct	Type_SInt_From_Struct<u32> { using Type = i32; };
-template<>			struct	Type_SInt_From_Struct<u64> { using Type = i64; };
-template<class T>	using	Type_SInt_From = typename Type_SInt_From_Struct<T>::Type;
+template<class T>	struct	Type_SIntTypeFrom_T;
+template<>			struct	Type_SIntTypeFrom_T<i8 > { using Type = i8;  };
+template<>			struct	Type_SIntTypeFrom_T<i16> { using Type = i16; };
+template<>			struct	Type_SIntTypeFrom_T<i32> { using Type = i32; };
+template<>			struct	Type_SIntTypeFrom_T<i64> { using Type = i64; };
+template<>			struct	Type_SIntTypeFrom_T<u8 > { using Type = i8;  };
+template<>			struct	Type_SIntTypeFrom_T<u16> { using Type = i16; };
+template<>			struct	Type_SIntTypeFrom_T<u32> { using Type = i32; };
+template<>			struct	Type_SIntTypeFrom_T<u64> { using Type = i64; };
+template<class T>	using	Type_SIntTypeFrom = typename Type_SIntTypeFrom_T<T>::Type;
 
-template<class T>	struct	Type_UInt_From_Struct;
-template<>			struct	Type_UInt_From_Struct<i8 > { using Type = u8;  };
-template<>			struct	Type_UInt_From_Struct<i16> { using Type = u16; };
-template<>			struct	Type_UInt_From_Struct<i32> { using Type = u32; };
-template<>			struct	Type_UInt_From_Struct<i64> { using Type = u64; };
-template<>			struct	Type_UInt_From_Struct<u8 > { using Type = u8;  };
-template<>			struct	Type_UInt_From_Struct<u16> { using Type = u16; };
-template<>			struct	Type_UInt_From_Struct<u32> { using Type = u32; };
-template<>			struct	Type_UInt_From_Struct<u64> { using Type = u64; };
-template<class T>	using	Type_UInt_From = typename Type_UInt_From_Struct<T>::Type;
+template<class T>	struct	Type_UIntTypeFrom_T;
+template<>			struct	Type_UIntTypeFrom_T<i8 > { using Type = u8;  };
+template<>			struct	Type_UIntTypeFrom_T<i16> { using Type = u16; };
+template<>			struct	Type_UIntTypeFrom_T<i32> { using Type = u32; };
+template<>			struct	Type_UIntTypeFrom_T<i64> { using Type = u64; };
+template<>			struct	Type_UIntTypeFrom_T<u8 > { using Type = u8;  };
+template<>			struct	Type_UIntTypeFrom_T<u16> { using Type = u16; };
+template<>			struct	Type_UIntTypeFrom_T<u32> { using Type = u32; };
+template<>			struct	Type_UIntTypeFrom_T<u64> { using Type = u64; };
+template<class T>	using	Type_UIntTypeFrom = typename Type_UIntTypeFrom_T<T>::Type;
 
 template<class FUNC, class FUNC_SIG>
-struct Type_IsFuncSig_Struct { static constexpr bool value = false; };
+struct Type_IsFunc_T { static constexpr bool value = false; };
 
 template<class FUNC, class RETURN, class...ARGS>
-struct Type_IsFuncSig_Struct<FUNC, RETURN (ARGS...)> {
+struct Type_IsFunc_T<FUNC, RETURN (ARGS...)> {
 	static constexpr bool value =  std::is_invocable_v< FUNC, ARGS...>
 								&& std::is_same_v<RETURN, std::invoke_result_t<FUNC, ARGS...>>;
 };
 
 template<class FUNC, class FUNC_SIG>
-constexpr bool Type_IsFuncSig = Type_IsFuncSig_Struct<FUNC, FUNC_SIG>::value;
+constexpr bool Type_IsFunc = Type_IsFunc_T<FUNC, FUNC_SIG>::value;
 
 template<class T> AX_INLINE constexpr Int ax_strlen(const T* sz) {
 	if (!sz) return 0;
@@ -265,12 +265,12 @@ public:
 	constexpr	Int		size() const noexcept	{ return _size; }
 	
 	constexpr CZView	constView() const		{ return CZView(_data, _size); }
-	constexpr const T*	c_str() const			{ return _size ? _data : &_empty_c_str; }
+	constexpr const T*	c_str() const			{ return _size ? _data : &kEmpty_c_str; }
 	
 	static constexpr This s_from_c_str(T *sz) { return This(sz, ax_strlen(sz)); } 
 	
 private:
-	static constexpr T _empty_c_str = 0;
+	static constexpr T kEmpty_c_str = 0;
 };
 
 template<class T> using ZStrView_ = MutZStrView_<const T>;
@@ -303,7 +303,7 @@ public:
 protected:
 	AX_INLINE constexpr MutStrLit_(T* sz, Int size) noexcept : Base(sz, size) {}
 	
-	static constexpr T _empty_c_str = 0;	
+	static constexpr T kEmpty_c_str = 0;
 };
 
 template<class T> using StrLit_ = MutStrLit_<const T>;

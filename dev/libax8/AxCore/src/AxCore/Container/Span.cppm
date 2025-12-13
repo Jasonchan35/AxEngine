@@ -243,7 +243,7 @@ public:
 		return find_([&r](const T& e){ return e == r; });
 	}
 	
-	template<class FUNC> requires Type_IsFuncSig<FUNC, bool (const T&)>
+	template<class FUNC> requires Type_IsFunc<FUNC, bool (const T&)>
 	constexpr Opt<MFindResult> find_(FUNC func) {
 		auto* p = _data;
 		auto* e = _data + _size;
@@ -256,7 +256,7 @@ public:
 	template<class R>    constexpr Opt<CFindResult> find(const R& r) const { return ax_const_cast(this)->find(r); }
 	template<class FUNC> constexpr Opt<CFindResult> find_(FUNC func) const { return ax_const_cast(this)->find_(func); }
 
-	template<class FUNC> requires Type_IsFuncSig<FUNC, bool (const T&, const T&)>
+	template<class FUNC> requires Type_IsFunc<FUNC, bool (const T&, const T&)>
 	constexpr MFindResult findMin_(FUNC func) {
 		if (_size <= 0) throw Error_InvalidSize();
 
@@ -277,7 +277,7 @@ public:
 	
 	constexpr void sort() { sort(ax_op_less<T,T>); }
 	
-	template<class FUNC> requires Type_IsFuncSig<FUNC, bool (const T&, const T&)>
+	template<class FUNC> requires Type_IsFunc<FUNC, bool (const T&, const T&)>
 	constexpr void sort(FUNC func) {
 		// simple sorting, prevent move data if possible
 		for (Int i = 0; i < _size; i++) {

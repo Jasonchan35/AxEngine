@@ -160,11 +160,11 @@ AX_INLINE constexpr ColorType_IntType ColorType_int(ColorModel model, ColorElem 
 
 AX_ENUM_CLASS(AX_ColorType_ENUM_LIST, ColorType, ColorType_IntType);
 
-template<ColorModel MODEL, class ELEM, VecSIMD SIMD = VecSIMD_Default> class Color_;
+template<ColorModel MODEL, class ELEM, VecSimd SIMD = VecSimd_Default> class Color_;
 
 //e.g. ColorRGBAf = Color_<ColorModel::RGBA, f32>;
 #define E(MODEL,...) \
-	template<class T, VecSIMD SIMD = VecSIMD_Default> using Color## MODEL ##_ = Color_<ColorModel::MODEL, T, SIMD>; \
+	template<class T, VecSimd SIMD = VecSimd_Default> using Color## MODEL ##_ = Color_<ColorModel::MODEL, T, SIMD>; \
 	using Color## MODEL ##b = Color_<ColorModel::MODEL, UNorm8 >; \
 	using Color## MODEL ##s = Color_<ColorModel::MODEL, UNorm16>; \
 	using Color## MODEL ##h = Color_<ColorModel::MODEL, f16    >; \
@@ -174,7 +174,7 @@ template<ColorModel MODEL, class ELEM, VecSIMD SIMD = VecSIMD_Default> class Col
 	AX_ColorModel_Basic_ENUM_LIST(E)
 #undef E
 
-template<class ELEM, VecSIMD SIMD = VecSIMD_Default>
+template<class ELEM, VecSimd SIMD = VecSimd_Default>
 using ColorPacked_  = Color_<ColorModel::Packed, ELEM, SIMD>;
 
 using ColorR5G6B5      = ColorPacked_<ColorElem_R5G6B5     >;
@@ -182,7 +182,7 @@ using ColorR5G5B5A1    = ColorPacked_<ColorElem_R5G5B5A1   >;
 using ColorR11G11B10   = ColorPacked_<ColorElem_R11G11B10  >;
 using ColorR10G10B10A2 = ColorPacked_<ColorElem_R10G10B10A2>;
 
-template<class ELEM, VecSIMD SIMD = VecSIMD_Default>
+template<class ELEM, VecSimd SIMD = VecSimd_Default>
 using ColorDXT_  = Color_<ColorModel::DXT, ELEM, SIMD>;
 using ColorDXT_BC1  = ColorDXT_<ColorElem_DXT_BC1 >;
 using ColorDXT_BC2  = ColorDXT_<ColorElem_DXT_BC2 >;

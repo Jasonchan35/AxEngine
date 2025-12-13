@@ -5,20 +5,20 @@ export import :ColorType;
 
 export namespace ax {
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::L, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 1;
 public:
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T luma; };
 	};
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::L;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
@@ -72,20 +72,20 @@ public:
 	static const This& kGray		() { static This s(kElemHalf()); return s; }
 };
 
-template<class T, VecSIMD SIMD>
+template<class T, VecSimd SIMD>
 class Color_<ColorModel::LA, T, SIMD> {
 	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 2;
 public:
-	using SIMD_Data = VecSIMD_Data_<N,T,SIMD>; 
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SIMD_Data	_simd;
+		SimdData	_simd;
 		struct { T luma, a; };
 	};
 
-	using _NumLimit = VecSIMD_NumLimit<This, T>;
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
-	static constexpr VecSIMD	kVecSIMD		= SIMD;
+	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::LA;
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);

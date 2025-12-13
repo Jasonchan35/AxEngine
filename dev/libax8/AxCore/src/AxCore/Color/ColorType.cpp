@@ -34,7 +34,7 @@ struct ColorTypeInfo_Creator : public ColorTypeInfo {
 
 const ColorTypeInfo& ColorTypeInfo::s_get(ColorType t) {
 	// work around for MSVC
-	//   - use of undefined type 'ax::Color_<ax::ColorModel::Packed,ax::ColorElem_R5G6B5,ax::VecSIMD::SSE>'
+	//   - use of undefined type 'ax::Color_<ax::ColorModel::Packed,ax::ColorElem_R5G6B5,ax::VecSimd::SSE>'
 	// by adding static_assert() below, somehow could pass the compilation 
 	static_assert(Type_IsSame<Color_<ColorModel::Packed, ColorElem_R5G5B5A1   >, ColorR5G5B5A1   >);
 	static_assert(Type_IsSame<Color_<ColorModel::Packed, ColorElem_R5G6B5     >, ColorR5G6B5     >);
