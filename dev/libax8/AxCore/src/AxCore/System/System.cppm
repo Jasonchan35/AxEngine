@@ -3,9 +3,7 @@ module;
 export module AxCore.System;
 export import AxCore.String;
 
-export namespace ax {
-
-namespace System {
+export namespace ax::System {
 
 Int		numberOfProcessors	();
 Int		availableMemory		();
@@ -19,7 +17,5 @@ void	setEnvVariable(StrView name, StrView value);
 bool	getEnvVariable(IString& outStr, StrView	name);
 
 Opt<TempString> envVariable(StrView name);
-
-};
 
 } // namespace ax 

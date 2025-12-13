@@ -20,7 +20,7 @@ public:
 
 	Delegate_() = default;
 	Delegate_(const Delegate_& r) { if (r._functor) r._functor->copyTo(*this); }
-	Delegate_(Delegate_ && r) { operator=(std::move(r)); }
+	Delegate_(Delegate_ && r) noexcept { operator=(std::move(r)); }
 
 	// beware lambda capture variable life cycle
 	template<class LAMBDA> requires std::is_invocable_v<LAMBDA, ARGS...>
@@ -151,7 +151,7 @@ private:
 
 		virtual bool valid() const override					{ auto sp = obj(); return sp.ptr() != nullptr; }
 		virtual bool hasObject(void* p) const override		{ auto sp = obj(); return sp.ptr() == p; }
-		virtual void copyTo(Delegate_& de) const override	{ if (auto sp = obj()) de._bindObj<WPtrFunctor>(sp.ptr(), _func); }
+		virtual void copyTo(Delegate_& de) const override	{ if (auto sp = obj()) de.template _bindObj<WPtrFunctor>(sp.ptr(), _func); }
 
 		virtual OptReturn onInvoke(ARGS... args) const override { return Functor::doObjInvoke(obj().ptr(), _func, AX_FORWARD(args)...); }
 	};

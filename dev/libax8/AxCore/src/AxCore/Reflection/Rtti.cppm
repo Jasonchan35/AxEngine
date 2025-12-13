@@ -40,8 +40,8 @@ public:
 
 private:
 	RttiAttrClassId			_classId = nullptr;
-	static constexpr Int	kBufSize = 64;
-	char					_buf[kBufSize];
+	// static constexpr Int	kBufSize = 64;
+	// char					_buf[kBufSize];
 	MetaAttr*				_attr = nullptr;
 	String					_name;
 };
@@ -104,7 +104,7 @@ struct Rtti : public NonCopyable {
 
 	RttiField*	findField(NameId name) const { return _ownFieldsDict.find(name); }	
 	
-	void DebugDump();
+	void debugDump();
 
 	template<class R> friend struct Rtti_; 
 protected:
@@ -189,7 +189,7 @@ bool Rtti::isKindOf(Rtti* r) const {
 #pragma mark ---------------- RttiObject -------------------
 #endif
 
-class RttiObject : public WPtrReferenable {
+class RttiObject : public WPtr_Referenceable {
 	AX_NON_COPYABLE(RttiObject)
 	AX_TYPE_INFO(RttiObject, NoBaseClass)
 public:

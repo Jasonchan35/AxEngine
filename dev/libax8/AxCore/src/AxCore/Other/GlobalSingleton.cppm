@@ -12,7 +12,7 @@ class GlobalSingletonBase : public LinkedListNode<GlobalSingletonBase> {
 public:
 	class AllocatorInit {};
 
-	virtual ~GlobalSingletonBase() {}
+	virtual ~GlobalSingletonBase() = default;
 	virtual void callDestructor() {}
 };
 
@@ -30,11 +30,8 @@ public:
 	virtual void callDestructor() override;
 
 private:
-	template<class... Args>
-	void _ctor(Args&&... args);
-
-	char _buffer[sizeof(T)];
-	bool _inited;
+	alignas(T) Byte _buffer[AX_SIZEOF(T)];
+	bool _initialized = false;
 };
 
 class GlobalSingletonManager : public NonCopyable {
@@ -59,11 +56,11 @@ private:
 //---------------------
 
 template<class T>
-template<class... Args> inline
-GlobalSingleton<T>::GlobalSingleton(Args&&... args) {
-	_inited = true;
+template<class... ARGS> inline
+GlobalSingleton<T>::GlobalSingleton(ARGS&&... args)
+	: _initialized(true)
+{
 	ax_call_constructor(reinterpret_cast<T*>(_buffer), AX_FORWARD(args)...);
-
 	GlobalSingletonManager::s_instance()->add(this);
 }
 
@@ -74,8 +71,8 @@ inline GlobalSingleton<T>::~GlobalSingleton() {
 
 template<class T> 
 inline void GlobalSingleton<T>::callDestructor() {
-	AX_ASSERT(_inited);
+	AX_ASSERT(_initialized);
 	ax_call_destructor(reinterpret_cast<T*>(_buffer));
-	_inited = false;
+	_initialized = false;
 }
 } // namespace 

@@ -100,19 +100,19 @@ protected:
 	#error
 #endif
 
-AX_INLINE void sleep(Nanoseconds nanoseconds) {
+AX_INLINE void sleep(const Nanoseconds& nanoseconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int, std::nano>(nanoseconds.value));
 }
 
-AX_INLINE void sleep(Microseconds microseconds) {
+AX_INLINE void sleep(const Microseconds& microseconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int, std::micro>(microseconds.value));
 }
 
-AX_INLINE void sleep(Milliseconds milliseconds) {
+AX_INLINE void sleep(const Milliseconds& milliseconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int, std::milli>(milliseconds.value));
 }
 
-AX_INLINE void sleep(Seconds seconds) {
+AX_INLINE void sleep(const Seconds& seconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int>(seconds.value));
 }
 

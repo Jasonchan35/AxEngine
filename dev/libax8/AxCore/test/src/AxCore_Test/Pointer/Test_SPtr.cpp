@@ -18,13 +18,13 @@ public:
 		UPtr<FooClass> u;
 	};
 	
-	class FooClass : public SPtrReferenable {
+	class FooClass : public SPtr_Referenceable {
 		public:
 		int foo = 0; 
 	};
 #endif
 
-	class TestObjectBase : public WPtrReferenable {
+	class TestObjectBase : public WPtr_Referenceable {
 	public:
 		Int base_i = 1;
 	};

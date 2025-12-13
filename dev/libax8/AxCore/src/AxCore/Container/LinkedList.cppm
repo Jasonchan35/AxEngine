@@ -311,7 +311,7 @@ private:
 	
 	AX_NODISCARD AX_INLINE constexpr SPtr<T> s_outputPtr(UPtr<T> && p) {
 		if constexpr (true) {
-			return SPtr<T>::s_ref_DontAddRefCount(p.detach());
+			return SPtr<T>::s_ref_dontAddRefCount(p.detach());
 		} else {
 			auto sp = SPtr_fromUPtr(p);
 			if (sp) sp->_releaseSPtrRefCount();

@@ -58,7 +58,7 @@ public:
 	
 	AX_INLINE constexpr String_() : Base(inlineBufPtr(), BUF_SIZE) {}
 	AX_INLINE constexpr String_(CView view) : String_() { Base::append(view); }
-	AX_INLINE constexpr String_(String_ && rhs) : String_() { Base::operator=(std::move(rhs.asIString())); }
+	AX_INLINE constexpr String_(String_ && rhs) noexcept : String_() { Base::operator=(std::move(rhs.asIString())); }
 	AX_INLINE constexpr String_(const String_ & rhs) : String_(rhs.view()) {}
 
 	template<CON_StrView_<T>... ARGS>

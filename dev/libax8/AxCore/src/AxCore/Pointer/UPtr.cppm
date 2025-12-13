@@ -60,7 +60,7 @@ public:
 	AX_INLINE	void operator=(UPtr<R, DEL> && r) noexcept { move(AX_FORWARD(r)); }
 
 	static UPtr  s_ref(T* p) noexcept { return UPtr(p); }
-	static UPtr  s_ref_DontAddRefCount(T* p) noexcept { return UPtr(p); }
+	static UPtr  s_ref_dontAddRefCount(T* p) noexcept { return UPtr(p); }
 
 private:
 	//! not allowed in public, please use UPtr_ref or UPtr<T>::s_ref

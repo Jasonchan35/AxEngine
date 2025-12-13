@@ -13,7 +13,7 @@ class Dict_OrderedListConfig {};
 class Dict_HashListConfig {};
 
 template<class KEY, class VALUE>
-class DictNode : public SPtrReferenable_NonThreadSafe
+class DictNode : public SPtr_Referenceable_NonThreadSafe
 	, public LinkedListNode< DictNode<KEY, VALUE>, Dict_OrderedListConfig>
 	, public LinkedListNode< DictNode<KEY, VALUE>, Dict_HashListConfig>
 {

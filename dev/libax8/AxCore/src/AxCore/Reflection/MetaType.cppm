@@ -96,7 +96,7 @@ struct FinalMetaTypeOf_Handler_ {
 	using OwnAttrs     = typename MetaTypeInit::OwnAttrs;
 	
 	struct FinalMetaType : public MetaTypeInit {
-		//---- Combind all ---
+		//---- Combine all ---
 		using AllFields = typename Base_AllFields::template JoinType<OwnFields>;
 		using AllAttrs  = typename Base_AllAttrs ::template JoinType<OwnAttrs >;
 	};

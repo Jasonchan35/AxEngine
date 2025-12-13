@@ -3,6 +3,7 @@
 
 export module AxCore.UnitTest;
 export import AxCore.String;
+export import AxCore.MetaType;
 
 export namespace ax {
 
@@ -40,7 +41,7 @@ bool UnitTest_Validate(bool success, const char* expr_str, const std::source_loc
 	if (success && !verbose)
 		return success;
 
-	const int kBufSize = 4096;
+	constexpr int kBufSize = 4096;
 	char buf[kBufSize + 1];
 	snprintf(buf, kBufSize, "%s %s", (success ? "[ OK ]" : "[FAIL]"), expr_str);
 	ax_internal_log(buf);
@@ -50,20 +51,11 @@ bool UnitTest_Validate(bool success, const char* expr_str, const std::source_loc
 	return success;
 }
 
-template<class T> inline
-const char* _ax_get_cls_name() {
-	auto* src = AX_FUNC_SIG;
-	auto* t = "_ax_get_cls_name";
-	auto* sz = std::strstr(src, t);
-	if (!sz) AX_ASSERT(false);
-	return sz + std::strlen(t);
-}
-
 template<class TEST_CLASS, class... FUNC_ARGS, class... CALL_ARGS>
 inline void UnitTest_RunCase(const char* funcName, void (TEST_CLASS::*testFunc)(FUNC_ARGS...), CALL_ARGS&&... args) {
-//	const char* clsName = _ax_get_cls_name<TEST_CLASS>();
-	const int kBufSize = 4096;
-	char msg[kBufSize + 1];
+//	const char*   clsName  = ax_metatype_get_class_name<TEST_CLASS>();
+	constexpr int kBufSize = 4096;
+	char          msg[kBufSize + 1];
 	snprintf(msg, kBufSize, "---- RunCase [%s] ---------", funcName);
 	ax_internal_log(msg);
 
@@ -72,17 +64,17 @@ inline void UnitTest_RunCase(const char* funcName, void (TEST_CLASS::*testFunc)(
 		(obj.*testFunc)(AX_FORWARD(args)...);
 
 	} catch (const Error& e) {
-		snprintf(msg, kBufSize, "\n  uncatched ax::Error occur %s", e.what());
+		snprintf(msg, kBufSize, "\n  un-catched ax::Error occur %s", e.what());
 		ax_internal_log(msg);
 		AX_ASSERT(false);
 
 	} catch (const std::exception& e) {
-		snprintf(msg, kBufSize, "\n  uncatched std::exception occur %s", e.what());
+		snprintf(msg, kBufSize, "\n  un-catched std::exception occur %s", e.what());
 		ax_internal_log(msg);
 		AX_ASSERT(false);
 
 	} catch (...) {
-		snprintf(msg, kBufSize, "\n  uncatched exception occur");
+		snprintf(msg, kBufSize, "\n  un-catched exception occur");
 		ax_internal_log(msg);
 		AX_ASSERT(false);
 	}

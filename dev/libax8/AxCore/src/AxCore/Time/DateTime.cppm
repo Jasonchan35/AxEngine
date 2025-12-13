@@ -20,10 +20,10 @@ AX_ENUM_CLASS(AX_Weekday_ENUM_LIST, Weekday, i8)
 
 class DateTime {
 public:
-	static const Int kMinToSec	= 60;
-	static const Int kHourToSec	= 60 * kMinToSec;
-	static const Int kDayToSec	= 24 * kHourToSec;
-	static const Int kWeekToSec	= 7  * kDayToSec;
+	static constexpr Int kMinToSec  = 60;
+	static constexpr Int kHourToSec = 60 * kMinToSec;
+	static constexpr Int kDayToSec  = 24 * kHourToSec;
+	static constexpr Int kWeekToSec = 7  * kDayToSec;
 
 	void reset() { _t = {}; }
 
@@ -31,8 +31,8 @@ public:
 	explicit DateTime(const LocalTime& t) { set(t); }
 	explicit DateTime(const UtcTime&   t) { set(t); }
 
-	void set(const LocalTime& t);
-	void set(const UtcTime& t);
+	void set(const LocalTime& ts);
+	void set(const UtcTime&   ts);
 
 	void setToNow()					{ set(LocalTime::s_now()); }
 

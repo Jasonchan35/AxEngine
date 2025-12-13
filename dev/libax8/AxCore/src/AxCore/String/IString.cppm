@@ -174,7 +174,7 @@ template <class T> constexpr
 void IString_<T>::replaceChars(const T& from, const T& to) {
 	auto* s = data();
 	auto* e = s + size();
-	for ( ; s < e; s++ ) {
+	for ( ; s < e; ++s ) {
 		if (*s == from) *s = to;
 	}
 }

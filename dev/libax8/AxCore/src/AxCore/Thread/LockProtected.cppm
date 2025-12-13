@@ -18,7 +18,7 @@ public:
 		using Base = typename Mutex::ScopedLock;
 	public:
 		ScopedLock(Mutex& mutex, Data* data) : Base(mutex), _data(data) {}
-		ScopedLock(ScopedLock && r) : Base(std::move(r)), _data(r._data) { r._data = nullptr; }
+		ScopedLock(ScopedLock && r) noexcept : Base(std::move(r)), _data(r._data) { r._data = nullptr; }
 		void unlock() { Base::unlock(); _data = nullptr; }
 
 		operator Data*	() { return _data; }
@@ -61,7 +61,8 @@ public:
 			mutex.lock();
 		}
 
-		ScopedLock(ScopedLock && r) : _mutex(r._mutex), _data(r._data) {
+		ScopedLock(ScopedLock && r) noexcept
+			: _mutex(r._mutex), _data(r._data) {
 			r._mutex = nullptr;
 			r._data = nullptr; 
 		}
@@ -91,7 +92,7 @@ public:
 			mutex.lockRead();
 		}
 
-		ScopedReadLock(ScopedLock && r) : _mutex(r._mutex), _data(r._data) { 
+		ScopedReadLock(ScopedReadLock && r) noexcept : _mutex(r._mutex), _data(r._data) { 
 			r._mutex = nullptr;
 			r._data = nullptr; 
 		}
@@ -113,8 +114,8 @@ public:
 		const Data* _data = nullptr;
 	};
 
-	template<class... Args>
-	SharedLockProtected(Args&&... args) : _data(new(_dataBuffer) Data(AX_FORWARD(args)...)) {}
+	template<class... ARGS>
+	SharedLockProtected(ARGS&&... args) : _data(new(_dataBuffer) Data(AX_FORWARD(args)...)) {}
 
 	~SharedLockProtected() {
 		auto lock = _mutex.scopedLock();

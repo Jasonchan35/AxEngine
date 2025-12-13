@@ -3,6 +3,8 @@
 - Type_EnumFlag<>
 - rename AxTag::Zero_ -> AxZero ?
 
+- NameId consteval string literal to StrLit + Id
+
 - ECS
 
 - func(SPtr<T> & obj) <-- should always use & for SPtr<T> ?

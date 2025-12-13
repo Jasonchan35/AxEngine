@@ -20,12 +20,12 @@ public:
 	using Mutex = MUTEX;
 
 	ScopedLock_() = default;
-	ScopedLock_(ScopedLock_ && r) : _mutex(r._mutex) { r._mutex = nullptr; }
+	ScopedLock_(ScopedLock_ && r) noexcept : _mutex(r._mutex) { r._mutex = nullptr; }
 
 	class TryTag {};
 
 	explicit ScopedLock_(MUTEX& mutex) { lock(mutex); }
-	explicit ScopedLock_(const TryTag&, MUTEX& mutex) { tryLock(mutex); }
+	explicit ScopedLock_(const TryTag&, MUTEX& mutex) { _tryLock(mutex); }
 
 	~ScopedLock_() { unlock(); }
 
@@ -43,7 +43,7 @@ public:
 	AX_NODISCARD	MUTEX* mutex() { return _mutex; }
 protected:
 
-	AX_NODISCARD bool _tryLock(MUTEX& mutex) {
+	bool _tryLock(MUTEX& mutex) {
 		unlock();
 		if (mutex.tryLock()) {
 			_mutex = &mutex;
@@ -62,7 +62,7 @@ public:
 	using Mutex = MUTEX;
 
 	ScopedReadLock_() = default;
-	ScopedReadLock_(ScopedReadLock_ && r) : _v(r._v) { r._v = nullptr; }
+	ScopedReadLock_(ScopedReadLock_ && r) noexcept : _v(r._v) { r._v = nullptr; }
 	explicit ScopedReadLock_(MUTEX& p) { lock(p); }
 
 	~ScopedReadLock_() { unlock(); }
@@ -80,7 +80,7 @@ private:
 template<class T0, class T1>
 class ScopedLock2_ : public NonCopyable {
 public:
-	ScopedLock2_(ScopedLock2_ && r) : m0(ax_move(r.m0)), m1(ax_move(r.m1)) {}
+	ScopedLock2_(ScopedLock2_ && r) noexcept : m0(ax_move(r.m0)), m1(ax_move(r.m1)) {}
 
 	explicit ScopedLock2_(T0& t0, T1& t1) {
 		if (&t0 < &t1) { //using address to decide the order

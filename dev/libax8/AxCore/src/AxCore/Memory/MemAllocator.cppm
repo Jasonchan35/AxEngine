@@ -97,7 +97,7 @@ protected:
 	virtual MemAllocResult<u8> onAlloc(const MemAllocRequest & req) {
 		void* data = ax_malloc(req.dataSize, req.alignment);
 //		std::cout << std::format("onAlloc size={} data={}\n", req.dataSize, data);
-		return MemAllocResult<u8>(this, reinterpret_cast<u8*>(data), req.dataSize);
+		return MemAllocResult<u8>(this, static_cast<u8*>(data), req.dataSize);
 	}
 
 	virtual void onDealloc(void* data) {

@@ -35,11 +35,11 @@ public:
 	AX_INLINE static constexpr This kZero() { return This(0); }
 	AX_INLINE static constexpr This kMax()  { return This(NumLimit<T>::max()); }
 
-	constexpr This s_f32(f32 s) noexcept { return This(static_cast<T>(s * f32(RATIO))); }
-	constexpr This s_f64(f64 s) noexcept { return This(static_cast<T>(s * f64(RATIO))); }
+	static constexpr This s_f32(f32 s) noexcept { return This(static_cast<T>(s * static_cast<f32>(RATIO))); }
+	static constexpr This s_f64(f64 s) noexcept { return This(static_cast<T>(s * static_cast<f64>(RATIO))); }
 
-	constexpr f32  seconds_f32() const noexcept { return static_cast<f32>(value) / f32(RATIO); }
-	constexpr f64  seconds_f64() const noexcept { return static_cast<f64>(value) / f64(RATIO); }
+	constexpr f32 seconds_f32() const noexcept { return static_cast<f32>(value) / static_cast<f32>(RATIO); }
+	constexpr f64 seconds_f64() const noexcept { return static_cast<f64>(value) / static_cast<f64>(RATIO); }
 
 	constexpr This operator+ (const This& r) const noexcept { return This(value + r.value); }
 	constexpr This operator- (const This& r) const noexcept { return This(value - r.value); }

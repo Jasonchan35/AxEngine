@@ -50,7 +50,7 @@ private:
 	void _move(WPtr && r)	{ _block.move(r._block); }
 
 	void _ref(T* p) {
-		static_assert(std::is_base_of_v<WPtrReferenable, T>);
+		static_assert(std::is_base_of_v<WPtr_Referenceable, T>);
 
 		if (!p) return _block.unref();
 		

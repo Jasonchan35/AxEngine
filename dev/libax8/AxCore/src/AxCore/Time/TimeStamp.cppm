@@ -17,19 +17,19 @@ public:
 	static_assert(std::is_same_v<typename CLOCK::duration::rep, i64>);
 	static_assert(std::is_same_v<typename CLOCK::duration, std::chrono::nanoseconds>);
 
-	Timestamp_() = default;
-	constexpr Timestamp_(Seconds      v) : _value(v) {}
-	constexpr Timestamp_(Milliseconds v) : _value(v) {}
-	constexpr Timestamp_(Microseconds v) : _value(v) {}
-	constexpr Timestamp_(Nanoseconds  v) : _value(v) {}
+	constexpr Timestamp_() = default;
+	constexpr Timestamp_(const Seconds     & v) : _value(v) {}
+	constexpr Timestamp_(const Milliseconds& v) : _value(v) {}
+	constexpr Timestamp_(const Microseconds& v) : _value(v) {}
+	constexpr Timestamp_(const Nanoseconds & v) : _value(v) {}
 
 			  static Timestamp_	s_now()  noexcept { return CLOCK::s_now(); }
 	constexpr static Timestamp_	s_zero() noexcept { return Nanoseconds(0); }
 
-	static const Int kMinToSec	= 60;
-	static const Int kHourToSec	= 60 * kMinToSec;
-	static const Int kDayToSec	= 24 * kHourToSec;
-	static const Int kWeekToSec	= 7  * kDayToSec;
+	static constexpr Int kMinToSec  = 60;
+	static constexpr Int kHourToSec = 60 * kMinToSec;
+	static constexpr Int kDayToSec  = 24 * kHourToSec;
+	static constexpr Int kWeekToSec = 7  * kDayToSec;
 
 	constexpr static Timestamp_	s_date_1970_to_2000() noexcept { return Nanoseconds((365*30+7) * kDayToSec * 1000000000LL); } // 1970 year to 2000 year
 

@@ -18,7 +18,7 @@ public:
 		if( !s ) return 0;
 
 		Int len = 0;
-		for( ; *s; s++, len++ ) {
+		for( ; *s; ++s, len++ ) {
 		}
 		return len;
 	}
@@ -29,8 +29,8 @@ public:
 		for (;;) {
 			if (l > maxLen) return maxLen;
 			if (*s == 0) return l;
-			l++;
-			s++;
+			++l;
+			++s;
 		}
 	}
 
@@ -179,7 +179,7 @@ T* _ZStrUtil_T_Impl<T>::copy(T* dst, const T* src, Int n) {
 	for(Int i=0; i<n; i++ ) {
 		if( *src == 0 ) break;
 		*dst = *src;
-		dst++; src++;
+		++dst; ++src;
 	}
 	*dst = T(0);
 	return ret;
@@ -193,7 +193,7 @@ T* _ZStrUtil_T_Impl<T>::copy( T* dst, const T* src ) {
 	for(;;) {
 		if( *src == 0 ) break;
 		*dst = *src;
-		dst++; src++;
+		++dst; ++src;
 	}
 	*dst = T(0);
 	return ret;
@@ -418,7 +418,7 @@ template<class CHAR, class VAL> inline
 bool Old_CStr_parse_impl(VAL& outValue, const CHAR* sz, Int szSize) {
 	if (!sz) return false;
 
-	const Int kBufSize = Old_CStr_parse_impl_bufSize;
+	constexpr Int kBufSize = Old_CStr_parse_impl_bufSize;
 	wchar_t buf[kBufSize + 1];
 
 	Int copiedCount = 0;
@@ -426,7 +426,7 @@ bool Old_CStr_parse_impl(VAL& outValue, const CHAR* sz, Int szSize) {
 	auto* dst = buf;
 	auto* end = dst + kBufSize;
 	auto* src = sz;
-	for (; *src; src++, dst++) {
+	for (; *src; ++src, ++dst) {
 		if (copiedCount >= szSize) break;
 
 		if (dst >= end) {
@@ -502,7 +502,7 @@ T* _ZStrUtil_T_Impl<T>::findBackStr(T* a, T* b) {
 
 	if (blen > alen) return nullptr;
 
-	for (T* p = a + alen - blen; p >= a; p--) {
+	for (T* p = a + alen - blen; p >= a; --p) {
 		if (equals(p, b, blen)) {
 			return p;
 		}
@@ -514,7 +514,7 @@ template<class T> inline
 T* _ZStrUtil_T_Impl<T>::findChar(T* sz, T ch) {
 	if (!sz) return nullptr;
 
-	for (; *sz; sz++) {
+	for (; *sz; ++sz) {
 		if (*sz == ch) return sz;
 	}
 	return nullptr;
@@ -527,13 +527,13 @@ T* _ZStrUtil_T_Impl<T>::findStr(T* a, T* b) {
 	T* sa = a;
 	T* sb = b;
 	if (*b == 0) return nullptr;
-	for (; *a; a++) {
+	for (; *a; ++a) {
 		sa = a;
 		sb = b;
 		for (;;) {
 			if (*sb == T(0)) return a; //found
 			if (*sb != *sa) break;
-			sa++; sb++;
+			++sa; ++sb;
 		}
 	}
 	return nullptr;
@@ -546,7 +546,7 @@ T* _ZStrUtil_T_Impl<T>::findCharBack(T* sz, T ch) {
 	Int len = length(sz);
 	if (len == 0) return nullptr;
 	T *s = &sz[len - 1];
-	for (; s >= sz; s--) {
+	for (; s >= sz; --s) {
 		if (*s == ch) return s;
 	}
 	return nullptr;
@@ -559,7 +559,7 @@ Int _ZStrUtil_T_Impl<T>::compare( const T* s1, const T* s2 ) {
 		if( !s1 ) return -1;
 		if( !s2 ) return  1;
 
-		for( ;; s1++, s2++ ) {
+		for( ;; ++s1, ++s2 ) {
 			if( *s1 != *s2 ) return (*s1-*s2);
 			if( *s1 == T(0) || *s2 == T(0) ) break;
 		}
@@ -573,7 +573,7 @@ Int _ZStrUtil_T_Impl<T>::compare( const T* s1, const T* s2, Int n ) {
 	if( !s2 ) return  1;
 
 	Int i = 0;
-	for( i=0; i<n; s1++, s2++, i++ ) {
+	for( i=0; i<n; ++s1, ++s2, i++ ) {
 		if( *s1 != *s2 ) return (*s1-*s2);
 		if( *s1 == T(0) || *s2 == T(0) ) break;
 	}
@@ -586,7 +586,7 @@ Int _ZStrUtil_T_Impl<T>::caseCompare(const T* s1, const T* s2) {
 	if( ! s1 ) return -1;
 	if( ! s2 ) return  1;
 
-	for( ;; s1++, s2++ ) {
+	for( ;; ++s1, ++s2 ) {
 		Int c1 = CharUtil::toLower(*s1);
 		Int c2 = CharUtil::toLower(*s2);
 		if( c1 != c2 ) return (c1-c2);
@@ -601,7 +601,7 @@ Int _ZStrUtil_T_Impl<T>::caseCompare(const T* s1, const T* s2, Int n) {
 	if( ! s1 ) return -1;
 	if( ! s2 ) return  1;
 
-	for(Int i=0; i<n; s1++, s2++, i++ ) {
+	for(Int i=0; i<n; ++s1, ++s2, i++ ) {
 		if (auto d = charCaseCompare(*s1, *s2)) {
 			return d;
 		}
@@ -615,8 +615,8 @@ T* _ZStrUtil_T_Impl<T>::findChars(T* sz, const T* chrs) {
 	if (!sz || !chrs) return nullptr;
 
 	T* p = sz;
-	for (; *p; p++) {
-		for (const T* c = chrs; *c; c++) {
+	for (; *p; ++p) {
+		for (const T* c = chrs; *c; ++c) {
 			if (*p == *c) return p;
 		}
 	}
@@ -629,8 +629,8 @@ T* _ZStrUtil_T_Impl<T>::findCharsBack(T* sz, const T* chrs) {
 
 	Int len = length(sz);
 	T* p = sz + len - 1;
-	for (; p >= sz; p--) {
-		for (const T* c = chrs; *c; c++) {
+	for (; p >= sz; --p) {
+		for (const T* c = chrs; *c; ++c) {
 			if (*p == *c) return p;
 		}
 	}
@@ -659,7 +659,7 @@ T* _ZStrUtil_T_Impl<T>::findCaseChar(T* sz, T ch) {
 	if (!sz) return nullptr;
 
 	T c = toUpper(ch);
-	for (; *sz; sz++) {
+	for (; *sz; ++sz) {
 		if (toUpper(*sz) == c) return sz;
 	}
 	return nullptr;

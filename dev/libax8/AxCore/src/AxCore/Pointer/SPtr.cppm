@@ -7,15 +7,15 @@ import AxCore.Atomic;
 import AxCore.SpinLock;
 
 export namespace ax {
-// +-----------------+     +----------+
-// | SPtrReferenable |     | SPtr x N |
-// |                 |<----| - p*     |
-// | - refCount      |     +----------+
-// +-----------------+     +-----------+     +----------+
-// | WPtrReferenable |     | WPtrBlock |     | WPtr x N |
-// | - WPtrBlock*    |---->|           |<----| - p*     |
-// |                 |<----| - obj*    |     +----------+
-// +-----------------+     +-----------+
+// +--------------------+     +----------+
+// | SPtr_Referenceable |     | SPtr x N |
+// |                    |<----| - p*     |
+// | - refCount         |     +----------+
+// +--------------------+     +-----------+     +----------+
+// | WPtr_Referenceable |     | WPtrBlock |     | WPtr x N |
+// | - WPtrBlock*       |---->|           |<----| - p*     |
+// |                    |<----| - obj*    |     +----------+
+// +--------------------+     +-----------+
 
 
 template<class T> class SPtr;
@@ -30,46 +30,46 @@ struct SPtr_Config_NonThreadSafe {
 	using LockType     = Thread::NullSpinLock;
 };
 
-class SPtrReferenableBase {
-	AX_NON_COPYABLE(SPtrReferenableBase)
+class SPtr_ReferenceableBase {
+	AX_NON_COPYABLE(SPtr_ReferenceableBase)
 protected:
-	SPtrReferenableBase() = default;
+	SPtr_ReferenceableBase() = default;
 };
 
-template<class CONFIG> class WPtrReferenable_; 
+template<class CONFIG> class WPtr_Referenceable_; 
 
 template<class CONFIG>
-class SPtrReferenable_ : public SPtrReferenableBase {
+class SPtr_Referenceable_ : public SPtr_ReferenceableBase {
 public:
-	using _WPtrReferenable = WPtrReferenable_<CONFIG>;
+	using _WPtr_Referenceable = WPtr_Referenceable_<CONFIG>;
 	
 	AX_INLINE Int _addSPtrRefCount() const		{ return ++m_SPtrRefCount; }
 	AX_INLINE Int _releaseSPtrRefCount() const	{ return --m_SPtrRefCount; }
 	AX_INLINE Int _getSPtrRefCount() const		{ return m_SPtrRefCount; }
 
-	AX_INLINE ~SPtrReferenable_() { AX_ASSERT(m_SPtrRefCount == 0); }
+	AX_INLINE ~SPtr_Referenceable_() { AX_ASSERT(m_SPtrRefCount == 0); }
 
 private:
 	mutable typename CONFIG::RefCountType	m_SPtrRefCount = 0;
 };
 
-using SPtrReferenable = SPtrReferenable_<SPtr_Config_ThreadSafe>;
-using SPtrReferenable_NonThreadSafe = SPtrReferenable_<SPtr_Config_NonThreadSafe>;
+using SPtr_Referenceable = SPtr_Referenceable_<SPtr_Config_ThreadSafe>;
+using SPtr_Referenceable_NonThreadSafe = SPtr_Referenceable_<SPtr_Config_NonThreadSafe>;
 
 template <class CONFIG>
-struct WPtrBlock_ : public SPtrReferenable_<CONFIG> {
+struct WPtrBlock_ : public SPtr_Referenceable_<CONFIG> {
 	using LockType = typename CONFIG::LockType;
 	struct Data {
-		SPtrReferenable* obj = nullptr;
+		SPtr_Referenceable* obj = nullptr;
 	};
 	Thread::LockProtected<LockType, Data> data;
 };
 
 template<class CONFIG>
-class WPtrReferenable_ : public SPtrReferenable_<CONFIG> {
+class WPtr_Referenceable_ : public SPtr_Referenceable_<CONFIG> {
 public:
 	using WPtrBlock = WPtrBlock_<CONFIG>;
-	~WPtrReferenable_() {
+	~WPtr_Referenceable_() {
 		if (auto* block = _weakPtrBlock.ptr()) {
 			AX_ASSERT(block->data.scopedLock()->obj == nullptr);
 		}
@@ -81,7 +81,7 @@ protected:
 	SPtr<WPtrBlock>		_weakPtrBlock;
 };
 
-using WPtrReferenable = WPtrReferenable_<SPtr_Config_ThreadSafe>;
+using WPtr_Referenceable = WPtr_Referenceable_<SPtr_Config_ThreadSafe>;
 
 } namespace ax { // no export
 
@@ -92,7 +92,7 @@ public:
 	SPtr_Internal() = delete;
 	
 	static constexpr T* ref(SPtr<T>* s, T* p) {
-		static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
+		static_assert(std::is_base_of_v<SPtr_ReferenceableBase, T>);
 		if (s->_p != p) {
 			unref(s);
 			s->_p = p;
@@ -101,10 +101,10 @@ public:
 		return p;
 	}
 
-	static constexpr bool hasWPtrReferenable = std::is_base_of_v<typename T::_WPtrReferenable, T>;
+	static constexpr bool has_WPtr_Referenceable = std::is_base_of_v<typename T::_WPtr_Referenceable, T>;
 	
 	static constexpr void unref(SPtr<T>* s) {
-		static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
+		static_assert(std::is_base_of_v<SPtr_ReferenceableBase, T>);
 		auto* obj = s->_p;
 		if (!obj) return;
 		auto refCount = _releaseRefCount(s);
@@ -119,7 +119,7 @@ public:
 private:
 	static AX_INLINE constexpr Int _releaseRefCount(SPtr<T>* s) {
 		auto* obj = s->_p;
-		if constexpr (hasWPtrReferenable) {
+		if constexpr (has_WPtr_Referenceable) {
 			if (auto* wb = obj->_weakPtrBlock.ptr()) {
 				// lock before release ref count
 				auto wbData   = ax_const_cast(wb)->data.scopedLock();
@@ -189,7 +189,7 @@ public:
 	template<class R> AX_NODISCARD AX_INLINE bool operator!=(const SPtr<R>& r) const { return _p != r._p; }
 	
 	AX_NODISCARD AX_INLINE static SPtr<T> s_ref(T* p) noexcept { return SPtr(p); }
-	AX_NODISCARD AX_INLINE static SPtr<T> s_ref_DontAddRefCount(T* p) noexcept { SPtr<T> o; o._p = p; return o; }
+	AX_NODISCARD AX_INLINE static SPtr<T> s_ref_dontAddRefCount(T* p) noexcept { SPtr<T> o; o._p = p; return o; }
 	
 	friend  class SPtr_Internal<T>;
 	template<class R> friend class SPtr;
@@ -228,7 +228,7 @@ void SPtr<T>::unref() noexcept {
 
 template<class T> AX_INLINE
 T* SPtr<T>::ref(T * p) noexcept {
-	static_assert(std::is_base_of_v<SPtrReferenableBase, T>);
+	static_assert(std::is_base_of_v<SPtr_ReferenceableBase, T>);
 	return SPtr_Internal<T>::ref(this, p);
 }
 

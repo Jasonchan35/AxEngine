@@ -19,8 +19,8 @@ struct MemUtil {
 	template<class T>
 	static constexpr void copy(T* dst, const T* src, Int n);
 	
-	template<class T, class... Args>
-	static constexpr void constructor( T* p, Int n, Args&&... args);
+	template<class T, class... ARGS>
+	static constexpr void constructor( T* p, Int n, ARGS&&... args);
 
 	template<class T> static constexpr void destructor(T* p, Int n);
 
@@ -48,36 +48,28 @@ struct MemUtil {
 		return reinterpret_cast<const T*>(reinterpret_cast<const char*>(p) + numBytes);
 	}
 
-	template<class T> struct memberOffset_wrap { static T v; };
-
 	template< class Obj, class Member > AX_INLINE
 	static constexpr Int memberOffset(Member Obj::*ptrToMember) {
-#if 1
 		Obj* obj = nullptr;
 		char* m = reinterpret_cast<char*>(&(obj->*ptrToMember));
 		char* c = nullptr;
 		return m - c;
-#else // try constexpr, but seems not work
-		using W = memberOffset_wrap<Obj>;
-		char arr[reinterpret_cast<char*>(&(W::v.*ptrToMember)) - reinterpret_cast<char*>(&W::v)];
-		return static_cast<IntPtr>(sizeof(arr));
-#endif
 	}
 
-	template< class Obj, class Member > AX_INLINE
-	static constexpr Obj* _memberOwner( Member Obj::*ptrToMember, Member* member) {
+	template< class OBJ, class MEMBER > AX_INLINE
+	static constexpr OBJ* _memberOwner( MEMBER OBJ::*ptrToMember, MEMBER* member) {
 		if (!member) return nullptr;
 		auto o = reinterpret_cast<char*>(member) - memberOffset(ptrToMember);
-		return reinterpret_cast<Obj*>(o);
+		return reinterpret_cast<OBJ*>(o);
 	}
 
-	template< class Obj, class Member > AX_INLINE
-	static constexpr Obj* memberOwner( Member Obj::*ptrToMember, Member* member) {
+	template< class OBJ, class EMBER > AX_INLINE
+	static constexpr OBJ* memberOwner( EMBER OBJ::*ptrToMember, EMBER* member) {
 		return _memberOwner(ptrToMember, member);
 	}
 
-	template< class Obj, class Member > AX_INLINE
-	static constexpr const Obj* memberOwner( Member Obj::*ptrToMember, const Member* member) {
+	template< class OBJ, class MEMBER > AX_INLINE
+	static constexpr const OBJ* memberOwner( MEMBER OBJ::*ptrToMember, const MEMBER* member) {
 		return _memberOwner(ptrToMember, ax_const_cast(member));
 	}
 	
@@ -108,12 +100,12 @@ void MemUtil::rawCopy(void* dst, const void* src, Int n) {
 		return;
 	}
 	using Block = u64;
-	const Int w = AX_SIZEOF(Block);
+	constexpr Int w = AX_SIZEOF(Block);
 	auto c = n / w;
 	auto r = n % w;
 	auto j = c * w;
-	_copyLoop( reinterpret_cast<Block*>(dst),  reinterpret_cast<const Block*>(src),  c);
-	_copyLoop( reinterpret_cast<Byte*>(dst)+j, reinterpret_cast<const Byte*>(src)+j, r);
+	_copyLoop( static_cast<Block*>(dst),  static_cast<const Block*>(src),  c);
+	_copyLoop( static_cast<Byte*>(dst)+j, static_cast<const Byte*>(src)+j, r);
 }
 
 template <class A, class B> AX_INLINE constexpr
@@ -123,8 +115,8 @@ bool MemUtil::isOverlapped(const A* a, Int a_size, const B* b, Int b_size) {
 	return (ea > b) && (eb > a);
 }
 
-template <class T, class ... Args> AX_INLINE constexpr
-void MemUtil::constructor(T* p, Int n, Args&&... args) {
+template <class T, class ... ARGS> AX_INLINE constexpr
+void MemUtil::constructor(T* p, Int n, ARGS&&... args) {
 	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
 	if (n <= 0) return;
 	
@@ -180,15 +172,14 @@ constexpr void MemUtil::copyConstructor(T* dst, const T* src, Int n) {
 	if constexpr (Type_IsTriviallyCopyAssignable<T>) {
 		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
+		auto s = src;
+		auto e = src + n ;
 		try {
-			auto s = src;
-			auto e = src + n ;
-			for( ; s<e; ++s, ++dst ) {
+			for (; s<e; ++s, ++dst) {
 				ax_call_constructor<T>(dst, *s);
 			}
 		} catch	(...) {
 			AX_ASSERT(false);
-			// TODO: catch exception and rewind the move here before re-throw
 			throw;
 		}
 	}	

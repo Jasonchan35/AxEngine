@@ -115,8 +115,8 @@ public:
 	//---------------
 	AX_INLINE constexpr static MView	s_fromMutByteSpan	(MutByteSpan	from) noexcept	{ return MView(reinterpret_cast<T*>(from.data()), from.sizeInBytes() / AX_SIZEOF(T)); }
 	AX_INLINE constexpr void			  fromMutByteSpan	(MutByteSpan	from) noexcept	{ *this = s_fromMutByteSpan(from); }
-	AX_INLINE constexpr MutByteSpan		toMutByteSpan		()       noexcept { return MutByteSpan((      Byte*)_data, sizeInBytes()); }
-	AX_INLINE constexpr    ByteSpan		   toByteSpan		() const noexcept { return    ByteSpan((const Byte*)_data, sizeInBytes()); }
+	AX_INLINE constexpr MutByteSpan		toMutByteSpan		()       noexcept { return MutByteSpan(reinterpret_cast<      Byte*>(_data), sizeInBytes()); }
+	AX_INLINE constexpr    ByteSpan		   toByteSpan		() const noexcept { return    ByteSpan(reinterpret_cast<const Byte*>(_data), sizeInBytes()); }
 	
 	constexpr std_string_view to_string_view() const noexcept { return std_string_view(_data, _size); }
 	constexpr operator std_string_view() const noexcept { return to_string_view(); }

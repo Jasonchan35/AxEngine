@@ -10,13 +10,13 @@ template<>	struct CharW_Native_<AX_SIZEOF(Char16)> { using Type = Char16; };
 template<>	struct CharW_Native_<AX_SIZEOF(Char32)> { using Type = Char32; };
 using CharW_Native = typename CharW_Native_<AX_SIZEOF(CharW)>::Type;
 
-AX_INLINE			CharW_Native	CharW_to_Native(      CharW   v) { return static_cast<           CharW_Native  >(v); }
-AX_INLINE			CharW_Native&	CharW_to_Native(      CharW&  v) { return reinterpret_cast<      CharW_Native& >(v); }
-AX_INLINE			CharW_Native*	CharW_to_Native(      CharW*  v) { return reinterpret_cast<      CharW_Native* >(v); }
-AX_INLINE			CharW_Native**	CharW_to_Native(      CharW** v) { return reinterpret_cast<      CharW_Native**>(v); }
-AX_INLINE	const	CharW_Native&	CharW_to_Native(const CharW&  v) { return reinterpret_cast<const CharW_Native& >(v); }
-AX_INLINE	const	CharW_Native*	CharW_to_Native(const CharW*  v) { return reinterpret_cast<const CharW_Native* >(v); }
-AX_INLINE	const	CharW_Native**	CharW_to_Native(const CharW** v) { return reinterpret_cast<const CharW_Native**>(v); }
+AX_INLINE			CharW_Native	CharW_toNative(      CharW   v) { return static_cast<           CharW_Native  >(v); }
+AX_INLINE			CharW_Native&	CharW_toNative(      CharW&  v) { return reinterpret_cast<      CharW_Native& >(v); }
+AX_INLINE			CharW_Native*	CharW_toNative(      CharW*  v) { return reinterpret_cast<      CharW_Native* >(v); }
+AX_INLINE			CharW_Native**	CharW_toNative(      CharW** v) { return reinterpret_cast<      CharW_Native**>(v); }
+AX_INLINE	const	CharW_Native&	CharW_toNative(const CharW&  v) { return reinterpret_cast<const CharW_Native& >(v); }
+AX_INLINE	const	CharW_Native*	CharW_toNative(const CharW*  v) { return reinterpret_cast<const CharW_Native* >(v); }
+AX_INLINE	const	CharW_Native**	CharW_toNative(const CharW** v) { return reinterpret_cast<const CharW_Native**>(v); }
 
 
 struct CharUtil {
@@ -105,15 +105,15 @@ struct CharUtil {
 	template<class CH>
 	static constexpr CH translateEscapeSequence(CH c) {
 		switch (c) { // https://en.cppreference.com/w/cpp/language/escape
-			case 'a':  return CH('\a');
-			case 'b':  return CH('\b');
-			case 'f':  return CH('\f');
-			case 'n':  return CH('\n');
-			case 'r':  return CH('\r');
-			case 't':  return CH('\t');
-			case 'v':  return CH('\v');
+			case 'a':	return CH('\a');
+			case 'b':	return CH('\b');
+			case 'f':	return CH('\f');
+			case 'n':	return CH('\n');
+			case 'r':	return CH('\r');
+			case 't':	return CH('\t');
+			case 'v':	return CH('\v');
+			default:	return c;
 		}
-		return c;
 	}
 };
 
