@@ -6,6 +6,8 @@ namespace ax {
 class Test_Array : public UnitTestClass {
 public:
 	void test_case1() {
+		// constexpr Array<u8> u8arr;
+		
 		Array<Int> arr;
 		for (Int i = 0; i < 6; ++i) {
 			arr.append(i * 10);

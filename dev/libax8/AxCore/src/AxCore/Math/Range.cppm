@@ -32,9 +32,9 @@ public:
 	
 	AX_INLINE constexpr void reset() noexcept { *this = Range_(); }
 
-	AX_NODISCARD AX_INLINE constexpr void	setBegin(const T& newBegin) noexcept	{ _begin = newBegin; }
-	AX_NODISCARD AX_INLINE constexpr void	setEnd	(const T& newEnd  ) noexcept	{ _end   = newEnd;   }
-	AX_NODISCARD AX_INLINE constexpr void	setSize	(const T& newSize ) noexcept	{ _end   = _begin + newSize; }
+	AX_INLINE constexpr void setBegin(const T& newBegin) noexcept	{ _begin = newBegin; }
+	AX_INLINE constexpr void setEnd	(const T& newEnd  ) noexcept	{ _end   = newEnd;   }
+	AX_INLINE constexpr void setSize	(const T& newSize ) noexcept	{ _end   = _begin + newSize; }
 
 	AX_NODISCARD AX_INLINE constexpr		T&	begin()       noexcept{ return _begin; }
 	AX_NODISCARD AX_INLINE constexpr const	T&	begin() const noexcept{ return _begin; }
@@ -104,7 +104,8 @@ class RangeEx_  {
 	T	_step	= 0;
 
 	// please use s_beginAndEnd() or s_beginAndSize()
-	AX_INLINE constexpr RangeEx_(const T& begin_, const T& end_) noexcept;
+	AX_INLINE constexpr RangeEx_(const T& begin_, const T& end_, const T& step_) noexcept 
+								: _begin(begin_), _end(end_), _step(step_) {}
 public:
 	
 };

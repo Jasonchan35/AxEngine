@@ -203,7 +203,7 @@ bool MaterialPass_VK::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 			return false;
 		}
 
-		auto& dst = bindDescSets.ensureSizeAndGet(bindSpace);
+		auto& dst = bindDescSets.ensureSizeAndGetElement(bindSpace);
 		dst = paramSpace->getUpdatedDescriptorSet(req);
 		if (!dst) { AX_ASSERT(false); return false; }
 	}
@@ -215,7 +215,7 @@ bool MaterialPass_VK::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_VK>(0, bindSpace);
 		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", bindSpace));
 
-		auto& dst = bindDescSets.ensureSizeAndGet(ax_enum_int(bindSpace));
+		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(bindSpace));
 		dst = block->getUpdatedDescriptorSet(req);
 		if (!dst) throw Error_Undefined("cannot getUpdatedDescriptorSet");
 	};

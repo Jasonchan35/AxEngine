@@ -77,19 +77,19 @@ private:
 };	
 
 template<class NODE, class IN_KEY>
-class Dict_FindEnumator {
+class Dict_FindEnumerator {
 public:
 	using FindIter = Dict_FindIter<NODE>;
 	
-	Dict_FindEnumator() = default;
-	Dict_FindEnumator(const IN_KEY& key, FindIter begin) : _begin(begin), _key(&key) {}
+	constexpr Dict_FindEnumerator() = default;
+	constexpr Dict_FindEnumerator(const IN_KEY& key, FindIter begin) : _begin(begin), _key(&key) {}
 
-	operator Dict_FindEnumator<const NODE, const IN_KEY>() { return {_key, _begin}; }
+	constexpr operator Dict_FindEnumerator<const NODE, const IN_KEY>() { return {_key, _begin}; }
 	
-	explicit operator bool() const { return _begin; }
+	constexpr explicit operator bool() const { return _begin; }
 
-	FindIter	begin	() { return _begin;  }
-	FindIter	end		() { return nullptr; }
+	constexpr FindIter	begin	() { return _begin;  }
+	constexpr FindIter	end		() { return nullptr; }
 private:
 	FindIter		_begin;
 	const IN_KEY*	_key = nullptr;
@@ -119,8 +119,8 @@ public:
 	using Key			= KEY;
 	using Value			= VALUE;
 	using InKey			= typename CONFIG::InKey;
-	using  FindEnumator	= Dict_FindEnumator<Node, InKey>;
-	using CFindEnumator	= Dict_FindEnumator<const Node, const InKey>;
+	using  FindEnumator	= Dict_FindEnumerator<Node, InKey>;
+	using CFindEnumator	= Dict_FindEnumerator<const Node, const InKey>;
 	using FindIter		= Dict_FindIter<Node>;
 	static constexpr Int s_tableBufSize = CONFIG::s_tableBufSize;
 

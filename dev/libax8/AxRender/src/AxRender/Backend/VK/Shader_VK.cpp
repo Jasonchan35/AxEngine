@@ -60,13 +60,13 @@ ShaderPass_VK::ShaderPass_VK(const CreateDesc& desc)
 	auto addLayout = [&](const ShaderPass_VK* pass, BindSpace space) {
 		auto* block = pass->getParamSpace_<ShaderParamSpace_VK>(space);
 		if (!block) return;
-		layouts.ensureSizeAndGet(ax_enum_int(space)) = block->descipterSetLayout();
+		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->descipterSetLayout();
 	};
 
 	auto createLayout = [&](ShaderPass_VK* pass, BindSpace space) {
 		auto* block = pass->getParamSpace_<ShaderParamSpace_VK>(space);
 		if (!block) return;
-		layouts.ensureSizeAndGet(ax_enum_int(space)) = block->createDescipterSetLayout();
+		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->createDescipterSetLayout();
 	};
 
 	if (_shader->isGlobalCommonShader()) {

@@ -38,20 +38,20 @@ class Array : public IArray<T>, Array_InlineBuffer<T, BUF_SIZE> {
 public:
 	using CSpan = Span<T>;
 	
-	Array() : Base(inlineBufPtr(), BUF_SIZE) {}
-	Array(      CSpan        src) : Array() { operator=(src);  }
-	Array(const Array      & src) : Array(src.span()) {}
-	Array(const IArray<T>  & src) : Array(src.span()) {}
+	constexpr Array() : Base(inlineBufPtr(), BUF_SIZE) {}
+	constexpr Array(      CSpan        src) : Array() { operator=(src);  }
+	constexpr Array(const Array      & src) : Array(src.span()) {}
+	constexpr Array(const IArray<T>  & src) : Array(src.span()) {}
 	template<Int M>
-	Array(const Array<T,M> & src) : Array(src.span()) {}
+	constexpr Array(const Array<T,M> & src) : Array(src.span()) {}
 
-	Array(IArray<T> && src) : Array() { operator=(AX_FORWARD(src)); }
-	Array(Array     && src) : Array(AX_FORWARD(src.asIArray())) {}
+	constexpr Array(IArray<T> && src) : Array() { operator=(AX_FORWARD(src)); }
+	constexpr Array(Array     && src) : Array(AX_FORWARD(src.asIArray())) {}
 
-	virtual	~Array() override { Base::clearAndFree(); }
+	constexpr virtual	~Array() override { Base::clearAndFree(); }
 
-		  IArray<T>& asIArray()			{ return *this; }
-	const IArray<T>& asIArray() const	{ return *this; }
+	constexpr 	  IArray<T>& asIArray()			{ return *this; }
+	constexpr const IArray<T>& asIArray() const	{ return *this; }
 
 	constexpr void operator=(      CSpan        src) { Base::operator=(src); } 
 	constexpr void operator=(const IArray<T>  & src) { Base::operator=(src); }
@@ -68,23 +68,23 @@ public:
 	constexpr void appendRange(Array<T,M> && src) { Base::appendRange(std::move(src.asIArray())); }
 
 protected:
-	virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
-	virtual	MemAllocResult<T>	onStorageMalloc(Int reqSize) override;
-	virtual	void				onStorageFree(T* p) override;
+	constexpr virtual MemAllocResult<T>	onStorageLocalBuf() override { return MemAllocResult<T>(nullptr, inlineBufPtr(), BUF_SIZE); }
+	constexpr virtual MemAllocResult<T>	onStorageMalloc(Int reqSize) override;
+	constexpr virtual void				onStorageFree(T* p) override;
 };
 
 template<class T> constexpr bool Type_IsArray = false;
 template<class T, Int N> constexpr bool Type_IsArray<Array<T,N>> = true;
 
 
-template <class T, Int BUF_SIZE> inline
+template <class T, Int BUF_SIZE> constexpr 
 MemAllocResult<T> Array<T, BUF_SIZE>::onStorageMalloc(Int reqSize) {
 	Int newCapacity = reqSize;
 	auto* allocator = ax_default_allocator();
 	return allocator->allocArray<T>(newCapacity);
 }
 
-template <class T, Int BUF_SIZE> inline
+template <class T, Int BUF_SIZE> constexpr
 void Array<T, BUF_SIZE>::onStorageFree(T* p) {
 	if (p == inlineBufPtr()) return;
 	auto* allocator = ax_default_allocator();

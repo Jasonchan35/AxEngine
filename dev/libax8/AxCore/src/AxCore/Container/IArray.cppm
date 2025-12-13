@@ -23,7 +23,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr	Int		size() const		{ return _storage.size(); }
 	AX_NODISCARD AX_INLINE constexpr 	Int		sizeInBytes() const noexcept { return size() * AX_SIZEOF(T); }
 
-	AX_NODISCARD AX_INLINE	bool inBound( Int  i ) const	{ return i >= 0 && i < size(); }
+	AX_NODISCARD AX_INLINE constexpr	bool inBound( Int  i ) const	{ return i >= 0 && i < size(); }
 
 	constexpr void clear() { Base::_storageClear(); }
 	constexpr void clearAndFree() { Base::_storageClearAndFree(); }
@@ -38,10 +38,10 @@ public:
 							constexpr void ensureSize(Int n) { if (size() < n) resize(n); }
 
 	template< class... Args >
-	AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
+	constexpr AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
 
 	template< class... Args >
-	AX_INLINE	T&	emplaceNew(const MemAllocRequest& req, Args&&... args ) { return emplaceBack(AxTag::NewObject, req, AX_FORWARD(args)...); }
+	constexpr AX_INLINE	T&	emplaceNew(const MemAllocRequest& req, Args&&... args ) { return emplaceBack(AxTag::NewObject, req, AX_FORWARD(args)...); }
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);
@@ -72,10 +72,6 @@ public:
 	AX_NODISCARD AX_INLINE constexpr const T& at(Int i) const noexcept					{ _checkBound(i); return at_noBoundCheck(i); }
 	AX_NODISCARD AX_INLINE constexpr       T* tryGetElement(Int i)       noexcept		{ return inBound(i) ? &at_noBoundCheck(i) : nullptr; }
 	AX_NODISCARD AX_INLINE constexpr const T* tryGetElement(Int i) const noexcept		{ return inBound(i) ? &at_noBoundCheck(i) : nullptr; }
-
-	//TODO: remove
-	AX_NODISCARD AX_INLINE constexpr       T* tryGet(Int i)       noexcept				{ return tryGetElement(i); }
-	AX_NODISCARD AX_INLINE constexpr const T* tryGet(Int i) const noexcept				{ return tryGetElement(i); }
 	
 	AX_NODISCARD AX_INLINE constexpr       T& back()       noexcept 					{ return at(size() - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& back() const noexcept 					{ return at(size() - 1); }
@@ -86,15 +82,15 @@ public:
 	AX_NODISCARD AX_INLINE constexpr       T& back_noBoundCheck(Int i)       noexcept	{ return at_noBoundCheck(size() - i - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& back_noBoundCheck(Int i) const noexcept	{ return at_noBoundCheck(size() - i - 1); }
 
-	AX_NODISCARD AX_INLINE constexpr T& ensureSizeAndGet(Int i)		{ ensureSize(i+1); return at(i); }
+	AX_NODISCARD AX_INLINE constexpr T& ensureSizeAndGetElement(Int i)	{ ensureSize(i+1); return at(i); }
 	
-	AX_INLINE constexpr		T&	insertAt	(Int i)				{ return *insertAt(IntRange(i, 1)).data(); }
-	AX_INLINE constexpr		T&	insertAt	(Int i, T && value)	{ auto dst = insertAt(IntRange(i, 1)); *dst.data() = std::move(value); return *dst.data(); }
+	AX_INLINE constexpr		T&	insertAt	(Int i)				{ return *insertAt(IntRange_BeginSize(i, 1)).data(); }
+	AX_INLINE constexpr		T&	insertAt	(Int i, T && value)	{ auto dst = insertAt(IntRange_BeginSize(i, 1)); *dst.data() = std::move(value); return *dst.data(); }
 	AX_INLINE constexpr	MSpan	insertAt	(IntRange range);
 
 	AX_INLINE constexpr		T	popBack()					{ T tmp = back(); decSize(1); return tmp; }
 	
-	AX_INLINE constexpr	Int		eraseAt	(Int i)				{ return eraseAt(IntRange(i, 1)); }
+	AX_INLINE constexpr	Int		eraseAt	(Int i)				{ return eraseAt(IntRange_BeginSize(i, 1)); }
 	AX_INLINE constexpr	Int		eraseAt	(IntRange range);
 	AX_INLINE constexpr	void	eraseAt_Unordered( Int i );
 
@@ -113,7 +109,7 @@ public:
 	constexpr bool operator==(Span<R> r) const noexcept { return span() == r; }
 	constexpr bool operator==(const This& r) const noexcept { return span() == r.span(); }
 
-	template<class SE> void onJsonIO_Value(SE& se) { se.io_array(*this); }
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_array(*this); }
 	
 	using  Iter	= T*;
 	using CIter	= const T*;
@@ -125,8 +121,8 @@ public:
 
 private:
 
-	AX_INLINE void _checkBound			( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
-	AX_INLINE void	_debug_boundCheck	( Int i ) const {
+	AX_INLINE constexpr void _checkBound		( Int i ) const { if( ! inBound(i) ) throw Error_IndexOutOfRange(); }
+	AX_INLINE constexpr void _debug_boundCheck	( Int i ) const {
 #ifdef AX_BUILD_CONFIG_Debug
 		_checkBound(i);
 #endif

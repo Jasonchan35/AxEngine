@@ -180,7 +180,7 @@ void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
 			return;
 		}
 
-		auto& space = _shaderParamSpaces.ensureSizeAndGet(bindSpace);
+		auto& space = _shaderParamSpaces.ensureSizeAndGetElement(bindSpace);
 
 		if (!space) {
 			ShaderParamSpace_CreateDesc blockDesc;

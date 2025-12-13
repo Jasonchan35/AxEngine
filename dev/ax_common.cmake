@@ -156,6 +156,7 @@ function(ax_set_warning_level target_name)
 														-Wno-unused-parameter														
 														-Wno-unused-local-typedef
 														-Wno-unused-member-function
+														-Wno-unused-const-variable
 														-Wno-uninitialized
 														#
 														-mavx #enable AVX

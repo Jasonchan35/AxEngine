@@ -293,7 +293,7 @@ public:
 	}
 
 	MaterialParamSpace_Backend*	getPassParamSpace(Int passIndex, BindSpace s) {
-		auto* pp = _passes.tryGet(passIndex);
+		auto* pp = _passes.tryGetElement(passIndex);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;
 	}
