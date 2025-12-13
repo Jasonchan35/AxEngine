@@ -28,6 +28,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
 message("==== ${PROJECT_NAME} ====")
 message("VCPKG_TARGET_TRIPLET           = ${VCPKG_TARGET_TRIPLET}")
+message("CMAKE_CURRENT_SOURCE_DIR       = ${CMAKE_CURRENT_SOURCE_DIR}")
 message("CMAKE_CURRENT_BINARY_DIR       = ${CMAKE_CURRENT_BINARY_DIR}")
 message("CMAKE_RUNTIME_OUTPUT_DIRECTORY = ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
@@ -39,6 +40,8 @@ else()
 endif()
 
 project(${PROJECT_NAME} VERSION 0.1.0)
+
+ax_copy_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.sln.DotSettings" "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_subdirectory(libax8/AxCore)
 add_subdirectory(libax8/AxCore/test)

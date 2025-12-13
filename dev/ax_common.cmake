@@ -17,6 +17,11 @@ function(ax_write_to_file filename text)
 	file(GENERATE OUTPUT ${filename} CONTENT "${text}" NEWLINE_STYLE UNIX)	
 endfunction()
 
+function(ax_copy_file src_filename dst_filename)
+	message("ax_copy_file(\"${src_filename}\" \"${dst_filename}\")")
+	file(COPY "${src_filename}" DESTINATION "${dst_filename}")
+endfunction()
+
 function(ax_add_all_subdirectory_recurse src_path)
 	file(GLOB_RECURSE V_GLOB LIST_DIRECTORIES true "${src_path}/*")
 	foreach(item ${V_GLOB})
