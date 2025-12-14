@@ -62,7 +62,7 @@ RenderPass_VK::RenderPass_VK(const CreateDesc& desc)
 			dst.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			dst.finalLayout		= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-			if (srcColorDesc.loadOp == BufferLoadOp::Clear) {
+			if (srcColorDesc.loadOp == RenderBufferLoadOp::Clear) {
 				dst.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			} else {
 				dst.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ;
@@ -105,7 +105,7 @@ RenderPass_VK::RenderPass_VK(const CreateDesc& desc)
 			dst.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			dst.finalLayout		= VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-			if (desc.depthBuffer.loadOp == BufferLoadOp::Clear) {
+			if (desc.depthBuffer.loadOp == RenderBufferLoadOp::Clear) {
 				dst.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			} else {
 				dst.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;

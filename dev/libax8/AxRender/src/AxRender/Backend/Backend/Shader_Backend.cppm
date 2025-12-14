@@ -14,7 +14,7 @@ class ShaderParamSpace_Backend : public ShaderParamSpace {
 	AX_RTTI_INFO(ShaderParamSpace_Backend, ShaderParamSpace)
 public:
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-
+	
 	struct VarInfo {
 		VarInfo() = default;
 		VarInfo(const ShaderStageInfo::Variable& r)
@@ -31,13 +31,13 @@ public:
 
 		NameId	 name() const { return _name; }
 		u32		 offset() const { return _offset; }
-		DataType dataType() const { return _dataType; }
+		RenderDataType dataType() const { return _dataType; }
 		bool	 rowMajor() const { return _rowMajor; }
 
 	private:
 		NameId	 _name;
 		u32		 _offset	= 0;
-		DataType _dataType	= DataType::None;
+		RenderDataType _dataType	= RenderDataType::None;
 		bool	 _rowMajor	= true;
 	};
 
@@ -45,7 +45,7 @@ public:
 		using Info = ShaderStageInfo::ParamBase;
 
 		NameId			 name() const { return _name; }
-		DataType		 dataType() const { return _dataType; }
+		RenderDataType		 dataType() const { return _dataType; }
 		ShaderStageFlags stageFlags() const { return _stageFlags; }
 		BindPoint		 bindPoint() const { return _bindPoint; }
 		Int				 bindCount() const { return _bindCount; }
@@ -54,9 +54,9 @@ public:
 		void	create(const Info& info);
 
 		NameId			 _name;
-		DataType		 _dataType	 = DataType::None;
+		RenderDataType		 _dataType	 = RenderDataType::None;
 		ShaderStageFlags _stageFlags = ShaderStageFlags::None;
-		BindPoint		 _bindPoint	 = BindPoint::Invalid;
+		ShaderResourceBindPoint		 _bindPoint	 = ShaderResourceBindPoint::Invalid;
 		Int				 _bindCount  = 0;
 	};
 
@@ -203,6 +203,7 @@ class ShaderPass_Backend : public RttiObject {
 	AX_RTTI_INFO(ShaderPass_Backend, RttiObject)
 public:
 	using CreateDesc = ShaderPass_Backend_CreateDesc;
+	using ParamSpaceType = ShaderParamSpaceType;
 
 	ShaderPass_Backend(const CreateDesc& desc);
 
@@ -217,15 +218,15 @@ public:
 
 	bool isCompute() const { return EnumFn(_stageFlags).hasFlags(ShaderStageFlags::Compute); }
 	
-	template<class R>       R* getParamSpace_(BindSpace s)       { return rttiCastCheck<R>(getParamSpace(s)); }
-	template<class R> const R* getParamSpace_(BindSpace s) const { return rttiCastCheck<R>(getParamSpace(s)); }
+	template<class R>       R* getParamSpace_(ParamSpaceType s)       { return rttiCastCheck<R>(getParamSpace(s)); }
+	template<class R> const R* getParamSpace_(ParamSpaceType s) const { return rttiCastCheck<R>(getParamSpace(s)); }
 
-	ShaderParamSpace_Backend* getParamSpace(BindSpace s) {
+	ShaderParamSpace_Backend* getParamSpace(ParamSpaceType s) {
 		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(s));
 		return p ? p->ptr() : nullptr;
 	}
 
-	const ShaderParamSpace_Backend*	getParamSpace(BindSpace s) const {
+	const ShaderParamSpace_Backend*	getParamSpace(ParamSpaceType s) const {
 		return ax_const_cast(this)->getParamSpace(s);
 	}
 
@@ -265,11 +266,11 @@ public:
 
 	NameId getPropSamplerName(NameId name) const;
 
-	template<class R> const R* getPassParamSpace_(Int pass, BindSpace s) const {
+	template<class R> const R* getPassParamSpace_(Int pass, ParamSpaceType s) const {
 		return rttiCastCheck<R>(getPassParamSpace(pass, s));
 	}
 
-	const ShaderParamSpace_Backend*	getPassParamSpace(Int pass, BindSpace s) const {
+	const ShaderParamSpace_Backend*	getPassParamSpace(Int pass, ParamSpaceType s) const {
 		auto* pp = _passes.tryGetElement(pass);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;

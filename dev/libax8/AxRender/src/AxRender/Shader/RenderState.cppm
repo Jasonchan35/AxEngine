@@ -1,6 +1,6 @@
 module;
 export module AxRender:RenderState;
-export import :DataType;
+export import :RenderDataType;
 
 export namespace ax::AxRender {
 

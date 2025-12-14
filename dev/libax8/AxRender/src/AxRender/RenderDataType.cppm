@@ -1,6 +1,6 @@
 ﻿module;
 
-export module AxRender:DataType;
+export module AxRender:RenderDataType;
 export import :Common;
 
 export namespace ax::AxRender {
@@ -13,7 +13,7 @@ struct RenderMemoryInfo {
 };
 
 // HLSL: "register space", DX: BindPoint, Vulkan: "set"
-#define AX_RENDER_BindSpace_ENUM_LIST(E) \
+#define AX_RenderParamSpace_ENUM_LIST(E) \
 	E(Default       , = 0) \
 	E(Global        , = 1) \
 	E(PerFrame      , = 2) \
@@ -21,17 +21,17 @@ struct RenderMemoryInfo {
 	E(_COUNT        ,    ) \
 	E(Invalid       ,= u16_max) \
 //-----
-AX_ENUM_CLASS(AX_RENDER_BindSpace_ENUM_LIST, BindSpace, u16);
+AX_ENUM_CLASS(AX_RenderParamSpace_ENUM_LIST, ShaderParamSpaceType, u16);
 
 // HLSL: "shader register", DX: Space, Vulkan: "binding"
-enum class BindPoint : u16 {
+enum class ShaderResourceBindPoint : u16 {
 	GlobalConstBuffer = 0,
 	VertexBuffer	   = 30, // the max limit is 32 (0~31) on RTX 3080
 //-----
 	Invalid			   = u16_max,
 };
 
-#define AX_RENDER_ShaderStageFlags_ENUM_LIST(E) \
+#define AX_ShaderStageFlags_ENUM_LIST(E) \
 	E(None,) \
 	E(Vertex,	= 1 << 0) \
 	E(Pixel,	= 1 << 1) \
@@ -39,7 +39,7 @@ enum class BindPoint : u16 {
 	E(Compute,	= 1 << 15) \
 	E(_END,) \
 //----
-AX_ENUM_FLAGS_CLASS(AX_RENDER_ShaderStageFlags_ENUM_LIST, ShaderStageFlags, u32)
+AX_ENUM_FLAGS_CLASS(AX_ShaderStageFlags_ENUM_LIST, ShaderStageFlags, u32)
 
 #define AX_RENDER_AutoFrameSize_ENUM_LIST(E) \
 	E(None,) \
@@ -78,17 +78,17 @@ Vec2i AutoFrameSize_Compute(AutoFrameSize mode, Vec2i v) {
 	E(Edge,		 = 1 << 2) \
 	E(Primitive, = 1 << 3) \
 //----
-AX_ENUM_FLAGS_CLASS(AX_RENDER_GeoComponentFlags_ENUM_LIST, GeoComponentFlags, u8)
+AX_ENUM_FLAGS_CLASS(AX_RENDER_GeoComponentFlags_ENUM_LIST, RenderGeoComponentFlags, u8)
 
-#define AX_RENDER_PrimitiveType_ENUM_LIST(E) \
+#define AX_RenderPrimitiveType_ENUM_LIST(E) \
 	E(None,) \
 	E(Points,) \
 	E(Lines,) \
 	E(Triangles,) \
 //----
-AX_ENUM_CLASS(AX_RENDER_PrimitiveType_ENUM_LIST, PrimitiveType, u8)
+AX_ENUM_CLASS(AX_RenderPrimitiveType_ENUM_LIST, RenderPrimitiveType, u8)
 
-#define AX_RENDER_DepthType_ENUM_LIST(E) \
+#define AX_RenderDepthType_ENUM_LIST(E) \
 	E(None,) \
 	E(Depth_UNorm16,) \
 	E(Depth_Float32,) \
@@ -97,26 +97,26 @@ AX_ENUM_CLASS(AX_RENDER_PrimitiveType_ENUM_LIST, PrimitiveType, u8)
 	E(Depth_Float32_Stencil_UInt8,) \
 	E(Stencil_UInt8,) \
 //----
-AX_ENUM_CLASS(AX_RENDER_DepthType_ENUM_LIST, DepthType, u8)
+AX_ENUM_CLASS(AX_RenderDepthType_ENUM_LIST, RenderDepthType, u8)
 
-#define AX_RENDER_BufferLoadOp_ENUM_LIST(E) \
+#define AX_RenderBufferLoadOp_ENUM_LIST(E) \
 	E(None		,) \
 	E(DontCare	,) \
 	E(Load		,) \
 	E(Clear		,) \
 //--
-AX_ENUM_CLASS(AX_RENDER_BufferLoadOp_ENUM_LIST, BufferLoadOp, u8)
+AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 
-#define AX_RENDER_DataType_Int_ENUM_LIST(E) \
+#define AX_RenderDataType_Int_ENUM_LIST(E) \
 	E(i8,) E(i16,) E(i32,) E(i64,) \
 	E(u8,) E(u16,) E(u32,) E(u64,) \
 //---
 
-#define AX_RENDER_DataType_Float_ENUM_LIST(E) \
+#define AX_RenderDataType_Float_ENUM_LIST(E) \
 	E(f16,) E(f32,) E(f64,) \
 //---
 
-#define AX_RENDER_DataType_Num_ENUM_LIST(E) \
+#define AX_RenderDataType_Num_ENUM_LIST(E) \
 	E(i8x1		,) E(i8x2		,) E(i8x3		,) E(i8x4		,) \
 	E(i16x1		,) E(i16x2		,) E(i16x3		,) E(i16x4		,) \
 	E(i32x1		,) E(i32x2		,) E(i32x3		,) E(i32x4		,) \
@@ -133,17 +133,17 @@ AX_ENUM_CLASS(AX_RENDER_BufferLoadOp_ENUM_LIST, BufferLoadOp, u8)
 	\
 //---
 
-#define AX_RENDER_DataType_Vec_ENUM_LIST(E) \
+#define AX_RenderDataType_Vec_ENUM_LIST(E) \
 	E(Vec1i		,) E(Vec2i		,) E(Vec3i		,) E(Vec4i		,) \
 	E(Vec1h		,) E(Vec2h		,) E(Vec3h		,) E(Vec4h		,) \
 	E(Vec1f		,) E(Vec2f		,) E(Vec3f		,) E(Vec4f		,) \
 	E(Vec1d		,) E(Vec2d		,) E(Vec3d		,) E(Vec4d		,) \
 //---
-#define AX_RENDER_DataType_Mat_ENUM_LIST(E) \
+#define AX_RenderDataType_Mat_ENUM_LIST(E) \
 	E(Mat4f		,) E(Mat4d		,) \
 //---
 
-#define AX_RENDER_DataType_Norm_ENUM_LIST(E) \
+#define AX_RenderDataType_Norm_ENUM_LIST(E) \
 	E(SNorm8	,) E(SNorm8x2	,) E(SNorm8x3	,) E(SNorm8x4	,) \
 	E(SNorm16	,) E(SNorm16x2	,) E(SNorm16x3	,) E(SNorm16x4	,) \
 	E(SNorm32	,) E(SNorm32x2	,) E(SNorm32x3	,) E(SNorm32x4	,) \
@@ -153,35 +153,35 @@ AX_ENUM_CLASS(AX_RENDER_BufferLoadOp_ENUM_LIST, BufferLoadOp, u8)
 	E(UNorm32	,) E(UNorm32x2	,) E(UNorm32x3	,) E(UNorm32x4	,) \
 //---
 
-#define AX_RENDER_DataType_Color_ENUM_LIST(E) \
+#define AX_RenderDataType_Color_ENUM_LIST(E) \
 	E(Color3b	,) E(Color3s	,) E(Color3h	,) E(Color3f	,)	E(Color3d	,)\
 	E(Color4b	,) E(Color4s	,) E(Color4h	,) E(Color4f	,)	E(Color4d	,)\
 //---
 
-#define AX_RENDER_DataType_Char_ENUM_LIST(E) \
+#define AX_RenderDataType_Char_ENUM_LIST(E) \
 	E(CharA		,) E(Char16		,) E(Char32		,) E(CharW		,) \
 //---
 
-#define AX_RENDER_DataType_String_ENUM_LIST(E) \
+#define AX_RenderDataType_String_ENUM_LIST(E) \
 	E(StringA	,) E(String16	,) E(String32	,) E(StringW	,) \
 //---
 
 
-#define AX_RENDER_DataType_Basic_ENUM_LIST(E) \
+#define AX_RenderDataType_Basic_ENUM_LIST(E) \
 	/* E(bool,) */ \
-	AX_RENDER_DataType_Int_ENUM_LIST(E) \
-	AX_RENDER_DataType_Float_ENUM_LIST(E) \
-	AX_RENDER_DataType_Num_ENUM_LIST(E) \
-	AX_RENDER_DataType_Vec_ENUM_LIST(E) \
-	AX_RENDER_DataType_Mat_ENUM_LIST(E) \
-	AX_RENDER_DataType_Norm_ENUM_LIST(E) \
-	AX_RENDER_DataType_Char_ENUM_LIST(E) \
-	AX_RENDER_DataType_String_ENUM_LIST(E) \
-	AX_RENDER_DataType_Color_ENUM_LIST(E) \
+	AX_RenderDataType_Int_ENUM_LIST(E) \
+	AX_RenderDataType_Float_ENUM_LIST(E) \
+	AX_RenderDataType_Num_ENUM_LIST(E) \
+	AX_RenderDataType_Vec_ENUM_LIST(E) \
+	AX_RenderDataType_Mat_ENUM_LIST(E) \
+	AX_RenderDataType_Norm_ENUM_LIST(E) \
+	AX_RenderDataType_Char_ENUM_LIST(E) \
+	AX_RenderDataType_String_ENUM_LIST(E) \
+	AX_RenderDataType_Color_ENUM_LIST(E) \
 //---
 
-#define AX_RENDER_DataType_ENUM_LIST_WITHOUT_NONE(E) \
-	AX_RENDER_DataType_Basic_ENUM_LIST(E) \
+#define AX_RenderDataType_ENUM_LIST_WITHOUT_NONE(E) \
+	AX_RenderDataType_Basic_ENUM_LIST(E) \
 	\
 	E(SamplerState,) \
 	E(DepthTexture,) \
@@ -199,77 +199,73 @@ AX_ENUM_CLASS(AX_RENDER_BufferLoadOp_ENUM_LIST, BufferLoadOp, u8)
 	E(StorageBuffer,) \
 //----
 
-#define AX_RENDER_DataType_ENUM_LIST(E) \
+#define AX_RenderDataType_ENUM_LIST(E) \
 	E(None,) \
-	AX_RENDER_DataType_ENUM_LIST_WITHOUT_NONE(E) \
+	AX_RenderDataType_ENUM_LIST_WITHOUT_NONE(E) \
 //-------
-AX_ENUM_CLASS(AX_RENDER_DataType_ENUM_LIST, DataType, u16);
+AX_ENUM_CLASS(AX_RenderDataType_ENUM_LIST, RenderDataType, u16);
 
-struct DataTypeInfo {
-	DataType	dataType		= DataType::None;
-	i16			elementCount	= 0;
-	Int			sizeInBytes		= 0;
+struct RenderDataTypeInfo {
+	RenderDataType	dataType		= RenderDataType::None;
+	i16				elementCount	= 0;
+	Int				sizeInBytes		= 0;
 
-	explicit operator bool() const { return dataType != DataType::None; }
-	const DataTypeInfo& s_get(DataType t);
+	explicit operator bool() const { return dataType != RenderDataType::None; }
+	const RenderDataTypeInfo& s_get(RenderDataType t);
 };
 
-class ColorBufferDesc {
+class RenderColorBufferDesc {
 public:
-	ColorBufferDesc() = default;
-	ColorBufferDesc(
-		ColorType		colorType_,
-		BufferLoadOp	loadOp_		= BufferLoadOp::Clear,
+	RenderColorBufferDesc() = default;
+	RenderColorBufferDesc(
+		ColorType			colorType_,
+		RenderBufferLoadOp	loadOp_	= RenderBufferLoadOp::Clear,
 		const Color4f&	clearColor_ = Color4f::kBlack())
 		: colorType(colorType_)
 		, loadOp(loadOp_)
 		, clearColor(clearColor_) {}
 
-	ColorType		colorType	= ColorType::RGBAb;
-	BufferLoadOp	loadOp		= BufferLoadOp::Clear;
-	Color4f			clearColor	= Color4f::kBlack();
+	ColorType			colorType	= ColorType::RGBAb;
+	RenderBufferLoadOp	loadOp		= RenderBufferLoadOp::Clear;
+	Color4f				clearColor	= Color4f::kBlack();
 
-	bool operator==(const ColorBufferDesc& r) const {
+	bool operator==(const RenderColorBufferDesc& r) const {
 		return colorType  == r.colorType
 			&& loadOp     == r.loadOp
 			&& clearColor.exactlyEqual(r.clearColor);
 	}
-
-	bool operator!=(const ColorBufferDesc& r) const { return !operator==(r); }
 };
 
-class DepthBufferDesc {
+class RenderDepthBufferDesc {
 public:
-	DepthType		depthType		= DepthType::Depth_Unorm24_Stencil_UInt8;
-	BufferLoadOp	loadOp			= BufferLoadOp::Clear;
-	f32				clearDepth		= 1;
-	u32				clearStencil	= 0;
+	RenderDepthType		depthType		= RenderDepthType::Depth_Unorm24_Stencil_UInt8;
+	RenderBufferLoadOp	loadOp			= RenderBufferLoadOp::Clear;
+	f32					clearDepth		= 1;
+	u32					clearStencil	= 0;
 
-	AX_INLINE bool isEnabled() const { return depthType != DepthType::None; }
-	bool operator==(const DepthBufferDesc& r) const {
+	AX_INLINE bool isEnabled() const { return depthType != RenderDepthType::None; }
+	bool operator==(const RenderDepthBufferDesc& r) const {
 		return depthType	== r.depthType
 			&& loadOp		== r.loadOp
 			&& Math::exactlyEqual(clearDepth, r.clearDepth)
 			&& clearStencil	== r.clearStencil;
 	}
-
-	bool operator!=(const DepthBufferDesc& r) const { return !operator==(r); }
 };
 
-template<class T> struct DataType_get_;
+template<class T> struct RenderDataType_get_;
 
-// C++ Type -> DataType
-template<class T> constexpr DataType DataType_get = DataType_get_<T>::value;
+// C++ Type -> RenderDataType
+template<class T> constexpr RenderDataType DataType_get = RenderDataType_get_<T>::value;
 
-// DataType -> C++ Type
-template<DataType dt> struct DataType_Type_;
-template<DataType dt> using  DataType_Type = typename DataType_Type_<dt>::Type;
+// RenderDataType -> C++ Type
+template<RenderDataType dt> struct RenderDataType_Type_;
+template<RenderDataType dt> using  RenderDataType_Type = typename RenderDataType_Type_<dt>::Type;
 
 #define E(T, ...)\
-	template<> struct DataType_Type_<DataType::T> { using Type = T; }; \
-	template<> struct DataType_get_<T> { static constexpr DataType value = DataType::T; }; \
+	template<> struct RenderDataType_Type_<RenderDataType::T> { using Type = T; }; \
+	template<> struct RenderDataType_get_<T> { static constexpr RenderDataType value = RenderDataType::T; }; \
 //----
-	AX_RENDER_DataType_Basic_ENUM_LIST(E)
+	AX_RenderDataType_Basic_ENUM_LIST(E)
 #undef E
 
 } // namespace ax::AxRender

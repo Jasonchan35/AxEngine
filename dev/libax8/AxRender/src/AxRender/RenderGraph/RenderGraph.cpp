@@ -8,7 +8,7 @@ import :RenderPass_Backend;
 
 namespace ax::AxRender {
 
-RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, const ColorBufferDesc& desc)
+RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, const RenderColorBufferDesc& desc)
 	: _pass(pass)
 	, _name(name)
 	, _desc(desc)
@@ -16,7 +16,7 @@ RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, cons
 	pass->_addColorBuffer(this);
 }
 
-void RenderGraph_ColorBuffer::setDesc(const ColorBufferDesc& desc) {
+void RenderGraph_ColorBuffer::setDesc(const RenderColorBufferDesc& desc) {
 	if (_desc == desc) return;
 	setDirty();
 	_desc = desc;
@@ -34,13 +34,13 @@ void RenderGraph_ColorBuffer::setColorType(ColorType colorType) {
 	setDirty();
 }
 
-void RenderGraph_ColorBuffer::setLoadOp(BufferLoadOp loadOp) {
+void RenderGraph_ColorBuffer::setLoadOp(RenderBufferLoadOp loadOp) {
 	if (_desc.loadOp == loadOp) return;
 	_desc.loadOp = loadOp;
 	setDirty();
 }
 
-void RenderGraph_Pass::setDepthBufferDesc(const DepthBufferDesc& desc) {
+void RenderGraph_Pass::setDepthBufferDesc(const RenderDepthBufferDesc& desc) {
 	if (_depthBufferDesc == desc)
 		return;
 

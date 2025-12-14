@@ -75,14 +75,14 @@ void ax::AxRender::GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSp
 	for (auto& src : srcSpan) {
 
 		if (!_resultInfo.declare.isGlobalCommonShader) {
-			if (src.bindSpace != BindSpace::Default) continue;
+			if (src.paramSpaceType != ShaderParamSpaceType::Default) continue;
 		}
 
 		auto* dst = _findParam(dstArray.span(), src.name);
 		if (dst) {
-			if (dst->bindPoint  != src.bindPoint ) throw Error_Runtime(Fmt("param'{}' bindPoint mismatch", src.name));
-			if (dst->bindSpace  != src.bindSpace ) throw Error_Runtime(Fmt("param'{}' bindSpace mismatch", src.name));
-			if (dst->bindCount  != src.bindCount ) throw Error_Runtime(Fmt("param'{}' bindCount mismatch", src.name));
+			if (dst->bindPoint		!= src.bindPoint		) throw Error_Runtime(Fmt("param'{}' bindPoint mismatch", src.name));
+			if (dst->bindCount		!= src.bindCount		) throw Error_Runtime(Fmt("param'{}' bindCount mismatch", src.name));
+			if (dst->paramSpaceType != src.paramSpaceType	) throw Error_Runtime(Fmt("param'{}' paramSpaceType mismatch", src.name));
 
 		} else {
 			dst = &dstArray.emplaceBack(src);

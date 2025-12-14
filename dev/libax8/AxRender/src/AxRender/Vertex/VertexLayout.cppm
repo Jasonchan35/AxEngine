@@ -1,6 +1,6 @@
 module;
 export module AxRender:VertexLayout;
-export import :DataType;
+export import :RenderDataType;
 
 export namespace ax::AxRender {
 
@@ -142,12 +142,11 @@ AX_ENUM_CLASS(VertexSemantic_ENUM_LIST, VertexSemantic, u16)
 
 struct VertexLayoutDesc {
 	using Semantic = VertexSemantic;
-	using DataType = DataType;
 
 	struct Element {
 		Semantic	semantic = Semantic::None;
 		u16			offset   = 0;
-		DataType	dataType = DataType::None;
+		RenderDataType	dataType = RenderDataType::None;
 
 		bool operator==(const Element& r) const {
 			return semantic == r.semantic

@@ -196,7 +196,7 @@ protected:
 class RenderDepthBuffer_CreateDesc : NonCopyable {
 public:
 	String		name;
-	DepthType	depthType = DepthType::None;
+	RenderDepthType	depthType = RenderDepthType::None;
 	Vec2i		frameSize {0,0};
 };
 
@@ -205,12 +205,12 @@ class RenderDepthBuffer : public Texture {
 public:
 	using CreateDesc = RenderDepthBuffer_CreateDesc;
 
-	DepthType	depthType() const { return _depthType; }
+	RenderDepthType	depthType() const { return _depthType; }
 	Vec2i		frameSize() const { return _frameSize; }
 
 protected:
 	RenderDepthBuffer(const CreateDesc& desc);
-	DepthType	_depthType = DepthType::None;
+	RenderDepthType	_depthType = RenderDepthType::None;
 	Vec2i		_frameSize {0,0};
 };
 

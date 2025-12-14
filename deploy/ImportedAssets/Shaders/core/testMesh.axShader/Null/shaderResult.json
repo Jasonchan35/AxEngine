@@ -60,7 +60,7 @@
               "srcFactor": "One", 
               "dstFactor": "OneMinusSrcAlpha"
             }, 
-            "constColor": [0, 0, 0, 0]
+            "constColor": [1, 1, 1, 1]
           }, 
           "depthTest": {
             "op": "Less", 
@@ -85,7 +85,7 @@
           "name": "$Global", 
           "dataType": "ConstBuffer", 
           "stageFlags": 2, 
-          "bindSpace": 0, 
+          "paramSpaceType": 0, 
           "bindPoint": 0, 
           "bindCount": 1, 
           "dataSize": 48, 

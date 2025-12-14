@@ -16,8 +16,8 @@ public:
 		indexBuffer.addIndices(indexData);
 	}
 
-	AX_INLINE	void			setPrimitiveType(PrimitiveType t)	{ _primitiveType = t; }
-	AX_INLINE	PrimitiveType	primitiveType() const				{ return _primitiveType; }
+	AX_INLINE	void			setPrimitiveType(RenderPrimitiveType t)	{ _primitiveType = t; }
+	AX_INLINE	RenderPrimitiveType	primitiveType() const				{ return _primitiveType; }
 
 
 	AX_INLINE	VertexLayout	vertexLayout() const	{ return vertexBuffer.vertexLayout(); }
@@ -33,7 +33,7 @@ public:
 
 friend class RenderMesh;
 protected:
-	PrimitiveType _primitiveType = PrimitiveType::Triangles;
+	RenderPrimitiveType _primitiveType = RenderPrimitiveType::Triangles;
 	RenderMesh*	_mesh = nullptr;
 };
 

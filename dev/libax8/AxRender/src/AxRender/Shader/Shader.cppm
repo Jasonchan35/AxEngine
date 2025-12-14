@@ -27,10 +27,12 @@ template<class T> ShaderPropType ShaderPropType_get = ShaderPropType_get_<T>::va
 
 class ShaderStageInfo : public NonCopyable {
 public:
+	using BindPoint = ShaderResourceBindPoint;
+	using ParamSpaceType = ShaderParamSpaceType;
 
 	struct Input {
 		VertexSemantic	semantic = VertexSemantic::None;
-		DataType		dataType = DataType::None;
+		RenderDataType		dataType = RenderDataType::None;
 
 		template<class SE>
 		void onJsonIO(SE & se) {
@@ -40,10 +42,10 @@ public:
 	};
 
 	struct Variable {
-		String		name;
-		u32			offset   = 0;
-		DataType	dataType = DataType::None;
-		bool		rowMajor = true;
+		String			name;
+		u32				offset   = 0;
+		RenderDataType	dataType = RenderDataType::None;
+		bool			rowMajor = true;
 
 		constexpr bool operator==(const Variable& r) {
 			return offset == r.offset && dataType == r.dataType && rowMajor == r.rowMajor;
@@ -59,11 +61,11 @@ public:
 	};
 
 	struct ParamBase {
-		String		name;
-		DataType	dataType;
-		BindSpace	bindSpace = BindSpace::Default;
-		BindPoint	bindPoint = BindPoint::Invalid;
-		u16			bindCount = 0;
+		String			name;
+		RenderDataType	dataType;
+		ParamSpaceType	paramSpaceType = ParamSpaceType::Default;
+		BindPoint		bindPoint = BindPoint::Invalid;
+		u16				bindCount = 0;
 
 		ShaderStageFlags stageFlags = ShaderStageFlags::None;
 
@@ -73,7 +75,7 @@ public:
 			AX_JSON_IO(se, dataType);
 
 			AX_JSON_IO_ENUM_AS_INT(se, stageFlags);
-			AX_JSON_IO_ENUM_AS_INT(se, bindSpace);
+			AX_JSON_IO_ENUM_AS_INT(se, paramSpaceType);
 			AX_JSON_IO_ENUM_AS_INT(se, bindPoint);
 
 			AX_JSON_IO(se, bindCount);
@@ -263,25 +265,28 @@ public:
 
 class ShaderParamSpace_CreateDesc : public NonCopyable {
 public:
-	BindSpace	bindSpace = BindSpace::Invalid;
+	using ParamSpaceType = ShaderParamSpaceType;
+	ParamSpaceType	paramSpaceType = ParamSpaceType::Invalid;
 };
 
 class ShaderParamSpace : public RenderObject {
 	AX_RTTI_INFO(ShaderParamSpace, RenderObject)
 public:
 	using CreateDesc = ShaderParamSpace_CreateDesc;
+	using BindPoint = ShaderResourceBindPoint;
+	using ParamSpaceType = ShaderParamSpaceType;
 
-	BindSpace	bindSpace() const { return _bindSpace; }
+	ParamSpaceType	paramSpaceType() const { return _paramSpaceType; }
 
 	static SPtr<ShaderParamSpace> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	SPtr<class MaterialParamSpace> newMaterialParamSpace(const MemAllocRequest& req) const;
 
 
 protected:
-	ShaderParamSpace(const CreateDesc& desc) : _bindSpace(desc.bindSpace) {}
+	ShaderParamSpace(const CreateDesc& desc) : _paramSpaceType(desc.paramSpaceType) {}
 
 private:
-	BindSpace _bindSpace = BindSpace::Invalid;
+	ParamSpaceType _paramSpaceType = ParamSpaceType::Invalid;
 };
 
 class Shader_CreateDesc : public NonCopyable {
@@ -292,6 +297,7 @@ public:
 class Shader : public RenderObject {
 	AX_RTTI_INFO(Shader, RenderObject)
 public:
+	using ParamSpaceType = ShaderParamSpaceType;
 	using CreateDesc = Shader_CreateDesc;
 	using ResourceKey = String;
 

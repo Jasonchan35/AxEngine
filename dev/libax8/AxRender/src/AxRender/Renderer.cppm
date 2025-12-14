@@ -1,7 +1,7 @@
 ﻿module;
 export module AxRender:Renderer;
 export import :RenderObject;
-export import :DataType;
+export import :RenderDataType;
 
 export namespace ax::AxRender {
 

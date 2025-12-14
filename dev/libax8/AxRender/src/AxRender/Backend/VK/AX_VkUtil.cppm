@@ -12,16 +12,16 @@ class AX_VkUtil {
 public:
 	static VkShaderStageFlagBits	getVkShaderStageFlagBits	(ShaderStageFlags f);
 
-	static VkPrimitiveTopology		getVkPrimitiveTopology	(PrimitiveType t);
+	static VkPrimitiveTopology		getVkPrimitiveTopology	(RenderPrimitiveType t);
 
 	static VkIndexType				getVkIndexType			(IndexType t);
 	static VkCompareOp				getVkDepthTestOp		(DepthTestOp v);
 
-	static VkAttachmentLoadOp		getVkLoadOp				(BufferLoadOp v);
+	static VkAttachmentLoadOp		getVkLoadOp				(RenderBufferLoadOp v);
 
 	static VkFormat					getVkColorType			(ColorType type);
-	static VkFormat					getVkDataType			(DataType v);
-	static VkFormat					getVkDepthType			(DepthType v);
+	static VkFormat					getVkDataType			(RenderDataType v);
+	static VkFormat					getVkDepthType			(RenderDepthType v);
 
 	static VkFilter					getVkSamplerFilter		(SamplerFilter v);
 	static VkSamplerAddressMode		getVkSamplerWrap		(SamplerWrap   v);
@@ -129,11 +129,11 @@ VkShaderStageFlagBits AX_VkUtil::getVkShaderStageFlagBits(ShaderStageFlags f) {
 }
 
 inline
-VkPrimitiveTopology AX_VkUtil::getVkPrimitiveTopology(PrimitiveType t) {
+VkPrimitiveTopology AX_VkUtil::getVkPrimitiveTopology(RenderPrimitiveType t) {
 	switch (t) {
-		case PrimitiveType::Points:		return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-		case PrimitiveType::Lines:		return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-		case PrimitiveType::Triangles:	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		case RenderPrimitiveType::Points:		return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+		case RenderPrimitiveType::Lines:		return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+		case RenderPrimitiveType::Triangles:	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		default: throw Error_Undefined();
 	}
 }
@@ -169,8 +169,8 @@ VkFormat AX_VkUtil::getVkColorType(ColorType type) {
 }
 
 inline
-VkFormat AX_VkUtil::getVkDataType(DataType v) {
-	using SRC = DataType;
+VkFormat AX_VkUtil::getVkDataType(RenderDataType v) {
+	using SRC = RenderDataType;
 	switch (v) {
 //---- UInt8 ----
 		case SRC::u8:			return VK_FORMAT_R8_UINT;
@@ -255,8 +255,8 @@ VkFormat AX_VkUtil::getVkDataType(DataType v) {
 }
 
 inline
-VkFormat AX_VkUtil::getVkDepthType(DepthType v) {
-	using SRC = DepthType;
+VkFormat AX_VkUtil::getVkDepthType(RenderDepthType v) {
+	using SRC = RenderDepthType;
 	switch (v) {
 		case SRC::Depth_Float32:				return VK_FORMAT_D32_SFLOAT;
 		case SRC::Depth_Float32_Stencil_UInt8:	return VK_FORMAT_D32_SFLOAT_S8_UINT;
@@ -377,8 +377,8 @@ VkCompareOp AX_VkUtil::getVkDepthTestOp(DepthTestOp v) {
 }
 
 inline
-VkAttachmentLoadOp ax::AxRender::AX_VkUtil::getVkLoadOp(BufferLoadOp v) {
-	using SRC = BufferLoadOp;
+VkAttachmentLoadOp ax::AxRender::AX_VkUtil::getVkLoadOp(RenderBufferLoadOp v) {
+	using SRC = RenderBufferLoadOp;
 	switch (v) {
 		case SRC::DontCare:		return  VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		case SRC::Load:			return  VK_ATTACHMENT_LOAD_OP_LOAD;

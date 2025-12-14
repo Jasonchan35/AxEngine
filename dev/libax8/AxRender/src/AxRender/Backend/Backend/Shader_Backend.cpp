@@ -25,7 +25,7 @@ void ShaderParamSpace_Backend::ConstBuffer::setVariableDefault(const VarInfo& va
 
 template<class T, class INFO>
 void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) {
-	AX_ASSERT(paramInfo.bindSpace == bindSpace());
+	AX_ASSERT(paramInfo.paramSpaceType == paramSpaceType());
 
 	auto& dst = arr.emplaceBack();
 	dst.create(paramInfo);
@@ -170,21 +170,21 @@ void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
 
 	for (auto& param : paramInfoSpan) {
 		if (!isGlobalCommonShader) {
-			if (param.bindSpace != BindSpace::Default)
+			if (param.paramSpaceType != ParamSpaceType::Default)
 				continue;
 		}
 
-		auto bindSpace = ax_enum_int(param.bindSpace);
-		if (bindSpace < 0 || bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
+		auto paramSpaceType = ax_enum_int(param.paramSpaceType);
+		if (paramSpaceType < 0 || paramSpaceType >= ax_enum_int(ParamSpaceType::_COUNT)) {
 			AX_ASSERT(false);
 			return;
 		}
 
-		auto& space = _shaderParamSpaces.ensureSizeAndGetElement(bindSpace);
+		auto& space = _shaderParamSpaces.ensureSizeAndGetElement(paramSpaceType);
 
 		if (!space) {
 			ShaderParamSpace_CreateDesc blockDesc;
-			blockDesc.bindSpace = param.bindSpace;
+			blockDesc.paramSpaceType = param.paramSpaceType;
 			auto p = ShaderParamSpace::s_new(AX_ALLOC_REQ, blockDesc);
 			space = rttiCastCheck<ShaderParamSpace_Backend>(p.ptr());
 		}

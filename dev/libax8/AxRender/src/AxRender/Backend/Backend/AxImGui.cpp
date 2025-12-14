@@ -164,7 +164,7 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 
 				drawcall.material		   = _material;
 				drawcall.materialPassIndex = 0;
-				drawcall.primitiveType	   = PrimitiveType::Triangles;
+				drawcall.primitiveType	   = RenderPrimitiveType::Triangles;
 				drawcall.vertexLayout	   = vertexLayout;
 				drawcall.vertexBuffer	   = vertexGpuBuffer;
 				drawcall.vertexStart	   = vertexStart + srcBuf.VtxOffset;

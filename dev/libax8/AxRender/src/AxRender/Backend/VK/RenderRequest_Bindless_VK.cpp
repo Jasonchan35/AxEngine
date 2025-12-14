@@ -11,14 +11,14 @@ namespace ax::AxRender {
 template<class T>
 RenderRequest_Bindless_VK::Table<T>::Table() {
 	auto* renderer	  = Renderer_VK::s_instance();
-	auto* globalSpace = renderer->commonShader()->getPassParamSpace(0, BindSpace::Global);
+	auto* globalSpace = renderer->commonShader()->getPassParamSpace(0, ParamSpaceType::Global);
 
 	if constexpr (isSampler) {
 		_descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
 
 		auto* param = globalSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
 		if (!param) throw Error_Undefined();
-		if (param->dataType() != DataType::SamplerState) throw Error_Undefined();
+		if (param->dataType() != RenderDataType::SamplerState) throw Error_Undefined();
 		
 		_bindPoint = param->bindPoint();
 		_slotLimit = param->bindCount();
@@ -28,7 +28,7 @@ RenderRequest_Bindless_VK::Table<T>::Table() {
 
 		auto* param = globalSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
 		if (!param) throw Error_Undefined();
-		if (param->dataType() != DataType::Texture2D) throw Error_Undefined();
+		if (param->dataType() != RenderDataType::Texture2D) throw Error_Undefined();
 
 		_bindPoint = param->bindPoint();
 		_slotLimit = param->bindCount();
@@ -50,7 +50,7 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 	auto* mtl = renderer->commonMaterial();
 	if (!mtl) return;
 
-	auto* mtlSpace = mtl->getPassParamSpace_<MaterialParamSpace_VK>(0, BindSpace::Global);
+	auto* mtlSpace = mtl->getPassParamSpace_<MaterialParamSpace_VK>(0, ParamSpaceType::Global);
 	if (!mtlSpace) return;
 
 	auto currentDescriptorSet = mtlSpace->getUpdatedDescriptorSet(req);

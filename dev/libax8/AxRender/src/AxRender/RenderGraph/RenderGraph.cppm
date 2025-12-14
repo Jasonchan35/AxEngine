@@ -1,6 +1,6 @@
 module;
 export module AxRender:RenderGraph;
-export import :DataType;
+export import :RenderDataType;
 export import :RenderRequest;
 
 export namespace ax::AxRender {
@@ -16,24 +16,24 @@ public:
 	using Graph  = RenderGraph;
 	using Pass   = RenderGraph_Pass;
 
-	RenderGraph_ColorBuffer(Pass* pass, StrView name, const ColorBufferDesc& desc);
+	RenderGraph_ColorBuffer(Pass* pass, StrView name, const RenderColorBufferDesc& desc);
 
 	Pass*			pass() { return _pass; }
 	StrView			name() const { return _name; }
 
-	const ColorBufferDesc&	desc() const { return _desc; }
+	const RenderColorBufferDesc&	desc() const { return _desc; }
 
-	void setDesc(const ColorBufferDesc& desc);
+	void setDesc(const RenderColorBufferDesc& desc);
 	void setDirty();
 
 	void setClearColor(const Color4f& color);
-	void setLoadOp(BufferLoadOp loadOp);
+	void setLoadOp(RenderBufferLoadOp loadOp);
 	void setColorType(ColorType colorType);
 
 private:
 	Pass*				_pass = nullptr;
 	String				_name;
-	ColorBufferDesc		_desc;
+	RenderColorBufferDesc		_desc;
 };
 
 class RenderGraph_Input : public NonCopyable {
@@ -87,7 +87,7 @@ public:
 
 	Span<ColorBuffer*>	colorBuffers() { return _colorBuffers; }
 
-	void setDepthBufferDesc(const DepthBufferDesc& v);
+	void setDepthBufferDesc(const RenderDepthBufferDesc& v);
 
 	void setFrameSize(Vec2i frameSize);
 
@@ -116,7 +116,7 @@ protected:
 
 	Array<Input,  8>		_inputs;
 	Array<ColorBuffer*, 8>	_colorBuffers;
-	DepthBufferDesc			_depthBufferDesc;
+	RenderDepthBufferDesc			_depthBufferDesc;
 
 	RenderDelegate			_renderDelegate;
 	SPtr<RenderPass>		_renderPass;
@@ -152,9 +152,9 @@ public:
 	using BackBufferPass = RenderGraph_BackBufferPass;
 
 	// forward those names for RenderGraph subclass
-	using ColorBufferDesc	= ColorBufferDesc;
-	using DepthBufferDesc	= DepthBufferDesc;
-	using BufferLoadOp		= BufferLoadOp;
+	using RenderColorBufferDesc	= RenderColorBufferDesc;
+	using RenderDepthBufferDesc	= RenderDepthBufferDesc;
+	using RenderBufferLoadOp		= RenderBufferLoadOp;
 
 	const Vec2i& frameSize() const { return _frameSize; }
 

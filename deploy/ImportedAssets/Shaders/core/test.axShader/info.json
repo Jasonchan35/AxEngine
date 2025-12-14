@@ -31,7 +31,7 @@
             "srcFactor": "One", 
             "dstFactor": "OneMinusSrcAlpha"
           }, 
-          "constColor": [0, 0, 0, 0]
+          "constColor": [1, 1, 1, 1]
         }, 
         "depthTest": {
           "op": "LessEqual", 

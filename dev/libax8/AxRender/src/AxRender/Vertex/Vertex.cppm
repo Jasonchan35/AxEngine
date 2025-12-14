@@ -1,6 +1,6 @@
 module;
 export module AxRender:Vertex;
-export import :DataType;
+export import :RenderDataType;
 export import :VertexLayout;
 
 export namespace ax::AxRender {
@@ -11,10 +11,10 @@ struct VertexBase {
 	using UvType     = void;
 	using NormalType = void;
 
-	static constexpr DataType	kPosType    = DataType::None;
-	static constexpr DataType	kColorType  = DataType::None;
-	static constexpr DataType	kUvType     = DataType::None;
-	static constexpr DataType	kNormalType = DataType::None;
+	static constexpr RenderDataType	kPosType    = RenderDataType::None;
+	static constexpr RenderDataType	kColorType  = RenderDataType::None;
+	static constexpr RenderDataType	kUvType     = RenderDataType::None;
+	static constexpr RenderDataType	kNormalType = RenderDataType::None;
 
 	static constexpr u8 kColorCount	= 0;
 	static constexpr u8 kUvCount		= 0;
@@ -49,7 +49,7 @@ struct VertexT_Pos : public VertexBase {
 	using PosType = POS_TYPE;
 	POS_TYPE pos;
 
-	static const DataType	kPosType	= DataType_get<POS_TYPE>;
+	static const RenderDataType	kPosType	= DataType_get<POS_TYPE>;
 
 	static VertexLayout s_layout() {
 		static VertexLayoutCreator<VertexT_Pos> s;
@@ -66,7 +66,7 @@ struct VertexT_Color : public BASE {
 	using ColorType = COLOR_TYPE;
 	FixedArray<COLOR_TYPE, COLOR_COUNT>	color;
 
-	static const DataType	kColorType    = DataType_get<COLOR_TYPE>;
+	static const RenderDataType	kColorType    = DataType_get<COLOR_TYPE>;
 	static const u8 kColorCount = COLOR_COUNT;
 
 	static VertexLayout s_layout() {
@@ -86,7 +86,7 @@ struct VertexT_Uv : public BASE
 	using UvType = UV_TYPE;
 	FixedArray<UV_TYPE, UV_COUNT>	uv;
 
-	static const DataType	kUvType    = DataType_get<UV_TYPE>;
+	static const RenderDataType	kUvType    = DataType_get<UV_TYPE>;
 	static const u8 kUvCount = UV_COUNT;
 
 	static VertexLayout s_layout() {
@@ -106,7 +106,7 @@ struct VertexT_Normal : public BASE
 	using NormalType = NORMAL_TYPE;
 	FixedArray<NORMAL_TYPE, NORMAL_COUNT>	normal;
 
-	static const DataType	kNormalType    = DataType_get<NORMAL_TYPE>();
+	static const RenderDataType	kNormalType    = DataType_get<NORMAL_TYPE>();
 	static const u8 kNormalCount = NORMAL_COUNT;
 
 	static VertexLayout s_layout() {
@@ -126,7 +126,7 @@ struct VertexT_Tangent : public BASE
 	using TangentType = TANGENT_TYPE;
 	FixedArray<TANGENT_TYPE, TANGENT_COUNT>	tangent;
 
-	static const DataType	kTangentType    = DataType_get<TANGENT_TYPE>();
+	static const RenderDataType	kTangentType    = DataType_get<TANGENT_TYPE>();
 	static const u8 kTangentCount = TANGENT_COUNT;
 
 	static VertexLayout s_layout() {
@@ -146,7 +146,7 @@ struct VertexT_Binormal : public BASE
 	using BinormalType = BINORMAL_TYPE;
 	FixedArray<BINORMAL_TYPE, BINORMAL_COUNT>	binormal;
 
-	static const DataType	kBinormalType    = DataType_get<BINORMAL_TYPE>();
+	static const RenderDataType	kBinormalType    = DataType_get<BINORMAL_TYPE>();
 	static const u8 kBinormalCount = BINORMAL_COUNT;
 
 	static VertexLayout s_layout() {

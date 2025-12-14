@@ -24,6 +24,7 @@ class Material_CreateDesc {};
 class Material : public RenderObject {
 	AX_RTTI_INFO(Material, RenderObject)
 public:
+	using ParamSpaceType = ShaderParamSpaceType;
 	using CreateDesc = Material_CreateDesc;
 
 	static SPtr<This> s_new(const MemAllocRequest& req, Shader* shader = nullptr);

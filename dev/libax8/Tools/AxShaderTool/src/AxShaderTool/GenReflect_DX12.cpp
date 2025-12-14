@@ -404,7 +404,7 @@ void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 
 		auto& outCB = outInfo.constBuffers.emplaceBack();
 		outCB.stageFlags = outInfo.stageFlags;
-		outCB.dataType = DataType::ConstBuffer;
+		outCB.dataType = RenderDataType::ConstBuffer;
 
 		D3D12_SHADER_BUFFER_DESC bufDesc;
 		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);
@@ -414,7 +414,7 @@ void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		outCB.name = StrView_c_str(bufDesc.Name);
 		ax_safe_assign(outCB.bindPoint, resDesc.BindPoint);
 		ax_safe_assign(outCB.bindCount, resDesc.BindCount);
-		ax_safe_assign(outCB.bindSpace, resDesc.Space);
+		ax_safe_assign(outCB.paramSpaceType, resDesc.Space);
 
 		ax_safe_assign(outCB.dataSize , bufDesc.Size);
 
@@ -479,7 +479,7 @@ void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 				throw Error_Undefined();
 			}
 
-			if (outVar.dataType == DataType::None) {
+			if (outVar.dataType == RenderDataType::None) {
 				throw Error_Undefined();
 			}
 		}
@@ -502,17 +502,17 @@ void GenReflect_DX12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 		outTex.name = StrView_c_str(resDesc.Name);
 		ax_safe_assign(outTex.bindPoint, resDesc.BindPoint);
 		ax_safe_assign(outTex.bindCount, resDesc.BindCount);
-		ax_safe_assign(outTex.bindSpace, resDesc.Space);
+		ax_safe_assign(outTex.paramSpaceType, resDesc.Space);
 
 		switch (resDesc.Dimension) {
-			case D3D_SRV_DIMENSION_TEXTURE1D:		outTex.dataType = DataType::Texture1D;   break;
-			case D3D_SRV_DIMENSION_TEXTURE2D:		outTex.dataType = DataType::Texture2D;   break;
-			case D3D_SRV_DIMENSION_TEXTURE3D:		outTex.dataType = DataType::Texture3D;   break;
-			case D3D_SRV_DIMENSION_TEXTURECUBE:		outTex.dataType = DataType::TextureCube; break;
+			case D3D_SRV_DIMENSION_TEXTURE1D:		outTex.dataType = RenderDataType::Texture1D;   break;
+			case D3D_SRV_DIMENSION_TEXTURE2D:		outTex.dataType = RenderDataType::Texture2D;   break;
+			case D3D_SRV_DIMENSION_TEXTURE3D:		outTex.dataType = RenderDataType::Texture3D;   break;
+			case D3D_SRV_DIMENSION_TEXTURECUBE:		outTex.dataType = RenderDataType::TextureCube; break;
 		//----
-			case D3D_SRV_DIMENSION_TEXTURE1DARRAY:	outTex.dataType = DataType::Texture1DArray;   break;
-			case D3D_SRV_DIMENSION_TEXTURE2DARRAY:	outTex.dataType = DataType::Texture2DArray;   break;
-			case D3D_SRV_DIMENSION_TEXTURECUBEARRAY:outTex.dataType = DataType::TextureCubeArray; break;
+			case D3D_SRV_DIMENSION_TEXTURE1DARRAY:	outTex.dataType = RenderDataType::Texture1DArray;   break;
+			case D3D_SRV_DIMENSION_TEXTURE2DARRAY:	outTex.dataType = RenderDataType::Texture2DArray;   break;
+			case D3D_SRV_DIMENSION_TEXTURECUBEARRAY:outTex.dataType = RenderDataType::TextureCubeArray; break;
 		//----
 			default: throw Error_Undefined();
 		}
@@ -541,11 +541,11 @@ void GenReflect_DX12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 
 		auto& outSampler = outInfo.samplers.emplaceBack();
 		outSampler.stageFlags = outInfo.stageFlags;
-		outSampler.dataType = DataType::SamplerState;
+		outSampler.dataType = RenderDataType::SamplerState;
 		outSampler.name = StrView_c_str(resDesc.Name);
 		ax_safe_assign(outSampler.bindPoint, resDesc.BindPoint);
 		ax_safe_assign(outSampler.bindCount, resDesc.BindCount);
-		ax_safe_assign(outSampler.bindSpace, resDesc.Space);
+		ax_safe_assign(outSampler.paramSpaceType, resDesc.Space);
 	}
 }
 
@@ -563,11 +563,11 @@ void GenReflect_DX12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, I
 
 		auto& sbuf = outInfo.storageBuffers.emplaceBack();
 		sbuf.stageFlags = outInfo.stageFlags;
-		sbuf.dataType = DataType::StorageBuffer;
+		sbuf.dataType = RenderDataType::StorageBuffer;
 		sbuf.name = StrView_c_str(resDesc.Name);
 		ax_safe_assign(sbuf.bindPoint, resDesc.BindPoint);
 		ax_safe_assign(sbuf.bindCount, resDesc.BindCount);
-		ax_safe_assign(sbuf.bindSpace, resDesc.Space);
+		ax_safe_assign(sbuf.paramSpaceType, resDesc.Space);
 
 		sbuf.rawUAV = (resDesc.Type == D3D_SIT_UAV_RWBYTEADDRESS);
 	}

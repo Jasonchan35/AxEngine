@@ -13,6 +13,8 @@ class RenderRequest_VK;
 
 class RenderRequest_Bindless_VK {
 public:
+	using BindPoint = ShaderResourceBindPoint;
+	using ParamSpaceType = ShaderParamSpaceType;
 
 	template<class T>
 	class Table : public NonCopyable {

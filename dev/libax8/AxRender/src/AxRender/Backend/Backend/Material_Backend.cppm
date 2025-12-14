@@ -44,6 +44,8 @@ public:
 	MaterialParamSpace_Backend(const CreateDesc& desc);
 
 	using VarInfo	= ShaderParamSpace_Backend::VarInfo;
+	using BindPoint = ShaderResourceBindPoint;
+	using ParamSpaceType = ShaderParamSpaceType;
 
 	struct ParamBase {
 		void	  create(const ShaderParamSpace_Backend::ParamBase& shaderParam);
@@ -68,7 +70,7 @@ public:
 	struct TextureParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
-		DataType	dataType() const { return _shaderParam->dataType(); }
+		RenderDataType	dataType() const { return _shaderParam->dataType(); }
 		Int			bindCount() const { return _shaderParam->bindCount(); }
 
 		void		create(const ShaderParamSpace_Backend::TextureParam& shaderParam);
@@ -156,7 +158,7 @@ public:
 	Int samplerParams_totalBindCount() const		{ return s_totalBindCount(_samplerParams.span()); }
 	Int storageBufferParams_totalBindCount() const	{ return s_totalBindCount(_storageBufferParams.span()); }
 	
-	BindSpace	bindSpace() const { return _shaderParamSpace->bindSpace(); }
+	ParamSpaceType	paramSpaceType() const { return _shaderParamSpace->paramSpaceType(); }
 
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
@@ -227,6 +229,7 @@ class MaterialPass_Backend : public RttiObject {
 	AX_RTTI_INFO(MaterialPass_Backend, RttiObject)
 public:
 	using CreateDesc = MaterialPass_Backend_CreateDesc;
+	using ParamSpaceType = ShaderParamSpaceType;
 
 	MaterialPass_Backend(const CreateDesc& desc);
 
@@ -240,17 +243,17 @@ public:
 	void logWarningOnce(StrView msg);
 
 	template<class R>
-	R* getParamSpace_(BindSpace s) {
+	R* getParamSpace_(ParamSpaceType s) {
 		return rttiCastCheck<R>(getParamSpace(s));
 	}
 
-	MaterialParamSpace_Backend* getParamSpace(BindSpace s) {
+	MaterialParamSpace_Backend* getParamSpace(ParamSpaceType s) {
 		auto* pp = _materialParamSpaces.tryGetElement(ax_enum_int(s));
 		return pp ? pp->ptr() : nullptr;
 	}
 
 	template<class V>
-	bool setParamSpaceParam(BindSpace space, NameId name, const V& v) {
+	bool setParamSpaceParam(ParamSpaceType space, NameId name, const V& v) {
 		auto* p = getParamSpace(space);
 		return p ? p->setParam(name, v) : false;
 	}
@@ -278,7 +281,7 @@ public:
 	Shader_Backend* shader_backend() { return _shader; }
 
 	template<class V> AX_INLINE
-	bool setParamSpaceParam(BindSpace space, NameId name, V& v);
+	bool setParamSpaceParam(ParamSpaceType space, NameId name, V& v);
 
 	Int		passCount() const { return _passes.size(); }
 
@@ -286,11 +289,11 @@ public:
 
 	StrView shaderAssetPath() const { return _shader ? StrView(_shader->assetPath()) : StrView(); }
 
-	template<class R> R* getPassParamSpace_(Int pass, BindSpace s) {
+	template<class R> R* getPassParamSpace_(Int pass, ParamSpaceType s) {
 		return rttiCastCheck<R>(getPassParamSpace(pass, s));
 	}
 
-	MaterialParamSpace_Backend*	getPassParamSpace(Int passIndex, BindSpace s) {
+	MaterialParamSpace_Backend*	getPassParamSpace(Int passIndex, ParamSpaceType s) {
 		auto* pp = _passes.tryGetElement(passIndex);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;
@@ -322,7 +325,7 @@ const ShaderPass_Backend* MaterialPass_Backend::shaderPass() const {
 }
 
 template<class V> AX_INLINE 
-bool Material_Backend::setParamSpaceParam(BindSpace space, NameId name, V& v) {
+bool Material_Backend::setParamSpaceParam(ParamSpaceType space, NameId name, V& v) {
 	bool b = false;
 	for (auto& p : _passes) {
 		if (p) { b = b || p->setParamSpaceParam(space, name, v); }

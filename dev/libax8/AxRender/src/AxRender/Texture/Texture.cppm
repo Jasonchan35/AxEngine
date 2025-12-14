@@ -105,14 +105,14 @@ protected:
 class Texture : public RenderObject {
 	AX_RTTI_INFO(Texture, RenderObject)
 public:
-	DataType type() const { return _type; }
+	RenderDataType type() const { return _type; }
 
 	using ResourceKey = String;
 	const ResourceKey& resourceKey() const { return _assetPath; }
 
 protected:
-	Texture(DataType type) : _type(type) {}
-	DataType _type = DataType::None;
+	Texture(RenderDataType type) : _type(type) {}
+	RenderDataType _type = RenderDataType::None;
 
 	String	_assetPath;
 };
@@ -144,7 +144,7 @@ public:
 friend class Texture2D_ImageIO_Reader;
 protected:
 
-	Texture2D(const CreateDesc& desc): Base(DataType::Texture2D), _info(desc.info) {
+	Texture2D(const CreateDesc& desc): Base(RenderDataType::Texture2D), _info(desc.info) {
 		_assetPath = desc.assetPath;
 	}
 
@@ -165,7 +165,7 @@ public:
 
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	
-	Texture3D(const CreateDesc& desc) : Base(DataType::Texture3D), _info(desc.info) {
+	Texture3D(const CreateDesc& desc) : Base(RenderDataType::Texture3D), _info(desc.info) {
 		_assetPath = desc.assetPath;
 	}
 
@@ -187,7 +187,7 @@ public:
 
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	
-	TextureCube(const CreateDesc& desc): Base(DataType::TextureCube), _info(desc.info) {
+	TextureCube(const CreateDesc& desc): Base(RenderDataType::TextureCube), _info(desc.info) {
 		_assetPath = desc.assetPath;
 	}
 
@@ -196,10 +196,10 @@ private:
 };
 
 
-template<> struct DataType_get_<Sampler    > { static constexpr DataType value = DataType::SamplerState; };
-template<> struct DataType_get_<Texture2D  > { static constexpr DataType value = DataType::Texture2D;    };
-template<> struct DataType_get_<Texture3D  > { static constexpr DataType value = DataType::Texture3D;    };
-template<> struct DataType_get_<TextureCube> { static constexpr DataType value = DataType::TextureCube;  };
+template<> struct RenderDataType_get_<Sampler    > { static constexpr RenderDataType value = RenderDataType::SamplerState; };
+template<> struct RenderDataType_get_<Texture2D  > { static constexpr RenderDataType value = RenderDataType::Texture2D;    };
+template<> struct RenderDataType_get_<Texture3D  > { static constexpr RenderDataType value = RenderDataType::Texture3D;    };
+template<> struct RenderDataType_get_<TextureCube> { static constexpr RenderDataType value = RenderDataType::TextureCube;  };
 
 
 } // namespace

@@ -28,7 +28,7 @@ class ShaderPipeline_VK : public NonCopyable {
 public:
 	struct Key {
 		VertexLayout  vertexLayout	 = nullptr;
-		PrimitiveType primitiveType	 = PrimitiveType::None;
+		RenderPrimitiveType primitiveType	 = RenderPrimitiveType::None;
 		bool		  debugWireframe = false;
 		VkRenderPass  renderPass	 = VK_NULL_HANDLE;
 

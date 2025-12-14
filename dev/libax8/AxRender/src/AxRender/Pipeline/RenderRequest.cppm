@@ -40,6 +40,8 @@ private:
 class RenderRequest : public RttiObject {
 	AX_RTTI_INFO(RenderRequest, RttiObject)
 public:
+	using ParamSpaceType = ShaderParamSpaceType;
+	
 	RenderSeqId		renderSeqId() const		{ return _renderSeqId; }
 
 	void setViewport(const Rect2f& rect, float minDepth, float maxDepth) { _graphCmdBuf->setViewport(rect, minDepth, maxDepth); }

@@ -110,7 +110,7 @@ void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const Sh
 		
 		auto& dst = _updateTextureInfos.emplaceBack();
 		switch (tex->type()) {
-			case DataType::Texture2D: {
+			case RenderDataType::Texture2D: {
 				auto* tex2d = rttiCastCheck<Texture2D_VK>(tex);
 				if (!tex2d) throw Error_Undefined();
 				tex2d->_bindImage(req, dst);
@@ -161,7 +161,7 @@ void MaterialParamSpace_VK::_nextDescriptorSet(RenderRequest_VK* req, const Shad
 		for (Int i = 0; i < renderRequestCount; i++) {
 			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->descriptorSetLayout());
 //#if AX_DEBUG_NAME
-//			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, bindSpace()));
+//			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, paramSpaceType()));
 //#endif
 		}
 	}
@@ -197,13 +197,13 @@ bool MaterialPass_VK::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		auto* paramSpace = rttiCastCheck<MaterialParamSpace_VK>(paramSpace_.ptr());
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
-		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
-		if (bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
+		auto paramSpaceType = ax_enum_int(paramSpace->paramSpaceType());
+		if (paramSpaceType >= ax_enum_int(ParamSpaceType::_COUNT)) {
 			AX_ASSERT(false);
 			return false;
 		}
 
-		auto& dst = bindDescSets.ensureSizeAndGetElement(bindSpace);
+		auto& dst = bindDescSets.ensureSizeAndGetElement(paramSpaceType);
 		dst = paramSpace->getUpdatedDescriptorSet(req);
 		if (!dst) { AX_ASSERT(false); return false; }
 	}
@@ -211,19 +211,19 @@ bool MaterialPass_VK::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* commonMaterial = renderer->commonMaterial();
 	if (!commonMaterial) { AX_ASSERT(false); return false; }
 
-	auto addCommonBlock = [&](BindSpace bindSpace) {
-		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_VK>(0, bindSpace);
-		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", bindSpace));
+	auto addCommonBlock = [&](ParamSpaceType paramSpaceType) {
+		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_VK>(0, paramSpaceType);
+		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", paramSpaceType));
 
-		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(bindSpace));
+		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(paramSpaceType));
 		dst = block->getUpdatedDescriptorSet(req);
 		if (!dst) throw Error_Undefined("cannot getUpdatedDescriptorSet");
 	};
 
-	addCommonBlock(BindSpace::Global   );
-	addCommonBlock(BindSpace::PerFrame );
+	addCommonBlock(ParamSpaceType::Global   );
+	addCommonBlock(ParamSpaceType::PerFrame );
 	// TODO: get from object
-	addCommonBlock(BindSpace::PerObject);
+	addCommonBlock(ParamSpaceType::PerObject);
 
 	if (bindDescSets.size() <= 0) {
 		AX_ASSERT(false);

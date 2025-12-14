@@ -1,6 +1,6 @@
 module;
 export module AxRender:CommandBuffer;
-export import :DataType;
+export import :RenderDataType;
 export import :VertexLayout;
 export import :GpuBuffer;
 export import :Material;
@@ -11,7 +11,7 @@ export namespace ax::AxRender {
 
 class Cmd_DrawCall : public NonCopyable {
 public:
-	PrimitiveType	primitiveType	= PrimitiveType::Triangles;
+	RenderPrimitiveType	primitiveType	= RenderPrimitiveType::Triangles;
 	IndexType		indexType		= IndexType::None;
 
 	VertexLayout	vertexLayout = nullptr;

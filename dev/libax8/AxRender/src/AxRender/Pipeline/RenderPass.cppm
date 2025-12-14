@@ -20,8 +20,8 @@ public:
 	RenderContext*	backBufferRenderContext = nullptr;
 	Int				backBufferIndex = 0;
 
-	Array<ColorBufferDesc, 16>	colorBuffers;
-	DepthBufferDesc				depthBuffer;
+	Array<RenderColorBufferDesc, 16>	colorBuffers;
+	RenderDepthBufferDesc				depthBuffer;
 };
 
 class RenderPass : public RenderObject {
@@ -45,7 +45,7 @@ public:
 			RenderColorBuffer*	colorBuffer(Int i) { return _colorBuffers.inBound(i) ? _colorBuffers[i].colorBuf.ptr() : nullptr; }
 	const	RenderColorBuffer*	colorBuffer(Int i) const { return ax_const_cast(this)->colorBuffer(i); }
 
-	const ColorBufferDesc*	colorBufferDesc(Int i) { return _colorBuffers.inBound(i) ? &_colorBuffers[i].desc : nullptr; }
+	const RenderColorBufferDesc*	colorBufferDesc(Int i) { return _colorBuffers.inBound(i) ? &_colorBuffers[i].desc : nullptr; }
 
 	RenderDepthBuffer*	depthBuffer()		{ return _depthBuffer.depthBuf.ptr(); }
 
@@ -58,12 +58,12 @@ protected:
 
 	struct ColorBuffer {
 		SPtr<RenderColorBuffer>	colorBuf;
-		ColorBufferDesc			desc;
+		RenderColorBufferDesc			desc;
 	};
 
 	struct DepthBuffer {
 		SPtr<RenderDepthBuffer>	depthBuf;
-		DepthBufferDesc			desc;
+		RenderDepthBufferDesc			desc;
 	};
 
 	Array< ColorBuffer >	_colorBuffers;

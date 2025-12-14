@@ -93,7 +93,7 @@ void CommandBuffer_VK::onDrawCall(Cmd_DrawCall& cmd) {
 	if (auto* vb = rttiCastCheck<GpuBuffer_VK>(cmd.vertexBuffer)) {
 		// draw indirect doesn't support byte offset
 		// VkDeviceSize vertexBufferByteOffset = AX_VkUtil::castUInt32(cmd.vertexBufferByteOffset);
-		u32 firstBinding = ax_enum_int(BindPoint::VertexBuffer);
+		u32 firstBinding = ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
 		VkDeviceSize offset = 0;
 		vkCmdBindVertexBuffers(_cmdBuf, firstBinding, 1, &vb->vkBufHandle(), &offset);
 	}

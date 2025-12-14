@@ -15,8 +15,8 @@ public:
 	Int			backBufferCount = 3;
 	bool		vsync = true;
 
-	ColorBufferDesc	colorBuffer;
-	DepthBufferDesc	depthBuffer;
+	RenderColorBufferDesc	colorBuffer;
+	RenderDepthBufferDesc	depthBuffer;
 };
 
 class RenderContext : public RttiObject {
@@ -34,7 +34,7 @@ public:
 	const Vec2i&  frameSize() const		{ return _frameSize; }
 
 	ColorType	colorType() const	{ return _colorBufferDesc.colorType; }
-	DepthType	depthType() const	{ return _depthBufferDesc.depthType; }
+	RenderDepthType	depthType() const	{ return _depthBufferDesc.depthType; }
 
 	bool	vsync() const { return _vsync; }
 
@@ -83,8 +83,8 @@ protected:
 	bool		_vsync = true;
 	bool		_viewportIsBottomUp = false;
 
-	ColorBufferDesc	_colorBufferDesc;
-	DepthBufferDesc	_depthBufferDesc;
+	RenderColorBufferDesc	_colorBufferDesc;
+	RenderDepthBufferDesc	_depthBufferDesc;
 
 	Vec2i			_frameSize {0,0};
 

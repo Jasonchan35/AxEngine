@@ -125,9 +125,9 @@ void RenderColorBuffer_CreateDesc::setBackBuffer(
 }
 
 RenderDepthBuffer::RenderDepthBuffer(const CreateDesc& desc) 
-: Base(DataType::DepthTexture)
+: Base(RenderDataType::DepthTexture)
 {
-	_type	   = DataType::DepthTexture;
+	_type	   = RenderDataType::DepthTexture;
 	_depthType = desc.depthType;
 	_frameSize = desc.frameSize;
 }

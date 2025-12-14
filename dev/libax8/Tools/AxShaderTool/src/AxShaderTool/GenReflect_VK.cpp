@@ -77,7 +77,7 @@ ShaderStageFlags getShaderStageGlags(SpvReflectShaderStageFlagBits f) {
 	return static_cast<ShaderStageFlags>(o);
 }
 
-DataType getDataType(const SpvReflectTypeDescription& src) {
+RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 	auto& numeric = src.traits.numeric;
 	auto& scalar  = numeric.scalar;
 
@@ -95,8 +95,8 @@ DataType getDataType(const SpvReflectTypeDescription& src) {
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 			if (mat.row_count == 4 && mat.column_count == 4) {
 				switch (scalar.width) {
-					case 32: return DataType::Mat4f;
-					case 64: return DataType::Mat4d;
+					case 32: return RenderDataType::Mat4f;
+					case 64: return RenderDataType::Mat4d;
 				}
 			}
 		}
@@ -107,62 +107,62 @@ DataType getDataType(const SpvReflectTypeDescription& src) {
 	if (src.type_flags & SPV_REFLECT_TYPE_FLAG_INT) {
 		switch (scalar.width) {
 			case 8: switch (vec.component_count) {
-				case 0: return scalar.signedness ? DataType::i8   :  DataType::u8;
-				case 1: return scalar.signedness ? DataType::i8x1 :  DataType::u8x1;
-				case 2: return scalar.signedness ? DataType::i8x2 :  DataType::u8x2;
-				case 3: return scalar.signedness ? DataType::i8x3 :  DataType::u8x3;
-				case 4: return scalar.signedness ? DataType::i8x4 :  DataType::u8x4;
+				case 0: return scalar.signedness ? RenderDataType::i8   :  RenderDataType::u8;
+				case 1: return scalar.signedness ? RenderDataType::i8x1 :  RenderDataType::u8x1;
+				case 2: return scalar.signedness ? RenderDataType::i8x2 :  RenderDataType::u8x2;
+				case 3: return scalar.signedness ? RenderDataType::i8x3 :  RenderDataType::u8x3;
+				case 4: return scalar.signedness ? RenderDataType::i8x4 :  RenderDataType::u8x4;
 			} break;
 			case 16: switch (vec.component_count) {
-				case 0: return scalar.signedness ? DataType::i16   :  DataType::u16;
-				case 1: return scalar.signedness ? DataType::i16x1 :  DataType::u16x1;
-				case 2: return scalar.signedness ? DataType::i16x2 :  DataType::u16x2;
-				case 3: return scalar.signedness ? DataType::i16x3 :  DataType::u16x3;
-				case 4: return scalar.signedness ? DataType::i16x4 :  DataType::u16x4;
+				case 0: return scalar.signedness ? RenderDataType::i16   :  RenderDataType::u16;
+				case 1: return scalar.signedness ? RenderDataType::i16x1 :  RenderDataType::u16x1;
+				case 2: return scalar.signedness ? RenderDataType::i16x2 :  RenderDataType::u16x2;
+				case 3: return scalar.signedness ? RenderDataType::i16x3 :  RenderDataType::u16x3;
+				case 4: return scalar.signedness ? RenderDataType::i16x4 :  RenderDataType::u16x4;
 			} break;
 			case 32: switch (vec.component_count) {
-				case 0: return scalar.signedness ? DataType::i32   :  DataType::u32;
-				case 1: return scalar.signedness ? DataType::i32x1 :  DataType::u32x1;
-				case 2: return scalar.signedness ? DataType::i32x2 :  DataType::u32x2;
-				case 3: return scalar.signedness ? DataType::i32x3 :  DataType::u32x3;
-				case 4: return scalar.signedness ? DataType::i32x4 :  DataType::u32x4;
+				case 0: return scalar.signedness ? RenderDataType::i32   :  RenderDataType::u32;
+				case 1: return scalar.signedness ? RenderDataType::i32x1 :  RenderDataType::u32x1;
+				case 2: return scalar.signedness ? RenderDataType::i32x2 :  RenderDataType::u32x2;
+				case 3: return scalar.signedness ? RenderDataType::i32x3 :  RenderDataType::u32x3;
+				case 4: return scalar.signedness ? RenderDataType::i32x4 :  RenderDataType::u32x4;
 			} break;
 			case 64: switch (vec.component_count) {
-				case 0: return scalar.signedness ? DataType::i64   :  DataType::u64;
-				case 1: return scalar.signedness ? DataType::i64x1 :  DataType::u64x1;
-				case 2: return scalar.signedness ? DataType::i64x2 :  DataType::u64x2;
-				case 3: return scalar.signedness ? DataType::i64x3 :  DataType::u64x3;
-				case 4: return scalar.signedness ? DataType::i64x4 :  DataType::u64x4;
+				case 0: return scalar.signedness ? RenderDataType::i64   :  RenderDataType::u64;
+				case 1: return scalar.signedness ? RenderDataType::i64x1 :  RenderDataType::u64x1;
+				case 2: return scalar.signedness ? RenderDataType::i64x2 :  RenderDataType::u64x2;
+				case 3: return scalar.signedness ? RenderDataType::i64x3 :  RenderDataType::u64x3;
+				case 4: return scalar.signedness ? RenderDataType::i64x4 :  RenderDataType::u64x4;
 			} break;
 		}
 	} else if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 		switch (scalar.width) {
 			case 16: switch (vec.component_count) {
-				case 0: return DataType::f16;
-				case 1: return DataType::f16x1;
-				case 2: return DataType::f16x2;
-				case 3: return DataType::f16x3;
-				case 4: return DataType::f16x4;
+				case 0: return RenderDataType::f16;
+				case 1: return RenderDataType::f16x1;
+				case 2: return RenderDataType::f16x2;
+				case 3: return RenderDataType::f16x3;
+				case 4: return RenderDataType::f16x4;
 			} break;
 			case 32: switch (vec.component_count) {
-				case 0: return DataType::f32;
-				case 1: return DataType::f32x1;
-				case 2: return DataType::f32x2;
-				case 3: return DataType::f32x3;
-				case 4: return DataType::f32x4;
+				case 0: return RenderDataType::f32;
+				case 1: return RenderDataType::f32x1;
+				case 2: return RenderDataType::f32x2;
+				case 3: return RenderDataType::f32x3;
+				case 4: return RenderDataType::f32x4;
 			} break;
 			case 64: switch (vec.component_count) {
-				case 0: return DataType::f64;
-				case 1: return DataType::f64x1;
-				case 2: return DataType::f64x2;
-				case 3: return DataType::f64x3;
-				case 4: return DataType::f64x4;
+				case 0: return RenderDataType::f64;
+				case 1: return RenderDataType::f64x1;
+				case 2: return RenderDataType::f64x2;
+				case 3: return RenderDataType::f64x3;
+				case 4: return RenderDataType::f64x4;
 			} break;
 		}
 	}
 
 	AX_ASSERT(false);
-	return DataType::None;
+	return RenderDataType::None;
 }
 
 void GenReflect_VK_EX::generate(StrView outFilename, StrView filename, RenderApi api) {
@@ -237,7 +237,7 @@ template<class PARAM>
 void GenReflect_VK_EX::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	dst.stageFlags = outInfo.stageFlags;
 	dst.name  = StrView_c_str(binding->name);
-	dst.bindSpace = SafeCast(binding->set);
+	dst.paramSpaceType = SafeCast(binding->set);
 	dst.bindPoint = SafeCast(binding->binding);
 
 	if (binding->array.dims_count == 1) {
@@ -250,7 +250,7 @@ void GenReflect_VK_EX::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const
 void GenReflect_VK_EX::_genSampler(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	auto& dst = outInfo.samplers.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
-	dst.dataType = DataType::SamplerState;
+	dst.dataType = RenderDataType::SamplerState;
 }
 
 void GenReflect_VK_EX::_genTexture(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
@@ -259,10 +259,10 @@ void GenReflect_VK_EX::_genTexture(ShaderStageInfo& outInfo, const SpvReflectDes
 
 	auto& img = binding->image;
 	switch (img.dim) {
-		case SpvDim1D:   dst.dataType = DataType::Texture1D;   break;
-		case SpvDim2D:   dst.dataType = DataType::Texture2D;   break;
-		case SpvDim3D:   dst.dataType = DataType::Texture3D;   break;
-		case SpvDimCube: dst.dataType = DataType::TextureCube; break;
+		case SpvDim1D:   dst.dataType = RenderDataType::Texture1D;   break;
+		case SpvDim2D:   dst.dataType = RenderDataType::Texture2D;   break;
+		case SpvDim3D:   dst.dataType = RenderDataType::Texture3D;   break;
+		case SpvDimCube: dst.dataType = RenderDataType::TextureCube; break;
 		default: throw Error_Undefined();
 	}
 }
@@ -270,7 +270,7 @@ void GenReflect_VK_EX::_genTexture(ShaderStageInfo& outInfo, const SpvReflectDes
 void GenReflect_VK_EX::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	auto& dst = outInfo.constBuffers.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
-	dst.dataType = DataType::ConstBuffer;
+	dst.dataType = RenderDataType::ConstBuffer;
 
 	auto& typeDesc = binding->type_description;
 	dst.name = StrView_c_str(typeDesc->type_name);
