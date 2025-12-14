@@ -27,7 +27,7 @@ public:
 	}
 };
 
-template <class T, class FMT_CH> requires Type_IsConvertiableToStrViewT<T>
+template <class T, class FMT_CH> requires Type_IsConvertibleToStrViewX<T>
 class FormatHandler<T, FMT_CH> {
 public:
 	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {

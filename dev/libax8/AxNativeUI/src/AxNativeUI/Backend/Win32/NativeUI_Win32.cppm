@@ -7,9 +7,10 @@ export import :NativeUIWindow_Base;
 
 export namespace ax {
 
+constexpr UINT AX_WM_USER_HasCustomAppEvent = WM_USER + 1;
+
 class NativeUI_Win32 {
 public:
-	enum { AX_WM_USER_HasCustomAppEvent = WM_USER + 1 };
 
 	static NativeUIKeyCode		 s_convertKey(WPARAM vkey);
 	static NativeUIEventModifier s_eventModifier();

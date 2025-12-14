@@ -10,8 +10,6 @@ export namespace ax {
 
 class NativeUIEventHandler_Win32 {
 public:
-	enum { AX_WM_USER_HasCustomAppEvent = WM_USER + 1 };
-
 	virtual ~NativeUIEventHandler_Win32() = default;
 
 	virtual void onUIMouseEvent(NativeUIMouseEvent& ev) {}

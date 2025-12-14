@@ -97,14 +97,14 @@ bool NativeUIApp_Win32::onRequestNativeCustomAppEvent() {
 	if (!_hiddenWindow)
 		return false;
 
-	if (!::PostMessage(_hiddenWindow, NativeUIEventHandler_Win32::AX_WM_USER_HasCustomAppEvent, 0, 0))
+	if (!::PostMessage(_hiddenWindow, AX_WM_USER_HasCustomAppEvent, 0, 0))
 		return false;
 	return true;
 }
 
 LRESULT WINAPI NativeUIApp_Win32::s_hiddenWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
-		case NativeUIEventHandler_Win32::AX_WM_USER_HasCustomAppEvent: {
+		case AX_WM_USER_HasCustomAppEvent: {
 			NativeUIApp_Win32::s_instance()->handleCustomAppEvent(false);
 		}break;
 	}

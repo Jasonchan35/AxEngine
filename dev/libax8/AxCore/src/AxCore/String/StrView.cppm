@@ -24,11 +24,13 @@ using StrView8  = StrView_<Char8 >;
 using StrView16 = StrView_<Char16>;
 using StrView32 = StrView_<Char32>;
 
-template<class T> constexpr bool Type_IsConvertiableToStrViewT	=  std::is_convertible_v<T, StrViewA>
-																|| std::is_convertible_v<T, StrViewW>
-																|| std::is_convertible_v<T, StrView8>
-																|| std::is_convertible_v<T, StrView16>
-																|| std::is_convertible_v<T, StrView32>;
+template<class T, class CH> constexpr bool Type_IsConvertibleToStrView_	= std::is_convertible_v<T, StrView_<CH>>;
+
+template<class T> constexpr bool Type_IsConvertibleToStrViewX	=  Type_IsConvertibleToStrView_<T, CharA >
+																|| Type_IsConvertibleToStrView_<T, CharW >
+																|| Type_IsConvertibleToStrView_<T, Char8 >
+																|| Type_IsConvertibleToStrView_<T, Char16>
+																|| Type_IsConvertibleToStrView_<T, Char32>;
 
 template<class CH, class T>
 struct StrView_ParseHandler {

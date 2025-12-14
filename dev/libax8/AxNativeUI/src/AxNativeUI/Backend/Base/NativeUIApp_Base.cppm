@@ -26,7 +26,7 @@ public:
 	using Time = NativeUIEventTime;
 
 	NativeUIApp_Base(const CreateDesc& desc);
-	virtual ~NativeUIApp_Base() override;
+	virtual ~NativeUIApp_Base() override = default;
 
 	virtual void	quit		(int returnCode) = 0;
 
@@ -58,11 +58,6 @@ NativeUIApp_Base::NativeUIApp_Base(const CreateDesc& desc)
 	, _desc(desc)
 	, _pendingCustomAppEvent(false)
 {
-}
-
-inline
-NativeUIApp_Base::~NativeUIApp_Base() {
- 
 }
 
 inline

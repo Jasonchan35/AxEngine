@@ -11,6 +11,9 @@ class NativeUIApp_Null : public NativeUIApp_Base {
 	AX_RTTI_INFO(NativeUIApp_Null, NativeUIApp_Base)
 public:
 	using NativeWindow = NativeUIWindow_Null;
+	using CreateDesc = NativeUIApp_CreateDesc;
+
+	NativeUIApp_Null() : Base(CreateDesc()) {}
 
 	virtual int		onRun		() override { return _returnCode; }
 	virtual	void	quit		(int returnCode) override { _returnCode = returnCode; }
