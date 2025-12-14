@@ -26,18 +26,17 @@ public:
 	using Data       = PersistString_Data<T>;
 	using Key        = String_<T, 24>;
 
-	class MTData {
-	public:
+	struct MTData {
 		Dict<Key, Data> dict;
 	};
 	Thread::SpinLockProtected<MTData> _mtData;
 
-	static This* s_instance() {
+	AX_INLINE static This* s_instance() {
 		static GlobalSingleton<This> s;
 		return s.ptr();
 	}
 
-	PersistStr lookup(StrView_<T> inStr) {
+	AX_INLINE PersistStr lookup(StrView_<T> inStr) {
 		if (!inStr) return PersistStr();
 
 		auto mt = _mtData.scopedLock();
@@ -57,7 +56,7 @@ public:
 };
 
 template<class T>
-auto PersistString_<T>::s_make(StrView_<T> s) -> PersistString_ {
+auto PersistString_<T>::s_make(StrView_<T> s) -> This {
 	return Manager::s_instance()->lookup(s);
 }
 
