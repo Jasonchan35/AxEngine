@@ -9,7 +9,7 @@ import :ResourceManager_Backend;
 namespace ax::AxRender {
 
 struct Renderer_Backend::PrivateData {
-	Array<UPtr<RenderRequest_Backend>>	renderReqests;
+	Array<UPtr<RenderRequest_Backend>>	renderRequests;
 	SPtr<Material_Backend>	commonMaterial;
 };
 
@@ -46,7 +46,7 @@ void Renderer_Backend::onCreate() {
 
 	for (Int i = 0; i < _info.renderRequestCount; i++) {
 		auto req = RenderRequest_Backend::s_new(AX_ALLOC_REQ, this, i);
-		_privateData->renderReqests.emplaceBack(std::move(req));
+		_privateData->renderRequests.emplaceBack(std::move(req));
 	}
 }
 
@@ -58,7 +58,7 @@ void Renderer_Backend::onDestroy() {
 }
 
 RenderRequest_Backend* Renderer_Backend::nextRenderRequest() {
-	auto& reqs = _privateData->renderReqests;
+	auto& reqs = _privateData->renderRequests;
 
 	if (reqs.size() <= 0) {
 		throw Error_Undefined("RenderRequest count is 0");
@@ -76,11 +76,11 @@ Material_Backend* Renderer_Backend::commonMaterial() {
 
 const Shader_Backend* Renderer_Backend::commonShader() {
 	auto& m = _privateData->commonMaterial;
-	return m ? m->shader() : nullptr;
+	return m ? m->shader_backend() : nullptr;
 }
 
 void Renderer_Backend::waitAllRenderCompleted() {
-	for (auto& req : _privateData->renderReqests) {
+	for (auto& req : _privateData->renderRequests) {
 		if (!req) { AX_ASSERT(false); continue; }
 		req->waitCompleted();
 	}
@@ -95,7 +95,7 @@ void Renderer_Backend::onFileChanged(FileDirWatcher_Result& result) {
 }
 
 RenderRequest_Backend* Renderer_Backend::getRenderRequest(Int i) {
-	return _privateData->renderReqests[i];
+	return _privateData->renderRequests[i];
 }
 
 } // namespace ax::AxRender

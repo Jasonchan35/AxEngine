@@ -18,9 +18,8 @@ public:
 	template<class OBJ>	using MemFunc		= RETURN_TYPE (OBJ::*)(ARGS...);
 
 
-	Delegate_() = default;
-	Delegate_(const Delegate_& r) { if (r._functor) r._functor->copyTo(*this); }
-	Delegate_(Delegate_ && r) noexcept { operator=(std::move(r)); }
+				Delegate_() = default;
+				Delegate_(Delegate_ && r) noexcept { operator=(std::move(r)); }
 
 	// beware lambda capture variable life cycle
 	template<class LAMBDA> requires std::is_invocable_v<LAMBDA, ARGS...>

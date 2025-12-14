@@ -14,13 +14,13 @@ class ShaderParamSpace_VK : public ShaderParamSpace_Backend {
 public:
 	ShaderParamSpace_VK(const CreateDesc& desc) : Base(desc) {}
 
-	VkDescriptorSetLayout	createDescipterSetLayout();
+	VkDescriptorSetLayout	createDescriptorSetLayout();
 
 
-	VkDescriptorSetLayout	descipterSetLayout() const { return _descipterSetLayout.handle(); }
+	VkDescriptorSetLayout	descriptorSetLayout() const { return _descriptorSetLayout.handle(); }
 
 private:
-	AX_VkDescriptorSetLayout	_descipterSetLayout;
+	AX_VkDescriptorSetLayout	_descriptorSetLayout;
 };
 
 

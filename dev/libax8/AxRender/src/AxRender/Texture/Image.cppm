@@ -29,7 +29,7 @@ public:
 		computeDataSize();
 	}
 
-	Int			pixelSizeInBytes() const { return ColorTypeInfo::s_get(colorType).kSizeInBytes; }
+	Int			pixelSizeInBytes() const { return ColorTypeInfo::s_get(colorType).sizeInBytes; }
 	Int			computeDataSize();
 };
 

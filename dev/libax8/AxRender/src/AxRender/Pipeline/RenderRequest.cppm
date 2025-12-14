@@ -53,7 +53,7 @@ public:
 
 	Texture2D* getTexture(RenderGraph_Output* v) { return nullptr; }
 
-	const Vec2i	frameSize() const { return _frameSize; }
+	Vec2i			frameSize() const { return _frameSize; }
 
 	Renderer*		renderer() { return _renderer; }
 	RenderContext*	renderContext() { return _renderContext; }
@@ -90,7 +90,7 @@ protected:
 	RenderContext*		_renderContext = nullptr;
 	RenderPass*			_currentRenderPass = nullptr;
 	Vec2i				_frameSize {0,0};
-	f64					_uptime;
+	f64					_uptime = 0;
 	CommandBuffer*		_graphCmdBuf = nullptr;
 
 	bool	_viewportIsBottomUp = false;

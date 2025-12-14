@@ -11,16 +11,16 @@ struct VertexBase {
 	using UvType     = void;
 	using NormalType = void;
 
-	static const DataType	kPosType    = DataType::None;
-	static const DataType	kColorType  = DataType::None;
-	static const DataType	kUvType     = DataType::None;
-	static const DataType	kNormalType = DataType::None;
+	static constexpr DataType	kPosType    = DataType::None;
+	static constexpr DataType	kColorType  = DataType::None;
+	static constexpr DataType	kUvType     = DataType::None;
+	static constexpr DataType	kNormalType = DataType::None;
 
-	static const u8 kColorCount		= 0;
-	static const u8 kUvCount		= 0;
-	static const u8 kNormalCount	= 0;
-	static const u8 kTangentCount	= 0;
-	static const u8 kBinormalCount	= 0;
+	static constexpr u8 kColorCount	= 0;
+	static constexpr u8 kUvCount		= 0;
+	static constexpr u8 kNormalCount	= 0;
+	static constexpr u8 kTangentCount	= 0;
+	static constexpr u8 kBinormalCount	= 0;
 
 	static void onCreateLayout(VertexLayoutDesc* desc) {}
 protected:

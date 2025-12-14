@@ -12,7 +12,7 @@ class RenderContext_VK_Base : public RenderContext_Backend {
 	AX_RTTI_INFO(RenderContext_VK_Base, RenderContext_Backend)
 public:
 	RenderContext_VK_Base(const CreateDesc& desc);
-	virtual ~RenderContext_VK_Base();
+	virtual ~RenderContext_VK_Base() override;
 
 	AX_VkSurfaceKHR&	surface() { return _surface; }
 
@@ -86,7 +86,7 @@ private:
 
 	UIEventHandler _uiEventHandler;
 
-	static const u32 kRenderTimerId = 100;
+	static constexpr u32 kRenderTimerId = 100;
 };
 
 using RenderContext_VK_Impl = RenderContext_VK_Win32;

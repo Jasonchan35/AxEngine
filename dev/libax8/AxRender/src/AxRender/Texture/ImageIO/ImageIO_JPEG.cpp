@@ -54,7 +54,7 @@ ImageIO_Reader_JPEG::~ImageIO_Reader_JPEG() {
 	jpeg_destroy_decompress(&_cinfo);
 }
 
-void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
+void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inData) {
 	_cinfo.err = jpeg_std_error(&_errMgr);
 	_errMgr.output_message = s_output_message;
 	_errMgr.error_exit = s_error_exit;
@@ -114,14 +114,14 @@ void ImageIO_Reader_JPEG::load(ImageIO::Callback callback, ByteSpan inData) {
 	auto& outInfo = ColorTypeInfo::s_get(out_color_type);
 
 	auto srcStrideInBytes = width * srcPixelSize;
-	auto dstStrideInBytes = width * outInfo.kSizeInBytes;
+	auto dstStrideInBytes = width * outInfo.sizeInBytes;
 
 	ImageIO_ReadHandler handler;
 
 	handler.desc.info.colorType		= out_color_type;
 	handler.desc.info.size			= Vec3i(width, height, 0);
 	handler.desc.info.mipLevels		= 1;
-	handler.desc.info.strideInBytes  = dstStrideInBytes;
+	handler.desc.info.strideInBytes = dstStrideInBytes;
 	handler.desc.dataSize			= handler.desc.info.computeDataSize();
 
 	handler.readPixelsFunc = [&](MutByteSpan outSpan) {

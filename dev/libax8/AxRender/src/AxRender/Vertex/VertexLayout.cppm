@@ -205,8 +205,8 @@ private:
 			dst.dataType = DataType_get<A>;
 
 		} else {
-			using A = typename std::remove_extent<ATTR>::type;
-			auto& dst = elements.emplaceBack();
+			using A      = std::remove_extent_t<ATTR>;
+			auto& dst    = elements.emplaceBack();
 			dst.semantic = semantic;
 			dst.offset   = static_cast<u16>(MemUtil::memberOffset(attr) + AX_SIZEOF(A) * index);
 			dst.dataType = DataType_get<A>;

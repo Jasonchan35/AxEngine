@@ -112,7 +112,7 @@ private:
 	static void  s_allocNotification(void* pUserData_, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope);
 	static void  s_freeNotification	(void* pUserData_, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope);
 
-	static This* s_getThis(void* userData) { return reinterpret_cast<This*>(userData); }
+	static This* s_getThis(void* userData) { return static_cast<This*>(userData); }
 
 	MemAllocator*	_allocator = nullptr;
 };

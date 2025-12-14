@@ -26,8 +26,8 @@ public:
 
 	using Callback = Delegate_<void (ImageIO_ReadHandler& handler)>;
 
-	static void loadFile(Callback callback, StrView filename, ImageFileType fileType = ImageFileType::None);
-	static void loadMem (Callback callback, ByteSpan inData,  ImageFileType fileType);
+	static void loadFile(const Callback& callback, StrView filename, ImageFileType fileType = ImageFileType::None);
+	static void loadMem (const Callback& callback, ByteSpan inData,  ImageFileType fileType);
 };
 
 } // namespace

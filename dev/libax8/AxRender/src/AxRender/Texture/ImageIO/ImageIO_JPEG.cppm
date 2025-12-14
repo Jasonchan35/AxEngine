@@ -13,7 +13,7 @@ public:
 	ImageIO_Reader_JPEG();
 	~ImageIO_Reader_JPEG();
 
-	void load(ImageIO::Callback callback, ByteSpan inData);
+	void load(const ImageIO::Callback& callback, ByteSpan inData);
 
 private:
 	static void		s_init_source(j_decompress_ptr cinfo) {}

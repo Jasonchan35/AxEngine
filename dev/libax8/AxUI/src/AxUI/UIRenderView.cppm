@@ -14,7 +14,7 @@ public:
 	void render();
 
 protected:
-	virtual void onSizeChanged(const Vec2f& pos) override;
+	virtual void onSizeChanged(const Vec2f& size) override;
 
 private:
 	UPtr<RenderContext>	_renderContext;

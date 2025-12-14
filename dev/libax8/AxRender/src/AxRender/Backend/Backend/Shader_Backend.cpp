@@ -126,7 +126,7 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 			}
 		} break;
 		
-		default: Error_Undefined();
+		default: throw Error_Undefined();
 	}
 }
 

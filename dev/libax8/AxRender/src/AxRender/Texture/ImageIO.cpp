@@ -5,7 +5,7 @@ import :ImageIO_JPEG;
 
 namespace ax::AxRender {
 
-void ImageIO::loadFile(Callback callback, StrView filename, ImageFileType fileType) {
+void ImageIO::loadFile(const Callback& callback, StrView filename, ImageFileType fileType) {
 	FileMemMap	inData(filename);
 
 	if (fileType == ImageFileType::None) {
@@ -20,7 +20,7 @@ void ImageIO::loadFile(Callback callback, StrView filename, ImageFileType fileTy
 	loadMem(callback, inData, fileType);
 }
 
-void ImageIO::loadMem(Callback callback, ByteSpan inData, ImageFileType fileType) {
+void ImageIO::loadMem(const Callback& callback, ByteSpan inData, ImageFileType fileType) {
 	switch (fileType) {
 		case ImageFileType::JPEG:	{ ImageIO_Reader_JPEG rd; rd.load(callback, inData); } break;
 		case ImageFileType::PNG:	{ ImageIO_Reader_PNG  rd; rd.load(callback, inData); } break;

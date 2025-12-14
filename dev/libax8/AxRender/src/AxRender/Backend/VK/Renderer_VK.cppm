@@ -19,15 +19,15 @@ public:
 	AX_VkPhysicalDeviceList& physicalDeviceList() { return _physicalDeviceList; }
 	AX_VkDevice& device() { return _device; }
 
-	struct DescipterSets {
+	struct DescriptorSets {
 		AX_VkDescriptorSetLayout	frameLayout;
 		AX_VkDescriptorSetLayout	renderPassLayout;
 	};
 
-	const DescipterSets&	descipterSets() { return _descipterSets; }
+	const DescriptorSets&	descriptorSets() { return _descriptorSets; }
 
 protected:
-	DescipterSets	_descipterSets;
+	DescriptorSets	_descriptorSets;
 
 	AX_Renderer_FunctionInterfaces_override(VK)
 

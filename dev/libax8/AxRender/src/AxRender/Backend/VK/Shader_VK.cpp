@@ -14,7 +14,7 @@ import :Material_VK;
 namespace ax::AxRender {
 
 
-VkDescriptorSetLayout ShaderParamSpace_VK::createDescipterSetLayout() {
+VkDescriptorSetLayout ShaderParamSpace_VK::createDescriptorSetLayout() {
 	AX_VkDescriptorSetLayoutBindings	bindings;
 
 #if AX_RENDER_BINDLESS
@@ -42,9 +42,9 @@ VkDescriptorSetLayout ShaderParamSpace_VK::createDescipterSetLayout() {
 	}
 
 	auto* renderer = Renderer_VK::s_instance();
-	_descipterSetLayout.create(renderer->device(), bindings, layoutFlags);
+	_descriptorSetLayout.create(renderer->device(), bindings, layoutFlags);
 
-	return _descipterSetLayout.handle();
+	return _descriptorSetLayout.handle();
 }
 
 ShaderPass_VK::ShaderPass_VK(const CreateDesc& desc)
@@ -60,17 +60,17 @@ ShaderPass_VK::ShaderPass_VK(const CreateDesc& desc)
 	auto addLayout = [&](const ShaderPass_VK* pass, BindSpace space) {
 		auto* block = pass->getParamSpace_<ShaderParamSpace_VK>(space);
 		if (!block) return;
-		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->descipterSetLayout();
+		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->descriptorSetLayout();
 	};
 
 	auto createLayout = [&](ShaderPass_VK* pass, BindSpace space) {
 		auto* block = pass->getParamSpace_<ShaderParamSpace_VK>(space);
 		if (!block) return;
-		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->createDescipterSetLayout();
+		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->createDescriptorSetLayout();
 	};
 
 	if (_shader->isGlobalCommonShader()) {
-		for (auto space = BindSpace::Default; space < BindSpace::_COUNT; space++) {
+		for (auto space = BindSpace::Default; space < BindSpace::_COUNT; ++space) {
 			createLayout(this, space);
 		}
 
@@ -292,7 +292,7 @@ bool ShaderPass_VK::_bindPipeline(RenderRequest_VK* req_, Cmd_DrawCall& cmd) con
 	auto* req = rttiCastCheck<RenderRequest_VK>(req_);
 	if (!req) { AX_ASSERT(false); return false; }
 
-	auto* renderPass = req->currentRenderPass();
+	auto* renderPass = req->currentRenderPass_vk();
 	if (!renderPass) { AX_ASSERT(false); return false; }
 
 	Pipeline::Key key;

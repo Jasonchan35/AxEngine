@@ -14,18 +14,16 @@ struct ColorTypeInfo_Creator : public ColorTypeInfo {
 	using Base = ColorTypeInfo;
 	
 	constexpr ColorTypeInfo_Creator() {
-		Base::kSizeInBytes		= AX_SIZEOF(T);
-
-		Base::kColorModel		= T::kColorModel;
-		Base::kColorElem		= T::kColorElem;
-		Base::kColorType		= T::kColorType;
-
-		Base::kElementCount		= T::kElementCount;
-		Base::kAlphaBits		= T::kAlphaBits;
+		Base::sizeInBytes	= AX_SIZEOF(T);
+		Base::colorModel	= T::kColorModel;
+		Base::colorElem		= T::kColorElem;
+		Base::colorType		= T::kColorType;
+		Base::elementCount	= T::kElementCount;
+		Base::alphaBits		= T::kAlphaBits;
 
 		if constexpr (T::kColorModel == ColorModel::DXT) {
-			Base::kCompressedBlockSize	= T::kCompressedBlockSize;
-			Base::kUncompressedType		= T::kUncompressedType;
+			Base::compressedBlockSize	= T::kCompressedBlockSize;
+			Base::uncompressedType		= T::kUncompressedType;
 		}
 
 		static_assert(T::kColorType == ColorType_make(T::kColorModel, T::kColorElem));

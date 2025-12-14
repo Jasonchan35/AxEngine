@@ -125,10 +125,10 @@ Material_Backend::Material_Backend(const CreateDesc& desc)
 void Material_Backend::logWarningOnce(StrView msg) {
 	if (!_bShowWarning) return;
 	_bShowWarning = false;
-	AX_LOG_WARNING("Materai: {}\n shader={}", msg, shaderAssetPath());
+	AX_LOG_WARNING("Material: {}\n shader={}", msg, shaderAssetPath());
 }
 
-void Material_Backend::setShader(Shader* shader_) {
+void Material_Backend::setShader_backend(Shader* shader_) {
 	auto* shader = rttiCastCheck<Shader_Backend>(shader_);
 
 	if (_shader == shader) return;

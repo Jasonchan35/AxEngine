@@ -13,11 +13,11 @@ SPtr<Material> Material::s_new(const MemAllocRequest& req, StrView shaderAssetPa
 }
 
 void Material::setShader(Shader* shader) {
-	rttiCastCheck<Material_Backend>(this)->setShader(shader);
+	rttiCastCheck<Material_Backend>(this)->setShader_backend(shader);
 }
 
 Shader* Material::shader() {
-	return rttiCastCheck<Material_Backend>(this)->shader();
+	return rttiCastCheck<Material_Backend>(this)->shader_backend();
 }
 
 Material::Material(const CreateDesc& desc) {

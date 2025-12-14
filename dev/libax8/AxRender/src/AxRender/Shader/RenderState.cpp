@@ -5,6 +5,7 @@ namespace ax::AxRender {
 RenderState::Blend::Blend() {
 	rgb.set(  BlendOp::Disable, BlendFactor::One, BlendFactor::OneMinusSrcAlpha);
 	alpha.set(BlendOp::Disable, BlendFactor::One, BlendFactor::OneMinusSrcAlpha);
+	constColor = ColorRGBAf::kWhite();
 }
 
 } // namespace

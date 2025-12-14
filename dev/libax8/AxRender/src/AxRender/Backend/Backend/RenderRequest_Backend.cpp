@@ -42,7 +42,7 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_frameSize = backBufferRenderPass->frameSize();
 	_backBufferRenderPass = backBufferRenderPass;
 
-	auto* renderer_ = renderer();
+	auto* renderer_ = renderer_backend();
 	if (!renderer_) throw Error_Undefined();
 
 	_uptime = renderer_->getCurrentUptime().seconds_f64();
@@ -119,7 +119,7 @@ void RenderRequest_Backend::onDrawcall(Cmd_DrawCall& cmd) {
 }
 
 void RenderRequest_Backend::frameEnd() {
-	renderContext()->imgui.onEndRender();
+	renderContext_backend()->imgui.onEndRender();
 
 	ResourceManager_Backend::s_instance()->onFrameEnd(this);
 
@@ -131,7 +131,7 @@ void RenderRequest_Backend::frameEnd() {
 }
 
 void RenderRequest_Backend::onDrawUI() {
-	renderContext()->imgui.onDrawUI(this);
+	renderContext_backend()->imgui.onDrawUI(this);
 }
 
 bool RenderRequest_Backend::InlineUpload::copyDataToGpuBuffer(GpuBuffer_Backend* dst, ByteSpan data, Int dstOffset) {

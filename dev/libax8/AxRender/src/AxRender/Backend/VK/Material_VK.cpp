@@ -123,7 +123,7 @@ void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const Sh
 	}
 #endif
 
-	auto* renderer = req->renderer();
+	auto* renderer = req->renderer_vk();
 	AX_vkUpdateDescriptorSets(renderer->device(), _updateWriteDescriptorSets, {});
 }
 
@@ -154,12 +154,12 @@ void MaterialParamSpace_VK::_nextDescriptorSet(RenderRequest_VK* req, const Shad
 		poolFlags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 #endif
 
-		auto* renderer = req->renderer();
+		auto* renderer = req->renderer_vk();
 		auto& dev = renderer->device();
 		_descriptorPool.create(dev, poolSizes, renderRequestCount, poolFlags);
 
 		for (Int i = 0; i < renderRequestCount; i++) {
-			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->descipterSetLayout());
+			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->descriptorSetLayout());
 //#if AX_DEBUG_NAME
 //			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, bindSpace()));
 //#endif

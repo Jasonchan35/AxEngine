@@ -54,9 +54,9 @@ void Renderer::destroy() {
 
 RendererInfo::RendererInfo() {
 #if _DEBUG
-	const bool isDebug = true;
+	constexpr bool isDebug = true;
 #else
-	const bool isDebug = false;
+	constexpr bool isDebug = false;
 #endif
 
 #if AX_OS_WINDOWS

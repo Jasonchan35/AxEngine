@@ -34,10 +34,9 @@ export namespace ax::AxRender {
 
 */
 
+class MaterialPass_Backend;
 class Cmd_DrawCall;
 class Material_Backend;
-class MaterialPass_Backend;
-
 
 class MaterialParamSpace_Backend : public MaterialParamSpace {
 	AX_RTTI_INFO(MaterialParamSpace_Backend, MaterialParamSpace)
@@ -144,7 +143,6 @@ public:
 
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
-	bool setParam(NameId name, Texture3D*	v);
 
 	bool setParam(NameId name, StorageBuffer* v);
 
@@ -160,14 +158,14 @@ public:
 	
 	BindSpace	bindSpace() const { return _shaderParamSpace->bindSpace(); }
 
-	const ShaderParamSpace_Backend* shaderParamSpace() const { return _shaderParamSpace.ptr(); }
+	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
 protected:
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
 	template<class T> T*	_findParam(IArray<T>& arr, NameId name);
 	template<class V> bool	_setVariable(NameId name, const V& v);
-	template<class V> bool	_setTextureParam(NameId name, V* v);
+//	template<class V> bool	_setTextureParam(NameId name, V* v);
 
 	Array<ConstBuffer,        1>	_constBuffers;
 	Array<StorageBufferParam, 0>	_storageBufferParams;
@@ -276,8 +274,8 @@ public:
 	static SPtr<This> s_new(const MemAllocRequest& req, Shader* shader = nullptr);
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView shaderAssetPath);
 
-	void setShader(Shader* shader);
-	Shader_Backend* shader() { return _shader; }
+	void setShader_backend(Shader* shader);
+	Shader_Backend* shader_backend() { return _shader; }
 
 	template<class V> AX_INLINE
 	bool setParamSpaceParam(BindSpace space, NameId name, V& v);
@@ -314,7 +312,7 @@ protected:
 AX_INLINE
 const Shader_Backend* MaterialPass_Backend::shader() const {
 	auto* m = _material;
-	return m ? m->shader() : nullptr;
+	return m ? m->shader_backend() : nullptr;
 }
 
 AX_INLINE

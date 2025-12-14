@@ -191,54 +191,7 @@ struct DDS_HEADER_DXT10
 
 
 
-void ImageIO_Reader_DDS::_readHeader(BinIO_Reader& de, DDS_HEADER& hdr) {
-	de.io_fixed_le(hdr.dwSize);
-	de.io_fixed_le(hdr.dwHeaderFlags);
-	de.io_fixed_le(hdr.dwHeight);
-	de.io_fixed_le(hdr.dwWidth);
-	de.io_fixed_le(hdr.dwPitchOrLinearSize);
-	de.io_fixed_le(hdr.dwDepth);
-	de.io_fixed_le(hdr.dwMipMapCount);
-	de.advance(sizeof(hdr.dwReserved1[0]) * 11);
-
-	de.io_fixed_le(hdr.ddspf.dwSize);
-	de.io_fixed_le(hdr.ddspf.dwFlags);
-	de.io_fixed_le(hdr.ddspf.dwFourCC);
-	de.io_fixed_le(hdr.ddspf.dwRGBBitCount);
-	de.io_fixed_le(hdr.ddspf.dwRBitMask);
-	de.io_fixed_le(hdr.ddspf.dwGBitMask);
-	de.io_fixed_le(hdr.ddspf.dwBBitMask);
-	de.io_fixed_le(hdr.ddspf.dwABitMask);
-
-	de.io_fixed_le(hdr.dwSurfaceFlags);
-	de.io_fixed_le(hdr.dwCubemapFlags);
-	de.advance(sizeof(hdr.dwReserved2[0]) * 3);
-
-	if (hdr.dwSize != sizeof(hdr))
-		throw Error_Undefined();
-
-	if (hdr.ddspf.dwSize != sizeof(DDS_PIXELFORMAT))
-		throw Error_Undefined();
-
-	if (!(hdr.ddspf.dwFlags & DDS_FOURCC))
-		throw Error_Undefined();
-}
-
-void ImageIO_Reader_DDS::_readHeader10(BinIO_Reader& de, DDS_HEADER_DXT10& hdr10) {
-	uint32_t tmp32;
-
-	de.io_fixed_le(tmp32);
-	hdr10.dxgiFormat = static_cast<DXGI_FORMAT>(tmp32);
-
-	de.io_fixed_le(tmp32);
-	hdr10.resourceDimension = static_cast<D3D10_RESOURCE_DIMENSION>(tmp32);
-
-	de.io_fixed_le(hdr10.miscFlag);
-	de.io_fixed_le(hdr10.arraySize);
-	de.io_fixed_le(hdr10.miscFlags2);
-}
-
-void ImageIO_Reader_DDS::load(ImageIO::Callback callback, ByteSpan inData) {
+void ImageIO_Reader_DDS::load(const ImageIO::Callback& callback, ByteSpan inData) {
 	BinIO_Reader de(inData);
 
 	uint32_t sign;
@@ -302,16 +255,16 @@ void ImageIO_Reader_DDS::load(ImageIO::Callback callback, ByteSpan inData) {
 		}
 	}
 
-	Int blockSize = ColorTypeInfo::s_get(colorType).kCompressedBlockSize;
+	Int blockSize     = ColorTypeInfo::s_get(colorType).compressedBlockSize;
 	Int strideInBytes = Math::max(1U, ((hdr.dwWidth + 3)/4)) * blockSize;
 
 	ImageIO_ReadHandler handler;
 
-	handler.desc.info.colorType		= colorType;
-	handler.desc.info.size			= Vec3i(hdr.dwWidth, hdr.dwHeight, 0);
-	handler.desc.info.mipLevels		= mipLevels;
-	handler.desc.info.strideInBytes	= strideInBytes;
-	handler.desc.dataSize			= de.remain();
+	handler.desc.info.colorType     = colorType;
+	handler.desc.info.size          = Vec3i(hdr.dwWidth, hdr.dwHeight, 0);
+	handler.desc.info.mipLevels     = mipLevels;
+	handler.desc.info.strideInBytes = strideInBytes;
+	handler.desc.dataSize           = de.remain();
 
 	auto srcSpan = ByteSpan(de.cur(), de.remain());
 
@@ -320,6 +273,53 @@ void ImageIO_Reader_DDS::load(ImageIO::Callback callback, ByteSpan inData) {
 	};
 
 	callback.invoke(handler);
+}
+
+void ImageIO_Reader_DDS::_readHeader(BinIO_Reader& de, DDS_HEADER& hdr) {
+	de.io_fixed_le(hdr.dwSize);
+	de.io_fixed_le(hdr.dwHeaderFlags);
+	de.io_fixed_le(hdr.dwHeight);
+	de.io_fixed_le(hdr.dwWidth);
+	de.io_fixed_le(hdr.dwPitchOrLinearSize);
+	de.io_fixed_le(hdr.dwDepth);
+	de.io_fixed_le(hdr.dwMipMapCount);
+	de.advance(sizeof(hdr.dwReserved1[0]) * 11);
+
+	de.io_fixed_le(hdr.ddspf.dwSize);
+	de.io_fixed_le(hdr.ddspf.dwFlags);
+	de.io_fixed_le(hdr.ddspf.dwFourCC);
+	de.io_fixed_le(hdr.ddspf.dwRGBBitCount);
+	de.io_fixed_le(hdr.ddspf.dwRBitMask);
+	de.io_fixed_le(hdr.ddspf.dwGBitMask);
+	de.io_fixed_le(hdr.ddspf.dwBBitMask);
+	de.io_fixed_le(hdr.ddspf.dwABitMask);
+
+	de.io_fixed_le(hdr.dwSurfaceFlags);
+	de.io_fixed_le(hdr.dwCubemapFlags);
+	de.advance(sizeof(hdr.dwReserved2[0]) * 3);
+
+	if (hdr.dwSize != sizeof(hdr))
+		throw Error_Undefined();
+
+	if (hdr.ddspf.dwSize != sizeof(DDS_PIXELFORMAT))
+		throw Error_Undefined();
+
+	if (!(hdr.ddspf.dwFlags & DDS_FOURCC))
+		throw Error_Undefined();
+}
+
+void ImageIO_Reader_DDS::_readHeader10(BinIO_Reader& de, DDS_HEADER_DXT10& hdr10) {
+	uint32_t tmp32;
+
+	de.io_fixed_le(tmp32);
+	hdr10.dxgiFormat = static_cast<DXGI_FORMAT>(tmp32);
+
+	de.io_fixed_le(tmp32);
+	hdr10.resourceDimension = static_cast<D3D10_RESOURCE_DIMENSION>(tmp32);
+
+	de.io_fixed_le(hdr10.miscFlag);
+	de.io_fixed_le(hdr10.arraySize);
+	de.io_fixed_le(hdr10.miscFlags2);
 }
 
 } // namespace

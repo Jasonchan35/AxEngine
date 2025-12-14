@@ -182,7 +182,7 @@ bool RenderGraph::_rebuild() {
 		pass->_buildData._dependedCount = 0;
 	}
 
-// search depended passes start from output pass
+// search depended on passes start from output pass
 	pending.emplaceBack(&_backBufferPass);
 
 	while (pending.size()) {

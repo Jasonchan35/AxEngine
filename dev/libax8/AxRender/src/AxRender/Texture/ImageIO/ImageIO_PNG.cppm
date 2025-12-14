@@ -11,7 +11,7 @@ class ImageIO_Reader_PNG : public NonCopyable {
 public:
 	~ImageIO_Reader_PNG();
 
-	void load(ImageIO::Callback callback, ByteSpan inData);
+	void load(const ImageIO::Callback& callback, ByteSpan inData);
 
 private:
 	static	void _s_onRead(png_structp png, png_bytep dest, png_size_t len) noexcept;

@@ -7,7 +7,7 @@ export namespace ax {
 struct AxRenderConfig {
 	static constexpr Int kMaxBackBufferCount = 3;
 	static constexpr Int kMaxRenderRequestCount = 8;
-	static constexpr bool bindless = bool(AX_RENDER_BINDLESS);
+	static constexpr bool bindless = static_cast<bool>(AX_RENDER_BINDLESS);
 };
 
 } // namespace

@@ -189,7 +189,7 @@ bool AX_VkSurfaceKHR::findQueueFamilySupportPresent(AX_VkQueueFamilyIndex& outIn
 	uint32_t n = AX_VkUtil::castUInt32(_dev->physicalDevice()->queueFamilyProps().size());
 
 	for (uint32_t i = 0; i < n; i++) {
-		auto index = AX_VkQueueFamilyIndex(i);
+		auto index = static_cast<AX_VkQueueFamilyIndex>(i);
 		if (checkQueueFamilySupportPresent(index)) {
 			outIndex = index;
 			return true;
@@ -227,7 +227,7 @@ bool AX_VkPhysicalDevice::findQueueFamilyIndex(AX_VkQueueFamilyIndex& outIndex, 
 	u32 i = 0;
 	for (auto& p : _queueFamilyProps) {
 		if (p.queueFlags & hasFlags) {
-			outIndex = AX_VkQueueFamilyIndex(i);
+			outIndex = static_cast<AX_VkQueueFamilyIndex>(i);
 			return true;
 		}
 		i++;
@@ -247,9 +247,9 @@ bool AX_VkPhysicalDevice::findComputeQueueFamilyIndex(AX_VkQueueFamilyIndex& out
 		if (p.queueFlags & VK_QUEUE_COMPUTE_BIT) {
 
 			if (p.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-				graphQueueCanCompute = AX_VkQueueFamilyIndex(i);
+				graphQueueCanCompute = static_cast<AX_VkQueueFamilyIndex>(i);
 			} else {
-				outIndex = AX_VkQueueFamilyIndex(i);
+				outIndex = static_cast<AX_VkQueueFamilyIndex>(i);
 				return true; // pick non-graph compute queue
 			}
 		}
@@ -272,7 +272,7 @@ AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 		if ((typeBits & 1) == 1) {
 			// Type is available, does it match user properties?
 			if ((_memProps.memoryTypes[i].propertyFlags & requireMask) == requireMask) {
-				outIndex = AX_VkQueueFamilyIndex(i);
+				outIndex = static_cast<AX_VkQueueFamilyIndex>(i);
 				return true;
 			}
 		}
@@ -316,10 +316,9 @@ void AX_VkPhysicalDevice::create(Int index, VkInstance inst, VkPhysicalDevice ph
 		}
 	}
 
-	VkResult err;
 	{
 		uint32_t count = 0;
-		err = vkEnumerateDeviceExtensionProperties(_phyDev, nullptr, &count, nullptr);
+		VkResult err   = vkEnumerateDeviceExtensionProperties(_phyDev, nullptr, &count, nullptr);
 		AX_VkUtil::throwIfError(err);
 
 		_extensionProps.resize(count);
@@ -502,8 +501,7 @@ void AX_VkDevice::_setObjectDebugTag(VkObjectType objectType, void* objectHandle
 void AX_VkInstance::create(AX_VkInstanceCreateInfo& info) {
 	destroy();
 
-	VkResult err;
-	err = vkEnumerateInstanceVersion(&info.appInfo.apiVersion);
+	VkResult err = vkEnumerateInstanceVersion(&info.appInfo.apiVersion);
 	AX_VkUtil::throwIfError(err);
 
 	info.enabledLayerCount			= AX_VkUtil::castUInt32(info._enabledLayerNames.size());
@@ -687,7 +685,7 @@ AX_VkTimelineSemaphore& AX_VkTimelineSemaphore::create(AX_VkDevice& dev, u64 ini
 	return *this;
 }
 
-bool AX_VkTimelineSemaphore::wait(u64 value, Nanoseconds timeout) {
+bool AX_VkTimelineSemaphore::wait(u64 value, const Nanoseconds& timeout) {
 	VkSemaphoreWaitInfo info = {};
 	info.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
 	info.semaphoreCount		 = 1;
@@ -1066,10 +1064,8 @@ void AX_VkSwapchainKHR::create(
 void AX_VkSwapchainKHR::getImages(IArray<VkImage>& outImages) {
 	outImages.clear();
 
-	VkResult err;
-
 	uint32_t count = 0;
-	err = vkGetSwapchainImagesKHR(*_dev, _handle, &count, nullptr);
+	VkResult err   = vkGetSwapchainImagesKHR(*_dev, _handle, &count, nullptr);
 	AX_VkUtil::throwIfError(err);
 
 	outImages.resize(count);
@@ -1175,7 +1171,7 @@ MutByteSpan AX_VkDeviceMemory::mapMemory(IntRange range, VkMemoryMapFlags flags)
 
 	auto err = vkMapMemory(*_dev, _handle, offset, size, flags, &outPtr);
 	AX_VkUtil::throwIfError(err);
-	return MutByteSpan(reinterpret_cast<Byte*>(outPtr), SafeCast(size));
+	return MutByteSpan(static_cast<Byte*>(outPtr), SafeCast(size));
 }
 
 void AX_VkDeviceMemory::unmapMemory() {

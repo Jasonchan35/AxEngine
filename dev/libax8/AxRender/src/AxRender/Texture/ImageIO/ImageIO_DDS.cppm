@@ -7,7 +7,7 @@ export namespace ax::AxRender {
 
 class ImageIO_Reader_DDS : public NonCopyable {
 public:
-	void load(ImageIO::Callback callback, ByteSpan inData);
+	void load(const ImageIO::Callback& callback, ByteSpan inData);
 
 private:
 	void _readHeader	(BinIO_Reader& de, struct DDS_HEADER& hdr);

@@ -29,8 +29,8 @@ void RenderContext_VK_Base::onPostCreate(const CreateDesc& desc) {
 	_surface.getPresentQueue(_presentQueue, 0);
 
 #if AX_DEBUG_NAME
-	_graphQueue.setDebugName("RencerContext-GraphQueue");
-	_presentQueue.setDebugName("RencerContext-PresentQueue");
+	_graphQueue.setDebugName("RenderContext-GraphQueue");
+	_presentQueue.setDebugName("RenderContext-PresentQueue");
 #endif
 
 	_createSwapChain();

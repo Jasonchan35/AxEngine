@@ -9,13 +9,13 @@ namespace ax::AxRender {
 DefaultRenderGraph::DefaultRenderGraph() {
 	backBufferPass().color0.setClearColor(Color4f::kDarkBlue());
 
-	if (0) {
+	if constexpr (false) {
 		auto shader = Shader::s_new(AX_ALLOC_REQ, "ImportedAssets/Shaders/core/test.axShader");
 		_testMaterial = Material::s_new(AX_ALLOC_REQ);
 		_testMaterial->setShader(shader);
 	}
 
-	if (1) {
+	if constexpr (true) {
 //		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvCheckerPalette.png");
 //		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvChecker_BC7.dds");
 		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvChecker.jpg");
@@ -28,7 +28,7 @@ DefaultRenderGraph::DefaultRenderGraph() {
 
 	}
 
-	if (1) {
+	if constexpr (true) {
 		auto shader = Shader::s_new(AX_ALLOC_REQ, "ImportedAssets/Shaders/core/testMesh.axShader");
 		_testMeshMaterial = Material::s_new(AX_ALLOC_REQ);
 		_testMeshMaterial->setShader(shader);
@@ -46,7 +46,7 @@ DefaultRenderGraph::DefaultRenderGraph() {
 	}
 
 
-	if (1) {
+	if constexpr (true) {
 		using V = Vertex_PosUv;
 		Array<V, 4>	vertices;
 		{ auto& v = vertices.emplaceBack(); v.pos.set(-0.5f, -0.5f, 0); v.uv[0].set(0, 0); }
@@ -62,7 +62,7 @@ DefaultRenderGraph::DefaultRenderGraph() {
 }
 
 void DefaultRenderGraph::onUpdate(RenderRequest* req) {
-	ColorBufferDesc colorDesc{ColorType::RGBAf, BufferLoadOp::Clear, Color4f(0, 0.5f, 0, 1)};
+//	ColorBufferDesc colorDesc{ColorType::RGBAf, BufferLoadOp::Clear, Color4f(0, 0.5f, 0, 1)};
 }
 
 void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {

@@ -34,7 +34,7 @@ bool ImageIO_Reader_PNG::_error_longjmp_restore_point() {
 	AX_VC_WARNING_POP()
 }
 
-void ImageIO_Reader_PNG::load(ImageIO::Callback callback, ByteSpan inData) {
+void ImageIO_Reader_PNG::load(const ImageIO::Callback& callback, ByteSpan inData) {
 	_inData = inData;
 	_readPtr = inData.data();
 	AX_ASSERT(!_png);
@@ -127,7 +127,7 @@ void ImageIO_Reader_PNG::load(ImageIO::Callback callback, ByteSpan inData) {
 	Int width  = SafeCast(in_width);
 	Int height = SafeCast(in_height);
 
-	Int pixelSize = ColorTypeInfo::s_get(out_color_type).kSizeInBytes;
+	Int pixelSize = ColorTypeInfo::s_get(out_color_type).sizeInBytes;
 	Int strideInBytes = in_width * pixelSize;
 
 	ImageIO_ReadHandler handler;
@@ -183,7 +183,7 @@ AX_GCC_WARNING_POP()
 
 void ImageIO_Reader_PNG::_setReadFilter(ColorType out_color_type, Int in_color_type, Int in_bit, bool in_palette_has_alpha) {
 	auto& outColorTypeInfo = ColorTypeInfo::s_get(out_color_type);
-	auto elementType = outColorTypeInfo.kColorElem;
+	auto elementType = outColorTypeInfo.colorElem;
 
 	// 8 <-> 16 bit
 	switch (elementType) {
@@ -215,7 +215,7 @@ void ImageIO_Reader_PNG::_setReadFilter(ColorType out_color_type, Int in_color_t
 	}
 
 // alpha channel
-	if (outColorTypeInfo.kAlphaBits > 0) {
+	if (outColorTypeInfo.alphaBits > 0) {
 		// add alpha channel if missing
 		if (in_color_type & PNG_COLOR_MASK_PALETTE) {
 			if (!in_palette_has_alpha) {

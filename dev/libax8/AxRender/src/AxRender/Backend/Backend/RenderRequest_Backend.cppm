@@ -40,8 +40,8 @@ public:
 
 	RenderPass_Backend*	backBufferRenderPass()	{ return _backBufferRenderPass; }
 
-	class Renderer_Backend* renderer() { return rttiCastCheck<Renderer_Backend>(_renderer); }
-	class RenderContext_Backend* renderContext() { return rttiCastCheck<RenderContext_Backend>(_renderContext); }
+	class Renderer_Backend* renderer_backend() { return rttiCastCheck<Renderer_Backend>(_renderer); }
+	class RenderContext_Backend* renderContext_backend() { return rttiCastCheck<RenderContext_Backend>(_renderContext); }
 
 //	CommandBuffer&	cmdBuf() { return *_cmdBuf; }
 

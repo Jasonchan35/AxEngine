@@ -60,7 +60,6 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 		auto renderRequestCount = renderer->renderRequestCount();
 		
 		for (Int i = 1; i < renderRequestCount; i++) {
-			req->index();
 			auto otherReqIndex = (i + req->index()) % renderRequestCount;
 			auto* otherReq = rttiCastCheck<RenderRequest_VK>(renderer->getRenderRequest(otherReqIndex));
 			if (!otherReq) { AX_ASSERT(false); continue; }
@@ -85,7 +84,8 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 
 				if (slotId == lastSlotId + 1 && _temp.copySets.size() > 0) {
 					// The id is continuous, just count + 1
-					_temp.copySets.back().descriptorCount++;
+					auto &c = _temp.copySets.back();
+					++c.descriptorCount;
 				} else {
 					auto& ds = _temp.copySets.emplaceBack();
 					ds.sType		   = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;

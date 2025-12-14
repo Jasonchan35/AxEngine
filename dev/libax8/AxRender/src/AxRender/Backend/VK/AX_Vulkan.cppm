@@ -7,6 +7,7 @@ export import :AX_VkUtil;
 
 export namespace ax::AxRender {
 
+class AX_VkInstance;
 enum class AX_VkQueueFamilyIndex : u32 { Invalid = UINT32_MAX };
 
 class AX_VkExtProcList : public NonCopyable {
@@ -220,7 +221,7 @@ public:
 		Span<VkPipelineStageFlags>	dstStageFlags() const { return _dstStageFlags; }
 
 	private:
-		static const Int N = 16;
+		static constexpr Int N = 16;
 		Array<VkSemaphore,			N>	_semaphores;
 		Array<VkPipelineStageFlags, N>	_dstStageFlags;
 	};
@@ -363,7 +364,7 @@ public:
 	void destroy();
 
 	void signal(u64 value);
-	bool wait(u64 value, Nanoseconds timeout = Nanoseconds::kMax());
+	bool wait(u64 value, const Nanoseconds& timeout = Nanoseconds::kMax());
 
 #if AX_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
@@ -579,7 +580,7 @@ public:
 	~AX_VkBuffer() { destroy(); }
 
 	AX_VkBuffer() = default;
-	AX_VkBuffer(AX_VkBuffer && r);
+	AX_VkBuffer(AX_VkBuffer && r) noexcept;
 
 	void destroy();
 	void create(AX_VkDevice& dev, VkDeviceSize bufferSize, VkBufferUsageFlags usage);
@@ -702,7 +703,7 @@ public:
 	~AX_VkDescriptorSetLayout() { destroy(); }
 
 	AX_VkDescriptorSetLayout() = default;
-	AX_VkDescriptorSetLayout(AX_VkDescriptorSetLayout&& r);
+	AX_VkDescriptorSetLayout(AX_VkDescriptorSetLayout&& r) noexcept;
 
 	void destroy();
 	void create(AX_VkDevice& dev, 

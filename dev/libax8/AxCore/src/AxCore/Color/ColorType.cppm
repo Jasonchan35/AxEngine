@@ -194,16 +194,16 @@ using ColorDXT_BC7  = ColorDXT_<ColorElem_DXT_BC7 >;
 
 // Info for run-time
 struct ColorTypeInfo {
-	ColorModel kColorModel			= ColorModel::None;
-	ColorElem  kColorElem			= ColorElem::None;
-	ColorType  kColorType			= ColorType::None;
-	Int		   kElementCount		= 0;
-	Int		   kAlphaBits			= 0;
-	Int		   kSizeInBytes			= 0;
-	Int		   kCompressedBlockSize	= 0;
-	ColorType  kUncompressedType	= ColorType::None;
+	ColorModel colorModel			= ColorModel::None;
+	ColorElem  colorElem			= ColorElem::None;
+	ColorType  colorType			= ColorType::None;
+	Int		   elementCount			= 0;
+	Int		   alphaBits			= 0;
+	Int		   sizeInBytes			= 0;
+	Int		   compressedBlockSize	= 0;
+	ColorType  uncompressedType	= ColorType::None;
 
-	explicit operator bool() const { return kColorType != ColorType::None; }
+	explicit operator bool() const { return colorType != ColorType::None; }
 
 	static const ColorTypeInfo&	s_get(ColorType t);
 };

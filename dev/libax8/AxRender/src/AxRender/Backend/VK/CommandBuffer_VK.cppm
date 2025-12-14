@@ -33,7 +33,8 @@ public:
 	void resetAndReleaseResource() {
 		_cmdBuf.resetAndReleaseResource();
 	}
-
+	
+protected:
 	AX_VkCommandPool	_pool;
 	AX_VkCommandBuffer	_cmdBuf;
 };
