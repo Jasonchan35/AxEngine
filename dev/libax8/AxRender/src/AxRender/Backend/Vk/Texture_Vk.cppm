@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:Texture_VK;
+export module AxRender:Texture_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;

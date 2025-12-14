@@ -15,8 +15,8 @@ public:
 	Int			backBufferCount = 3;
 	bool		vsync = true;
 
-	RenderColorBufferDesc	colorBuffer;
-	RenderDepthBufferDesc	depthBuffer;
+	RenderTargetColorBufferDesc	colorBuffer;
+	RenderTargetDepthBufferDesc	depthBuffer;
 };
 
 class RenderContext : public RttiObject {
@@ -40,8 +40,8 @@ public:
 
 	NativeUIWindow*	window	()		{ return _window; }
 
-	RenderColorBuffer*	backColorBuffer(Int i);
-	RenderDepthBuffer*	backDepthBuffer() { return _depthBuf.ptr(); }
+	RenderTargetColorBuffer*	backColorBuffer(Int i);
+	RenderTargetDepthBuffer*	backDepthBuffer() { return _depthBuf.ptr(); }
 
 	void setRenderGraph(RenderGraph* graph) { _renderGraph = graph; }
 
@@ -60,8 +60,8 @@ friend class Renderer;
 friend class RenderRequest;
 protected:
 	struct BackBuffer : public NonCopyable {
-		SPtr<RenderColorBuffer>	_colorBuf;
-		SPtr<RenderPass>		_renderPass;
+		SPtr<RenderTargetColorBuffer>	_colorBuf;
+		SPtr<RenderPass>				_renderPass;
 	};
 	virtual BackBuffer*	onGetBackBuffer(Int i) = 0;
 
@@ -83,13 +83,13 @@ protected:
 	bool		_vsync = true;
 	bool		_viewportIsBottomUp = false;
 
-	RenderColorBufferDesc	_colorBufferDesc;
-	RenderDepthBufferDesc	_depthBufferDesc;
+	RenderTargetColorBufferDesc	_colorBufferDesc;
+	RenderTargetDepthBufferDesc	_depthBufferDesc;
 
 	Vec2i			_frameSize {0,0};
 
-	SPtr<RenderDepthBuffer>		_depthBuf;
-	SPtr<RenderGraph>			_renderGraph;
+	SPtr<RenderTargetDepthBuffer>	_depthBuf;
+	SPtr<RenderGraph>				_renderGraph;
 };
 
 } // namespace

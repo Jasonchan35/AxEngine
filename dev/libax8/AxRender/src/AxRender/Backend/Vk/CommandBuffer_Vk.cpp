@@ -2,11 +2,11 @@
 
 #if AX_RENDERER_VK
 
-import :CommandBuffer_VK;
-import :RenderContext_VK;
-import :GpuBuffer_VK;
+import :CommandBuffer_Vk;
+import :RenderContext_Vk;
+import :GpuBuffer_Vk;
 import :StockObjects;
-import :RenderPass_VK;
+import :RenderPass_Vk;
 
 namespace ax /*::AxRender*/ {
 

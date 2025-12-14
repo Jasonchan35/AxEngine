@@ -3,7 +3,11 @@
 import :Renderer_Null;
 
 #if AX_RENDERER_VK
-	import :Renderer_VK;
+	import :Renderer_Vk;
+#endif
+
+#if AX_RENDERER_DX12
+	import :Renderer_Dx12;
 #endif
 
 namespace ax /*::AxRender*/ {

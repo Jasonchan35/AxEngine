@@ -2,11 +2,11 @@ module AxRender;
 
 #if AX_RENDERER_VK
 
-import :Texture_VK;
-import :RenderContext_VK;
-import :RenderRequest_VK;
+import :Texture_Vk;
+import :RenderContext_Vk;
+import :RenderRequest_Vk;
 import :ImageIO;
-import :GpuBuffer_VK;
+import :GpuBuffer_Vk;
 
 namespace ax /*::AxRender*/ {
 

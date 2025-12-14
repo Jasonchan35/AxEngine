@@ -243,7 +243,7 @@ private:
 	struct MData : public NonCopyable {
 		Dict<VertexLayoutDesc, VertexLayout>	table;
 	};
-	Thread::LockProtected<Thread::Mutex, MData>	_md;
+	LockProtected<Mutex, MData>	_md;
 };
 
 

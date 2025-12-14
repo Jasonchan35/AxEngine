@@ -1,11 +1,11 @@
 module;
 
-export module AxRender:Material_VK;
+export module AxRender:Material_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;
 export import :Material_Backend;
-export import :Shader_VK;
+export import :Shader_Vk;
 
 
 export namespace ax /*::AxRender*/ {

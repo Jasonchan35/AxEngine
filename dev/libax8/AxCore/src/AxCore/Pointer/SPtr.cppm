@@ -21,13 +21,13 @@ export namespace ax {
 template<class T> class SPtr;
 
 struct SPtr_Config_ThreadSafe {
-	using RefCountType = Thread::AtomicInt;
-	using LockType     = Thread::SpinLock;
+	using RefCountType = AtomicInt;
+	using LockType     = SpinLock;
 };
 
 struct SPtr_Config_NonThreadSafe {
 	using RefCountType = Int;
-	using LockType     = Thread::NullSpinLock;
+	using LockType     = NullSpinLock;
 };
 
 class SPtr_ReferenceableBase {
@@ -62,7 +62,7 @@ struct WPtrBlock_ : public SPtr_Referenceable_<CONFIG> {
 	struct Data {
 		SPtr_Referenceable* obj = nullptr;
 	};
-	Thread::LockProtected<LockType, Data> data;
+	LockProtected<LockType, Data> data;
 };
 
 template<class CONFIG>

@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:RenderPass_VK;
+export module AxRender:RenderPass_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;

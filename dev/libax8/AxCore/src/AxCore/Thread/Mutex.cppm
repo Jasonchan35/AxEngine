@@ -6,7 +6,7 @@ import AxCore.BasicType;
 import AxCore.ScopedLock;
 import AxCore.LockProtected;
 
-export namespace ax::Thread {
+export namespace ax {
 
 //! Internal Mutex used by axAllocator or axPerfProfiler
 class InternalMutex : public NonCopyable {

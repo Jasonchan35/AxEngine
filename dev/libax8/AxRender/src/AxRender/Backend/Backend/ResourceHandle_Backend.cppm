@@ -67,7 +67,7 @@ public:
 
 	void onFrameEnd(class RenderRequest_Backend* req);
 
-	static Thread::MutexProtected<This>*	s_get();
+	static MutexProtected<This>*	s_get();
 
 protected:
 	Array<T*>				_slots;

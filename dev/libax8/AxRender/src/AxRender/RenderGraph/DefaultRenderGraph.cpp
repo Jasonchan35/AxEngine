@@ -62,7 +62,7 @@ DefaultRenderGraph::DefaultRenderGraph() {
 }
 
 void DefaultRenderGraph::onUpdate(RenderRequest* req) {
-//	RenderColorBufferDesc colorDesc{ColorType::RGBAf, RenderBufferLoadOp::Clear, Color4f(0, 0.5f, 0, 1)};
+//	RenderTargetColorBufferDesc colorDesc{ColorType::RGBAf, RenderBufferLoadOp::Clear, Color4f(0, 0.5f, 0, 1)};
 }
 
 void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {

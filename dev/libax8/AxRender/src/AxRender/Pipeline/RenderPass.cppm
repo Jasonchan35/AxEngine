@@ -2,6 +2,7 @@ module;
 export module AxRender:RenderPass;
 export import :RenderObject;
 export import :GpuBuffer;
+export import :RenderTarget;
 
 export namespace ax /*::AxRender*/ {
 
@@ -20,8 +21,8 @@ public:
 	RenderContext*	backBufferRenderContext = nullptr;
 	Int				backBufferIndex = 0;
 
-	Array<RenderColorBufferDesc, 16>	colorBuffers;
-	RenderDepthBufferDesc				depthBuffer;
+	Array<RenderTargetColorBufferDesc, 16>	colorBuffers;
+	RenderTargetDepthBufferDesc				depthBuffer;
 };
 
 class RenderPass : public RenderObject {
@@ -42,12 +43,12 @@ public:
 	void			setClearDepth(f32 v)		{ _depthBuffer.desc.clearDepth   = v; }
 	void			setClearStencil(u32 v)		{ _depthBuffer.desc.clearStencil = v; }
 
-			RenderColorBuffer*	colorBuffer(Int i) { return _colorBuffers.inBound(i) ? _colorBuffers[i].colorBuf.ptr() : nullptr; }
-	const	RenderColorBuffer*	colorBuffer(Int i) const { return ax_const_cast(this)->colorBuffer(i); }
+			RenderTargetColorBuffer*	colorBuffer(Int i) { return _colorBuffers.inBound(i) ? _colorBuffers[i].colorBuf.ptr() : nullptr; }
+	const	RenderTargetColorBuffer*	colorBuffer(Int i) const { return ax_const_cast(this)->colorBuffer(i); }
 
-	const RenderColorBufferDesc*	colorBufferDesc(Int i) { return _colorBuffers.inBound(i) ? &_colorBuffers[i].desc : nullptr; }
+	const RenderTargetColorBufferDesc*	colorBufferDesc(Int i) { return _colorBuffers.inBound(i) ? &_colorBuffers[i].desc : nullptr; }
 
-	RenderDepthBuffer*	depthBuffer()		{ return _depthBuffer.depthBuf.ptr(); }
+	RenderTargetDepthBuffer*	depthBuffer()		{ return _depthBuffer.depthBuf.ptr(); }
 
 	bool isCompatible(const CreateDesc& desc) const;
 
@@ -57,13 +58,13 @@ protected:
 	Vec2i	_frameSize {0,0};
 
 	struct ColorBuffer {
-		SPtr<RenderColorBuffer>	colorBuf;
-		RenderColorBufferDesc			desc;
+		SPtr<RenderTargetColorBuffer>	colorBuf;
+		RenderTargetColorBufferDesc			desc;
 	};
 
 	struct DepthBuffer {
-		SPtr<RenderDepthBuffer>	depthBuf;
-		RenderDepthBufferDesc			desc;
+		SPtr<RenderTargetDepthBuffer>	depthBuf;
+		RenderTargetDepthBufferDesc			desc;
 	};
 
 	Array< ColorBuffer >	_colorBuffers;

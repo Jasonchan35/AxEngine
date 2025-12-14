@@ -3,12 +3,12 @@ module;
 module AxRender;
 
 #if AX_RENDERER_VK
-import :Material_VK;
-import :Renderer_VK;
-import :RenderRequest_VK;
-import :Texture_VK;
-import :GpuBuffer_VK;
-import :RenderContext_VK;
+import :Material_Vk;
+import :Renderer_Vk;
+import :RenderRequest_Vk;
+import :Texture_Vk;
+import :GpuBuffer_Vk;
+import :RenderContext_Vk;
 
 namespace ax /*::AxRender*/ {
 

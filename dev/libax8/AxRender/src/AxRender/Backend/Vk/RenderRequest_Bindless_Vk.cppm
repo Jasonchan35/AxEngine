@@ -1,11 +1,11 @@
 module;
 
-export module AxRender:RenderRequest_Bindless_VK;
+export module AxRender:RenderRequest_Bindless_Vk;
 
 #if AX_RENDER_BINDLESS && AX_RENDERER_VK
-export import :CommandBuffer_VK;
-export import :RenderPass_VK;
-export import :RenderContext_VK;
+export import :CommandBuffer_Vk;
+export import :RenderPass_Vk;
+export import :RenderContext_Vk;
 
 export namespace ax /*::AxRender*/ {
 

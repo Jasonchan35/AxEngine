@@ -2,14 +2,14 @@ module AxRender;
 
 #if AX_RENDERER_VK
 
-import :Shader_VK;
-import :Renderer_VK;
-import :RenderPass_VK;
+import :Shader_Vk;
+import :Renderer_Vk;
+import :RenderPass_Vk;
 import :Vertex;
-import :CommandBuffer_VK;
-import :RenderRequest_VK;
-import :RenderContext_VK;
-import :Material_VK;
+import :CommandBuffer_Vk;
+import :RenderRequest_Vk;
+import :RenderContext_Vk;
+import :Material_Vk;
 
 namespace ax /*::AxRender*/ {
 

@@ -1,6 +1,6 @@
 ﻿module;
 
-export module AxRender:Renderer_VK;
+export module AxRender:Renderer_Vk;
 
 #if AX_RENDERER_VK
 export import :Renderer_Backend;

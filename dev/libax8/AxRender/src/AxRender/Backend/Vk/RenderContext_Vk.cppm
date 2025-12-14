@@ -1,10 +1,10 @@
 ﻿module;
 
-export module AxRender:RenderContext_VK;
+export module AxRender:RenderContext_Vk;
 
 #if AX_RENDERER_VK
 export import :RenderContext_Backend;
-export import :CommandBuffer_VK;
+export import :CommandBuffer_Vk;
 
 export namespace ax /*::AxRender*/ {
 

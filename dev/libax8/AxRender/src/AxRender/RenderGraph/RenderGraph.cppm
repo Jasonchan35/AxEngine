@@ -16,14 +16,14 @@ public:
 	using Graph  = RenderGraph;
 	using Pass   = RenderGraph_Pass;
 
-	RenderGraph_ColorBuffer(Pass* pass, StrView name, const RenderColorBufferDesc& desc);
+	RenderGraph_ColorBuffer(Pass* pass, StrView name, const RenderTargetColorBufferDesc& desc);
 
 	Pass*			pass() { return _pass; }
 	StrView			name() const { return _name; }
 
-	const RenderColorBufferDesc&	desc() const { return _desc; }
+	const RenderTargetColorBufferDesc&	desc() const { return _desc; }
 
-	void setDesc(const RenderColorBufferDesc& desc);
+	void setDesc(const RenderTargetColorBufferDesc& desc);
 	void setDirty();
 
 	void setClearColor(const Color4f& color);
@@ -33,7 +33,7 @@ public:
 private:
 	Pass*				_pass = nullptr;
 	String				_name;
-	RenderColorBufferDesc		_desc;
+	RenderTargetColorBufferDesc		_desc;
 };
 
 class RenderGraph_Input : public NonCopyable {
@@ -87,7 +87,7 @@ public:
 
 	Span<ColorBuffer*>	colorBuffers() { return _colorBuffers; }
 
-	void setDepthBufferDesc(const RenderDepthBufferDesc& v);
+	void setDepthBufferDesc(const RenderTargetDepthBufferDesc& v);
 
 	void setFrameSize(Vec2i frameSize);
 
@@ -116,7 +116,7 @@ protected:
 
 	Array<Input,  8>		_inputs;
 	Array<ColorBuffer*, 8>	_colorBuffers;
-	RenderDepthBufferDesc			_depthBufferDesc;
+	RenderTargetDepthBufferDesc			_depthBufferDesc;
 
 	RenderDelegate			_renderDelegate;
 	SPtr<RenderPass>		_renderPass;
@@ -152,8 +152,8 @@ public:
 	using BackBufferPass = RenderGraph_BackBufferPass;
 
 	// forward those names for RenderGraph subclass
-	using RenderColorBufferDesc	= RenderColorBufferDesc;
-	using RenderDepthBufferDesc	= RenderDepthBufferDesc;
+	using RenderTargetColorBufferDesc	= RenderTargetColorBufferDesc;
+	using RenderTargetDepthBufferDesc	= RenderTargetDepthBufferDesc;
 	using RenderBufferLoadOp		= RenderBufferLoadOp;
 
 	const Vec2i& frameSize() const { return _frameSize; }

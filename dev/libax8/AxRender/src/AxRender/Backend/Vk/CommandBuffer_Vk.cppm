@@ -1,6 +1,6 @@
 ﻿module;
 
-export module AxRender:CommandBuffer_VK;
+export module AxRender:CommandBuffer_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;

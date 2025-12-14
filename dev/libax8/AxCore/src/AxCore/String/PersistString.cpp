@@ -29,7 +29,7 @@ public:
 	struct MTData {
 		Dict<Key, Data> dict;
 	};
-	Thread::SpinLockProtected<MTData> _mtData;
+	SpinLockProtected<MTData> _mtData;
 
 	AX_INLINE static This* s_instance() {
 		static GlobalSingleton<This> s;

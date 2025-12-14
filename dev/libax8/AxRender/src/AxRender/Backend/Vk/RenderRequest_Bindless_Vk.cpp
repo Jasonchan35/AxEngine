@@ -1,10 +1,10 @@
 module AxRender;
 
 #if AX_RENDER_BINDLESS && AX_RENDERER_VK
-import :RenderRequest_Bindless_VK;
-import :RenderRequest_VK;
-import :Texture_VK;
-import :Material_VK;
+import :RenderRequest_Bindless_Vk;
+import :RenderRequest_Vk;
+import :Texture_Vk;
+import :Material_Vk;
 
 namespace ax /*::AxRender*/ {
 

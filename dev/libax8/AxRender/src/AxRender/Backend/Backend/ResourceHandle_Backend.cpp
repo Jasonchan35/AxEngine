@@ -16,8 +16,8 @@ ResourceTable_Backend<T>::ResourceTable_Backend() {
 }
 
 template<class T> inline
-Thread::MutexProtected<ResourceTable_Backend<T>>* ResourceTable_Backend<T>::s_get() {
-	Thread::MutexProtected<This>* p = nullptr;
+MutexProtected<ResourceTable_Backend<T>>* ResourceTable_Backend<T>::s_get() {
+	MutexProtected<This>* p = nullptr;
 	ResourceManager_Backend::s_instance()->getTable(p);
 	return p;
 }

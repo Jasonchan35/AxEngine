@@ -9,7 +9,7 @@ export import AxCore.LockProtected;
 export import AxCore.ThreadUtil; 
 export import AxCore.TimeDuration;
 
-export namespace ax::Thread {
+export namespace ax {
 
 //! Internal Spin Lock used by Allocator or PerfProfiler
 class InternalSpinLock : public NonCopyable {
@@ -48,9 +48,9 @@ private:
 				if (i < 8) continue;
 				//else if (i < 16) __asm__ __volatile__("rep; nop" : : : "memory");
 				else if(i < 32) {
-					Thread::yield();
+					Thread_yield();
 				} else {
-					Thread::sleep(Milliseconds(16));
+					Thread_sleep(Milliseconds(16));
 				}
 			}
 		}

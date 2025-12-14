@@ -22,7 +22,7 @@ protected:
 	virtual void onCreate() override {}
 	virtual void onStart() {}
 	virtual void onStop() {}
-	virtual void onTick() { Thread::sleep(Milliseconds(100)); }
+	virtual void onTick() { Thread_sleep(Milliseconds(100)); }
 
 private:
 #if AX_OS_WINDOWS

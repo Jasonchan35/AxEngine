@@ -5,7 +5,7 @@ export module AxCore.LockProtected;
 
 import AxCore.BasicType;
 
-export namespace ax::Thread {
+export namespace ax {
 
 template<class MUTEX, class DATA>
 class LockProtected : public NonCopyable {

@@ -2,10 +2,10 @@ module AxRender;
 
 #if AX_RENDERER_VK
 
-import :RenderRequest_VK;
-import :Renderer_VK;
-import :RenderContext_VK;
-import :Material_VK;
+import :RenderRequest_Vk;
+import :Renderer_Vk;
+import :RenderContext_Vk;
+import :Material_Vk;
 
 namespace ax /*::AxRender*/ {
 

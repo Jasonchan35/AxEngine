@@ -1,12 +1,13 @@
 ﻿module AxRender;
 
 #if AX_RENDERER_VK
-import :RenderContext_VK;
+import :RenderContext_Vk;
 import :RenderRequest;
-import :Renderer_VK;
-import :Texture_VK;
-import :RenderRequest_VK;
-import :GpuBuffer_VK;
+import :Renderer_Vk;
+import :Texture_Vk;
+import :RenderRequest_Vk;
+import :GpuBuffer_Vk;
+import :RenderTarget_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -63,12 +64,12 @@ void RenderContext_Vk_Base::_createSwapChain() {
 
 	bool hasDepth = depthFormat != VK_FORMAT_UNDEFINED;
 	if (hasDepth) {
-		RenderDepthBuffer_CreateDesc depthBufDesc;
+		RenderTargetDepthBuffer_CreateDesc depthBufDesc;
 		depthBufDesc.name = Fmt("BackBuffer-depth");
 		depthBufDesc.depthType = _depthBufferDesc.depthType;
 		depthBufDesc.frameSize = frameSize;
 
-		_depthBuf = RenderDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+		_depthBuf = RenderTargetDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
 	}
 
 	{	// init Back Buffers
@@ -137,7 +138,7 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 	auto* backBuf = req->backBufferRenderPass();
 	if (!backBuf) { AX_ASSERT(false); return; }
 
-	auto* colorBuffer	= rttiCastCheck<RenderColorBuffer_Vk>(backBuf->colorBuffer(0));
+	auto* colorBuffer	= rttiCastCheck<RenderTargetColorBuffer_Vk>(backBuf->colorBuffer(0));
 	if (!colorBuffer) { AX_ASSERT(false); return; }
 
 	auto& backBufferRef = colorBuffer->backBufferRef();
@@ -188,13 +189,13 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 	auto& colorBufferDesc = renderContext->_colorBufferDesc;
 	auto& depthBufferDesc = renderContext->_depthBufferDesc;
 
-	RenderColorBuffer_CreateDesc	colorBufDesc;
+	RenderTargetColorBuffer_CreateDesc	colorBufDesc;
 	colorBufDesc.name = backBufferName;
 	colorBufDesc.setBackBuffer(	renderContext, index, 
 								colorBufferDesc.colorType, 
 								frameSize);
 
-	_colorBuf = RenderColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBufDesc);
+	_colorBuf = RenderTargetColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBufDesc);
 
 	auto& surface = renderContext->_surface;
 

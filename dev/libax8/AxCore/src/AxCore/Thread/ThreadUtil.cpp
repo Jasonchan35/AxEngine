@@ -3,7 +3,7 @@ module;
 
 module AxCore.ThreadUtil;
 
-namespace ax::Thread {
+namespace ax {
 
 bool ThreadId::isCurrentThread() {
 	return *this == s_current();

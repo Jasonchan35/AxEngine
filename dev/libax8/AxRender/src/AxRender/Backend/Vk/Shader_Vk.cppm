@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:Shader_VK;
+export module AxRender:Shader_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;
@@ -15,8 +15,6 @@ public:
 	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	VkDescriptorSetLayout	createDescriptorSetLayout();
-
-
 	VkDescriptorSetLayout	descriptorSetLayout() const { return _descriptorSetLayout.handle(); }
 
 private:

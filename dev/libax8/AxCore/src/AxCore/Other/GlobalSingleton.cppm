@@ -50,7 +50,7 @@ private:
 		List list;
 	};
 
-	Thread::InternalSpinLockProtected<Data> _data;
+	InternalSpinLockProtected<Data> _data;
 };
 
 //---------------------

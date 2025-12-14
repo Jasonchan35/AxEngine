@@ -4,7 +4,7 @@ module AxRender;
 
 #if AX_RENDERER_VK
 import :AX_Vulkan;
-import :Renderer_VK;
+import :Renderer_Vk;
 
 namespace ax /*::AxRender*/ {
 

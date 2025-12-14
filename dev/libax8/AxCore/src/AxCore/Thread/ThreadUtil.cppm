@@ -6,7 +6,7 @@ export module AxCore.ThreadUtil;
 export import AxCore.Format;
 export import AxCore.TimeDuration;
 
-export namespace ax::Thread {
+export namespace ax {
 
 #if AX_OS_WINDOWS
 
@@ -83,36 +83,36 @@ protected:
 };
 
 #if 1 // C++11
-	AX_INLINE void yield() { ::std::this_thread::yield(); }
+	AX_INLINE void Thread_yield() { ::std::this_thread::yield(); }
 
 #elif AX_OS_WINDOWS
-	AX_INLINE void yield() { ::YieldProcessor(); }
+	AX_INLINE void Thread_yield() { ::YieldProcessor(); }
 
 #elif AX_OS_LINUX || AX_OS_IOS || AX_OS_MACOSX
-	AX_INLINE void yield() { ::cpu_relax(); }
+	AX_INLINE void Thread_yield() { ::cpu_relax(); }
 
 #elif AX_COMPILER_GCC
-	AX_INLINE void yield() { __asm__("pause"); }
+	AX_INLINE void Thread_yield() { __asm__("pause"); }
 
 #elif 1// pthread
-	AX_INLINE void yield() { ::pthread_yield(void); }
+	AX_INLINE void Thread_yield() { ::pthread_yield(void); }
 #else
 	#error
 #endif
 
-AX_INLINE void sleep(const Nanoseconds& nanoseconds) {
+AX_INLINE void Thread_sleep(const Nanoseconds& nanoseconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int, std::nano>(nanoseconds.value));
 }
 
-AX_INLINE void sleep(const Microseconds& microseconds) {
+AX_INLINE void Thread_sleep(const Microseconds& microseconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int, std::micro>(microseconds.value));
 }
 
-AX_INLINE void sleep(const Milliseconds& milliseconds) {
+AX_INLINE void Thread_sleep(const Milliseconds& milliseconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int, std::milli>(milliseconds.value));
 }
 
-AX_INLINE void sleep(const Seconds& seconds) {
+AX_INLINE void Thread_sleep(const Seconds& seconds) {
 	::std::this_thread::sleep_for(std::chrono::duration<Int>(seconds.value));
 }
 

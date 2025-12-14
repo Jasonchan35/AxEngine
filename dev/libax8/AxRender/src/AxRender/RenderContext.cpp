@@ -24,7 +24,7 @@ RenderContext::RenderContext(const CreateDesc& desc) {
 	_depthBufferDesc	= desc.depthBuffer;
 }
 
-RenderColorBuffer* RenderContext::backColorBuffer(Int i) {
+RenderTargetColorBuffer* RenderContext::backColorBuffer(Int i) {
 	auto* p = onGetBackBuffer(i);
 	return p ? p->_colorBuf.ptr() : nullptr;
 }

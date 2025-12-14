@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:GpuBuffer_VK;
+export module AxRender:GpuBuffer_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;
@@ -35,44 +35,6 @@ private:
 	AX_VkBuffer			_vkBuf;
 	AX_VkDeviceMemory	_vkDevMem;
 };
-
-
-class RenderColorBuffer_Vk : public RenderColorBuffer_Backend {
-	AX_RTTI_INFO(RenderColorBuffer_Vk, RenderColorBuffer_Backend)
-public:
-	RenderColorBuffer_Vk(const CreateDesc& desc);
-
-#if AX_DEBUG_NAME
-	virtual void onSetDebugName(const String& name) override {
-		_image.setDebugName(Fmt("{}-image", name));
-		_mem.setDebugName(Fmt("{}-mem",   name));
-		_view.setDebugName(Fmt("{}-view",  name));
-	}
-#endif
-
-	AX_VkImage			_image;
-	AX_VkDeviceMemory	_mem;
-	AX_VkImageView		_view;
-};
-
-class RenderDepthBuffer_Vk : public RenderDepthBuffer_Backend {
-	AX_RTTI_INFO(RenderDepthBuffer_Vk, RenderDepthBuffer_Backend)
-public:
-	RenderDepthBuffer_Vk(const CreateDesc& desc);
-
-#if AX_DEBUG_NAME
-	virtual void onSetDebugName(const String& name) override {
-		_image.setDebugName(Fmt("{}-image", name));
-		_mem.setDebugName(Fmt("{}-mem",   name));
-		_view.setDebugName(Fmt("{}-view",  name));
-	}
-#endif
-
-	AX_VkImage			_image;
-	AX_VkDeviceMemory	_mem;
-	AX_VkImageView		_view;
-};
-
 
 } // namespace
 

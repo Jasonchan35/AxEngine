@@ -1,0 +1,29 @@
+module;
+
+export module AxRender:Texture_Dx12;
+#if AX_RENDERER_DX12
+
+import :Dx12Resource;
+import :Texture_Backend;
+import :Renderer_Backend;
+
+namespace ax {
+
+class Sampler_Dx12 : public Sampler_Backend {
+	AX_RTTI_INFO(Sampler_Dx12, Sampler_Backend)
+public:
+};
+
+class Texture2D_Dx12 : public Texture2D_Backend {
+	AX_RTTI_INFO(Texture2D_Dx12, Texture2D_Backend)
+public:
+	
+
+	Texture2D_Dx12(CreateDesc& desc);
+
+	Dx12Resource_Texture2D	_tex;
+};
+
+} // namespace
+
+#endif //AX_RENDERER_DX12

@@ -5,7 +5,7 @@ export module AxCore.Atomic;
 
 import AxCore.BasicType;
 
-export namespace ax::Thread {
+export namespace ax {
 
 class AtomicFlag : public NonCopyable {
 	using AtomicType = ::std::atomic_flag;

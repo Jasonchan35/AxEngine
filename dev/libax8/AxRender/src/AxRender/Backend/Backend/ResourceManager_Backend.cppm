@@ -30,13 +30,13 @@ public:
 	using SamplerTable     = ResourceTable_Backend<Sampler_Backend>;
 	using Texture2DTable   = ResourceTable_Backend<Texture2D_Backend>;
 
-	Thread::MutexProtected<ShaderTable     > shaderTable;
-	Thread::MutexProtected<SamplerTable    > samplerTable;
-	Thread::MutexProtected<Texture2DTable  > texture2DTable;
+	MutexProtected<ShaderTable     > shaderTable;
+	MutexProtected<SamplerTable    > samplerTable;
+	MutexProtected<Texture2DTable  > texture2DTable;
 	
-	void getTable(Thread::MutexProtected<ShaderTable     >* & o) { o = &shaderTable; }
-	void getTable(Thread::MutexProtected<SamplerTable    >* & o) { o = &samplerTable; }
-	void getTable(Thread::MutexProtected<Texture2DTable  >* & o) { o = &texture2DTable; }
+	void getTable(MutexProtected<ShaderTable     >* & o) { o = &shaderTable; }
+	void getTable(MutexProtected<SamplerTable    >* & o) { o = &samplerTable; }
+	void getTable(MutexProtected<Texture2DTable  >* & o) { o = &texture2DTable; }
 	
 	template<class FUNC>
 	void visit(FUNC func) {
@@ -52,7 +52,7 @@ bool ResourceManager_Backend::getOrNewResource(SPtr<T>&			   sp,
 											   const MemAllocRequest& req,
 											   const CreateDesc&   desc,
 											   const ResourceKey&  key) {
-	Thread::MutexProtected<ResourceTable_Backend<T>>* table = nullptr;
+	MutexProtected<ResourceTable_Backend<T>>* table = nullptr;
 	getTable(table);
 
 	auto tableLock = table->scopedLock();

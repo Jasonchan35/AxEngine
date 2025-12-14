@@ -2,11 +2,12 @@ module AxRender;
 
 #if AX_RENDERER_VK
 
-import :RenderPass_VK;
-import :Renderer_VK;
-import :RenderContext_VK;
-import :GpuBuffer_VK;
-import :RenderRequest_VK;
+import :RenderPass_Vk;
+import :Renderer_Vk;
+import :RenderContext_Vk;
+import :GpuBuffer_Vk;
+import :RenderRequest_Vk;
+import :RenderTarget_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -32,15 +33,15 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 		if (desc.isBackBuffer) {
 			colorBuf.colorBuf = desc.backBufferRenderContext->backColorBuffer(desc.backBufferIndex);
 		} else {
-			RenderColorBuffer_CreateDesc colorBufDesc;
+			RenderTargetColorBuffer_CreateDesc colorBufDesc;
 			colorBufDesc.name = Fmt("{}-color", desc.name);
 			colorBufDesc.colorType	= srcColorDesc.colorType;
 			colorBufDesc.size		= desc.frameSize;
 
-			colorBuf.colorBuf = RenderColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBufDesc);
+			colorBuf.colorBuf = RenderTargetColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBufDesc);
 		}
 
-		auto* color_tex_vk = rttiCastCheck<RenderColorBuffer_Vk>(colorBuf.colorBuf.ptr());
+		auto* color_tex_vk = rttiCastCheck<RenderTargetColorBuffer_Vk>(colorBuf.colorBuf.ptr());
 		AX_ASSERT(color_tex_vk);
 
 		auto viewHandle = color_tex_vk->_view.handle();
@@ -77,15 +78,15 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	if (desc.isBackBuffer) {
 		_depthBuffer.depthBuf = desc.backBufferRenderContext->backDepthBuffer();
 	} else {
-		RenderDepthBuffer_CreateDesc depthBufDesc;
+		RenderTargetDepthBuffer_CreateDesc depthBufDesc;
 		depthBufDesc.name = Fmt("{}-depth", desc.name);
 		depthBufDesc.depthType = desc.depthBuffer.depthType;
 		depthBufDesc.frameSize = desc.frameSize;
 
-		_depthBuffer.depthBuf = RenderDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+		_depthBuffer.depthBuf = RenderTargetDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
 	}
 
-	auto* depth_tex_vk = rttiCastCheck<RenderDepthBuffer_Vk>(_depthBuffer.depthBuf.ptr());
+	auto* depth_tex_vk = rttiCastCheck<RenderTargetDepthBuffer_Vk>(_depthBuffer.depthBuf.ptr());
 	if (depth_tex_vk) {
 		hasDepth = true;
 
