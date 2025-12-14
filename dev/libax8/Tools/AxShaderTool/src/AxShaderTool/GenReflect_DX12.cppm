@@ -32,9 +32,9 @@ StrView StrView_make(IDxcBlob* blob) {
 	return StrView(s, n);
 }
 
-class GenReflect_DX12 : public NonCopyable {
+class GenReflect_Dx12 : public NonCopyable {
 public:
-	GenReflect_DX12();
+	GenReflect_Dx12();
 
 	void compile(StrView	  outFilename,
 				 StrView	  filename,

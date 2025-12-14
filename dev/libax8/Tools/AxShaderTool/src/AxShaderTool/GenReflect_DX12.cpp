@@ -6,11 +6,11 @@ import :GenReflect_Dx12;
 
 namespace ax /*::AxRender*/ {
 
-class GenReflect_DX12::IncludeHandler : public IDxcIncludeHandler {
+class GenReflect_Dx12::IncludeHandler : public IDxcIncludeHandler {
 public:
 	virtual ~IncludeHandler() = default;
 
-	IncludeHandler(GenReflect_DX12* compiler, StrView currentFile) 
+	IncludeHandler(GenReflect_Dx12* compiler, StrView currentFile) 
 		: _compiler(compiler)
 	{
 		_currentFileDir = FilePath::dirname(currentFile);
@@ -47,10 +47,10 @@ public:
 
 private:
 	String			_currentFileDir;
-	GenReflect_DX12*		_compiler;
+	GenReflect_Dx12*		_compiler;
 };
 
-GenReflect_DX12::GenReflect_DX12() {
+GenReflect_Dx12::GenReflect_Dx12() {
 	HRESULT hr;
 
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wlanguage-extension-token")
@@ -63,7 +63,7 @@ AX_GCC_WARNING_POP()
 
 }
 
-bool GenReflect_DX12::tryLoadFile(ComPtr<IDxcBlobEncoding>& outBlob, StrView filename) {
+bool GenReflect_Dx12::tryLoadFile(ComPtr<IDxcBlobEncoding>& outBlob, StrView filename) {
 	outBlob.unref();
 
 	if (!File::exists(filename))
@@ -89,7 +89,7 @@ bool GenReflect_DX12::tryLoadFile(ComPtr<IDxcBlobEncoding>& outBlob, StrView fil
 	return true;
 }
 
-void GenReflect_DX12::writeDepFile(StrView filename) {
+void GenReflect_Dx12::writeDepFile(StrView filename) {
 	String outFilename = filename;
 	outFilename.append(".d");
 
@@ -106,7 +106,7 @@ void GenReflect_DX12::writeDepFile(StrView filename) {
 	File::writeFile(outFilename, o, false, false);
 }
 
-void GenReflect_DX12::compile(StrView	   outFilename,
+void GenReflect_Dx12::compile(StrView	   outFilename,
 					  StrView	   filename,
 					  StrView	   profile,
 					  StrView	   entryFunc,
@@ -276,7 +276,7 @@ void GenReflect_DX12::compile(StrView	   outFilename,
 	_compileReflect(outFilename, byteCode, profile);
 }
 
-void GenReflect_DX12::_compileReflect(StrView outFilename, IDxcBlob* byteCode, StrView profile) {
+void GenReflect_Dx12::_compileReflect(StrView outFilename, IDxcBlob* byteCode, StrView profile) {
 
 	ComPtr<IDxcContainerReflection>	container;
 	ComPtr<ID3D12ShaderReflection>	reflect;
@@ -336,7 +336,7 @@ AX_GCC_WARNING_POP()
 	}
 }
 
-void GenReflect_DX12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
+void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 
 	outInfo.inputs.ensureCapacity(desc.InputParameters);
@@ -390,7 +390,7 @@ void GenReflect_DX12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 	}
 }
 
-void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
+void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 
 	outInfo.constBuffers.ensureCapacity(desc.BoundResources);
@@ -486,7 +486,7 @@ void GenReflect_DX12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 	}
 }
 
-void GenReflect_DX12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
+void GenReflect_Dx12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 
 	outInfo.textures.ensureCapacity(desc.BoundResources);
@@ -529,7 +529,7 @@ void GenReflect_DX12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 	}
 }
 
-void GenReflect_DX12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
+void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 	outInfo.samplers.ensureCapacity(desc.BoundResources);
 	for (UINT i=0; i<desc.BoundResources; i++) {
@@ -549,7 +549,7 @@ void GenReflect_DX12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 	}
 }
 
-void GenReflect_DX12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
+void GenReflect_Dx12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
 	outInfo.storageBuffers.ensureCapacity(desc.BoundResources);
 	for (UINT i=0; i<desc.BoundResources; i++) {
