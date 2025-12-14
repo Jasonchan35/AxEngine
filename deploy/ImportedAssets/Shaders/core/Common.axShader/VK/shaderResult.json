@@ -176,7 +176,7 @@
           "dataType": "Texture2D", 
           "stageFlags": 2, 
           "paramSpaceType": 1, 
-          "bindPoint": 2, 
+          "bindPoint": 6, 
           "bindCount": 16384
         }], 
       "samplers": [{
@@ -184,7 +184,7 @@
           "dataType": "SamplerState", 
           "stageFlags": 2, 
           "paramSpaceType": 1, 
-          "bindPoint": 1, 
+          "bindPoint": 5, 
           "bindCount": 1024
         }]
     }]

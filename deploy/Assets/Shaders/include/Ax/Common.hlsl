@@ -57,8 +57,8 @@ cbuffer AX_ConstBuffer_PerObject : register(b0, AX_BindSpace_PerObject) {
 
 #if AX_RENDER_BINDLESS
 	SamplerState AxBindless_SamplerState[1024]  : register(s1, AX_BindSpace_Global);
-	Texture2D    AxBindless_Texture2D[16*1024]     : register(t2, AX_BindSpace_Global);
-	Texture3D    AxBindless_Texture3D[   1024]     : register(t3, AX_BindSpace_Global);
+	Texture2D    AxBindless_Texture2D[16*1024]  : register(t2, AX_BindSpace_Global);
+	Texture3D    AxBindless_Texture3D[   1024]  : register(t3, AX_BindSpace_Global);
 
 	// $Global UniformBuffer should be register(x, space0)
 

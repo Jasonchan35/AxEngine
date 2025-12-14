@@ -4,7 +4,9 @@
 - rename AxTag::Zero_ -> AxZero ?
 
 - NameId consteval string literal to StrLit + Id
-- AxShaderTool - output bindless shader to separate folder
+
+- Runtime select bindless
+- AxShaderTool - output bindless shader to separate file
 
 - ECS
 

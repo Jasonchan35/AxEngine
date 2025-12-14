@@ -276,7 +276,7 @@ void AxShaderTool_App::writeNinja_NullPass(IString& outStr,
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
 		if (!entryPoint) return;
 
-		outStr.append(Fmt("build NULL-{0}-{1}.bin: build_null_bin ${{SourceFile}} | ${{AxShaderTool}}\n", pass.name, stageFlags));
+		outStr.append(Fmt("build Null-{0}-{1}.bin: build_null_bin ${{SourceFile}} | ${{AxShaderTool}}\n", pass.name, stageFlags));
 		outStr.append(Fmt("  param_shader_stage = {}\n", profile));
 		outStr.append(Fmt("  param_entry_point  = {}\n", entryPoint));
 		outStr.append("\n");
@@ -286,7 +286,7 @@ void AxShaderTool_App::writeNinja_NullPass(IString& outStr,
 		outStr.append("\n");
 #endif
 
-		String outJsonFilename = Fmt("NULL-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
+		String outJsonFilename = Fmt("Null-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
 		outJsonFileList.append(outJsonFilename);
 
 		outStr.append(Fmt("build {}: build_null_bin_json NULL-{}-{}.bin\n", outJsonFilename, pass.name, stageFlags));
@@ -309,6 +309,12 @@ void AxShaderTool_App::writeNinja_VulkanPass(IString& outStr, IArray<String>& ou
 					"    -fshader-stage=$param_shader_stage $\n"
 					"    -fentry-point=$param_entry_point $\n"
 					"    -fauto-bind-uniforms $\n"
+					//"    -fubo-binding-base 16 $\n"
+					"    -fsampler-binding-base 4 $\n"
+					"    -ftexture-binding-base 4 $\n"
+					"      -fimage-binding-base 4 $\n"
+					"        -fuav-binding-base 4 $\n"
+					"       -fssbo-binding-base 4 $\n"
 #if AX_RENDER_BINDLESS
 					"    -DAX_RENDER_BINDLESS=1 $\n"
 #endif
@@ -341,7 +347,7 @@ void AxShaderTool_App::writeNinja_VulkanPass(IString& outStr, IArray<String>& ou
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
 		if (!entryPoint) return;
 
-		outStr.append(Fmt("build VK-{0}-{1}.bin: build_vk_bin ${{SourceFile}} | ${{AxShaderTool}}\n", pass.name, stageFlags));
+		outStr.append(Fmt("build Vk-{0}-{1}.bin: build_vk_bin ${{SourceFile}} | ${{AxShaderTool}}\n", pass.name, stageFlags));
 		outStr.append(Fmt("  param_shader_stage = {}\n", profile));
 		outStr.append(Fmt("  param_entry_point  = {}\n", entryPoint));
 		outStr.append("\n");
@@ -351,7 +357,7 @@ void AxShaderTool_App::writeNinja_VulkanPass(IString& outStr, IArray<String>& ou
 		outStr.append("\n");
 #endif
 
-		String outJsonFilename = Fmt("VK-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
+		String outJsonFilename = Fmt("Vk-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
 		outJsonFileList.append(outJsonFilename);
 
 		outStr.append(Fmt("build {}: build_vk_bin_json VK-{}-{}.bin\n", outJsonFilename, pass.name, stageFlags));
