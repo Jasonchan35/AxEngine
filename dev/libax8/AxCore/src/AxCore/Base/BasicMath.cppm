@@ -215,26 +215,26 @@ constexpr T nextPow2_half(const T& v) {
 
 template<class T>
 AX_NODISCARD AX_INLINE constexpr T alignTo(const T& n, const T& a) {
-	if constexpr(std::is_floating_point_v<T>) {
-		T i = floor( n / a ) * a;
-		if (almostEqual(i,n)) return i;
-		return (n > 0) ? i+a : i-a;
-			
-	} else if constexpr(std::is_unsigned_v<T>) {
+	if constexpr (std::is_floating_point_v<T>) {
+		T i = floor(n / a) * a;
+		if (almostEqual(i, n)) return i;
+		return (n > 0) ? i + a : i - a;
+
+	} else if constexpr (std::is_unsigned_v<T>) {
 		T r = n % a;
-		if( r == 0 ) return n;
-		return n + (a-r);
+		if (r == 0) return n;
+		return n + (a - r);
 
 	} else {
-		a = abs(a);
-		if( n >= 0 ) {
-			T r = n % a;
-			if( r == 0 ) return n;
-			return n + (a-r);
-		}else{
-			T r = (-n) % a;
-			if( r == 0 ) return n;
-			return n - (a-r);
+		T abs_a = abs(a);
+		if (n >= 0) {
+			T r = n % abs_a;
+			if (r == 0) return n;
+			return n + (abs_a - r);
+		} else {
+			T r = (-n) % abs_a;
+			if (r == 0) return n;
+			return n - (abs_a - r);
 		}
 	}
 }

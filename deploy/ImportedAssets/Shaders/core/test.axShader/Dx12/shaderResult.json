@@ -1,0 +1,58 @@
+{
+  "declare": {
+    "isGlobalCommonShader": false, 
+    "props": [{
+        "name": "ambient", 
+        "propType": "Color4f", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": [1, 1, 1, 1]
+      }, {
+        "name": "shininess", 
+        "propType": "f32", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": 0
+      }], 
+    "passes": [{
+        "name": "Pass0", 
+        "vsFunc": "vs_main", 
+        "psFunc": "ps_main", 
+        "gsFunc": "", 
+        "renderState": {
+          "cull": "Back", 
+          "blend": {
+            "rgb": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "alpha": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "constColor": [1, 1, 1, 1]
+          }, 
+          "depthTest": {
+            "op": "LessEqual", 
+            "writeMask": true
+          }, 
+          "antialiasedLine": false, 
+          "wireframe": false
+        }
+      }]
+  }, 
+  "passStages": [{
+      "bindless": true, 
+      "stageFlags": 3, 
+      "inputs": [{
+          "semantic": "SV_VERTEXID", 
+          "dataType": "u32"
+        }], 
+      "constBuffers": [], 
+      "storageBuffers": [], 
+      "textures": [], 
+      "samplers": []
+    }]
+}

@@ -288,13 +288,11 @@ AX_GCC_WARNING_PUSH_AND_DISABLE("-Wlanguage-extension-token")
 	throwIfError(hr);
 AX_GCC_WARNING_POP()
 
-	
-
 	hr = container->Load(byteCode);
 	throwIfError(hr);
 
 	UINT shaderIdx;
-	hr = container->FindFirstPartKind(FourCC("DXIL"), &shaderIdx);
+	hr = container->FindFirstPartKind(CharUtil::FourCC("DXIL"), &shaderIdx);
 	throwIfError(hr);
 
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wlanguage-extension-token")
@@ -359,7 +357,7 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 			FmtTo(semantic, "{}", paramDesc.SemanticIndex);
 		}
 
-		if (!enumTryParse(dst.semantic, semantic)) {
+		if (!semantic.tryParse(dst.semantic)) {
 			throw Error_Undefined(Fmt("Unknown semantic name {}", semantic));
 		}
 
@@ -381,7 +379,7 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 			dataType.append(Fmt("x{}", componentCount));
 		}
 
-		if (!enumTryParse(dst.dataType, dataType)) {
+		if (!dataType.tryParse(dst.dataType)) {
 			AX_LOG("Error: parse enum {}", dataType);
 			throw Error_Undefined();
 		}
@@ -412,11 +410,10 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		checkError(hr);
 
 		outCB.name = StrView_c_str(bufDesc.Name);
-		ax_safe_assign(outCB.bindPoint, resDesc.BindPoint);
-		ax_safe_assign(outCB.bindCount, resDesc.BindCount);
-		ax_safe_assign(outCB.paramSpaceType, resDesc.Space);
-
-		ax_safe_assign(outCB.dataSize , bufDesc.Size);
+		outCB.bindPoint		 = SafeCast(resDesc.BindPoint);
+		outCB.bindCount		 = SafeCast(resDesc.BindCount);
+		outCB.paramSpaceType = SafeCast(resDesc.Space);
+		outCB.dataSize		 = SafeCast(bufDesc.Size);
 
 		outCB.variables.ensureCapacity(bufDesc.Variables);
 		for (UINT j=0; j<bufDesc.Variables; j++) {
@@ -433,9 +430,9 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 				if (0 == (varDesc.uFlags & D3D_SVF_USED)) continue;
 			}
 
-			auto& outVar = outCB.variables.emplaceBack();
-			outVar.name = StrView_c_str(varDesc.Name);
-			ax_safe_assign(outVar.offset,   varDesc.StartOffset);
+			auto& outVar  = outCB.variables.emplaceBack();
+			outVar.name   = StrView_c_str(varDesc.Name);
+			outVar.offset = SafeCast(varDesc.StartOffset);
 					
 			//------------------------------
 			TempString dataType;
@@ -474,7 +471,7 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 				outVar.rowMajor = true;
 			}
 
-			if (!enumTryParse(outVar.dataType, dataType)) {
+			if (!dataType.tryParse(outVar.dataType)) {
 				AX_LOG("Error: parse enum {}", dataType);
 				throw Error_Undefined();
 			}
@@ -500,9 +497,9 @@ void GenReflect_Dx12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 		auto& outTex = outInfo.textures.emplaceBack();
 		outTex.stageFlags = outInfo.stageFlags;
 		outTex.name = StrView_c_str(resDesc.Name);
-		ax_safe_assign(outTex.bindPoint, resDesc.BindPoint);
-		ax_safe_assign(outTex.bindCount, resDesc.BindCount);
-		ax_safe_assign(outTex.paramSpaceType, resDesc.Space);
+		outTex.bindPoint      = SafeCast(resDesc.BindPoint);
+		outTex.bindCount      = SafeCast(resDesc.BindCount);
+		outTex.paramSpaceType = SafeCast(resDesc.Space);
 
 		switch (resDesc.Dimension) {
 			case D3D_SRV_DIMENSION_TEXTURE1D:		outTex.dataType = RenderDataType::Texture1D;   break;
@@ -543,9 +540,9 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 		outSampler.stageFlags = outInfo.stageFlags;
 		outSampler.dataType = RenderDataType::SamplerState;
 		outSampler.name = StrView_c_str(resDesc.Name);
-		ax_safe_assign(outSampler.bindPoint, resDesc.BindPoint);
-		ax_safe_assign(outSampler.bindCount, resDesc.BindCount);
-		ax_safe_assign(outSampler.paramSpaceType, resDesc.Space);
+		outSampler.bindPoint      = SafeCast(resDesc.BindPoint);
+		outSampler.bindCount      = SafeCast(resDesc.BindCount);
+		outSampler.paramSpaceType = SafeCast(resDesc.Space);
 	}
 }
 
@@ -565,9 +562,9 @@ void GenReflect_Dx12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, I
 		sbuf.stageFlags = outInfo.stageFlags;
 		sbuf.dataType = RenderDataType::StorageBuffer;
 		sbuf.name = StrView_c_str(resDesc.Name);
-		ax_safe_assign(sbuf.bindPoint, resDesc.BindPoint);
-		ax_safe_assign(sbuf.bindCount, resDesc.BindCount);
-		ax_safe_assign(sbuf.paramSpaceType, resDesc.Space);
+		sbuf.bindPoint      = SafeCast(resDesc.BindPoint);
+		sbuf.bindCount      = SafeCast(resDesc.BindCount);
+		sbuf.paramSpaceType = SafeCast(resDesc.Space);
 
 		sbuf.rawUAV = (resDesc.Type == D3D_SIT_UAV_RWBYTEADDRESS);
 	}

@@ -5,6 +5,13 @@ import :Texture_Dx12;
 
 namespace ax {
 
+void Texture2D_Dx12::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
+	// TODO
+	auto dataSize = handler.desc.dataSize;
+	ByteArray buf;
+	buf.resize(dataSize);
+	handler.readPixelsTo(buf);
+}
 
 } // namespace
 

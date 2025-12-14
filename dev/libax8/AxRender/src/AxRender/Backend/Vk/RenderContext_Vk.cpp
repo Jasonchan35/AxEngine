@@ -306,7 +306,7 @@ LRESULT WINAPI RenderContext_Vk_Win32::s_wndProc(HWND hwnd, UINT msg, WPARAM wPa
 
 		case WM_TIMER: {
 			if (auto* thisObj = s_getThis(hwnd)) {
-				if (wParam == RenderContext_Vk_Win32::kRenderTimerId) {
+				if (wParam == kRenderTimerId) {
 					thisObj->render();
 				}
 			}

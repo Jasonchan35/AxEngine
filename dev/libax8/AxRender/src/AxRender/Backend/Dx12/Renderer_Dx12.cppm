@@ -14,8 +14,9 @@ class Renderer_Dx12 : public Renderer_Backend {
 	AX_RTTI_INFO(Renderer_Dx12, Renderer_Backend)
 public:
 	AX_DOWNCAST_GET_INSTANCE();
+	Renderer_Dx12(const CreateDesc& desc);
 
-	Renderer_Dx12(CreateDesc& desc);
+	static ID3D12Device* s_d3dDevice() { auto* t = s_instance(); return t ? t->d3dDevice() : nullptr; }
 
 	ID3D12Device*		d3dDevice	()	{ return _d3dDevice; }
 	IDXGIFactory4*		dxgiFactory	()	{ return _dxgiFactory; }

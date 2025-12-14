@@ -10,6 +10,12 @@ import :Shader_Backend;
 
 namespace ax {
 
+class ShaderParamSpace_Dx12 : public ShaderParamSpace_Backend {
+	AX_RTTI_INFO(ShaderParamSpace_Dx12, ShaderParamSpace_Backend)
+public:
+	ShaderParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
+};
+
 class ShaderPipeline_Dx12 : public NonCopyable {
 public:
 	struct Key {
@@ -34,7 +40,7 @@ public:
 	ShaderPass_Dx12(const CreateDesc& desc);
 
 	template<class FUNC>
-	void _visitStage(FUNC func) {
+	void _visitStages(FUNC func) {
 		func(_vsStage, ShaderStageFlags::Vertex);
 		func(_csStage, ShaderStageFlags::Pixel);
 		func(_gsStage, ShaderStageFlags::Geometry);
@@ -42,13 +48,15 @@ public:
 	}
 
 	struct Stage {
-		ByteArray _bytecode;
+		FileMemMap bytecode;
 	};
 
 	Stage _vsStage;
 	Stage _psStage;
 	Stage _gsStage;
 	Stage _csStage;
+
+	ShaderPipeline_Dx12 _pipeline;
 };
 
 class Shader_Dx12 : public Shader_Backend {

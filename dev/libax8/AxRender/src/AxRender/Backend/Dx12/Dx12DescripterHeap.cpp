@@ -20,9 +20,8 @@ void Dx12DescripterHeap_Base::_init(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TY
 	if (_d3dHeap && _desc.Type == type && _desc.Flags == flags && _numDescriptors == numDescriptors)
 		return;
 
-	_renderer = Dx12Util::renderer();
-
-	auto* d3dDevice = _renderer->d3dDevice();
+	auto* renderer = Renderer_Dx12::s_instance();
+	auto* d3dDevice = renderer->d3dDevice();
 	_stride = d3dDevice->GetDescriptorHandleIncrementSize(type);
 
 	_desc.NumDescriptors = SafeCast(numDescriptors);

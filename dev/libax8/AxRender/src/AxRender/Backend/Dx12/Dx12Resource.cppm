@@ -9,13 +9,29 @@ import :Renderer_Backend;
 
 namespace ax {
 
+template<class DATA, class OWNER, void (OWNER::*)()>
+class ScopeDataProxy0 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeDataProxy0(OWNER* owner, DATA && data) : _owner(owner), _data(AX_FORWARD(data)) {}
+
+private:
+	OWNER*	_owner = nullptr;
+	DATA	_data;
+};
+
+
 
 class Dx12ResourceBase : public NonCopyable {
+	using This = Dx12ResourceBase;
 public:
-	
-
 	void destroy();
 
+	MutByteSpan	_mapMemory(IntRange range);
+	void		_unmapMemory();
+	
+	using ScopeMapMemory = ScopeDataProxy0<MutByteSpan, This, &This::_unmapMemory>;
+	ScopeMapMemory 	scopeMapMemory(IntRange range) { return ScopeMapMemory(this, _mapMemory(range));  }
+	
 	void uploadToGpu(Int offset, ByteSpan data);
 
 	ID3D12Resource*	d3dResource() { return _d3dResource; }
@@ -32,7 +48,6 @@ public:
 
 	void resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state);
 
-
 protected:
 	Dx12ResourceBase();
 	void _create(const D3D12_CLEAR_VALUE* clearValue = nullptr);
@@ -48,7 +63,7 @@ protected:
 
 class Dx12Resource_RenderTarget : public Dx12ResourceBase {
 public:
-	void createFromSwapChain(IDXGISwapChain3* swapChain, UINT i);
+	void createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT i);
 };
 
 class Dx12Resource_DepthStencilBuffer : public Dx12ResourceBase {

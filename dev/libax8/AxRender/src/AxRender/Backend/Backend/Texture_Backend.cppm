@@ -1,5 +1,6 @@
 module;
 export module AxRender:Texture_Backend;
+export import :ImageIO;
 export import :Texture;
 export import :ResourceHandle_Backend;
 
@@ -42,12 +43,12 @@ protected:
 	void _create(const CreateDesc& desc) { onCreate(desc); }
 	virtual void onCreate(const CreateDesc& desc);
 
-	void _onImageIO_ReadHandler(class ImageIO_ReadHandler& handler) {
+	void _onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 		resourceHandle.markDirty();
 		onImageIO_ReadHandler(handler);
 	}
 
-	virtual void onImageIO_ReadHandler(class ImageIO_ReadHandler& handler) = 0;
+	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) = 0;
 };
 
 } // namespace

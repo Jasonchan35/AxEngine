@@ -10,9 +10,10 @@ namespace ax /*::AxRender*/ {
 
 class Renderer_Dx12;
 
-using AX_DX12_IDXGIFactory	= IDXGIFactory4;
-using AX_DX12_ID3D12Device	= ID3D12Device;
-using AX_DX12_IDXGIAdapter	= IDXGIAdapter3;
+using AX_DX12_IDXGIFactory    = IDXGIFactory4;
+using AX_DX12_ID3D12Device    = ID3D12Device;
+using AX_DX12_IDXGIAdapter    = IDXGIAdapter3;
+using AX_DX12_IDXGISwapChain  = IDXGISwapChain3;
 
 #if _DEBUG
 	using AX_DX12_IDXGIDebug	= IDXGIDebug1;
@@ -23,9 +24,6 @@ struct Dx12Util {
 	Dx12Util() = delete;
 
 	class DxResourceCreator;
-
-	static Renderer_Dx12*			renderer();
-	static AX_DX12_ID3D12Device*	d3dDevice();
 
 	static bool isValid			(HRESULT hr) { if (!checkError(hr)) { reportError(hr); return false; } return true; }
 

@@ -11,11 +11,17 @@ import :Shader_Dx12;
 
 namespace ax {
 
+class MaterialParamSpace_Dx12 : public MaterialParamSpace_Backend {
+	AX_RTTI_INFO(MaterialParamSpace_Dx12, MaterialParamSpace_Backend)
+public:
+	MaterialParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
+};
+
 class MaterialPass_Dx12 : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Dx12, MaterialPass_Backend)
 public:
 	MaterialPass_Dx12(const CreateDesc& desc) : Base(desc) {}
-	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
+	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override { AX_ASSERT_TODO; return false; }
 	
 private:
 	Dx12DescripterHeap_CBV_SRV_UAV	_texDescHeap;

@@ -3,9 +3,9 @@ module;
 export module AxRender:Texture_Dx12;
 #if AX_RENDERER_DX12
 
-import :Dx12Resource;
-import :Texture_Backend;
-import :Renderer_Backend;
+export import :Dx12Resource;
+export import :Texture_Backend;
+export import :Renderer_Backend;
 
 namespace ax {
 
@@ -18,8 +18,10 @@ public:
 class Texture2D_Dx12 : public Texture2D_Backend {
 	AX_RTTI_INFO(Texture2D_Dx12, Texture2D_Backend)
 public:
-	
 	Texture2D_Dx12(const CreateDesc& desc) : Base(desc) {}
+
+	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) override;
+
 	Dx12Resource_Texture2D	_tex;
 };
 

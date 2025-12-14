@@ -1,0 +1,123 @@
+{
+  "declare": {
+    "isGlobalCommonShader": false, 
+    "props": [{
+        "name": "color", 
+        "propType": "Color4f", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": [1, 1, 1, 1]
+      }, {
+        "name": "global_shininess", 
+        "propType": "f32", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": 0
+      }, {
+        "name": "tex0", 
+        "propType": "Texture2D", 
+        "displayName": "Texture0", 
+        "asset": "asset path", 
+        "defaultValue": "White", 
+        "samplerState": {
+          "filter": "Bilinear", 
+          "wrapU": "Repeat", 
+          "wrapV": "Clamp", 
+          "wrapW": "Repeat", 
+          "minLOD": 0, 
+          "maxLOD": "Infinity"
+        }
+      }, {
+        "name": "tex1", 
+        "propType": "Texture2D", 
+        "displayName": "Texture1", 
+        "asset": "", 
+        "defaultValue": "Blue", 
+        "samplerState": {
+          "filter": "Bilinear", 
+          "wrapU": "Repeat", 
+          "wrapV": "Repeat", 
+          "wrapW": "Repeat", 
+          "minLOD": 0, 
+          "maxLOD": "Infinity"
+        }
+      }], 
+    "passes": [{
+        "name": "Pass0", 
+        "vsFunc": "vs_main", 
+        "psFunc": "ps_main", 
+        "gsFunc": "", 
+        "renderState": {
+          "cull": "None", 
+          "blend": {
+            "rgb": {
+              "op": "Add", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "alpha": {
+              "op": "Add", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "constColor": [1, 1, 1, 1]
+          }, 
+          "depthTest": {
+            "op": "Less", 
+            "writeMask": true
+          }, 
+          "antialiasedLine": false, 
+          "wireframe": false
+        }
+      }]
+  }, 
+  "passStages": [{
+      "bindless": true, 
+      "stageFlags": 3, 
+      "inputs": [{
+          "semantic": "POSITION", 
+          "dataType": "f32x4"
+        }, {
+          "semantic": "TEXCOORD0", 
+          "dataType": "f32x2"
+        }], 
+      "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": 2, 
+          "paramSpaceType": 0, 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "dataSize": 48, 
+          "variables": [{
+              "name": "color", 
+              "offset": 0, 
+              "dataType": "f32x4", 
+              "rowMajor": true
+            }, {
+              "name": "AxSamplerState_tex0", 
+              "offset": 16, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxTexture2D_tex0", 
+              "offset": 20, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxSamplerState_tex1", 
+              "offset": 24, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxTexture2D_tex1", 
+              "offset": 28, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }]
+        }], 
+      "storageBuffers": [], 
+      "textures": [], 
+      "samplers": []
+    }]
+}

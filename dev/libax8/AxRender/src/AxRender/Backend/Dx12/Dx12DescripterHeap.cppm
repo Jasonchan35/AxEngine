@@ -44,7 +44,6 @@ protected:
 	void _init(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 
 	ComPtr<ID3D12DescriptorHeap>	_d3dHeap;
-	Renderer_Dx12*					_renderer = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
 	Int								_numDescriptors = 0;
 	Dx12DescriptorHandle			_heapStartHandle;
@@ -60,7 +59,7 @@ public:
 	Dx12DescriptorHandle createView(Int i, Dx12Resource_RenderTarget& res) {
 		//	D3D12_RENDER_TARGET_VIEW_DESC desc = {};
 		auto h = elementHandle(i);
-		_renderer->d3dDevice()->CreateRenderTargetView(res.d3dResource(), nullptr, h);
+		Renderer_Dx12::s_d3dDevice()->CreateRenderTargetView(res.d3dResource(), nullptr, h);
 		return h;
 	}
 };
@@ -74,7 +73,7 @@ public:
 	Dx12DescriptorHandle createView(Int i, Dx12Resource_DepthStencilBuffer& res) {
 		//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 		auto h = elementHandle(i);
-		_renderer->d3dDevice()->CreateDepthStencilView(res.d3dResource(), nullptr, h);
+		Renderer_Dx12::s_d3dDevice()->CreateDepthStencilView(res.d3dResource(), nullptr, h);
 		return h;
 	}
 };
@@ -91,13 +90,13 @@ public:
 		desc.SizeInBytes    = Dx12Util::castUINT(res.alignedDataSize());
 
 		auto h = elementHandle(i);
-		_renderer->d3dDevice()->CreateConstantBufferView(&desc, h);
+		Renderer_Dx12::s_d3dDevice()->CreateConstantBufferView(&desc, h);
 		return h;
 	}
 
 	Dx12DescriptorHandle createViewStructuredUAV(Int i, Dx12Resource_Buffer& buf) {
 		auto h = elementHandle(i);
-		_renderer->d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, nullptr, h);
+		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, nullptr, h);
 		return h;
 	}
 
@@ -112,14 +111,14 @@ public:
 		desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
 		auto h = elementHandle(i);
-		_renderer->d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, &desc, h);
+		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, &desc, h);
 		return h;
 	}
 
 	Dx12DescriptorHandle createViewSRV(Int i, Dx12Resource_Texture& res) {
 		//	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 		auto h = elementHandle(i);
-		_renderer->d3dDevice()->CreateShaderResourceView(res.d3dResource(), nullptr, h);
+		Renderer_Dx12::s_d3dDevice()->CreateShaderResourceView(res.d3dResource(), nullptr, h);
 		return h;
 	}
 };
@@ -132,7 +131,7 @@ public:
 
 	Dx12DescriptorHandle createSampler(Int i, const D3D12_SAMPLER_DESC& desc) {
 		auto o = elementHandle(i);
-		_renderer->d3dDevice()->CreateSampler(&desc, o.cpu);
+		Renderer_Dx12::s_d3dDevice()->CreateSampler(&desc, o.cpu);
 		return o;
 	}
 };

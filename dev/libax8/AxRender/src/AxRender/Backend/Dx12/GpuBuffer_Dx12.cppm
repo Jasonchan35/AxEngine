@@ -13,7 +13,7 @@ namespace ax {
 class GpuBuffer_Dx12 : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_Dx12, GpuBuffer_Backend)
 public:
-	
+	GpuBuffer_Dx12(const CreateDesc& desc) : Base(desc) {}
 
 	void onCreate(const CreateDesc& desc, Int bufferSize) {
 		_p.create(desc.bufferType, bufferSize);
@@ -28,6 +28,12 @@ public:
 	ID3D12Resource*	d3dResource() { return _p.d3dResource(); }
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _p.gpuAddress(); }
 
+protected:
+	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _p._mapMemory(range); }
+	virtual void		onUnmapMemory() override				{ return _p._unmapMemory(); }
+
+	virtual void		onFlush(IntRange range) override { AX_ASSERT_TODO; }
+	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override { AX_ASSERT(false); }
 
 private:
 	Dx12Resource_Buffer	_p;

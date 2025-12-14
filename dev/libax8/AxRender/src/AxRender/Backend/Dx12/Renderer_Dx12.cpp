@@ -16,7 +16,7 @@ namespace ax {
 
 AX_Renderer_FunctionBodies(Dx12);
 
-Renderer_Dx12::Renderer_Dx12(CreateDesc& desc)
+Renderer_Dx12::Renderer_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
 	HRESULT hr;
@@ -45,14 +45,13 @@ Renderer_Dx12::Renderer_Dx12(CreateDesc& desc)
 	Dx12Util::throwIfError(hr);
 
 	static const D3D_FEATURE_LEVEL s_featureLevels[] = {
+		D3D_FEATURE_LEVEL_12_2,
 		D3D_FEATURE_LEVEL_12_1,
 		D3D_FEATURE_LEVEL_12_0,
-		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0,
 	};
 
 	D3D12_FEATURE_DATA_FEATURE_LEVELS featLevels = {
-		ARRAYSIZE(s_featureLevels), s_featureLevels, D3D_FEATURE_LEVEL_11_0
+		ARRAYSIZE(s_featureLevels), s_featureLevels, D3D_FEATURE_LEVEL_12_0
 	};
 	hr = _d3dDevice->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &featLevels, sizeof(featLevels));
 	Dx12Util::throwIfError(hr);
@@ -123,22 +122,22 @@ void Renderer_Dx12::_getHardwareAdapter() {
 
 		// Check to see if the adapter supports Direct3D 12, but don't create the
 		// actual device yet.
-		hr = D3D12CreateDevice(_dxgiAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(axDX12_ID3D12Device), nullptr);
+		hr = D3D12CreateDevice(_dxgiAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(AX_DX12_ID3D12Device), nullptr);
 		if (!Dx12Util::checkError(hr))
 			continue;
 
-		_adapterInfo.adapterName.setUtf(axStrView_c_str(desc.Description));
+		_adapterInfo.name.setUtf(StrView_c_str(desc.Description));
 		_adapterInfo.memorySize = desc.DedicatedVideoMemory;
 
 		SIZE_T megaByte = 1024 * 1024;
 
-		AX_LOG(	"DX12 Adpter = {?}\n"
-				"	Revision = {?}\n"
-				"	VendorId = {?}\n"
-				"	DeviceId = {?}\n"
-				"	 Video  Memory = {?}M\n"
-				"	 System Memory = {?}M\n"
-				"	 Shared Memory = {?}M\n",
+		AX_LOG(	"DX12 Adpter = {}\n"
+				"	Revision = {}\n"
+				"	VendorId = {}\n"
+				"	DeviceId = {}\n"
+				"	 Video  Memory = {}M\n"
+				"	 System Memory = {}M\n"
+				"	 Shared Memory = {}M\n",
 					desc.Description, 
 					desc.Revision,
 					desc.VendorId,

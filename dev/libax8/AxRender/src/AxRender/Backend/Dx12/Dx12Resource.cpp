@@ -1,5 +1,6 @@
 module AxRender;
 import :Dx12Resource;
+import :Renderer_Dx12;
 
 #if AX_RENDERER_DX12
 
@@ -27,7 +28,7 @@ Dx12ResourceBase::Dx12ResourceBase() {
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
-	auto hr = Dx12Util::d3dDevice()->CreateCommittedResource(
+	auto hr = Renderer_Dx12::s_d3dDevice()->CreateCommittedResource(
 		&_heapProps,
 		D3D12_HEAP_FLAG_NONE,
 		&_desc,
@@ -121,6 +122,22 @@ void Dx12Resource_Buffer::create(GpuBufferType type, Int bufferSize) {
 	_dataSize = bufferSize;
 }
 
+
+MutByteSpan Dx12ResourceBase::_mapMemory(IntRange range) {
+	D3D12_RANGE dxRange;
+	dxRange.Begin = SafeCast(range.begin());
+	dxRange.End   = SafeCast(range.end());
+
+	UINT8* dst = nullptr;
+	auto hr = _d3dResource->Map(0, &dxRange, reinterpret_cast<void**>(&dst));
+	Dx12Util::throwIfError(hr);
+	return MutByteSpan(dst, range.size());
+}
+
+void Dx12ResourceBase::_unmapMemory() {
+	_d3dResource->Unmap(0, nullptr);
+}
+
 void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	D3D12_RANGE readRange = {}; // We do not intend to read from this resource on the CPU.
 	UINT8* dst = nullptr;
@@ -149,6 +166,15 @@ void Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12
 	cmdList->ResourceBarrier(1, &barrier);
 
 	_resourceState = state;
+}
+
+void Dx12Resource_RenderTarget::createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT i) {
+	auto hr = swapChain->GetBuffer(i, IID_PPV_ARGS(_d3dResource.ptrForInit()));
+	Dx12Util::throwIfError(hr);
+	_desc = _d3dResource->GetDesc();
+
+	D3D12_HEAP_FLAGS flags;
+	_d3dResource->GetHeapProperties(&_heapProps, &flags);
 }
 
 void Dx12Resource_DepthStencilBuffer::create(Vec2i size) {

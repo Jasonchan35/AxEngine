@@ -60,6 +60,7 @@
 #define AX_FORWARD(a) ::std::forward<decltype(a)>(a)
 #define AX_ASSERT(EXPR) ::ax::ax_assert((EXPR), #EXPR)
 #define AX_ASSERT_MSG(EXPR, MSG) ::ax::ax_assert((EXPR), MSG)
+#define AX_ASSERT_TODO	AX_ASSERT_MSG(false, "AX_ASSERT_TODO");
 
 #define AX_JOIN_WORD_INTERNAL_IMPL( w0,w1)		w0##w1
 #define AX_JOIN_WORD3_INTERNAL_IMPL(w0,w1,w2)	w0##w1##w2

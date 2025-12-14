@@ -94,7 +94,7 @@ void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
 	func(RenderAPI::Vk);
 #endif
 #if AX_RENDERER_DX12
-	func(RenderAPI::DX12);
+	func(RenderAPI::Dx12);
 #endif
 
 	auto outFilename = Fmt("{}/build.ninja", outDir);
@@ -173,13 +173,13 @@ void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& inf
 }
 
 #if AX_RENDERER_DX12
-void AxShaderTool_App::writeNinja_DX12Pass(IString& outStr, IArray<String>& outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename) {
+void AxShaderTool_App::writeNinja_Dx12Pass(IString& outStr, IArray<String>& outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename) {
 
 	outStr.append(	"#---- DX12 ----\n"
-					"rule build_dx12_bin_json\n"
+					"rule build_Shader_Dx12_json\n"
 					"  depfile = $out.d\n"
 					"  command = \"${AxShaderTool}\" $\n"
-					"    -genReflect_DX12 $\n");
+					"    -genReflect_Dx12 $\n");
 
 	if (opt.keepUnusedVariable) {
 		outStr.append("    -keepUnusedVariable $\n");
@@ -191,7 +191,7 @@ void AxShaderTool_App::writeNinja_DX12Pass(IString& outStr, IArray<String>& outJ
 					"    -out=\"$out\" $\n"
 					"    -file=\"$in\""
 					"\n\n"
-					"rule build_dx12_bin\n"
+					"rule build_Shader_Dx12_bin\n"
 					"  command = \"$windows_sdk_bin/dxc\" $\n"
 #if AX_RENDER_BINDLESS
 					"    -DAX_RENDER_BINDLESS=1 $\n"
@@ -209,16 +209,16 @@ void AxShaderTool_App::writeNinja_DX12Pass(IString& outStr, IArray<String>& outJ
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
 		if (!entryPoint) return;
 
-		String outJsonFilename = Fmt("DX12-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
+		String outJsonFilename = Fmt("Shader_Dx12-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
 		outJsonFileList.append(outJsonFilename);
 
-		outStr.append(Fmt("build {}: build_dx12_bin_json ${{SourceFile}} | ${{AxShaderTool}}\n", outJsonFilename, pass.name, stageFlags));
+		outStr.append(Fmt("build {}: build_Shader_Dx12_json ${{SourceFile}} | ${{AxShaderTool}}\n", outJsonFilename, pass.name, stageFlags));
 		outStr.append(Fmt("  param_entry_point = {}\n", entryPoint));
 		outStr.append(Fmt("  param_profile     = {}\n", profile));
 		outStr.append("\n");
 
 		// have to use dxc.exe from MS, because that add validate hash in the bin file
-		outStr.append(Fmt("build DX12-{}-{}.bin: build_dx12_bin ${{SourceFile}} | {} \n", pass.name, stageFlags, outJsonFilename));
+		outStr.append(Fmt("build Shader_Dx12-{}-{}.bin: build_Shader_Dx12_bin ${{SourceFile}} | {} \n", pass.name, stageFlags, outJsonFilename));
 		outStr.append(Fmt("  param_entry_point = {}\n", entryPoint));
 		outStr.append(Fmt("  param_profile     = {}\n", profile));
 		outStr.append("\n");
@@ -464,7 +464,7 @@ int AxShaderTool_App::onRun() {
 #endif
 
 #if AX_RENDERER_DX12		
-	} else if (opt.genReflect_DX12) {
+	} else if (opt.genReflect_Dx12) {
 		GenReflect_Dx12 c;
 		c.compile(opt.out, opt.file, opt.profile, opt.entry, opt.include_dirs, opt.keepUnusedVariable);
 #endif

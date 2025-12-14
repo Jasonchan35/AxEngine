@@ -1,0 +1,66 @@
+{
+  "declare": {
+    "isGlobalCommonShader": false, 
+    "props": [], 
+    "passes": [{
+        "name": "Pass0", 
+        "vsFunc": "vs_main", 
+        "psFunc": "ps_main", 
+        "gsFunc": "", 
+        "renderState": {
+          "cull": "None", 
+          "blend": {
+            "rgb": {
+              "op": "Add", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "alpha": {
+              "op": "Add", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "constColor": [1, 1, 1, 1]
+          }, 
+          "depthTest": {
+            "op": "Always", 
+            "writeMask": true
+          }, 
+          "antialiasedLine": false, 
+          "wireframe": false
+        }
+      }]
+  }, 
+  "passStages": [{
+      "bindless": true, 
+      "stageFlags": 3, 
+      "inputs": [{
+          "semantic": "POSITION", 
+          "dataType": "f32x2"
+        }, {
+          "semantic": "COLOR0", 
+          "dataType": "f32x4"
+        }, {
+          "semantic": "TEXCOORD0", 
+          "dataType": "f32x2"
+        }], 
+      "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": 3, 
+          "paramSpaceType": 0, 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "dataSize": 80, 
+          "variables": [{
+              "name": "imguiProjectionMatrix", 
+              "offset": 0, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }]
+        }], 
+      "storageBuffers": [], 
+      "textures": [], 
+      "samplers": []
+    }]
+}
