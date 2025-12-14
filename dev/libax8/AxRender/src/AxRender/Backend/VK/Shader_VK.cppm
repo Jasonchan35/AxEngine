@@ -7,7 +7,7 @@ export import :AX_Vulkan;
 export import :RenderRequest_Backend;
 export import :Shader_Backend;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class ShaderParamSpace_VK : public ShaderParamSpace_Backend {
 	AX_RTTI_INFO(ShaderParamSpace_VK, ShaderParamSpace_Backend)

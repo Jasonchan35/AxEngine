@@ -6,7 +6,7 @@ export module AxRender:AX_VkUtil;
 export import :Shader;
 export import :Texture;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 class AX_VkUtil {
 public:
@@ -377,7 +377,7 @@ VkCompareOp AX_VkUtil::getVkDepthTestOp(DepthTestOp v) {
 }
 
 inline
-VkAttachmentLoadOp ax::AxRender::AX_VkUtil::getVkLoadOp(RenderBufferLoadOp v) {
+VkAttachmentLoadOp AX_VkUtil::getVkLoadOp(RenderBufferLoadOp v) {
 	using SRC = RenderBufferLoadOp;
 	switch (v) {
 		case SRC::DontCare:		return  VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -387,6 +387,6 @@ VkAttachmentLoadOp ax::AxRender::AX_VkUtil::getVkLoadOp(RenderBufferLoadOp v) {
 	}
 }
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/
 
 #endif // AX_RENDERER_VK

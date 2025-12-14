@@ -6,7 +6,7 @@ import :Texture_Backend;
 import :Renderer_Backend;
 import :Material_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 #if 0
 #pragma mark "============ MaterialParamSpace_Backend ==============="

@@ -4,4 +4,4 @@
 
 import AxShaderTool;
 
-AX_APP_MAIN(ax::AxRender::AxShaderTool_App);
+AX_APP_MAIN(ax::AxShaderTool_App);

@@ -3,7 +3,7 @@ module AxRender;
 import :ImageIO;
 import :ResourceManager_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 SPtr<Sampler> Sampler_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<Sampler_Backend> o;

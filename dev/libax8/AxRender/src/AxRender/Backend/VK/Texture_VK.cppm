@@ -7,7 +7,7 @@ export import :AX_Vulkan;
 export import :Texture_Backend;
 export import :GpuBuffer_Backend;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class Sampler_VK : public Sampler_Backend {
 	AX_RTTI_INFO(Sampler_VK, Sampler_Backend)

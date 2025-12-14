@@ -6,7 +6,7 @@ import :RenderRequest_VK;
 import :Texture_VK;
 import :Material_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 template<class T>
 RenderRequest_Bindless_VK::Table<T>::Table() {

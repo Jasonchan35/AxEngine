@@ -11,8 +11,8 @@ class EditorApp_CreateDesc : public EditorApp::CreateDesc {
 public:
 	EditorApp_CreateDesc() {
 		peekMessage = true;
-//		rendererDesc.info.api = AxRender::RenderApi::Null;
-		rendererDesc.info.api = AxRender::RenderApi::VK;
+//		rendererDesc.info.api = RenderAPI::Null;
+		rendererDesc.info.api = RenderAPI::VK;
 	}
 };
 

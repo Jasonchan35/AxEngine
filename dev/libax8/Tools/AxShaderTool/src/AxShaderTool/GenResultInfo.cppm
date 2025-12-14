@@ -3,11 +3,11 @@ module;
 export module AxShaderTool:GenResultInfo;
 export import AxRender;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class GenResultInfo : public NonCopyable {
 public:
-	void run(StrView outFilename, StrView filename, RenderApi api);
+	void run(StrView outFilename, StrView filename, RenderAPI api);
 
 	void mergeStageInfo(ShaderStageInfo& outStageInfo, const ShaderStageInfo& inStageInfo);
 

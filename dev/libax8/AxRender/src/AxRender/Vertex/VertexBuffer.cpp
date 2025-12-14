@@ -1,6 +1,6 @@
 module AxRender;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 void VertexBuffer::create(VertexLayout vertexLayout) {
 	if (!vertexLayout)

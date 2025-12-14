@@ -5,7 +5,7 @@ import :GenReflect_VK;
 import :ShaderInfoParser;
 import :GenResultInfo;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 AxShaderTool_App::AxShaderTool_App() {
 	Error::s_setEnableAssertion(true);
@@ -82,19 +82,19 @@ void AxShaderTool_App::genNinja_Shader(StrView outdir, StrView filename) {
 
 	outStr.append(Fmt("SourceFile={}\n\n", filename));
 
-	auto func = [&](RenderApi api) {
+	auto func = [&](RenderAPI api) {
 		outStr.append(Fmt("build {}/shaderResult.json: build_api_shader {} | ${{AxShaderTool}} ${{SourceFile}}\n", api, api));
 		genNinja_Shader_API(api, parser.info, outdir, filename);
 	};
 
 #if AX_RENDERER_NULL
-	func(RenderApi::Null);
+	func(RenderAPI::Null);
 #endif
 #if AX_RENDERER_VK	
-	func(RenderApi::VK);
+	func(RenderAPI::VK);
 #endif
 #if AX_RENDERER_DX12
-	func(RenderApi::DX12);
+	func(RenderAPI::DX12);
 #endif
 
 	auto outFilename = Fmt("{}/build.ninja", outdir);
@@ -127,7 +127,7 @@ void AxShaderTool_App::writeNinja_Header(IString& outStr) {
 	outStr.append("\n\n");
 }
 
-void AxShaderTool_App::genNinja_Shader_API(RenderApi api, ShaderDeclareInfo& info, StrView outdir, StrView filename) {	
+void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& info, StrView outdir, StrView filename) {	
 	auto apiOutdir = Fmt("{}/{}", outdir, api);
 
 	auto absSourceFilename = FilePath::absPath(filename);
@@ -140,13 +140,13 @@ void AxShaderTool_App::genNinja_Shader_API(RenderApi api, ShaderDeclareInfo& inf
 	for (auto& pass : info.passes) {
 		switch (api) {
 #if AX_RENDERER_NULL
-			case RenderApi::Null:   writeNinja_NullPass(outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::Null:   writeNinja_NullPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 #if AX_RENDERER_VK
-			case RenderApi::VK:		writeNinja_VulkanPass(outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::VK:		writeNinja_VulkanPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 #if AX_RENDERER_DX12
-			case RenderApi::DX12:	writeNinja_DX12Pass  (outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::DX12:	writeNinja_DX12Pass  (outStr, depFileList, pass, absSourceFilename); break;
 #endif
 			default: break;
 		}
@@ -448,13 +448,13 @@ int AxShaderTool_App::onRun() {
 #if AX_RENDERER_NULL
 	} else if (opt.genReflect_Null) {
 		GenReflect_VK_EX c;
-		c.generate(opt.out, opt.file, RenderApi::Null);
+		c.generate(opt.out, opt.file, RenderAPI::Null);
 #endif
 
 #if AX_RENDERER_VK
 	} else if (opt.genReflect_VK) {
 		GenReflect_VK_EX c;
-		c.generate(opt.out, opt.file, RenderApi::VK);
+		c.generate(opt.out, opt.file, RenderAPI::VK);
 #endif
 
 #if AX_RENDERER_DX12		

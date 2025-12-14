@@ -3,7 +3,7 @@
 export module AxRender:RenderDataType;
 export import :Common;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 using RenderSeqId = i64;
 
@@ -268,4 +268,4 @@ template<RenderDataType dt> using  RenderDataType_Type = typename RenderDataType
 	AX_RenderDataType_Basic_ENUM_LIST(E)
 #undef E
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/

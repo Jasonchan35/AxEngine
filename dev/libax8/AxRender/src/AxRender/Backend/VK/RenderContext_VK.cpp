@@ -8,7 +8,7 @@ import :Texture_VK;
 import :RenderRequest_VK;
 import :GpuBuffer_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 RenderContext_VK_Base::RenderContext_VK_Base(const CreateDesc& desc)
 : Base(desc)

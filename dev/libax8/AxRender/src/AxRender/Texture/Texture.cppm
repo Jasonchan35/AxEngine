@@ -3,7 +3,7 @@ export module AxRender:Texture;
 export import :RenderObject;
 export import :Image;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 #define AX_RENDER_SamplerFilter_ENUM_LIST(E) \
 	E(None,) \

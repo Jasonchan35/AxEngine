@@ -12,7 +12,7 @@ import :RenderRequest_VK;
 import :Shader_VK;
 import :Texture_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 AX_Renderer_FunctionBodies(VK);
 

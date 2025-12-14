@@ -1,7 +1,7 @@
 module AxRender;
 import :ImageIO_DDS;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 #if 0
 #pragma mark -------------- DDS Header -------------

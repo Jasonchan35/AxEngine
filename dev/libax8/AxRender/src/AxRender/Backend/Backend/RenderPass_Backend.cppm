@@ -2,7 +2,7 @@ module;
 export module AxRender:RenderPass_Backend;
 export import :RenderPass;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderPass_Backend : public RenderPass {
 	AX_RTTI_INFO(RenderPass_Backend, RenderPass)

@@ -2,7 +2,7 @@ module;
 export module AxRender:Material;
 export import :Shader;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class MaterialParamSpace_CreateDesc : public NonCopyable {
 public:

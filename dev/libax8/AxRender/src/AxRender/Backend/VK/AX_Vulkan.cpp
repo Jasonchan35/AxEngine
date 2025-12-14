@@ -6,7 +6,7 @@ module AxRender;
 import :AX_Vulkan;
 import :Renderer_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 AX_VkInstanceCreateInfo::Props::Props() {
 	VkResult err;

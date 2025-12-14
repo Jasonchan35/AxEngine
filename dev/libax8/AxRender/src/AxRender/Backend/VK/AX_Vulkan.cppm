@@ -5,7 +5,7 @@ export module AxRender:AX_Vulkan;
 #if AX_RENDERER_VK
 export import :AX_VkUtil;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class AX_VkInstance;
 enum class AX_VkQueueFamilyIndex : u32 { Invalid = UINT32_MAX };
@@ -828,6 +828,6 @@ private:
 	AX_VkDevice* _dev = nullptr;
 };
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/
 
 #endif // AX_RENDERER_VK

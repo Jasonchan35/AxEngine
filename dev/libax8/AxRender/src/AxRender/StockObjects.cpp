@@ -1,6 +1,6 @@
 module AxRender;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 static StockObjects* StockObjects_instance = nullptr;
 

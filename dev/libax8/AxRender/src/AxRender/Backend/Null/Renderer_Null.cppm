@@ -9,7 +9,7 @@ export import :Texture_Backend;
 export import :Material_Backend;
 export import :ImageIO;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class Renderer_Null : public Renderer_Backend {
 	AX_RTTI_INFO(Renderer_Null, Renderer_Backend)

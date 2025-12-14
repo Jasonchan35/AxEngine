@@ -1,7 +1,7 @@
 module AxRender;
 import :ResourceManager_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 static ResourceManager_Backend* ResourceManager_Backend_instance = nullptr;
 

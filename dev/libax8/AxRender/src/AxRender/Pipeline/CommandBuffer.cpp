@@ -1,5 +1,5 @@
 module AxRender;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 }

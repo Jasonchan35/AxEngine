@@ -3,7 +3,7 @@ module;
 export module AxRender:UI;
 export import :Common; 
 
-export namespace ax::AxRender::UI {
+export namespace ax /*::AxRender*/::UI {
 	constexpr const char* mixedValueFormat = "--";
 	constexpr const char* floatFormat = "%0.3f";
 	constexpr bool showMixedValue = false;

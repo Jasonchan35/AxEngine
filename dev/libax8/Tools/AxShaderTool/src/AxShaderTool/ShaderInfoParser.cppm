@@ -3,7 +3,7 @@ module;
 export module AxShaderTool:ShaderInfoParser;
 export import AxRender;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class ShaderInfoParser : public NonCopyable {
 public:

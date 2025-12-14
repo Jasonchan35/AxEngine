@@ -1,6 +1,6 @@
 module AxRender;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 void RenderMesh::clear() {
 	_subMeshes.clear();

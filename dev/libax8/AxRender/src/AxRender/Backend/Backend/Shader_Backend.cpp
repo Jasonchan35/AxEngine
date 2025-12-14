@@ -4,7 +4,7 @@ import :StockObjects;
 import :Renderer_Backend;
 import :ResourceManager_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 #if 0
 #pragma mark ------ ShaderParamSpace_Backend ------

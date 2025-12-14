@@ -8,7 +8,7 @@ import :GpuBuffer;
 import :RenderContext_Backend;
 import :ResourceManager_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& req, Renderer* renderer, Int index) {
 	CreateDesc desc;
@@ -166,4 +166,4 @@ void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {
 	_gpuBuffer = GpuBuffer_Backend::s_new(AX_ALLOC_REQ, "InlineBuffer", GpuBufferType::StagingToGpu, info.bufferSize);
 }
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/

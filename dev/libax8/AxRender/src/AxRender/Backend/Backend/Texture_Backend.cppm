@@ -3,7 +3,7 @@ export module AxRender:Texture_Backend;
 export import :Texture;
 export import :ResourceHandle_Backend;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class Sampler_Backend : public  Sampler {
 	AX_RTTI_INFO(Sampler_Backend, Sampler)

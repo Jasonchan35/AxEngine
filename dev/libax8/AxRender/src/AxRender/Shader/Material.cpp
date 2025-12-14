@@ -2,7 +2,7 @@ module AxRender;
 import :Material_Backend;
 import :Renderer_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 SPtr<Material> Material::s_new(const MemAllocRequest& req, Shader* shader) {
 	return Material_Backend::s_new(req, shader);

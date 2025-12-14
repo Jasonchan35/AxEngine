@@ -8,7 +8,7 @@ import :GpuBuffer_VK;
 import :StockObjects;
 import :RenderPass_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 CommandBuffer_VK& CommandBuffer_VK::create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue) {
 	_pool.create(dev, queue);

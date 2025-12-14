@@ -3,7 +3,7 @@
 export module AxShaderTool:CmdOptions;
 export import AxRender;
 
-export namespace  ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 struct CmdOptions {
 	bool genNinja = false;
@@ -23,7 +23,7 @@ struct CmdOptions {
 	String out;
 	String entry;
 	String profile;
-	RenderApi api;
+	RenderAPI api;
 	Array<String>	include_dirs;
 };
 

@@ -3,7 +3,7 @@
 module AxRender;
 import :Renderer_Null;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 AX_Renderer_FunctionBodies(Null)
 

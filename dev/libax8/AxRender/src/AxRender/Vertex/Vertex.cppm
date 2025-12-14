@@ -3,7 +3,7 @@ export module AxRender:Vertex;
 export import :RenderDataType;
 export import :VertexLayout;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 struct VertexBase {
 	using PosType    = void;

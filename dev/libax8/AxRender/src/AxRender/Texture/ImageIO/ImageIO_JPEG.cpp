@@ -5,7 +5,7 @@ module;
 module AxRender;
 import :ImageIO_JPEG;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 void ImageIO_Reader_JPEG::s_output_message (j_common_ptr cinfo) {
 	char buffer[JMSG_LENGTH_MAX];

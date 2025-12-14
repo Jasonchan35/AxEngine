@@ -5,7 +5,7 @@ export import :Vertex;
 export import :StockObjects;
 export import :GpuBuffer;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 
 AX_ENUM_CLASS(AX_ShaderPropType_EnumList, ShaderPropType, u16)

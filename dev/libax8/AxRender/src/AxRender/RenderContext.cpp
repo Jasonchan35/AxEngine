@@ -3,7 +3,7 @@ import :RenderContext_Backend;
 import :RenderRequest;
 import :Renderer_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 UPtr<RenderContext> RenderContext::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	auto o = Renderer_Backend::s_instance()->newRenderContext(req, desc);

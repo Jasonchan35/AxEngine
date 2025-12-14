@@ -6,7 +6,7 @@ import :RenderRequest_Backend;
 import :RenderContext_Backend;
 import :ResourceManager_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 struct Renderer_Backend::PrivateData {
 	Array<UPtr<RenderRequest_Backend>>	renderRequests;
@@ -98,4 +98,4 @@ RenderRequest_Backend* Renderer_Backend::getRenderRequest(Int i) {
 	return _privateData->renderRequests[i];
 }
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/

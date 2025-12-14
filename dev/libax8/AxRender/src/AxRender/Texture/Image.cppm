@@ -2,7 +2,7 @@ module;
 export module AxRender:Image;
 export import :RenderDataType;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 #define AX_RENDER_ImageFileType_ENUM_LIST(E) \
 	E(None,	) \

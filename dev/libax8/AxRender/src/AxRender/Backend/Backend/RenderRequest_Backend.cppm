@@ -8,7 +8,7 @@ export import :Texture_Backend;
 export import :Material_Backend;
 export import :RenderPass_Backend;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderRequest_CreateDesc : public NonCopyable {
 public:

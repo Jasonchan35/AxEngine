@@ -6,7 +6,7 @@ module;
 export module AxRender:ImageIO_JPEG;
 export import :ImageIO;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class ImageIO_Reader_JPEG : public NonCopyable {
 public:

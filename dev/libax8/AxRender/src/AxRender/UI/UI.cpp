@@ -4,7 +4,7 @@ module AxRender;
 import :UI;
 import :AxImGui;
 
-namespace ax::AxRender::UI {
+namespace ax /*::AxRender*/::UI {
 
 bool DragFloat(StrView label, float* v, float v_speed, float v_min, float v_max) {
 	return ::ImGui::DragFloat(TempString(label).c_str(), v, v_speed, v_min, v_max, showMixedValue ? mixedValueFormat : floatFormat);

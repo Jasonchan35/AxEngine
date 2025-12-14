@@ -2,7 +2,7 @@ module;
 export module AxRender:RenderMesh;
 export import :VertexBuffer;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderMesh;
 

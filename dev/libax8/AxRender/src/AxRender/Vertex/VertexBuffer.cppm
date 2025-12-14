@@ -3,7 +3,7 @@ export module AxRender:VertexBuffer;
 export import :GpuBuffer;
 export import :VertexLayout;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class VertexBuffer : public NonCopyable {
 public:

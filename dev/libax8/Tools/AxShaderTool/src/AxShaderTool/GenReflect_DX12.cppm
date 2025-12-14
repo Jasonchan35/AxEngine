@@ -21,7 +21,7 @@ export module AxShaderTool:GenReflect_DX12;
 #if AX_RENDERER_DX12
 export import AxRender;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 inline
 StrView StrView_make(IDxcBlob* blob) {

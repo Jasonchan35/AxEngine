@@ -4,7 +4,7 @@ import :RenderRequest_Backend;
 import :RenderContext_Backend;
 import :GpuBuffer_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 SPtr<GpuBuffer> GpuBuffer::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	return GpuBuffer_Backend::s_new(req, desc);

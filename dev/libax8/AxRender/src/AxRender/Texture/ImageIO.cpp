@@ -3,7 +3,7 @@ import :ImageIO_DDS;
 import :ImageIO_PNG;
 import :ImageIO_JPEG;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 void ImageIO::loadFile(const Callback& callback, StrView filename, ImageFileType fileType) {
 	FileMemMap	inData(filename);

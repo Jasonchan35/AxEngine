@@ -1,7 +1,7 @@
 module AxRender;
 import :ImageIO;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 ImageFileType ImageFileType_fromFileExt(StrView ext) {
 	if (ext.equals("dds" , StrCase::Ignore)) return ImageFileType::DDS;

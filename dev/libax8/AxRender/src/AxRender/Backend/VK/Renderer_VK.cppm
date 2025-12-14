@@ -6,7 +6,7 @@ export module AxRender:Renderer_VK;
 export import :Renderer_Backend;
 export import :AX_Vulkan;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class Renderer_VK : public Renderer_Backend {
 	AX_RTTI_INFO(Renderer_VK, Renderer_Backend)

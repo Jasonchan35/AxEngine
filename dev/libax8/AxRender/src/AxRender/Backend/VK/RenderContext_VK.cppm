@@ -6,7 +6,7 @@ export module AxRender:RenderContext_VK;
 export import :RenderContext_Backend;
 export import :CommandBuffer_VK;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderContext_VK_Base : public RenderContext_Backend {
 	AX_RTTI_INFO(RenderContext_VK_Base, RenderContext_Backend)

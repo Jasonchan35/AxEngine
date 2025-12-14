@@ -4,7 +4,7 @@ module AxShaderTool;
 
 import :GenReflect_DX12;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 class GenReflect_DX12::IncludeHandler : public IDxcIncludeHandler {
 public:

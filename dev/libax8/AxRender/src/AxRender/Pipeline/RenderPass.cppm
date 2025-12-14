@@ -3,7 +3,7 @@ export module AxRender:RenderPass;
 export import :RenderObject;
 export import :GpuBuffer;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderPass_CreateDesc : public NonCopyable {
 public:

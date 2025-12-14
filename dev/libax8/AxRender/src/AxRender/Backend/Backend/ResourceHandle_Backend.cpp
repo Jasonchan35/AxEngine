@@ -5,7 +5,7 @@ import :RenderRequest_Backend;
 import :RenderContext_Backend;
 
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 template<class T>
 ResourceTable_Backend<T>::ResourceTable_Backend() {

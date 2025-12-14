@@ -1,7 +1,7 @@
 module AxRender;
 import :Vertex;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 VertexLayoutManager::VertexLayoutManager() {
 }

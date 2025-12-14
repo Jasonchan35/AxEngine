@@ -2,9 +2,9 @@ module AxShaderTool;
 
 import :GenResultInfo;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
-void GenResultInfo::run(StrView outFilename, StrView filename, RenderApi api) {
+void GenResultInfo::run(StrView outFilename, StrView filename, RenderAPI api) {
 	JsonIO::readFile(filename, _resultInfo.declare);
 
 	_resultInfo.passStages.ensureCapacity(_resultInfo.declare.passes.size());
@@ -71,7 +71,7 @@ void GenResultInfo::mergeStageInfo(ShaderStageInfo& outStageInfo, const ShaderSt
 }
 
 template<class T, class FUNC> inline
-void ax::AxRender::GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSpan, FUNC func) {
+void GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSpan, FUNC func) {
 	for (auto& src : srcSpan) {
 
 		if (!_resultInfo.declare.isGlobalCommonShader) {

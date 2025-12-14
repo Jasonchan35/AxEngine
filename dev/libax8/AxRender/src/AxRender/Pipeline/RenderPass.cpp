@@ -3,7 +3,7 @@ module AxRender;
 import :Renderer_Backend;
 import :RenderPass_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 RenderPass::RenderPass(const CreateDesc& desc) {
 	_name = desc.name;

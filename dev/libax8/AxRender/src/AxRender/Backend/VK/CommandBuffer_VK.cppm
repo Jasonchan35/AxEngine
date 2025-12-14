@@ -8,7 +8,7 @@ export import :CommandBuffer;
 export import :Renderer_Backend;
 export import :RenderRequest_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 class CommandBuffer_VK : public CommandBuffer {
 	AX_RTTI_INFO(CommandBuffer_VK, CommandBuffer)

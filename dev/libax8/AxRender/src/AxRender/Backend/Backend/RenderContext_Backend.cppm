@@ -3,7 +3,7 @@ export module AxRender:RenderContext_Backend;
 export import :RenderContext;
 export import :AxImGui;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderPass_Backend;
 

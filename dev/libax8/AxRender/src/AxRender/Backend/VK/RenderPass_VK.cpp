@@ -8,7 +8,7 @@ import :RenderContext_VK;
 import :GpuBuffer_VK;
 import :RenderRequest_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 RenderPass_VK::RenderPass_VK(const CreateDesc& desc) 
 : Base(desc)

@@ -10,7 +10,7 @@ import :Texture_VK;
 import :GpuBuffer_VK;
 import :RenderContext_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 MaterialParamSpace_VK::MaterialParamSpace_VK(const CreateDesc& desc)
 	: Base(desc) {}
@@ -260,5 +260,5 @@ MaterialPass_VK::MaterialPass_VK(const CreateDesc& desc)
 }
 
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/
 #endif // AX_RENDERER_VK

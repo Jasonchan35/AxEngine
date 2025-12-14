@@ -6,7 +6,7 @@ export module AxRender:GpuBuffer_VK;
 export import :AX_Vulkan;
 export import :GpuBuffer_Backend;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class GpuBuffer_VK : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_VK, GpuBuffer_Backend)

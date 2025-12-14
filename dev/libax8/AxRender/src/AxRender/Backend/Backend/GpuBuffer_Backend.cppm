@@ -3,7 +3,7 @@ export module AxRender:GpuBuffer_Backend;
 export import :Renderer_Backend;
 export import :GpuBuffer;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class GpuBuffer_Backend : public GpuBuffer {
 	AX_RTTI_INFO(GpuBuffer_Backend, GpuBuffer)

@@ -3,22 +3,22 @@ export module AxRender:Renderer;
 export import :RenderObject;
 export import :RenderDataType;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
-#define AX_RenderApi_ENUM_LIST(E) \
+#define AX_RenderAPI_ENUM_LIST(E) \
 	E(None,) \
 	E(Null,) \
 	E(DX12,) \
 	E(VK,) \
 //-----
-AX_ENUM_CLASS(AX_RenderApi_ENUM_LIST, RenderApi, u8);
+AX_ENUM_CLASS(AX_RenderAPI_ENUM_LIST, RenderAPI, u8);
 
 class GpuUploadManager;
 
 struct RendererInfo {
 	RendererInfo();
 
-	RenderApi	api = RenderApi::None;
+	RenderAPI	api = RenderAPI::None;
 	bool multithread		: 1;
 	bool enableDebugReport	: 1;
 	bool enableDebugUtils	: 1;
@@ -47,7 +47,7 @@ public:
 	Renderer(const CreateDesc& desc);
 	virtual ~Renderer() override;
 
-	RenderApi	api() const			{ return _info.api; }
+	RenderAPI	api() const			{ return _info.api; }
 	bool		multithread() const	{ return _info.multithread; }
 
 	struct AdapterInfo {

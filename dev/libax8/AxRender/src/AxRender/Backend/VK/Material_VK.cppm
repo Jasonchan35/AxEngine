@@ -8,7 +8,7 @@ export import :Material_Backend;
 export import :Shader_VK;
 
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderRequest_VK;
 

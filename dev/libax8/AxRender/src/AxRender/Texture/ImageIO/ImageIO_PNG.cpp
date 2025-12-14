@@ -5,7 +5,7 @@ module;
 module AxRender;
 import :ImageIO_PNG;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 ImageIO_Reader_PNG::~ImageIO_Reader_PNG() {
 	if (_info) {

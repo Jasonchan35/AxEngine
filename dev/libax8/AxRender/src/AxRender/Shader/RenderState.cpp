@@ -1,6 +1,6 @@
 module AxRender;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 RenderState::Blend::Blend() {
 	rgb.set(  BlendOp::Disable, BlendFactor::One, BlendFactor::OneMinusSrcAlpha);

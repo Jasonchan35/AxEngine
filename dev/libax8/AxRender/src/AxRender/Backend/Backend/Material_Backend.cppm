@@ -4,7 +4,7 @@ export import :Shader_Backend;
 export import :Texture_Backend;
 export import :Material;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 /*
     +--------------------------+     +-------------------------+

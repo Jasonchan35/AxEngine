@@ -4,7 +4,7 @@ import :RenderRequest_Backend;
 import :GpuBuffer;
 import :Renderer_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 RenderContext_Backend::RenderContext_Backend(const CreateDesc& desc) 
 : Base(desc)

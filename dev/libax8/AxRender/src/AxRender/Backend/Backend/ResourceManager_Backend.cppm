@@ -4,7 +4,7 @@ export import :Texture_Backend;
 export import :Shader_Backend;
 export import :Renderer_Backend;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class ResourceManager_Backend : public NonCopyable {
 	using This = ResourceManager_Backend;

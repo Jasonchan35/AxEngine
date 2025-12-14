@@ -22,7 +22,7 @@ module AxShaderTool;
 
 import :GenReflect_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 struct VarNameToSemantic {
 
@@ -165,7 +165,7 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 	return RenderDataType::None;
 }
 
-void GenReflect_VK_EX::generate(StrView outFilename, StrView filename, RenderApi api) {
+void GenReflect_VK_EX::generate(StrView outFilename, StrView filename, RenderAPI api) {
 	FileMemMap	spv_data(filename);
 
 	spv_reflect::ShaderModule spirvReflect(spv_data.size(), spv_data.data());

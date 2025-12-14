@@ -3,7 +3,7 @@ module;
 export module AxRender:Renderer_Backend;
 export import :Renderer;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderRequest_Backend;
 

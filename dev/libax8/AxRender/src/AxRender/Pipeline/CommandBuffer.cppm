@@ -7,7 +7,7 @@ export import :Material;
 export import :RenderPass;
 export import :RenderMesh;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class Cmd_DrawCall : public NonCopyable {
 public:

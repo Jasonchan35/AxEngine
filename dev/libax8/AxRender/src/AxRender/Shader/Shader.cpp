@@ -3,7 +3,7 @@ import :Shader_Backend;
 import :Renderer_Backend;
 import :Material_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 void ShaderStageInfo::loadFile(StrView filename_) {
 	filename = filename_;

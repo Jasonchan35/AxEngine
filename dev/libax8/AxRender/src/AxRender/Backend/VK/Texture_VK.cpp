@@ -8,7 +8,7 @@ import :RenderRequest_VK;
 import :ImageIO;
 import :GpuBuffer_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 void Sampler_VK::onCreate(const CreateDesc& desc) {
 	Base::onCreate(desc);

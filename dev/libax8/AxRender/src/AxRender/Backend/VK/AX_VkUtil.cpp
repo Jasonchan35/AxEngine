@@ -5,7 +5,7 @@ module AxRender;
 #if AX_RENDERER_VK
 import :AX_VkUtil;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 AX_VkAllocatorCallbacks* AX_VkUtil::allocCallbacks() {
 #if 0
@@ -90,5 +90,5 @@ void AX_VkAllocatorCallbacks::s_freeNotification(
 	VkSystemAllocationScope allocationScope
 ) {}
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/
 #endif // #if AX_RENDERER_VK

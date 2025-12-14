@@ -11,7 +11,7 @@ import :RenderRequest_VK;
 import :RenderContext_VK;
 import :Material_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 
 VkDescriptorSetLayout ShaderParamSpace_VK::createDescriptorSetLayout() {

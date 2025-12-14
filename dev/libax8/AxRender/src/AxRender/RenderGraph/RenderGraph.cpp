@@ -6,7 +6,7 @@ import :Renderer_Backend;
 import :RenderContext_Backend;
 import :RenderPass_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, const RenderColorBufferDesc& desc)
 	: _pass(pass)
@@ -283,4 +283,4 @@ void RenderGraph_BackBufferPass::setRenderPass(RenderPass* pass) {
 	_renderPass = pass;
 }
 
-} // namespace ax::AxRender
+} // namespace ax /*::AxRender*/

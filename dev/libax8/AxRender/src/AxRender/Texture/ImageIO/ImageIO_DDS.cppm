@@ -3,7 +3,7 @@ module;
 export module AxRender:ImageIO_DDS;
 export import :ImageIO;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class ImageIO_Reader_DDS : public NonCopyable {
 public:

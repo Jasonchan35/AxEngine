@@ -5,7 +5,7 @@ import :AxImGui;
 import :Renderer;
 import :RenderContext;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 AxImGui::~AxImGui() {
 	destroy();
@@ -221,7 +221,7 @@ void AxImGui::_createFontTexture() {
 
 	using Color = ColorRb;
 
-	AxRender::ImageInfo	info(Color::kColorType, Vec2i(width, height));
+	ImageInfo	info(Color::kColorType, Vec2i(width, height));
 	auto pixelData = ByteSpan(pixels, width * height);
 	_fontTex = Texture2D::s_new(AX_ALLOC_REQ, info, pixelData);
 }

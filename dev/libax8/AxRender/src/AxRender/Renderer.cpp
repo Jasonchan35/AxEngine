@@ -6,7 +6,7 @@ import :Renderer_Null;
 	import :Renderer_VK;
 #endif
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 static Renderer* Renderer_instance = nullptr;
 
@@ -17,12 +17,12 @@ Renderer* Renderer::s_instance() {
 UPtr<Renderer> Renderer::s_create(const CreateDesc& desc) {
 	UPtr<Renderer> o;
 	switch (desc.info.api) {
-		case RenderApi::Null:	o = UPtr_new<Renderer_Null>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Null:	o = UPtr_new<Renderer_Null>(AX_ALLOC_REQ, desc); break;
 #if AX_RENDERER_VK
-		case RenderApi::VK:		o = UPtr_new<Renderer_VK>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::VK:		o = UPtr_new<Renderer_VK>(AX_ALLOC_REQ, desc); break;
 #endif
 #if AX_RENDERER_DX12
-		case RenderApi::DX12:	o = UPtr_new<Renderer_DX12>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::DX12:	o = UPtr_new<Renderer_DX12>(AX_ALLOC_REQ, desc); break;
 #endif
 		default:	throw Error_Undefined(); break;
 	}
@@ -61,9 +61,9 @@ RendererInfo::RendererInfo() {
 
 #if AX_OS_WINDOWS
 	#if AX_RENDERER_VK
-		api = RenderApi::VK;
+		api = RenderAPI::VK;
 	#elif AX_RENDERER_DX12
-		api = RenderApi::DX12;
+		api = RenderAPI::DX12;
 	#endif
 #endif
 //	AX_ASSERT(api != RenderApi::None);

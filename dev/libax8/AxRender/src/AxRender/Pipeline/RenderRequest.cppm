@@ -2,7 +2,7 @@ module;
 export module AxRender:RenderRequest;
 export import :CommandBuffer;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderContext;
 class RenderGraph_Output;

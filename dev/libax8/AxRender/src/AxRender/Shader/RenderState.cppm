@@ -2,7 +2,7 @@ module;
 export module AxRender:RenderState;
 export import :RenderDataType;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 #define AX_RENDER_DepthTestOp_ENUM_LIST(E) \
 	E(Less,) \

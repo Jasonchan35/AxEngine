@@ -3,7 +3,7 @@ export module AxRender:Shader_Backend;
 export import :ResourceHandle_Backend;
 export import :Shader;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class Shader_Backend;
 class ShaderPass_Backend;

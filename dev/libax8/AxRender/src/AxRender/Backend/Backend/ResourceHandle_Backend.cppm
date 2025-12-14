@@ -2,7 +2,7 @@ module;
 export module AxRender:ResourceHandle_Backend;
 export import :Texture;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 template<class T> class ResourceTable_Backend;
 

@@ -2,7 +2,7 @@ module;
 export module AxRender:ImageIO;
 export import :Image;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class ImageIO_ReadHandler : public NonCopyable {
 	using This = ImageIO_ReadHandler;

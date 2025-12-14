@@ -2,7 +2,7 @@ module AxShaderTool;
 
 import :ShaderInfoParser;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 void ShaderInfoParser::readFile(StrView outdir, StrView filename) {
 	_fileMap.openFile(filename);

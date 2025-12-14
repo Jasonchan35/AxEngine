@@ -7,7 +7,7 @@ import :Renderer_VK;
 import :RenderContext_VK;
 import :Material_VK;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 RenderRequest_VK::RenderRequest_VK(const CreateDesc& desc)
 : Base(desc)

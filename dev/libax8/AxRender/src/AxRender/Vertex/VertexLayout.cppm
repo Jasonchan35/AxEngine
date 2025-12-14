@@ -2,7 +2,7 @@ module;
 export module AxRender:VertexLayout;
 export import :RenderDataType;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 enum class VertexSemantic : u16;
 

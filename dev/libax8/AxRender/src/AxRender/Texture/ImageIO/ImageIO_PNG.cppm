@@ -4,7 +4,7 @@ module;
 export module AxRender:ImageIO_PNG;
 export import :ImageIO;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class ImageIO_Reader_PNG : public NonCopyable {
 	using This = ImageIO_Reader_PNG;

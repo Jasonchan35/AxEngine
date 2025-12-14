@@ -3,7 +3,7 @@ export module AxRender:RenderGraph;
 export import :RenderDataType;
 export import :RenderRequest;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderGraph;
 class RenderGraph_Pass;

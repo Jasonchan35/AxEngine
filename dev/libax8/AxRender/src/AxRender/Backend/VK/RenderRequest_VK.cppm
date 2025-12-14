@@ -8,7 +8,7 @@ export import :RenderContext_VK;
 export import :RenderRequest_Bindless_VK;
 export import :Renderer_VK;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 
 class RenderRequest_VK : public RenderRequest_Backend {

@@ -2,7 +2,7 @@ module;
 export module AxRender:StockObjects;
 export import :Texture;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 #define AX_RENDER_StockTextureId_ENUM_LIST(E) \
 	E(None,) \

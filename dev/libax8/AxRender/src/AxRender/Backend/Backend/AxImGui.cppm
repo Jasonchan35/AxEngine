@@ -6,7 +6,7 @@ export import :VertexBuffer;
 export import :GpuBuffer;
 export import :Material;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderContext;
 class RenderRequest;

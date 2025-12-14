@@ -7,7 +7,7 @@ export import :CommandBuffer_VK;
 export import :RenderPass_VK;
 export import :RenderContext_VK;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderRequest_VK;
 

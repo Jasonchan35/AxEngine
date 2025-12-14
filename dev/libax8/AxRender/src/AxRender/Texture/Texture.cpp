@@ -2,7 +2,7 @@ module AxRender;
 import :Renderer_Backend;
 import :Texture_Backend;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 SPtr<Sampler> Sampler::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	return Sampler_Backend::s_new(req, desc);

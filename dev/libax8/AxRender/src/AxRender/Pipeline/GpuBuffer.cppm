@@ -3,7 +3,7 @@ export module AxRender:GpuBuffer;
 export import :Renderer;
 export import :Texture;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 #define AX_RENDER_GpuBufferType_ENUM_LIST(E) \
 	E(None,			) \

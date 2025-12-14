@@ -4,7 +4,7 @@ import :CommandBuffer;
 import :RenderRequest;
 import :UI;
 
-namespace ax::AxRender {
+namespace ax /*::AxRender*/ {
 
 DefaultRenderGraph::DefaultRenderGraph() {
 	backBufferPass().color0.setClearColor(Color4f::kDarkBlue());

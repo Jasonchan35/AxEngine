@@ -14,7 +14,7 @@ protected:
 	virtual void onWindowCloseButton() override;
 
 
-	struct MyRenderGraph : public AxRender::DefaultRenderGraph {
+	struct MyRenderGraph : public DefaultRenderGraph {
 		class EditorMainWindow* win = nullptr;
 	};
 

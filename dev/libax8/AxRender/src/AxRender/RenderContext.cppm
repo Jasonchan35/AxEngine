@@ -3,7 +3,7 @@ export module AxRender:RenderContext;
 export import :RenderRequest;
 export import :RenderGraph;
 
-export namespace ax::AxRender {
+export namespace ax /*::AxRender*/ {
 
 class RenderContext;
 
