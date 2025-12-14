@@ -14,10 +14,12 @@ class HashInt {
 	AX_INLINE constexpr HashInt(const VALUE& v) noexcept : value(v) {} // private
 public:
 	using Value = VALUE;
-	Value	value;
+	Value	value = 0;
 
 	template<class OBJ>
 	static constexpr This s_make(const OBJ& obj);
+
+	constexpr HashInt() = default;
 
 	AX_NODISCARD AX_INLINE constexpr bool operator==(const This& other) const noexcept { return value == other.value; }
 	AX_NODISCARD AX_INLINE constexpr bool operator!=(const This& other) const noexcept { return value != other.value; }

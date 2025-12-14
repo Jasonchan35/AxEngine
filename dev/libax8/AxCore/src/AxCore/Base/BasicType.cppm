@@ -286,10 +286,10 @@ class MutStrLit_ : public MutZStrView_<T> {
 	using Base::_size;
 public:
 
-	// consteval - only construct from compile time and ensure the lifespan is permanent
-	consteval MutStrLit_() noexcept = default;
-	consteval MutStrLit_(const This&) noexcept = default;
+	constexpr MutStrLit_() noexcept = default;
+	constexpr MutStrLit_(const This&) noexcept = default;
 	
+	// consteval - only construct from compile time and ensure the lifespan is permanent
 	template<Int N>
 	AX_INLINE consteval MutStrLit_(T (&sz)[N]) noexcept : Base(sz) {}
 
