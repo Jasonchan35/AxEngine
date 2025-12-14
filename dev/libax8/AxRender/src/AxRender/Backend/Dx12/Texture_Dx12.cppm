@@ -12,15 +12,14 @@ namespace ax {
 class Sampler_Dx12 : public Sampler_Backend {
 	AX_RTTI_INFO(Sampler_Dx12, Sampler_Backend)
 public:
+	Sampler_Dx12(const CreateDesc& desc) : Base(desc) {}
 };
 
 class Texture2D_Dx12 : public Texture2D_Backend {
 	AX_RTTI_INFO(Texture2D_Dx12, Texture2D_Backend)
 public:
 	
-
-	Texture2D_Dx12(CreateDesc& desc);
-
+	Texture2D_Dx12(const CreateDesc& desc) : Base(desc) {}
 	Dx12Resource_Texture2D	_tex;
 };
 

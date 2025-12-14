@@ -140,6 +140,11 @@ public:
 	constexpr void appendUtf(StrView32 r);
 
 	template<class... ARGS>
+	constexpr void format(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
+		clear(); appendFormat(fmt, args...);
+	}
+	
+	template<class... ARGS>
 	constexpr void appendFormat(const FormatString_<T, ARGS...> & fmt, const ARGS&... args) {
 		FmtTo(*this, fmt, AX_FORWARD(args)...);
 	}

@@ -1,16 +1,17 @@
 module AxRender;
-import :DescripterHeap_Dx12;
+import :Dx12DescripterHeap;
 
 #if AX_RENDERER_DX12
 
 namespace  ax {
-void axDX12DescripterHeap_Base::destroy() {
+
+void Dx12DescripterHeap_Base::destroy() {
 	_d3dHeap.unref();
 	_numDescriptors = 0;
-	_heapStartHandle = axDX12DescriptorHandle();
+	_heapStartHandle = Dx12DescriptorHandle();
 }
 
-void axDX12DescripterHeap_Base::_init(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
+void Dx12DescripterHeap_Base::_init(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
 	if (numDescriptors <= 0) {
 		destroy();
 		return;
@@ -24,7 +25,7 @@ void axDX12DescripterHeap_Base::_init(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_
 	auto* d3dDevice = _renderer->d3dDevice();
 	_stride = d3dDevice->GetDescriptorHandleIncrementSize(type);
 
-	ax_safe_assign(_desc.NumDescriptors, numDescriptors);
+	_desc.NumDescriptors = SafeCast(numDescriptors);
 	_desc.Type  = type;
 	_desc.Flags = flags;
 	auto hr = d3dDevice->CreateDescriptorHeap(&_desc, IID_PPV_ARGS(_d3dHeap.ptrForInit()));

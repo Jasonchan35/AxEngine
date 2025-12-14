@@ -33,48 +33,6 @@ private:
 	Dx12Resource_Buffer	_p;
 };
 
-class StorageBuffer_Dx12 : public GpuBuffer_Dx12 {
-	AX_RTTI_INFO(StorageBuffer_Dx12, GpuBuffer_Dx12)
-public:
-	
-
-	StorageBuffer_Dx12(CreateDesc& desc) : Base(desc) {}
-
-	GpuBuffer_Dx12* gpuBuffer() { return rttiCastCheck<GpuBuffer_Dx12>(_gpuBuffer.ptr()); }
-	ID3D12Resource*	d3dResource() { return gpuBuffer()->d3dResource(); }
-};
-
-class StageBuffer_Dx12 : public GpuBuffer_Dx12 {
-	AX_RTTI_INFO(StageBuffer_Dx12, GpuBuffer_Dx12)
-public:
-	
-
-	StageBuffer_Dx12(CreateDesc& desc) : Base(desc) {}
-
-	GpuBuffer_Dx12* gpuBuffer() { return rttiCastCheck<GpuBuffer_Dx12>(_gpuBuffer.ptr()); }
-
-	ID3D12Resource*	d3dResource() { return gpuBuffer()->d3dResource(); }
-
-	void* onMap() override {
-		auto* buf = gpuBuffer();
-
-		D3D12_RANGE readRange = {0, Dx12Util::castUINT64(buf->bufferSize()) }; // We do not intend to read from this resource on the CPU.
-		UINT8* dst = nullptr;
-
-		auto hr = buf->d3dResource()->Map(0, &readRange, reinterpret_cast<void**>(&dst));
-		Dx12Util::throwIfError(hr);
-
-		return dst;
-	}
-
-	void onUnmap() override {
-		auto* buf = gpuBuffer();
-		if (!buf) throw Error_Undefined();
-		buf->d3dResource()->Unmap(0, nullptr);
-	}
-};
-
-
 } // namespace
 
 #endif

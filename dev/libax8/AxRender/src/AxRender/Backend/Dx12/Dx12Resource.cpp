@@ -4,7 +4,6 @@ import :Dx12Resource;
 #if AX_RENDERER_DX12
 
 namespace ax {
-
 Dx12ResourceBase::Dx12ResourceBase() {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 	_desc.Alignment = 0;
@@ -82,7 +81,7 @@ void Dx12Resource_Buffer::create(GpuBufferType type, Int bufferSize) {
 			alignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 			// _resourceState	= D3D12_RESOURCE_STATE_COPY_SOURCE | D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 			_resourceState	= D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-//			_desc.Format = DXGI_FORMAT_R32_TYPELESS;
+			//			_desc.Format = DXGI_FORMAT_R32_TYPELESS;
 			_desc.Flags		= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}break;
 
@@ -132,17 +131,8 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	if (offset < 0 || offset + data.size() > _dataSize)
 		throw Error_Undefined();
 
-	ax_memcpy(dst + offset, data.data(), data.sizeInBytes());
+	MemUtil::copy(dst + offset, data.data(), data.sizeInBytes());
 	_d3dResource->Unmap(0, nullptr);
-}
-
-void RenderTarget_Dx12::createFromSwapChain(IDXGISwapChain3* swapChain, UINT i) {
-	auto hr = swapChain->GetBuffer(i, IID_PPV_ARGS(_d3dResource.ptrForInit()));
-	Dx12Util::throwIfError(hr);
-	_desc = _d3dResource->GetDesc();
-
-	D3D12_HEAP_FLAGS flags;
-	_d3dResource->GetHeapProperties(&_heapProps, &flags);
 }
 
 void Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state) {
@@ -161,7 +151,7 @@ void Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12
 	_resourceState = state;
 }
 
-void DepthStencilBuffer_Dx12::create(Vec2i size) {
+void Dx12Resource_DepthStencilBuffer::create(Vec2i size) {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	_desc.MipLevels = 0;
 	_desc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -179,7 +169,7 @@ void DepthStencilBuffer_Dx12::create(Vec2i size) {
 	_create(&clearValue);
 }
 
-void ResourceTexture2D_Dx12::create(Vec2i size, Int mipmapCount, ColorType colorType) {
+void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType colorType) {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	_desc.Format = Dx12Util::getDxColorType(colorType);
 	_resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
@@ -190,5 +180,7 @@ void ResourceTexture2D_Dx12::create(Vec2i size, Int mipmapCount, ColorType color
 
 	_create();
 }
+
+} // namespace
 
 #endif //#if AX_RENDERER_DX12

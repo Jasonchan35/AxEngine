@@ -1,7 +1,7 @@
 module;
 
 export module AxRender:Material_Dx12;
-import :Dx12Util;
+import :Dx12DescripterHeap;
 
 #if AX_RENDERER_DX12
 
@@ -14,36 +14,27 @@ namespace ax {
 class MaterialPass_Dx12 : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Dx12, MaterialPass_Backend)
 public:
+	MaterialPass_Dx12(const CreateDesc& desc) : Base(desc) {}
+	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 	
-
-	void bind	(ID3D12GraphicsCommandList* cmdList, DrawCall& drawCall);
-	void bind	(ID3D12GraphicsCommandList* cmdList, ComputeCall& computeCall);
-
-	void onSetShaderPass(ShaderPass* shaderPass);
-
-	ShaderPass_Dx12*	shaderPass() { return rttiCastCheck<axDX12ShaderPass>(Base::shaderPass()); }
-
 private:
-	void _bindParams(ID3D12GraphicsCommandList* cmdList);
-
-	axDX12DescripterHeap_CBV_SRV_UAV	_texDescHeap;
-	axDX12DescripterHeap_Sampler		_samplerDescHeap;
-	axDX12DescripterHeap_CBV_SRV_UAV	_storageBufDescHeap;
-
+	Dx12DescripterHeap_CBV_SRV_UAV	_texDescHeap;
+	Dx12DescripterHeap_Sampler		_samplerDescHeap;
+	Dx12DescripterHeap_CBV_SRV_UAV	_storageBufDescHeap;
 };
 
-class Material_Dx12 : public axMaterial {
-	AX_RTTI_INFO(Material_Dx12, axMaterial)
+class Material_Dx12 : public Material_Backend {
+	AX_RTTI_INFO(Material_Dx12, Material_Backend)
 public:
-	
+	Material_Dx12(const CreateDesc& desc) : Base(desc) {}
 
-	Material_Dx12() = default;
+	Shader_Dx12*	shader_dx12() { return rttiCastCheck<Shader_Dx12>(Base::shader()); }
 
-	axDX12Shader*	shader() { return rttiCastCheck<axDX12Shader>(Base::shader()); }
-
-	void bind	(ID3D12GraphicsCommandList* cmdList, DrawCall&		drawCall);
-	void bind	(ID3D12GraphicsCommandList* cmdList, ComputeCall&	computeCall);
+	virtual UPtr<MaterialPass_Backend> onNewPass(const MaterialPass_Backend_CreateDesc& desc) override {
+		return UPtr_new<MaterialPass_Dx12>(AX_ALLOC_REQ, desc);
+	}
 };
+
 } // namespace
 
 #endif //#if AX_RENDERER_DX12

@@ -22,10 +22,10 @@ public:
 #endif
 	
 #if AX_RENDERER_VK
-	void writeNinja_VulkanPass		(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
+	void writeNinja_VkPass			(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
 #endif
 #if AX_RENDERER_DX12
-	void writeNinja_DX12Pass		(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
+	void writeNinja_Dx12Pass		(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
 #endif
 
 	void showHelp();

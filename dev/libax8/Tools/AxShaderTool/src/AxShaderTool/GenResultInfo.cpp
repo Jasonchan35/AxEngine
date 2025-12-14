@@ -18,7 +18,7 @@ void GenResultInfo::run(StrView outFilename, StrView filename, RenderAPI api) {
 		auto addStage = [&](StrView funcName, ShaderStageFlags stageFlags) {
 			if (!funcName) return;
 
-			auto stageInfoFilename = Fmt("{}-{}-{}.bin.json.tmp", api, pass.name, stageFlags);
+			auto stageInfoFilename = Fmt("Shader_{}-{}-{}.bin.json.tmp", api, pass.name, stageFlags);
 
 			ShaderStageInfo	inStageInfo;
 			JsonIO::readFile(stageInfoFilename, inStageInfo);

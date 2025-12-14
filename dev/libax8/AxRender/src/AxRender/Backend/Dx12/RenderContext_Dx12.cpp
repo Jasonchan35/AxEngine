@@ -5,9 +5,9 @@ import :RenderContext_Dx12;
 
 namespace ax {
 
-const wchar_t* axDX12RenderContext::kClassName = L"axDX12RenderContext";
+const wchar_t* RenderContext_Dx12_Win32_ClassName = L"RenderContext_Dx12";
 
-axDX12RenderContext::axDX12RenderContext(Renderer_Dx12* renderer, CreateDesc& desc)
+RenderContext_Dx12::RenderContext_Dx12(Renderer_Dx12* renderer, CreateDesc& desc)
 	: Base(renderer, desc)
 {
 	_createWindow(desc);
@@ -59,11 +59,11 @@ axDX12RenderContext::axDX12RenderContext(Renderer_Dx12* renderer, CreateDesc& de
 	_createRenderTargetView();
 }
 
-Renderer_Dx12* axDX12RenderContext::renderer() {
+Renderer_Dx12* RenderContext_Dx12::renderer() {
 	return static_cast<Renderer_Dx12*>(_renderer);
 }
 
-void axDX12RenderContext::_createRenderTargetView() {
+void RenderContext_Dx12::_createRenderTargetView() {
 	_releaseRenderTargetView();
 
 	_renderTargetDescHeap.init(kFrameBufferCount);
@@ -88,7 +88,7 @@ void axDX12RenderContext::_createRenderTargetView() {
 	}
 }
 
-void axDX12RenderContext::_releaseRenderTargetView() {
+void RenderContext_Dx12::_releaseRenderTargetView() {
 	for (UINT i = 0; i < kFrameBufferCount; i++) {
 		auto* f = &_frameArray[i];
 		f->_renderTargetResource.destroy();
@@ -97,7 +97,7 @@ void axDX12RenderContext::_releaseRenderTargetView() {
 }
 
 
-void axDX12RenderContext::cmdSwapBuffers(CommandDispatcher_Dx12& dispatcher) {
+void RenderContext_Dx12::cmdSwapBuffers(CommandDispatcher_Dx12& dispatcher) {
 	{	// Indicate that the back buffer will now be used to present.
 		D3D12_RESOURCE_BARRIER barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -119,7 +119,7 @@ void axDX12RenderContext::cmdSwapBuffers(CommandDispatcher_Dx12& dispatcher) {
 	Dx12Util::throwIfError(hr);
 }
 
-void axDX12RenderContext::onDispatchCommands(RenderRequest& req_) {
+void RenderContext_Dx12::onDispatchCommands(RenderRequest& req_) {
 	_setFrameIndex(_swapChain->GetCurrentBackBufferIndex());
 
 	auto* req = rttiCastCheck<axDX12RenderRequest>(&req_);
@@ -156,19 +156,19 @@ void axDX12RenderContext::onDispatchCommands(RenderRequest& req_) {
 	dispatcher.dispatch();
 }
 
-void axDX12RenderContext::onPreDestroy() {
+void RenderContext_Dx12::onPreDestroy() {
 }
 
-void axDX12RenderContext::onSetNeedToRender() {
+void RenderContext_Dx12::onSetNeedToRender() {
 	if (_hwnd) {
 		::RedrawWindow(_hwnd, nullptr, nullptr, RDW_INVALIDATE);
 	}
 }
 
-axDX12RenderContext::~axDX12RenderContext() {
+RenderContext_Dx12::~RenderContext_Dx12() {
 }
 
-void axDX12RenderContext::onSetNativeViewRect(const Rect2f& rect) {
+void RenderContext_Dx12::onSetNativeViewRect(const Rect2f& rect) {
 	::MoveWindow(_hwnd, int(rect.x), int(rect.y), int(rect.w), int(rect.h), false);
 
 	_releaseRenderTargetView();
@@ -183,7 +183,7 @@ void axDX12RenderContext::onSetNativeViewRect(const Rect2f& rect) {
 	Base::onSetNativeViewRect(rect);
 }
 
-LRESULT WINAPI axDX12RenderContext::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT WINAPI RenderContext_Dx12::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 		case WM_CREATE: {
 			auto cs = reinterpret_cast<CREATESTRUCT*>(lParam);
@@ -217,7 +217,7 @@ LRESULT WINAPI axDX12RenderContext::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam
 	return ::DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-void axDX12RenderContext::_createWindow(CreateDesc& desc) {
+void RenderContext_Dx12::_createWindow(CreateDesc& desc) {
 	auto hInstance = ::GetModuleHandle(nullptr);
 	HWND parentHwnd = desc.window ? desc.window->hwnd() : nullptr;
 
@@ -256,7 +256,7 @@ void axDX12RenderContext::_createWindow(CreateDesc& desc) {
 	ShowWindow(_hwnd, SW_SHOW);
 }
 
-void axDX12RenderContext::_setFrameIndex(UINT i) {
+void RenderContext_Dx12::_setFrameIndex(UINT i) {
 	_frameIndex = i;
 	_frame = &_frameArray[i];
 }

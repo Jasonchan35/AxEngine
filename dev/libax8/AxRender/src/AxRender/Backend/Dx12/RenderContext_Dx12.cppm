@@ -1,7 +1,7 @@
 module;
 
 export module AxRender:RenderContext_Dx12;
-import :Dx12Util;
+import :Dx12DescripterHeap;
 import :RenderContext_Backend;
 
 #if AX_RENDERER_DX12
@@ -20,19 +20,11 @@ public:
 
 	Renderer_Dx12* renderer();
 
-	void cmdSwapBuffers(CommandDispatcher_Dx12& dispatcher);
-
 protected:
-	virtual void onDispatchCommands(RenderRequest& req) override;
-	virtual void onPreDestroy();
-	virtual void onSetNeedToRender() override;
-	virtual void onSetNativeViewRect(const Rect2f& rect) override;
-
 	static LRESULT WINAPI s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	AX_INLINE static This* s_getThis(HWND hwnd) {
 		return reinterpret_cast<This*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
-
 
 private:
 	void _createWindow(CreateDesc& desc);
@@ -42,24 +34,24 @@ private:
 
 	void _setFrameIndex(UINT i);
 
-	static const UINT kFrameBufferCount = 2; // front and back buffer	
-	static const wchar_t* kClassName;
+	static constexpr UINT kFrameBufferCount = 2; // front and back buffer	
+
 	ThreadId							_currentThreadId;
 	ComPtr<ID3D12CommandQueue>			_cmdQueue;
 	ComPtr<ID3D12CommandQueue>			_computeCmdQueue;
 
 	ComPtr<IDXGISwapChain3>				_swapChain;
 
-	axDX12DescripterHeap_RenderTarget		_renderTargetDescHeap;
-	axDX12DescripterHeap_DepthStencilBuffer	_depthStencilDescHeap;
+	Dx12DescripterHeap_RenderTarget			_renderTargetDescHeap;
+	Dx12DescripterHeap_DepthStencilBuffer	_depthStencilDescHeap;
 
 	struct FrameData {
 		UINT index = 0xffff;
-		axDX12DescriptorHandle				renderTarget;
-		axDX12DescriptorHandle				depthStencilBuffer;
+		Dx12DescriptorHandle				renderTarget;
+		Dx12DescriptorHandle				depthStencilBuffer;
 
-		axDX12Resource_RenderTarget			_renderTargetResource;
-		axDX12Resource_DepthStencilBuffer	_depthStencilBufferResource;
+		Dx12Resource_RenderTarget			_renderTargetResource;
+		Dx12Resource_DepthStencilBuffer		_depthStencilBufferResource;
 	};
 
 	FixedArray<FrameData, kFrameBufferCount>	_frameArray;

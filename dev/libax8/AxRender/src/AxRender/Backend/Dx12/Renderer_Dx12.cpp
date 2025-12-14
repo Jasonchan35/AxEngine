@@ -1,7 +1,16 @@
 module AxRender;
-import :Renderer_Dx12;
 
 #if AX_RENDERER_DX12
+
+import :Renderer_Dx12;
+import :GpuBuffer_Dx12;
+import :Material_Dx12;
+import :RenderContext_Dx12;
+import :RenderPass_Dx12;
+import :RenderRequest_Dx12;
+import :RenderTarget_Dx12;
+import :Shader_Dx12;
+import :Texture_Dx12;
 
 namespace ax {
 

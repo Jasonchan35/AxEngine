@@ -69,17 +69,21 @@ private:
 	Array<UPtr<Pipeline>, 4>	_pipelineTable;
 
 	template<class FUNC>
-	void _visitModules(FUNC func) {
-		func(_vsModule, ShaderStageFlags::Vertex);
-		func(_csModule, ShaderStageFlags::Pixel);
-		func(_gsModule, ShaderStageFlags::Geometry);
-		func(_csModule, ShaderStageFlags::Compute);
+	void _visitStages(FUNC func) {
+		func(_vsStage, ShaderStageFlags::Vertex);
+		func(_psStage, ShaderStageFlags::Pixel);
+		func(_gsStage, ShaderStageFlags::Geometry);
+		func(_csStage, ShaderStageFlags::Compute);
 	}
 
-	AX_VkShaderModule	_vsModule;
-	AX_VkShaderModule	_psModule;
-	AX_VkShaderModule	_gsModule;
-	AX_VkShaderModule	_csModule;
+	struct Stage {
+		AX_VkShaderModule	vkShaderModule;
+	};
+
+	Stage _vsStage;
+	Stage _psStage;
+	Stage _gsStage;
+	Stage _csStage;
 };
 
 class Shader_Vk : public Shader_Backend {

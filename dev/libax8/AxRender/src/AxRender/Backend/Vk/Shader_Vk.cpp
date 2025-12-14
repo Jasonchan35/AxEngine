@@ -89,16 +89,15 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		addLayout(commonPass, ParamSpaceType::PerObject);
 	}
 
-	auto loadModule = [&](AX_VkShaderModule& outModule, ShaderStageFlags stageFlags) {
+	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
 		if (!desc.info->getFuncName(stageFlags)) return;
 
-		auto filename = Fmt("{}/VK/VK-{}-{}.bin", shader()->assetPath(), _name, stageFlags);
+		auto filename = Fmt("{}/Vk/Shader_Vk-{}-{}.bin", shader()->assetPath(), _name, stageFlags);
 		FileMemMap bytecode(filename);
-		outModule.create(dev, bytecode);
+		stage.vkShaderModule.create(dev, bytecode);
 	};
 
-	_visitModules(loadModule);
-
+	_visitStages(loadStage);
 	_pipelineLayout.create(dev, layouts);
 }
 
@@ -148,7 +147,7 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 
 //-----
 	VertexInputLayoutDesc_Vk vertexInputLayoutDesc;
-	if (!_vsModule) { AX_ASSERT(false); return nullptr; }
+	if (!_vsStage.vkShaderModule) { AX_ASSERT(false); return nullptr; }
 
 	if (!vertexInputLayoutDesc.init(*_stageInfo, key.vertexLayout)) {
 		AX_ASSERT(false);
@@ -171,7 +170,7 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 	viewportState.pScissors = &scissorRect;
 
 	Array<VkPipelineShaderStageCreateInfo, 32>	stageCreateInfos;
-	auto addStage = [&](AX_VkShaderModule& mod, ShaderStageFlags stageFlags) -> void {
+	auto addStage = [&](Stage& stage, ShaderStageFlags stageFlags) -> void {
 		auto& entryFunc = info()->getFuncName(stageFlags);
 		if (!entryFunc) return;
 
@@ -179,11 +178,11 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 		dst.sType	= VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		dst.stage	= AX_VkUtil::getVkShaderStageFlagBits(stageFlags);
 	//	dst.flags	= VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT;
-		dst.module	= mod;
+		dst.module	= stage.vkShaderModule;
 		dst.pName	= entryFunc.c_str();
 	};
 
-	_visitModules(addStage);
+	_visitStages(addStage);
 
 	pipelineCreateInfo.stageCount	= AX_VkUtil::castUInt32(stageCreateInfos.size());
 	pipelineCreateInfo.pStages		= stageCreateInfos.data();

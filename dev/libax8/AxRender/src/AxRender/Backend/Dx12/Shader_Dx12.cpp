@@ -9,30 +9,32 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
 	auto shaderFilename = shader()->assetPath();
-
 	HRESULT hr = 0;
 
 	TempString vsBytecodeFilename;
-	TempString psBytecodeFilename;
-	TempString csBytecodeFilename;
+	vsBytecodeFilename.format("{}/Dx12_pass{?}.{?}.bin", shaderFilename, passIndex, StageProfile::DX12_VS);
 
-	vsBytecodeFilename.format("{}/DX12_pass{?}.{?}.bin", shaderFilename, passIndex, StageProfile::DX12_VS);
-	psBytecodeFilename.format("{}/DX12_pass{?}.{?}.bin", shaderFilename, passIndex, StageProfile::DX12_PS);
-	csBytecodeFilename.format("{}/DX12_pass{?}.{?}.bin", shaderFilename, passIndex, StageProfile::DX12_CS);
+	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
+		if (!desc.info->getFuncName(stageFlags)) return;
 
+		auto filename = Fmt("{}/Dx12/Dx12-{}-{}.bin", shader()->assetPath(), _name, stageFlags);
+		FileMemMap bytecode(filename);
+		outModule.create(dev, bytecode);
+	};	
+
+	_visitStage(loadStage);
+
+
+	
 	axTempString vsInfoFilename(vsBytecodeFilename, ".json");
-	axTempString psInfoFilename(psBytecodeFilename, ".json");
-	axTempString csInfoFilename(csBytecodeFilename, ".json");
 
 	if (info.vsFunc) axFile::readBytes(vsBytecodeFilename, _vsBytecode);
-	if (info.psFunc) axFile::readBytes(psBytecodeFilename, _psBytecode);
-	if (info.csFunc) axFile::readBytes(csBytecodeFilename, _csBytecode);
 
 	initStageInfos(info, vsInfoFilename, psInfoFilename, csInfoFilename);
 
 	onInit_DescriptorTable(_psoTexDescTable);
-	onInit_DescriptorTable(_psoSamplerDescTable);
-	onInit_DescriptorTable(_psoStorageBufDescTable);
+
+	_visitModules()
 
 	{	// Create an root signature.
 		D3D12_VERSIONED_ROOT_SIGNATURE_DESC versionedDesc;
