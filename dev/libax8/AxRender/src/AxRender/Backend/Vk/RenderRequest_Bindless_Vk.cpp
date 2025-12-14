@@ -9,8 +9,8 @@ import :Material_VK;
 namespace ax /*::AxRender*/ {
 
 template<class T>
-RenderRequest_Bindless_VK::Table<T>::Table() {
-	auto* renderer	  = Renderer_VK::s_instance();
+RenderRequest_Bindless_Vk::Table<T>::Table() {
+	auto* renderer	  = Renderer_Vk::s_instance();
 	auto* globalSpace = renderer->commonShader()->getPassParamSpace(0, ParamSpaceType::Global);
 
 	if constexpr (isSampler) {
@@ -39,18 +39,18 @@ RenderRequest_Bindless_VK::Table<T>::Table() {
 }
 
 template<class T>
-void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
+void RenderRequest_Bindless_Vk::Table<T>::update(RenderRequest_Vk* req) {
 	_temp.reset();
 	_writeSets.clear();
 
 	if (!req) return;
 
-	auto* renderer = Renderer_VK::s_instance();
+	auto* renderer = Renderer_Vk::s_instance();
 
 	auto* mtl = renderer->commonMaterial();
 	if (!mtl) return;
 
-	auto* mtlSpace = mtl->getPassParamSpace_<MaterialParamSpace_VK>(0, ParamSpaceType::Global);
+	auto* mtlSpace = mtl->getPassParamSpace_<MaterialParamSpace_Vk>(0, ParamSpaceType::Global);
 	if (!mtlSpace) return;
 
 	auto currentDescriptorSet = mtlSpace->getUpdatedDescriptorSet(req);
@@ -61,7 +61,7 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 		
 		for (Int i = 1; i < renderRequestCount; i++) {
 			auto otherReqIndex = (i + req->index()) % renderRequestCount;
-			auto* otherReq = rttiCastCheck<RenderRequest_VK>(renderer->getRenderRequest(otherReqIndex));
+			auto* otherReq = rttiCastCheck<RenderRequest_Vk>(renderer->getRenderRequest(otherReqIndex));
 			if (!otherReq) { AX_ASSERT(false); continue; }
 
 			Table<T>* otherTable = nullptr;
@@ -122,7 +122,7 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 		auto& samplersList = srcList.getList<Sampler_Backend>();
 		_temp.imageInfos.ensureCapacity(samplersList.size()); // ensure the element pointer not change
 		for (auto& sampler_ : samplersList) {
-			auto* sampler = rttiCastCheck<Sampler_VK>(sampler_.ptr());
+			auto* sampler = rttiCastCheck<Sampler_Vk>(sampler_.ptr());
 			if (!sampler) continue;
 
 			auto& dst = _temp.imageInfos.emplaceBack();
@@ -136,7 +136,7 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 		auto& tex2dList = srcList.getList<Texture2D_Backend>();
 		_temp.imageInfos.ensureCapacity(tex2dList.size()); // ensure the element pointer not change
 		for (auto& tex_ : tex2dList) {
-			auto* tex = rttiCastCheck<Texture2D_VK>(tex_.ptr());
+			auto* tex = rttiCastCheck<Texture2D_Vk>(tex_.ptr());
 			if (!tex) continue;
 
 			auto& dst = _temp.imageInfos.emplaceBack();
@@ -154,14 +154,14 @@ void RenderRequest_Bindless_VK::Table<T>::update(RenderRequest_VK* req) {
 	AX_vkUpdateDescriptorSets(renderer->device(), _writeSets, {});
 }
 
-void RenderRequest_Bindless_VK::update(RenderRequest_VK * req) {
+void RenderRequest_Bindless_Vk::update(RenderRequest_Vk * req) {
 	_samplerTable.update(req);
 	_texture2DTable.update(req);
 }
 
 /*---- The explicit instantiation ---*/ \
-template class RenderRequest_Bindless_VK::Table<Sampler>;
-template class RenderRequest_Bindless_VK::Table<Texture2D>;
+template class RenderRequest_Bindless_Vk::Table<Sampler>;
+template class RenderRequest_Bindless_Vk::Table<Texture2D>;
 
 } // namespace
 

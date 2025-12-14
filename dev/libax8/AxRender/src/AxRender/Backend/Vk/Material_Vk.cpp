@@ -12,11 +12,11 @@ import :RenderContext_VK;
 
 namespace ax /*::AxRender*/ {
 
-MaterialParamSpace_VK::MaterialParamSpace_VK(const CreateDesc& desc)
+MaterialParamSpace_Vk::MaterialParamSpace_Vk(const CreateDesc& desc)
 	: Base(desc) {}
 
-VkDescriptorSet MaterialParamSpace_VK::getUpdatedDescriptorSet(RenderRequest_VK* req) {
-	auto* shaderParamSpace = rttiCastCheck<ShaderParamSpace_VK>(_shaderParamSpace.ptr());
+VkDescriptorSet MaterialParamSpace_Vk::getUpdatedDescriptorSet(RenderRequest_Vk* req) {
+	auto* shaderParamSpace = rttiCastCheck<ShaderParamSpace_Vk>(_shaderParamSpace.ptr());
 	if (!shaderParamSpace) return VK_NULL_HANDLE;
 
 	auto seqId = req->renderSeqId();
@@ -29,7 +29,7 @@ VkDescriptorSet MaterialParamSpace_VK::getUpdatedDescriptorSet(RenderRequest_VK*
 	return _currentDescriptorSet();
 }
 
-void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const ShaderParamSpace_VK* shaderParamSpace) {
+void MaterialParamSpace_Vk::_updateDescriptorSet(RenderRequest_Vk* req, const ShaderParamSpace_Vk* shaderParamSpace) {
 	_nextDescriptorSet(req, shaderParamSpace);
 	auto curSet = _currentDescriptorSet();
 
@@ -59,7 +59,7 @@ void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const Sh
 	};
 
 	for (auto& param : _constBuffers) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_VK>(param.getUploadedGpuBuffer(req));
+		auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
 		if (!gpuBuf) throw Error_Undefined("cannot get const buffer");
 
 		auto& dst = _updateUniformBufferInfos.emplaceBack();
@@ -74,7 +74,7 @@ void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const Sh
 #if !AX_RENDER_BINDLESS
 
 	for (auto& param : _storageBufferParams) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_VK>(param.gpuBuffer());
+		auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.gpuBuffer());
 		if (!gpuBuf) throw Error_Undefined("cannot get storage buffer");
 
 		auto& dst = _updateStorageBufferInfos.emplaceBack();
@@ -92,7 +92,7 @@ void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const Sh
 			sampler = StockObjects::s_instance()->samplers.defaultValue.ptr();
 		}
 
-		auto* sampler_vk = rttiCastCheck<Sampler_VK>(sampler);
+		auto* sampler_vk = rttiCastCheck<Sampler_Vk>(sampler);
 		if (!sampler_vk) throw Error_Undefined();
 
 		req->resourcesToKeep.add(sampler_vk);
@@ -111,7 +111,7 @@ void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const Sh
 		auto& dst = _updateTextureInfos.emplaceBack();
 		switch (tex->type()) {
 			case RenderDataType::Texture2D: {
-				auto* tex2d = rttiCastCheck<Texture2D_VK>(tex);
+				auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
 				if (!tex2d) throw Error_Undefined();
 				tex2d->_bindImage(req, dst);
 			}break;
@@ -127,7 +127,7 @@ void MaterialParamSpace_VK::_updateDescriptorSet(RenderRequest_VK* req, const Sh
 	AX_vkUpdateDescriptorSets(renderer->device(), _updateWriteDescriptorSets, {});
 }
 
-void MaterialParamSpace_VK::_nextDescriptorSet(RenderRequest_VK* req, const ShaderParamSpace_VK* shaderParamSpace) {
+void MaterialParamSpace_Vk::_nextDescriptorSet(RenderRequest_Vk* req, const ShaderParamSpace_Vk* shaderParamSpace) {
 
 	auto renderRequestCount = req->renderer()->info().renderRequestCount;
 
@@ -169,32 +169,32 @@ void MaterialParamSpace_VK::_nextDescriptorSet(RenderRequest_VK* req, const Shad
 	_currentDescriptorSetsIndex = (_currentDescriptorSetsIndex + 1) % _descriptorSets.size();
 }
 
-VkDescriptorSet MaterialParamSpace_VK::getLastDescriptorSet() {
+VkDescriptorSet MaterialParamSpace_Vk::getLastDescriptorSet() {
 	Int n = _descriptorSets.size();
 	Int last = (_currentDescriptorSetsIndex + n - 1) % n;
 	return _descriptorSets[last];
 }
 
 
-bool MaterialPass_VK::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
+bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	if (!shaderPass()) { AX_ASSERT(false); return false; }
 
-	auto* req = rttiCastCheck<RenderRequest_VK>(req_);
+	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return false; }
 
-	auto* shdPass = rttiCastCheck<ShaderPass_VK>(shaderPass());
+	auto* shdPass = rttiCastCheck<ShaderPass_Vk>(shaderPass());
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
 	if (!shdPass->_bindPipeline(req, cmd)) return false;
 
 	Array<VkDescriptorSet, 16>	bindDescSets;
 
-	auto* renderer = Renderer_VK::s_instance();
+	auto* renderer = Renderer_Vk::s_instance();
 
 	for (auto& paramSpace_ : _materialParamSpaces) {
 		if (!paramSpace_) continue;
 
-		auto* paramSpace = rttiCastCheck<MaterialParamSpace_VK>(paramSpace_.ptr());
+		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(paramSpace_.ptr());
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
 		auto paramSpaceType = ax_enum_int(paramSpace->paramSpaceType());
@@ -212,7 +212,7 @@ bool MaterialPass_VK::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	if (!commonMaterial) { AX_ASSERT(false); return false; }
 
 	auto addCommonBlock = [&](ParamSpaceType paramSpaceType) {
-		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_VK>(0, paramSpaceType);
+		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, paramSpaceType);
 		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", paramSpaceType));
 
 		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(paramSpaceType));
@@ -244,7 +244,7 @@ bool MaterialPass_VK::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	return true;
 }
 
-MaterialPass_VK::MaterialPass_VK(const CreateDesc& desc)
+MaterialPass_Vk::MaterialPass_Vk(const CreateDesc& desc)
 : Base(desc)
 {
 	auto shaderBlocks = shaderPass()->shaderParamSpaces();

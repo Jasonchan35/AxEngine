@@ -9,7 +9,7 @@ class ShaderInfoParser : public NonCopyable {
 public:
 	using BlendFunc = RenderState::BlendFunc;
 
-	void readFile(StrView outdir, StrView filename);
+	void readFile(StrView outDir, StrView filename);
 
 	bool nextToken();
 
@@ -23,7 +23,7 @@ public:
 	};
 
 	struct Token {
-		TokenType	type;
+		TokenType	type = TokenType::Unknown;
 		String		str;
 
 		explicit operator bool() const		{ return type != TokenType::Unknown; }
@@ -43,7 +43,6 @@ public:
 	const Source& source() { return _source; }
 
 private:
-	void _trimSpaces();
 	void _nextChar() { _ch = _source.nextChar(); }
 	bool _nextToken();
 
@@ -120,7 +119,6 @@ void ShaderInfoParser::readEnum(T& v) {
 
 	if (!_token.isIdentifier()) {
 		throw _makeErrorUnexpectedToken();
-		return;
 	}
 
 	if (!EnumFn(v).tryParse(_token.str)) {

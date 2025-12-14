@@ -10,7 +10,7 @@ import :GpuBuffer_VK;
 
 namespace ax /*::AxRender*/ {
 
-void Sampler_VK::onCreate(const CreateDesc& desc) {
+void Sampler_Vk::onCreate(const CreateDesc& desc) {
 	Base::onCreate(desc);
 
 	auto& ss = desc.samplerState;
@@ -33,15 +33,15 @@ void Sampler_VK::onCreate(const CreateDesc& desc) {
 	info.borderColor				= VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 	info.unnormalizedCoordinates	= VK_FALSE;
 
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 	_sampler.create(dev, info);
 }
 
-void Texture2D_VK::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
+void Texture2D_Vk::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	auto& info = handler.desc.info;
 	_info = info;
 
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 	_image.createImage2D(	dev,
 							AX_VkUtil::castVkExtent2D(info.size.xy()),
 							AX_VkUtil::getVkColorType(info.colorType),
@@ -60,9 +60,9 @@ void Texture2D_VK::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	handler.readPixelsTo(map.data());
 }
 
-void Texture2D_VK::_bindImage(RenderRequest_VK* req, VkDescriptorImageInfo& outInfo) {
+void Texture2D_Vk::_bindImage(RenderRequest_Vk* req, VkDescriptorImageInfo& outInfo) {
 
-	if (auto* uploadBuf = rttiCast<GpuBuffer_VK>(_uploadBuffer.ptr())) {
+	if (auto* uploadBuf = rttiCast<GpuBuffer_Vk>(_uploadBuffer.ptr())) {
 		auto& cmdBuf = req->uploadCmdBuf_vk();
 
 		u32 width  = AX_VkUtil::castUInt32(_info.size.x);

@@ -10,10 +10,10 @@ import :RenderRequest_VK;
 
 namespace ax /*::AxRender*/ {
 
-GpuBuffer_VK::GpuBuffer_VK(const CreateDesc& desc) 
+GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 
 	VkBufferUsageFlags usage = 0;
 	VkMemoryPropertyFlags memProps = 0;
@@ -59,7 +59,7 @@ GpuBuffer_VK::GpuBuffer_VK(const CreateDesc& desc)
 #endif
 }
 
-void GpuBuffer_VK::onFlush(IntRange range) {
+void GpuBuffer_Vk::onFlush(IntRange range) {
 	switch (bufferType()) {
 		case GpuBufferType::StagingToGpu: {
 			_vkDevMem.flushMappedMemoryRanges(range);
@@ -73,11 +73,11 @@ void GpuBuffer_VK::onFlush(IntRange range) {
 	}
 }
 
-void GpuBuffer_VK::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, IntRange srcRange, Int dstOffset) {
+void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, IntRange srcRange, Int dstOffset) {
 	if (!_vkBuf) { AX_ASSERT(false); return; }
 
-	auto* src = rttiCastCheck<GpuBuffer_VK>(src_);
-	auto* req = rttiCastCheck<RenderRequest_VK>(req_);
+	auto* src = rttiCastCheck<GpuBuffer_Vk>(src_);
+	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 
 	if (!src   ) { AX_ASSERT(false); return; }
 	if (!req   ) { AX_ASSERT(false); return; }
@@ -98,15 +98,15 @@ void GpuBuffer_VK::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, Int
 }
 
 
-RenderColorBuffer_VK::RenderColorBuffer_VK(const CreateDesc& desc) 
+RenderColorBuffer_Vk::RenderColorBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 	auto frameSize = AX_VkUtil::castVkExtent2D(desc.size);
 	auto format = AX_VkUtil::getVkColorType(desc.colorType);
 
 	if (desc.backBufferRef) {
-		auto* ctx = rttiCast<RenderContext_VK>(desc.backBufferRef.renderContext);
+		auto* ctx = rttiCast<RenderContext_Vk>(desc.backBufferRef.renderContext);
 		if (!ctx) throw Error_Undefined();
 		
 		auto image = ctx->_getBackBufferImage(desc.backBufferRef.index);
@@ -134,10 +134,10 @@ RenderColorBuffer_VK::RenderColorBuffer_VK(const CreateDesc& desc)
 #endif
 }
 
-RenderDepthBuffer_VK::RenderDepthBuffer_VK(const CreateDesc& desc) 
+RenderDepthBuffer_Vk::RenderDepthBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 
 	auto frameSize = AX_VkUtil::castVkExtent2D(desc.frameSize);
 	auto format    = AX_VkUtil::getVkDepthType(desc.depthType);

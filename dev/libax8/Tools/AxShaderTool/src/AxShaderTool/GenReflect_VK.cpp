@@ -1,8 +1,6 @@
 module;
 
-#if !AX_RENDERER_VK
-	module AxShaderTool;
-#else
+#if AX_RENDERER_VK
 
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wmicrosoft-enum-value") // INVALID_VALUE  = 0xFFFFFFFF,
 AX_VC_WARNING_PUSH_AND_DISABLE(5039)
@@ -19,8 +17,7 @@ AX_VC_WARNING_POP()
 AX_GCC_WARNING_POP()
 
 module AxShaderTool;
-
-import :GenReflect_VK;
+import :GenReflect_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -165,7 +162,7 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 	return RenderDataType::None;
 }
 
-void GenReflect_VK_EX::generate(StrView outFilename, StrView filename, RenderAPI api) {
+void GenReflect_Vk::generate(StrView outFilename, StrView filename, RenderAPI api) {
 	FileMemMap	spv_data(filename);
 
 	spv_reflect::ShaderModule spirvReflect(spv_data.size(), spv_data.data());
@@ -180,7 +177,7 @@ void GenReflect_VK_EX::generate(StrView outFilename, StrView filename, RenderAPI
 	JsonIO::writeFile(outFilename, outInfo, false, false);
 }
 
-void GenReflect_VK_EX::_genVertexInputs(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {
+void GenReflect_Vk::_genVertexInputs(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {
 
 	u32 count;
 	spirvReflect.EnumerateInputVariables(&count, nullptr);
@@ -199,7 +196,7 @@ void GenReflect_VK_EX::_genVertexInputs(ShaderStageInfo& outInfo, const spv_refl
 	}
 }
 
-void GenReflect_VK_EX::_genBindings(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {
+void GenReflect_Vk::_genBindings(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {
 	u32 count;
 
 	spirvReflect.EnumerateDescriptorBindings(&count, nullptr);
@@ -234,7 +231,7 @@ void GenReflect_VK_EX::_genBindings(ShaderStageInfo& outInfo, const spv_reflect:
 }
 
 template<class PARAM>
-void GenReflect_VK_EX::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
+void GenReflect_Vk::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	dst.stageFlags = outInfo.stageFlags;
 	dst.name  = StrView_c_str(binding->name);
 	dst.paramSpaceType = SafeCast(binding->set);
@@ -247,13 +244,13 @@ void GenReflect_VK_EX::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const
 	}
 }
 
-void GenReflect_VK_EX::_genSampler(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
+void GenReflect_Vk::_genSampler(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	auto& dst = outInfo.samplers.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
 	dst.dataType = RenderDataType::SamplerState;
 }
 
-void GenReflect_VK_EX::_genTexture(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
+void GenReflect_Vk::_genTexture(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	auto& dst = outInfo.textures.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
 
@@ -267,7 +264,7 @@ void GenReflect_VK_EX::_genTexture(ShaderStageInfo& outInfo, const SpvReflectDes
 	}
 }
 
-void GenReflect_VK_EX::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
+void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	auto& dst = outInfo.constBuffers.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
 	dst.dataType = RenderDataType::ConstBuffer;

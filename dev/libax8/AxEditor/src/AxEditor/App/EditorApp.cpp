@@ -12,7 +12,7 @@ public:
 	EditorApp_CreateDesc() {
 		peekMessage = true;
 //		rendererDesc.info.api = RenderAPI::Null;
-		rendererDesc.info.api = RenderAPI::VK;
+		rendererDesc.info.api = RenderAPI::Vk;
 	}
 };
 

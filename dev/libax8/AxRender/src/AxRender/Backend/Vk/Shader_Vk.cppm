@@ -9,10 +9,10 @@ export import :Shader_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class ShaderParamSpace_VK : public ShaderParamSpace_Backend {
-	AX_RTTI_INFO(ShaderParamSpace_VK, ShaderParamSpace_Backend)
+class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
+	AX_RTTI_INFO(ShaderParamSpace_Vk, ShaderParamSpace_Backend)
 public:
-	ShaderParamSpace_VK(const CreateDesc& desc) : Base(desc) {}
+	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	VkDescriptorSetLayout	createDescriptorSetLayout();
 
@@ -24,7 +24,7 @@ private:
 };
 
 
-class ShaderPipeline_VK : public NonCopyable {
+class ShaderPipeline_Vk : public NonCopyable {
 public:
 	struct Key {
 		VertexLayout  vertexLayout	 = nullptr;
@@ -45,7 +45,7 @@ public:
 	AX_VkPipeline		pipeline;
 };
 
-struct VertexInputLayoutDesc_VK {
+struct VertexInputLayoutDesc_Vk {
 	bool init(const ShaderStageInfo& info, VertexLayout vertexLayout);
 
 	VkPipelineVertexInputStateCreateInfo	vertexInputState = {};
@@ -53,16 +53,16 @@ struct VertexInputLayoutDesc_VK {
 	Array<VkVertexInputAttributeDescription,	64>		attrDesc;
 };
 
-class ShaderPass_VK : public ShaderPass_Backend {
-	AX_RTTI_INFO(ShaderPass_VK, ShaderPass_Backend)
+class ShaderPass_Vk : public ShaderPass_Backend {
+	AX_RTTI_INFO(ShaderPass_Vk, ShaderPass_Backend)
 public:
-	using Pipeline = ShaderPipeline_VK;
+	using Pipeline = ShaderPipeline_Vk;
 
-	ShaderPass_VK(const CreateDesc& desc);
+	ShaderPass_Vk(const CreateDesc& desc);
 
-	ShaderPipeline_VK* getOrAddPipeline(const Pipeline::Key& key);
+	ShaderPipeline_Vk* getOrAddPipeline(const Pipeline::Key& key);
 
-	bool _bindPipeline(class RenderRequest_VK* req, Cmd_DrawCall& cmd) const;
+	bool _bindPipeline(class RenderRequest_Vk* req, Cmd_DrawCall& cmd) const;
 
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
 
@@ -84,13 +84,13 @@ private:
 	AX_VkShaderModule	_csModule;
 };
 
-class Shader_VK : public Shader_Backend {
-	AX_RTTI_INFO(Shader_VK, Shader_Backend)
+class Shader_Vk : public Shader_Backend {
+	AX_RTTI_INFO(Shader_Vk, Shader_Backend)
 public:
-	Shader_VK(const CreateDesc& desc) : Base(desc) {}
+	Shader_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	virtual UPtr<ShaderPass_Backend> onNewPass(const ShaderPass_Backend_CreateDesc& desc) override {
-		return UPtr_new<ShaderPass_VK>(AX_ALLOC_REQ, desc);
+		return UPtr_new<ShaderPass_Vk>(AX_ALLOC_REQ, desc);
 	}
 };
 

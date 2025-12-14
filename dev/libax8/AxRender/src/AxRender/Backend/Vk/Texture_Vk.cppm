@@ -9,10 +9,10 @@ export import :GpuBuffer_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class Sampler_VK : public Sampler_Backend {
-	AX_RTTI_INFO(Sampler_VK, Sampler_Backend)
+class Sampler_Vk : public Sampler_Backend {
+	AX_RTTI_INFO(Sampler_Vk, Sampler_Backend)
 public:
-	Sampler_VK(const CreateDesc& desc) : Base(desc) {}
+	Sampler_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	VkSampler	vkHandle() { return _sampler.handle(); }
 
@@ -21,14 +21,14 @@ protected:
 	AX_VkSampler		_sampler;
 };
 
-class Texture2D_VK : public Texture2D_Backend {
-	AX_RTTI_INFO(Texture2D_VK, Texture2D_Backend)
+class Texture2D_Vk : public Texture2D_Backend {
+	AX_RTTI_INFO(Texture2D_Vk, Texture2D_Backend)
 public:
-	Texture2D_VK(const CreateDesc& desc) : Base(desc) {}
+	Texture2D_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) override;
 
-	void _bindImage(class RenderRequest_VK* req, VkDescriptorImageInfo& outInfo);
+	void _bindImage(class RenderRequest_Vk* req, VkDescriptorImageInfo& outInfo);
 private:
 	AX_VkImage			_image;
 	AX_VkDeviceMemory	_devMem;

@@ -14,7 +14,7 @@ import :Material_VK;
 namespace ax /*::AxRender*/ {
 
 
-VkDescriptorSetLayout ShaderParamSpace_VK::createDescriptorSetLayout() {
+VkDescriptorSetLayout ShaderParamSpace_Vk::createDescriptorSetLayout() {
 	AX_VkDescriptorSetLayoutBindings	bindings;
 
 #if AX_RENDER_BINDLESS
@@ -41,30 +41,30 @@ VkDescriptorSetLayout ShaderParamSpace_VK::createDescriptorSetLayout() {
 		bindings.addBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), param.bindCount(), param.stageFlags(), bindingFlags);
 	}
 
-	auto* renderer = Renderer_VK::s_instance();
+	auto* renderer = Renderer_Vk::s_instance();
 	_descriptorSetLayout.create(renderer->device(), bindings, layoutFlags);
 
 	return _descriptorSetLayout.handle();
 }
 
-ShaderPass_VK::ShaderPass_VK(const CreateDesc& desc)
+ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 : Base(desc)
 {	
-	auto* renderer = Renderer_VK::s_instance();
+	auto* renderer = Renderer_Vk::s_instance();
 	auto& dev = renderer->device();
 
 // create pipeline layout
 
 	Array<VkDescriptorSetLayout, 8> layouts;
 
-	auto addLayout = [&](const ShaderPass_VK* pass, ParamSpaceType space) {
-		auto* block = pass->getParamSpace_<ShaderParamSpace_VK>(space);
+	auto addLayout = [&](const ShaderPass_Vk* pass, ParamSpaceType space) {
+		auto* block = pass->getParamSpace_<ShaderParamSpace_Vk>(space);
 		if (!block) return;
 		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->descriptorSetLayout();
 	};
 
-	auto createLayout = [&](ShaderPass_VK* pass, ParamSpaceType space) {
-		auto* block = pass->getParamSpace_<ShaderParamSpace_VK>(space);
+	auto createLayout = [&](ShaderPass_Vk* pass, ParamSpaceType space) {
+		auto* block = pass->getParamSpace_<ShaderParamSpace_Vk>(space);
 		if (!block) return;
 		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->createDescriptorSetLayout();
 	};
@@ -81,7 +81,7 @@ ShaderPass_VK::ShaderPass_VK(const CreateDesc& desc)
 		auto* commonShader = renderer->commonShader();
 		if (!commonShader) throw Error_Undefined();
 
-		auto* commonPass = commonShader->getPass_<ShaderPass_VK>(0);
+		auto* commonPass = commonShader->getPass_<ShaderPass_Vk>(0);
 		if (!commonPass) throw Error_Undefined();
 
 		addLayout(commonPass, ParamSpaceType::Global);
@@ -102,7 +102,7 @@ ShaderPass_VK::ShaderPass_VK(const CreateDesc& desc)
 	_pipelineLayout.create(dev, layouts);
 }
 
-ShaderPipeline_VK* ShaderPass_VK::getOrAddPipeline(const Pipeline::Key& key) {
+ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 	// TODO pick compatible key.renderPass instead
 
 	for (auto& pipeline : _pipelineTable) {
@@ -114,7 +114,7 @@ ShaderPipeline_VK* ShaderPass_VK::getOrAddPipeline(const Pipeline::Key& key) {
 	auto& outPipeline = _pipelineTable.emplaceNew(AX_ALLOC_REQ);
 	outPipeline->key = key;
 
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 	auto& renderState = _info->renderState;
 
 //-----
@@ -147,7 +147,7 @@ ShaderPipeline_VK* ShaderPass_VK::getOrAddPipeline(const Pipeline::Key& key) {
 	inputAssemblyState.topology = AX_VkUtil::getVkPrimitiveTopology(key.primitiveType);
 
 //-----
-	VertexInputLayoutDesc_VK vertexInputLayoutDesc;
+	VertexInputLayoutDesc_Vk vertexInputLayoutDesc;
 	if (!_vsModule) { AX_ASSERT(false); return nullptr; }
 
 	if (!vertexInputLayoutDesc.init(*_stageInfo, key.vertexLayout)) {
@@ -287,9 +287,9 @@ ShaderPipeline_VK* ShaderPass_VK::getOrAddPipeline(const Pipeline::Key& key) {
 	return outPipeline;
 }
 
-bool ShaderPass_VK::_bindPipeline(RenderRequest_VK* req_, Cmd_DrawCall& cmd) const {
+bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req_, Cmd_DrawCall& cmd) const {
 	// TODO lookup compatible renderPass instead
-	auto* req = rttiCastCheck<RenderRequest_VK>(req_);
+	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return false; }
 
 	auto* renderPass = req->currentRenderPass_vk();
@@ -309,7 +309,7 @@ bool ShaderPass_VK::_bindPipeline(RenderRequest_VK* req_, Cmd_DrawCall& cmd) con
 	return true;
 }
 
-bool VertexInputLayoutDesc_VK::init(const ShaderStageInfo& info, VertexLayout vertexLayout) {
+bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout vertexLayout) {
 	if (!vertexLayout) {
 		vertexLayout = Vertex_None::s_layout();
 	}

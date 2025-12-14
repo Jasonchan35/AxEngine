@@ -1,7 +1,7 @@
 module AxShaderTool;
 import :App;
-import :GenReflect_DX12;
-import :GenReflect_VK;
+import :GenReflect_Dx12;
+import :GenReflect_Vk;
 import :ShaderInfoParser;
 import :GenResultInfo;
 
@@ -11,12 +11,12 @@ AxShaderTool_App::AxShaderTool_App() {
 	Error::s_setEnableAssertion(true);
 }
 
-void AxShaderTool_App::genNinja_ShadersInFolder(StrView outdir, StrView filename) {
+void AxShaderTool_App::genNinja_ShadersInFolder(StrView outDir, StrView filename) {
 	Array<String>	outFiles;
 	File::glob(Fmt("{}/**/*.axShader", filename),
 		[&](auto& entry) {
 			auto relFile = FilePath::relPath(entry.fullpath, filename);
-			auto relOutDir = Fmt("{}/{}", outdir, relFile);
+			auto relOutDir = Fmt("{}/{}", outDir, relFile);
 			outFiles.emplaceBack(relFile);
 			genNinja_Shader(relOutDir, entry.fullpath);
 		
@@ -26,16 +26,16 @@ void AxShaderTool_App::genNinja_ShadersInFolder(StrView outdir, StrView filename
 	File::glob(Fmt("{}/**/*.axComputeShader", filename),
 		[&](auto& entry) {
 			auto relFile = FilePath::relPath(entry.fullpath, filename);
-			auto relOutDir = Fmt("{}/{}", outdir, relFile);
+			auto relOutDir = Fmt("{}/{}", outDir, relFile);
 			outFiles.emplaceBack(relFile);
 
 			genNinja_Shader(relOutDir, entry.fullpath);
 		});
 
-	genNinja_Shaders(outdir, outFiles);
+	genNinja_Shaders(outDir, outFiles);
 }
 
-void AxShaderTool_App::genNinja_Shaders(StrView outdir, const Array<String>& files) {
+void AxShaderTool_App::genNinja_Shaders(StrView outDir, const Array<String>& files) {
 	String outStr;
 	writeNinja_Header(outStr);
 
@@ -49,17 +49,17 @@ void AxShaderTool_App::genNinja_Shaders(StrView outdir, const Array<String>& fil
 		outStr.append(Fmt("build {}/shaderResult.json: build_shader {} | ${{AxShaderTool}} \n", f, f));
 	}
 
-	File::writeFileIfChanged(Fmt("{}/build.ninja", outdir), outStr, true);
+	File::writeFileIfChanged(Fmt("{}/build.ninja", outDir), outStr, true);
 }
 
-void AxShaderTool_App::genNinja_Shader(StrView outdir, StrView filename) {
-	if (!outdir) {
-		AX_LOG("error: please specify outdir");
+void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
+	if (!outDir) {
+		AX_LOG("error: please specify outDir");
 		throw Error_Undefined();
 	}
 
 	if (FileDir::exists(filename)) { // if the input is a directory
-		genNinja_ShadersInFolder(outdir, filename);
+		genNinja_ShadersInFolder(outDir, filename);
 		return;
 	}
 
@@ -76,7 +76,7 @@ void AxShaderTool_App::genNinja_Shader(StrView outdir, StrView filename) {
 
 
 	ShaderInfoParser parser;
-	parser.readFile(outdir, filename);
+	parser.readFile(outDir, filename);
 
 	opt.keepUnusedVariable = parser.info.isGlobalCommonShader;
 
@@ -84,20 +84,20 @@ void AxShaderTool_App::genNinja_Shader(StrView outdir, StrView filename) {
 
 	auto func = [&](RenderAPI api) {
 		outStr.append(Fmt("build {}/shaderResult.json: build_api_shader {} | ${{AxShaderTool}} ${{SourceFile}}\n", api, api));
-		genNinja_Shader_API(api, parser.info, outdir, filename);
+		genNinja_Shader_API(api, parser.info, outDir, filename);
 	};
 
 #if AX_RENDERER_NULL
 	func(RenderAPI::Null);
 #endif
 #if AX_RENDERER_VK	
-	func(RenderAPI::VK);
+	func(RenderAPI::Vk);
 #endif
 #if AX_RENDERER_DX12
 	func(RenderAPI::DX12);
 #endif
 
-	auto outFilename = Fmt("{}/build.ninja", outdir);
+	auto outFilename = Fmt("{}/build.ninja", outDir);
 	File::writeFileIfChanged(outFilename, outStr, true);
 }
 
@@ -127,8 +127,8 @@ void AxShaderTool_App::writeNinja_Header(IString& outStr) {
 	outStr.append("\n\n");
 }
 
-void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& info, StrView outdir, StrView filename) {	
-	auto apiOutdir = Fmt("{}/{}", outdir, api);
+void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& info, StrView outDir, StrView filename) {	
+	auto apiOutDir = Fmt("{}/{}", outDir, api);
 
 	auto absSourceFilename = FilePath::absPath(filename);
 
@@ -143,10 +143,10 @@ void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& inf
 			case RenderAPI::Null:   writeNinja_NullPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 #if AX_RENDERER_VK
-			case RenderAPI::VK:		writeNinja_VulkanPass(outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::Vk:		writeNinja_VulkanPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 #if AX_RENDERER_DX12
-			case RenderAPI::DX12:	writeNinja_DX12Pass  (outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::Dx12:	writeNinja_Dx12Pass  (outStr, depFileList, pass, absSourceFilename); break;
 #endif
 			default: break;
 		}
@@ -168,7 +168,7 @@ void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& inf
 	outStr.append(Fmt("  param_api  = {}\n ", api      ));
 	outStr.append("\n\n");
 
-	auto outFilename = Fmt("{}/build.ninja", apiOutdir);
+	auto outFilename = Fmt("{}/build.ninja", apiOutDir);
 	File::writeFileIfChanged(outFilename, outStr, true);
 }
 
@@ -331,7 +331,7 @@ void AxShaderTool_App::writeNinja_VulkanPass(IString& outStr, IArray<String>& ou
 
 	outStr.append(	"rule build_vk_bin_json\n"
 					"  command = \"${AxShaderTool}\" $\n"
-					"    -genReflect_VK $\n"
+					"    -genReflect_Vk $\n"
 					"    -file=\"$in\""
 					"    -out=\"$out\" $\n"
 					"\n\n");
@@ -368,8 +368,8 @@ void AxShaderTool_App::showHelp() {
 	AX_LOG(	"\n==== AxShaderTool_App Help: ====\n"
 			"  AxShaderTool_App -genNinja        -file=<file/folder> -out=<folder>\n"
 			"  AxShaderTool_App -genReflect_Null -file=<filename>    -out=<outFilename> \n"
-			"  AxShaderTool_App -genReflect_VK   -file=<filename>    -out=<outFilename> \n"
-			"  AxShaderTool_App -genReflect_DX12 -file=<filename>    -out=<folder> -profile=<profile_name> -entry=<entry_func_name> \n"
+			"  AxShaderTool_App -genReflect_Vk   -file=<filename>    -out=<outFilename> \n"
+			"  AxShaderTool_App -genReflect_Dx12 -file=<filename>    -out=<folder> -profile=<profile_name> -entry=<entry_func_name> \n"
 			"  AxShaderTool_App -genResultInfo   -file=<filename>    -out=<outFilename> -api=<api>\n"
 			);
 }
@@ -389,10 +389,10 @@ int AxShaderTool_App::onRun() {
 		if (a == "-genReflect_Null"		) { opt.genReflect_Null		= true; continue; }
 #endif
 #if AX_RENDERER_VK
-		if (a == "-genReflect_VK"		) { opt.genReflect_VK		= true; continue; }
+		if (a == "-genReflect_Vk"		) { opt.genReflect_Vk		= true; continue; }
 #endif
 #if AX_RENDERER_DX12
-		if (a == "-genReflect_DX12"		) { opt.genReflect_DX12		= true; continue; }
+		if (a == "-genReflect_Dx12"		) { opt.genReflect_Dx12		= true; continue; }
 #endif		
 
 		if (auto v = a.extractFromPrefix("-file=")) {
@@ -447,19 +447,19 @@ int AxShaderTool_App::onRun() {
 
 #if AX_RENDERER_NULL
 	} else if (opt.genReflect_Null) {
-		GenReflect_VK_EX c;
+		GenReflect_Vk c;
 		c.generate(opt.out, opt.file, RenderAPI::Null);
 #endif
 
 #if AX_RENDERER_VK
-	} else if (opt.genReflect_VK) {
-		GenReflect_VK_EX c;
-		c.generate(opt.out, opt.file, RenderAPI::VK);
+	} else if (opt.genReflect_Vk) {
+		GenReflect_Vk c;
+		c.generate(opt.out, opt.file, RenderAPI::Vk);
 #endif
 
 #if AX_RENDERER_DX12		
 	} else if (opt.genReflect_DX12) {
-		GenReflect_DX12 c;
+		GenReflect_Dx12 c;
 		c.compile(opt.out, opt.file, opt.profile, opt.entry, opt.include_dirs, opt.keepUnusedVariable);
 #endif
 

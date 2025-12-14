@@ -10,14 +10,14 @@ import :RenderPass_VK;
 
 namespace ax /*::AxRender*/ {
 
-CommandBuffer_VK& CommandBuffer_VK::create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue) {
+CommandBuffer_Vk& CommandBuffer_Vk::create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue) {
 	_pool.create(dev, queue);
 	_cmdBuf.create(_pool);
 	return *this;
 }
 
-void CommandBuffer_VK::onRenderPassBegin(RenderPass* pass_) {
-	auto* pass  = rttiCast<RenderPass_VK >(pass_);
+void CommandBuffer_Vk::onRenderPassBegin(RenderPass* pass_) {
+	auto* pass  = rttiCast<RenderPass_Vk >(pass_);
 	AX_ASSERT(pass);
 
 	VkExtent2D extent = AX_VkUtil::castVkExtent2D(pass->frameSize());
@@ -51,20 +51,20 @@ void CommandBuffer_VK::onRenderPassBegin(RenderPass* pass_) {
 	vkCmdBeginRenderPass(_cmdBuf, &info, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void CommandBuffer_VK::onRenderPassEnd() {
+void CommandBuffer_Vk::onRenderPassEnd() {
 	vkCmdEndRenderPass(_cmdBuf);
 	_cmdBuf.debugLabelEnd();
 }
 
-void CommandBuffer_VK::onCommandBegin() {
+void CommandBuffer_Vk::onCommandBegin() {
 	_cmdBuf.beginCommand();
 }
 
-void CommandBuffer_VK::onCommandEnd() {
+void CommandBuffer_Vk::onCommandEnd() {
 	_cmdBuf.endCommand();
 }
 
-void CommandBuffer_VK::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
+void CommandBuffer_Vk::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
 	VkViewport tmp;
 	tmp.x = rect.x;
 	tmp.y = rect.y;
@@ -75,12 +75,12 @@ void CommandBuffer_VK::onSetViewport(const Rect2f& rect, float minDepth, float m
 	vkCmdSetViewport(_cmdBuf, 0, 1, &tmp);
 }
 
-void CommandBuffer_VK::onSetScissorRect(const Rect2f& rect) {
+void CommandBuffer_Vk::onSetScissorRect(const Rect2f& rect) {
 	VkRect2D rc = AX_VkUtil::castVkRect2D(rect);
 	vkCmdSetScissor(_cmdBuf, 0, 1, &rc);
 }
 
-void CommandBuffer_VK::onDrawCall(Cmd_DrawCall& cmd) {
+void CommandBuffer_Vk::onDrawCall(Cmd_DrawCall& cmd) {
 	u32	vertexCount   = AX_VkUtil::castUInt32(cmd.vertexCount);
 	u32 vertexStart   = AX_VkUtil::castUInt32(cmd.vertexStart);
 
@@ -90,7 +90,7 @@ void CommandBuffer_VK::onDrawCall(Cmd_DrawCall& cmd) {
 	u32 instanceStart = AX_VkUtil::castUInt32(cmd.instanceStart);
 	u32 instanceCount = AX_VkUtil::castUInt32(cmd.instanceCount);
 
-	if (auto* vb = rttiCastCheck<GpuBuffer_VK>(cmd.vertexBuffer)) {
+	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(cmd.vertexBuffer)) {
 		// draw indirect doesn't support byte offset
 		// VkDeviceSize vertexBufferByteOffset = AX_VkUtil::castUInt32(cmd.vertexBufferByteOffset);
 		u32 firstBinding = ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
@@ -101,7 +101,7 @@ void CommandBuffer_VK::onDrawCall(Cmd_DrawCall& cmd) {
 	if (cmd.indexType == IndexType::None) {
 		vkCmdDraw(_cmdBuf, vertexCount, instanceCount, vertexStart, instanceStart);
 
-	} else if (auto* ib = rttiCastCheck<GpuBuffer_VK>(cmd.indexBuffer)) {
+	} else if (auto* ib = rttiCastCheck<GpuBuffer_Vk>(cmd.indexBuffer)) {
 		vkCmdBindIndexBuffer(_cmdBuf, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(cmd.indexType));
 		vkCmdDrawIndexed(_cmdBuf, indexCount, instanceCount, indexStart, SafeCast(vertexStart), instanceStart);
 

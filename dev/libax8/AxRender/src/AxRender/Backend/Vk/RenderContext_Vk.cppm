@@ -8,11 +8,11 @@ export import :CommandBuffer_VK;
 
 export namespace ax /*::AxRender*/ {
 
-class RenderContext_VK_Base : public RenderContext_Backend {
-	AX_RTTI_INFO(RenderContext_VK_Base, RenderContext_Backend)
+class RenderContext_Vk_Base : public RenderContext_Backend {
+	AX_RTTI_INFO(RenderContext_Vk_Base, RenderContext_Backend)
 public:
-	RenderContext_VK_Base(const CreateDesc& desc);
-	virtual ~RenderContext_VK_Base() override;
+	RenderContext_Vk_Base(const CreateDesc& desc);
+	virtual ~RenderContext_Vk_Base() override;
 
 	AX_VkSurfaceKHR&	surface() { return _surface; }
 
@@ -24,14 +24,14 @@ private:
 protected:
 	virtual void onPostCreate(const CreateDesc& desc) override;
 
-	struct BackBuffer_VK : public BackBuffer {
-		void createOrUpdate(RenderContext_VK_Base* renderContext, AX_VkDevice& dev, Int index, Vec2i frameSize);
+	struct BackBuffer_Vk : public BackBuffer {
+		void createOrUpdate(RenderContext_Vk_Base* renderContext, AX_VkDevice& dev, Int index, Vec2i frameSize);
 
-		CommandBuffer_VK	_presentCmdBuf_vk;
+		CommandBuffer_Vk	_presentCmdBuf_vk;
 		AX_VkSemaphore		_presentSemaphore_vk;
 	};
 
-	AX_INLINE BackBuffer_VK* _getBackBuffer(Int i) {
+	AX_INLINE BackBuffer_Vk* _getBackBuffer(Int i) {
 		return _backBuffers.inBound(i) ? _backBuffers[i].ptr() : nullptr;
 	}
 
@@ -48,18 +48,18 @@ protected:
 	AX_VkSwapchainKHR	_swapChain;
 
 	Array<VkImage, 8>	_backBufImages;
-	Array< UPtr<BackBuffer_VK> >	_backBuffers;
+	Array< UPtr<BackBuffer_Vk> >	_backBuffers;
 };
 
 #if AX_NATIVE_UI_WIN32
 
-class RenderContext_VK_Win32 : public RenderContext_VK_Base {
-	AX_RTTI_INFO(RenderContext_VK_Win32, RenderContext_VK_Base)
+class RenderContext_Vk_Win32 : public RenderContext_Vk_Base {
+	AX_RTTI_INFO(RenderContext_Vk_Win32, RenderContext_Vk_Base)
 public:
 	static LRESULT WINAPI s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	RenderContext_VK_Win32(const CreateDesc& desc);
-	virtual ~RenderContext_VK_Win32() override;
+	RenderContext_Vk_Win32(const CreateDesc& desc);
+	virtual ~RenderContext_Vk_Win32() override;
 
 	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override;
 	virtual Vec2f	localToWorldPos(const Vec2f& pt) override;
@@ -76,9 +76,9 @@ private:
 	HWND _hwnd = nullptr;
 
 	class UIEventHandler : public NativeUIEventHandler_Win32 {
-		RenderContext_VK_Win32* _owner = nullptr;
+		RenderContext_Vk_Win32* _owner = nullptr;
 	public:
-		UIEventHandler(RenderContext_VK_Win32* owner) : _owner(owner) {}
+		UIEventHandler(RenderContext_Vk_Win32* owner) : _owner(owner) {}
 
 		virtual void onUIMouseEvent(NativeUIMouseEvent& ev) override { _owner->onUIMouseEvent(ev); }
 		virtual void onUIKeyEvent(NativeUIKeyEvent& ev) override { _owner->onUIKeyEvent(ev); }
@@ -89,7 +89,7 @@ private:
 	static constexpr u32 kRenderTimerId = 100;
 };
 
-using RenderContext_VK_Impl = RenderContext_VK_Win32;
+using RenderContext_Vk_Impl = RenderContext_Vk_Win32;
 
 // #if AX_NATIVE_UI_WIN32
 #elif AX_NATIVE_UI_X11  
@@ -101,10 +101,10 @@ using RenderContext_VK_Impl = RenderContext_VK_Win32;
 
 
 
-class RenderContext_VK : public RenderContext_VK_Impl {
-	AX_RTTI_INFO(RenderContext_VK, RenderContext_VK_Impl)
+class RenderContext_Vk : public RenderContext_Vk_Impl {
+	AX_RTTI_INFO(RenderContext_Vk, RenderContext_Vk_Impl)
 public:
-	RenderContext_VK(const CreateDesc& desc) : Base(desc) {}
+	RenderContext_Vk(const CreateDesc& desc) : Base(desc) {}
 };
 
 

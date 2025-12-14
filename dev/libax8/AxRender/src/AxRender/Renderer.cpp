@@ -19,10 +19,10 @@ UPtr<Renderer> Renderer::s_create(const CreateDesc& desc) {
 	switch (desc.info.api) {
 		case RenderAPI::Null:	o = UPtr_new<Renderer_Null>(AX_ALLOC_REQ, desc); break;
 #if AX_RENDERER_VK
-		case RenderAPI::VK:		o = UPtr_new<Renderer_VK>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Vk:		o = UPtr_new<Renderer_Vk>(AX_ALLOC_REQ, desc); break;
 #endif
 #if AX_RENDERER_DX12
-		case RenderAPI::DX12:	o = UPtr_new<Renderer_DX12>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Dx12:	o = UPtr_new<Renderer_Dx12>(AX_ALLOC_REQ, desc); break;
 #endif
 		default:	throw Error_Undefined(); break;
 	}
@@ -61,7 +61,7 @@ RendererInfo::RendererInfo() {
 
 #if AX_OS_WINDOWS
 	#if AX_RENDERER_VK
-		api = RenderAPI::VK;
+		api = RenderAPI::Vk;
 	#elif AX_RENDERER_DX12
 		api = RenderAPI::DX12;
 	#endif

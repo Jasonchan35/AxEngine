@@ -8,13 +8,13 @@ export import :AX_Vulkan;
 
 export namespace ax /*::AxRender*/ {
 
-class Renderer_VK : public Renderer_Backend {
-	AX_RTTI_INFO(Renderer_VK, Renderer_Backend)
+class Renderer_Vk : public Renderer_Backend {
+	AX_RTTI_INFO(Renderer_Vk, Renderer_Backend)
 public:
 	AX_DOWNCAST_GET_INSTANCE()
 
-	Renderer_VK(const CreateDesc& desc);
-	virtual ~Renderer_VK() override { destroy(); }
+	Renderer_Vk(const CreateDesc& desc);
+	virtual ~Renderer_Vk() override { destroy(); }
 
 	AX_VkPhysicalDeviceList& physicalDeviceList() { return _physicalDeviceList; }
 	AX_VkDevice& device() { return _device; }
@@ -29,7 +29,7 @@ public:
 protected:
 	DescriptorSets	_descriptorSets;
 
-	AX_Renderer_FunctionInterfaces_override(VK)
+	AX_Renderer_FunctionInterfaces_override(Vk)
 
 private:
 	void _createVkInstance();

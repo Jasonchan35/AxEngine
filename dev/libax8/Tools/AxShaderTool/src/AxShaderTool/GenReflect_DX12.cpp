@@ -2,7 +2,7 @@ module AxShaderTool;
 
 #if AX_RENDERER_DX12
 
-import :GenReflect_DX12;
+import :GenReflect_Dx12;
 
 namespace ax /*::AxRender*/ {
 

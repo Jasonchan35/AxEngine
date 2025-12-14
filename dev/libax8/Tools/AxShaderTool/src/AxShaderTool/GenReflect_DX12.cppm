@@ -16,7 +16,7 @@ module;
 	#endif
 #endif
 
-export module AxShaderTool:GenReflect_DX12;
+export module AxShaderTool:GenReflect_Dx12;
 
 #if AX_RENDERER_DX12
 export import AxRender;

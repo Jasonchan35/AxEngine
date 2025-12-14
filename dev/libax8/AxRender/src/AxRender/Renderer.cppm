@@ -8,8 +8,8 @@ export namespace ax /*::AxRender*/ {
 #define AX_RenderAPI_ENUM_LIST(E) \
 	E(None,) \
 	E(Null,) \
-	E(DX12,) \
-	E(VK,) \
+	E(Dx12,) \
+	E(Vk,) \
 //-----
 AX_ENUM_CLASS(AX_RenderAPI_ENUM_LIST, RenderAPI, u8);
 

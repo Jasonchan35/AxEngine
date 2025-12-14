@@ -10,10 +10,10 @@ import :RenderRequest_VK;
 
 namespace ax /*::AxRender*/ {
 
-RenderPass_VK::RenderPass_VK(const CreateDesc& desc) 
+RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 
 	const Int colorBufferCount = desc.colorBuffers.size();
 	Array<VkImageView, 16>				frameBufferAttachments;
@@ -40,7 +40,7 @@ RenderPass_VK::RenderPass_VK(const CreateDesc& desc)
 			colorBuf.colorBuf = RenderColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBufDesc);
 		}
 
-		auto* color_tex_vk = rttiCastCheck<RenderColorBuffer_VK>(colorBuf.colorBuf.ptr());
+		auto* color_tex_vk = rttiCastCheck<RenderColorBuffer_Vk>(colorBuf.colorBuf.ptr());
 		AX_ASSERT(color_tex_vk);
 
 		auto viewHandle = color_tex_vk->_view.handle();
@@ -85,7 +85,7 @@ RenderPass_VK::RenderPass_VK(const CreateDesc& desc)
 		_depthBuffer.depthBuf = RenderDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
 	}
 
-	auto* depth_tex_vk = rttiCastCheck<RenderDepthBuffer_VK>(_depthBuffer.depthBuf.ptr());
+	auto* depth_tex_vk = rttiCastCheck<RenderDepthBuffer_Vk>(_depthBuffer.depthBuf.ptr());
 	if (depth_tex_vk) {
 		hasDepth = true;
 

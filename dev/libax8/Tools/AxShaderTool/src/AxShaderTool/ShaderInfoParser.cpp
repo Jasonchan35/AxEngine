@@ -4,7 +4,7 @@ import :ShaderInfoParser;
 
 namespace ax /*::AxRender*/ {
 
-void ShaderInfoParser::readFile(StrView outdir, StrView filename) {
+void ShaderInfoParser::readFile(StrView outDir, StrView filename) {
 	_fileMap.openFile(filename);
 
 	_source.init(_fileMap.strViewA(), filename);
@@ -22,7 +22,7 @@ void ShaderInfoParser::readFile(StrView outdir, StrView filename) {
 	}
 
 	{
-		String outFilename = outdir;
+		String outFilename = outDir;
 		outFilename.append("/info.json");
 
 		JsonIO::writeFileIfChanged(outFilename, info, true);

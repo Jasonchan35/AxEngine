@@ -10,10 +10,10 @@ export import :RenderRequest_Backend;
 
 namespace ax /*::AxRender*/ {
 
-class CommandBuffer_VK : public CommandBuffer {
-	AX_RTTI_INFO(CommandBuffer_VK, CommandBuffer)
+class CommandBuffer_Vk : public CommandBuffer {
+	AX_RTTI_INFO(CommandBuffer_Vk, CommandBuffer)
 public:
-	CommandBuffer_VK& create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue);
+	CommandBuffer_Vk& create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue);
 
 	AX_RENDER_CommandBuffer_FunctionInterfaces(override)
 

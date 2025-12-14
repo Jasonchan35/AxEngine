@@ -8,10 +8,10 @@ export import :GpuBuffer_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class GpuBuffer_VK : public GpuBuffer_Backend {
-	AX_RTTI_INFO(GpuBuffer_VK, GpuBuffer_Backend)
+class GpuBuffer_Vk : public GpuBuffer_Backend {
+	AX_RTTI_INFO(GpuBuffer_Vk, GpuBuffer_Backend)
 public:
-	GpuBuffer_VK(const CreateDesc& desc);
+	GpuBuffer_Vk(const CreateDesc& desc);
 
 	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _vkDevMem.mapMemory(range); }
 	virtual void		onUnmapMemory() override				{ return _vkDevMem.unmapMemory(); }
@@ -37,10 +37,10 @@ private:
 };
 
 
-class RenderColorBuffer_VK : public RenderColorBuffer_Backend {
-	AX_RTTI_INFO(RenderColorBuffer_VK, RenderColorBuffer_Backend)
+class RenderColorBuffer_Vk : public RenderColorBuffer_Backend {
+	AX_RTTI_INFO(RenderColorBuffer_Vk, RenderColorBuffer_Backend)
 public:
-	RenderColorBuffer_VK(const CreateDesc& desc);
+	RenderColorBuffer_Vk(const CreateDesc& desc);
 
 #if AX_DEBUG_NAME
 	virtual void onSetDebugName(const String& name) override {
@@ -55,10 +55,10 @@ public:
 	AX_VkImageView		_view;
 };
 
-class RenderDepthBuffer_VK : public RenderDepthBuffer_Backend {
-	AX_RTTI_INFO(RenderDepthBuffer_VK, RenderDepthBuffer_Backend)
+class RenderDepthBuffer_Vk : public RenderDepthBuffer_Backend {
+	AX_RTTI_INFO(RenderDepthBuffer_Vk, RenderDepthBuffer_Backend)
 public:
-	RenderDepthBuffer_VK(const CreateDesc& desc);
+	RenderDepthBuffer_Vk(const CreateDesc& desc);
 
 #if AX_DEBUG_NAME
 	virtual void onSetDebugName(const String& name) override {

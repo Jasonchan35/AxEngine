@@ -8,10 +8,10 @@ export import :RenderPass_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class RenderPass_VK : public RenderPass_Backend {
-	AX_RTTI_INFO(RenderPass_VK, RenderPass_Backend)
+class RenderPass_Vk : public RenderPass_Backend {
+	AX_RTTI_INFO(RenderPass_Vk, RenderPass_Backend)
 public:	
-	RenderPass_VK(const CreateDesc& desc);
+	RenderPass_Vk(const CreateDesc& desc);
 
 	AX_VkRenderPass		_renderPass;
 	AX_VkFramebuffer	_framebuffer;

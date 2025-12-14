@@ -1,15 +1,15 @@
 module;
 
-export module AxShaderTool:GenReflect_VK;
-export import AxRender;
-
 #if AX_RENDERER_VK
 
 #include "spirv_reflect.h"
 
+export module AxShaderTool:GenReflect_Vk;
+export import AxRender;
+
 export namespace ax /*::AxRender*/ {
 
-class GenReflect_VK_EX : public NonCopyable {
+class GenReflect_Vk : public NonCopyable {
 public:
 	void generate(StrView outFilename, StrView filename, RenderAPI api);
 //	void _genEntryPoint		(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {}

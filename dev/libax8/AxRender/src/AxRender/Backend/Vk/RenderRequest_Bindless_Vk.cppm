@@ -9,9 +9,9 @@ export import :RenderContext_VK;
 
 export namespace ax /*::AxRender*/ {
 
-class RenderRequest_VK;
+class RenderRequest_Vk;
 
-class RenderRequest_Bindless_VK {
+class RenderRequest_Bindless_Vk {
 public:
 	using BindPoint = ShaderResourceBindPoint;
 	using ParamSpaceType = ShaderParamSpaceType;
@@ -21,7 +21,7 @@ public:
 	public:
 		Table();
 
-		void update(RenderRequest_VK* req);
+		void update(RenderRequest_Vk* req);
 	private:
 		static constexpr bool isSampler		  = std::is_base_of_v<Sampler      , T>;
 		static constexpr bool isTexture2D	  = std::is_base_of_v<Texture2D    , T>;
@@ -49,7 +49,7 @@ public:
 	};
 
 
-	void update(RenderRequest_VK* req);
+	void update(RenderRequest_Vk* req);
 	void getTable(Table<Sampler  >* & outTable) { outTable = &_samplerTable;   }
 	void getTable(Table<Texture2D>* & outTable) { outTable = &_texture2DTable; }
 

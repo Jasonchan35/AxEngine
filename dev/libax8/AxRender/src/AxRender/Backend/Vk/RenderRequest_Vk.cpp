@@ -9,10 +9,10 @@ import :Material_VK;
 
 namespace ax /*::AxRender*/ {
 
-RenderRequest_VK::RenderRequest_VK(const CreateDesc& desc)
+RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 : Base(desc)
 {
-	auto* renderer = Renderer_VK::s_instance();
+	auto* renderer = Renderer_Vk::s_instance();
 	auto& dev = renderer->device();
 
 	_completedFence_vk.create(dev, true);
@@ -34,19 +34,19 @@ RenderRequest_VK::RenderRequest_VK(const CreateDesc& desc)
 #endif
 }
 
-void RenderRequest_VK::onWaitCompleted() {
+void RenderRequest_Vk::onWaitCompleted() {
 	_completedFence_vk.wait();
 	_uploadCmdBuf_vk.resetAndReleaseResource();
 	_graphCmdBuf_vk.resetAndReleaseResource();
 }
 
-void RenderRequest_VK::onFrameBegin() {
+void RenderRequest_Vk::onFrameBegin() {
 	Base::onFrameBegin();
 	_uploadCmdBuf_vk.onCommandBegin();
 	_graphCmdBuf_vk.onCommandBegin();
 }
 
-void RenderRequest_VK::onFrameEnd() {
+void RenderRequest_Vk::onFrameEnd() {
 #if AX_RENDER_BINDLESS
 	_bindless.update(this);
 #endif

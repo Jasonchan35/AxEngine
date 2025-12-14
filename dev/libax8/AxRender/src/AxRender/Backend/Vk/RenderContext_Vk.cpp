@@ -10,19 +10,19 @@ import :GpuBuffer_VK;
 
 namespace ax /*::AxRender*/ {
 
-RenderContext_VK_Base::RenderContext_VK_Base(const CreateDesc& desc)
+RenderContext_Vk_Base::RenderContext_Vk_Base(const CreateDesc& desc)
 : Base(desc)
 {
 	_viewportIsBottomUp = true;
 }
 
-RenderContext_VK_Base::~RenderContext_VK_Base() {
-	if (auto* renderer = Renderer_VK::s_instance()) {
+RenderContext_Vk_Base::~RenderContext_Vk_Base() {
+	if (auto* renderer = Renderer_Vk::s_instance()) {
 		renderer->device().waitIdle(); // wait all commandQueue is done
 	}
 }
 
-void RenderContext_VK_Base::onPostCreate(const CreateDesc& desc) {
+void RenderContext_Vk_Base::onPostCreate(const CreateDesc& desc) {
 	Base::onPostCreate(desc);
 
 	_surface.getGraphQueue(_graphQueue, 0);
@@ -36,9 +36,9 @@ void RenderContext_VK_Base::onPostCreate(const CreateDesc& desc) {
 	_createSwapChain();
 }
 
-void RenderContext_VK_Base::_createSwapChain() {
+void RenderContext_Vk_Base::_createSwapChain() {
 
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 
 	auto cap = _surface.getCapabilities();
 	auto frameSize_vk = cap.currentExtent;
@@ -87,8 +87,8 @@ void RenderContext_VK_Base::_createSwapChain() {
 	}
 }
 
-RenderPass_Backend* RenderContext_VK_Base::onAcquireBackBufferRenderPass(RenderRequest* req_) {
-	auto* req = rttiCastCheck<RenderRequest_VK>(req_);
+RenderPass_Backend* RenderContext_Vk_Base::onAcquireBackBufferRenderPass(RenderRequest* req_) {
+	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return nullptr; }
 
 	u32 swapChainImageIndex = UINT32_MAX;
@@ -125,8 +125,8 @@ RenderPass_Backend* RenderContext_VK_Base::onAcquireBackBufferRenderPass(RenderR
 	return rttiCastCheck<RenderPass_Backend>(backBuf->_renderPass.ptr());
 }
 
-void RenderContext_VK_Base::onPresentSurface(RenderRequest* req_) {
-	auto* req = rttiCastCheck<RenderRequest_VK>(req_);
+void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
+	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return; }
 
 	const bool presentQueueIsSeparated = _surface.isPresentQueueIsSeparated();
@@ -137,7 +137,7 @@ void RenderContext_VK_Base::onPresentSurface(RenderRequest* req_) {
 	auto* backBuf = req->backBufferRenderPass();
 	if (!backBuf) { AX_ASSERT(false); return; }
 
-	auto* colorBuffer	= rttiCastCheck<RenderColorBuffer_VK>(backBuf->colorBuffer(0));
+	auto* colorBuffer	= rttiCastCheck<RenderColorBuffer_Vk>(backBuf->colorBuffer(0));
 	if (!colorBuffer) { AX_ASSERT(false); return; }
 
 	auto& backBufferRef = colorBuffer->backBufferRef();
@@ -176,8 +176,8 @@ void RenderContext_VK_Base::onPresentSurface(RenderRequest* req_) {
 	_graphQueue.present(presentSemaphore, _swapChain, backBufferRef.index);
 }
 
-void RenderContext_VK_Base::BackBuffer_VK::createOrUpdate(
-	RenderContext_VK_Base* renderContext,
+void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
+	RenderContext_Vk_Base* renderContext,
 	AX_VkDevice&           dev,
 	Int                    index,
 	Vec2i                  frameSize
@@ -224,7 +224,7 @@ void RenderContext_VK_Base::BackBuffer_VK::createOrUpdate(
 #if AX_NATIVE_UI_WIN32
 
 
-RenderContext_VK_Win32::RenderContext_VK_Win32(const CreateDesc& desc) 
+RenderContext_Vk_Win32::RenderContext_Vk_Win32(const CreateDesc& desc) 
 : Base(desc)
 , _uiEventHandler(this)
 {
@@ -267,11 +267,11 @@ RenderContext_VK_Win32::RenderContext_VK_Win32(const CreateDesc& desc)
 		throw Error_Undefined();
 	}
 
-	auto& dev = Renderer_VK::s_instance()->device();
+	auto& dev = Renderer_Vk::s_instance()->device();
 	_surface.create_Win32(dev, hInstance, _hwnd);
 }
 
-void RenderContext_VK_Win32::onPostCreate(const CreateDesc& desc) {
+void RenderContext_Vk_Win32::onPostCreate(const CreateDesc& desc) {
 	Base::onPostCreate(desc);
 	if (_hwnd) {
 		::ShowWindow(_hwnd, SW_SHOW);
@@ -281,7 +281,7 @@ void RenderContext_VK_Win32::onPostCreate(const CreateDesc& desc) {
 #endif
 }
 
-LRESULT WINAPI RenderContext_VK_Win32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT WINAPI RenderContext_Vk_Win32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 		case WM_CREATE: {
 			auto cs = reinterpret_cast<CREATESTRUCT*>(lParam);
@@ -305,7 +305,7 @@ LRESULT WINAPI RenderContext_VK_Win32::s_wndProc(HWND hwnd, UINT msg, WPARAM wPa
 
 		case WM_TIMER: {
 			if (auto* thisObj = s_getThis(hwnd)) {
-				if (wParam == RenderContext_VK_Win32::kRenderTimerId) {
+				if (wParam == RenderContext_Vk_Win32::kRenderTimerId) {
 					thisObj->render();
 				}
 			}
@@ -321,31 +321,31 @@ LRESULT WINAPI RenderContext_VK_Win32::s_wndProc(HWND hwnd, UINT msg, WPARAM wPa
 	return ::DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-void RenderContext_VK_Win32::onSetFrameSize(const Vec2i& s) {
+void RenderContext_Vk_Win32::onSetFrameSize(const Vec2i& s) {
 	Base::onSetFrameSize(s);
 
 	if (!_hwnd) return;
 	SetWindowPos(_hwnd, nullptr, 0, 0, SafeCast(s.x), SafeCast(s.y), 0);
 }
 
-void RenderContext_VK_Win32::onSetRenderNeeded() {
+void RenderContext_Vk_Win32::onSetRenderNeeded() {
 	if (_hwnd) {
 		InvalidateRect(_hwnd, nullptr, false);
 	}
 }
 
-RenderContext_VK_Win32::~RenderContext_VK_Win32() {
+RenderContext_Vk_Win32::~RenderContext_Vk_Win32() {
 	if (_hwnd) {
 		::DestroyWindow(_hwnd);
 		_hwnd = nullptr;
 	}
 }
 
-Vec2f RenderContext_VK_Win32::worldToLocalPos(const Vec2f& pt) {
+Vec2f RenderContext_Vk_Win32::worldToLocalPos(const Vec2f& pt) {
 	return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt);
 }
 
-Vec2f RenderContext_VK_Win32::localToWorldPos(const Vec2f& pt) {
+Vec2f RenderContext_Vk_Win32::localToWorldPos(const Vec2f& pt) {
 	return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt);
 }
 

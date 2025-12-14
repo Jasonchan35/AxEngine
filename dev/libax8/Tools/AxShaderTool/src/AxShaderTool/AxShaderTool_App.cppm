@@ -10,10 +10,10 @@ class AxShaderTool_App : public ConsoleApp {
 public:
 	AxShaderTool_App();
 
-	void genNinja_ShadersInFolder	(StrView outdir, StrView filename);
-	void genNinja_Shaders			(StrView outdir, const Array<String>& files);
-	void genNinja_Shader			(StrView outdir, StrView filename);
-	void genNinja_Shader_API		(RenderAPI api, ShaderDeclareInfo& info, StrView outdir, StrView filename);
+	void genNinja_ShadersInFolder	(StrView outDir, StrView filename);
+	void genNinja_Shaders			(StrView outDir, const Array<String>& files);
+	void genNinja_Shader			(StrView outDir, StrView filename);
+	void genNinja_Shader_API		(RenderAPI api, ShaderDeclareInfo& info, StrView outDir, StrView filename);
 
 	void writeNinja_Header			(IString& outStr);
 
@@ -31,7 +31,7 @@ public:
 	void showHelp();
 	int onRun() override;
 
-	CmdOptions opt;
+	CmdOptions opt {};
 
 	struct HLSLProfile {
 		String	stage;

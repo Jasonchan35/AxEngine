@@ -11,10 +11,10 @@ struct CmdOptions {
 	bool genReflect_Null = false;
 #endif		
 #if AX_RENDERER_VK
-	bool genReflect_VK = false;
+	bool genReflect_Vk = false;
 #endif
 #if AX_RENDERER_DX12
-	bool genReflect_DX12 = false;
+	bool genReflect_Dx12 = false;
 #endif		
 	bool genResultInfo = false;
 	bool keepUnusedVariable = false;
