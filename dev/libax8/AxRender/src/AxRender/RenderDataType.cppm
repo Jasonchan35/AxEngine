@@ -214,37 +214,28 @@ struct RenderDataTypeInfo {
 	const RenderDataTypeInfo& s_get(RenderDataType t);
 };
 
-class RenderTargetColorBufferDesc {
+class RenderPassColorBufferAttachment {
 public:
-	RenderTargetColorBufferDesc() = default;
-	RenderTargetColorBufferDesc(
-		ColorType			colorType_,
-		RenderBufferLoadOp	loadOp_	= RenderBufferLoadOp::Clear,
-		const Color4f&	clearColor_ = Color4f::kBlack())
-		: colorType(colorType_)
-		, loadOp(loadOp_)
-		, clearColor(clearColor_) {}
+	ColorType          colorType  = ColorType::RGBAb;
+	RenderBufferLoadOp loadOp     = RenderBufferLoadOp::Clear;
+	Color4f            clearColor = Color4f::kBlack();
 
-	ColorType			colorType	= ColorType::RGBAb;
-	RenderBufferLoadOp	loadOp		= RenderBufferLoadOp::Clear;
-	Color4f				clearColor	= Color4f::kBlack();
-
-	bool operator==(const RenderTargetColorBufferDesc& r) const {
+	bool operator==(const RenderPassColorBufferAttachment& r) const {
 		return colorType  == r.colorType
 			&& loadOp     == r.loadOp
 			&& clearColor.exactlyEqual(r.clearColor);
 	}
 };
 
-class RenderTargetDepthBufferDesc {
+class RenderPassDepthBufferAttachment {
 public:
 	RenderDepthType		depthType		= RenderDepthType::Depth_Unorm24_Stencil_UInt8;
 	RenderBufferLoadOp	loadOp			= RenderBufferLoadOp::Clear;
 	f32					clearDepth		= 1;
 	u32					clearStencil	= 0;
-
+	
 	AX_INLINE bool isEnabled() const { return depthType != RenderDepthType::None; }
-	bool operator==(const RenderTargetDepthBufferDesc& r) const {
+	bool operator==(const RenderPassDepthBufferAttachment& r) const {
 		return depthType	== r.depthType
 			&& loadOp		== r.loadOp
 			&& Math::exactlyEqual(clearDepth, r.clearDepth)

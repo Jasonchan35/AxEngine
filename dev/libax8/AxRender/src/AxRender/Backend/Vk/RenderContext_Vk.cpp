@@ -7,7 +7,6 @@ import :Renderer_Vk;
 import :Texture_Vk;
 import :RenderRequest_Vk;
 import :GpuBuffer_Vk;
-import :RenderTarget_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -45,7 +44,7 @@ void RenderContext_Vk_Base::_createSwapChain() {
 
 //-- renderPass and framebuffer
 	VkSurfaceFormatKHR	surfaceFormat;
-	surfaceFormat.format		= AX_VkUtil::getVkColorType(_swapChainDesc.colorBuffer.colorType);
+	surfaceFormat.format		= AX_VkUtil::getVkColorType(_swapChainDesc.colorBufferAttachment.colorType);
 	surfaceFormat.colorSpace	= VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 
 //------
@@ -54,13 +53,13 @@ void RenderContext_Vk_Base::_createSwapChain() {
 
 	_swapChain_vk.create(dev, _surface_vk, surfaceFormat, _swapChainDesc.backBufferCount, presentMode);
 
-	RenderDepthType depthType = _swapChainDesc.depthBuffer.depthType;
+	RenderDepthType depthType = _swapChainDesc.depthBufferAttachment.depthType;
 	if (depthType != RenderDepthType::None) {
-		RenderTargetDepthBuffer_CreateDesc depthBuf_createDesc;
+		RenderPassDepthBuffer_CreateDesc depthBuf_createDesc;
 		depthBuf_createDesc.name = Fmt("BackBuffer-depth");
-		depthBuf_createDesc.depthType = depthType;
 		depthBuf_createDesc.frameSize = frameSize;
-		_depthBuf_vk = RenderTargetDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc);
+		depthBuf_createDesc.attachment.depthType = depthType;
+		_depthBuf_vk = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc);
 	}
 
 	_createBackBuffers(dev, frameSize);
@@ -132,10 +131,13 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 	auto* backBuf = req->backBufferRenderPass();
 	if (!backBuf) { AX_ASSERT(false); return; }
 
-	auto* colorBuffer = rttiCastCheck<RenderTargetColorBuffer_Vk>(backBuf->colorBuffer(0));
+	RenderPass::ColorBuffer* colorBuffer = backBuf->colorBuffers().tryGetElement(0);
 	if (!colorBuffer) { AX_ASSERT(false); return; }
+	
+	auto* colorBuffer_vk = rttiCastCheck<RenderPassColorBuffer_Vk>(colorBuffer->buffer.ptr());
+	if (!colorBuffer_vk) { AX_ASSERT(false); return; }
 
-	auto& backBufferRef    = colorBuffer->backBufferRef();
+	auto& backBufferRef    = colorBuffer_vk->backBufferRef();
 	auto* backBuffer       = _getBackBuffer(backBufferRef.index);
 	auto& presentCmdBuf    = backBuffer->_presentCmdBuf_vk;
 	auto& presentSemaphore = backBuffer->_presentSemaphore_vk;
@@ -159,7 +161,7 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 		presentCmdBuf->beginCommand();
 		presentCmdBuf->pipelineBarrier(	_surface_vk.graphQueueFamilyIndex(), 
 										_surface_vk.presentQueueFamilyIndex(),
-										colorBuffer->_image);
+										colorBuffer_vk->_image);
 		presentCmdBuf->endCommand();
 
 		_presentQueue_vk.submit(AX_VkDeviceQueue::WaitSemaphores(graphSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
@@ -183,16 +185,16 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 	auto backBufferName = Fmt("BackBuffer_{}-color", index);
 	dev.setObjectDebugName(vkImage, backBufferName);
 
-	auto& colorBufferDesc = renderContext->_swapChainDesc.colorBuffer;
-	auto& depthBufferDesc = renderContext->_swapChainDesc.depthBuffer;
+	auto& colorBufferAttachment = renderContext->_swapChainDesc.colorBufferAttachment;
+	auto& depthBufferAttachment = renderContext->_swapChainDesc.depthBufferAttachment;
 
-	RenderTargetColorBuffer_CreateDesc	colorBuf_createDesc;
-	colorBuf_createDesc.name = backBufferName;
-	colorBuf_createDesc.setBackBuffer(	renderContext, index, 
-										colorBufferDesc.colorType, 
-										frameSize);
+	RenderPassColorBuffer_CreateDesc	colorBuf_createDesc;
+	colorBuf_createDesc.name      = backBufferName;
+	colorBuf_createDesc.frameSize = frameSize;
+	colorBuf_createDesc.attachment = colorBufferAttachment;
+	colorBuf_createDesc.backBufferRef.set(renderContext, index);
 
-	_colorBuf_vk = RenderTargetColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+	_colorBuf_vk = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 
 	auto& surface = renderContext->_surface_vk;
 
@@ -212,8 +214,8 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 	RenderPass_CreateDesc renderPass_createDesc;
 	renderPass_createDesc.name = Fmt("BackBuffer_{}", index);
 	renderPass_createDesc.setBackBuffer(renderContext, index);
-	renderPass_createDesc.colorBuffers.emplaceBack(colorBufferDesc);
-	renderPass_createDesc.depthBuffer = depthBufferDesc;
+	renderPass_createDesc.colorBufferAttachments.emplaceBack(colorBufferAttachment);
+	renderPass_createDesc.depthBufferAttachment = depthBufferAttachment;
 	renderPass_createDesc.frameSize   = frameSize;
 
 	_renderPass_vk = RenderPass_Backend::s_new(AX_ALLOC_REQ, renderPass_createDesc);

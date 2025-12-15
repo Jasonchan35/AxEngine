@@ -62,12 +62,12 @@ void CommandBuffer_Dx12::onDrawCall(Cmd_DrawCall& cmd) {
 void CommandBuffer_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	auto* pass = rttiCastCheck<RenderPass_Dx12>(pass_);
 
-	Int colorBufferCount = pass->colorBufferCount();
-	for (Int i = 0; i < colorBufferCount; ++i) {
-		auto* colorBuf = pass->colorBuffer(i);
-		if (!colorBuf) continue;
-		//		colorBuf->
-	}
+	// Int colorBufferCount = pass->colorBufferCount();
+	// for (Int i = 0; i < colorBufferCount; ++i) {
+	// 	auto* colorBuf = pass->colorBuffer(i);
+	// 	if (!colorBuf) continue;
+	// 	//		colorBuf->
+	// }
 	
 	// for (auto& colorBuf : pass->_colorBuffers) {
 	// 	

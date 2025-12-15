@@ -3,7 +3,6 @@ module;
 export module AxRender:RenderContext_Dx12;
 export import :Dx12DescripterHeap;
 export import :RenderContext_Backend;
-export import :RenderTarget_Dx12;
 export import :RenderPass_Dx12;
 
 #if AX_RENDERER_DX12
@@ -22,7 +21,7 @@ public:
 	struct BackBuffer_Dx12 {
 		Int	_index = -1;
 
-		SPtr<RenderTargetColorBuffer_Dx12>	_colorBuf_dx12;
+		SPtr<RenderPassColorBuffer_Dx12>	_colorBuf_dx12;
 		SPtr<RenderPass_Dx12>				_renderPass_dx12;
 
 		void createOrUpdate(RenderContext_Dx12* renderContext, Int index, Vec2i frameSize);
@@ -30,7 +29,7 @@ public:
 	};
 	
 	ComPtr<AX_DX12_IDXGISwapChain>		_swapChain_dx12;
-	SPtr<RenderTargetDepthBuffer_Dx12>	_depthBuffer_dx12;
+	SPtr<RenderPassDepthBuffer_Dx12>	_depthBuffer_dx12;
 	BackBuffer_Dx12* _getBackBuffer(Int i) { return PtrOfPtr(_backBuffers_dx12.tryGetElement(i)); }
 
 protected:

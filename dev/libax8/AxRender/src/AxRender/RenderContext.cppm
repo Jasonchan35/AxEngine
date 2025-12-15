@@ -10,8 +10,8 @@ class RenderContext;
 struct SwapChainDesc {
 	Int			backBufferCount = 3;
 	bool		vsync = true;
-	RenderTargetColorBufferDesc	colorBuffer;
-	RenderTargetDepthBufferDesc	depthBuffer;
+	RenderPassColorBufferAttachment	colorBufferAttachment;
+	RenderPassDepthBufferAttachment	depthBufferAttachment;
 };
 
 class RenderContext_CreateDesc : public NonCopyable {

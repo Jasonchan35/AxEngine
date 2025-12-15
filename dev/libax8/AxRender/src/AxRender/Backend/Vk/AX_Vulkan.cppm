@@ -430,7 +430,7 @@ private:
 
 class AX_VkImage : public NonCopyable {
 public:
-	const VkImage& handle() { return _handle; }
+	const VkImage& handle() const { return _handle; }
 	operator const VkImage&() { return _handle; }
 
 	AX_VkImage() {}

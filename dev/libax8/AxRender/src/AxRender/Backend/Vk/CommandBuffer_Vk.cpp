@@ -21,18 +21,17 @@ void CommandBuffer_Vk::onRenderPassBegin(RenderPass* pass_) {
 
 	VkExtent2D extent = AX_VkUtil::castVkExtent2D(pass->frameSize());
 
-	Int colorBufCount = pass->colorBufferCount();
-
 	Array<VkClearValue, 32>	clearValues;
-	for (Int i = 0; i < colorBufCount; i++ ) {
+	for (auto& src : pass->colorBuffers()) {
 		auto& dst = clearValues.emplaceBack().color;
-		AX_VkUtil::setFloat4(dst.float32, pass->clearColor(i));
+		AX_VkUtil::setFloat4(dst.float32, src.attachment.clearColor);
 	}
-
-	{
+	
+	if (auto* depthBuffer = pass->depthBuffer()) {
 		auto& dst = clearValues.emplaceBack().depthStencil;
-		dst.depth   = pass->clearDepth();
-		dst.stencil = pass->clearStencil();
+		auto& desc = depthBuffer->attachment();
+		dst.depth   = desc.clearDepth;
+		dst.stencil = desc.clearStencil;
 	}
 
 	VkRenderPassBeginInfo info = {};

@@ -9,7 +9,6 @@ import :Material_Vk;
 import :RenderContext_Vk;
 import :RenderPass_Vk;
 import :RenderRequest_Vk;
-import :RenderTarget_Vk;
 import :Shader_Vk;
 import :Texture_Vk;
 

@@ -8,44 +8,44 @@ import :RenderPass_Backend;
 
 namespace ax /*::AxRender*/ {
 
-RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, const RenderTargetColorBufferDesc& desc)
+RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, ColorType colorType)
 	: _pass(pass)
 	, _name(name)
-	, _desc(desc)
 {
+	_attachment.colorType = colorType;
 	pass->_addColorBuffer(this);
 }
 
-void RenderGraph_ColorBuffer::setDesc(const RenderTargetColorBufferDesc& desc) {
-	if (_desc == desc) return;
+void RenderGraph_ColorBuffer::setDesc(const RenderPassColorBufferAttachment& desc) {
+	if (_attachment == desc) return;
 	setDirty();
-	_desc = desc;
+	_attachment = desc;
 }
 
 void RenderGraph_ColorBuffer::setClearColor(const Color4f& color) {
-	if (_desc.clearColor == color) return;
-	_desc.clearColor = color;
+	if (_attachment.clearColor == color) return;
+	_attachment.clearColor = color;
 	setDirty();
 }
 
 void RenderGraph_ColorBuffer::setColorType(ColorType colorType) {
-	if (_desc.colorType == colorType) return;
-	_desc.colorType = colorType;
+	if (_attachment.colorType == colorType) return;
+	_attachment.colorType = colorType;
 	setDirty();
 }
 
 void RenderGraph_ColorBuffer::setLoadOp(RenderBufferLoadOp loadOp) {
-	if (_desc.loadOp == loadOp) return;
-	_desc.loadOp = loadOp;
+	if (_attachment.loadOp == loadOp) return;
+	_attachment.loadOp = loadOp;
 	setDirty();
 }
 
-void RenderGraph_Pass::setDepthBufferDesc(const RenderTargetDepthBufferDesc& desc) {
-	if (_depthBufferDesc == desc)
+void RenderGraph_Pass::setDepthBufferAttachment(const RenderPassDepthBufferAttachment& attach) {
+	if (_depthBufferAttachment == attach)
 		return;
 
 	setDirty();
-	_depthBufferDesc = desc;
+	_depthBufferAttachment = attach;
 }
 
 void RenderGraph_Pass::_createRenderPass() {
@@ -53,11 +53,11 @@ void RenderGraph_Pass::_createRenderPass() {
 
 	RenderPass_CreateDesc	desc;
 	desc.frameSize = _frameSize;
-	desc.depthBuffer = _depthBufferDesc;
+	desc.depthBufferAttachment = _depthBufferAttachment;
 		
 	for (auto& col : _colorBuffers) {
 		if (!col) { AX_ASSERT(false); return; }
-		desc.colorBuffers.emplaceBack(col->desc());
+		desc.colorBufferAttachments.emplaceBack(col->attachment());
 	}
 
 	if (_renderPass && _renderPass->isCompatible(desc))
@@ -276,10 +276,11 @@ void RenderGraph_BackBufferPass::setRenderPass(RenderPass* pass) {
 	if (!pass) return;
 
 	setFrameSize(pass->frameSize());
-	auto* desc = pass->colorBufferDesc(0);
-	if (!desc) return;
 
-	color0.setDesc(*desc);
+	auto* passColor = pass->colorBuffers().tryGetElement(0);
+	if (!passColor) return;
+
+	color0.setDesc(passColor->attachment);
 	_renderPass = pass;
 }
 

@@ -5,7 +5,6 @@ export module AxRender:RenderContext_Vk;
 #if AX_RENDERER_VK
 export import :RenderContext_Backend;
 export import :CommandBuffer_Vk;
-export import :RenderTarget_Vk;
 export import :RenderPass_Vk;
 
 export namespace ax /*::AxRender*/ {
@@ -20,14 +19,14 @@ public:
 
 	AX_VkSurfaceKHR&	surface() { return _surface_vk; }
 	
-	SPtr<RenderTargetDepthBuffer_Vk>	_depthBuf_vk;
+	SPtr<RenderPassDepthBuffer_Vk>	_depthBuf_vk;
 
 	struct BackBuffer_Vk : public NonCopyable {
 		void createOrUpdate(RenderContext_Vk_Base* renderContext, AX_VkDevice& dev, Int index, VkImage& vkImage, Vec2i frameSize);
 		
 		Int					_index = -1;
 
-		SPtr<RenderTargetColorBuffer_Vk>	_colorBuf_vk;
+		SPtr<RenderPassColorBuffer_Vk>	_colorBuf_vk;
 		SPtr<RenderPass_Vk>					_renderPass_vk;
 		
 		CommandBuffer_Vk	_presentCmdBuf_vk;

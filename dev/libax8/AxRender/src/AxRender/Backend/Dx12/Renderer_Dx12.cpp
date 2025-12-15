@@ -8,7 +8,6 @@ import :Material_Dx12;
 import :RenderContext_Dx12;
 import :RenderPass_Dx12;
 import :RenderRequest_Dx12;
-import :RenderTarget_Dx12;
 import :Shader_Dx12;
 import :Texture_Dx12;
 

@@ -16,14 +16,14 @@ public:
 	using Graph  = RenderGraph;
 	using Pass   = RenderGraph_Pass;
 
-	RenderGraph_ColorBuffer(Pass* pass, StrView name, const RenderTargetColorBufferDesc& desc);
+	RenderGraph_ColorBuffer(Pass* pass, StrView name, ColorType colorType);
 
 	Pass*			pass() { return _pass; }
 	StrView			name() const { return _name; }
 
-	const RenderTargetColorBufferDesc&	desc() const { return _desc; }
+	const RenderPassColorBufferAttachment&	attachment() const { return _attachment; }
 
-	void setDesc(const RenderTargetColorBufferDesc& desc);
+	void setDesc(const RenderPassColorBufferAttachment& desc);
 	void setDirty();
 
 	void setClearColor(const Color4f& color);
@@ -33,7 +33,7 @@ public:
 private:
 	Pass*				_pass = nullptr;
 	String				_name;
-	RenderTargetColorBufferDesc		_desc;
+	RenderPassColorBufferAttachment		_attachment;
 };
 
 class RenderGraph_Input : public NonCopyable {
@@ -57,10 +57,10 @@ private:
 
 class RenderGraph_Pass : public NonCopyable {
 public:
-	using Pass   = RenderGraph_Pass;
-	using Input  = RenderGraph_Input;
-	using Inputs = RenderGraph_Inputs;
-	using ColorBuffer  = RenderGraph_ColorBuffer;
+	using Pass        = RenderGraph_Pass;
+	using Input       = RenderGraph_Input;
+	using Inputs      = RenderGraph_Inputs;
+	using ColorBuffer = RenderGraph_ColorBuffer;
 
 	using RenderDelegate = Delegate_<void (RenderRequest* req, Span<Input> inputs)>;
 
@@ -87,7 +87,7 @@ public:
 
 	Span<ColorBuffer*>	colorBuffers() { return _colorBuffers; }
 
-	void setDepthBufferDesc(const RenderTargetDepthBufferDesc& v);
+	void setDepthBufferAttachment(const RenderPassDepthBufferAttachment& v);
 
 	void setFrameSize(Vec2i frameSize);
 
@@ -116,7 +116,7 @@ protected:
 
 	Array<Input,  8>		_inputs;
 	Array<ColorBuffer*, 8>	_colorBuffers;
-	RenderTargetDepthBufferDesc			_depthBufferDesc;
+	RenderPassDepthBufferAttachment		_depthBufferAttachment;
 
 	RenderDelegate			_renderDelegate;
 	SPtr<RenderPass>		_renderPass;
@@ -152,8 +152,8 @@ public:
 	using BackBufferPass = RenderGraph_BackBufferPass;
 
 	// forward those names for RenderGraph subclass
-	using RenderTargetColorBufferDesc	= RenderTargetColorBufferDesc;
-	using RenderTargetDepthBufferDesc	= RenderTargetDepthBufferDesc;
+	using RenderTargetColorBufferDesc	= RenderPassColorBufferAttachment;
+	using RenderPassDepthBufferDesc	= RenderPassDepthBufferAttachment;
 	using RenderBufferLoadOp		= RenderBufferLoadOp;
 
 	const Vec2i& frameSize() const { return _frameSize; }

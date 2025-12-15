@@ -5,7 +5,6 @@ export import :GpuBuffer_Backend;
 export import :RenderContext_Backend;
 export import :RenderPass_Backend;
 export import :RenderRequest_Backend;
-export import :RenderTarget_Backend;
 export import :Texture_Backend;
 export import :Material_Backend;
 export import :ImageIO;
@@ -35,16 +34,16 @@ public:
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override {}
 };
 
-class RenderTargetColorBuffer_Null : public RenderTargetColorBuffer_Backend {
-	AX_RTTI_INFO(RenderTargetColorBuffer_Null, RenderTargetColorBuffer_Backend)
+class RenderPassColorBuffer_Null : public RenderPassColorBuffer_Backend {
+	AX_RTTI_INFO(RenderPassColorBuffer_Null, RenderPassColorBuffer_Backend)
 public:
-	RenderTargetColorBuffer_Null(const CreateDesc& desc) : Base(desc) {}
+	RenderPassColorBuffer_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
-class RenderTargetDepthBuffer_Null : public RenderTargetDepthBuffer_Backend {
-	AX_RTTI_INFO(RenderTargetDepthBuffer_Null, RenderTargetDepthBuffer_Backend)
+class RenderPassDepthBuffer_Null : public RenderPassDepthBuffer_Backend {
+	AX_RTTI_INFO(RenderPassDepthBuffer_Null, RenderPassDepthBuffer_Backend)
 public:
-	RenderTargetDepthBuffer_Null(const CreateDesc& desc) : Base(desc) {}
+	RenderPassDepthBuffer_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
 class RenderPass_Null : public RenderPass_Backend {
