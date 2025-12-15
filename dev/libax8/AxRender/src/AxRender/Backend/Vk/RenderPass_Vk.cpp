@@ -16,7 +16,6 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 {
 	auto& dev = Renderer_Vk::s_instance()->device();
 
-	const Int colorBufferCount = desc.colorBuffers.size();
 	Array<VkImageView, 16>				frameBufferAttachments;
 
 	Array<VkAttachmentDescription, 16>	renderPassAttachmentDescription;
@@ -31,6 +30,7 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	}
 
 //---- color buffers ----
+	const Int colorBufferCount = desc.colorBuffers.size();
 	for (Int i = 0; i < colorBufferCount; i++) {
 		auto& colorBuf = _colorBuffers.emplaceBack();
 		auto& srcColorDesc = desc.colorBuffers[i];
@@ -145,12 +145,12 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	renderPassCreateInfo.dependencyCount	= 0;
 	renderPassCreateInfo.pDependencies		= nullptr;
 
-	_renderPass.create(dev, renderPassCreateInfo);
-	_framebuffer.create(dev, _renderPass, frameBufferAttachments, AX_VkUtil::castVkExtent2D(desc.frameSize));
+	_renderPass_vk.create(dev, renderPassCreateInfo);
+	_framebuffer_vk.create(dev, _renderPass_vk, frameBufferAttachments, AX_VkUtil::castVkExtent2D(desc.frameSize));
 
 #if AX_DEBUG_NAME
-	_renderPass.setDebugName(Fmt("{}-renderPass", desc.name));
-	_framebuffer.setDebugName(Fmt("{}-framebuffer", desc.name));
+	_renderPass_vk.setDebugName(Fmt("{}-renderPass", desc.name));
+	_framebuffer_vk.setDebugName(Fmt("{}-framebuffer", desc.name));
 #endif
 
 }

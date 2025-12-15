@@ -18,8 +18,8 @@ public:
 	void		_unmapMemory();
 	
 	using ScopeMapMemory = ScopeDataProxy0<MutByteSpan, This, &This::_unmapMemory>;
-	ScopeMapMemory 	scopeMapMemory(IntRange range) { return ScopeMapMemory(_mapMemory(range), this);  }
-	
+	ScopeMapMemory 	mapMemory(IntRange range) { return ScopeMapMemory(_mapMemory(range), this);  }
+
 	void uploadToGpu(Int offset, ByteSpan data);
 
 	ID3D12Resource*	d3dResource() { return _d3dResource; }

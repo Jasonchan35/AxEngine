@@ -297,7 +297,7 @@ bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req_, Cmd_DrawCall& cmd) con
 	Pipeline::Key key;
 	key.vertexLayout	= cmd.vertexLayout;
 	key.primitiveType	= cmd.primitiveType;
-	key.renderPass		= renderPass->_renderPass;
+	key.renderPass		= renderPass->_renderPass_vk;
 
 	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(key);
 	if (!pipeline) { AX_ASSERT(false); return false; }

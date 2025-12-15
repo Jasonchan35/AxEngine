@@ -1,5 +1,6 @@
 module AxRender;
 import :RenderContext_Dx12;
+import :RenderRequest_Dx12;
 
 #if AX_RENDERER_DX12
 
@@ -207,6 +208,27 @@ RenderPass_Backend* RenderContext_Dx12::onAcquireBackBufferRenderPass(RenderRequ
 	auto* backBuffer = _getBackBuffer(backBuffIndex);
 	if (!backBuffer) return nullptr;
 	return backBuffer->_renderPass_dx12;
+}
+
+void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
+	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
+	if (!req) { AX_ASSERT(false); return; }
+	
+	auto* backBuf = req->backBufferRenderPass();
+	if (!backBuf) { AX_ASSERT(false); return; }
+	
+	// {	// Indicate that the back buffer will now be used to present.
+	//
+	// 	
+	// 	D3D12_RESOURCE_BARRIER barrier = {};
+	// 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	// 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	// 	barrier.Transition.pResource   = _frame->_renderTargetResource.d3dResource();
+	// 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	// 	barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_PRESENT;
+	// 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	// 	dispatcher.cmdList->ResourceBarrier(1, &barrier);
+	// }	
 }
 
 void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {

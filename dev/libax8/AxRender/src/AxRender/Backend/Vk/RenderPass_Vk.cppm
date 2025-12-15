@@ -13,8 +13,8 @@ class RenderPass_Vk : public RenderPass_Backend {
 public:	
 	RenderPass_Vk(const CreateDesc& desc);
 
-	AX_VkRenderPass		_renderPass;
-	AX_VkFramebuffer	_framebuffer;
+	AX_VkRenderPass		_renderPass_vk;
+	AX_VkFramebuffer	_framebuffer_vk;
 };
 
 } // namespace

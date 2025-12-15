@@ -31,6 +31,7 @@ public:
 	
 	ComPtr<AX_DX12_IDXGISwapChain>		_swapChain_dx12;
 	SPtr<RenderTargetDepthBuffer_Dx12>	_depthBuffer_dx12;
+	BackBuffer_Dx12* _getBackBuffer(Int i) { return PtrOfPtr(_backBuffers_dx12.tryGetElement(i)); }
 
 protected:
 	static LRESULT WINAPI s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -39,8 +40,8 @@ protected:
 	}
 
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override;
-	virtual void                onPresentSurface(RenderRequest* req) override { AX_ASSERT_TODO; }
-	
+	virtual void                onPresentSurface(RenderRequest* req_) override;
+
 	virtual void onPostCreate(const CreateDesc& desc) override;
 	virtual void onSetFrameSize(const Vec2i& s) override;
 	virtual void onSetRenderNeeded() override;
@@ -67,7 +68,6 @@ private:
 	void _createBackBuffers();
 	
 	Array<UPtr<BackBuffer_Dx12>, 8>	_backBuffers_dx12;
-	BackBuffer_Dx12* _getBackBuffer(Int i) { return PtrOfPtr(_backBuffers_dx12.tryGetElement(i)); }
 	
 	HWND _hwnd = nullptr;
 };

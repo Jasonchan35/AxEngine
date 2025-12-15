@@ -38,8 +38,8 @@ void CommandBuffer_Vk::onRenderPassBegin(RenderPass* pass_) {
 	VkRenderPassBeginInfo info = {};
 	info.sType					= VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	info.pNext					= nullptr;
-	info.renderPass				= pass->_renderPass;
-	info.framebuffer			= pass->_framebuffer;
+	info.renderPass				= pass->_renderPass_vk;
+	info.framebuffer			= pass->_framebuffer_vk;
 	info.renderArea.offset.x	= 0;
 	info.renderArea.offset.y	= 0;
 	info.renderArea.extent		= extent;

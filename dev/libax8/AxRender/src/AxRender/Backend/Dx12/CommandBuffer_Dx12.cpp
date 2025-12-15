@@ -3,6 +3,7 @@
 #if AX_RENDERER_DX12
 
 import :CommandBuffer_Dx12;
+import :RenderPass_Dx12;
 
 namespace ax /*::AxRender*/ {
 
@@ -59,7 +60,27 @@ void CommandBuffer_Dx12::onDrawCall(Cmd_DrawCall& cmd) {
 }
 
 void CommandBuffer_Dx12::onRenderPassBegin(RenderPass* pass_) {
-	// TODO
+	auto* pass = rttiCastCheck<RenderPass_Dx12>(pass_);
+
+	Int colorBufferCount = pass->colorBufferCount();
+	for (Int i = 0; i < colorBufferCount; ++i) {
+		auto* colorBuf = pass->colorBuffer(i);
+		if (!colorBuf) continue;
+		//		colorBuf->
+	}
+	
+	// for (auto& colorBuf : pass->_colorBuffers) {
+	// 	
+	// }
+	
+	
+	auto& renderTargetDescriptors = pass->_renderTargetDescriptors;
+	BOOL RTsSingleHandleToDescriptorRange = FALSE;
+	_cmdList_dx12->OMSetRenderTargets(
+		SafeCast(renderTargetDescriptors.size()),
+		renderTargetDescriptors.data(),
+		RTsSingleHandleToDescriptorRange,
+		&pass->_depthStencilDescriptor);
 }
 
 void CommandBuffer_Dx12::onRenderPassEnd() {

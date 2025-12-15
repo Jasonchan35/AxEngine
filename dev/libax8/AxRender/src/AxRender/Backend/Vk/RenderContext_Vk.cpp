@@ -132,12 +132,12 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 	auto* backBuf = req->backBufferRenderPass();
 	if (!backBuf) { AX_ASSERT(false); return; }
 
-	auto* colorBuffer	= rttiCastCheck<RenderTargetColorBuffer_Vk>(backBuf->colorBuffer(0));
+	auto* colorBuffer = rttiCastCheck<RenderTargetColorBuffer_Vk>(backBuf->colorBuffer(0));
 	if (!colorBuffer) { AX_ASSERT(false); return; }
 
-	auto& backBufferRef = colorBuffer->backBufferRef();
-	auto* backBuffer	   = _getBackBuffer(backBufferRef.index);
-	auto& presentCmdBuf	   = backBuffer->_presentCmdBuf_vk;
+	auto& backBufferRef    = colorBuffer->backBufferRef();
+	auto* backBuffer       = _getBackBuffer(backBufferRef.index);
+	auto& presentCmdBuf    = backBuffer->_presentCmdBuf_vk;
 	auto& presentSemaphore = backBuffer->_presentSemaphore_vk;
 
 	Array<VkCommandBuffer, 2>	cmdBuffers;
@@ -162,7 +162,7 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 										colorBuffer->_image);
 		presentCmdBuf->endCommand();
 
-		_presentQueue_vk.submit(	AX_VkDeviceQueue::WaitSemaphores(graphSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
+		_presentQueue_vk.submit(AX_VkDeviceQueue::WaitSemaphores(graphSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
 								presentCmdBuf.handle(),
 								presentSemaphore.handle());
 	}

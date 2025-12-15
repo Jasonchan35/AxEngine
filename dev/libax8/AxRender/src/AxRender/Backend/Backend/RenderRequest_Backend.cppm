@@ -87,10 +87,10 @@ public:
 	struct InlineUpload {
 		InlineUpload() { reset(); }
 
-		bool copyDataToGpuBuffer(GpuBuffer_Backend* dst, ByteSpan data, Int dstOffset);
+		bool tryCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
 
 		Int remainSize() const	{ return bufferSize() - _used; }
-		Int bufferSize() const	{ return _gpuBuffer->bufferSize(); }
+		Int bufferSize() const	{ return _stagingToGpuBuffer->bufferSize(); }
 
 	friend class RenderRequest_Backend;
 	protected:
@@ -101,7 +101,7 @@ public:
 		RenderRequest*	_req = nullptr;
 		Int				_used = 0;
 		Int				_limitPerEach = 0;
-		SPtr<GpuBuffer_Backend>	_gpuBuffer;
+		SPtr<GpuBuffer_Backend>	_stagingToGpuBuffer;
 	};
 
 	InlineUpload	inlineUpload;
