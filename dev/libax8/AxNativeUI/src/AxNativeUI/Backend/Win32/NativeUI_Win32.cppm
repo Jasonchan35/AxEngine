@@ -17,7 +17,9 @@ public:
 
 	static Vec2f  s_worldToLocalPos(HWND hwnd, const Vec2f& pt);
 	static Vec2f  s_localToWorldPos(HWND hwnd, const Vec2f& pt);
+
 	static Rect2f s_getWorldRect(HWND hwnd);
+	static Rect2f s_getLocalRect(HWND hwnd);
 };
 
 

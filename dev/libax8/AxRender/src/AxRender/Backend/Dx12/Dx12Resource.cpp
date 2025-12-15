@@ -168,8 +168,8 @@ void Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12
 	_resourceState = state;
 }
 
-void Dx12Resource_RenderTarget::createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT i) {
-	auto hr = swapChain->GetBuffer(i, IID_PPV_ARGS(_d3dResource.ptrForInit()));
+void Dx12Resource_ColorBuffer::createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex) {
+	auto hr = swapChain->GetBuffer(backBufIndex, IID_PPV_ARGS(_d3dResource.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 	_desc = _d3dResource->GetDesc();
 
@@ -177,7 +177,7 @@ void Dx12Resource_RenderTarget::createFromSwapChain(AX_DX12_IDXGISwapChain* swap
 	_d3dResource->GetHeapProperties(&_heapProps, &flags);
 }
 
-void Dx12Resource_DepthStencilBuffer::create(Vec2i size) {
+void Dx12Resource_DepthBuffer::create(Vec2i size) {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	_desc.MipLevels = 0;
 	_desc.Format = DXGI_FORMAT_D32_FLOAT;

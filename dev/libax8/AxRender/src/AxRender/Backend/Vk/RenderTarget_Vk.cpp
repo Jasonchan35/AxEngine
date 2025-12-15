@@ -18,10 +18,13 @@ RenderTargetColorBuffer_Vk::RenderTargetColorBuffer_Vk(const CreateDesc& desc)
 	auto format = AX_VkUtil::getVkColorType(desc.colorType);
 
 	if (desc.backBufferRef) {
-		auto* ctx = rttiCast<RenderContext_Vk>(desc.backBufferRef.renderContext);
-		if (!ctx) throw Error_Undefined();
-		
-		auto image = ctx->_getBackBufferImage(desc.backBufferRef.index);
+		auto* renderContext_vk = rttiCast<RenderContext_Vk>(desc.backBufferRef.renderContext);
+		if (!renderContext_vk) throw Error_Undefined();
+
+		auto* backBuffer = renderContext_vk->_getBackBuffer(desc.backBufferRef.index);
+		if (!backBuffer) throw Error_Undefined();
+
+		auto& image = backBuffer->_vkImage;
 		if (image == VK_NULL_HANDLE) throw Error_Undefined();
 		
 		_image.createFromBackBuffer(dev, image, frameSize, format);

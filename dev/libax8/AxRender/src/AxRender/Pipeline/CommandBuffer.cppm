@@ -54,6 +54,21 @@ public:
 	}
 };
 
+enum class CommandBufferType {
+	None,
+	Direct,
+	Bundle,
+	Compute,
+	Copy,
+	VideoDecode,
+	VideoProcess,
+	VideoEncode,
+};
+
+struct CommandBuffer_CreateDesc {
+	CommandBufferType type = CommandBufferType::None;
+};
+
 class CommandBuffer : public RenderObject {
 	AX_RTTI_INFO(CommandBuffer, RenderObject)
 public:

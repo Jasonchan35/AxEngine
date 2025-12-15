@@ -13,7 +13,7 @@ namespace ax /*::AxRender*/ {
 class CommandBuffer_Vk : public CommandBuffer {
 	AX_RTTI_INFO(CommandBuffer_Vk, CommandBuffer)
 public:
-	CommandBuffer_Vk& create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue);
+	void create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue);
 
 	AX_RENDER_CommandBuffer_FunctionInterfaces(override)
 

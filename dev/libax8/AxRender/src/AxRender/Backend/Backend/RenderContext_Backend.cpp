@@ -25,7 +25,7 @@ void RenderContext_Backend::onRender() {
 	auto* backBufferRenderPass = onAcquireBackBufferRenderPass(req);
 	if (!backBufferRenderPass) return;
 
-	imgui.onBeginRender(_frameSize); // TODO: move to frame update, to enable draw ui in update loop as well
+	imgui.onBeginRender(backBufferRenderPass->frameSize()); // TODO: move to frame update, to enable draw ui in update loop as well
 
 	req->frameBegin(this, backBufferRenderPass);
 	_renderGraph->_render(req);

@@ -26,65 +26,59 @@ RenderContext_Vk_Base::~RenderContext_Vk_Base() {
 void RenderContext_Vk_Base::onPostCreate(const CreateDesc& desc) {
 	Base::onPostCreate(desc);
 
-	_surface.getGraphQueue(_graphQueue, 0);
-	_surface.getPresentQueue(_presentQueue, 0);
+	_surface_vk.getGraphQueue(_graphQueue_vk, 0);
+	_surface_vk.getPresentQueue(_presentQueue_vk, 0);
 
 #if AX_DEBUG_NAME
-	_graphQueue.setDebugName("RenderContext-GraphQueue");
-	_presentQueue.setDebugName("RenderContext-PresentQueue");
+	_graphQueue_vk.setDebugName("RenderContext-GraphQueue");
+	_presentQueue_vk.setDebugName("RenderContext-PresentQueue");
 #endif
 
 	_createSwapChain();
 }
 
 void RenderContext_Vk_Base::_createSwapChain() {
-
 	auto& dev = Renderer_Vk::s_instance()->device();
 
-	auto cap = _surface.getCapabilities();
-	auto frameSize_vk = cap.currentExtent;
-
-	Vec2i frameSize(frameSize_vk.width, frameSize_vk.height);
-
-	if (frameSize.x <= 0 || frameSize.y <= 0)
-		return;
+	auto cap = _surface_vk.getCapabilities();
+	Vec2i frameSize = Math::max(_minFrameSize, AX_VkUtil::castVec2i(cap.currentExtent));
 
 //-- renderPass and framebuffer
 	VkSurfaceFormatKHR	surfaceFormat;
-	surfaceFormat.format		= AX_VkUtil::getVkColorType(_colorBufferDesc.colorType);
+	surfaceFormat.format		= AX_VkUtil::getVkColorType(_swapChainDesc.colorBuffer.colorType);
 	surfaceFormat.colorSpace	= VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 
-	VkFormat depthFormat	= AX_VkUtil::getVkDepthType(_depthBufferDesc.depthType);
-
 //------
-//	VkPresentModeKHR	presentMode	= _vsync ? VK_PRESENT_MODE_MAILBOX_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
-	VkPresentModeKHR	presentMode	= _vsync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
+//	VkPresentModeKHR	presentMode	= _swapChainDesc.vsync ? VK_PRESENT_MODE_MAILBOX_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
+	VkPresentModeKHR	presentMode	= _swapChainDesc.vsync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
 
-	_swapChain.create(dev, _surface, surfaceFormat, _requestBackBufferCount, presentMode);
+	_swapChain_vk.create(dev, _surface_vk, surfaceFormat, _swapChainDesc.backBufferCount, presentMode);
 
-	bool hasDepth = depthFormat != VK_FORMAT_UNDEFINED;
-	if (hasDepth) {
-		RenderTargetDepthBuffer_CreateDesc depthBufDesc;
-		depthBufDesc.name = Fmt("BackBuffer-depth");
-		depthBufDesc.depthType = _depthBufferDesc.depthType;
-		depthBufDesc.frameSize = frameSize;
-
-		_depthBuf = RenderTargetDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+	RenderDepthType depthType = _swapChainDesc.depthBuffer.depthType;
+	if (depthType != RenderDepthType::None) {
+		RenderTargetDepthBuffer_CreateDesc depthBuf_createDesc;
+		depthBuf_createDesc.name = Fmt("BackBuffer-depth");
+		depthBuf_createDesc.depthType = depthType;
+		depthBuf_createDesc.frameSize = frameSize;
+		_depthBuf_vk = RenderTargetDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc);
 	}
 
-	{	// init Back Buffers
-		_swapChain.getImages(_backBufImages);
-		Int resultBackBufferCount = _backBufImages.size();
-		
-		_backBuffers.resize(resultBackBufferCount);
+	_createBackBuffers(dev, frameSize);
+}
 
-		for (Int i = 0; i < resultBackBufferCount; i++) {
-			auto& dst = _backBuffers[i];
-			if (!dst) {
-				dst.newObject(AX_ALLOC_REQ);
-			}
-			dst->createOrUpdate(this, dev, i, frameSize);
+void RenderContext_Vk_Base::_createBackBuffers(AX_VkDevice& dev, Vec2i frameSize) {
+	Array<VkImage, 8>	images;
+	_swapChain_vk.getImages(images);
+
+	Int imageCount = images.size();
+	_backBuffers_vk.resize(imageCount);
+
+	for (Int i = 0; i < imageCount; i++) {
+		auto& dst = _backBuffers_vk[i];
+		if (!dst) {
+			dst.newObject(AX_ALLOC_REQ);
 		}
+		dst->createOrUpdate(this, dev, i, images[i], frameSize);
 	}
 }
 
@@ -96,9 +90,9 @@ RenderPass_Backend* RenderContext_Vk_Base::onAcquireBackBufferRenderPass(RenderR
 
 	constexpr Int kMaxRecreate = 2;
 	for(Int i = 0; i < kMaxRecreate; i++) {
-		auto err = _swapChain.acquireNextImage(	swapChainImageIndex, 
-												req->_imageAcquiredSemaphore_vk, 
-												VK_NULL_HANDLE);
+		auto err = _swapChain_vk.acquireNextImage(	swapChainImageIndex, 
+													req->_imageAcquiredSemaphore_vk, 
+													VK_NULL_HANDLE);
 		if (err == VK_SUCCESS) {
 			break;
 		} else if (err == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -117,20 +111,20 @@ RenderPass_Backend* RenderContext_Vk_Base::onAcquireBackBufferRenderPass(RenderR
 	}
 
 	Int backBufferIndex = SafeCast(swapChainImageIndex);
-	auto* backBuf = _getBackBuffer(backBufferIndex);
+	auto& backBuf = _backBuffers_vk[backBufferIndex];
 	if (!backBuf) {
 		AX_ASSERT(false);
 		return nullptr;
 	}
 
-	return rttiCastCheck<RenderPass_Backend>(backBuf->_renderPass.ptr());
+	return backBuf->_renderPass_vk;
 }
 
 void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return; }
 
-	const bool presentQueueIsSeparated = _surface.isPresentQueueIsSeparated();
+	const bool presentQueueIsSeparated = _surface_vk.isPresentQueueIsSeparated();
 
 	AX_VkDeviceQueue::WaitSemaphores waitSem(req->_imageAcquiredSemaphore_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 	auto& graphSemaphore = req->_graphSemaphore_vk;
@@ -146,14 +140,13 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 	auto& presentCmdBuf	   = backBuffer->_presentCmdBuf_vk;
 	auto& presentSemaphore = backBuffer->_presentSemaphore_vk;
 
-
 	Array<VkCommandBuffer, 2>	cmdBuffers;
 	cmdBuffers.append(req->_uploadCmdBuf_vk);
 	cmdBuffers.append(req->_graphCmdBuf_vk);
 
 	req->_completedFence_vk.reset();
 	
-	_graphQueue.submit( waitSem,
+	_graphQueue_vk.submit( waitSem,
 						cmdBuffers,
 						presentQueueIsSeparated ? graphSemaphore.handle() : presentSemaphore.handle(),
 						req->_completedFence_vk.handle());
@@ -164,40 +157,44 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 		// semaphore and signaling the ownership released semaphore when finished
 
 		presentCmdBuf->beginCommand();
-		presentCmdBuf->pipelineBarrier(	_surface.graphQueueFamilyIndex(), 
-										_surface.presentQueueFamilyIndex(),
+		presentCmdBuf->pipelineBarrier(	_surface_vk.graphQueueFamilyIndex(), 
+										_surface_vk.presentQueueFamilyIndex(),
 										colorBuffer->_image);
 		presentCmdBuf->endCommand();
 
-		_presentQueue.submit(	AX_VkDeviceQueue::WaitSemaphores(graphSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
+		_presentQueue_vk.submit(	AX_VkDeviceQueue::WaitSemaphores(graphSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
 								presentCmdBuf.handle(),
 								presentSemaphore.handle());
 	}
 
-	_graphQueue.present(presentSemaphore, _swapChain, backBufferRef.index);
+	_graphQueue_vk.present(presentSemaphore, _swapChain_vk, backBufferRef.index);
 }
 
 void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 	RenderContext_Vk_Base* renderContext,
-	AX_VkDevice&           dev,
-	Int                    index,
-	Vec2i                  frameSize
+	AX_VkDevice&	dev,
+	Int				index,
+	VkImage&		vkImage,
+	Vec2i			frameSize
 ) {
+	_index = index;
+	_vkImage = vkImage;
+	
 	auto backBufferName = Fmt("BackBuffer_{}-color", index);
-	dev.setObjectDebugName(renderContext->_backBufImages[index], backBufferName);
+	dev.setObjectDebugName(vkImage, backBufferName);
 
-	auto& colorBufferDesc = renderContext->_colorBufferDesc;
-	auto& depthBufferDesc = renderContext->_depthBufferDesc;
+	auto& colorBufferDesc = renderContext->_swapChainDesc.colorBuffer;
+	auto& depthBufferDesc = renderContext->_swapChainDesc.depthBuffer;
 
-	RenderTargetColorBuffer_CreateDesc	colorBufDesc;
-	colorBufDesc.name = backBufferName;
-	colorBufDesc.setBackBuffer(	renderContext, index, 
-								colorBufferDesc.colorType, 
-								frameSize);
+	RenderTargetColorBuffer_CreateDesc	colorBuf_createDesc;
+	colorBuf_createDesc.name = backBufferName;
+	colorBuf_createDesc.setBackBuffer(	renderContext, index, 
+										colorBufferDesc.colorType, 
+										frameSize);
 
-	_colorBuf = RenderTargetColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBufDesc);
+	_colorBuf_vk = RenderTargetColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 
-	auto& surface = renderContext->_surface;
+	auto& surface = renderContext->_surface_vk;
 
 	if (!_presentSemaphore_vk) {
 		_presentSemaphore_vk.create(dev);
@@ -212,14 +209,14 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 #endif
 	}
 
-	RenderPass_CreateDesc	renderPassDesc;
-	renderPassDesc.name = Fmt("BackBuffer_{}", index);
-	renderPassDesc.setBackBuffer(renderContext, index);
-	renderPassDesc.colorBuffers.emplaceBack(colorBufferDesc);
-	renderPassDesc.depthBuffer = depthBufferDesc;
-	renderPassDesc.frameSize = frameSize;
+	RenderPass_CreateDesc renderPass_createDesc;
+	renderPass_createDesc.name = Fmt("BackBuffer_{}", index);
+	renderPass_createDesc.setBackBuffer(renderContext, index);
+	renderPass_createDesc.colorBuffers.emplaceBack(colorBufferDesc);
+	renderPass_createDesc.depthBuffer = depthBufferDesc;
+	renderPass_createDesc.frameSize   = frameSize;
 
-	_renderPass = RenderPass_Backend::s_new(AX_ALLOC_REQ, renderPassDesc);
+	_renderPass_vk = RenderPass_Backend::s_new(AX_ALLOC_REQ, renderPass_createDesc);
 }
 
 #if AX_NATIVE_UI_WIN32
@@ -258,18 +255,29 @@ RenderContext_Vk_Win32::RenderContext_Vk_Win32(const CreateDesc& desc)
 	HWND parentHwnd = desc.window ? desc.window->hwnd() : nullptr;
 
 	// create real context
-	DWORD dwStyle = parentHwnd ? WS_CHILD : WS_POPUP;
+	DWORD dwStyle   = parentHwnd ? WS_CHILD : WS_POPUP;
 	DWORD dwExStyle = 0;
-	_hwnd = ::CreateWindowExW(dwExStyle, kClassName, kClassName, dwStyle,
-								0, 0, 8, 8,
-								parentHwnd, nullptr, hInstance, this);
+	auto  rc        = desc.windowDesc.rect;
+
+	_hwnd = ::CreateWindowExW(dwExStyle,
+	                          kClassName,
+	                          kClassName,
+	                          dwStyle,
+	                          SafeCast(rc.x),
+	                          SafeCast(rc.y),
+	                          SafeCast(rc.w),
+	                          SafeCast(rc.h),
+	                          parentHwnd,
+	                          nullptr,
+	                          hInstance,
+	                          this);
 	if (!_hwnd) {
 		AX_LOG_WIN32_LAST_ERROR("CreateWindow");
 		throw Error_Undefined();
 	}
 
 	auto& dev = Renderer_Vk::s_instance()->device();
-	_surface.create_Win32(dev, hInstance, _hwnd);
+	_surface_vk.create_Win32(dev, hInstance, _hwnd);
 }
 
 void RenderContext_Vk_Win32::onPostCreate(const CreateDesc& desc) {
@@ -326,7 +334,7 @@ void RenderContext_Vk_Win32::onSetFrameSize(const Vec2i& s) {
 	Base::onSetFrameSize(s);
 
 	if (!_hwnd) return;
-	SetWindowPos(_hwnd, nullptr, 0, 0, SafeCast(s.x), SafeCast(s.y), 0);
+	::SetWindowPos(_hwnd, nullptr, 0, 0, SafeCast(s.x), SafeCast(s.y), 0);
 }
 
 void RenderContext_Vk_Win32::onSetRenderNeeded() {
@@ -341,15 +349,6 @@ RenderContext_Vk_Win32::~RenderContext_Vk_Win32() {
 		_hwnd = nullptr;
 	}
 }
-
-Vec2f RenderContext_Vk_Win32::worldToLocalPos(const Vec2f& pt) {
-	return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt);
-}
-
-Vec2f RenderContext_Vk_Win32::localToWorldPos(const Vec2f& pt) {
-	return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt);
-}
-
 
 #endif
 

@@ -495,6 +495,9 @@ protected:
 	T* _p;
 };
 
+template<class T> constexpr       T* PtrOfPtr(      PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
+template<class T> constexpr const T* PtrOfPtr(const PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
+
 template<class T> struct NumLimit_Struct {
 	using Type = typename T::_NumLimit;
 };

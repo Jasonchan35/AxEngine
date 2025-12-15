@@ -14,7 +14,10 @@ UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& 
 	CreateDesc desc;
 	desc.renderer = renderer;
 	desc.index = index;
-	return rttiCast<RenderRequest_Backend>(Renderer_Backend::s_instance()->newRenderRequest(req, desc));
+	auto o = Renderer_Backend::s_instance()->newRenderRequest(req, desc);
+	AX_ASSERT(o->_graphCmdBuf);
+	AX_ASSERT(o->inlineUpload._gpuBuffer);
+	return o;
 }
 
 RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {

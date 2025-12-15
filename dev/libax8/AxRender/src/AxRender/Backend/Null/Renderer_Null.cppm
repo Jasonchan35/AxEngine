@@ -129,9 +129,8 @@ public:
 protected:
 	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return AxTag::Zero; }
 	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return AxTag::Zero; }
-	virtual BackBuffer*	onGetBackBuffer(Int i) override { return nullptr; }
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override { return nullptr; }
-	virtual void onPresentSurface(RenderRequest* req) override {}
+	virtual void	onPresentSurface(RenderRequest* req) override {}
 };
 
 

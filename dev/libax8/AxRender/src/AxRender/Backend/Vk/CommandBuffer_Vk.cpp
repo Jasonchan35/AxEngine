@@ -10,10 +10,9 @@ import :RenderPass_Vk;
 
 namespace ax /*::AxRender*/ {
 
-CommandBuffer_Vk& CommandBuffer_Vk::create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue) {
+void CommandBuffer_Vk::create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue) {
 	_pool.create(dev, queue);
 	_cmdBuf.create(_pool);
-	return *this;
 }
 
 void CommandBuffer_Vk::onRenderPassBegin(RenderPass* pass_) {
@@ -66,10 +65,10 @@ void CommandBuffer_Vk::onCommandEnd() {
 
 void CommandBuffer_Vk::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
 	VkViewport tmp;
-	tmp.x = rect.x;
-	tmp.y = rect.y;
-	tmp.width = rect.w;
-	tmp.height = rect.h;
+	tmp.x        = rect.x;
+	tmp.y        = rect.y;
+	tmp.width    = rect.w;
+	tmp.height   = rect.h;
 	tmp.minDepth = minDepth;
 	tmp.maxDepth = maxDepth;
 	vkCmdSetViewport(_cmdBuf, 0, 1, &tmp);

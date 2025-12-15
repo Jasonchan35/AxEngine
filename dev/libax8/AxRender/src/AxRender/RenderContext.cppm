@@ -7,16 +7,18 @@ export namespace ax /*::AxRender*/ {
 
 class RenderContext;
 
+struct SwapChainDesc {
+	Int			backBufferCount = 3;
+	bool		vsync = true;
+	RenderTargetColorBufferDesc	colorBuffer;
+	RenderTargetDepthBufferDesc	depthBuffer;
+};
+
 class RenderContext_CreateDesc : public NonCopyable {
 public:
 	NativeUIWindow*				window = nullptr;
-	NativeUIWindow_CreateDesc	winDesc;
-
-	Int			backBufferCount = 3;
-	bool		vsync = true;
-
-	RenderTargetColorBufferDesc	colorBuffer;
-	RenderTargetDepthBufferDesc	depthBuffer;
+	NativeUIWindow_CreateDesc	windowDesc;
+	SwapChainDesc				swapChainDesc;
 };
 
 class RenderContext : public RttiObject {
@@ -31,17 +33,10 @@ public:
 	void setRenderNeeded() { onSetRenderNeeded(); }
 
 	void setFrameSize(const Vec2i& s) { onSetFrameSize(s); }
-	const Vec2i&  frameSize() const		{ return _frameSize; }
 
-	ColorType	colorType() const	{ return _colorBufferDesc.colorType; }
-	RenderDepthType	depthType() const	{ return _depthBufferDesc.depthType; }
-
-	bool	vsync() const { return _vsync; }
+	const SwapChainDesc& swapChainDesc() const { return _swapChainDesc; }
 
 	NativeUIWindow*	window	()		{ return _window; }
-
-	RenderTargetColorBuffer*	backColorBuffer(Int i);
-	RenderTargetDepthBuffer*	backDepthBuffer() { return _depthBuf.ptr(); }
 
 	void setRenderGraph(RenderGraph* graph) { _renderGraph = graph; }
 
@@ -59,15 +54,9 @@ public:
 friend class Renderer;
 friend class RenderRequest;
 protected:
-	struct BackBuffer : public NonCopyable {
-		SPtr<RenderTargetColorBuffer>	_colorBuf;
-		SPtr<RenderPass>				_renderPass;
-	};
-	virtual BackBuffer*	onGetBackBuffer(Int i) = 0;
-
-	virtual void onPostCreate(const CreateDesc& desc);
+	virtual void onPostCreate(const CreateDesc& desc) {}
 	virtual void onSetRenderNeeded() {}
-	virtual void onSetFrameSize(const Vec2i& s) { _frameSize = s; }
+	virtual void onSetFrameSize(const Vec2i& s) {}
 	virtual void onUIMouseEvent(NativeUIMouseEvent& ev) {}
 	virtual void onUIKeyEvent(NativeUIKeyEvent& ev) {}
 	virtual void onRender() {}
@@ -76,20 +65,13 @@ protected:
 	virtual void onLoadImGuiIniFile() {}
 	virtual void onSaveImGuiIniFile() {}
 
-	Renderer*			_renderer = nullptr;
-	NativeUIWindow*		_window = nullptr;
+	Renderer*       _renderer           = nullptr;
+	NativeUIWindow* _window             = nullptr;
+	bool            _viewportIsBottomUp = false;
+	const	Vec2i	_minFrameSize		= {8,8}; 
 
-	Int			_requestBackBufferCount = 3;
-	bool		_vsync = true;
-	bool		_viewportIsBottomUp = false;
-
-	RenderTargetColorBufferDesc	_colorBufferDesc;
-	RenderTargetDepthBufferDesc	_depthBufferDesc;
-
-	Vec2i			_frameSize {0,0};
-
-	SPtr<RenderTargetDepthBuffer>	_depthBuf;
-	SPtr<RenderGraph>				_renderGraph;
+	SwapChainDesc		_swapChainDesc;
+	SPtr<RenderGraph>	_renderGraph;
 };
 
 } // namespace

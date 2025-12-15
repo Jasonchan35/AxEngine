@@ -23,7 +23,14 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	Array<VkAttachmentReference,16>		renderPassColorReference;
 	VkAttachmentReference				renderPassDepthReference = {};
 
-//---- color buffers
+	RenderContext_Vk*                renderContext_vk = nullptr;
+	RenderContext_Vk::BackBuffer_Vk* backBuffer_vk    = nullptr;
+	if (desc.isBackBuffer) {
+		renderContext_vk	= rttiCastCheck<RenderContext_Vk>(desc.renderContext);
+		backBuffer_vk		= renderContext_vk->_getBackBuffer(desc.backBufferIndex);
+	}
+
+//---- color buffers ----
 	for (Int i = 0; i < colorBufferCount; i++) {
 		auto& colorBuf = _colorBuffers.emplaceBack();
 		auto& srcColorDesc = desc.colorBuffers[i];
@@ -31,7 +38,9 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 		_colorBuffers[i].desc = srcColorDesc;
 
 		if (desc.isBackBuffer) {
-			colorBuf.colorBuf = desc.backBufferRenderContext->backColorBuffer(desc.backBufferIndex);
+			if (i >= 1) throw Error_Undefined();
+			colorBuf.colorBuf = backBuffer_vk->_colorBuf_vk;
+
 		} else {
 			RenderTargetColorBuffer_CreateDesc colorBufDesc;
 			colorBufDesc.name = Fmt("{}-color", desc.name);
@@ -41,10 +50,10 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 			colorBuf.colorBuf = RenderTargetColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBufDesc);
 		}
 
-		auto* color_tex_vk = rttiCastCheck<RenderTargetColorBuffer_Vk>(colorBuf.colorBuf.ptr());
-		AX_ASSERT(color_tex_vk);
+		auto* colorBuf_vk = rttiCastCheck<RenderTargetColorBuffer_Vk>(colorBuf.colorBuf.ptr());
+		AX_ASSERT(colorBuf_vk);
 
-		auto viewHandle = color_tex_vk->_view.handle();
+		auto viewHandle = colorBuf_vk->_view.handle();
 		AX_ASSERT(viewHandle);
 		frameBufferAttachments.emplaceBack(viewHandle);
 
@@ -54,7 +63,7 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 		colorReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		{
 			auto& dst = renderPassAttachmentDescription.emplaceBack();
-			dst.format			= AX_VkUtil::getVkColorType(color_tex_vk->colorType());
+			dst.format			= AX_VkUtil::getVkColorType(colorBuf_vk->colorType());
 			dst.flags			= 0;
 			dst.samples			= VK_SAMPLE_COUNT_1_BIT;
 			dst.loadOp			= AX_VkUtil::getVkLoadOp(srcColorDesc.loadOp);
@@ -74,24 +83,23 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 //--- depth buffer
 	_depthBuffer.desc = desc.depthBuffer;
 	bool hasDepth = _depthBuffer.desc.isEnabled();
+	if (hasDepth) {
+		if (desc.isBackBuffer) {
+			_depthBuffer.depthBuf = renderContext_vk->_depthBuf_vk;
+			
+		} else {
+			RenderTargetDepthBuffer_CreateDesc depthBufDesc;
+			depthBufDesc.name = Fmt("{}-depth", desc.name);
+			depthBufDesc.depthType = desc.depthBuffer.depthType;
+			depthBufDesc.frameSize = desc.frameSize;
 
-	if (desc.isBackBuffer) {
-		_depthBuffer.depthBuf = desc.backBufferRenderContext->backDepthBuffer();
-	} else {
-		RenderTargetDepthBuffer_CreateDesc depthBufDesc;
-		depthBufDesc.name = Fmt("{}-depth", desc.name);
-		depthBufDesc.depthType = desc.depthBuffer.depthType;
-		depthBufDesc.frameSize = desc.frameSize;
+			_depthBuffer.depthBuf = RenderTargetDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+		}
 
-		_depthBuffer.depthBuf = RenderTargetDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
-	}
+		auto* depthBuffer_vk = rttiCastCheck<RenderTargetDepthBuffer_Vk>(_depthBuffer.depthBuf.ptr()); 
 
-	auto* depth_tex_vk = rttiCastCheck<RenderTargetDepthBuffer_Vk>(_depthBuffer.depthBuf.ptr());
-	if (depth_tex_vk) {
-		hasDepth = true;
-
-		frameBufferAttachments.emplaceBack(depth_tex_vk->_view.handle());
-		auto depthFormat = AX_VkUtil::getVkDepthType(depth_tex_vk->depthType());
+		frameBufferAttachments.emplaceBack(depthBuffer_vk->_view.handle());
+		auto depthFormat = AX_VkUtil::getVkDepthType(depthBuffer_vk->depthType());
 
 		renderPassDepthReference.attachment = AX_VkUtil::castUInt32(renderPassAttachmentDescription.size());
 		renderPassDepthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;

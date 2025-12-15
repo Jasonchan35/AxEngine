@@ -8,7 +8,7 @@ export namespace ax /*::AxRender*/ {
 
 struct BackBufferRef {
 	class RenderContext* renderContext = nullptr;
-	Int				index = 0;
+	Int	index = 0;
 
 	explicit operator bool() const { return renderContext; }
 };

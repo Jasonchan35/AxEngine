@@ -97,4 +97,74 @@ struct ScopeEnterOnce : public NonCopyable {
 	bool _entered = false;
 };
 
+
+template<class DATA, class OWNER, void (OWNER::*FUNC)()>
+class ScopeDataProxy0 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeDataProxy0(DATA && data, OWNER* owner)
+		: _data(AX_FORWARD(data)), _owner(owner) {}
+
+	ScopeDataProxy0(ScopeDataProxy0 && r) noexcept {
+		std::swap(_data,  r._data);
+		std::swap(_owner, r._owner);
+	}
+	~ScopeDataProxy0() { if (_owner) (_owner->*FUNC)(); }
+	
+	DATA& data()		{ return _data; }
+	operator DATA&()	{ return _data; }
+	DATA* operator->()	{ return &_data; }
+	
+private:
+	DATA	_data;
+	OWNER*	_owner = nullptr;
+};
+
+template<class DATA, class OWNER, class PARAM0, void (OWNER::*FUNC)(PARAM0)>
+class ScopeDataProxy1 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeDataProxy1(DATA && data, OWNER* owner, PARAM0 && param0)
+		: _data(AX_FORWARD(data)), _owner(owner), _param0(AX_FORWARD(param0)) {}
+
+	ScopeDataProxy1(ScopeDataProxy1 && r) noexcept {
+		std::swap(_data,   r._data);
+		std::swap(_owner,  r._owner);
+		std::swap(_param0, r._param0);
+	}
+	~ScopeDataProxy1() { if (_owner) (_owner->*FUNC)(std::move(_param0)); }
+	
+	DATA& data()		{ return _data; }
+	operator DATA&()	{ return _data; }
+	DATA* operator->()	{ return &_data; }
+	
+private:
+	DATA	_data;
+	OWNER*	_owner = nullptr;
+	PARAM0	_param0;
+};
+
+template<class DATA, class OWNER, class PARAM0, class PARAM1, void (OWNER::*FUNC)(PARAM0, PARAM1)>
+class ScopeDataProxy2 : public NonCopyable {
+public:
+	AX_NODISCARD ScopeDataProxy2(DATA && data, OWNER* owner, PARAM0 && param0, PARAM1 && param1)
+		: _data(AX_FORWARD(data)), _owner(owner), _param0(AX_FORWARD(param0)), _param1(AX_FORWARD(param1)) {}
+
+	ScopeDataProxy2(ScopeDataProxy2 && r) noexcept {
+		std::swap(_data,   r._data);
+		std::swap(_owner,  r._owner);
+		std::swap(_param0, r._param0);
+		std::swap(_param1, r._param1);
+	}
+	~ScopeDataProxy2() { if (_owner) (_owner->*FUNC)(std::move(_param0), std::move(_param1)); }
+
+	DATA& data()		{ return _data; }
+	operator DATA&()	{ return _data; }
+	DATA* operator->()	{ return &_data; }
+	
+private:
+	DATA	_data;
+	OWNER*	_owner = nullptr;
+	PARAM0	_param0;
+	PARAM1	_param1;
+};
+
 } // namespace

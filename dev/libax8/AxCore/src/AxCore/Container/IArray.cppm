@@ -72,7 +72,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr const T& at(Int i) const noexcept					{ _checkBound(i); return at_noBoundCheck(i); }
 	AX_NODISCARD AX_INLINE constexpr       T* tryGetElement(Int i)       noexcept		{ return inBound(i) ? &at_noBoundCheck(i) : nullptr; }
 	AX_NODISCARD AX_INLINE constexpr const T* tryGetElement(Int i) const noexcept		{ return inBound(i) ? &at_noBoundCheck(i) : nullptr; }
-	
+
 	AX_NODISCARD AX_INLINE constexpr       T& back()       noexcept 					{ return at(size() - 1); }
 	AX_NODISCARD AX_INLINE constexpr const T& back() const noexcept 					{ return at(size() - 1); }
 	AX_NODISCARD AX_INLINE constexpr       T& back(Int i)       noexcept				{ return at(size() - i - 1); }

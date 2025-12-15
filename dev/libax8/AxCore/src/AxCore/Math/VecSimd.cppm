@@ -126,6 +126,9 @@ public:
 	}
 
 	AX_NODISCARD AX_INLINE bool operator==(Vec vec) const { return exactlyEqual(vec); }
+
+	AX_NODISCARD AX_INLINE Vec min(Vec vec) const { return unroll(vec, [](T a, T b){ return Math::min(a, b); }); }
+	AX_NODISCARD AX_INLINE Vec max(Vec vec) const { return unroll(vec, [](T a, T b){ return Math::max(a, b); }); }
 	
 	AX_NODISCARD AX_INLINE constexpr auto operator+(Vec vec) const -> Vec {
 		if (!std::is_constant_evaluated()) {

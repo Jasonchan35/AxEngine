@@ -5,6 +5,7 @@ export module AxRender:Dx12Util;
 #if AX_RENDERER_DX12
 export import :Shader;
 export import :Texture;
+export import :CommandBuffer;
 
 namespace ax /*::AxRender*/ {
 
@@ -25,42 +26,47 @@ struct Dx12Util {
 
 	class DxResourceCreator;
 
-	static bool isValid			(HRESULT hr) { if (!checkError(hr)) { reportError(hr); return false; } return true; }
+	static constexpr bool isValid		(HRESULT hr) { if (!checkError(hr)) { reportError(hr); return false; } return true; }
 
-	static void throwIfError	(HRESULT hr) { if (!checkError(hr)) { reportError(hr); throw Error_Undefined(); } }
-	static void throwIfError	(HRESULT hr, ID3DBlob* error);
+	static constexpr void throwIfError	(HRESULT hr) { if (!checkError(hr)) { reportError(hr); throw Error_Undefined(); } }
+	static constexpr void throwIfError	(HRESULT hr, ID3DBlob* error);
 
-	static void assertIfError	(HRESULT hr) { if (!checkError(hr)) { reportError(hr); AX_ASSERT(false); } }
-	static void reportError		(HRESULT hr);
+	static constexpr void assertIfError	(HRESULT hr) { if (!checkError(hr)) { reportError(hr); AX_ASSERT(false); } }
+	static inline	 void reportError	(HRESULT hr);
 
-	static bool checkError(HRESULT hr) {
+	static constexpr bool checkError(HRESULT hr) {
 		if (FAILED(hr))
 			return false;
 		return true;
 	}
 	
-	static D3D12_PRIMITIVE_TOPOLOGY			getDxPrimitiveTopology		(RenderPrimitiveType t);
-	static D3D12_PRIMITIVE_TOPOLOGY_TYPE	getDxPrimitiveTopologyType	(RenderPrimitiveType t);
-	static D3D12_FILTER						getDxSamplerFilter			(SamplerFilter v);
-	static D3D12_TEXTURE_ADDRESS_MODE		getDxSamplerWrap			(SamplerWrap v);
-	static DXGI_FORMAT						getDxIndexType				(IndexType t);
-	static D3D12_COMPARISON_FUNC			getDxDepthTestOp			(DepthTestOp v);
+	static constexpr D3D12_PRIMITIVE_TOPOLOGY		getDxPrimitiveTopology		(RenderPrimitiveType t);
+	static constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE	getDxPrimitiveTopologyType	(RenderPrimitiveType t);
+	static constexpr D3D12_FILTER					getDxSamplerFilter			(SamplerFilter v);
+	static constexpr D3D12_TEXTURE_ADDRESS_MODE		getDxSamplerWrap			(SamplerWrap v);
+	static constexpr DXGI_FORMAT					getDxIndexType				(IndexType t);
+	static constexpr D3D12_COMPARISON_FUNC			getDxDepthTestOp			(DepthTestOp v);
 
-	static DXGI_FORMAT		getDxColorType		(ColorType type);
-	static DXGI_FORMAT		getDxDataType		(RenderDataType v);
-	static D3D12_BLEND_OP	getDxBlendOp		(BlendOp		v);
-	static D3D12_BLEND		getDxBlendFactor	(BlendFactor	v);
-	static D3D12_CULL_MODE	getDxCullMode		(CullMode		v);
+	static constexpr DXGI_FORMAT		getDxColorType		(ColorType type);
+	static constexpr DXGI_FORMAT		getDxDataType		(RenderDataType v);
+	static constexpr D3D12_BLEND_OP		getDxBlendOp		(BlendOp		v);
+	static constexpr D3D12_BLEND		getDxBlendFactor	(BlendFactor	v);
+	static constexpr D3D12_CULL_MODE	getDxCullMode		(CullMode		v);
 
-	static StrView	errorToStrView(ID3DBlob* blob);
+	static constexpr D3D12_COMMAND_LIST_TYPE getDxCommandBufferType(CommandBufferType type);
+	
+	static constexpr StrView	errorToStrView(ID3DBlob* blob);
 
-	static UINT		castUINT	(Int v) { return SafeCast(v); }
-	static UINT16	castUINT16	(Int v) { return SafeCast(v); }
-	static UINT64	castUINT64	(Int v) { return SafeCast(v); }
+	static constexpr UINT		castUINT	(Int v) { return SafeCast(v); }
+	static constexpr UINT16	castUINT16	(Int v) { return SafeCast(v); }
+	static constexpr UINT64	castUINT64	(Int v) { return SafeCast(v); }
 };
 
-
-void Dx12Util::reportError(HRESULT hr) {
+inline void Dx12Util::reportError(HRESULT hr) {
+	_com_error err(hr);
+	auto errMsg = StrView_c_str(err.ErrorMessage());
+	AX_LOG_ERROR("HRESULT = {:x} {}", static_cast<u32>(hr), errMsg); 
+	
 #if 0 && _DEBUG
 	auto* d = renderer()->dxgiDebug();
 	if (d) {
@@ -70,8 +76,7 @@ void Dx12Util::reportError(HRESULT hr) {
 	AX_ASSERT(false);
 }
 
-inline
-void Dx12Util::throwIfError(HRESULT hr, ID3DBlob* error) {
+constexpr void Dx12Util::throwIfError(HRESULT hr, ID3DBlob* error) {
 	if (!checkError(hr)) {
 		if (error) {
 			AX_LOG("DX12 error: {?}", errorToStrView(error));
@@ -80,8 +85,7 @@ void Dx12Util::throwIfError(HRESULT hr, ID3DBlob* error) {
 	}
 }
 
-inline
-D3D12_PRIMITIVE_TOPOLOGY Dx12Util::getDxPrimitiveTopology(RenderPrimitiveType t) {
+constexpr D3D12_PRIMITIVE_TOPOLOGY Dx12Util::getDxPrimitiveTopology(RenderPrimitiveType t) {
 	using SRC = RenderPrimitiveType;
 	switch (t) {
 		case SRC::Points:		return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
@@ -91,8 +95,7 @@ D3D12_PRIMITIVE_TOPOLOGY Dx12Util::getDxPrimitiveTopology(RenderPrimitiveType t)
 	}
 }
 
-inline
-D3D12_PRIMITIVE_TOPOLOGY_TYPE Dx12Util::getDxPrimitiveTopologyType(RenderPrimitiveType t) {
+constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE Dx12Util::getDxPrimitiveTopologyType(RenderPrimitiveType t) {
 	using SRC = RenderPrimitiveType;
 	switch (t) {
 		case SRC::Points:		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
@@ -102,8 +105,7 @@ D3D12_PRIMITIVE_TOPOLOGY_TYPE Dx12Util::getDxPrimitiveTopologyType(RenderPrimiti
 	}
 }
 
-inline
-D3D12_FILTER Dx12Util::getDxSamplerFilter(SamplerFilter v) {
+constexpr D3D12_FILTER Dx12Util::getDxSamplerFilter(SamplerFilter v) {
 	using SRC = SamplerFilter;
 	switch (v) {
 		case SRC::Point:		return D3D12_FILTER_MIN_MAG_MIP_POINT;
@@ -116,8 +118,7 @@ D3D12_FILTER Dx12Util::getDxSamplerFilter(SamplerFilter v) {
 	}
 }
 
-inline
-D3D12_TEXTURE_ADDRESS_MODE Dx12Util::getDxSamplerWrap(SamplerWrap v) {
+constexpr D3D12_TEXTURE_ADDRESS_MODE Dx12Util::getDxSamplerWrap(SamplerWrap v) {
 	using SRC = SamplerWrap;
 	switch (v) {
 		case SRC::Repeat:		return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -129,8 +130,7 @@ D3D12_TEXTURE_ADDRESS_MODE Dx12Util::getDxSamplerWrap(SamplerWrap v) {
 	}
 }
 
-inline
-DXGI_FORMAT Dx12Util::getDxIndexType(IndexType t) {
+constexpr DXGI_FORMAT Dx12Util::getDxIndexType(IndexType t) {
 	using SRC = IndexType;
 	switch (t) {
 		case SRC::UInt16:	return DXGI_FORMAT_R16_UINT;
@@ -139,7 +139,7 @@ DXGI_FORMAT Dx12Util::getDxIndexType(IndexType t) {
 	}
 }
 
-inline StrView Dx12Util::errorToStrView(ID3DBlob* blob) {
+constexpr StrView Dx12Util::errorToStrView(ID3DBlob* blob) {
 	if (blob == nullptr)
 		return StrView();
 	auto* s = static_cast<const char*>(blob->GetBufferPointer());
@@ -147,8 +147,7 @@ inline StrView Dx12Util::errorToStrView(ID3DBlob* blob) {
 	return StrView(s, n);
 }
 
-inline
-DXGI_FORMAT Dx12Util::getDxColorType(ColorType type) {
+constexpr DXGI_FORMAT Dx12Util::getDxColorType(ColorType type) {
 	using SRC = ColorType;
 	switch (type) {
 		case SRC::HSVAf: 	return DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -177,8 +176,7 @@ DXGI_FORMAT Dx12Util::getDxColorType(ColorType type) {
 	}
 }
 
-inline
-DXGI_FORMAT Dx12Util::getDxDataType(RenderDataType v) {
+constexpr DXGI_FORMAT Dx12Util::getDxDataType(RenderDataType v) {
 	using SRC = RenderDataType;
 	switch (v) {
 		case SRC::u8:		return DXGI_FORMAT_R8_UNORM; break;
@@ -200,8 +198,7 @@ DXGI_FORMAT Dx12Util::getDxDataType(RenderDataType v) {
 	}
 }
 
-inline
-D3D12_BLEND_OP Dx12Util::getDxBlendOp(BlendOp v) {
+constexpr D3D12_BLEND_OP Dx12Util::getDxBlendOp(BlendOp v) {
 	using SRC = BlendOp;
 	switch (v) {
 		case SRC::Add:		return D3D12_BLEND_OP_ADD;
@@ -213,8 +210,7 @@ D3D12_BLEND_OP Dx12Util::getDxBlendOp(BlendOp v) {
 	}
 }
 
-inline
-D3D12_BLEND Dx12Util::getDxBlendFactor(BlendFactor v) {
+constexpr D3D12_BLEND Dx12Util::getDxBlendFactor(BlendFactor v) {
 	using SRC = BlendFactor;
 	switch (v) {
 		case SRC::Zero:						return D3D12_BLEND_ZERO;
@@ -236,8 +232,7 @@ D3D12_BLEND Dx12Util::getDxBlendFactor(BlendFactor v) {
 	}
 }
 
-inline
-D3D12_CULL_MODE Dx12Util::getDxCullMode(CullMode v) {
+constexpr D3D12_CULL_MODE Dx12Util::getDxCullMode(CullMode v) {
 	using SRC = CullMode;
 	switch (v) {
 		case SRC::None:	return D3D12_CULL_MODE_NONE;
@@ -247,8 +242,22 @@ D3D12_CULL_MODE Dx12Util::getDxCullMode(CullMode v) {
 	}
 }
 
-inline
-D3D12_COMPARISON_FUNC Dx12Util::getDxDepthTestOp(DepthTestOp v) {
+constexpr D3D12_COMMAND_LIST_TYPE Dx12Util::getDxCommandBufferType(CommandBufferType type) {
+	using SRC = CommandBufferType;
+	switch (type) {
+		case SRC::None:			return D3D12_COMMAND_LIST_TYPE_NONE;
+		case SRC::Direct:		return D3D12_COMMAND_LIST_TYPE_DIRECT;
+		case SRC::Bundle:		return D3D12_COMMAND_LIST_TYPE_BUNDLE;
+		case SRC::Compute:		return D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		case SRC::Copy:			return D3D12_COMMAND_LIST_TYPE_COPY;
+		case SRC::VideoDecode:	return D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE;
+		case SRC::VideoProcess:	return D3D12_COMMAND_LIST_TYPE_VIDEO_PROCESS;
+		case SRC::VideoEncode:	return D3D12_COMMAND_LIST_TYPE_VIDEO_ENCODE;
+		default: throw Error_Undefined();
+	}
+}
+
+constexpr D3D12_COMPARISON_FUNC Dx12Util::getDxDepthTestOp(DepthTestOp v) {
 	using SRC = DepthTestOp;
 	switch (v) {
 		case SRC::Always:		return  D3D12_COMPARISON_FUNC_ALWAYS;

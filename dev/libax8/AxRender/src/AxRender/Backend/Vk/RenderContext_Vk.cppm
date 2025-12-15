@@ -5,8 +5,12 @@ export module AxRender:RenderContext_Vk;
 #if AX_RENDERER_VK
 export import :RenderContext_Backend;
 export import :CommandBuffer_Vk;
+export import :RenderTarget_Vk;
+export import :RenderPass_Vk;
 
 export namespace ax /*::AxRender*/ {
+
+class RenderContext_Vk_Base;
 
 class RenderContext_Vk_Base : public RenderContext_Backend {
 	AX_RTTI_INFO(RenderContext_Vk_Base, RenderContext_Backend)
@@ -14,41 +18,36 @@ public:
 	RenderContext_Vk_Base(const CreateDesc& desc);
 	virtual ~RenderContext_Vk_Base() override;
 
-	AX_VkSurfaceKHR&	surface() { return _surface; }
+	AX_VkSurfaceKHR&	surface() { return _surface_vk; }
+	
+	SPtr<RenderTargetDepthBuffer_Vk>	_depthBuf_vk;
 
-	VkImage _getBackBufferImage(Int i) { return _backBufImages[i]; }
+	struct BackBuffer_Vk : public NonCopyable {
+		void createOrUpdate(RenderContext_Vk_Base* renderContext, AX_VkDevice& dev, Int index, VkImage& vkImage, Vec2i frameSize);
+		
+		Int					_index = -1;
 
-private:	
-	void	_createSwapChain();
-
-protected:
-	virtual void onPostCreate(const CreateDesc& desc) override;
-
-	struct BackBuffer_Vk : public BackBuffer {
-		void createOrUpdate(RenderContext_Vk_Base* renderContext, AX_VkDevice& dev, Int index, Vec2i frameSize);
-
+		SPtr<RenderTargetColorBuffer_Vk>	_colorBuf_vk;
+		SPtr<RenderPass_Vk>					_renderPass_vk;
+		
 		CommandBuffer_Vk	_presentCmdBuf_vk;
 		AX_VkSemaphore		_presentSemaphore_vk;
+		VkImage				_vkImage;
 	};
-
-	AX_INLINE BackBuffer_Vk* _getBackBuffer(Int i) {
-		return _backBuffers.inBound(i) ? _backBuffers[i].ptr() : nullptr;
-	}
-
-	virtual BackBuffer* onGetBackBuffer(Int i) override { return _getBackBuffer(i); }
-
+	
+	BackBuffer_Vk* _getBackBuffer(Int i) { return PtrOfPtr(_backBuffers_vk.tryGetElement(i)); }
+protected:	
+	void _createSwapChain();
+	void _createBackBuffers(AX_VkDevice& dev, Vec2i frameSize);
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override;
 	virtual void onPresentSurface(RenderRequest* req) override;
-
-
-	AX_VkSurfaceKHR		_surface;
-	AX_VkDeviceQueue	_graphQueue;
-	AX_VkDeviceQueue	_presentQueue;
-
-	AX_VkSwapchainKHR	_swapChain;
-
-	Array<VkImage, 8>	_backBufImages;
-	Array< UPtr<BackBuffer_Vk> >	_backBuffers;
+	virtual void onPostCreate(const CreateDesc& desc) override;
+	
+	AX_VkSurfaceKHR		_surface_vk;
+	AX_VkDeviceQueue	_graphQueue_vk;
+	AX_VkDeviceQueue	_presentQueue_vk;
+	AX_VkSwapchainKHR	_swapChain_vk;
+	Array< UPtr<BackBuffer_Vk>, 8 >	_backBuffers_vk;
 };
 
 #if AX_NATIVE_UI_WIN32
@@ -61,8 +60,8 @@ public:
 	RenderContext_Vk_Win32(const CreateDesc& desc);
 	virtual ~RenderContext_Vk_Win32() override;
 
-	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override;
-	virtual Vec2f	localToWorldPos(const Vec2f& pt) override;
+	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt); }
+	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt); }
 
 private:
 	AX_INLINE static This* s_getThis(HWND hwnd) {

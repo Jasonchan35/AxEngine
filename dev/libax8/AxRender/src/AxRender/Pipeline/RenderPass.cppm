@@ -10,7 +10,7 @@ class RenderPass_CreateDesc : public NonCopyable {
 public:
 	void setBackBuffer(class RenderContext* ctx, Int index) {
 		isBackBuffer = true;
-		backBufferRenderContext = ctx;
+		renderContext = ctx;
 		backBufferIndex = index;
 	}
 
@@ -18,7 +18,7 @@ public:
 
 	Vec2i	frameSize {0,0};
 	bool			isBackBuffer = false;
-	RenderContext*	backBufferRenderContext = nullptr;
+	RenderContext*	renderContext = nullptr;
 	Int				backBufferIndex = 0;
 
 	Array<RenderTargetColorBufferDesc, 16>	colorBuffers;

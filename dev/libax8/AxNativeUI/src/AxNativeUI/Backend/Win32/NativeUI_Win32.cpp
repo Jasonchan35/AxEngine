@@ -244,14 +244,16 @@ Vec2f NativeUI_Win32::s_worldToLocalPos(HWND hwnd, const Vec2f& pt) {
 	return pt - o.pos;
 }
 
-
 Rect2f NativeUI_Win32::s_getWorldRect(HWND hwnd) {
+	auto rc = s_getLocalRect(hwnd);
+	rc.pos = s_localToWorldPos(hwnd, rc.pos);
+	return rc;
+}
+
+Rect2f NativeUI_Win32::s_getLocalRect(HWND hwnd) {
 	RECT rc;
 	::GetWindowRect(hwnd, &rc);
-	auto o = Rect2f::s_from(rc);
-
-	o.pos = s_localToWorldPos(hwnd, o.pos);
-	return o;
+	return Rect2f::s_from(rc);
 }
 
 

@@ -12,27 +12,11 @@ UPtr<RenderContext> RenderContext::s_new(const MemAllocRequest& req, const Creat
 }
 
 RenderContext::RenderContext(const CreateDesc& desc) {
-	AX_ASSERT(desc.backBufferCount <= AxRenderConfig::kMaxBackBufferCount);
-
-	_requestBackBufferCount	= desc.backBufferCount;
-
-	_renderer			= Renderer::s_instance(); // for debug
-	_window				= desc.window;
-	_vsync				= desc.vsync;
-
-	_colorBufferDesc	= desc.colorBuffer;
-	_depthBufferDesc	= desc.depthBuffer;
+	AX_ASSERT(desc.swapChainDesc.backBufferCount <= AxRenderConfig::kMaxBackBufferCount);
+	_renderer      = Renderer::s_instance(); // for debug
+	_window        = desc.window;
+	_swapChainDesc = desc.swapChainDesc;
 }
-
-RenderTargetColorBuffer* RenderContext::backColorBuffer(Int i) {
-	auto* p = onGetBackBuffer(i);
-	return p ? p->_colorBuf.ptr() : nullptr;
-}
-
-void RenderContext::onPostCreate(const CreateDesc& desc) {
-	
-}
-
 
 } // namespace
 

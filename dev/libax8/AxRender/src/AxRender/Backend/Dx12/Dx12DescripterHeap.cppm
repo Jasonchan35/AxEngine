@@ -18,6 +18,34 @@ struct Dx12DescriptorHandle {
 	operator D3D12_GPU_DESCRIPTOR_HANDLE () const { return gpu; }
 };
 
+class Dx12DescripterHeapArray : public NonCopyable {
+public:
+	void create(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+	void destroy();
+	
+	ID3D12DescriptorHeap* d3dHeap() { return _d3dHeap; }
+	bool isValid() const { return _d3dHeap.ptr() != nullptr; }
+
+	Dx12DescriptorHandle getHandle(Int index) {
+		UINT i = SafeCast(index);
+		if (i >= _desc.NumDescriptors) throw Error_Undefined();
+		auto o = _handle;
+		auto offset = i * _stride;
+		o.cpu.ptr += offset;
+		o.gpu.ptr += offset;
+		return o;
+	}
+
+	Int size() const { return static_cast<Int>(_desc.NumDescriptors); }
+
+protected:
+	ComPtr<ID3D12DescriptorHeap>	_d3dHeap;
+	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
+	Dx12DescriptorHandle			_handle = {};
+	UINT							_stride = 0;
+};
+
+
 class Dx12DescripterHeap_Base : public NonCopyable {
 public:
 	ID3D12DescriptorHeap*	d3dHeap() { return _d3dHeap; }
@@ -50,13 +78,13 @@ protected:
 	UINT							_stride = 0;
 };
 
-class Dx12DescripterHeap_RenderTarget : public Dx12DescripterHeap_Base {
+class Dx12DescripterHeap_ColorBuffer : public Dx12DescripterHeap_Base {
 public:
 	void init(Int numDescriptors) {
 		_init(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle createView(Int i, Dx12Resource_RenderTarget& res) {
+	Dx12DescriptorHandle createView(Int i, Dx12Resource_ColorBuffer& res) {
 		//	D3D12_RENDER_TARGET_VIEW_DESC desc = {};
 		auto h = elementHandle(i);
 		Renderer_Dx12::s_d3dDevice()->CreateRenderTargetView(res.d3dResource(), nullptr, h);
@@ -70,7 +98,7 @@ public:
 		_init(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle createView(Int i, Dx12Resource_DepthStencilBuffer& res) {
+	Dx12DescriptorHandle createView(Int i, Dx12Resource_DepthBuffer& res) {
 		//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 		auto h = elementHandle(i);
 		Renderer_Dx12::s_d3dDevice()->CreateDepthStencilView(res.d3dResource(), nullptr, h);

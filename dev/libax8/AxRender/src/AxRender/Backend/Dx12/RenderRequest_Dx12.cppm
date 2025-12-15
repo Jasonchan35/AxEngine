@@ -6,6 +6,7 @@ export module AxRender:RenderRequest_Dx12;
 export import :Dx12Util;
 export import :Renderer_Backend;
 export import :RenderRequest_Backend;
+export import :CommandBuffer_Dx12;
 
 namespace ax {
 
@@ -15,13 +16,11 @@ public:
 	
 	RenderRequest_Dx12(const CreateDesc& desc);
 
-	ComPtr<ID3D12CommandAllocator>	_cmdAllocator;
-	ComPtr<ID3D12CommandAllocator>	_computeCmdAllocator;
-
-	ComPtr<ID3D12GraphicsCommandList> _cmdList;
-	ComPtr<ID3D12GraphicsCommandList> _computeCmdList;
-
-	ComPtr<ID3D12Fence>	_computeFence;
+	CommandBuffer_Dx12	_uploadCmdBuf_dx12; // submit earlier than graphCmdBuf
+	
+	CommandBuffer_Dx12	_graphCmdBuf_dx12;
+	CommandBuffer_Dx12	_computeCmdList_dx12;
+	ComPtr<ID3D12Fence>	_computeFence_dx12;
 };
 
 } // namespace

@@ -9,18 +9,6 @@ import :Renderer_Backend;
 
 namespace ax {
 
-template<class DATA, class OWNER, void (OWNER::*)()>
-class ScopeDataProxy0 : public NonCopyable {
-public:
-	AX_NODISCARD ScopeDataProxy0(OWNER* owner, DATA && data) : _owner(owner), _data(AX_FORWARD(data)) {}
-
-private:
-	OWNER*	_owner = nullptr;
-	DATA	_data;
-};
-
-
-
 class Dx12ResourceBase : public NonCopyable {
 	using This = Dx12ResourceBase;
 public:
@@ -30,7 +18,7 @@ public:
 	void		_unmapMemory();
 	
 	using ScopeMapMemory = ScopeDataProxy0<MutByteSpan, This, &This::_unmapMemory>;
-	ScopeMapMemory 	scopeMapMemory(IntRange range) { return ScopeMapMemory(this, _mapMemory(range));  }
+	ScopeMapMemory 	scopeMapMemory(IntRange range) { return ScopeMapMemory(_mapMemory(range), this);  }
 	
 	void uploadToGpu(Int offset, ByteSpan data);
 
@@ -61,12 +49,12 @@ protected:
 	D3D12_RESOURCE_STATES	_resourceState;
 };
 
-class Dx12Resource_RenderTarget : public Dx12ResourceBase {
+class Dx12Resource_ColorBuffer : public Dx12ResourceBase {
 public:
-	void createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT i);
+	void createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex);
 };
 
-class Dx12Resource_DepthStencilBuffer : public Dx12ResourceBase {
+class Dx12Resource_DepthBuffer : public Dx12ResourceBase {
 public:
 	void create(Vec2i size);
 };

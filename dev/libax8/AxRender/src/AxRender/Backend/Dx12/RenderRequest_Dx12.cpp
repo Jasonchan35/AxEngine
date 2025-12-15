@@ -9,33 +9,17 @@ namespace ax {
 RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
-	auto* renderer = Renderer_Dx12::s_instance();
-	auto* dev = renderer->d3dDevice();
+	auto* dev = Renderer_Dx12::s_d3dDevice();
+
+	_uploadCmdBuf_dx12.create(dev, CommandBufferType::Copy);
+
+	_graphCmdBuf_dx12.create(dev, CommandBufferType::Direct);
+	Base::_graphCmdBuf = &_graphCmdBuf_dx12; 
+	
+	_computeCmdList_dx12.create(dev, CommandBufferType::Compute);
 	
 	{
-		auto hr = dev->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(_cmdAllocator.ptrForInit()));
-		Dx12Util::throwIfError(hr);
-
-		hr = dev->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _cmdAllocator, nullptr, IID_PPV_ARGS(_cmdList.ptrForInit()));
-		Dx12Util::throwIfError(hr);
-
-		hr = _cmdList->Close();
-		Dx12Util::throwIfError(hr);
-	}
-
-	{ // compute
-		auto hr = dev->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(_computeCmdAllocator.ptrForInit()));
-		Dx12Util::throwIfError(hr);
-
-		hr = dev->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE, _computeCmdAllocator, nullptr, IID_PPV_ARGS(_computeCmdList.ptrForInit()));
-		Dx12Util::throwIfError(hr);
-
-		hr = _computeCmdList->Close();
-		Dx12Util::throwIfError(hr);
-	}
-
-	{
-		auto hr = Renderer_Dx12::s_d3dDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_computeFence.ptrForInit()));
+		auto hr = Renderer_Dx12::s_d3dDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_computeFence_dx12.ptrForInit()));
 		Dx12Util::throwIfError(hr);
 	}
 }

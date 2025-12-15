@@ -61,6 +61,18 @@ public:
 		return o;
 	}
 
+	static Vec2i castVec2i(const VkOffset2D& r) { return Vec2i(SafeCast(r.x), SafeCast(r.y)); }
+	static Vec2f castVec2f(const VkOffset2D& r) { return Vec2f(SafeCast(r.x), SafeCast(r.y)); }
+
+	static Vec2i castVec2i(const VkExtent2D& r) { return Vec2i(SafeCast(r.width), SafeCast(r.height)); }
+	static Vec2f castVec2f(const VkExtent2D& r) { return Vec2f(SafeCast(r.width), SafeCast(r.height)); }
+
+	static Vec3i castVec3i(const VkOffset3D& r) { return Vec3i(SafeCast(r.x), SafeCast(r.y), SafeCast(r.z)); }
+	static Vec3f castVec3f(const VkOffset3D& r) { return Vec3f(SafeCast(r.x), SafeCast(r.y), SafeCast(r.z)); }
+	
+	static Vec3i castVec3i(const VkExtent3D& r) { return Vec3i(SafeCast(r.width), SafeCast(r.height), SafeCast(r.depth)); }
+	static Vec3f castVec3f(const VkExtent3D& r) { return Vec3f(SafeCast(r.width), SafeCast(r.height), SafeCast(r.depth)); }
+	
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wold-style-cast")
 	static u32 makeApiVersion(u32 variant, u32 major, u32 minor, u32 patch) { return VK_MAKE_API_VERSION(variant, major, minor, patch); }
 	static u32 makeApiVersionMajor(u32 variant) { return VK_API_VERSION_MAJOR(variant); }

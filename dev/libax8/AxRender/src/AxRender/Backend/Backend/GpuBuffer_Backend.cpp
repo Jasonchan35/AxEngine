@@ -14,12 +14,6 @@ void GpuBuffer_Backend::copyData(ByteSpan data, Int offset) {
 	map->copyValues(data);
 }
 
-GpuBuffer_Backend::MapScope GpuBuffer_Backend::mapMemory(IntRange range) {
-	if (!bufferRange().contains(range))
-		throw Error_IndexOutOfRange();
-	return MapScope(this, onMapMemory(range));
-}
-
 void GpuBuffer_Backend::flush(IntRange range) {
 	if (range.size() <= 0) return;
 
