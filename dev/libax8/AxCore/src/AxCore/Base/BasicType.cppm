@@ -27,6 +27,9 @@ struct ax_static_cast {
 template<class T> using Type_EnumInt = std::underlying_type_t<T>;
 template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<Type_EnumInt<T>>(v); }
 
+template<class T> requires std::is_enum_v<T>
+AX_NODISCARD constexpr void ax_enum_set_int(T & v, Type_EnumInt<T> i) { v = static_cast<T>(i); }
+
 using u8  = std::uint8_t;
 using u16 = std::uint16_t;
 using u32 = std::uint32_t;

@@ -1,5 +1,4 @@
 import AxCore_Test.PCH;
-import AxCore.Enum;
 
 namespace ax {
 
@@ -30,7 +29,7 @@ public:
 
 	void test_case1() {
 		Example t = Example::AC;
-		AX_TEST_EQ(EnumFn(t).str(), "AC");
+		AX_TEST_EQ(ax_enum_str(t), "AC");
 
 		switch (t) {
 		#if 0 // test vc warning: #warning C5262: switch-case fallthrough warning

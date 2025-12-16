@@ -80,24 +80,22 @@ bool NativeUIEventHandler_Win32::_handleMouseEvent(HWND hwnd, UINT msg, WPARAM w
 			return false;
 	}	
 
-	auto pressedFn = EnumFn_(_mousePressedButtons);
-	pressedFn = AxTag::Zero;
-
-	if (wParam & MK_LBUTTON)  pressedFn.setFlags(Button::Left);
-	if (wParam & MK_MBUTTON)  pressedFn.setFlags(Button::Middle);
-	if (wParam & MK_RBUTTON)  pressedFn.setFlags(Button::Right);
-	if (wParam & MK_XBUTTON1) pressedFn.setFlags(Button::Button4);
-	if (wParam & MK_XBUTTON2) pressedFn.setFlags(Button::Button5);
+	_mousePressedButtons = Button::None;
+	if (wParam & MK_LBUTTON)  _mousePressedButtons |= Button::Left;
+	if (wParam & MK_MBUTTON)  _mousePressedButtons |= Button::Middle;
+	if (wParam & MK_RBUTTON)  _mousePressedButtons |= Button::Right;
+	if (wParam & MK_XBUTTON1) _mousePressedButtons |= Button::Button4;
+	if (wParam & MK_XBUTTON2) _mousePressedButtons |= Button::Button5;
 
 //	ev.pressedButtons = _mousePressedButtons;
 
 	if (ev.type == Type::Down) {
-		if (pressedFn.isZero()) {
+		if (_mousePressedButtons == Button::None) {
 			::SetCapture(hwnd);
 		}
 
 	}else if (ev.type == Type::Up) {
-		if (pressedFn.isZero()) {
+		if (_mousePressedButtons == Button::None) {
 			::ReleaseCapture();
 		}
 	}

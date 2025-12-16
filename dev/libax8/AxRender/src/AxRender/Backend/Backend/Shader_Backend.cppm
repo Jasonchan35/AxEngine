@@ -216,7 +216,7 @@ public:
 
 	const ShaderPassInfo*	info() const	{ return _info; }
 
-	bool isCompute() const { return EnumFn(_stageFlags).hasFlags(ShaderStageFlags::Compute); }
+	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
 	
 	template<class R>       R* getParamSpace_(ParamSpaceType s)       { return rttiCastCheck<R>(getParamSpace(s)); }
 	template<class R> const R* getParamSpace_(ParamSpaceType s) const { return rttiCastCheck<R>(getParamSpace(s)); }

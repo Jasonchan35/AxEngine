@@ -20,8 +20,6 @@ struct NativeUI_Win32_KeyMap {
 
 	NativeUI_Win32_KeyMap() {
 		using KeyCode = NativeUIKeyCode;
-
-		using IntType = EnumFn_<NativeUIKeyCode>::IntType;
 		for (u8 i = 0; i < 26; ++i) { addEntry(KeyCode::A       + i, 'A'        + i); }
 		for (u8 i = 0; i < 10; ++i) { addEntry(KeyCode::Digi0   + i, '0'        + i); }
 		for (u8 i = 0; i < 10; ++i) { addEntry(KeyCode::NumPad0 + i, VK_NUMPAD0 + i); }

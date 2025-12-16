@@ -4,7 +4,6 @@ module;
 export module AxCore.JsonIO_Reader;
 export import AxCore.JsonReader;
 export import AxCore.Rtti;
-export import AxCore.Enum;
 
 export namespace ax {
 
@@ -77,7 +76,7 @@ public:
 		static_assert(std::is_enum_v<T>);
 		auto tmp = ax_enum_int(value);
 		named_io(name, tmp);
-		EnumFn(value).setInt(tmp);
+		ax_enum_set_int(value, tmp);
 	}
 
 	template<class T> void named_io_fixed(StrView name, T& value) { named_io(name, value); }

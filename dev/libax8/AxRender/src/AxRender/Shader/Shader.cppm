@@ -145,7 +145,7 @@ public:
 
 		AX_JSON_IO_ENUM_AS_INT(se, stageFlags);
 
-		if (EnumFn_(stageFlags).hasFlags(ShaderStageFlags::Compute)) {
+		if (ax_bit_has(stageFlags, ShaderStageFlags::Compute)) {
 			AX_JSON_IO(se, csWorkgroupSize);
 		}
 

@@ -2,7 +2,6 @@ module;
 
 export module AxCore.Color:ColorType;
 export import AxCore.Mat;
-export import AxCore.Enum;
 
 export namespace ax {
 

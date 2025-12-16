@@ -89,7 +89,7 @@ struct JsonIO_Handler<T> {
 			}
 			value = t;
 		} else {
-			se.writer.writeValue(EnumFn(value).str());
+			se.writer.writeValue(ax_enum_str(value));
 		}
 	}
 };

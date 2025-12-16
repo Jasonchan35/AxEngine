@@ -67,10 +67,10 @@ private:
 ShaderStageFlags getShaderStageGlags(SpvReflectShaderStageFlagBits f) {
 	using DST = ShaderStageFlags;
 	DST o = DST::None;
-	if (EnumFn(f).hasFlags(SPV_REFLECT_SHADER_STAGE_VERTEX_BIT  )) o |= DST::Vertex;
-	if (EnumFn(f).hasFlags(SPV_REFLECT_SHADER_STAGE_FRAGMENT_BIT)) o |= DST::Pixel;
-	if (EnumFn(f).hasFlags(SPV_REFLECT_SHADER_STAGE_GEOMETRY_BIT)) o |= DST::Geometry;
-	if (EnumFn(f).hasFlags(SPV_REFLECT_SHADER_STAGE_COMPUTE_BIT )) o |= DST::Compute;
+	if (ax_bit_has(f, SPV_REFLECT_SHADER_STAGE_VERTEX_BIT  )) o |= DST::Vertex;
+	if (ax_bit_has(f, SPV_REFLECT_SHADER_STAGE_FRAGMENT_BIT)) o |= DST::Pixel;
+	if (ax_bit_has(f, SPV_REFLECT_SHADER_STAGE_GEOMETRY_BIT)) o |= DST::Geometry;
+	if (ax_bit_has(f, SPV_REFLECT_SHADER_STAGE_COMPUTE_BIT )) o |= DST::Compute;
 	return static_cast<ShaderStageFlags>(o);
 }
 

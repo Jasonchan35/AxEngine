@@ -8,7 +8,6 @@ export import AxCore.ConsoleApp;
 export import AxCore.Color;
 export import AxCore.ComPtr;
 export import AxCore.DateTime;
-export import AxCore.Enum;
 export import AxCore.File;
 export import AxCore.FileDirWatcher;
 export import AxCore.FileMemMap;
