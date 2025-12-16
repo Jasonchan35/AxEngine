@@ -23,8 +23,9 @@ struct RendererInfo {
 	bool enableDebugReport	: 1;
 	bool enableDebugUtils	: 1;
 	bool enableDebugMarker	: 1;
+	bool vsync              : 1;
 
-	Int  renderRequestCount	= 0;
+	Int  renderRequestCount = 0;
 
 	struct InlineUpload {
 		Int bufferSize   = 0;
@@ -49,6 +50,7 @@ public:
 
 	RenderAPI	api() const			{ return _info.api; }
 	bool		multithread() const	{ return _info.multithread; }
+	bool		vsync() const		{ return _info.vsync; }
 
 	struct AdapterInfo {
 		String	name;

@@ -31,8 +31,6 @@ private:
 };
 
 UIWindow::UIWindow() {
-	TempString title("Test");
-
 	{
 		NativeUIWindow_CreateDesc desc;
 		desc.isMainWindow = true;
@@ -50,10 +48,9 @@ UIWindow::UIWindow() {
 		_contentView->createRenderContext(desc);
 	}
 
-//	auto* app = EditorApp::s_instance();
-//	auto* renderer = app->renderer();
-//	FmtTo(title, " - {}, MT: {}, VSync: {}", renderer->api(), renderer->multithread(), renderer->vsync());
-//	setWindowTitle(title);
+	auto* renderer = Renderer::s_instance();
+	auto title = Fmt("Test - {}, MT: {}, VSync: {}", renderer->api(), renderer->multithread(), renderer->vsync());
+	setWindowTitle(title);
 //	setWindowActive(true);
 
 	setSize({1280, 768});

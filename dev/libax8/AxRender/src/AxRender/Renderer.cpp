@@ -76,6 +76,7 @@ RendererInfo::RendererInfo() {
 	enableDebugReport	= isDebug;
 	enableDebugUtils	= isDebug;
 	enableDebugMarker	= isDebug;
+	vsync				= true;
 	//---
 	renderRequestCount = 4;
 	inlineUpload.bufferSize   =  16 * 1024 * 1024;
