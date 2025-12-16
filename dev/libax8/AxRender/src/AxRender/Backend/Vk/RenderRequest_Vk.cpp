@@ -6,6 +6,7 @@ import :RenderRequest_Vk;
 import :Renderer_Vk;
 import :RenderContext_Vk;
 import :Material_Vk;
+import :GpuBuffer_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -21,8 +22,6 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 
 	_uploadCmdBuf_vk.create(dev, dev.graphQueueFamilyIndex());
 	_graphCmdBuf_vk.create(dev, dev.graphQueueFamilyIndex());
-
-	Base::_graphCmdBuf = &_graphCmdBuf_vk;
 
 #if AX_DEBUG_NAME
 	auto debugIndex = desc.index;
@@ -41,19 +40,101 @@ void RenderRequest_Vk::onWaitCompleted() {
 }
 
 void RenderRequest_Vk::onFrameBegin() {
-	Base::onFrameBegin();
-	_uploadCmdBuf_vk.onCommandBegin();
-	_graphCmdBuf_vk.onCommandBegin();
+	_uploadCmdBuf_vk.commandBegin();
+	_graphCmdBuf_vk.commandBegin();
 }
 
 void RenderRequest_Vk::onFrameEnd() {
 #if AX_RENDER_BINDLESS
 	_bindless.update(this);
 #endif
+	_graphCmdBuf_vk.commandEnd();
+	_uploadCmdBuf_vk.commandEnd();
+}
 
-	_graphCmdBuf_vk.onCommandEnd();
-	_uploadCmdBuf_vk.onCommandEnd();
-	Base::onFrameEnd();
+void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
+	auto* pass  = rttiCast<RenderPass_Vk >(pass_);
+	AX_ASSERT(pass);
+
+	VkExtent2D extent = AX_VkUtil::castVkExtent2D(pass->frameSize());
+
+	Array<VkClearValue, 32>	clearValues;
+	for (auto& src : pass->colorBuffers()) {
+		auto& dst = clearValues.emplaceBack().color;
+		AX_VkUtil::setFloat4(dst.float32, src.attachment.clearColor);
+	}
+	
+	if (auto* depthBuffer = pass->depthBuffer()) {
+		auto& dst = clearValues.emplaceBack().depthStencil;
+		auto& desc = depthBuffer->attachment();
+		dst.depth   = desc.clearDepth;
+		dst.stencil = desc.clearStencil;
+	}
+
+	VkRenderPassBeginInfo info = {};
+	info.sType					= VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	info.pNext					= nullptr;
+	info.renderPass				= pass->_renderPass_vk;
+	info.framebuffer			= pass->_framebuffer_vk;
+	info.renderArea.offset.x	= 0;
+	info.renderArea.offset.y	= 0;
+	info.renderArea.extent		= extent;
+	info.clearValueCount		= AX_VkUtil::castUInt32(clearValues.size());
+	info.pClearValues			= clearValues.data();
+
+	_graphCmdBuf_vk->debugLabelBegin(pass->name(), Color4f(0, 0, 0.25f,1));
+	vkCmdBeginRenderPass(_graphCmdBuf_vk, &info, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void RenderRequest_Vk::onRenderPassEnd() {
+	vkCmdEndRenderPass(_graphCmdBuf_vk);
+	_graphCmdBuf_vk->debugLabelEnd();
+}
+
+void RenderRequest_Vk::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
+	VkViewport tmp;
+	tmp.x        = rect.x;
+	tmp.y        = rect.y;
+	tmp.width    = rect.w;
+	tmp.height   = rect.h;
+	tmp.minDepth = minDepth;
+	tmp.maxDepth = maxDepth;
+	vkCmdSetViewport(_graphCmdBuf_vk, 0, 1, &tmp);
+}
+
+void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
+	VkRect2D rc = AX_VkUtil::castVkRect2D(rect);
+	vkCmdSetScissor(_graphCmdBuf_vk, 0, 1, &rc);
+}
+
+void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& cmd) {
+	u32	vertexCount   = AX_VkUtil::castUInt32(cmd.vertexCount);
+	u32 vertexStart   = AX_VkUtil::castUInt32(cmd.vertexStart);
+
+	u32 indexStart    = AX_VkUtil::castUInt32(cmd.indexStart);
+	u32 indexCount    = AX_VkUtil::castUInt32(cmd.indexCount);
+
+	u32 instanceStart = AX_VkUtil::castUInt32(cmd.instanceStart);
+	u32 instanceCount = AX_VkUtil::castUInt32(cmd.instanceCount);
+
+	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(cmd.vertexBuffer)) {
+		// draw indirect doesn't support byte offset
+		// VkDeviceSize vertexBufferByteOffset = AX_VkUtil::castUInt32(cmd.vertexBufferByteOffset);
+		u32 firstBinding = ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers(_graphCmdBuf_vk, firstBinding, 1, &vb->vkBufHandle(), &offset);
+	}
+
+	if (cmd.indexType == IndexType::None) {
+		vkCmdDraw(_graphCmdBuf_vk, vertexCount, instanceCount, vertexStart, instanceStart);
+
+	} else if (auto* ib = rttiCastCheck<GpuBuffer_Vk>(cmd.indexBuffer)) {
+		vkCmdBindIndexBuffer(_graphCmdBuf_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(cmd.indexType));
+		vkCmdDrawIndexed(_graphCmdBuf_vk, indexCount, instanceCount, indexStart, SafeCast(vertexStart), instanceStart);
+
+	} else {
+		AX_ASSERT(false);
+	}
 }
 
 

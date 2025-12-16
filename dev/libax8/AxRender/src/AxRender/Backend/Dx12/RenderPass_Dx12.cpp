@@ -3,6 +3,7 @@
 #if AX_RENDERER_DX12
 import :RenderPass_Dx12;
 import :RenderContext_Dx12;
+import :RenderRequest_Dx12;
 
 namespace ax {
 
@@ -11,7 +12,7 @@ RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): 
 		auto* renderContext_dx12 = rttiCastCheck<RenderContext_Dx12>(desc.backBufferRef.renderContext);
 		if (!renderContext_dx12) throw Error_Undefined();
 		UINT backBufIndex = SafeCast(desc.backBufferRef.index);
-		createFromSwapChain(renderContext_dx12->_swapChain_dx12.ptr(), backBufIndex);
+		createFromSwapChain(renderContext_dx12->_swapChain_dx12, backBufIndex);
 	}
 }
 
@@ -78,6 +79,15 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 	
 }
 
+void RenderPass_Dx12::colorBuf0_resourceBarrier(RenderRequest* req_, D3D12_RESOURCE_STATES state) {
+	auto* colorBuf = _colorBuffers.tryGetElement(0);
+	if (!colorBuf) return;
+
+	auto* buffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorBuf->buffer.ptr());
+
+	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
+	buffer->_resource_dx12.resourceBarrier(req->_graphCmdBuf_dx12, state);
+}
 
 } // namespace
 

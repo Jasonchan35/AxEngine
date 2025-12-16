@@ -174,7 +174,7 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 				drawcall.indexCount		   = srcBuf.ElemCount;
 				drawcall.indexStart		   = indexStart + srcBuf.IdxOffset;
 
-				req->draw(drawcall);
+				req->drawCall(drawcall);
 
 			}
 

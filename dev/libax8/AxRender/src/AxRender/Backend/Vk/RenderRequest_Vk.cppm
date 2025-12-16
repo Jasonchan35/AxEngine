@@ -22,12 +22,10 @@ public:
 	CommandBuffer_Vk&	uploadCmdBuf_vk()		{ return _uploadCmdBuf_vk; }
 	CommandBuffer_Vk&	graphCmdBuf_vk()		{ return _graphCmdBuf_vk; }
 
-	virtual void onWaitCompleted() override;
-	virtual void onFrameBegin() override;
-	virtual void onFrameEnd() override;
-	
 	Renderer_Vk*	renderer_vk() { return rttiCastCheck<Renderer_Vk>(_renderer); }
 
+	AX_RenderRequest_Backend_FunctionInterfaces(override)
+	
 #if AX_RENDER_BINDLESS
 	RenderRequest_Bindless_Vk _bindless;
 #endif

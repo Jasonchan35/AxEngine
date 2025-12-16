@@ -36,8 +36,6 @@ public:
 
 	void setCurrentRenderPass(RenderPass* pass) { _currentRenderPass = pass; }
 
-	virtual void onDrawcall(Cmd_DrawCall& cmd) override;
-
 	RenderPass_Backend*	backBufferRenderPass()	{ return _backBufferRenderPass; }
 
 	class Renderer_Backend* renderer_backend() { return rttiCastCheck<Renderer_Backend>(_renderer); }
@@ -108,20 +106,17 @@ public:
 
 	Int index() const { return _index; }
 
+	void drawUI_backend();
+	void drawCall_backend(Cmd_DrawCall& cmd);
+	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
+	void setScissorRect_backend(const Rect2f& rect);
+	
 protected:
-	virtual void onDrawUI() override;
-
-	virtual void onWaitCompleted() {}
-	virtual void onFrameBegin() {}
-	virtual void onFrameEnd() {}
-
-	virtual void onRenderPassBegin() {}
-	virtual void onRenderPassEnd() {}
-
+	AX_RenderRequest_Backend_FunctionInterfaces(=0)
+	
 private:
 	Int _index = 0;
 	SPtr<RenderPass_Backend>	_backBufferRenderPass;
-
 };
 
 } // namespace

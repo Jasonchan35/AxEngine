@@ -208,6 +208,36 @@ void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType color
 	_create();
 }
 
+void Dx12Fence::create(ID3D12Device* dev) {
+	// _event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	auto hr = Renderer_Dx12::s_d3dDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.ptrForInit()));
+	Dx12Util::throwIfError(hr);
+}
+
+void Dx12CommandQueue::create(ID3D12Device* dev) {
+	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+	queueDesc.Type		= D3D12_COMMAND_LIST_TYPE_DIRECT;
+	queueDesc.Priority	= D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
+	queueDesc.Flags		= D3D12_COMMAND_QUEUE_FLAG_NONE; // D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT
+	queueDesc.NodeMask	= 0;
+
+	auto hr = dev->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(_queue.ptrForInit()));
+	Dx12Util::throwIfError(hr);
+}
+
+void Dx12SwapChain::create(Dx12CommandQueue& cmdQueue, HWND hwnd, DXGI_SWAP_CHAIN_DESC1& desc) {
+	auto* factory = Renderer_Dx12::s_instance()->dxgiFactory();
+	
+	HRESULT hr;
+	
+	ComPtr<IDXGISwapChain1> swapChain1;
+	hr = factory->CreateSwapChainForHwnd(cmdQueue, hwnd, &desc, nullptr, nullptr, swapChain1.ptrForInit());
+	Dx12Util::throwIfError(hr);
+
+	hr = swapChain1->QueryInterface(IID_PPV_ARGS(_swapChain.ptrForInit()));
+	Dx12Util::throwIfError(hr);
+}
+
 } // namespace
 
 #endif //#if AX_RENDERER_DX12

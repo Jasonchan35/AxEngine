@@ -20,27 +20,11 @@ void RenderContext_Dx12::_createSwapChain() {
 	auto  vsync       = _swapChainDesc.vsync;
 	
 	auto* renderer    = Renderer_Dx12::s_instance();
-	auto* d3dDevice   = renderer->d3dDevice();
-	auto* dxgiFactory = renderer->dxgiFactory();
+	auto* dev		  = renderer->d3dDevice();
 
-	HRESULT hr;
+	_graphCmdQueue.create(dev);
+	_computeCmdQueue.create(dev);
 
-	{	// create command queue
-		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-		queueDesc.Type		= D3D12_COMMAND_LIST_TYPE_DIRECT;
-		queueDesc.Priority	= D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-		queueDesc.Flags		= D3D12_COMMAND_QUEUE_FLAG_NONE; // D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT
-		queueDesc.NodeMask	= 0;
-
-		hr = d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(_cmdQueue.ptrForInit()));
-		Dx12Util::throwIfError(hr);
-
-		queueDesc.Type		= D3D12_COMMAND_LIST_TYPE_COMPUTE;
-		hr = d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(_computeCmdQueue.ptrForInit()));
-		Dx12Util::throwIfError(hr);
-	}
-	
-	
 	{	// create swap chain
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 		swapChainDesc.Width                 = SafeCast(frameSize.x);
@@ -55,12 +39,7 @@ void RenderContext_Dx12::_createSwapChain() {
 		swapChainDesc.AlphaMode             = DXGI_ALPHA_MODE_IGNORE;
 		swapChainDesc.Flags                 = vsync ? 0 : DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-		ComPtr<IDXGISwapChain1> swapChain1;
-		hr = dxgiFactory->CreateSwapChainForHwnd(_cmdQueue, _hwnd, &swapChainDesc, nullptr, nullptr, swapChain1.ptrForInit());
-		Dx12Util::throwIfError(hr);
-
-		hr = swapChain1->QueryInterface(IID_PPV_ARGS(_swapChain_dx12.ptrForInit()));
-		Dx12Util::throwIfError(hr);
+		_swapChain_dx12.create(_graphCmdQueue, _hwnd, swapChainDesc);
 	}
 
 	RenderDepthType depthType = _swapChainDesc.depthBufferAttachment.depthType;
@@ -214,21 +193,10 @@ void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 	if (!req) { AX_ASSERT(false); return; }
 	
-	auto* backBuf = req->backBufferRenderPass();
-	if (!backBuf) { AX_ASSERT(false); return; }
-	
-	// {	// Indicate that the back buffer will now be used to present.
-	//
-	// 	
-	// 	D3D12_RESOURCE_BARRIER barrier = {};
-	// 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// 	barrier.Transition.pResource   = _frame->_renderTargetResource.d3dResource();
-	// 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// 	barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_PRESENT;
-	// 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	// 	dispatcher.cmdList->ResourceBarrier(1, &barrier);
-	// }	
+	auto* pass = rttiCastCheck<RenderPass_Dx12>(req->backBufferRenderPass());
+	if (!pass) { AX_ASSERT(false); return; }
+
+	pass->colorBuf0_resourceBarrier(req, D3D12_RESOURCE_STATE_PRESENT);
 }
 
 void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {

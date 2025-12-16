@@ -56,6 +56,8 @@ class RenderRequest_Null : public RenderRequest_Backend {
 	AX_RTTI_INFO(RenderRequest_Null, RenderRequest_Backend)
 public:
 	RenderRequest_Null(const CreateDesc& desc) : Base(desc) {}
+
+	AX_RenderRequest_Backend_FunctionInterfaces(override {})
 };
 
 class Sampler_Null : public Sampler_Backend {

@@ -49,7 +49,7 @@ public:
 	AX_INLINE constexpr Rect2_(T x_, T y_, T w_, T h_) : _simd(x_,y_,w_,h_) {}
 	AX_INLINE constexpr Rect2_(const Vec2& pos_, const Vec2& size_) : pos(pos_), size(size_) {}
 
-	constexpr void	set			(T x_, T y_, T w_, T h_)				{ _simd(x_,y_,w_,h_); }
+	constexpr void	set			(T x_, T y_, T w_, T h_)				{ _simd = SimdData(x_,y_,w_,h_); }
 	constexpr void	set			(const Vec2& pos_, const Vec2& size_)	{ pos = pos_; size = size_; }
 
 	static constexpr This s_zero() { return SimdData::s_zero(); }

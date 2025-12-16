@@ -82,12 +82,13 @@
 #define AX_Renderer_FunctionInterfaces_override(API)	AX_RenderObject_LIST(AX_Renderer_NewObject,    API, override)
 #define AX_Renderer_FunctionBodies(             API)	AX_RenderObject_LIST(AX_Renderer_NewObjectImp, API, override)
 
-#define AX_RENDER_CommandBuffer_FunctionInterfaces(IMP) \
-	virtual void onCommandBegin() IMP; \
-	virtual void onCommandEnd() IMP; \
+#define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \
 	virtual void onSetScissorRect(const Rect2f& rect) IMP; \
+	virtual void onDrawCall(Cmd_DrawCall& cmd) IMP; \
+	virtual void onFrameBegin() IMP; \
+	virtual void onFrameEnd() IMP; \
 	virtual void onRenderPassBegin(RenderPass* pass) IMP; \
 	virtual void onRenderPassEnd() IMP; \
-	virtual void onDrawCall(Cmd_DrawCall& cmd) IMP; \
+	virtual void onWaitCompleted() IMP; \
 //-----

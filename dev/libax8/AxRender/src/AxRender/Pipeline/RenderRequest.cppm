@@ -11,29 +11,17 @@ class RenderPassId : public NonCopyable {};
 class ScissorRectScope : public NonCopyable {
 public:
 	ScissorRectScope() = default;
+	ScissorRectScope(ScissorRectScope && r) noexcept
+		: _req(r._req) , _rect(r._rect) { r._req = nullptr; }
 
-	ScissorRectScope(ScissorRectScope && r) noexcept {
-		_cmdBuf = r._cmdBuf;
-		_rect = r._rect;
-		r._cmdBuf = nullptr;
-	}
-
-	ScissorRectScope(CommandBuffer* cmdBuf) noexcept {
-		if (!cmdBuf) return;
-		_rect	= cmdBuf->scissorRect();
-		_cmdBuf = cmdBuf;
-	}
+	ScissorRectScope(RenderRequest* req) noexcept;
 
 	~ScissorRectScope() { detach(); }
 
-	void detach() {
-		if (!_cmdBuf) return;
-		_cmdBuf->setScissorRect(_rect);
-		_cmdBuf = nullptr;
-	}
+	void detach();
 
 private:
-	CommandBuffer* _cmdBuf = nullptr;
+	RenderRequest* _req = nullptr;
 	Rect2f	_rect;
 };
 
@@ -43,10 +31,6 @@ public:
 	using ParamSpaceType = ShaderParamSpaceType;
 	
 	RenderSeqId		renderSeqId() const		{ return _renderSeqId; }
-
-	void setViewport(const Rect2f& rect, float minDepth, float maxDepth) { _graphCmdBuf->setViewport(rect, minDepth, maxDepth); }
-	
-	void draw(Cmd_DrawCall& cmd) { onDrawcall(cmd); }
 	
 	void drawMesh(   RenderMesh&    mesh,    Material*	material, Int materialPass);
 	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass);
@@ -61,12 +45,10 @@ public:
 	RenderContext*	renderContext() { return _renderContext; }
 	RenderPass*		currentRenderPass()	{ return _currentRenderPass; }
 
-	AX_NODISCARD	ScissorRectScope	scissorRectScope()	{ return ScissorRectScope(_graphCmdBuf); }
+	AX_NODISCARD	ScissorRectScope	scissorRectScope()	{ return ScissorRectScope(this); }
 
-	AX_INLINE		const Rect2f& scissorRect() const { return _graphCmdBuf->scissorRect(); }
-	AX_INLINE		void setScissorRect(const Rect2f& rect) { _graphCmdBuf->setScissorRect(rect); }
-
-	void drawUI() { onDrawUI(); }
+	void drawCall(Cmd_DrawCall& cmd);
+	void drawUI();
 
 	f64	uptime() const { return _uptime; }
 
@@ -83,20 +65,36 @@ public:
 	};
 	Statistics statistics;
 
-protected:
-	virtual void onDrawcall(Cmd_DrawCall& cmd) = 0;
-	virtual void onDrawUI() = 0;
+	void setViewport(const Rect2f& rect, float minDepth, float maxDepth);
 
+	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
+
+	void setScissorRect(const Rect2f& rect);
+
+protected:
 	Renderer*			_renderer = nullptr;
 	RenderSeqId			_renderSeqId = 0;
 	RenderContext*		_renderContext = nullptr;
 	RenderPass*			_currentRenderPass = nullptr;
 	Vec2i				_frameSize {0,0};
+	Rect2f				_scissorRect {0,0,0,0};
+	Rect2f				_viewportRect {0,0,0,0};
 	f64					_uptime = 0;
-	CommandBuffer*		_graphCmdBuf = nullptr;
 
 	bool	_viewportIsBottomUp = false;
 };
+
+ScissorRectScope::ScissorRectScope(RenderRequest* req) noexcept {
+	if (!req) return;
+	_rect = req->scissorRect();
+	_req  = req;
+}
+
+void ScissorRectScope::detach() {
+	if (!_req) return;
+	_req->setScissorRect(_rect);
+	_req = nullptr;
+}
 
 inline
 void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialPass) {
@@ -114,7 +112,7 @@ void RenderRequest::drawSubMesh(RenderSubMesh& subMesh, Material* material, Int 
 	cmd.materialPassIndex = materialPass;
 	cmd.setSubMesh(this, subMesh);
 
-	draw(cmd);
+	drawCall(cmd);
 }
 
 

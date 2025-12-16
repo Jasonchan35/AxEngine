@@ -81,6 +81,73 @@ public:
 	void create(Vec2i size, Int mipmapCount, ColorType colorType);
 };
 
+class Dx12Fence : public NonCopyable {
+public:
+	void create(ID3D12Device* dev);
+
+	// void setEventOnCompletion(u64 value, bool alertable) {
+	// 	_setEventOnCompletion(value, alertable, INFINITE);
+	// }
+	//
+	// void setEventOnCompletion(u64 value, bool alertable, const Milliseconds& timeout) {
+	// 	_setEventOnCompletion(value, alertable, SafeCast(timeout.value));
+	// }
+	//
+	// u64 getCompletedValue() { return _fence->GetCompletedValue(); }
+	// u64 currentValue() { return _fenceValue; }
+
+	operator ID3D12Fence* () { return _fence; }
+private:
+	//
+	// bool _setEventOnCompletion(u64 value, bool alertable, DWORD timeout) {
+	// 	auto hr = _fence->SetEventOnCompletion(value, _event);
+	// 	Dx12Util::throwIfError(hr);
+	// 	
+	// 	hr = ::WaitForSingleObjectEx(_event, timeout, alertable);
+	// 	if (hr == WAIT_TIMEOUT) {
+	// 		return false;
+	// 	}
+	// 	Dx12Util::throwIfError(hr);
+	// 	return true;
+	// }
+	// u64 _fenceValue = 0;
+	// HANDLE _event = INVALID_HANDLE_VALUE;
+	
+	ComPtr<ID3D12Fence>	_fence;
+};
+
+class Dx12CommandQueue : public NonCopyable {
+public:
+	void create(ID3D12Device* dev);
+	
+	void signal(Dx12Fence& fence, u64 value) {
+		auto hr = _queue->Signal(fence, value);
+		Dx12Util::throwIfError(hr);
+	}
+
+	void wait(Dx12Fence& fence, u64 value) {
+		auto hr = _queue->Wait(fence, value);
+		Dx12Util::throwIfError(hr);
+	}
+
+	operator ID3D12CommandQueue* () { return _queue; }
+private:
+	ComPtr<ID3D12CommandQueue>	_queue;
+};
+
+class Dx12SwapChain : public NonCopyable {
+public:
+	void create(Dx12CommandQueue& cmdQueue, HWND hwnd, DXGI_SWAP_CHAIN_DESC1& desc);
+
+
+	AX_DX12_IDXGISwapChain* operator->()	{ return _swapChain; }
+	AX_DX12_IDXGISwapChain* ptr()			{ return _swapChain; }
+	operator AX_DX12_IDXGISwapChain*()		{ return _swapChain; }
+	
+private:
+	ComPtr<AX_DX12_IDXGISwapChain>	_swapChain;
+};
+
 } // namespace
 
 #endif //AX_RENDERER_DX12

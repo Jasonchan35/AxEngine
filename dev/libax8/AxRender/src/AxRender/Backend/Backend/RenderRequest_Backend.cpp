@@ -15,7 +15,6 @@ UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& 
 	desc.renderer = renderer;
 	desc.index = index;
 	auto o = Renderer_Backend::s_instance()->newRenderRequest(req, desc);
-	AX_ASSERT(o->_graphCmdBuf);
 	AX_ASSERT(o->inlineUpload._stagingToGpuBuffer);
 	return o;
 }
@@ -85,20 +84,37 @@ void RenderRequest_Backend::renderPassBegin(RenderPass_Backend* pass) {
 	Rect2f rect(Vec2f(0, 0), Vec2f::s_cast(s));
 
 	setViewport(Rect2f::s_cast(rect), 0, 1);
-	_graphCmdBuf->setScissorRect(rect);
-	_graphCmdBuf->renderPassBegin(pass);
-
-	onRenderPassBegin();
+	setScissorRect(rect);
+	onRenderPassBegin(pass);
 }
 
 void RenderRequest_Backend::renderPassEnd() {
 	onRenderPassEnd();
-
-	_graphCmdBuf->renderPassEnd();
 	_currentRenderPass = nullptr;
+	_viewportRect.set(0,0,0,0);
+	_scissorRect.set(0,0,0,0);
 }
 
-void RenderRequest_Backend::onDrawcall(Cmd_DrawCall& cmd) {
+void RenderRequest_Backend::setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth) {
+	if (Math::exactlyEqual(_viewportRect, rect))
+		return;
+	_viewportRect = rect;
+	onSetViewport(rect, minDepth, maxDepth);
+	setScissorRect(rect);
+}
+
+void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
+	if (Math::exactlyEqual(_scissorRect, rect))
+		return;
+	_scissorRect = rect;
+	onSetScissorRect(rect);
+}
+
+void RenderRequest_Backend::drawUI_backend() {
+	renderContext_backend()->imgui.onDrawUI(this);
+}
+
+void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 	if (cmd.instanceCount <= 0) { AX_ASSERT(false); return; }
 
 	auto* material = rttiCastCheck<Material_Backend>(cmd.material);
@@ -118,7 +134,8 @@ void RenderRequest_Backend::onDrawcall(Cmd_DrawCall& cmd) {
 	}
 
 	matPass->onDrawcall(this, cmd);
-	_graphCmdBuf->drawCall(cmd);
+
+	onDrawCall(cmd);
 }
 
 void RenderRequest_Backend::frameEnd() {
@@ -131,10 +148,6 @@ void RenderRequest_Backend::frameEnd() {
 	}
 
 	onFrameEnd();
-}
-
-void RenderRequest_Backend::onDrawUI() {
-	renderContext_backend()->imgui.onDrawUI(this);
 }
 
 bool RenderRequest_Backend::InlineUpload::tryCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {

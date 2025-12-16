@@ -27,8 +27,8 @@ public:
 		void createOrUpdate(RenderContext_Dx12* renderContext, Int index, Vec2i frameSize);
 		void releaseResources();
 	};
-	
-	ComPtr<AX_DX12_IDXGISwapChain>		_swapChain_dx12;
+
+	Dx12SwapChain						_swapChain_dx12;
 	SPtr<RenderPassDepthBuffer_Dx12>	_depthBuffer_dx12;
 	BackBuffer_Dx12* _getBackBuffer(Int i) { return PtrUtil::ptrPointer(_backBuffers_dx12.tryGetElement(i)); }
 
@@ -60,12 +60,11 @@ private:
 	static constexpr u32 kRenderTimerId = 100;
 	UIEventHandler _uiEventHandler;	
 
-	ThreadId							_currentThreadId;
-	ComPtr<ID3D12CommandQueue>			_cmdQueue;
-	ComPtr<ID3D12CommandQueue>			_computeCmdQueue;
+	ThreadId			_currentThreadId;
+	Dx12CommandQueue	_graphCmdQueue;
+	Dx12CommandQueue	_computeCmdQueue;
 
 	void _createBackBuffers();
-	
 	Array<UPtr<BackBuffer_Dx12>, 8>	_backBuffers_dx12;
 	
 	HWND _hwnd = nullptr;

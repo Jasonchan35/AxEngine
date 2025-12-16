@@ -43,6 +43,8 @@ class RenderPass_Dx12 : public RenderPass_Backend {
 public:	
 	RenderPass_Dx12(const CreateDesc& desc);
 
+	void colorBuf0_resourceBarrier(RenderRequest* req_, D3D12_RESOURCE_STATES state);
+	
 	void releaseResources() {}
 
 	Array<D3D12_CPU_DESCRIPTOR_HANDLE>	_colorViewList_dx12;

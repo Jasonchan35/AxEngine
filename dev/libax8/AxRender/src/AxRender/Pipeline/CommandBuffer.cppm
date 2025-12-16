@@ -72,30 +72,6 @@ struct CommandBuffer_CreateDesc {
 class CommandBuffer : public RenderObject {
 	AX_RTTI_INFO(CommandBuffer, RenderObject)
 public:
-	AX_INLINE void commandBegin() { onCommandBegin(); }
-	AX_INLINE void commandEnd() { onCommandEnd(); }
-	AX_INLINE void setViewport(const Rect2f& rect, float minDepth, float maxDepth) {
-		_scissorRect = rect;
-		onSetViewport(rect, minDepth, maxDepth);
-		onSetScissorRect(rect);
-	}
-
-	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
-
-	AX_INLINE void setScissorRect(const Rect2f& rect) {
-		if (Math::exactlyEqual(_scissorRect, rect)) return;
-		_scissorRect = rect;
-		onSetScissorRect(rect);
-	}
-
-	AX_INLINE void renderPassBegin(RenderPass* pass) { onRenderPassBegin(pass); }
-	AX_INLINE void renderPassEnd() { onRenderPassEnd(); }
-	AX_INLINE void drawCall(Cmd_DrawCall& cmd) { onDrawCall(cmd); }
-
-protected:
-	Rect2f _scissorRect{0,0,0,0};
-
-	AX_RENDER_CommandBuffer_FunctionInterfaces(=0)
 };
 
 }
