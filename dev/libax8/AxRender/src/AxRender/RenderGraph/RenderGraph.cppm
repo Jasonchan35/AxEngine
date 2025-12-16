@@ -152,9 +152,8 @@ public:
 	using BackBufferPass = RenderGraph_BackBufferPass;
 
 	// forward those names for RenderGraph subclass
-	using RenderTargetColorBufferDesc	= RenderPassColorAttachmentDesc;
-	using RenderPassDepthBufferDesc	= RenderPassDepthAttachmentDesc;
-	using RenderBufferLoadOp		= RenderBufferLoadOp;
+	using ColorAttachmentDesc = RenderPassColorAttachmentDesc;
+	using DepthAttachmentDesc = RenderPassDepthAttachmentDesc;
 
 	const Vec2i& frameSize() const { return _frameSize; }
 
