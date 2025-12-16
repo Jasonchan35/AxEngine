@@ -49,11 +49,10 @@ public:
 	Int				bufferSize() const	{ return _bufferSize; }
 	IntRange		bufferRange() const { return IntRange(_bufferSize); }
 
+	bool inBound(IntRange range) const { return IntRange(_bufferSize).contains(range); }
 
 protected:
 	GpuBuffer(const CreateDesc& desc);
-
-private:
 	GpuBufferType	_bufferType = GpuBufferType::None;
 	Int				_bufferSize = 0;
 };

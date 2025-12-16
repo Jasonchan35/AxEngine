@@ -79,6 +79,11 @@ private:
 using IntRange = Range_<Int>;
 
 template<class T>
+AX_NODISCARD AX_INLINE constexpr Range_<T> Range_Size(const T& end) noexcept {
+	return Range_<T>::s_beginEnd(0, end);
+}
+
+template<class T>
 AX_NODISCARD AX_INLINE constexpr Range_<T> Range_BeginEnd(const T& begin, const T& end) noexcept {
 	return Range_<T>::s_beginEnd(begin, end);
 }

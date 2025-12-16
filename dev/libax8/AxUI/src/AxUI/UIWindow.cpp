@@ -36,7 +36,7 @@ UIWindow::UIWindow() {
 	{
 		NativeUIWindow_CreateDesc desc;
 		desc.isMainWindow = true;
-		desc.rect = Rect2f(100, 100, 1920, 1080) / 4;
+		desc.rect = Rect2f(100, 100, 1920, 1080) / 2;
 	//	desc.visible = false;
 		_nativeWin = UPtr_new<NativeWin>(AX_ALLOC_REQ, this, desc);
 	}

@@ -86,7 +86,7 @@ void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
 	vkCmdBeginRenderPass(_graphCmdBuf_vk, &info, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void RenderRequest_Vk::onRenderPassEnd() {
+void RenderRequest_Vk::onRenderPassEnd(RenderPass* pass_) {
 	vkCmdEndRenderPass(_graphCmdBuf_vk);
 	_graphCmdBuf_vk->debugLabelEnd();
 }

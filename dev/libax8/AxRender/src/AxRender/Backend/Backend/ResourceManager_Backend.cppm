@@ -13,6 +13,9 @@ public:
 	static void s_create(const MemAllocRequest& req);
 	static void s_destroy();
 
+	void onFrameBegin(RenderRequest_Backend* req) {
+	}
+	
 	void onFrameEnd(RenderRequest_Backend* req) {
 		visit([&](auto& table){
 			table.scopedLock()->onFrameEnd(req);

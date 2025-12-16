@@ -158,9 +158,10 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	_d3dResource->Unmap(0, nullptr);
 }
 
-void Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state) {
+D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state) {
 	if (!_d3dResource) throw Error_Undefined();
-	if (_resourceState & state) return; // only change when does not have specify bit
+	auto oldState = _resourceState;
+	if (_resourceState & state) return state; // only change when does not have specify bit
 
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type				   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -172,6 +173,7 @@ void Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12
 	cmdList->ResourceBarrier(1, &barrier);
 
 	_resourceState = state;
+	return oldState;
 }
 
 void Dx12Resource_ColorBuffer::createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex) {

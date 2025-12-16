@@ -19,8 +19,8 @@ public:
 		auto hr = _cmdAllocator_dx12->Reset();
 		Dx12Util::throwIfError(hr);
 	
-		ID3D12PipelineState* pso = nullptr;
-		hr = _cmdList_dx12->Reset(_cmdAllocator_dx12, pso);
+		ID3D12PipelineState* pipelineState = nullptr;
+		hr = _cmdList_dx12->Reset(_cmdAllocator_dx12, pipelineState);
 		Dx12Util::throwIfError(hr);
 	}
 	

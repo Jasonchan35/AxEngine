@@ -32,7 +32,7 @@ public:
 	void frameEnd();
 
 	void renderPassBegin(RenderPass_Backend* pass);
-	void renderPassEnd();
+	void renderPassEnd(RenderPass_Backend* pass);
 
 	void setCurrentRenderPass(RenderPass* pass) { _currentRenderPass = pass; }
 
@@ -115,6 +115,8 @@ protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
 	
 private:
+	void _updateCommonMaterial();
+	
 	Int _index = 0;
 	SPtr<RenderPass_Backend>	_backBufferRenderPass;
 };

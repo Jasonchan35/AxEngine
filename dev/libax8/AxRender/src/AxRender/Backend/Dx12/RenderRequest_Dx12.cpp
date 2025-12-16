@@ -78,7 +78,9 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	_graphCmdBuf_dx12->OMSetRenderTargets(rtCount, rtViews, rtSingleHandle, depthView);
 }
 
-void RenderRequest_Dx12::onRenderPassEnd() {
+void RenderRequest_Dx12::onRenderPassEnd(RenderPass* pass_) {
+	auto* pass = rttiCastCheck<RenderPass_Dx12>(pass_);
+	pass->colorBuf0_resourceBarrier(this, D3D12_RESOURCE_STATE_PRESENT);
 }
 
 

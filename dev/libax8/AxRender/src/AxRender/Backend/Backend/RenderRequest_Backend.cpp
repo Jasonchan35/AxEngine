@@ -38,42 +38,57 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId renderSeqId) {
 	inlineUpload.reset();
 }
 
-void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
-	_renderContext = renderContext;
-	_viewportIsBottomUp = renderContext->viewportIsBottomUp();
-	_frameSize = backBufferRenderPass->frameSize();
-	_backBufferRenderPass = backBufferRenderPass;
+void RenderRequest_Backend::_updateCommonMaterial() {
+	using namespace Math;
 
 	auto* renderer_ = renderer_backend();
 	if (!renderer_) throw Error_Undefined();
 
+	
+	auto* commonMaterial = renderer_->commonMaterial();
+	if (!commonMaterial) throw Error_Undefined();
+
+	resourcesToKeep.add(commonMaterial);
+
 	_uptime = renderer_->getCurrentUptime().seconds_f64();
+	
+	f32 t = static_cast<f32>(_uptime);
+	Vec4f timeSin		(sin(t),   sin(t*4), sin(t*9), sin(t*16));
+	Vec4f timeSlowSin   (sin(t/2), sin(t/4), sin(t/9), sin(t/16));
 
-//---- update common material
-	{
-		using namespace Math;
+	auto setParam = [&](ParamSpaceType space, NameId name, auto& value) {
+		if (!commonMaterial->setParamSpaceParam(space, name, value)) {
+			commonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
+		}
+	};
 
-		auto* commonMaterial = renderer_->commonMaterial();
-		if (!commonMaterial) throw Error_Undefined();
+	setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_time"       ), t);
+	setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_timeSin"    ), timeSin);
+	setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
+}
 
-		resourcesToKeep.add(commonMaterial);
+void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
+	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize()); // TODO: move to frame update, to enable draw ui in update loop as well
+	ResourceManager_Backend::s_instance()->onFrameBegin(this);
 
-		f32 t = static_cast<f32>(_uptime);
-		Vec4f timeSin		(sin(t),   sin(t*4), sin(t*9), sin(t*16));
-		Vec4f timeSlowSin   (sin(t/2), sin(t/4), sin(t/9), sin(t/16));
+	_renderContext        = renderContext;
+	_viewportIsBottomUp   = renderContext->viewportIsBottomUp();
+	_frameSize            = backBufferRenderPass->frameSize();
+	_backBufferRenderPass = backBufferRenderPass;
 
-		auto setParam = [&](ParamSpaceType space, NameId name, auto& value) {
-			if (!commonMaterial->setParamSpaceParam(space, name, value)) {
-				commonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
-			}
-		};
+	_updateCommonMaterial();
+	onFrameBegin();
+}
 
-		setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_time"       ), t);
-		setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_timeSin"    ), timeSin);
-		setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
+void RenderRequest_Backend::frameEnd() {
+	renderContext_backend()->imgui.onEndRender();
+	ResourceManager_Backend::s_instance()->onFrameEnd(this);
+
+	if (auto* r = rttiCastCheck<Renderer_Backend>(_renderer)) {
+		r->onUpdateBindlessTables(this);
 	}
 
-	onFrameBegin();
+	onFrameEnd();
 }
 
 void RenderRequest_Backend::renderPassBegin(RenderPass_Backend* pass) {
@@ -88,8 +103,9 @@ void RenderRequest_Backend::renderPassBegin(RenderPass_Backend* pass) {
 	onRenderPassBegin(pass);
 }
 
-void RenderRequest_Backend::renderPassEnd() {
-	onRenderPassEnd();
+void RenderRequest_Backend::renderPassEnd(RenderPass_Backend* pass) {
+	AX_ASSERT(_currentRenderPass == pass);
+	onRenderPassEnd(pass);
 	_currentRenderPass = nullptr;
 	_viewportRect.set(0,0,0,0);
 	_scissorRect.set(0,0,0,0);
@@ -136,18 +152,6 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 	matPass->onDrawcall(this, cmd);
 
 	onDrawCall(cmd);
-}
-
-void RenderRequest_Backend::frameEnd() {
-	renderContext_backend()->imgui.onEndRender();
-
-	ResourceManager_Backend::s_instance()->onFrameEnd(this);
-
-	if (auto* r = rttiCastCheck<Renderer_Backend>(_renderer)) {
-		r->onUpdateBindlessTables(this);
-	}
-
-	onFrameEnd();
 }
 
 bool RenderRequest_Backend::InlineUpload::tryCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {

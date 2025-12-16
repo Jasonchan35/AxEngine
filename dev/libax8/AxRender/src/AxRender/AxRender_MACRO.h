@@ -89,6 +89,6 @@
 	virtual void onFrameBegin() IMP; \
 	virtual void onFrameEnd() IMP; \
 	virtual void onRenderPassBegin(RenderPass* pass) IMP; \
-	virtual void onRenderPassEnd() IMP; \
+	virtual void onRenderPassEnd(RenderPass* pass) IMP; \
 	virtual void onWaitCompleted() IMP; \
 //-----

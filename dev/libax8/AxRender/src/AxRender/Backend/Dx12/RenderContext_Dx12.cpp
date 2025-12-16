@@ -198,13 +198,11 @@ RenderPass_Backend* RenderContext_Dx12::onAcquireBackBufferRenderPass(RenderRequ
 }
 
 void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
-	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
-	if (!req) { AX_ASSERT(false); return; }
-	
-	auto* pass = rttiCastCheck<RenderPass_Dx12>(req->backBufferRenderPass());
-	if (!pass) { AX_ASSERT(false); return; }
-
-	pass->colorBuf0_resourceBarrier(req, D3D12_RESOURCE_STATE_PRESENT);
+	// auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
+	// if (!req) { AX_ASSERT(false); return; }
+	//
+	// auto* pass = rttiCastCheck<RenderPass_Dx12>(req->backBufferRenderPass());
+	// if (!pass) { AX_ASSERT(false); return; }
 }
 
 void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {

@@ -82,7 +82,7 @@ void RenderGraph_Pass::_render(RenderRequest_Backend* req) {
 	if (_renderDelegate) {
 		_renderDelegate.invoke(req, _inputs);
 	}
-	req->renderPassEnd();
+	req->renderPassEnd(outPass);
 }
 
 void RenderGraph_Pass::_init(RenderGraph* graph, StrView name) {

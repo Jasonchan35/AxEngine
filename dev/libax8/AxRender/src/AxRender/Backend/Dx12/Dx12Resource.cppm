@@ -37,10 +37,12 @@ public:
 
 	bool isValid() const { return _d3dResource.ptr() != nullptr; }
 
-	D3D12_RESOURCE_STATES	resourceState() const { return _resourceState; }
+	D3D12_RESOURCE_STATES resourceState() const { return _resourceState; }
 
-	void resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state);
+	D3D12_RESOURCE_STATES resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state);
 
+	operator ID3D12Resource*() { return _d3dResource; }
+	
 protected:
 	Dx12ResourceBase();
 	void _create(const D3D12_CLEAR_VALUE* clearValue = nullptr);
