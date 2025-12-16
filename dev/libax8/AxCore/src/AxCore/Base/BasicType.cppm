@@ -495,8 +495,16 @@ protected:
 	T* _p;
 };
 
-template<class T> constexpr       T* PtrOfPtr(      PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
-template<class T> constexpr const T* PtrOfPtr(const PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
+struct PtrUtil {
+	template<class T> static constexpr       T  valueOr   (      T* p,       T && otherValue) noexcept { return p ? *p : AX_FORWARD(otherValue); }
+	template<class T> static constexpr       T& valueRefOr(      T* p,       T &  otherValue) noexcept { return p ? *p : otherValue; }
+	template<class T> static constexpr const T& valueRefOr(const T* p, const T &  otherValue) noexcept { return p ? *p : otherValue; }
+
+	template<class T> static constexpr       T* pointerOrNull(      T** pp) noexcept { return pp ? *pp : nullptr; }
+	template<class T> static constexpr const T* pointerOrNull(const T** pp) noexcept { return pp ? *pp : nullptr; }
+	template<class T> static constexpr       T* pointerOrNull(      PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
+	template<class T> static constexpr const T* pointerOrNull(const PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
+};
 
 template<class T> struct NumLimit_Struct {
 	using Type = typename T::_NumLimit;

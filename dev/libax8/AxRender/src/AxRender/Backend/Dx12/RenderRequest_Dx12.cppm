@@ -21,6 +21,9 @@ public:
 	CommandBuffer_Dx12	_graphCmdBuf_dx12;
 	CommandBuffer_Dx12	_computeCmdList_dx12;
 	ComPtr<ID3D12Fence>	_computeFence_dx12;
+
+	virtual void onFrameBegin() override;
+	virtual void onFrameEnd() override;
 };
 
 } // namespace

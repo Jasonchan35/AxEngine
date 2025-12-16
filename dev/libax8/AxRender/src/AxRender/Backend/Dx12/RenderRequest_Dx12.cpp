@@ -24,6 +24,17 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	}
 }
 
+void RenderRequest_Dx12::onFrameBegin() {
+	Base::onFrameBegin();
+	_uploadCmdBuf_dx12.commandBegin();
+	_graphCmdBuf_dx12.commandBegin();
+}
+
+void RenderRequest_Dx12::onFrameEnd() {
+	Base::onFrameEnd();
+}
+
+
 } // namespace
 
 #endif // #if AX_RENDERER_DX12

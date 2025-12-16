@@ -120,21 +120,14 @@ struct NativeUI_Win32_KeyMap {
 	}
 };
 
-template<class T>
-struct PtrFn {
-	T* ptr;
-	PtrFn(T* p) : ptr(p) {}
-	constexpr T valueOr(T && otherValue) { return ptr ? *ptr : AX_FORWARD(otherValue); }
-};
-
 NativeUIKeyCode NativeUI_Win32::s_toNativeKey(int key) {
 	auto& map = NativeUI_Win32_KeyMap::s_instance()->_win32ToNative;
-	return PtrFn(map.find(key)).valueOr(NativeUIKeyCode::None);
+	return PtrUtil::valueOr(map.find(key), NativeUIKeyCode::None);
 }
 
 int NativeUI_Win32::s_toWin32Key(NativeUIKeyCode key) {
 	auto& map = NativeUI_Win32_KeyMap::s_instance()->_nativeToWin32;
-	return PtrFn(map.find(key)).valueOr(0);
+	return PtrUtil::valueOr(map.find(key), 0);
 }
 
 NativeUIEventModifier NativeUI_Win32::s_eventModifier() {
