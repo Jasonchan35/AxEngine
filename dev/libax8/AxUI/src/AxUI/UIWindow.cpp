@@ -56,7 +56,7 @@ UIWindow::UIWindow() {
 //	setWindowTitle(title);
 //	setWindowActive(true);
 
-//	setSize({1280, 768});
+	setSize({1280, 768});
 }
 
 void UIWindow::onSetSize(const Vec2f& s) {
