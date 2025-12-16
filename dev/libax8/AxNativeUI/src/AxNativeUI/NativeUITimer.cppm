@@ -80,7 +80,7 @@ public:
 };
 
 void NativeUITimer::_start() {
-	UINT t = SafeCast(_intervalMillisecond);
+	UINT t = ax_safe_cast(_intervalMillisecond);
 	_p = ::SetTimer(nullptr, 0, t, s_onTimer);
 	NativeUITimerManager::s_instance()->_timerDict.add(_p, this);
 }

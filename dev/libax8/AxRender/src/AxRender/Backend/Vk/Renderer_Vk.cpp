@@ -36,7 +36,7 @@ Renderer_Vk::Renderer_Vk(const CreateDesc& desc)
 	bool supportBindless = true;
 	auto& features = phyDev->features();
 
-	Int tex2DSize = SafeCast(phyDev->props().limits.maxImageDimension2D);
+	Int tex2DSize = ax_safe_cast(phyDev->props().limits.maxImageDimension2D);
 	_limits.maxTexture2DSize = Vec2i(tex2DSize, tex2DSize);
 
 	auto bindlessRequire = [&](VkBool32 b, StrView name) {

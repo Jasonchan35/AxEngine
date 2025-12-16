@@ -37,8 +37,8 @@ boolean ImageIO_Reader_JPEG::s_fill_input_buffer (j_decompress_ptr cinfo) {
 void ImageIO_Reader_JPEG::s_skip_input_data (j_decompress_ptr cinfo, long num_bytes) {
 	if (num_bytes > 0) {
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
-		cinfo->src->next_input_byte += SafeCastTo<size_t>(num_bytes);
-		cinfo->src->bytes_in_buffer -= SafeCastTo<size_t>(num_bytes);
+		cinfo->src->next_input_byte += ax_safe_cast_<size_t>(num_bytes);
+		cinfo->src->bytes_in_buffer -= ax_safe_cast_<size_t>(num_bytes);
 AX_GCC_WARNING_POP()
 	}
 }
@@ -67,7 +67,7 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 	_srcMgr.resync_to_restart = jpeg_resync_to_restart; // use default method
 	_srcMgr.term_source = s_term_source;
 
-	_srcMgr.bytes_in_buffer = SafeCast(inData.size());
+	_srcMgr.bytes_in_buffer = ax_safe_cast(inData.size());
 	_srcMgr.next_input_byte = reinterpret_cast<const JOCTET*>(inData.data());
 
 	_cinfo.src = &_srcMgr;
@@ -90,8 +90,8 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 	
 	_cinfo.out_color_space = JCS_RGB;
 
-	Int width  = SafeCast(_cinfo.output_width);
-	Int height = SafeCast(_cinfo.output_height);
+	Int width  = ax_safe_cast(_cinfo.output_width);
+	Int height = ax_safe_cast(_cinfo.output_height);
 
 	if (width <= 0 || height <= 0) {
 		throw Error_Undefined("jpeg image size is 0");

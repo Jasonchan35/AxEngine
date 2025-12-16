@@ -36,7 +36,7 @@ protected:
 	}
 
 	void _baseGetHandle(Dx12DescriptorHandle& outHandle, Int index) {
-		UINT i = SafeCast(index);
+		UINT i = ax_safe_cast(index);
 		if (i >= _desc.NumDescriptors) throw Error_Undefined();
 		auto offset = i * _stride;
 		outHandle.cpu.ptr = _startHandle.cpu.ptr + offset;

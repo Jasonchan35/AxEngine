@@ -60,7 +60,7 @@ void* AX_VkAllocatorCallbacks::s_alloc(
 	if (!p->_allocator) return nullptr;
 
 	MemAllocRequest req(p->_allocator);
-	req.dataSize = SafeCast(sizeInBytes);
+	req.dataSize = ax_safe_cast(sizeInBytes);
 	req.alignment = alignment;
 	
 	auto result = p->_allocator->allocBytes(req);

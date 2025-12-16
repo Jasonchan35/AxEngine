@@ -66,7 +66,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	auto& renderTargetDescriptors = pass->_colorViewHandles_dx12;
 
-	UINT                         rtCount        = SafeCast(renderTargetDescriptors.size());
+	UINT                         rtCount        = ax_safe_cast(renderTargetDescriptors.size());
 	D3D12_CPU_DESCRIPTOR_HANDLE* rtViews        = renderTargetDescriptors.data();
 	D3D12_CPU_DESCRIPTOR_HANDLE* depthView      = &pass->_depthViewHandle_dx12;
 	BOOL                         rtSingleHandle = FALSE;

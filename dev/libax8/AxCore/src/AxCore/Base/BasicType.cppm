@@ -17,6 +17,13 @@ public:
 template<class T> AX_INLINE constexpr T* ax_const_cast(const T* v) { return const_cast<T*>(v); }
 template<class T> AX_INLINE constexpr T& ax_const_cast(const T& v) { return const_cast<T&>(v); }
 
+template<class SRC>
+struct ax_static_cast {
+	const SRC& src;
+	constexpr ax_static_cast(const SRC& src_) : src(src_) {}
+	template <typename DST>	constexpr operator DST() const { return static_cast<DST>(src); }
+};
+
 template<class T> using Type_EnumInt = std::underlying_type_t<T>;
 template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<Type_EnumInt<T>>(v); }
 

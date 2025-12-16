@@ -16,7 +16,7 @@ void* ax_operator_new_handler(size_t sizeInBytes, const MemAllocRequest& req_) {
 	}
 
 	MemAllocRequest req(req_.allocator, req_.srcLoc);
-	req.dataSize = SafeCast(sizeInBytes);
+	req.dataSize = ax_safe_cast(sizeInBytes);
 	
 	auto result = req.allocator->allocBytes(req);
 	return result.takeOwnership();

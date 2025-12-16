@@ -161,7 +161,7 @@ bool DateTime::tryParse(StrView str) {
 	double s;
 
 #if AX_OS_WINDOWS
-	int ret = _snscanf_s(str.data(), SafeCast(str.size()), "%d-%d-%d %d:%d:%lf", &Y, &M, &D, &h, &m, &s);
+	int ret = _snscanf_s(str.data(), ax_safe_cast(str.size()), "%d-%d-%d %d:%d:%lf", &Y, &M, &D, &h, &m, &s);
 #else
 	TempString tmpStr(str);
 	int ret = sscanf(tmpStr.c_str(), "%d-%d-%d %d:%d:%lf", &Y, &M, &D, &h, &m, &s);

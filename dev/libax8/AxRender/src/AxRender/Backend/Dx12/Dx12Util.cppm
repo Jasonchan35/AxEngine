@@ -57,9 +57,9 @@ struct Dx12Util {
 	
 	static constexpr StrView	errorToStrView(ID3DBlob* blob);
 
-	static constexpr UINT		castUINT	(Int v) { return SafeCast(v); }
-	static constexpr UINT16	castUINT16	(Int v) { return SafeCast(v); }
-	static constexpr UINT64	castUINT64	(Int v) { return SafeCast(v); }
+	static constexpr UINT		castUINT	(Int v) { return ax_safe_cast(v); }
+	static constexpr UINT16	castUINT16	(Int v) { return ax_safe_cast(v); }
+	static constexpr UINT64	castUINT64	(Int v) { return ax_safe_cast(v); }
 };
 
 inline void Dx12Util::reportError(HRESULT hr) {

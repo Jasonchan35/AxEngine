@@ -109,7 +109,7 @@ RenderPass_Backend* RenderContext_Vk_Base::onAcquireBackBufferRenderPass(RenderR
 		}
 	}
 
-	Int backBufferIndex = SafeCast(swapChainImageIndex);
+	Int backBufferIndex = ax_safe_cast(swapChainImageIndex);
 	auto& backBuf = _backBuffers_vk[backBufferIndex];
 	if (!backBuf) {
 		AX_ASSERT(false);
@@ -265,10 +265,10 @@ RenderContext_Vk_Win32::RenderContext_Vk_Win32(const CreateDesc& desc)
 	                          kClassName,
 	                          kClassName,
 	                          dwStyle,
-	                          SafeCast(rc.x),
-	                          SafeCast(rc.y),
-	                          SafeCast(rc.w),
-	                          SafeCast(rc.h),
+	                          ax_safe_cast(rc.x),
+	                          ax_safe_cast(rc.y),
+	                          ax_safe_cast(rc.w),
+	                          ax_safe_cast(rc.h),
 	                          parentHwnd,
 	                          nullptr,
 	                          hInstance,
@@ -336,7 +336,7 @@ void RenderContext_Vk_Win32::onSetFrameSize(const Vec2i& s) {
 	Base::onSetFrameSize(s);
 
 	if (!_hwnd) return;
-	::SetWindowPos(_hwnd, nullptr, 0, 0, SafeCast(s.x), SafeCast(s.y), 0);
+	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast(s.x), ax_safe_cast(s.y), 0);
 }
 
 void RenderContext_Vk_Win32::onSetRenderNeeded() {

@@ -130,7 +130,7 @@ void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& cmd) {
 
 	} else if (auto* ib = rttiCastCheck<GpuBuffer_Vk>(cmd.indexBuffer)) {
 		vkCmdBindIndexBuffer(_graphCmdBuf_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(cmd.indexType));
-		vkCmdDrawIndexed(_graphCmdBuf_vk, indexCount, instanceCount, indexStart, SafeCast(vertexStart), instanceStart);
+		vkCmdDrawIndexed(_graphCmdBuf_vk, indexCount, instanceCount, indexStart, ax_safe_cast(vertexStart), instanceStart);
 
 	} else {
 		AX_ASSERT(false);
