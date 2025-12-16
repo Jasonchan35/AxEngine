@@ -505,16 +505,14 @@ protected:
 	T* _p;
 };
 
-struct PtrUtil {
-	template<class T> static constexpr       T  valueOr   (      T* p,       T && otherValue) noexcept { return p ? *p : AX_FORWARD(otherValue); }
-	template<class T> static constexpr       T& valueRefOr(      T* p,       T &  otherValue) noexcept { return p ? *p : otherValue; }
-	template<class T> static constexpr const T& valueRefOr(const T* p, const T &  otherValue) noexcept { return p ? *p : otherValue; }
+template<class T> AX_NODISCARD AX_INLINE constexpr       T  ax_ptr_value_or(      T* p,       T && otherValue) noexcept { return p ? *p : AX_FORWARD(otherValue); }
+template<class T> AX_NODISCARD AX_INLINE constexpr       T& ax_ptr_ref_or  (      T* p,       T &  otherValue) noexcept { return p ? *p : otherValue; }
+template<class T> AX_NODISCARD AX_INLINE constexpr const T& ax_ptr_ref_or  (const T* p, const T &  otherValue) noexcept { return p ? *p : otherValue; }
 
-	template<class T> static constexpr       T* ptrPointer(      T** pp) noexcept { return pp ? *pp : nullptr; }
-	template<class T> static constexpr const T* ptrPointer(const T** pp) noexcept { return pp ? *pp : nullptr; }
-	template<class T> static constexpr       T* ptrPointer(      PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
-	template<class T> static constexpr const T* ptrPointer(const PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
-};
+template<class T> AX_NODISCARD AX_INLINE constexpr       T* ax_ptr_ptr(      T** pp) noexcept { return pp ? *pp : nullptr; }
+template<class T> AX_NODISCARD AX_INLINE constexpr const T* ax_ptr_ptr(const T** pp) noexcept { return pp ? *pp : nullptr; }
+template<class T> AX_NODISCARD AX_INLINE constexpr       T* ax_ptr_ptr(      PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
+template<class T> AX_NODISCARD AX_INLINE constexpr const T* ax_ptr_ptr(const PtrBase<T>* pp) noexcept { return pp ? pp->ptr() : nullptr; }
 
 template<class T> struct NumLimit_Struct {
 	using Type = typename T::_NumLimit;

@@ -30,7 +30,7 @@ public:
 
 	Dx12SwapChain						_swapChain_dx12;
 	SPtr<RenderPassDepthBuffer_Dx12>	_depthBuffer_dx12;
-	BackBuffer_Dx12* _getBackBuffer(Int i) { return PtrUtil::ptrPointer(_backBuffers_dx12.tryGetElement(i)); }
+	BackBuffer_Dx12* _getBackBuffer(Int i) { return ax_ptr_ptr(_backBuffers_dx12.tryGetElement(i)); }
 
 protected:
 	static LRESULT WINAPI s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

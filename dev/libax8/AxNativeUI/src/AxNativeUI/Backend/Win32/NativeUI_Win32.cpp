@@ -120,12 +120,12 @@ struct NativeUI_Win32_KeyMap {
 
 NativeUIKeyCode NativeUI_Win32::s_toNativeKey(int key) {
 	auto& map = NativeUI_Win32_KeyMap::s_instance()->_win32ToNative;
-	return PtrUtil::valueOr(map.find(key), NativeUIKeyCode::None);
+	return ax_ptr_value_or(map.find(key), NativeUIKeyCode::None);
 }
 
 int NativeUI_Win32::s_toWin32Key(NativeUIKeyCode key) {
 	auto& map = NativeUI_Win32_KeyMap::s_instance()->_nativeToWin32;
-	return PtrUtil::valueOr(map.find(key), 0);
+	return ax_ptr_value_or(map.find(key), 0);
 }
 
 NativeUIEventModifier NativeUI_Win32::s_eventModifier() {

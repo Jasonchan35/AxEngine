@@ -34,7 +34,7 @@ public:
 		VkImage				_vkImage;
 	};
 	
-	BackBuffer_Vk* _getBackBuffer(Int i) { return PtrUtil::ptrPointer(_backBuffers_vk.tryGetElement(i)); }
+	BackBuffer_Vk* _getBackBuffer(Int i) { return ax_ptr_ptr(_backBuffers_vk.tryGetElement(i)); }
 protected:	
 	void _createSwapChain();
 	void _createBackBuffers(AX_VkDevice& dev, Vec2i frameSize);
