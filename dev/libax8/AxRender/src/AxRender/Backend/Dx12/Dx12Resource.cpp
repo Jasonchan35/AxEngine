@@ -6,6 +6,10 @@ import :Renderer_Dx12;
 
 namespace ax {
 Dx12ResourceBase::Dx12ResourceBase() {
+	_reset();
+}
+
+void Dx12ResourceBase::_reset() {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 	_desc.Alignment = 0;
 	_desc.Width = 0;
@@ -24,7 +28,11 @@ Dx12ResourceBase::Dx12ResourceBase() {
 	_heapProps.CreationNodeMask = 1;
 	_heapProps.VisibleNodeMask = 1;
 
-	_resourceState = D3D12_RESOURCE_STATE_GENERIC_READ;
+	_resourceState = D3D12_RESOURCE_STATE_COMMON;
+	_dataSize = 0;
+	_alignedDataSize = 0;
+
+	_d3dResource.unref();
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
@@ -39,9 +47,7 @@ void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
 }
 
 void Dx12ResourceBase::destroy() {
-	_d3dResource.unref();
-	_dataSize = 0;
-	_alignedDataSize = 0;
+	_reset();
 }
 
 void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
@@ -178,15 +184,25 @@ void Dx12Resource_ColorBuffer::createFromSwapChain(AX_DX12_IDXGISwapChain* swapC
 	_d3dResource->GetHeapProperties(&_heapProps, &flags);
 }
 
+void Dx12Resource_ColorBuffer::create(Vec2i size, ColorType colorType) {
+	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	_desc.Format    = Dx12Util::getDxColorType(colorType);
+	_desc.Width     = Dx12Util::castUINT(size.x);
+	_desc.Height    = Dx12Util::castUINT(size.y);
+	_desc.MipLevels = 0;
+	_desc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+	_resourceState  = D3D12_RESOURCE_STATE_PRESENT;
+	_create();
+}
+
 void Dx12Resource_DepthBuffer::create(Vec2i size) {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	_desc.MipLevels = 0;
-	_desc.Format = DXGI_FORMAT_D32_FLOAT;
-	_desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-	_resourceState = D3D12_RESOURCE_STATE_DEPTH_WRITE;
-
-	_desc.Width  = Dx12Util::castUINT(size.x);
-	_desc.Height = Dx12Util::castUINT(size.y);
+	_desc.Format    = DXGI_FORMAT_D32_FLOAT;
+	_desc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+	_desc.Width     = Dx12Util::castUINT(size.x);
+	_desc.Height    = Dx12Util::castUINT(size.y);
+	_resourceState  = D3D12_RESOURCE_STATE_DEPTH_WRITE;
 
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = _desc.Format;
@@ -198,12 +214,11 @@ void Dx12Resource_DepthBuffer::create(Vec2i size) {
 
 void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType colorType) {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	_desc.Format = Dx12Util::getDxColorType(colorType);
-	_resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-
+	_desc.Format    = Dx12Util::getDxColorType(colorType);
 	_desc.Width     = Dx12Util::castUINT(size.x);
 	_desc.Height    = Dx12Util::castUINT(size.y);
 	_desc.MipLevels = Dx12Util::castUINT16(mipmapCount);
+	_resourceState  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
 	_create();
 }
@@ -220,7 +235,7 @@ void Dx12CommandQueue::create(ID3D12Device* dev) {
 	queueDesc.Priority	= D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
 	queueDesc.Flags		= D3D12_COMMAND_QUEUE_FLAG_NONE; // D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT
 	queueDesc.NodeMask	= 0;
-
+	
 	auto hr = dev->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(_queue.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 }

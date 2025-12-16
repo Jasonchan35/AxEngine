@@ -8,7 +8,7 @@ export namespace ax /*::AxRender*/ {
 class RenderContext;
 
 struct SwapChainDesc {
-	Int			backBufferCount = 3;
+	Int			backBufferCount = 2;
 	bool		vsync = true;
 	RenderPassColorBufferAttachment	colorBufferAttachment;
 	RenderPassDepthBufferAttachment	depthBufferAttachment;

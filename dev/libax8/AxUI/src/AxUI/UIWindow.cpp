@@ -36,6 +36,7 @@ UIWindow::UIWindow() {
 	{
 		NativeUIWindow_CreateDesc desc;
 		desc.isMainWindow = true;
+		desc.rect = Rect2f(100, 100, 1920, 1080) / 4;
 	//	desc.visible = false;
 		_nativeWin = UPtr_new<NativeWin>(AX_ALLOC_REQ, this, desc);
 	}
@@ -55,7 +56,7 @@ UIWindow::UIWindow() {
 //	setWindowTitle(title);
 //	setWindowActive(true);
 
-	setSize({1280, 768});
+//	setSize({1280, 768});
 }
 
 void UIWindow::onSetSize(const Vec2f& s) {

@@ -64,13 +64,18 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	auto* pass = rttiCastCheck<RenderPass_Dx12>(pass_);
 	pass->colorBuf0_resourceBarrier(this, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	auto& renderTargetDescriptors = pass->_colorViewList_dx12;
-	BOOL RTsSingleHandleToDescriptorRange = FALSE;
-	_graphCmdBuf_dx12->OMSetRenderTargets(
-		SafeCast(renderTargetDescriptors.size()),
-		renderTargetDescriptors.data(),
-		RTsSingleHandleToDescriptorRange,
-		&pass->_depthView_dx12);
+	auto& renderTargetDescriptors = pass->_colorViewHandles_dx12;
+
+	UINT                         rtCount        = SafeCast(renderTargetDescriptors.size());
+	D3D12_CPU_DESCRIPTOR_HANDLE* rtViews        = renderTargetDescriptors.data();
+	D3D12_CPU_DESCRIPTOR_HANDLE* depthView      = &pass->_depthViewHandle_dx12;
+	BOOL                         rtSingleHandle = FALSE;
+
+	AX_ASSERT(rtCount > 0);
+	AX_ASSERT(rtViews);
+	AX_ASSERT(depthView);
+	
+	_graphCmdBuf_dx12->OMSetRenderTargets(rtCount, rtViews, rtSingleHandle, depthView);
 }
 
 void RenderRequest_Dx12::onRenderPassEnd() {

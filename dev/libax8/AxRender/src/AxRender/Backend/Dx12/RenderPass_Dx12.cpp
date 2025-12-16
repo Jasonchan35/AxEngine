@@ -12,16 +12,21 @@ RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): 
 		auto* renderContext_dx12 = rttiCastCheck<RenderContext_Dx12>(desc.backBufferRef.renderContext);
 		if (!renderContext_dx12) throw Error_Undefined();
 		UINT backBufIndex = SafeCast(desc.backBufferRef.index);
-		createFromSwapChain(renderContext_dx12->_swapChain_dx12, backBufIndex);
+		_resource_dx12.createFromSwapChain(renderContext_dx12->_swapChain_dx12, backBufIndex);
+	} else {
+		_resource_dx12.create(desc.frameSize, desc.attachment.colorType);
 	}
-}
-
-void RenderPassColorBuffer_Dx12::createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex) {
-	_resource_dx12.createFromSwapChain(swapChain, backBufIndex);
 	_descHeap_dx12.create(1);
 	_view_dx12 = _descHeap_dx12.createView(0, _resource_dx12);
 }
 
+RenderPassDepthBuffer_Dx12::RenderPassDepthBuffer_Dx12(const CreateDesc& desc)
+: Base(desc)
+{
+	_resource_dx12.create(desc.frameSize);
+	_descHeap_dx12.create(1);
+	_view_dx12 = _descHeap_dx12.createView(0, _resource_dx12);
+}
 
 RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 : Base(desc)
@@ -52,7 +57,7 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 		}
 
 		auto* colorBuffer_dx12 = rttiCastCheck<RenderPassColorBuffer_Dx12>(newColorBuffer.buffer.ptr());
-		_colorViewList_dx12.emplaceBack(colorBuffer_dx12->_view_dx12.handle.cpu);
+		_colorViewHandles_dx12.emplaceBack(colorBuffer_dx12->_view_dx12.handle.cpu);
 	}
 
 
@@ -74,7 +79,7 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 		}
 
 		auto* depthBuffer_vk = rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthBuffer.buffer.ptr());
-		_depthView_dx12 = depthBuffer_vk->_view_dx12.handle.cpu;
+		_depthViewHandle_dx12 = depthBuffer_vk->_view_dx12.handle.cpu;
 	}	
 	
 }

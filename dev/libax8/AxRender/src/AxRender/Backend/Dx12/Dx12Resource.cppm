@@ -44,6 +44,7 @@ public:
 protected:
 	Dx12ResourceBase();
 	void _create(const D3D12_CLEAR_VALUE* clearValue = nullptr);
+	void _reset();
 
 	ComPtr<ID3D12Resource> _d3dResource;
 	Int _dataSize = 0;
@@ -57,6 +58,7 @@ protected:
 class Dx12Resource_ColorBuffer : public Dx12ResourceBase {
 public:
 	void createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex);
+	void create(Vec2i size, ColorType colorType);
 };
 
 class Dx12Resource_DepthBuffer : public Dx12ResourceBase {

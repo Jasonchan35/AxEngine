@@ -59,10 +59,18 @@ void RenderContext_Dx12::_createBackBuffers() {
 	auto hr = _swapChain_dx12->GetDesc1(&swapChainDesc);
 	Dx12Util::throwIfError(hr);
 
+	auto frameSize = Vec2i(swapChainDesc.Width, swapChainDesc.Height);
+	
+	RenderPassDepthBuffer_CreateDesc depthBuf_createDesc;
+	depthBuf_createDesc.name = Fmt("BackBuffer-depth");
+	depthBuf_createDesc.frameSize = frameSize;
+	depthBuf_createDesc.attachment = _swapChainDesc.depthBufferAttachment;
+	
+	_depthBuffer_dx12 = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc); 
+
 	Int bufferCount = SafeCast(swapChainDesc.BufferCount);
 	_backBuffers_dx12.resize(bufferCount);
 	
-	auto frameSize = Vec2i(swapChainDesc.Width, swapChainDesc.Height);
 	for (Int i = 0; i < bufferCount; ++i) {
 		auto& dst = _backBuffers_dx12[i];
 		if (!dst) {

@@ -8,7 +8,7 @@ export namespace ax {
 
 struct NativeUIWindow_CreateDesc {
 	NativeUIWindow_CreateDesc()
-		: rect(100, 100, 8, 8)
+		: rect(100, 100, 320, 200)
 		, titleBar(true)
 		, isMainWindow(false)
 		, visible(true)

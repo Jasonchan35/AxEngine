@@ -16,7 +16,6 @@ class RenderPassColorBuffer_Dx12 : public RenderPassColorBuffer_Backend {
 public:
 	RenderPassColorBuffer_Dx12(const CreateDesc& desc);
 
-	void createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex);
 	void releaseResources() {
 		_resource_dx12.destroy();
 		_descHeap_dx12.destroy();
@@ -31,7 +30,7 @@ public:
 class RenderPassDepthBuffer_Dx12 : public RenderPassDepthBuffer_Backend {
 	AX_RTTI_INFO(RenderPassDepthBuffer_Dx12, RenderPassDepthBuffer_Backend)
 public:
-	RenderPassDepthBuffer_Dx12(const CreateDesc& desc) : Base(desc) {}
+	RenderPassDepthBuffer_Dx12(const CreateDesc& desc);
 
 	Dx12Resource_DepthBuffer			_resource_dx12;
 	Dx12DescripterHeap_DepthBuffer		_descHeap_dx12;
@@ -47,8 +46,8 @@ public:
 	
 	void releaseResources() {}
 
-	Array<D3D12_CPU_DESCRIPTOR_HANDLE>	_colorViewList_dx12;
-		  D3D12_CPU_DESCRIPTOR_HANDLE	_depthView_dx12;
+	Array<D3D12_CPU_DESCRIPTOR_HANDLE>	_colorViewHandles_dx12;
+		  D3D12_CPU_DESCRIPTOR_HANDLE	_depthViewHandle_dx12;
 };
 
 
