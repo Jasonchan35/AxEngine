@@ -134,7 +134,8 @@ public:
 		Dx12Util::throwIfError(hr);
 	}
 
-	operator ID3D12CommandQueue* () { return _queue; }
+	ID3D12CommandQueue* operator->() { return _queue; }
+	operator ID3D12CommandQueue* ()  { return _queue; }
 private:
 	ComPtr<ID3D12CommandQueue>	_queue;
 };

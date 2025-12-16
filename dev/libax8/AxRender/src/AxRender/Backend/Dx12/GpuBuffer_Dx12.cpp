@@ -7,7 +7,7 @@ import :RenderRequest_Dx12;
 namespace  ax {
 
 void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
-#if 0 // TODO: cause error when cmdList->Close()
+#if 1 // TODO: cause error when cmdList->Close()
 	
 	auto* dst_dx12 = this;
 	auto* src_dx12 = rttiCastCheck<GpuBuffer_Dx12>(src);
@@ -19,8 +19,8 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	auto& srcRes = src_dx12->resource();
 	auto& dstRes = dst_dx12->resource();
 
-	auto srcOldState = srcRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
-	auto dstOldState = dstRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
+	// auto srcOldState = srcRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	// auto dstOldState = dstRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	cmdList_dx->CopyBufferRegion(dstRes,
 	                             SafeCast(dstOffset),
@@ -28,8 +28,8 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	                             SafeCast(srcRange.begin()),
 	                             SafeCast(srcRange.size()));
 
-	srcRes.resourceBarrier(cmdList_dx, srcOldState);
-	dstRes.resourceBarrier(cmdList_dx, dstOldState);
+	// srcRes.resourceBarrier(cmdList_dx, srcOldState);
+	// dstRes.resourceBarrier(cmdList_dx, dstOldState);
 
 	#endif
 }

@@ -17,8 +17,6 @@ void RenderContext_Dx12::_createSwapChain() {
 	::GetClientRect(_hwnd, &clientRect);
 
 	auto  frameSize   = Math::max(_minFrameSize, Rect2i::s_from(clientRect).size);
-	auto  vsync       = _swapChainDesc.vsync;
-	
 	auto* renderer    = Renderer_Dx12::s_instance();
 	auto* dev		  = renderer->d3dDevice();
 
@@ -37,7 +35,7 @@ void RenderContext_Dx12::_createSwapChain() {
 		swapChainDesc.Scaling               = DXGI_SCALING_STRETCH;
 		swapChainDesc.SwapEffect            = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.AlphaMode             = DXGI_ALPHA_MODE_IGNORE;
-		swapChainDesc.Flags                 = vsync ? 0 : DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+		swapChainDesc.Flags                 = 0; // _swapChainDesc.vsync ? 0 : DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
 		_swapChain_dx12.create(_graphCmdQueue, _hwnd, swapChainDesc);
 	}
@@ -198,11 +196,16 @@ RenderPass_Backend* RenderContext_Dx12::onAcquireBackBufferRenderPass(RenderRequ
 }
 
 void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
-	// auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
-	// if (!req) { AX_ASSERT(false); return; }
-	//
-	// auto* pass = rttiCastCheck<RenderPass_Dx12>(req->backBufferRenderPass());
-	// if (!pass) { AX_ASSERT(false); return; }
+	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
+	if (!req) { AX_ASSERT(false); return; }
+
+	Array<ID3D12CommandList*, 4> lists;
+	lists.emplaceBack(req->_graphCmdBuf_dx12);
+	
+	_graphCmdQueue->ExecuteCommandLists(SafeCast(lists.size()), lists.data());
+
+	auto hr = _swapChain_dx12->Present(_swapChainDesc.vsync ? 1 : 0, 0);
+	Dx12Util::throwIfError(hr);
 }
 
 void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {
