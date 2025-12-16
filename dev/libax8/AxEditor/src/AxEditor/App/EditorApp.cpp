@@ -13,7 +13,7 @@ public:
 		peekMessage = true;
 //		rendererDesc.info.api = RenderAPI::Null;
 		rendererDesc.info.api = RenderAPI::Vk;
-//		rendererDesc.info.api = RenderAPI::Dx12;
+		rendererDesc.info.api = RenderAPI::Dx12;
 	}
 };
 

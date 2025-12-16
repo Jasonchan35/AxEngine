@@ -9,6 +9,11 @@ import :Renderer_Backend;
 
 namespace ax {
 
+enum class Dx12ResourceType {
+	None,
+	ColorBuffer,
+};
+
 class Dx12ResourceBase : public NonCopyable {
 	using This = Dx12ResourceBase;
 public:

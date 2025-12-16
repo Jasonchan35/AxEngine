@@ -62,25 +62,13 @@ void CommandBuffer_Dx12::onDrawCall(Cmd_DrawCall& cmd) {
 void CommandBuffer_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	auto* pass = rttiCastCheck<RenderPass_Dx12>(pass_);
 
-	// Int colorBufferCount = pass->colorBufferCount();
-	// for (Int i = 0; i < colorBufferCount; ++i) {
-	// 	auto* colorBuf = pass->colorBuffer(i);
-	// 	if (!colorBuf) continue;
-	// 	//		colorBuf->
-	// }
-	
-	// for (auto& colorBuf : pass->_colorBuffers) {
-	// 	
-	// }
-	
-	
-	auto& renderTargetDescriptors = pass->_renderTargetDescriptors;
+	auto& renderTargetDescriptors = pass->_colorViewList_dx12;
 	BOOL RTsSingleHandleToDescriptorRange = FALSE;
 	_cmdList_dx12->OMSetRenderTargets(
 		SafeCast(renderTargetDescriptors.size()),
 		renderTargetDescriptors.data(),
 		RTsSingleHandleToDescriptorRange,
-		&pass->_depthStencilDescriptor);
+		&pass->_depthView_dx12);
 }
 
 void CommandBuffer_Dx12::onRenderPassEnd() {

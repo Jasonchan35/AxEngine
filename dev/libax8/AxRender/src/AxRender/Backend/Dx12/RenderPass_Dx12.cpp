@@ -16,10 +16,9 @@ RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): 
 }
 
 void RenderPassColorBuffer_Dx12::createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex) {
-	_d3dResource.createFromSwapChain(swapChain, backBufIndex);
-	_descHeap.create(1, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
-	_renderTargetView = _descHeap.getHandle(0);
-	Renderer_Dx12::s_d3dDevice()->CreateRenderTargetView(_d3dResource.d3dResource(), nullptr, _renderTargetView);
+	_resource_dx12.createFromSwapChain(swapChain, backBufIndex);
+	_descHeap_dx12.create(1);
+	_view_dx12 = _descHeap_dx12.createView(0, _resource_dx12);
 }
 
 
@@ -36,16 +35,47 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 	//---- color buffers ----
 	const Int colorBufferCount = desc.colorBufferAttachments.size();
 	for (Int i = 0; i < colorBufferCount; i++) {
-		auto& colorBuf = _colorBuffers.emplaceBack();
-		auto& colorBufferAttachment = desc.colorBufferAttachments[i];
-		_colorBuffers[i].attachment = colorBufferAttachment;
+		auto& newColorBuffer      = _colorBuffers.emplaceBack();
+		newColorBuffer.attachment = desc.colorBufferAttachments[i];
 
 		if (desc.isBackBuffer) {
 			if (i >= 1) throw Error_Undefined();
-			colorBuf.buffer = backBuffer_dx12->_colorBuf_dx12;
+			newColorBuffer.buffer = backBuffer_dx12->_colorBuf_dx12;
+			
+		} else {
+			RenderPassColorBuffer_CreateDesc colorBuf_createDesc;
+			colorBuf_createDesc.name = Fmt("{}-color", desc.name);
+			colorBuf_createDesc.attachment = newColorBuffer.attachment;
+			newColorBuffer.buffer = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+		
 		}
+
+		auto* colorBuffer_dx12 = rttiCastCheck<RenderPassColorBuffer_Dx12>(newColorBuffer.buffer.ptr());
+		_colorViewList_dx12.emplaceBack(colorBuffer_dx12->_view_dx12.handle.cpu);
 	}
 
+
+	//----- depth ------
+	_depthBuffer.attachment = desc.depthBufferAttachment;
+
+	bool hasDepth = _depthBuffer.attachment.isEnabled();
+	if (hasDepth) {
+		if (desc.isBackBuffer) {
+			_depthBuffer.buffer = renderContext_dx12->_depthBuffer_dx12;
+			
+		} else {
+			RenderPassDepthBuffer_CreateDesc depthBufDesc;
+			depthBufDesc.name = Fmt("{}-depth", desc.name);
+			depthBufDesc.frameSize = desc.frameSize;
+			depthBufDesc.attachment = desc.depthBufferAttachment;
+
+			_depthBuffer.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+		}
+
+		auto* depthBuffer_vk = rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthBuffer.buffer.ptr());
+		_depthView_dx12 = depthBuffer_vk->_view_dx12.handle.cpu;
+	}	
+	
 }
 
 

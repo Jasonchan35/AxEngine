@@ -76,12 +76,12 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 
 	Array<VkImageView, 16>				imageViews;
 
-	Array<VkAttachmentDescription, 16>	renderPassAttachmentDescription;
-	Array<VkAttachmentReference,16>		renderPassColorReference;
-	VkAttachmentReference				renderPassDepthReference = {};
+	Array<VkAttachmentDescription, 16>	attachDescList_vk;
+	Array<VkAttachmentReference,16>		colorAttachRefList_vk;
+	VkAttachmentReference				depthAttachRef_vk = {};
 
-	RenderContext_Vk*                renderContext_vk = nullptr;
-	RenderContext_Vk::BackBuffer_Vk* backBuffer_vk    = nullptr;
+	RenderContext_Vk*					renderContext_vk = nullptr;
+	RenderContext_Vk::BackBuffer_Vk*	backBuffer_vk    = nullptr;
 	if (desc.isBackBuffer) {
 		renderContext_vk	= rttiCastCheck<RenderContext_Vk>(desc.renderContext);
 		backBuffer_vk		= renderContext_vk->_getBackBuffer(desc.backBufferIndex);
@@ -90,49 +90,47 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 //---- color buffers ----
 	const Int colorBufferCount = desc.colorBufferAttachments.size();
 	for (Int i = 0; i < colorBufferCount; i++) {
-		SPtr<RenderPassColorBuffer> newColorBuf;
-
-		auto& colorBufAttachment = desc.colorBufferAttachments[i];
+		auto& newColorBuffer = _colorBuffers.emplaceBack();
+		newColorBuffer.attachment = desc.colorBufferAttachments[i];
 		
 		if (desc.isBackBuffer) {
 			if (i >= 1) throw Error_Undefined();
-			newColorBuf = backBuffer_vk->_colorBuf_vk;
+			newColorBuffer.buffer = backBuffer_vk->_colorBuf_vk;
 
 		} else {
 			RenderPassColorBuffer_CreateDesc colorBuf_createDesc;
 			colorBuf_createDesc.name = Fmt("{}-color", desc.name);
-			colorBuf_createDesc.attachment = colorBufAttachment;
+			colorBuf_createDesc.attachment = newColorBuffer.attachment;
 
-			newColorBuf = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+			newColorBuffer.buffer = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 		}
-		_colorBuffers.emplaceBack(newColorBuf);
 
-		auto* newColorBuf_vk = rttiCastCheck<RenderPassColorBuffer_Vk>(newColorBuf.ptr());
+		auto* newColorBuf_vk = rttiCastCheck<RenderPassColorBuffer_Vk>(newColorBuffer.buffer.ptr());
 		AX_ASSERT(newColorBuf_vk);
 
 		auto viewHandle = newColorBuf_vk->_view.handle();
 		AX_ASSERT(viewHandle);
 		imageViews.emplaceBack(viewHandle);
 
-		auto& colorReference = renderPassColorReference.emplaceBack();
+		auto& newColorAttachRef_vk = colorAttachRefList_vk.emplaceBack();
 
-		colorReference.attachment = AX_VkUtil::castUInt32(renderPassAttachmentDescription.size());
-		colorReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		newColorAttachRef_vk.attachment = AX_VkUtil::castUInt32(attachDescList_vk.size());
+		newColorAttachRef_vk.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		{
-			auto& dst = renderPassAttachmentDescription.emplaceBack();
-			dst.format			= AX_VkUtil::getVkColorType(newColorBuf_vk->colorType());
-			dst.flags			= 0;
-			dst.samples			= VK_SAMPLE_COUNT_1_BIT;
-			dst.loadOp			= AX_VkUtil::getVkLoadOp(colorBufAttachment.loadOp);
-			dst.storeOp			= VK_ATTACHMENT_STORE_OP_STORE;
-			dst.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			dst.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			dst.finalLayout		= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			auto& newAttachDesc_vk = attachDescList_vk.emplaceBack();
+			newAttachDesc_vk.format			= AX_VkUtil::getVkColorType(newColorBuf_vk->colorType());
+			newAttachDesc_vk.flags			= 0;
+			newAttachDesc_vk.samples		= VK_SAMPLE_COUNT_1_BIT;
+			newAttachDesc_vk.loadOp			= AX_VkUtil::getVkLoadOp(newColorBuffer.attachment.loadOp);
+			newAttachDesc_vk.storeOp		= VK_ATTACHMENT_STORE_OP_STORE;
+			newAttachDesc_vk.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			newAttachDesc_vk.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			newAttachDesc_vk.finalLayout	= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-			if (colorBufAttachment.loadOp == RenderBufferLoadOp::Clear) {
-				dst.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			if (newColorBuffer.attachment.loadOp == RenderBufferLoadOp::Clear) {
+				newAttachDesc_vk.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			} else {
-				dst.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ;
+				newAttachDesc_vk.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ;
 			}
 		}
 	}
@@ -158,10 +156,10 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 		imageViews.emplaceBack(depthBuffer_vk->_view.handle());
 		auto depthFormat = AX_VkUtil::getVkDepthType(depthBuffer_vk->depthType());
 
-		renderPassDepthReference.attachment = AX_VkUtil::castUInt32(renderPassAttachmentDescription.size());
-		renderPassDepthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		depthAttachRef_vk.attachment = AX_VkUtil::castUInt32(attachDescList_vk.size());
+		depthAttachRef_vk.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		{
-			auto& dst			= renderPassAttachmentDescription.emplaceBack();
+			auto& dst			= attachDescList_vk.emplaceBack();
 			dst.format			= depthFormat;
 			dst.flags			= 0;
 			dst.samples			= VK_SAMPLE_COUNT_1_BIT;
@@ -185,9 +183,9 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	subpassDesc.inputAttachmentCount		= 0;
 	subpassDesc.pInputAttachments			= nullptr;
 	subpassDesc.colorAttachmentCount		= 1;
-	subpassDesc.pColorAttachments			= renderPassColorReference.data();
+	subpassDesc.pColorAttachments			= colorAttachRefList_vk.data();
 	subpassDesc.pResolveAttachments			= nullptr;
-	subpassDesc.pDepthStencilAttachment		= hasDepth ? &renderPassDepthReference : nullptr;
+	subpassDesc.pDepthStencilAttachment		= hasDepth ? &depthAttachRef_vk : nullptr;
 	subpassDesc.preserveAttachmentCount		= 0;
 	subpassDesc.pPreserveAttachments		= nullptr;
 
@@ -195,8 +193,8 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	renderPassCreateInfo.sType				= VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassCreateInfo.pNext				= nullptr;
 	renderPassCreateInfo.flags				= 0;
-	renderPassCreateInfo.attachmentCount	= AX_VkUtil::castUInt32(renderPassAttachmentDescription.size());
-	renderPassCreateInfo.pAttachments		= renderPassAttachmentDescription.data();
+	renderPassCreateInfo.attachmentCount	= AX_VkUtil::castUInt32(attachDescList_vk.size());
+	renderPassCreateInfo.pAttachments		= attachDescList_vk.data();
 	renderPassCreateInfo.subpassCount		= 1;
 	renderPassCreateInfo.pSubpasses			= &subpassDesc;
 	renderPassCreateInfo.dependencyCount	= 0;

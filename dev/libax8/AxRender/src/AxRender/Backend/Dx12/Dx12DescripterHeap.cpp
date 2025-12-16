@@ -5,53 +5,20 @@ import :Dx12DescripterHeap;
 
 namespace  ax {
 
-void Dx12DescripterHeapArray::create(
-	Int size,
-	D3D12_DESCRIPTOR_HEAP_TYPE	type,
-	D3D12_DESCRIPTOR_HEAP_FLAGS flags
-)
-{
-	if (size <= 0) {
-		destroy();
-		return;
-	}
-
-	UINT numDescriptors = SafeCast(size);
-	if (_d3dHeap && _desc.Type == type && _desc.Flags == flags && _desc.NumDescriptors == numDescriptors)
-		return;
-
-	_desc.NumDescriptors = numDescriptors;
-	_desc.Type  = type;
-	_desc.Flags = flags;
-
-	auto* d3dDevice = Renderer_Dx12::s_d3dDevice();
-	_stride = d3dDevice->GetDescriptorHandleIncrementSize(type);
-
-	auto hr = d3dDevice->CreateDescriptorHeap(&_desc, IID_PPV_ARGS(_d3dHeap.ptrForInit()));
-	Dx12Util::throwIfError(hr);
-
-	_handle.cpu = _d3dHeap->GetCPUDescriptorHandleForHeapStart();
-	_handle.gpu = _d3dHeap->GetGPUDescriptorHandleForHeapStart();
-}
-
-void Dx12DescripterHeapArray::destroy() {
-	_d3dHeap.unref();
-	_desc = {};
-}
-
 void Dx12DescripterHeap_Base::destroy() {
 	_d3dHeap.unref();
-	_numDescriptors = 0;
-	_heapStartHandle = Dx12DescriptorHandle();
+	_desc.NumDescriptors = 0;
+	_startHandle = Dx12DescriptorHandle();
 }
 
-void Dx12DescripterHeap_Base::_init(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
+void Dx12DescripterHeap_Base::_create(Int size, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
+	UINT numDescriptors = SafeCast(size);
 	if (numDescriptors <= 0) {
 		destroy();
 		return;
 	}
 
-	if (_d3dHeap && _desc.Type == type && _desc.Flags == flags && _numDescriptors == numDescriptors)
+	if (_d3dHeap && _desc.Type == type && _desc.Flags == flags && _desc.NumDescriptors == numDescriptors)
 		return;
 
 	auto* renderer = Renderer_Dx12::s_instance();
@@ -64,9 +31,8 @@ void Dx12DescripterHeap_Base::_init(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TY
 	auto hr = d3dDevice->CreateDescriptorHeap(&_desc, IID_PPV_ARGS(_d3dHeap.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 
-	_heapStartHandle.cpu = _d3dHeap->GetCPUDescriptorHandleForHeapStart();
-	_heapStartHandle.gpu = _d3dHeap->GetGPUDescriptorHandleForHeapStart();
-	_numDescriptors = numDescriptors;
+	_startHandle.cpu = _d3dHeap->GetCPUDescriptorHandleForHeapStart();
+	_startHandle.gpu = _d3dHeap->GetGPUDescriptorHandleForHeapStart();
 }
 
 } // namespace

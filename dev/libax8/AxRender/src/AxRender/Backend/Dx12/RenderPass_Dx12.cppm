@@ -18,20 +18,24 @@ public:
 
 	void createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex);
 	void releaseResources() {
-		_d3dResource.destroy();
-		_descHeap.destroy();
-		_renderTargetView = {};
+		_resource_dx12.destroy();
+		_descHeap_dx12.destroy();
+		_view_dx12 = {};
 	}
 
-	Dx12Resource_ColorBuffer		_d3dResource;
-	Dx12DescripterHeapArray			_descHeap;
-	Dx12DescriptorHandle			_renderTargetView;
+	Dx12Resource_ColorBuffer			_resource_dx12;
+	Dx12DescripterHeap_ColorBuffer		_descHeap_dx12;
+	Dx12DescriptorHandle_ColorBuffer	_view_dx12;
 };
 
 class RenderPassDepthBuffer_Dx12 : public RenderPassDepthBuffer_Backend {
 	AX_RTTI_INFO(RenderPassDepthBuffer_Dx12, RenderPassDepthBuffer_Backend)
 public:
 	RenderPassDepthBuffer_Dx12(const CreateDesc& desc) : Base(desc) {}
+
+	Dx12Resource_DepthBuffer			_resource_dx12;
+	Dx12DescripterHeap_DepthBuffer		_descHeap_dx12;
+	Dx12DescriptorHandle_DepthBuffer	_view_dx12;
 };
 
 class RenderPass_Dx12 : public RenderPass_Backend {
@@ -41,9 +45,8 @@ public:
 
 	void releaseResources() {}
 
-
-	Array<D3D12_CPU_DESCRIPTOR_HANDLE>	_renderTargetDescriptors;
-		  D3D12_CPU_DESCRIPTOR_HANDLE	_depthStencilDescriptor;
+	Array<D3D12_CPU_DESCRIPTOR_HANDLE>	_colorViewList_dx12;
+		  D3D12_CPU_DESCRIPTOR_HANDLE	_depthView_dx12;
 };
 
 
