@@ -121,7 +121,7 @@ void ShaderInfoParser::readEnum(T& v) {
 		throw _makeErrorUnexpectedToken();
 	}
 
-	if (!EnumFn(v).tryParse(_token.str)) {
+	if (!_token.str.tryParse(v)) {
 		throw _makeError("parse enum {}", _token.str);
 	}
 	nextToken();

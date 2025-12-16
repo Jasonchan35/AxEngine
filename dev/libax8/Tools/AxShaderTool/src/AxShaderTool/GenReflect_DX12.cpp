@@ -370,7 +370,7 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 			default: throw Error_Undefined();
 		}
 
-		auto componentCount = BitFn(paramDesc.Mask).count1();
+		auto componentCount = ax_bit_count1(paramDesc.Mask);
 		if (componentCount < 1 || componentCount > 4) {
 			throw Error_Undefined();
 		}

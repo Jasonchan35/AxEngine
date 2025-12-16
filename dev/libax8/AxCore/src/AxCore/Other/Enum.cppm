@@ -35,7 +35,6 @@ struct EnumFn_ {
 	AX_INLINE constexpr void	operator=	(AxTag::Zero_) { setToZero(); }
 
 	AX_INLINE constexpr StrView	str() const { return _ax_macro_enum_str(value); }
-	AX_INLINE constexpr bool	tryParse(StrView view) { return _ax_macro_enum_try_parse(view, value); };
 
 	AX_INLINE constexpr bool	operator==(const T& r) const { return r == value; }
 

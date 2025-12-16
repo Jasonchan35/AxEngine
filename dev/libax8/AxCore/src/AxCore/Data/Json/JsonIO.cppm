@@ -83,7 +83,7 @@ struct JsonIO_Handler<T> {
 			TempString tmp;
 			se.io(tmp);
 			T t;
-			if (!EnumFn(t).tryParse(tmp)) {
+			if (!tmp.tryParse(t)) {
 				AX_ASSERT(false);
 				return;
 			}

@@ -417,7 +417,7 @@ int AxShaderTool_App::onRun() {
 		}
 
 		if (auto v = a.extractFromPrefix("-api=")) {
-			if (! EnumFn(opt.api).tryParse(v)) {
+			if (!v.tryParse(opt.api)) {
 				throw Error_Undefined(Fmt("'-api={}' unknown api", v));
 			}
 			continue;
