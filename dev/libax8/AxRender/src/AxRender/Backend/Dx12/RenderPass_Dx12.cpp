@@ -8,13 +8,13 @@ import :RenderRequest_Dx12;
 namespace ax {
 
 RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): Base(desc) {
-	if (desc.backBufferRef) {
-		auto* renderContext_dx12 = rttiCastCheck<RenderContext_Dx12>(desc.backBufferRef.renderContext);
+	if (desc.fromBackBuffer) {
+		auto* renderContext_dx12 = rttiCastCheck<RenderContext_Dx12>(desc.fromBackBuffer.renderContext);
 		if (!renderContext_dx12) throw Error_Undefined();
-		UINT backBufIndex = ax_safe_cast(desc.backBufferRef.index);
+		UINT backBufIndex = ax_safe_cast(desc.fromBackBuffer.index);
 		_resource_dx12.createFromSwapChain(renderContext_dx12->_swapChain_dx12, backBufIndex);
 	} else {
-		_resource_dx12.create(desc.frameSize, desc.attachment.colorType);
+		_resource_dx12.create(desc.frameSize, desc.colorType);
 	}
 	_descHeap_dx12.create(1);
 	_view_dx12 = _descHeap_dx12.createView(0, _resource_dx12);
@@ -33,27 +33,26 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 {
 	RenderContext_Dx12*					 renderContext_dx12 = nullptr;
 	RenderContext_Dx12::BackBuffer_Dx12* backBuffer_dx12    = nullptr;
-	if (desc.isBackBuffer) {
-		renderContext_dx12	= rttiCastCheck<RenderContext_Dx12>(desc.renderContext);
-		backBuffer_dx12		= renderContext_dx12->_getBackBuffer(desc.backBufferIndex);
+	if (desc.fromBackBuffer) {
+		renderContext_dx12	= rttiCastCheck<RenderContext_Dx12>(desc.fromBackBuffer.renderContext);
+		backBuffer_dx12		= renderContext_dx12->_getBackBuffer(desc.fromBackBuffer.index);
 	}
 	
 	//---- color buffers ----
-	const Int colorBufferCount = desc.colorBufferAttachments.size();
+	const Int colorBufferCount = desc.colorAttachmentDescs.size();
 	for (Int i = 0; i < colorBufferCount; i++) {
-		auto& newColorBuffer      = _colorBuffers.emplaceBack();
-		newColorBuffer.attachment = desc.colorBufferAttachments[i];
+		auto& newColorBuffer      = _colorAttachments.emplaceBack();
+		newColorBuffer.desc = desc.colorAttachmentDescs[i];
 
-		if (desc.isBackBuffer) {
+		if (desc.fromBackBuffer) {
 			if (i >= 1) throw Error_Undefined();
 			newColorBuffer.buffer = backBuffer_dx12->_colorBuf_dx12;
 			
 		} else {
 			RenderPassColorBuffer_CreateDesc colorBuf_createDesc;
-			colorBuf_createDesc.name = Fmt("{}-color", desc.name);
-			colorBuf_createDesc.attachment = newColorBuffer.attachment;
-			newColorBuffer.buffer = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
-		
+			colorBuf_createDesc.name      = Fmt("{}-color", desc.name);
+			colorBuf_createDesc.colorType = newColorBuffer.desc.colorType;
+			newColorBuffer.buffer         = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 		}
 
 		auto* colorBuffer_dx12 = rttiCastCheck<RenderPassColorBuffer_Dx12>(newColorBuffer.buffer.ptr());
@@ -62,30 +61,30 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 
 
 	//----- depth ------
-	_depthBuffer.attachment = desc.depthBufferAttachment;
+	_depthAttachment.desc = desc.depthAttachmentDesc;
 
-	bool hasDepth = _depthBuffer.attachment.isEnabled();
+	bool hasDepth = _depthAttachment.desc.isEnabled();
 	if (hasDepth) {
-		if (desc.isBackBuffer) {
-			_depthBuffer.buffer = renderContext_dx12->_depthBuffer_dx12;
+		if (desc.fromBackBuffer) {
+			_depthAttachment.buffer = renderContext_dx12->_depthBuffer_dx12;
 			
 		} else {
 			RenderPassDepthBuffer_CreateDesc depthBufDesc;
 			depthBufDesc.name = Fmt("{}-depth", desc.name);
 			depthBufDesc.frameSize = desc.frameSize;
-			depthBufDesc.attachment = desc.depthBufferAttachment;
+			depthBufDesc.depthType = desc.depthAttachmentDesc.depthType;
 
-			_depthBuffer.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+			_depthAttachment.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
 		}
 
-		auto* depthBuffer_vk = rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthBuffer.buffer.ptr());
+		auto* depthBuffer_vk = rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthAttachment.buffer.ptr());
 		_depthViewHandle_dx12 = depthBuffer_vk->_view_dx12.handle.cpu;
 	}	
 	
 }
 
 void RenderPass_Dx12::colorBuf0_resourceBarrier(RenderRequest* req_, D3D12_RESOURCE_STATES state) {
-	auto* colorBuf = _colorBuffers.tryGetElement(0);
+	auto* colorBuf = _colorAttachments.tryGetElement(0);
 	if (!colorBuf) return;
 
 	auto* buffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorBuf->buffer.ptr());

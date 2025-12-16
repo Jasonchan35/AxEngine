@@ -59,16 +59,16 @@ void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
 	VkExtent2D extent = AX_VkUtil::castVkExtent2D(pass->frameSize());
 
 	Array<VkClearValue, 32>	clearValues;
-	for (auto& src : pass->colorBuffers()) {
+	for (auto& src : pass->colorAttachments()) {
 		auto& dst = clearValues.emplaceBack().color;
-		AX_VkUtil::setFloat4(dst.float32, src.attachment.clearColor);
+		AX_VkUtil::setFloat4(dst.float32, src.desc.clearColorValue);
 	}
 	
 	if (auto* depthBuffer = pass->depthBuffer()) {
-		auto& dst = clearValues.emplaceBack().depthStencil;
-		auto& desc = depthBuffer->attachment();
-		dst.depth   = desc.clearDepth;
-		dst.stencil = desc.clearStencil;
+		auto& desc = pass->depthAttachment().desc;
+		auto& dst         = clearValues.emplaceBack().depthStencil;
+		dst.depth         = desc.clearDepthValue;
+		dst.stencil       = desc.clearStencilValue;
 	}
 
 	VkRenderPassBeginInfo info = {};

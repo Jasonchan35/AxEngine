@@ -199,8 +199,8 @@ public:
 	const ShaderStageInfo* stageInfo = nullptr;
 };
 
-class ShaderPass_Backend : public RttiObject {
-	AX_RTTI_INFO(ShaderPass_Backend, RttiObject)
+class ShaderPass_Backend : public RenderObject {
+	AX_RTTI_INFO(ShaderPass_Backend, RenderObject)
 public:
 	using CreateDesc = ShaderPass_Backend_CreateDesc;
 	using ParamSpaceType = ShaderParamSpaceType;

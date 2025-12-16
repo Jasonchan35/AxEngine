@@ -7,15 +7,15 @@ namespace ax /*::AxRender*/ {
 
 RenderPassColorBuffer::RenderPassColorBuffer(const CreateDesc& desc) {
 	_name			 = desc.name;
-	_attachment = desc.attachment;
-	_backBufferRef	 = desc.backBufferRef;
+	_colorType		 = desc.colorType;
+	_backBufferRef	 = desc.fromBackBuffer;
 }
 
 RenderPassDepthBuffer::RenderPassDepthBuffer(const CreateDesc& desc) 
 : Base(RenderDataType::DepthTexture)
 {
-	_type            = RenderDataType::DepthTexture;
-	_attachment = desc.attachment;
+	_textureType      = RenderDataType::DepthTexture;
+	_depthType = desc.depthType;
 }
 
 RenderPass::RenderPass(const CreateDesc& desc) {
@@ -29,13 +29,13 @@ RenderPass::RenderPass(const CreateDesc& desc) {
 
 bool RenderPass::isCompatible(const CreateDesc& desc) const {
 	if (_frameSize != desc.frameSize 
-	 && _depthBuffer.attachment != desc.depthBufferAttachment
-	 && _colorBuffers.size() != desc.colorBufferAttachments.size())
+	 && _depthAttachment.desc != desc.depthAttachmentDesc
+	 && _colorAttachments.size() != desc.colorAttachmentDescs.size())
 		return false;
 
-	Int n = desc.colorBufferAttachments.size();
+	Int n = desc.colorAttachmentDescs.size();
 	for (Int i = 0; i < n; ++i) {
-		if (_colorBuffers[i].attachment != desc.colorBufferAttachments[i]) return false;
+		if (_colorAttachments[i].desc != desc.colorAttachmentDescs[i]) return false;
 	}
 
 	return true;

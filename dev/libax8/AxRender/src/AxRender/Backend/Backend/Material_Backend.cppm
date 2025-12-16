@@ -225,8 +225,8 @@ public:
 	Int passIndex = 0;
 };
 
-class MaterialPass_Backend : public RttiObject {
-	AX_RTTI_INFO(MaterialPass_Backend, RttiObject)
+class MaterialPass_Backend : public RenderObject {
+	AX_RTTI_INFO(MaterialPass_Backend, RenderObject)
 public:
 	using CreateDesc = MaterialPass_Backend_CreateDesc;
 	using ParamSpaceType = ShaderParamSpaceType;

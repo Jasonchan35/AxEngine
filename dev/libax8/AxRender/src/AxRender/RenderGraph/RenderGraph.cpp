@@ -16,15 +16,15 @@ RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, Colo
 	pass->_addColorBuffer(this);
 }
 
-void RenderGraph_ColorBuffer::setDesc(const RenderPassColorBufferAttachment& desc) {
-	if (_attachment == desc) return;
+void RenderGraph_ColorBuffer::setDesc(const RenderPassColorAttachmentDesc& attachment) {
+	if (_attachment == attachment) return;
 	setDirty();
-	_attachment = desc;
+	_attachment = attachment;
 }
 
 void RenderGraph_ColorBuffer::setClearColor(const Color4f& color) {
-	if (_attachment.clearColor == color) return;
-	_attachment.clearColor = color;
+	if (_attachment.clearColorValue == color) return;
+	_attachment.clearColorValue = color;
 	setDirty();
 }
 
@@ -40,12 +40,12 @@ void RenderGraph_ColorBuffer::setLoadOp(RenderBufferLoadOp loadOp) {
 	setDirty();
 }
 
-void RenderGraph_Pass::setDepthBufferAttachment(const RenderPassDepthBufferAttachment& attach) {
-	if (_depthBufferAttachment == attach)
+void RenderGraph_Pass::setDepthAttachmentDesc(const RenderPassDepthAttachmentDesc& attachmentDesc) {
+	if (_depthAttachmentDesc == attachmentDesc)
 		return;
 
 	setDirty();
-	_depthBufferAttachment = attach;
+	_depthAttachmentDesc = attachmentDesc;
 }
 
 void RenderGraph_Pass::_createRenderPass() {
@@ -53,11 +53,11 @@ void RenderGraph_Pass::_createRenderPass() {
 
 	RenderPass_CreateDesc	desc;
 	desc.frameSize = _frameSize;
-	desc.depthBufferAttachment = _depthBufferAttachment;
+	desc.depthAttachmentDesc = _depthAttachmentDesc;
 		
 	for (auto& col : _colorBuffers) {
 		if (!col) { AX_ASSERT(false); return; }
-		desc.colorBufferAttachments.emplaceBack(col->attachment());
+		desc.colorAttachmentDescs.emplaceBack(col->attachment());
 	}
 
 	if (_renderPass && _renderPass->isCompatible(desc))
@@ -277,10 +277,10 @@ void RenderGraph_BackBufferPass::setRenderPass(RenderPass* pass) {
 
 	setFrameSize(pass->frameSize());
 
-	auto* passColor = pass->colorBuffers().tryGetElement(0);
+	auto* passColor = pass->colorAttachments().tryGetElement(0);
 	if (!passColor) return;
 
-	color0.setDesc(passColor->attachment);
+	color0.setDesc(passColor->desc);
 	_renderPass = pass;
 }
 

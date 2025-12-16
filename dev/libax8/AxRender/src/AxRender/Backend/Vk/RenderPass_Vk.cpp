@@ -16,13 +16,13 @@ RenderPassColorBuffer_Vk::RenderPassColorBuffer_Vk(const CreateDesc& createDesc)
 {
 	auto& dev       = Renderer_Vk::s_instance()->device();
 	auto  frameSize = AX_VkUtil::castVkExtent2D(createDesc.frameSize);
-	auto  format    = AX_VkUtil::getVkColorType(createDesc.attachment.colorType);
+	auto  format    = AX_VkUtil::getVkColorType(createDesc.colorType);
 
-	if (createDesc.backBufferRef) {
-		auto* renderContext_vk = rttiCast<RenderContext_Vk>(createDesc.backBufferRef.renderContext);
+	if (createDesc.fromBackBuffer) {
+		auto* renderContext_vk = rttiCast<RenderContext_Vk>(createDesc.fromBackBuffer.renderContext);
 		if (!renderContext_vk) throw Error_Undefined();
 
-		auto* backBuffer = renderContext_vk->_getBackBuffer(createDesc.backBufferRef.index);
+		auto* backBuffer = renderContext_vk->_getBackBuffer(createDesc.fromBackBuffer.index);
 		if (!backBuffer) throw Error_Undefined();
 
 		auto& image = backBuffer->_vkImage;
@@ -56,7 +56,7 @@ RenderPassDepthBuffer_Vk::RenderPassDepthBuffer_Vk(const CreateDesc& createDesc)
 	auto& dev = Renderer_Vk::s_instance()->device();
 
 	auto frameSize = AX_VkUtil::castVkExtent2D(createDesc.frameSize);
-	auto format    = AX_VkUtil::getVkDepthType(createDesc.attachment.depthType);
+	auto format    = AX_VkUtil::getVkDepthType(createDesc.depthType);
 	_image.createDepthStencil(dev, frameSize, format);
 	_mem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	_view.create(_image);
@@ -82,30 +82,30 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 
 	RenderContext_Vk*					renderContext_vk = nullptr;
 	RenderContext_Vk::BackBuffer_Vk*	backBuffer_vk    = nullptr;
-	if (desc.isBackBuffer) {
-		renderContext_vk	= rttiCastCheck<RenderContext_Vk>(desc.renderContext);
-		backBuffer_vk		= renderContext_vk->_getBackBuffer(desc.backBufferIndex);
+	if (desc.fromBackBuffer) {
+		renderContext_vk	= rttiCastCheck<RenderContext_Vk>(desc.fromBackBuffer.renderContext);
+		backBuffer_vk		= renderContext_vk->_getBackBuffer(desc.fromBackBuffer.index);
 	}
 
 //---- color buffers ----
-	const Int colorBufferCount = desc.colorBufferAttachments.size();
+	const Int colorBufferCount = desc.colorAttachmentDescs.size();
 	for (Int i = 0; i < colorBufferCount; i++) {
-		auto& newColorBuffer = _colorBuffers.emplaceBack();
-		newColorBuffer.attachment = desc.colorBufferAttachments[i];
+		auto& colorAttach = _colorAttachments.emplaceBack();
+		colorAttach.desc = desc.colorAttachmentDescs[i];
 		
-		if (desc.isBackBuffer) {
+		if (desc.fromBackBuffer) {
 			if (i >= 1) throw Error_Undefined();
-			newColorBuffer.buffer = backBuffer_vk->_colorBuf_vk;
+			colorAttach.buffer = backBuffer_vk->_colorBuf_vk;
 
 		} else {
 			RenderPassColorBuffer_CreateDesc colorBuf_createDesc;
-			colorBuf_createDesc.name = Fmt("{}-color", desc.name);
-			colorBuf_createDesc.attachment = newColorBuffer.attachment;
+			colorBuf_createDesc.name      = Fmt("{}-color", desc.name);
+			colorBuf_createDesc.colorType = colorAttach.desc.colorType;
 
-			newColorBuffer.buffer = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+			colorAttach.buffer = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 		}
 
-		auto* newColorBuf_vk = rttiCastCheck<RenderPassColorBuffer_Vk>(newColorBuffer.buffer.ptr());
+		auto* newColorBuf_vk = rttiCastCheck<RenderPassColorBuffer_Vk>(colorAttach.buffer.ptr());
 		AX_ASSERT(newColorBuf_vk);
 
 		auto viewHandle = newColorBuf_vk->_view.handle();
@@ -121,13 +121,13 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 			newAttachDesc_vk.format			= AX_VkUtil::getVkColorType(newColorBuf_vk->colorType());
 			newAttachDesc_vk.flags			= 0;
 			newAttachDesc_vk.samples		= VK_SAMPLE_COUNT_1_BIT;
-			newAttachDesc_vk.loadOp			= AX_VkUtil::getVkLoadOp(newColorBuffer.attachment.loadOp);
+			newAttachDesc_vk.loadOp			= AX_VkUtil::getVkLoadOp(colorAttach.desc.loadOp);
 			newAttachDesc_vk.storeOp		= VK_ATTACHMENT_STORE_OP_STORE;
 			newAttachDesc_vk.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			newAttachDesc_vk.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			newAttachDesc_vk.finalLayout	= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-			if (newColorBuffer.attachment.loadOp == RenderBufferLoadOp::Clear) {
+			if (colorAttach.desc.loadOp == RenderBufferLoadOp::Clear) {
 				newAttachDesc_vk.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			} else {
 				newAttachDesc_vk.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ;
@@ -136,22 +136,22 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	}
 
 //--- depth buffer
-	_depthBuffer.attachment = desc.depthBufferAttachment;
-	bool hasDepth = _depthBuffer.attachment.isEnabled();
+	_depthAttachment.desc = desc.depthAttachmentDesc;
+	bool hasDepth = _depthAttachment.isEnabled();
 	if (hasDepth) {
-		if (desc.isBackBuffer) {
-			_depthBuffer.buffer = renderContext_vk->_depthBuf_vk;
+		if (desc.fromBackBuffer) {
+			_depthAttachment.buffer = renderContext_vk->_depthBuf_vk;
 			
 		} else {
 			RenderPassDepthBuffer_CreateDesc depthBufDesc;
 			depthBufDesc.name = Fmt("{}-depth", desc.name);
 			depthBufDesc.frameSize = desc.frameSize;
-			depthBufDesc.attachment = desc.depthBufferAttachment;
+			depthBufDesc.depthType = desc.depthAttachmentDesc.depthType;
 
-			_depthBuffer.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+			_depthAttachment.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
 		}
 
-		auto* depthBuffer_vk = rttiCastCheck<RenderPassDepthBuffer_Vk>(_depthBuffer.buffer.ptr()); 
+		auto* depthBuffer_vk = rttiCastCheck<RenderPassDepthBuffer_Vk>(_depthAttachment.buffer.ptr()); 
 
 		imageViews.emplaceBack(depthBuffer_vk->_view.handle());
 		auto depthFormat = AX_VkUtil::getVkDepthType(depthBuffer_vk->depthType());
@@ -163,13 +163,13 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 			dst.format			= depthFormat;
 			dst.flags			= 0;
 			dst.samples			= VK_SAMPLE_COUNT_1_BIT;
-			dst.loadOp			= AX_VkUtil::getVkLoadOp(desc.depthBufferAttachment.loadOp);
+			dst.loadOp			= AX_VkUtil::getVkLoadOp(desc.depthAttachmentDesc.loadOp);
 			dst.storeOp			= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			dst.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			dst.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			dst.finalLayout		= VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-			if (desc.depthBufferAttachment.loadOp == RenderBufferLoadOp::Clear) {
+			if (desc.depthAttachmentDesc.loadOp == RenderBufferLoadOp::Clear) {
 				dst.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			} else {
 				dst.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;

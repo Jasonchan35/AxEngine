@@ -45,7 +45,7 @@ public:
 	void colorBuf0_resourceBarrier(RenderRequest* req_, D3D12_RESOURCE_STATES state);
 	void releaseResources() {}
 
-	RenderPassDepthBuffer_Dx12*	depthBuffer_dx12()	{ return rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthBuffer.buffer.ptr()); }
+	RenderPassDepthBuffer_Dx12*	depthBuffer_dx12()	{ return rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthAttachment.buffer.ptr()); }
 
 
 	Array<D3D12_CPU_DESCRIPTOR_HANDLE>	_colorViewHandles_dx12;

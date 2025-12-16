@@ -10,8 +10,8 @@ class RenderContext;
 struct SwapChainDesc {
 	Int			backBufferCount = 2;
 	bool		vsync = true;
-	RenderPassColorBufferAttachment	colorBufferAttachment;
-	RenderPassDepthBufferAttachment	depthBufferAttachment;
+	RenderPassColorAttachmentDesc	colorAttachmentDesc;
+	RenderPassDepthAttachmentDesc	depthAttachmentDesc;
 };
 
 class RenderContext_CreateDesc : public NonCopyable {
@@ -21,8 +21,8 @@ public:
 	SwapChainDesc				swapChainDesc;
 };
 
-class RenderContext : public RttiObject {
-	AX_RTTI_INFO(RenderContext, RttiObject)
+class RenderContext : public RenderObject {
+	AX_RTTI_INFO(RenderContext, RenderObject)
 public:
 	using CreateDesc	= RenderContext_CreateDesc;
 

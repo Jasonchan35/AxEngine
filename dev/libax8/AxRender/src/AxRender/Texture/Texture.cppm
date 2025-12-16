@@ -105,14 +105,14 @@ protected:
 class Texture : public RenderObject {
 	AX_RTTI_INFO(Texture, RenderObject)
 public:
-	RenderDataType type() const { return _type; }
+	RenderDataType type() const { return _textureType; }
 
 	using ResourceKey = String;
 	const ResourceKey& resourceKey() const { return _assetPath; }
 
 protected:
-	Texture(RenderDataType type) : _type(type) {}
-	RenderDataType _type = RenderDataType::None;
+	Texture(RenderDataType type) : _textureType(type) {}
+	RenderDataType _textureType = RenderDataType::None;
 
 	String	_assetPath;
 };

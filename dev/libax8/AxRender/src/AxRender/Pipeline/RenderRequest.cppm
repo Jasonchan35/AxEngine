@@ -25,8 +25,8 @@ private:
 	Rect2f	_rect;
 };
 
-class RenderRequest : public RttiObject {
-	AX_RTTI_INFO(RenderRequest, RttiObject)
+class RenderRequest : public RenderObject {
+	AX_RTTI_INFO(RenderRequest, RenderObject)
 public:
 	using ParamSpaceType = ShaderParamSpaceType;
 	

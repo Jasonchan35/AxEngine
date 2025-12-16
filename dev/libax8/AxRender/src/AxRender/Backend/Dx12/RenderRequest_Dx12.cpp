@@ -77,18 +77,20 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	
 	_graphCmdBuf_dx12->OMSetRenderTargets(rtCount, rtViews, rtSingleHandle, depthView);
 
-	for (auto& colorBuf : pass->colorBuffers()) {
-		if (!colorBuf.buffer.ptr()) continue;
-		auto* buffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorBuf.buffer.ptr());
-
-		if (colorBuf.attachment.loadOp == RenderBufferLoadOp::Clear) {
-			_graphCmdBuf_dx12->ClearRenderTargetView(buffer->_view_dx12.handle.cpu, colorBuf.attachment.clearColor.data(), 0, nullptr);
+	for (auto& colorAttachment : pass->colorAttachments()) {
+		auto& desc = colorAttachment.desc;
+		auto* colorBuffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
+		if (!colorBuffer) continue;
+		if (desc.loadOp == RenderBufferLoadOp::Clear) {
+			_graphCmdBuf_dx12->ClearRenderTargetView(colorBuffer->_view_dx12.handle.cpu, desc.clearColorValue.data(), 0, nullptr);
 		}
 	}
+
 	if (auto* depthBuffer = pass->depthBuffer_dx12()) {
-		if (depthBuffer->attachment().loadOp == RenderBufferLoadOp::Clear) {
-			float depthValue   = depthBuffer->attachment().clearDepth;
-			u8    stencilValue = static_cast<u8>(depthBuffer->attachment().clearStencil);
+		auto& desc = pass->depthAttachment().desc;
+		if (desc.loadOp == RenderBufferLoadOp::Clear) {
+			float depthValue   = desc.clearDepthValue;
+			u8    stencilValue = static_cast<u8>(desc.clearStencilValue);
 			_graphCmdBuf_dx12->ClearDepthStencilView(depthBuffer->_view_dx12.handle.cpu,
 			                                         D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
 			                                         depthValue,

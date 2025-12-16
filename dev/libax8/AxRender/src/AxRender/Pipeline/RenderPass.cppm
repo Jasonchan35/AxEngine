@@ -5,7 +5,7 @@ export import :GpuBuffer;
 
 export namespace ax /*::AxRender*/ {
 
-struct BackBufferRef {
+struct RenderBackBufferRef {
 	class RenderContext* renderContext = nullptr;
 	Int	index = 0;
 
@@ -19,10 +19,10 @@ struct BackBufferRef {
 
 class RenderPassColorBuffer_CreateDesc : public NonCopyable {
 public:
-	String	name;
-	Vec2i	frameSize {0,0};
-	RenderPassColorBufferAttachment attachment;
-	BackBufferRef	backBufferRef;
+	String              name;
+	Vec2i               frameSize{0, 0};
+	ColorType           colorType = ColorType::RGBAb;
+	RenderBackBufferRef fromBackBuffer;
 };
 
 class RenderPassColorBuffer : public RenderObject {
@@ -30,24 +30,23 @@ class RenderPassColorBuffer : public RenderObject {
 public:
 	using CreateDesc = RenderPassColorBuffer_CreateDesc;
 
-	const BackBufferRef&	backBufferRef() const { return _backBufferRef; }
+	const RenderBackBufferRef&	backBufferRef() const { return _backBufferRef; }
 
-	ColorType		colorType() const	{ return _attachment.colorType; }
+	ColorType		colorType() const	{ return _colorType; }
 	const Vec2i&	frameSize() const	{ return _frameSize; }
-	const RenderPassColorBufferAttachment& attachment() const { return _attachment; }
 
 protected:
 	RenderPassColorBuffer(const CreateDesc& desc);
-	Vec2i			_frameSize;
-	RenderPassColorBufferAttachment	_attachment;
-	BackBufferRef	_backBufferRef;
+	Vec2i               _frameSize;
+	ColorType           _colorType;
+	RenderBackBufferRef _backBufferRef;
 };
 
 class RenderPassDepthBuffer_CreateDesc : NonCopyable {
 public:
-	String	name;
-	Vec2i	frameSize {0,0};
-	RenderPassDepthBufferAttachment attachment;
+	String          name;
+	Vec2i           frameSize{0, 0};
+	RenderDepthType depthType = RenderDepthType::None;
 };
 
 class RenderPassDepthBuffer : public Texture { // TODO Texture -> RenderObject
@@ -55,33 +54,24 @@ class RenderPassDepthBuffer : public Texture { // TODO Texture -> RenderObject
 public:
 	using CreateDesc = RenderPassDepthBuffer_CreateDesc;
 
-	RenderDepthType	depthType() const { return _attachment.depthType; }
+	RenderDepthType	depthType() const { return _depthType; }
 	Vec2i			frameSize() const { return _frameSize; }
-	const RenderPassDepthBufferAttachment& attachment() const { return _attachment; }
 
 protected:
 	RenderPassDepthBuffer(const CreateDesc& desc);
 	Vec2i			_frameSize;
-	RenderPassDepthBufferAttachment _attachment;
+	RenderDepthType _depthType;
 };
 
 
 class RenderPass_CreateDesc : public NonCopyable {
 public:
-	void setBackBuffer(class RenderContext* ctx, Int index) {
-		isBackBuffer = true;
-		renderContext = ctx;
-		backBufferIndex = index;
-	}
+	String              name;
+	Vec2i               frameSize{0, 0};
+	RenderBackBufferRef fromBackBuffer;
 
-	String			name;
-	Vec2i			frameSize {0,0};
-	bool			isBackBuffer = false;
-	RenderContext*	renderContext = nullptr;
-	Int				backBufferIndex = 0;
-
-	Array<RenderPassColorBufferAttachment, 16>	colorBufferAttachments;
-	RenderPassDepthBufferAttachment				depthBufferAttachment;
+	Array<RenderPassColorAttachmentDesc, 16>	colorAttachmentDescs;
+	RenderPassDepthAttachmentDesc				depthAttachmentDesc;
 };
 
 class RenderPass : public RenderObject {
@@ -93,26 +83,37 @@ public:
 
 	bool isCompatible(const CreateDesc& desc) const;
 
-	struct ColorBuffer {
+	struct ColorAttachment {
 		SPtr<RenderPassColorBuffer>		buffer;
-		RenderPassColorBufferAttachment	attachment;
+		RenderPassColorAttachmentDesc	desc;
 	};
 
-	struct DepthBuffer {
+	struct DepthAttachment {
 		SPtr<RenderPassDepthBuffer>		buffer;
-		RenderPassDepthBufferAttachment attachment;
+		RenderPassDepthAttachmentDesc	desc;
+		
+		AX_INLINE bool isEnabled() const { return desc.isEnabled(); }
+		AX_INLINE explicit operator bool() const { return isEnabled(); }
 	};
 	
-	MutSpan<ColorBuffer>	colorBuffers()	{ return _colorBuffers; }
-	RenderPassDepthBuffer*	depthBuffer()	{ return _depthBuffer.buffer; }
+	MutSpan<ColorAttachment>	colorAttachments()	{ return _colorAttachments; }
+	ColorAttachment*			colorAttachment(Int i) { return _colorAttachments.tryGetElement(i); }
+
+	RenderPassColorBuffer*		colorBuffer(Int i) {
+		auto* att = _colorAttachments.tryGetElement(i);
+		return att ? att->buffer.ptr() : nullptr;
+	}
+
+	DepthAttachment&			depthAttachment()	{ return _depthAttachment; }
+	RenderPassDepthBuffer*		depthBuffer()		{ return _depthAttachment.buffer; }
 	
 protected:
 	RenderPass(const CreateDesc& desc);
 
 	Vec2i	_frameSize {0,0};
 	
-	Array< ColorBuffer >	_colorBuffers;
-	DepthBuffer				_depthBuffer;
+	Array< ColorAttachment >	_colorAttachments;
+	DepthAttachment				_depthAttachment;
 };
 
 } // namespace
