@@ -64,7 +64,7 @@ public:
 	void create(Vec2i size);
 };
 
-class Dx12Resource_Buffer : public Dx12ResourceBase {
+class Dx12Resource_GpuBuffer : public Dx12ResourceBase {
 public:
 	void create(GpuBufferType type, Int bufferSize);
 	void create(GpuBufferType type, ByteSpan data) {

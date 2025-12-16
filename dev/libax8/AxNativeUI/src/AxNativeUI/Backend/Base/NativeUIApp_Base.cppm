@@ -32,7 +32,7 @@ public:
 
 	bool setCursor(NativeUICursorType type) { return onSetNativeCursor(type); }
 	bool setCursorPos(const Vec2f& worldPos) { return onSetNativeCursorPos(worldPos); }
-
+	
 	void requestCustomAppEvent();
 	void handleCustomAppEvent(bool force);
 

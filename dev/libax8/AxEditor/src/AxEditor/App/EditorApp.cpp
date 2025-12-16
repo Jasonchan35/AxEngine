@@ -4,6 +4,7 @@ module AxEditor;
 
 import :EditorApp;
 import :EditorMainWindow;
+#include "AxEditor-Common.h"
 
 namespace ax::AxEditor {
 
@@ -12,8 +13,17 @@ public:
 	EditorApp_CreateDesc() {
 		peekMessage = true;
 //		rendererDesc.info.api = RenderAPI::Null;
-		rendererDesc.info.api = RenderAPI::Vk;
+//		rendererDesc.info.api = RenderAPI::Vk;
 		rendererDesc.info.api = RenderAPI::Dx12;
+
+		using App = NativeUIApp;
+		using KeyCode = NativeUIKeyCode;
+		
+		if (App::s_getAsyncKeyState(KeyCode::Ctrl)) {
+			rendererDesc.info.api = RenderAPI::Vk;
+		} else if (App::s_getAsyncKeyState(KeyCode::Shift)) {
+			rendererDesc.info.api = RenderAPI::Dx12;
+		}
 	}
 };
 

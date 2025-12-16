@@ -44,7 +44,7 @@ void Dx12ResourceBase::destroy() {
 	_alignedDataSize = 0;
 }
 
-void Dx12Resource_Buffer::create(GpuBufferType type, Int bufferSize) {
+void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	destroy();
 
 	_desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
@@ -172,6 +172,7 @@ void Dx12Resource_ColorBuffer::createFromSwapChain(AX_DX12_IDXGISwapChain* swapC
 	auto hr = swapChain->GetBuffer(backBufIndex, IID_PPV_ARGS(_d3dResource.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 	_desc = _d3dResource->GetDesc();
+	_resourceState = D3D12_RESOURCE_STATE_PRESENT;
 
 	D3D12_HEAP_FLAGS flags;
 	_d3dResource->GetHeapProperties(&_heapProps, &flags);

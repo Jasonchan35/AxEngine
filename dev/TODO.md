@@ -3,7 +3,7 @@
 - Type_EnumFlag<>
 - rename AxTag::Zero_ -> AxZero ?
 
-- NameId consteval string literal to StrLit + Id
+- rename CommandBuffer -> RenderCommandList
 
 - Runtime select bindless
 - AxShaderTool - output bindless shader to separate file
@@ -20,6 +20,8 @@
 - Allocator
 
 - PmrArray - hold allocator pointer
+
+- Nanite + Subdiv
 
 
 ==== 2025-12-13 =====

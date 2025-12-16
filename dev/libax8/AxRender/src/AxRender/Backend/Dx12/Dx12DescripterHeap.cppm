@@ -108,7 +108,7 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_ConstBuffer createViewCBV(Int i, Dx12Resource_Buffer& res) {
+	Dx12DescriptorHandle_ConstBuffer createViewCBV(Int i, Dx12Resource_GpuBuffer& res) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 		desc.BufferLocation = res.gpuAddress();
 		desc.SizeInBytes    = Dx12Util::castUINT(res.alignedDataSize());
@@ -118,13 +118,13 @@ public:
 		return h;
 	}
 
-	Dx12DescriptorHandle_UAV createViewStructuredUAV(Int i, Dx12Resource_Buffer& buf) {
+	Dx12DescriptorHandle_UAV createViewStructuredUAV(Int i, Dx12Resource_GpuBuffer& buf) {
 		auto h = _getHandle<Dx12DescriptorHandle_UAV>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, nullptr, h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_RawUAV createViewRawUAV(Int i, Dx12Resource_Buffer& buf) {
+	Dx12DescriptorHandle_RawUAV createViewRawUAV(Int i, Dx12Resource_GpuBuffer& buf) {
 		D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;

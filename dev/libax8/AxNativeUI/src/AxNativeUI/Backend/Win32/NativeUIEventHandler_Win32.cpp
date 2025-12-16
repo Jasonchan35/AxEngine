@@ -117,7 +117,7 @@ bool NativeUIEventHandler_Win32::_handleKeyEvent(HWND hwnd, UINT msg, WPARAM wPa
 
 	ev.time		= Milliseconds(app->_win32_msg.time);
 	ev.modifier = NativeUI_Win32::s_eventModifier();
-	ev.key		= NativeUI_Win32::s_convertKey(wParam);
+	ev.key		= NativeUI_Win32::s_toNativeKey(int(wParam));
 
 	if (msg == WM_CHAR) {
 		ev.type = Type::Char;

@@ -12,7 +12,9 @@ constexpr UINT AX_WM_USER_HasCustomAppEvent = WM_USER + 1;
 class NativeUI_Win32 {
 public:
 
-	static NativeUIKeyCode		 s_convertKey(WPARAM vkey);
+	static NativeUIKeyCode	 s_toNativeKey(int key);
+	static int				 s_toWin32Key(NativeUIKeyCode key);
+	
 	static NativeUIEventModifier s_eventModifier();
 
 	static Vec2f  s_worldToLocalPos(HWND hwnd, const Vec2f& pt);

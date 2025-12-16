@@ -21,19 +21,20 @@ export namespace ax {
 #endif
 
 export namespace ax {
-	class NativeUIApp : public NativeUIApp_Impl {
-		AX_RTTI_INFO(NativeUIApp, NativeUIApp_Impl)
-	public:
-		AX_DOWNCAST_GET_INSTANCE()
 
-		NativeUIApp(const CreateDesc& desc = CreateDesc()) : Base(desc) {}
-	};
+class NativeUIApp : public NativeUIApp_Impl {
+	AX_RTTI_INFO(NativeUIApp, NativeUIApp_Impl)
+public:
+	AX_DOWNCAST_GET_INSTANCE()
 
-	
-	class NativeUIWindow : public NativeUIWindow_Impl {
-		AX_RTTI_INFO(NativeUIWindow, NativeUIWindow_Impl)
-	public:
-		NativeUIWindow(CreateDesc& desc) : Base(desc) {}
-	};
-	
+	NativeUIApp(const CreateDesc& desc = CreateDesc()) : Base(desc) {}
+};
+
+
+class NativeUIWindow : public NativeUIWindow_Impl {
+	AX_RTTI_INFO(NativeUIWindow, NativeUIWindow_Impl)
+public:
+	NativeUIWindow(CreateDesc& desc) : Base(desc) {}
+};
+
 } // namespace ax

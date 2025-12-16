@@ -19,6 +19,7 @@ public:
 	virtual	void	quit		(int returnCode) override;
 
 	static Rect2f s_getVirtualDesktopRect();
+	static bool s_getAsyncKeyState(NativeUIKeyCode key);
 
 	MSG _win32_msg;
 

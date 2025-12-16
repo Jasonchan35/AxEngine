@@ -71,6 +71,11 @@ Rect2f NativeUIApp_Win32::s_getVirtualDesktopRect() {
 					static_cast<float>(GetSystemMetrics(SM_CYVIRTUALSCREEN)));
 }
 
+bool NativeUIApp_Win32::s_getAsyncKeyState(NativeUIKeyCode key) {
+	int w = NativeUI_Win32::s_toWin32Key(key);
+	return ::GetAsyncKeyState(w) != 0;
+}
+
 bool NativeUIApp_Win32::onSetNativeCursor(NativeUICursorType type) {
 	HCURSOR o = nullptr;
 	switch (type) {

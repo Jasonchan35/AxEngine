@@ -62,6 +62,11 @@ void CommandBuffer_Dx12::onDrawCall(Cmd_DrawCall& cmd) {
 void CommandBuffer_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	auto* pass = rttiCastCheck<RenderPass_Dx12>(pass_);
 
+	for (auto& colorBuf : pass->colorBuffers()) {
+		auto* colorBuf_dx12 = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorBuf.buffer.ptr());
+		colorBuf_dx12->_resource_dx12.resourceBarrier(_cmdList_dx12, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	}
+
 	auto& renderTargetDescriptors = pass->_colorViewList_dx12;
 	BOOL RTsSingleHandleToDescriptorRange = FALSE;
 	_cmdList_dx12->OMSetRenderTargets(

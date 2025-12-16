@@ -21,7 +21,7 @@ public:
 		_p.uploadToGpu(offset, data);
 	}
 
-	Dx12Resource_Buffer& resource() { return _p; }
+	Dx12Resource_GpuBuffer& resource() { return _p; }
 
 	ID3D12Resource*	d3dResource() { return _p.d3dResource(); }
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _p.gpuAddress(); }
@@ -34,7 +34,7 @@ protected:
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override;
 
 private:
-	Dx12Resource_Buffer	_p;
+	Dx12Resource_GpuBuffer	_p;
 };
 
 } // namespace
