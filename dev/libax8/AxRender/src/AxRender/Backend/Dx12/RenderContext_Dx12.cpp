@@ -200,6 +200,7 @@ void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
 	if (!req) { AX_ASSERT(false); return; }
 
 	Array<ID3D12CommandList*, 4> lists;
+	lists.emplaceBack(req->_uploadCmdBuf_dx12);
 	lists.emplaceBack(req->_graphCmdBuf_dx12);
 	
 	_graphCmdQueue->ExecuteCommandLists(ax_safe_cast(lists.size()), lists.data());

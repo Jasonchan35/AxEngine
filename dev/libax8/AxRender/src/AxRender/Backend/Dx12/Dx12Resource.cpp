@@ -197,10 +197,10 @@ void Dx12Resource_ColorBuffer::create(Vec2i size, ColorType colorType) {
 	_create();
 }
 
-void Dx12Resource_DepthBuffer::create(Vec2i size) {
+void Dx12Resource_DepthBuffer::create(Vec2i size, RenderDepthType depthType) {
 	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	_desc.MipLevels = 0;
-	_desc.Format    = DXGI_FORMAT_D32_FLOAT;
+	_desc.Format    = Dx12Util::getDxDepthType(depthType);
 	_desc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 	_desc.Width     = Dx12Util::castUINT(size.x);
 	_desc.Height    = Dx12Util::castUINT(size.y);

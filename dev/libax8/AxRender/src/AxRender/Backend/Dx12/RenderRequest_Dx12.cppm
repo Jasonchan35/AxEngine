@@ -15,7 +15,7 @@ class RenderRequest_Dx12 : public RenderRequest_Backend {
 public:
 	
 	RenderRequest_Dx12(const CreateDesc& desc);
-	
+
 	CommandBuffer_Dx12	_uploadCmdBuf_dx12; // submit earlier than graphCmdBuf
 	CommandBuffer_Dx12	_graphCmdBuf_dx12;
 	CommandBuffer_Dx12	_computeCmdList_dx12;

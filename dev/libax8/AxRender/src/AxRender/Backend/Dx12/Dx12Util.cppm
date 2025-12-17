@@ -48,6 +48,7 @@ struct Dx12Util {
 	static constexpr D3D12_COMPARISON_FUNC			getDxDepthTestOp			(DepthTestOp v);
 
 	static constexpr DXGI_FORMAT		getDxColorType		(ColorType type);
+	static constexpr DXGI_FORMAT		getDxDepthType		(RenderDepthType type);
 	static constexpr DXGI_FORMAT		getDxDataType		(RenderDataType v);
 	static constexpr D3D12_BLEND_OP		getDxBlendOp		(BlendOp		v);
 	static constexpr D3D12_BLEND		getDxBlendFactor	(BlendFactor	v);
@@ -172,6 +173,19 @@ constexpr DXGI_FORMAT Dx12Util::getDxColorType(ColorType type) {
 		case SRC::DXT_BC6h:	return DXGI_FORMAT_BC6H_UF16;
 		case SRC::DXT_BC7:	return DXGI_FORMAT_BC7_UNORM;
 //
+		default: throw Error_Undefined();
+	}
+}
+
+constexpr DXGI_FORMAT Dx12Util::getDxDepthType(RenderDepthType type) {
+	using SRC = RenderDepthType;
+	switch (type) {
+		case SRC::Depth_Float32:				return DXGI_FORMAT_D32_FLOAT;
+		case SRC::Depth_Float32_Stencil_UInt8:	return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case SRC::Depth_UNorm16:				return DXGI_FORMAT_D16_UNORM;
+//		case SRC::Depth_UNorm16_Stencil_UInt8:	return DXGI_FORMAT_D16_UNORM_S8_UINT;
+		case SRC::Depth_UNorm24_Stencil_UInt8:	return DXGI_FORMAT_D24_UNORM_S8_UINT;
+//		case SRC::Stencil_UInt8:				return DXGI_FORMAT_S8_UINT;
 		default: throw Error_Undefined();
 	}
 }

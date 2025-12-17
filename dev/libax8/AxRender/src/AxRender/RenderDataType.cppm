@@ -92,10 +92,10 @@ AX_ENUM_CLASS(AX_RenderPrimitiveType_ENUM_LIST, RenderPrimitiveType, u8)
 	E(None,) \
 	E(Depth_UNorm16,) \
 	E(Depth_Float32,) \
-	E(Depth_Unorm16_Stencil_UInt8,) \
-	E(Depth_Unorm24_Stencil_UInt8,) \
+	/* E(Depth_UNorm16_Stencil_UInt8,) - no in DX12 */  \
+	E(Depth_UNorm24_Stencil_UInt8,) \
 	E(Depth_Float32_Stencil_UInt8,) \
-	E(Stencil_UInt8,) \
+	/* E(Stencil_UInt8,) - no in DX12 */ \
 //----
 AX_ENUM_CLASS(AX_RenderDepthType_ENUM_LIST, RenderDepthType, u8)
 
@@ -229,7 +229,7 @@ public:
 
 class RenderPassDepthAttachmentDesc {
 public:
-	RenderDepthType    depthType         = RenderDepthType::Depth_Unorm24_Stencil_UInt8;
+	RenderDepthType    depthType         = RenderDepthType::Depth_UNorm24_Stencil_UInt8;
 	RenderBufferLoadOp loadOp            = RenderBufferLoadOp::Clear;
 	f32                clearDepthValue   = 1;
 	u32                clearStencilValue = 0;

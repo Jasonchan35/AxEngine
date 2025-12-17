@@ -12,7 +12,7 @@ export namespace ax /*::AxRender*/ {
 class RenderPassColorBuffer_Vk : public RenderPassColorBuffer_Backend {
 	AX_RTTI_INFO(RenderPassColorBuffer_Vk, RenderPassColorBuffer_Backend)
 public:
-	RenderPassColorBuffer_Vk(const CreateDesc& createDesc);
+	RenderPassColorBuffer_Vk(const CreateDesc& desc);
 
 #if AX_DEBUG_NAME
 	virtual void onSetDebugName(const String& name) override {
@@ -30,7 +30,7 @@ public:
 class RenderPassDepthBuffer_Vk : public RenderPassDepthBuffer_Backend {
 	AX_RTTI_INFO(RenderPassDepthBuffer_Vk, RenderPassDepthBuffer_Backend)
 public:
-	RenderPassDepthBuffer_Vk(const CreateDesc& createDesc);
+	RenderPassDepthBuffer_Vk(const CreateDesc& desc);
 
 #if AX_DEBUG_NAME
 	virtual void onSetDebugName(const String& name) override {

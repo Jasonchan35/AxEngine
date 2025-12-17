@@ -273,8 +273,9 @@ VkFormat AX_VkUtil::getVkDepthType(RenderDepthType v) {
 		case SRC::Depth_Float32:				return VK_FORMAT_D32_SFLOAT;
 		case SRC::Depth_Float32_Stencil_UInt8:	return VK_FORMAT_D32_SFLOAT_S8_UINT;
 		case SRC::Depth_UNorm16:				return VK_FORMAT_D16_UNORM;
-		case SRC::Depth_Unorm16_Stencil_UInt8:	return VK_FORMAT_D16_UNORM_S8_UINT;
-		case SRC::Depth_Unorm24_Stencil_UInt8:	return VK_FORMAT_D24_UNORM_S8_UINT;
+//		case SRC::Depth_UNorm16_Stencil_UInt8:	return VK_FORMAT_D16_UNORM_S8_UINT;
+		case SRC::Depth_UNorm24_Stencil_UInt8:	return VK_FORMAT_D24_UNORM_S8_UINT;
+//		case SRC::Depth_Stencil_UInt8:			return VK_FORMAT_S8_UINT;
 		default: throw Error_Undefined();
 	}
 }

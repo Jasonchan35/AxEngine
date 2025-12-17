@@ -11,60 +11,53 @@ import :RenderRequest_Vk;
 namespace ax /*::AxRender*/ {
 
 
-RenderPassColorBuffer_Vk::RenderPassColorBuffer_Vk(const CreateDesc& createDesc) 
-: Base(createDesc)
+RenderPassColorBuffer_Vk::RenderPassColorBuffer_Vk(const CreateDesc& desc) 
+: Base(desc)
 {
-	auto& dev       = Renderer_Vk::s_instance()->device();
-	auto  frameSize = AX_VkUtil::castVkExtent2D(createDesc.frameSize);
-	auto  format    = AX_VkUtil::getVkColorType(createDesc.colorType);
+	auto& dev = Renderer_Vk::s_instance()->device();
 
-	if (createDesc.fromBackBuffer) {
-		auto* renderContext_vk = rttiCast<RenderContext_Vk>(createDesc.fromBackBuffer.renderContext);
+	if (desc.fromBackBuffer) {
+		auto* renderContext_vk = rttiCast<RenderContext_Vk>(desc.fromBackBuffer.renderContext);
 		if (!renderContext_vk) throw Error_Undefined();
 
-		auto* backBuffer = renderContext_vk->_getBackBuffer(createDesc.fromBackBuffer.index);
+		auto* backBuffer = renderContext_vk->_getBackBuffer(desc.fromBackBuffer.index);
 		if (!backBuffer) throw Error_Undefined();
 
 		auto& image = backBuffer->_vkImage;
 		if (image == VK_NULL_HANDLE) throw Error_Undefined();
 		
-		_image.createFromBackBuffer(dev, image, frameSize, format);
+		_image.createFromBackBuffer(dev, image, desc.frameSize, desc.colorType);
 	} else {
 
-		_image.createImage2D(dev, frameSize, format, 1,
-								VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-								VK_IMAGE_LAYOUT_UNDEFINED);
-
+		_image.createImage2D(dev, desc.frameSize, desc.colorType, 1);
 		_mem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 #if AX_DEBUG_NAME
-		_image.setDebugName(Fmt("{}-image",  createDesc.name));
-		_mem.setDebugName(Fmt("{}-devMem", createDesc.name));
+		_image.setDebugName(Fmt("{}-image",  desc.name));
+		_mem.setDebugName(Fmt("{}-devMem", desc.name));
 #endif
 	}
 
 	_view.create(_image);
 
 #if AX_DEBUG_NAME
-	_view.setDebugName(Fmt("{}-view", createDesc.name));
+	_view.setDebugName(Fmt("{}-view", desc.name));
 #endif
 }
 
-RenderPassDepthBuffer_Vk::RenderPassDepthBuffer_Vk(const CreateDesc& createDesc) 
-: Base(createDesc)
+RenderPassDepthBuffer_Vk::RenderPassDepthBuffer_Vk(const CreateDesc& desc) 
+: Base(desc)
 {
 	auto& dev = Renderer_Vk::s_instance()->device();
 
-	auto frameSize = AX_VkUtil::castVkExtent2D(createDesc.frameSize);
-	auto format    = AX_VkUtil::getVkDepthType(createDesc.depthType);
-	_image.createDepthStencil(dev, frameSize, format);
+	_image.createDepthStencil(dev, desc.frameSize, desc.depthType);
 	_mem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	_view.create(_image);
 
 #if AX_DEBUG_NAME
-	_image.setDebugName(Fmt("{}-image", createDesc.name));
-	_mem.setDebugName(Fmt("{}-mem",   createDesc.name));
-	_view.setDebugName(Fmt("{}-view",  createDesc.name));
+	_image.setDebugName(Fmt("{}-image", desc.name));
+	_mem.setDebugName(Fmt("{}-mem",   desc.name));
+	_view.setDebugName(Fmt("{}-view",  desc.name));
 #endif
 }
 

@@ -840,30 +840,23 @@ void AX_VkImage::destroy() {
 	}
 }
 
-AX_VkImage& AX_VkImage::createImage2D(
-	AX_VkDevice& dev,
-	VkExtent2D frameSize,
-	VkFormat format,
-	uint32_t mipLevels,
-	VkImageUsageFlags usage,
-	VkImageLayout initialLayout
-) {
+AX_VkImage& AX_VkImage::createImage2D(AX_VkDevice& dev, Vec2i frameSize, ColorType colorType, Int mipLevels) {
 	VkImageCreateInfo info = {};
 	info.sType			= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	info.pNext			= nullptr;
 	info.imageType		= VK_IMAGE_TYPE_2D;
-	info.format			= format;
-	info.extent.width	= frameSize.width;
-	info.extent.height	= frameSize.height;
+	info.format			= AX_VkUtil::getVkColorType(colorType);
+	info.extent.width	= AX_VkUtil::castUInt32(frameSize.x);
+	info.extent.height	= AX_VkUtil::castUInt32(frameSize.y);
 	info.extent.depth	= 1;
-	info.mipLevels		= mipLevels;
+	info.mipLevels		= AX_VkUtil::castUInt32(mipLevels);
 	info.arrayLayers	= 1;
 	info.samples		= VK_SAMPLE_COUNT_1_BIT;
 	info.tiling			= VK_IMAGE_TILING_OPTIMAL;
-	info.usage			= usage;
+	info.usage			= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	info.sharingMode	= VK_SHARING_MODE_EXCLUSIVE;
 	info.flags			= 0;
-	info.initialLayout	= initialLayout;
+	info.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
 	_create(dev, info);
 
 	return *this;
@@ -871,21 +864,39 @@ AX_VkImage& AX_VkImage::createImage2D(
 
 AX_VkImage& AX_VkImage::createDepthStencil(
 	AX_VkDevice& dev,
-	VkExtent2D frameSize,
-	VkFormat format
+	Vec2i frameSize,
+	RenderDepthType depthType
 ) {
-	return createImage2D(dev, frameSize, format, 1, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_LAYOUT_UNDEFINED);
+	VkImageCreateInfo info = {};
+	info.sType			= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	info.pNext			= nullptr;
+	info.imageType		= VK_IMAGE_TYPE_2D;
+	info.format			= AX_VkUtil::getVkDepthType(depthType);
+	info.extent.width	= AX_VkUtil::castUInt32(frameSize.x);
+	info.extent.height	= AX_VkUtil::castUInt32(frameSize.y);
+	info.extent.depth	= 1;
+	info.mipLevels		= 1;
+	info.arrayLayers	= 1;
+	info.samples		= VK_SAMPLE_COUNT_1_BIT;
+	info.tiling			= VK_IMAGE_TILING_OPTIMAL;
+	info.usage			= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	info.sharingMode	= VK_SHARING_MODE_EXCLUSIVE;
+	info.flags			= 0;
+	info.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
+	_create(dev, info);
+
+	return *this;	
 }
 
-AX_VkImage& AX_VkImage::createFromBackBuffer(AX_VkDevice& dev, VkImage handle, VkExtent2D frameSize, VkFormat format) {
+AX_VkImage& AX_VkImage::createFromBackBuffer(AX_VkDevice& dev, VkImage handle, Vec2i frameSize, ColorType colorType) {
 	destroy();
 	_dev		  = &dev;
 	_handle		  = handle;
 	_isBackBuffer = true;
-	_size.width	  = frameSize.width;
-	_size.height  = frameSize.height;
+	_size.width	  = AX_VkUtil::castUInt32(frameSize.x);
+	_size.height  = AX_VkUtil::castUInt32(frameSize.y);
 	_size.depth	  = 1;
-	_format		  = format;
+	_format		  = AX_VkUtil::getVkColorType(colorType);
 
 	return *this;
 }

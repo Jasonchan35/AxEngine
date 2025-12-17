@@ -42,35 +42,29 @@ void Texture2D_Vk::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	_info = info;
 
 	auto& dev = Renderer_Vk::s_instance()->device();
-	_image.createImage2D(	dev,
-							AX_VkUtil::castVkExtent2D(info.size.xy()),
-							AX_VkUtil::getVkColorType(info.colorType),
-							AX_VkUtil::castUInt32(    info.mipLevels),
-							VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-							VK_IMAGE_LAYOUT_PREINITIALIZED);
-
+	_image.createImage2D(dev, info.size.xy(), info.colorType, info.mipLevels);
 	_devMem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	_view.create(_image);
 
 	auto dataSize = handler.desc.dataSize;
-
 	_uploadBuffer = GpuBuffer_Backend::s_new(AX_ALLOC_REQ, "Texture2D_VK-upload", GpuBufferType::StagingToGpu, dataSize);
-
 	auto map = _uploadBuffer->mapMemory(IntRange(dataSize));
 	handler.readPixelsTo(map.data());
 }
 
 void Texture2D_Vk::_bindImage(RenderRequest_Vk* req, VkDescriptorImageInfo& outInfo) {
+	req->resourcesToKeep.add(this);
 
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Vk>(_uploadBuffer.ptr())) {
-		auto& cmdBuf = req->uploadCmdBuf_vk();
+		req->resourcesToKeep.add(uploadBuf);
 
+		auto& cmdBuf = req->uploadCmdBuf_vk();
 		u32 width  = AX_VkUtil::castUInt32(_info.size.x);
 		u32 height = AX_VkUtil::castUInt32(_info.size.y);
 
 		VkBufferImageCopy region = {};
 		region.bufferOffset						= 0;
-		region.bufferRowLength					= width;
+		region.bufferRowLength					= AX_VkUtil::castUInt32(_info.strideInBytes / _info.pixelSizeInBytes());
 		region.bufferImageHeight				= height;
 		region.imageSubresource.aspectMask		= VK_IMAGE_ASPECT_COLOR_BIT;
 		region.imageSubresource.mipLevel		= 0;
@@ -90,15 +84,11 @@ void Texture2D_Vk::_bindImage(RenderRequest_Vk* req, VkDescriptorImageInfo& outI
 		_image.setLayout(	cmdBuf,
 							VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 							VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-
-		req->resourcesToKeep.add(uploadBuf);
-
+		
 		_uploadBuffer = nullptr;
 	}
 
 //----
-	req->resourcesToKeep.add(this);
-
 	outInfo.imageView	= _view;
 	outInfo.imageLayout	= _image.layout();
 	outInfo.sampler		= VK_NULL_HANDLE;

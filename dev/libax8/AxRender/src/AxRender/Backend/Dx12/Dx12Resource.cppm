@@ -42,6 +42,8 @@ public:
 	D3D12_RESOURCE_STATES resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state);
 
 	operator ID3D12Resource*() { return _d3dResource; }
+
+	D3D12_RESOURCE_DESC&	desc() { return _desc; }
 	
 protected:
 	Dx12ResourceBase();
@@ -65,7 +67,7 @@ public:
 
 class Dx12Resource_DepthBuffer : public Dx12ResourceBase {
 public:
-	void create(Vec2i size);
+	void create(Vec2i size, RenderDepthType depthType);
 };
 
 class Dx12Resource_GpuBuffer : public Dx12ResourceBase {

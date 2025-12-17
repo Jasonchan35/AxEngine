@@ -23,7 +23,7 @@ RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): 
 RenderPassDepthBuffer_Dx12::RenderPassDepthBuffer_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
-	_resource_dx12.create(desc.frameSize);
+	_resource_dx12.create(desc.frameSize, desc.depthType);
 	_descHeap_dx12.create(1);
 	_view_dx12 = _descHeap_dx12.createView(0, _resource_dx12);
 }

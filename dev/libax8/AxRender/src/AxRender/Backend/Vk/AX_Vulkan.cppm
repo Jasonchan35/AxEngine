@@ -438,15 +438,9 @@ public:
 
 	void destroy();
 
-	AX_VkImage& createImage2D(	AX_VkDevice& dev,
-								VkExtent2D frameSize,
-								VkFormat format,
-								uint32_t mipLevels,
-								VkImageUsageFlags usage,
-								VkImageLayout initialLayout);
-
-	AX_VkImage& createDepthStencil(AX_VkDevice& dev, VkExtent2D frameSize, VkFormat format = VK_FORMAT_D32_SFLOAT);
-	AX_VkImage& createFromBackBuffer(AX_VkDevice& dev, VkImage handle, VkExtent2D frameSize, VkFormat format);
+	AX_VkImage& createImage2D(AX_VkDevice& dev, Vec2i frameSize, ColorType colorType, Int mipLevels);
+	AX_VkImage& createDepthStencil(AX_VkDevice& dev, Vec2i frameSize, RenderDepthType depthType);
+	AX_VkImage& createFromBackBuffer(AX_VkDevice& dev, VkImage handle, Vec2i frameSize, ColorType colorType);
 
 	void setLayout(AX_VkCommandBuffer& cmdBuffer, VkImageLayout newLayout, VkPipelineStageFlags newStage);
 
