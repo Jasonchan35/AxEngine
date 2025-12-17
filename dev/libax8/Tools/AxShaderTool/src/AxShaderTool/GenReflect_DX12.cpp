@@ -205,8 +205,8 @@ void GenReflect_Dx12::compile(StrView	   outFilename,
 
 	if (0) {
 		hr = _dxc->Preprocess(	sourceBlob, filenameW.c_str(), 
-								outArgs.data(),    ax_safe_cast(outArgs.size()),
-								outDefines.data(), ax_safe_cast(outDefines.size()),
+								outArgs.data(),    ax_safe_cast_from(outArgs.size()),
+								outDefines.data(), ax_safe_cast_from(outDefines.size()),
 								&includeHandler, result.ptrForInit());
 		throwIfError(hr);
 		hr = result->GetStatus(&resultStatus);
@@ -224,8 +224,8 @@ void GenReflect_Dx12::compile(StrView	   outFilename,
 	hr = _dxc->CompileWithDebug(	sourceBlob,	filenameW.c_str(),
 									entryFuncW.c_str(),
 									profileW.c_str(),
-									outArgs.data(),		ax_safe_cast(outArgs.size()),
-									outDefines.data(),	ax_safe_cast(outDefines.size()),
+									outArgs.data(),		ax_safe_cast_from(outArgs.size()),
+									outDefines.data(),	ax_safe_cast_from(outDefines.size()),
 									&includeHandler, result.ptrForInit(),
 									nullptr, debugBlob.ptrForInit());
 	throwIfError(hr);
@@ -410,10 +410,10 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		checkError(hr);
 
 		outCB.name = StrView_c_str(bufDesc.Name);
-		outCB.bindPoint		 = ax_safe_cast(resDesc.BindPoint);
-		outCB.bindCount		 = ax_safe_cast(resDesc.BindCount);
-		outCB.paramSpaceType = ax_safe_cast(resDesc.Space);
-		outCB.dataSize		 = ax_safe_cast(bufDesc.Size);
+		outCB.bindPoint		 = ax_safe_cast_from(resDesc.BindPoint);
+		outCB.bindCount		 = ax_safe_cast_from(resDesc.BindCount);
+		outCB.paramSpaceType = ax_safe_cast_from(resDesc.Space);
+		outCB.dataSize		 = ax_safe_cast_from(bufDesc.Size);
 
 		outCB.variables.ensureCapacity(bufDesc.Variables);
 		for (UINT j=0; j<bufDesc.Variables; j++) {
@@ -432,7 +432,7 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 
 			auto& outVar  = outCB.variables.emplaceBack();
 			outVar.name   = StrView_c_str(varDesc.Name);
-			outVar.offset = ax_safe_cast(varDesc.StartOffset);
+			outVar.offset = ax_safe_cast_from(varDesc.StartOffset);
 					
 			//------------------------------
 			TempString dataType;
@@ -497,9 +497,9 @@ void GenReflect_Dx12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 		auto& outTex = outInfo.textures.emplaceBack();
 		outTex.stageFlags = outInfo.stageFlags;
 		outTex.name = StrView_c_str(resDesc.Name);
-		outTex.bindPoint      = ax_safe_cast(resDesc.BindPoint);
-		outTex.bindCount      = ax_safe_cast(resDesc.BindCount);
-		outTex.paramSpaceType = ax_safe_cast(resDesc.Space);
+		outTex.bindPoint      = ax_safe_cast_from(resDesc.BindPoint);
+		outTex.bindCount      = ax_safe_cast_from(resDesc.BindCount);
+		outTex.paramSpaceType = ax_safe_cast_from(resDesc.Space);
 
 		switch (resDesc.Dimension) {
 			case D3D_SRV_DIMENSION_TEXTURE1D:		outTex.dataType = RenderDataType::Texture1D;   break;
@@ -540,9 +540,9 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 		outSampler.stageFlags = outInfo.stageFlags;
 		outSampler.dataType = RenderDataType::SamplerState;
 		outSampler.name = StrView_c_str(resDesc.Name);
-		outSampler.bindPoint      = ax_safe_cast(resDesc.BindPoint);
-		outSampler.bindCount      = ax_safe_cast(resDesc.BindCount);
-		outSampler.paramSpaceType = ax_safe_cast(resDesc.Space);
+		outSampler.bindPoint      = ax_safe_cast_from(resDesc.BindPoint);
+		outSampler.bindCount      = ax_safe_cast_from(resDesc.BindCount);
+		outSampler.paramSpaceType = ax_safe_cast_from(resDesc.Space);
 	}
 }
 
@@ -562,9 +562,9 @@ void GenReflect_Dx12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, I
 		sbuf.stageFlags = outInfo.stageFlags;
 		sbuf.dataType = RenderDataType::StorageBuffer;
 		sbuf.name = StrView_c_str(resDesc.Name);
-		sbuf.bindPoint      = ax_safe_cast(resDesc.BindPoint);
-		sbuf.bindCount      = ax_safe_cast(resDesc.BindCount);
-		sbuf.paramSpaceType = ax_safe_cast(resDesc.Space);
+		sbuf.bindPoint      = ax_safe_cast_from(resDesc.BindPoint);
+		sbuf.bindCount      = ax_safe_cast_from(resDesc.BindCount);
+		sbuf.paramSpaceType = ax_safe_cast_from(resDesc.Space);
 
 		sbuf.rawUAV = (resDesc.Type == D3D_SIT_UAV_RWBYTEADDRESS);
 	}

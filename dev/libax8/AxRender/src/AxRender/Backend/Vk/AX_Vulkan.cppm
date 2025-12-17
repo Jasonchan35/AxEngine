@@ -203,30 +203,30 @@ private:
 	VkInstance	_instance = VK_NULL_HANDLE;
 };
 
+struct AX_VkWaitSemaphores {
+	AX_VkWaitSemaphores() = default;
+	AX_VkWaitSemaphores(VkSemaphore sem, VkPipelineStageFlags dstStage) { add(sem, dstStage); }
+
+	void add(VkSemaphore sem, VkPipelineStageFlags dstStage) {
+		_semaphores.emplaceBack(sem);
+		_dstStageFlags.emplaceBack(dstStage);
+	}
+
+	Span<VkSemaphore>			semaphores() const	  { return _semaphores; }
+	Span<VkPipelineStageFlags>	dstStageFlags() const { return _dstStageFlags; }
+
+private:
+	static constexpr Int N = 16;
+	Array<VkSemaphore,			N>	_semaphores;
+	Array<VkPipelineStageFlags, N>	_dstStageFlags;
+};
+
 class AX_VkDeviceQueue : public NonCopyable {
 public:
 	const VkQueue& handle() { return _handle; }
 	operator const VkQueue&() { return _handle; }
 
-	struct WaitSemaphores {
-		WaitSemaphores() = default;
-		WaitSemaphores(VkSemaphore sem, VkPipelineStageFlags dstStage) { add(sem, dstStage); }
-
-		void add(VkSemaphore sem, VkPipelineStageFlags dstStage) {
-			_semaphores.emplaceBack(sem);
-			_dstStageFlags.emplaceBack(dstStage);
-		}
-
-		Span<VkSemaphore>			semaphores() const	  { return _semaphores; }
-		Span<VkPipelineStageFlags>	dstStageFlags() const { return _dstStageFlags; }
-
-	private:
-		static constexpr Int N = 16;
-		Array<VkSemaphore,			N>	_semaphores;
-		Array<VkPipelineStageFlags, N>	_dstStageFlags;
-	};
-
-	void submit(	const WaitSemaphores&		waitSemaphores,
+	void submit(	const AX_VkWaitSemaphores&	waitSemaphores,
 					Span<VkCommandBuffer>		commandBuffers,
 					Span<VkSemaphore>			signalSemaphores,
 					VkFence						fenceToSignal = VK_NULL_HANDLE);

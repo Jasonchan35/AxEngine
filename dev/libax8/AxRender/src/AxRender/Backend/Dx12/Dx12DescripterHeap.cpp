@@ -12,7 +12,7 @@ void Dx12DescripterHeap_Base::destroy() {
 }
 
 void Dx12DescripterHeap_Base::_create(Int size, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
-	UINT numDescriptors = ax_safe_cast(size);
+	UINT numDescriptors = ax_safe_cast_from(size);
 	if (numDescriptors <= 0) {
 		destroy();
 		return;
@@ -25,7 +25,7 @@ void Dx12DescripterHeap_Base::_create(Int size, D3D12_DESCRIPTOR_HEAP_TYPE type,
 	auto* d3dDevice = renderer->d3dDevice();
 	_stride = d3dDevice->GetDescriptorHandleIncrementSize(type);
 
-	_desc.NumDescriptors = ax_safe_cast(numDescriptors);
+	_desc.NumDescriptors = ax_safe_cast_from(numDescriptors);
 	_desc.Type  = type;
 	_desc.Flags = flags;
 	auto hr = d3dDevice->CreateDescriptorHeap(&_desc, IID_PPV_ARGS(_d3dHeap.ptrForInit()));

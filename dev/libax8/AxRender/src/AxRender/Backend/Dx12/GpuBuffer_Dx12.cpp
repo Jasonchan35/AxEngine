@@ -23,10 +23,10 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	// auto dstOldState = dstRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	cmdList_dx->CopyBufferRegion(dstRes,
-	                             ax_safe_cast(dstOffset),
+	                             ax_safe_cast_from(dstOffset),
 	                             srcRes,
-	                             ax_safe_cast(srcRange.begin()),
-	                             ax_safe_cast(srcRange.size()));
+	                             ax_safe_cast_from(srcRange.begin()),
+	                             ax_safe_cast_from(srcRange.size()));
 
 	// srcRes.resourceBarrier(cmdList_dx, srcOldState);
 	// dstRes.resourceBarrier(cmdList_dx, dstOldState);

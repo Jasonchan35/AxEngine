@@ -50,10 +50,28 @@ DST ax_safe_cast_(const SRC& src) {
 }
 
 template<class SRC>
-struct ax_safe_cast {
+struct ax_safe_cast_from {
 	const SRC& src;
-	constexpr ax_safe_cast(const SRC& src_) : src(src_) {}
+	constexpr ax_safe_cast_from(const SRC& src_) : src(src_) {}
 	template <typename DST>	constexpr operator DST() const { return ax_safe_cast_<DST>(src); }
 };
+
+template<class SRC>
+struct ax_static_cast_from {
+	SRC& src;
+	constexpr ax_static_cast_from(SRC& src_) : src(src_) {}
+	template <typename DST>	constexpr operator DST() const { return static_cast<DST>(src); }
+};
+
+template<class SRC>
+struct ax_reinterpret_cast_from {
+	SRC& src;
+	constexpr ax_reinterpret_cast_from(SRC& src_) : src(src_) {}
+	template <typename DST>	constexpr operator DST() const { return reinterpret_cast<DST>(src); }
+};
+
+
+
+
 
 } // namespace

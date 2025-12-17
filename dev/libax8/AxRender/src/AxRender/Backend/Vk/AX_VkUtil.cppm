@@ -34,22 +34,22 @@ public:
 	static bool formatHasDepth	(VkFormat f);
 	static bool formatHasStencil(VkFormat f);
 
-	static uint32_t		castUInt32(Int v) 		{ return ax_safe_cast(v); }
-	static VkDeviceSize	castVkDeviceSize(Int v)	{ return ax_safe_cast(v); }
+	static uint32_t		castUInt32(Int v) 		{ return ax_safe_cast_from(v); }
+	static VkDeviceSize	castVkDeviceSize(Int v)	{ return ax_safe_cast_from(v); }
 
 	template<class R>
 	static VkOffset2D	castVkOffset2D(const Vec2_<R>& v) {
 		VkOffset2D o;
-		o.x = ax_safe_cast(v.x);
-		o.y = ax_safe_cast(v.y);
+		o.x = ax_safe_cast_from(v.x);
+		o.y = ax_safe_cast_from(v.y);
 		return o;
 	}
 
 	template<class R>
 	static VkExtent2D	castVkExtent2D(const Vec2_<R>& v) {
 		VkExtent2D o;
-		o.width  = ax_safe_cast(v.x);
-		o.height = ax_safe_cast(v.y);
+		o.width  = ax_safe_cast_from(v.x);
+		o.height = ax_safe_cast_from(v.y);
 		return o;
 	}
 
@@ -61,17 +61,17 @@ public:
 		return o;
 	}
 
-	static Vec2i castVec2i(const VkOffset2D& r) { return Vec2i(ax_safe_cast(r.x), ax_safe_cast(r.y)); }
-	static Vec2f castVec2f(const VkOffset2D& r) { return Vec2f(ax_safe_cast(r.x), ax_safe_cast(r.y)); }
+	static Vec2i castVec2i(const VkOffset2D& r) { return Vec2i(ax_safe_cast_from(r.x), ax_safe_cast_from(r.y)); }
+	static Vec2f castVec2f(const VkOffset2D& r) { return Vec2f(ax_safe_cast_from(r.x), ax_safe_cast_from(r.y)); }
 
-	static Vec2i castVec2i(const VkExtent2D& r) { return Vec2i(ax_safe_cast(r.width), ax_safe_cast(r.height)); }
-	static Vec2f castVec2f(const VkExtent2D& r) { return Vec2f(ax_safe_cast(r.width), ax_safe_cast(r.height)); }
+	static Vec2i castVec2i(const VkExtent2D& r) { return Vec2i(ax_safe_cast_from(r.width), ax_safe_cast_from(r.height)); }
+	static Vec2f castVec2f(const VkExtent2D& r) { return Vec2f(ax_safe_cast_from(r.width), ax_safe_cast_from(r.height)); }
 
-	static Vec3i castVec3i(const VkOffset3D& r) { return Vec3i(ax_safe_cast(r.x), ax_safe_cast(r.y), ax_safe_cast(r.z)); }
-	static Vec3f castVec3f(const VkOffset3D& r) { return Vec3f(ax_safe_cast(r.x), ax_safe_cast(r.y), ax_safe_cast(r.z)); }
+	static Vec3i castVec3i(const VkOffset3D& r) { return Vec3i(ax_safe_cast_from(r.x), ax_safe_cast_from(r.y), ax_safe_cast_from(r.z)); }
+	static Vec3f castVec3f(const VkOffset3D& r) { return Vec3f(ax_safe_cast_from(r.x), ax_safe_cast_from(r.y), ax_safe_cast_from(r.z)); }
 	
-	static Vec3i castVec3i(const VkExtent3D& r) { return Vec3i(ax_safe_cast(r.width), ax_safe_cast(r.height), ax_safe_cast(r.depth)); }
-	static Vec3f castVec3f(const VkExtent3D& r) { return Vec3f(ax_safe_cast(r.width), ax_safe_cast(r.height), ax_safe_cast(r.depth)); }
+	static Vec3i castVec3i(const VkExtent3D& r) { return Vec3i(ax_safe_cast_from(r.width), ax_safe_cast_from(r.height), ax_safe_cast_from(r.depth)); }
+	static Vec3f castVec3f(const VkExtent3D& r) { return Vec3f(ax_safe_cast_from(r.width), ax_safe_cast_from(r.height), ax_safe_cast_from(r.depth)); }
 	
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wold-style-cast")
 	static u32 makeApiVersion(u32 variant, u32 major, u32 minor, u32 patch) { return VK_MAKE_API_VERSION(variant, major, minor, patch); }

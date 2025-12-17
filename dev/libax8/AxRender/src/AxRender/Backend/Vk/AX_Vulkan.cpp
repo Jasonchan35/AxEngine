@@ -488,7 +488,7 @@ void AX_VkDevice::_setObjectDebugTag(VkObjectType objectType, void* objectHandle
 	info.objectType		= objectType;
 	info.objectHandle	= reinterpret_cast<u64>(objectHandle);
 	info.tagName		= tagName;
-	info.tagSize		= ax_safe_cast(tag.size());
+	info.tagSize		= ax_safe_cast_from(tag.size());
 	info.pTag			= tag.data();
 
 	auto* ext = AX_VkExtProcList::s_instance();
@@ -691,7 +691,7 @@ bool AX_VkTimelineSemaphore::wait(u64 value, const Nanoseconds& timeout) {
 	info.semaphoreCount		 = 1;
 	info.pSemaphores		 = &_handle;
 	info.pValues			 = &value;
-	auto err				 = vkWaitSemaphores(*_dev, &info, ax_safe_cast(timeout.value));
+	auto err				 = vkWaitSemaphores(*_dev, &info, ax_safe_cast_from(timeout.value));
 	if (err == VK_TIMEOUT) return false;
 	if (err == VK_SUCCESS) return true;
 
@@ -1138,7 +1138,7 @@ AX_VkDeviceMemory& AX_VkDeviceMemory::createForImage(AX_VkImage& img, VkMemoryPr
 
 	auto req = img.getMemoryRequirements();
 	auto* dev = img.device();
-	_create(*dev, ax_safe_cast(req.size), req.memoryTypeBits, requireMask);
+	_create(*dev, ax_safe_cast_from(req.size), req.memoryTypeBits, requireMask);
 
 	auto err = vkBindImageMemory(*dev, img, _handle, 0);
 	AX_VkUtil::throwIfError(err);
@@ -1151,7 +1151,7 @@ AX_VkDeviceMemory& AX_VkDeviceMemory::createForBuffer(AX_VkBuffer& buf, VkMemory
 
 	auto req = buf.getMemoryRequirements();
 	auto* dev = buf.device();
-	_create(*dev, ax_safe_cast(req.size), req.memoryTypeBits, requireMask);
+	_create(*dev, ax_safe_cast_from(req.size), req.memoryTypeBits, requireMask);
 
 	auto err = vkBindBufferMemory(*dev, buf, _handle, 0);
 	AX_VkUtil::throwIfError(err);
@@ -1176,7 +1176,7 @@ MutByteSpan AX_VkDeviceMemory::_mapMemory(IntRange range, VkMemoryMapFlags flags
 
 	auto err = vkMapMemory(*_dev, _handle, offset, size, flags, &outPtr);
 	AX_VkUtil::throwIfError(err);
-	return MutByteSpan(static_cast<Byte*>(outPtr), ax_safe_cast(size));
+	return MutByteSpan(static_cast<Byte*>(outPtr), ax_safe_cast_from(size));
 }
 
 void AX_VkDeviceMemory::_create(
@@ -1358,7 +1358,7 @@ void AX_VkShaderModule::create(AX_VkDevice& dev, ByteSpan byteCode) {
 	info.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	info.pNext		= nullptr;
 	info.flags		= 0;
-	info.codeSize	= ax_safe_cast(byteCode.size()); 
+	info.codeSize	= ax_safe_cast_from(byteCode.size()); 
 	info.pCode		= reinterpret_cast<const uint32_t*>(byteCode.data());
 
 	auto err = vkCreateShaderModule(dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
@@ -1503,7 +1503,7 @@ void AX_VkDeviceQueue::submit(Span<VkSubmitInfo> infos, VkFence fenceToSignal) {
 }
 
 void AX_VkDeviceQueue::submit(
-	const WaitSemaphores&		waitSemaphores,
+	const AX_VkWaitSemaphores&	waitSemaphores,
 	Span<VkCommandBuffer>		commandBuffers,
 	Span<VkSemaphore>			signalSemaphores,
 	VkFence						fenceToSignal /*= VK_NULL_HANDLE*/
@@ -1577,7 +1577,7 @@ void AX_VkDeviceQueue::_present(
 
 void AX_VkDeviceQueue::present(VkSemaphore waitSemaphore, VkSwapchainKHR swapchain, Span<Int> imageIndexInSwapchain) {
 	Array<u32, 16>	tmp;
-	tmp.appendRange(imageIndexInSwapchain, [](auto& e) -> u32 { return ax_safe_cast(e); });
+	tmp.appendRange(imageIndexInSwapchain, [](auto& e) -> u32 { return ax_safe_cast_from(e); });
 	present(waitSemaphore, swapchain, tmp);
 }
 

@@ -11,7 +11,7 @@ RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): 
 	if (desc.fromBackBuffer) {
 		auto* renderContext_dx12 = rttiCastCheck<RenderContext_Dx12>(desc.fromBackBuffer.renderContext);
 		if (!renderContext_dx12) throw Error_Undefined();
-		UINT backBufIndex = ax_safe_cast(desc.fromBackBuffer.index);
+		UINT backBufIndex = ax_safe_cast_from(desc.fromBackBuffer.index);
 		_resource_dx12.createFromSwapChain(renderContext_dx12->_swapChain_dx12, backBufIndex);
 	} else {
 		_resource_dx12.create(desc.frameSize, desc.colorType);

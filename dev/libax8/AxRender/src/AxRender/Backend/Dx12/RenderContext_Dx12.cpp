@@ -25,11 +25,11 @@ void RenderContext_Dx12::_createSwapChain() {
 
 	{	// create swap chain
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-		swapChainDesc.Width                 = ax_safe_cast(frameSize.x);
-		swapChainDesc.Height                = ax_safe_cast(frameSize.y);
+		swapChainDesc.Width                 = ax_safe_cast_from(frameSize.x);
+		swapChainDesc.Height                = ax_safe_cast_from(frameSize.y);
 		swapChainDesc.Format                = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.BufferCount           = ax_safe_cast(_swapChainDesc.backBufferCount);
+		swapChainDesc.BufferCount           = ax_safe_cast_from(_swapChainDesc.backBufferCount);
 		swapChainDesc.SampleDesc.Count      = 1;
 		swapChainDesc.SampleDesc.Quality    = 0;
 		swapChainDesc.Scaling               = DXGI_SCALING_STRETCH;
@@ -54,8 +54,7 @@ void RenderContext_Dx12::_createSwapChain() {
 
 void RenderContext_Dx12::_createBackBuffers() {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-	auto hr = _swapChain_dx12->GetDesc1(&swapChainDesc);
-	Dx12Util::throwIfError(hr);
+	_swapChain_dx12.getDesc(&swapChainDesc);
 
 	auto frameSize = Vec2i(swapChainDesc.Width, swapChainDesc.Height);
 	
@@ -66,7 +65,7 @@ void RenderContext_Dx12::_createBackBuffers() {
 	
 	_depthBuffer_dx12 = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc); 
 
-	Int bufferCount = ax_safe_cast(swapChainDesc.BufferCount);
+	Int bufferCount = ax_safe_cast_from(swapChainDesc.BufferCount);
 	_backBuffers_dx12.resize(bufferCount);
 	
 	for (Int i = 0; i < bufferCount; ++i) {
@@ -133,7 +132,7 @@ void RenderContext_Dx12::onPostCreate(const CreateDesc& desc) {
 void RenderContext_Dx12::onSetFrameSize(const Vec2i& s) {
 	Base::onSetFrameSize(s);
 	if (!_hwnd) return;
-	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast(s.x), ax_safe_cast(s.y), 0);
+	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast_from(s.x), ax_safe_cast_from(s.y), 0);
 
 	// release resource before resize swap chain
 	for (auto& backBuffer : _backBuffers_dx12) {
@@ -141,8 +140,7 @@ void RenderContext_Dx12::onSetFrameSize(const Vec2i& s) {
 	}
 
 	Vec2i frameSize = Math::max(_minFrameSize, s);
-	auto hr = _swapChain_dx12->ResizeBuffers(0, ax_safe_cast(frameSize.x), ax_safe_cast(frameSize.y), DXGI_FORMAT_UNKNOWN, 0);
-	Dx12Util::throwIfError(hr);
+	_swapChain_dx12.resizeBuffers(0, frameSize, DXGI_FORMAT_UNKNOWN, 0);
 
 	_createBackBuffers();
 }
@@ -153,11 +151,11 @@ LRESULT WINAPI RenderContext_Dx12::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam,
 			auto cs = reinterpret_cast<CREATESTRUCT*>(lParam);
 			auto* thisObj = static_cast<This*>(cs->lpCreateParams);
 			thisObj->_hwnd = hwnd;
-			::SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)thisObj);
+			::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(thisObj));
 		}break;
 
 		case WM_DESTROY: {
-			::SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)nullptr);
+			::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nullptr));
 		}break;
 
 		case WM_PAINT: {
@@ -189,7 +187,7 @@ LRESULT WINAPI RenderContext_Dx12::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam,
 
 RenderPass_Backend* RenderContext_Dx12::onAcquireBackBufferRenderPass(RenderRequest* req) {
 	if (!_swapChain_dx12) return nullptr;
-	Int backBuffIndex = ax_safe_cast(_swapChain_dx12->GetCurrentBackBufferIndex());
+	Int backBuffIndex = _swapChain_dx12.getCurrentBackBufferIndex();
 	auto* backBuffer = _getBackBuffer(backBuffIndex);
 	if (!backBuffer) return nullptr;
 	return backBuffer->_renderPass_dx12;
@@ -199,14 +197,18 @@ void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 	if (!req) { AX_ASSERT(false); return; }
 
-	Array<ID3D12CommandList*, 4> lists;
-	lists.emplaceBack(req->_uploadCmdBuf_dx12);
-	lists.emplaceBack(req->_graphCmdBuf_dx12);
-	
-	_graphCmdQueue->ExecuteCommandLists(ax_safe_cast(lists.size()), lists.data());
+	_graphCmdQueue.signal(req->_fence, 0);
 
-	auto hr = _swapChain_dx12->Present(_swapChainDesc.vsync ? 1 : 0, 0);
-	Dx12Util::throwIfError(hr);
+	ID3D12CommandList* lists[] = {
+		req->_uploadCmdBuf_dx12,
+		req->_graphCmdBuf_dx12
+	};
+	_graphCmdQueue.execCmdList(lists);
+	_graphCmdQueue.signal(req->_fence, req->_cpuEvent, 1);
+
+	req->_cpuEvent.wait();
+	
+	_swapChain_dx12.present(_swapChainDesc.vsync ? 1 : 0, 0);
 }
 
 void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {
@@ -242,10 +244,10 @@ void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {
 	DWORD dwStyle = parentHwnd ? WS_CHILD : WS_POPUP;
 	DWORD dwExStyle = 0;
 	_hwnd = ::CreateWindowExW(dwExStyle, kClassName, kClassName, dwStyle,
-								ax_safe_cast(rc.x),
-								ax_safe_cast(rc.y),
-								ax_safe_cast(rc.w),
-								ax_safe_cast(rc.h),
+								ax_safe_cast_from(rc.x),
+								ax_safe_cast_from(rc.y),
+								ax_safe_cast_from(rc.w),
+								ax_safe_cast_from(rc.h),
 								parentHwnd, nullptr, hInstance, this);
 	if (!_hwnd) {
 		throw Error_Undefined();

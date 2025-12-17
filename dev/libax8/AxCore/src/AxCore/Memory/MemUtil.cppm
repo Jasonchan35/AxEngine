@@ -96,7 +96,7 @@ void MemUtil::rawCopy(void* dst, const void* src, Int n) {
 	}
 
 	if (n > k_size_to_use_system_memcpy) {
-		::memcpy( dst, src, ax_safe_cast(n) );
+		::memcpy( dst, src, ax_safe_cast_from(n) );
 		return;
 	}
 	using Block = u64;

@@ -234,11 +234,11 @@ template<class PARAM>
 void GenReflect_Vk::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	dst.stageFlags = outInfo.stageFlags;
 	dst.name  = StrView_c_str(binding->name);
-	dst.paramSpaceType = ax_safe_cast(binding->set);
-	dst.bindPoint = ax_safe_cast(binding->binding);
+	dst.paramSpaceType = ax_safe_cast_from(binding->set);
+	dst.bindPoint = ax_safe_cast_from(binding->binding);
 
 	if (binding->array.dims_count == 1) {
-		dst.bindCount = ax_safe_cast(binding->array.dims[0]);
+		dst.bindCount = ax_safe_cast_from(binding->array.dims[0]);
 	} else {
 		dst.bindCount = 1;
 	}
@@ -273,7 +273,7 @@ void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDe
 	dst.name = StrView_c_str(typeDesc->type_name);
 
 	auto& block = binding->block;
-	dst.dataSize = ax_safe_cast(block.size);
+	dst.dataSize = ax_safe_cast_from(block.size);
 
 	u32 memberCount = block.member_count;
 	for (u32 i = 0; i < memberCount; i++) {

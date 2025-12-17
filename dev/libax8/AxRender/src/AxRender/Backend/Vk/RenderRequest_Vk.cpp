@@ -17,19 +17,22 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 	auto& dev = renderer->device();
 
 	_completedFence_vk.create(dev, true);
-	_graphSemaphore_vk.create(dev);
 	_imageAcquiredSemaphore_vk.create(dev);
 
 	_uploadCmdBuf_vk.create(dev, dev.graphQueueFamilyIndex());
+	_uploadCmdSem_vk.create(dev);
+	
 	_graphCmdBuf_vk.create(dev, dev.graphQueueFamilyIndex());
+	_graphCmdSem_vk.create(dev);
 
 #if AX_DEBUG_NAME
 	auto debugIndex = desc.index;
 	        _completedFence_vk.setDebugName(Fmt("RenderReq_{}-completedFence",			debugIndex));
-	        _graphSemaphore_vk.setDebugName(Fmt("RenderReq_{}-graphSemaphore",			debugIndex));
 	_imageAcquiredSemaphore_vk.setDebugName(Fmt("RenderReq_{}-imageAcquiredSemaphore",	debugIndex));
 	          _uploadCmdBuf_vk.setDebugName(Fmt("RenderReq_{}-uploadCmdBuf",			debugIndex));
+	          _uploadCmdSem_vk.setDebugName(Fmt("RenderReq_{}-uploadCmdSem",			debugIndex));
 	           _graphCmdBuf_vk.setDebugName(Fmt("RenderReq_{}-graphCmdBuf",				debugIndex));
+	           _graphCmdSem_vk.setDebugName(Fmt("RenderReq_{}-graphCmdSem",				debugIndex));
 #endif
 }
 
@@ -129,7 +132,7 @@ void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& cmd) {
 
 	} else if (auto* ib = rttiCastCheck<GpuBuffer_Vk>(cmd.indexBuffer)) {
 		vkCmdBindIndexBuffer(_graphCmdBuf_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(cmd.indexType));
-		vkCmdDrawIndexed(_graphCmdBuf_vk, indexCount, instanceCount, indexStart, ax_safe_cast(vertexStart), instanceStart);
+		vkCmdDrawIndexed(_graphCmdBuf_vk, indexCount, instanceCount, indexStart, ax_safe_cast_from(vertexStart), instanceStart);
 
 	} else {
 		AX_ASSERT(false);

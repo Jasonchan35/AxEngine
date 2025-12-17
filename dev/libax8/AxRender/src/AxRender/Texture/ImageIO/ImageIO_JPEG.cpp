@@ -67,7 +67,7 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 	_srcMgr.resync_to_restart = jpeg_resync_to_restart; // use default method
 	_srcMgr.term_source = s_term_source;
 
-	_srcMgr.bytes_in_buffer = ax_safe_cast(inData.size());
+	_srcMgr.bytes_in_buffer = ax_safe_cast_from(inData.size());
 	_srcMgr.next_input_byte = reinterpret_cast<const JOCTET*>(inData.data());
 
 	_cinfo.src = &_srcMgr;
@@ -90,8 +90,8 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 	
 	_cinfo.out_color_space = JCS_RGB;
 
-	Int width  = ax_safe_cast(_cinfo.output_width);
-	Int height = ax_safe_cast(_cinfo.output_height);
+	Int width  = ax_safe_cast_from(_cinfo.output_width);
+	Int height = ax_safe_cast_from(_cinfo.output_height);
 
 	if (width <= 0 || height <= 0) {
 		throw Error_Undefined("jpeg image size is 0");

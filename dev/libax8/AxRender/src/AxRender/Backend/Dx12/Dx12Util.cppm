@@ -32,13 +32,9 @@ struct Dx12Util {
 	static constexpr void throwIfError	(HRESULT hr, ID3DBlob* error);
 
 	static constexpr void assertIfError	(HRESULT hr) { if (!checkError(hr)) { reportError(hr); AX_ASSERT(false); } }
-	static inline	 void reportError	(HRESULT hr);
+	static           void reportError	(HRESULT hr);
 
-	static constexpr bool checkError(HRESULT hr) {
-		if (FAILED(hr))
-			return false;
-		return true;
-	}
+	static constexpr bool checkError	(HRESULT hr) { return SUCCEEDED(hr); }
 	
 	static constexpr D3D12_PRIMITIVE_TOPOLOGY		getDxPrimitiveTopology		(RenderPrimitiveType t);
 	static constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE	getDxPrimitiveTopologyType	(RenderPrimitiveType t);
@@ -58,24 +54,11 @@ struct Dx12Util {
 	
 	static constexpr StrView	errorToStrView(ID3DBlob* blob);
 
-	static constexpr UINT		castUINT	(Int v) { return ax_safe_cast(v); }
-	static constexpr UINT16	castUINT16	(Int v) { return ax_safe_cast(v); }
-	static constexpr UINT64	castUINT64	(Int v) { return ax_safe_cast(v); }
+	static constexpr UINT		castUINT	(Int v) { return ax_safe_cast_from(v); }
+	static constexpr UINT16		castUINT16	(Int v) { return ax_safe_cast_from(v); }
+	static constexpr UINT64		castUINT64	(Int v) { return ax_safe_cast_from(v); }
+	static constexpr DWORD		castDWORD	(Int v) { return ax_safe_cast_from(v); }
 };
-
-inline void Dx12Util::reportError(HRESULT hr) {
-	_com_error err(hr);
-	auto errMsg = StrView_c_str(err.ErrorMessage());
-	AX_LOG_ERROR("HRESULT = {:x} {}", static_cast<u32>(hr), errMsg); 
-	
-#if 0 && _DEBUG
-	auto* d = renderer()->dxgiDebug();
-	if (d) {
-		d->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-	}
-#endif
-	AX_ASSERT(false);
-}
 
 constexpr void Dx12Util::throwIfError(HRESULT hr, ID3DBlob* error) {
 	if (!checkError(hr)) {

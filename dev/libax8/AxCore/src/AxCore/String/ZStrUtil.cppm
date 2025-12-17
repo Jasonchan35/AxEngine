@@ -216,7 +216,7 @@ bool _ZStrUtil_T_Impl<char>::parse( const char* sz, u8    &v ) {
 	u32 tmp = 0;
 //	if( 1 != sscanf(sz, "%u", &tmp ) ) return false;
 	if( 1 != sscanf_s(sz, "%u", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 
@@ -225,7 +225,7 @@ bool _ZStrUtil_T_Impl<char>::parse( const char* sz, u16    &v ) {
 	u32 tmp;
 //	if( 1 != sscanf(sz, "%u", &tmp ) ) return false;
 	if( 1 != sscanf_s(sz, "%u", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 
@@ -250,7 +250,7 @@ bool _ZStrUtil_T_Impl<char>::parse( const char* sz, i8    &v ) {
 	i32 tmp;
 //	if( 1 != sscanf(sz, "%d", &tmp ) ) return false;
 	if( 1 != sscanf_s(sz, "%d", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 
@@ -259,7 +259,7 @@ bool _ZStrUtil_T_Impl<char>::parse( const char* sz, i16    &v ) {
 	i32 tmp;
 //	if( 1 != sscanf(sz, "%d", &tmp ) ) return false;
 	if( 1 != sscanf_s(sz, "%d", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 
@@ -321,7 +321,7 @@ bool _ZStrUtil_T_Impl<wchar_t>::parse( const wchar_t* sz, u8    &v ) {
 	u32 tmp;
 //	if( 1 != swscanf( sz, L"%u", &tmp ) ) return false;
 	if( 1 != swscanf_s( sz, L"%u", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 
@@ -330,7 +330,7 @@ bool _ZStrUtil_T_Impl<wchar_t>::parse( const wchar_t* sz, u16    &v ) {
 	u32 tmp;
 //	if( 1 != swscanf( sz, L"%u", &tmp ) ) return false;
 	if( 1 != swscanf_s( sz, L"%u", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 
@@ -353,7 +353,7 @@ bool _ZStrUtil_T_Impl<wchar_t>::parse( const wchar_t* sz, i8    &v ) {
 	i32 tmp;
 //	if( 1 != swscanf( sz, L"%d", &tmp ) ) return false;
 	if( 1 != swscanf_s( sz, L"%d", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 
@@ -362,7 +362,7 @@ bool _ZStrUtil_T_Impl<wchar_t>::parse( const wchar_t* sz, i16    &v ) {
 	i32 tmp;
 //	if( 1 != swscanf( sz, L"%d", &tmp ) ) return false;
 	if( 1 != swscanf_s( sz, L"%d", &tmp ) ) return false;
-	tmp = ax_safe_cast(v);
+	tmp = ax_safe_cast_from(v);
 	return true;
 }
 

@@ -125,7 +125,7 @@ bool System::getEnvVariable(IString& outStr, StrView name) {
 	}
 
 	TempStringW tmp;
-	tmp.resize(ax_safe_cast(requiredSize)); 
+	tmp.resize(ax_safe_cast_from(requiredSize)); 
 	errno_t err = _wgetenv_s(&requiredSize, tmp.data(), tmp.size(), nameW.c_str());
 	if (err != 0) {
 		AX_ASSERT(false);

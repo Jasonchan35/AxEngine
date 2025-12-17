@@ -31,11 +31,12 @@ public:
 #endif
 
 	CommandBuffer_Vk	_uploadCmdBuf_vk; // submit earlier than graphCmdBuf
+	AX_VkSemaphore		_uploadCmdSem_vk;
 
 	CommandBuffer_Vk	_graphCmdBuf_vk;
-	AX_VkSemaphore		_graphSemaphore_vk;
+	AX_VkSemaphore		_graphCmdSem_vk;
+	
 	AX_VkSemaphore		_imageAcquiredSemaphore_vk;
-
 	AX_VkFence			_completedFence_vk;
 };
 

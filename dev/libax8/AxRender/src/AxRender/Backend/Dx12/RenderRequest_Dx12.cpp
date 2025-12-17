@@ -15,8 +15,9 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_uploadCmdBuf_dx12.create(dev, CommandBufferType::Copy);
 	_graphCmdBuf_dx12.create(dev, CommandBufferType::Direct);
 	_computeCmdList_dx12.create(dev, CommandBufferType::Compute);
-
-	_completedFence_dx12.create(dev);
+	_fence.create(dev, 1);
+	_cpuEvent.create();
+	_cpuEvent.signalOnFenceCompletion(_fence, 1);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
@@ -30,10 +31,7 @@ void RenderRequest_Dx12::onFrameEnd() {
 }
 
 void RenderRequest_Dx12::onWaitCompleted() {
-	// AX_ASSERT_TODO	
-	// _completedFence_dx12.wait();
-	// _uploadCmdBuf_dx12.resetAndReleaseResource();
-	// _graphCmdBuf_dx12.resetAndReleaseResource();
+	_cpuEvent.wait();
 }
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
@@ -66,7 +64,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	auto& renderTargetDescriptors = pass->_colorViewHandles_dx12;
 
-	UINT                         rtCount        = ax_safe_cast(renderTargetDescriptors.size());
+	UINT                         rtCount        = ax_safe_cast_from(renderTargetDescriptors.size());
 	D3D12_CPU_DESCRIPTOR_HANDLE* rtViews        = renderTargetDescriptors.data();
 	D3D12_CPU_DESCRIPTOR_HANDLE* depthView      = &pass->_depthViewHandle_dx12;
 	BOOL                         rtSingleHandle = FALSE;

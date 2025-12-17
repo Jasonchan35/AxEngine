@@ -131,8 +131,8 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 
 MutByteSpan Dx12ResourceBase::_mapMemory(IntRange range) {
 	D3D12_RANGE dxRange;
-	dxRange.Begin = ax_safe_cast(range.begin());
-	dxRange.End   = ax_safe_cast(range.end());
+	dxRange.Begin = ax_safe_cast_from(range.begin());
+	dxRange.End   = ax_safe_cast_from(range.end());
 
 	UINT8* dst = nullptr;
 	auto hr = _d3dResource->Map(0, &dxRange, reinterpret_cast<void**>(&dst));
@@ -147,8 +147,12 @@ void Dx12ResourceBase::_unmapMemory() {
 void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	D3D12_RANGE readRange = {}; // We do not intend to read from this resource on the CPU.
 	UINT8* dst = nullptr;
-
+	
 	auto hr = _d3dResource->Map(0, &readRange, reinterpret_cast<void**>(&dst));
+	if (SUCCEEDED(hr)) {
+		return;
+	}
+	
 	Dx12Util::throwIfError(hr);
 
 	if (offset < 0 || offset + data.size() > _dataSize)
@@ -225,9 +229,9 @@ void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType color
 	_create();
 }
 
-void Dx12Fence::create(ID3D12Device* dev) {
+void Dx12Fence::create(ID3D12Device* dev, u64 initialValue) {
 	// _event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	auto hr = Renderer_Dx12::s_d3dDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.ptrForInit()));
+	auto hr = Renderer_Dx12::s_d3dDevice()->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 }
 
@@ -252,6 +256,15 @@ void Dx12SwapChain::create(Dx12CommandQueue& cmdQueue, HWND hwnd, DXGI_SWAP_CHAI
 	Dx12Util::throwIfError(hr);
 
 	hr = swapChain1->QueryInterface(IID_PPV_ARGS(_swapChain.ptrForInit()));
+	Dx12Util::throwIfError(hr);
+}
+
+void Dx12SwapChain::present(UINT SyncInterval, UINT Flags) {
+	auto hr = _swapChain->Present(SyncInterval, Flags);
+	// if (hr == DXGI_ERROR_DEVICE_REMOVED) {
+	// 	Renderer_Dx12::s_instance()->createDevice();
+	// 	return;
+	// }
 	Dx12Util::throwIfError(hr);
 }
 

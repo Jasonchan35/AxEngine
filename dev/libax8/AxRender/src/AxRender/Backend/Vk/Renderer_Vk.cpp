@@ -36,7 +36,7 @@ Renderer_Vk::Renderer_Vk(const CreateDesc& desc)
 	bool supportBindless = true;
 	auto& features = phyDev->features();
 
-	Int tex2DSize = ax_safe_cast(phyDev->props().limits.maxImageDimension2D);
+	Int tex2DSize = ax_safe_cast_from(phyDev->props().limits.maxImageDimension2D);
 	_limits.maxTexture2DSize = Vec2i(tex2DSize, tex2DSize);
 
 	auto bindlessRequire = [&](VkBool32 b, StrView name) {
@@ -131,7 +131,7 @@ VkBool32 VKAPI_PTR Renderer_Vk::s_debugReport(
 	const char* pMessage,
 	void* pUserData) 
 {
-	AX_LOG("Vulkan error {}: {} - location={}", messageCode, StrView_c_str(pMessage), location);
+	AX_LOG_ERROR("Vulkan error {}: {} - location={}", messageCode, StrView_c_str(pMessage), location);
 	AX_ASSERT(false);
 	return true;
 }

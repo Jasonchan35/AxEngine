@@ -18,6 +18,8 @@ public:
 
 	static ID3D12Device* s_d3dDevice() { auto* t = s_instance(); return t ? t->d3dDevice() : nullptr; }
 
+	void createDevice();
+	
 	ID3D12Device*		d3dDevice	()	{ return _d3dDevice; }
 	IDXGIFactory4*		dxgiFactory	()	{ return _dxgiFactory; }
 

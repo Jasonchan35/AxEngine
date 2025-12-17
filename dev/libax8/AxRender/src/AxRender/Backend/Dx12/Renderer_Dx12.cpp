@@ -18,6 +18,10 @@ AX_Renderer_FunctionBodies(Dx12);
 Renderer_Dx12::Renderer_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
+	createDevice();
+}
+
+void Renderer_Dx12::createDevice() {
 	HRESULT hr;
 	UINT dxgiFactoryFlags = 0;
 

@@ -38,7 +38,7 @@ void ResourceTable_Backend<T>::add(T* obj) {
 	if (_freeSlots.size()) {
 		slotId = _freeSlots.popBack();
 	} else {
-		slotId = ax_safe_cast(_slots.size());
+		slotId = ax_safe_cast_from(_slots.size());
 		_slots.emplaceBack();
 	}
 

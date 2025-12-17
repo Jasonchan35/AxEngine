@@ -89,37 +89,51 @@ public:
 
 class Dx12Fence : public NonCopyable {
 public:
-	void create(ID3D12Device* dev);
-
-	// void setEventOnCompletion(u64 value, bool alertable) {
-	// 	_setEventOnCompletion(value, alertable, INFINITE);
-	// }
-	//
-	// void setEventOnCompletion(u64 value, bool alertable, const Milliseconds& timeout) {
-	// 	_setEventOnCompletion(value, alertable, SafeCast(timeout.value));
-	// }
-	//
-	// u64 getCompletedValue() { return _fence->GetCompletedValue(); }
-	// u64 currentValue() { return _fenceValue; }
-
-	operator ID3D12Fence* () { return _fence; }
-private:
-	//
-	// bool _setEventOnCompletion(u64 value, bool alertable, DWORD timeout) {
-	// 	auto hr = _fence->SetEventOnCompletion(value, _event);
-	// 	Dx12Util::throwIfError(hr);
-	// 	
-	// 	hr = ::WaitForSingleObjectEx(_event, timeout, alertable);
-	// 	if (hr == WAIT_TIMEOUT) {
-	// 		return false;
-	// 	}
-	// 	Dx12Util::throwIfError(hr);
-	// 	return true;
-	// }
-	// u64 _fenceValue = 0;
-	// HANDLE _event = INVALID_HANDLE_VALUE;
+	void create(ID3D12Device* dev, u64 initialValue);
+	u64 getCompletedValue() { return _fence->GetCompletedValue(); }
 	
+	operator ID3D12Fence* () { return _fence; }
 	ComPtr<ID3D12Fence>	_fence;
+};
+
+class Dx12CpuEvent : public NonCopyable {
+public:
+	~Dx12CpuEvent() { destroy(); }
+	
+	void create() {
+		_h = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (_h == nullptr) throw Error_Undefined("Dx12Win32Event - CreateEvent");
+	}
+
+	void destroy() {
+		if (_h != nullptr) { CloseHandle(_h); }
+	}
+
+	void signalOnFenceCompletion(Dx12Fence& fence, u64 value) {
+		AX_ASSERT(_h != nullptr);
+		auto hr = fence._fence->SetEventOnCompletion(value, _h);
+		Dx12Util::throwIfError(hr);
+	}
+
+	void signal() {
+		::SetEvent(_h);
+	}
+
+	bool wait() { return _wait(INFINITE); }
+	bool wait(const Milliseconds& timeout) { return _wait(Dx12Util::castDWORD(timeout.value)); }
+	
+private:
+	
+	bool _wait(DWORD dwMilliseconds) {
+		AX_ASSERT(_h != nullptr);
+		DWORD ret = ::WaitForSingleObject(_h, dwMilliseconds);
+		if (ret == WAIT_TIMEOUT) return false;
+		if (ret == WAIT_OBJECT_0) return true;
+		throw Error_Undefined("Dx12Win32Event - wait");
+	}
+	
+	
+	HANDLE _h = nullptr; // // Event use nullptr, not INVALID_HANDLE_VALUE(-1)
 };
 
 class Dx12CommandQueue : public NonCopyable {
@@ -131,12 +145,25 @@ public:
 		Dx12Util::throwIfError(hr);
 	}
 
-	void wait(Dx12Fence& fence, u64 value) {
+	void signal(Dx12Fence& fence, Dx12CpuEvent& cpuEvent, u64 value) {
+		signal(fence, value);
+		cpuEvent.signalOnFenceCompletion(fence, value);
+	}
+	
+	void gpuWait(Dx12Fence& fence, u64 value) {
 		auto hr = _queue->Wait(fence, value);
 		Dx12Util::throwIfError(hr);
 	}
 
-	ID3D12CommandQueue* operator->() { return _queue; }
+	void execCmdList(ID3D12CommandList* cmdList) {
+		_queue->ExecuteCommandLists(1, &cmdList);
+	}
+	
+	void execCmdList(Span<ID3D12CommandList*> cmdListSpan) {
+		_queue->ExecuteCommandLists(Dx12Util::castUINT(cmdListSpan.size()), cmdListSpan.data());
+	}
+
+//	ID3D12CommandQueue* operator->() { return _queue; }
 	operator ID3D12CommandQueue* ()  { return _queue; }
 private:
 	ComPtr<ID3D12CommandQueue>	_queue;
@@ -145,9 +172,24 @@ private:
 class Dx12SwapChain : public NonCopyable {
 public:
 	void create(Dx12CommandQueue& cmdQueue, HWND hwnd, DXGI_SWAP_CHAIN_DESC1& desc);
+	void getDesc(DXGI_SWAP_CHAIN_DESC1* desc) {
+		auto hr = _swapChain->GetDesc1(desc);
+		Dx12Util::throwIfError(hr);
+	}
 
+	void resizeBuffers(Int bufferCount, Vec2i frameSize, DXGI_FORMAT NewFormat, UINT SwapChainFlags) {
+		auto hr = _swapChain->ResizeBuffers(Dx12Util::castUINT(bufferCount),
+		                                    Dx12Util::castUINT(frameSize.x),
+		                                    Dx12Util::castUINT(frameSize.y),
+		                                    NewFormat,
+		                                    SwapChainFlags);
+		Dx12Util::throwIfError(hr);
+	}
 
-	AX_DX12_IDXGISwapChain* operator->()	{ return _swapChain; }
+	Int getCurrentBackBufferIndex() { return ax_safe_cast_from(_swapChain->GetCurrentBackBufferIndex()); }
+
+	void present(UINT SyncInterval, UINT Flags);
+
 	AX_DX12_IDXGISwapChain* ptr()			{ return _swapChain; }
 	operator AX_DX12_IDXGISwapChain*()		{ return _swapChain; }
 	

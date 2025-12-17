@@ -109,7 +109,7 @@ RenderPass_Backend* RenderContext_Vk_Base::onAcquireBackBufferRenderPass(RenderR
 		}
 	}
 
-	Int backBufferIndex = ax_safe_cast(swapChainImageIndex);
+	Int backBufferIndex = ax_safe_cast_from(swapChainImageIndex);
 	auto& backBuf = _backBuffers_vk[backBufferIndex];
 	if (!backBuf) {
 		AX_ASSERT(false);
@@ -125,9 +125,6 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 
 	const bool presentQueueIsSeparated = _surface_vk.isPresentQueueIsSeparated();
 
-	AX_VkDeviceQueue::WaitSemaphores waitSem(req->_imageAcquiredSemaphore_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-	auto& graphSemaphore = req->_graphSemaphore_vk;
-
 	auto* backBuf = req->backBufferRenderPass();
 	if (!backBuf) { AX_ASSERT(false); return; }
 
@@ -142,16 +139,21 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 	auto& presentCmdBuf    = backBuffer->_presentCmdBuf_vk;
 	auto& presentSemaphore = backBuffer->_presentSemaphore_vk;
 
-	Array<VkCommandBuffer, 2>	cmdBuffers;
-	cmdBuffers.append(req->_uploadCmdBuf_vk);
-	cmdBuffers.append(req->_graphCmdBuf_vk);
+	// Array<VkCommandBuffer, 2>	cmdBuffers;
+	// cmdBuffers.append(req->_uploadCmdBuf_vk);
+	// cmdBuffers.append(req->_graphCmdBuf_vk);
 
 	req->_completedFence_vk.reset();
+
+	_graphQueue_vk.submit(	AX_VkWaitSemaphores(req->_imageAcquiredSemaphore_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
+							req->_uploadCmdBuf_vk.handle(),
+							req->_uploadCmdSem_vk.handle(),
+							nullptr);
 	
-	_graphQueue_vk.submit( waitSem,
-						cmdBuffers,
-						presentQueueIsSeparated ? graphSemaphore.handle() : presentSemaphore.handle(),
-						req->_completedFence_vk.handle());
+	_graphQueue_vk.submit(	AX_VkWaitSemaphores(req->_uploadCmdSem_vk.handle(), VK_PIPELINE_STAGE_TRANSFER_BIT),
+							req->_graphCmdBuf_vk.handle(),
+							presentQueueIsSeparated ? req->_graphCmdSem_vk.handle() : presentSemaphore.handle(),
+							req->_completedFence_vk.handle());
 
 	if (presentQueueIsSeparated) {
 		// If we are using separate queues, change image ownership to the
@@ -164,7 +166,7 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 										colorBuffer_vk->_image);
 		presentCmdBuf->endCommand();
 
-		_presentQueue_vk.submit(AX_VkDeviceQueue::WaitSemaphores(graphSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
+		_presentQueue_vk.submit(AX_VkWaitSemaphores(req->_graphCmdSem_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
 								presentCmdBuf.handle(),
 								presentSemaphore.handle());
 	}
@@ -265,10 +267,10 @@ RenderContext_Vk_Win32::RenderContext_Vk_Win32(const CreateDesc& desc)
 	                          kClassName,
 	                          kClassName,
 	                          dwStyle,
-	                          ax_safe_cast(rc.x),
-	                          ax_safe_cast(rc.y),
-	                          ax_safe_cast(rc.w),
-	                          ax_safe_cast(rc.h),
+	                          ax_safe_cast_from(rc.x),
+	                          ax_safe_cast_from(rc.y),
+	                          ax_safe_cast_from(rc.w),
+	                          ax_safe_cast_from(rc.h),
 	                          parentHwnd,
 	                          nullptr,
 	                          hInstance,
@@ -336,7 +338,7 @@ void RenderContext_Vk_Win32::onSetFrameSize(const Vec2i& s) {
 	Base::onSetFrameSize(s);
 
 	if (!_hwnd) return;
-	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast(s.x), ax_safe_cast(s.y), 0);
+	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast_from(s.x), ax_safe_cast_from(s.y), 0);
 }
 
 void RenderContext_Vk_Win32::onSetRenderNeeded() {

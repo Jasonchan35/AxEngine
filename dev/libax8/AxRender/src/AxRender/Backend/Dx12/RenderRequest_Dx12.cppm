@@ -19,8 +19,10 @@ public:
 	CommandBuffer_Dx12	_uploadCmdBuf_dx12; // submit earlier than graphCmdBuf
 	CommandBuffer_Dx12	_graphCmdBuf_dx12;
 	CommandBuffer_Dx12	_computeCmdList_dx12;
+
+	Dx12Fence			_fence;
+	Dx12CpuEvent		_cpuEvent;
 	
-	Dx12Fence			_completedFence_dx12;
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 };
 
