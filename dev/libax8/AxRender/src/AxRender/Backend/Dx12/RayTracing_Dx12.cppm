@@ -1,4 +1,6 @@
-#pragma once
+module;
+
+export module AxCore:RayTracing_Dx12;
 
 #if AX_RENDERER_DX12_DXR
 

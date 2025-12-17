@@ -64,8 +64,7 @@ void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
 		AX_VkUtil::setFloat4(dst.float32, src.desc.clearColorValue);
 	}
 	
-	if (auto* depthBuffer = pass->depthBuffer()) {
-		auto& desc = pass->depthAttachment().desc;
+	if (auto& desc = pass->depthAttachment().desc) {
 		auto& dst         = clearValues.emplaceBack().depthStencil;
 		dst.depth         = desc.clearDepthValue;
 		dst.stencil       = desc.clearStencilValue;

@@ -106,6 +106,7 @@ function(ax_set_warning_level target_name)
 		target_compile_options(${target_name} PRIVATE /wd4201)	#warning C4201: nonstandard extension used: nameless struct/union
 		target_compile_options(${target_name} PRIVATE /wd4275)	#warning C4275: non dll-interface class 'std::runtime_error' used as base for dll-interface class 'fmt::v10::format_error'
 		target_compile_options(${target_name} PRIVATE /wd4702)  #warning C4702: unreachable code (seems vc has bug when handle if constexpr() )
+		target_compile_options(${target_name} PRIVATE /wd4714)  #Warning C4714 : function marked as __forceinline not inlined
 
 	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GCC")
 		target_compile_options(${target_name} PRIVATE	-Wall 

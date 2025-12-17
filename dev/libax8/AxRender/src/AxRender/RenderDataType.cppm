@@ -235,6 +235,8 @@ public:
 	u32                clearStencilValue = 0;
 	
 	AX_INLINE bool isEnabled() const { return depthType != RenderDepthType::None; }
+	AX_INLINE explicit operator bool() const { return isEnabled(); }
+	
 	bool operator==(const RenderPassDepthAttachmentDesc& r) const {
 		return depthType	== r.depthType
 			&& loadOp		== r.loadOp
