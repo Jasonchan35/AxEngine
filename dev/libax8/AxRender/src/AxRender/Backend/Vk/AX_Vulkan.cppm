@@ -601,6 +601,7 @@ private:
 };
 
 class AX_VkDeviceMemory : public NonCopyable {
+	using This = AX_VkDeviceMemory;
 public:
 	const VkDeviceMemory& handle() { return _handle; }
 	operator const VkDeviceMemory&() { return _handle; }
@@ -614,9 +615,12 @@ public:
 
 	void copyData(ByteSpan data, Int offset = 0, VkMemoryMapFlags flags = 0);
 
-	MutByteSpan mapMemory(VkMemoryMapFlags flags = 0) { return mapMemory(IntRange(_bufferSize), flags); }
-	MutByteSpan mapMemory(IntRange range, VkMemoryMapFlags flags = 0);
-	void  unmapMemory();
+	void		_unmapMemory();
+	MutByteSpan _mapMemory(IntRange range, VkMemoryMapFlags flags = 0);
+	
+	using ScopedMapMemory = ScopedMemFuncProxy0<MutByteSpan, This, &This::_unmapMemory>;
+	ScopedMapMemory mapMemory(VkMemoryMapFlags flags = 0) { return mapMemory(IntRange(_bufferSize), flags); }
+	ScopedMapMemory mapMemory(IntRange range, VkMemoryMapFlags flags = 0) { return ScopedMapMemory(_mapMemory(range, flags), this); }
 
 	void flushMappedMemoryRanges(Span<IntRange> ranges);
 	void InvalidateMappedMemoryRanges(Span<IntRange> ranges);
@@ -635,7 +639,9 @@ private:
 	AX_VkDevice* _dev = nullptr;
 	Int _bufferSize = 0;
 };
-
+inline void AX_VkDeviceMemory::_unmapMemory() {
+	vkUnmapMemory(*_dev, _handle);
+}
 
 class AX_VkFence : public NonCopyable {
 public:

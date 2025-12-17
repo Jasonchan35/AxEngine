@@ -13,8 +13,8 @@ class GpuBuffer_Vk : public GpuBuffer_Backend {
 public:
 	GpuBuffer_Vk(const CreateDesc& desc);
 
-	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _vkDevMem.mapMemory(range); }
-	virtual void		onUnmapMemory() override				{ return _vkDevMem.unmapMemory(); }
+	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _vkDevMem._mapMemory(range); }
+	virtual void		onUnmapMemory() override				{ return _vkDevMem._unmapMemory(); }
 
 	virtual void		onFlush(IntRange range) override;
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override;

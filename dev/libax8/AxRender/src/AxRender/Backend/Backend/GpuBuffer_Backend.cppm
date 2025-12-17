@@ -7,8 +7,6 @@ export namespace ax /*::AxRender*/ {
 
 class GpuBuffer_Backend : public GpuBuffer {
 	AX_RTTI_INFO(GpuBuffer_Backend, GpuBuffer)
-	
-	void _unmapMemory() { onUnmapMemory(); }
 public:
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView name, GpuBufferType type, Int size) {
@@ -25,9 +23,12 @@ public:
 		onCopyFromGpuBuffer(req, src, srcRange, dstOffset);
 	}
 
-	using ScopeMapMemory = ScopeDataProxy0<MutByteSpan, This, &This::_unmapMemory>;
-	AX_NODISCARD AX_INLINE	ScopeMapMemory mapMemory() { return mapMemory(IntRange(bufferSize())); }
-	AX_NODISCARD AX_INLINE	ScopeMapMemory mapMemory(IntRange range);
+	void		_unmapMemory() { onUnmapMemory(); }
+	MutByteSpan _mapMemory(IntRange range);
+	
+	using ScopedMapMemory = ScopedMemFuncProxy0<MutByteSpan, This, &This::_unmapMemory>;
+	AX_NODISCARD AX_INLINE	ScopedMapMemory mapMemory() { return mapMemory(IntRange(bufferSize())); }
+	AX_NODISCARD AX_INLINE	ScopedMapMemory mapMemory(IntRange range) { return ScopedMapMemory(_mapMemory(range), this); }
 
 	void flush(IntRange range);
 
@@ -42,10 +43,10 @@ protected:
 	GpuBuffer_Backend(const CreateDesc& desc) : Base(desc) {}
 };
 
-AX_INLINE auto GpuBuffer_Backend::mapMemory(IntRange range) -> ScopeMapMemory {
+inline MutByteSpan GpuBuffer_Backend::_mapMemory(IntRange range) {
 	if (!bufferRange().contains(range))
 		throw Error_IndexOutOfRange();
-	return ScopeMapMemory(onMapMemory(range), this);
+	return onMapMemory(range);
 }
 
 

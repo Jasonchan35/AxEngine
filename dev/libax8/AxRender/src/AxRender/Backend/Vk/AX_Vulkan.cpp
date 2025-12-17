@@ -1154,17 +1154,11 @@ void AX_VkDeviceMemory::copyData(
 	VkMemoryMapFlags flags
 ) {
 	if (data.size() <= 0) return;
-	auto span = mapMemory(Range_BeginSize(offset, data.size()), flags);
-	try {
-		span.copyValues(data);
-	} catch (...) {
-		unmapMemory();
-		throw;
-	}
-	unmapMemory();
+	auto map = mapMemory(Range_BeginSize(offset, data.size()), flags);
+	map->copyValues(data);
 }
 
-MutByteSpan AX_VkDeviceMemory::mapMemory(IntRange range, VkMemoryMapFlags flags) {
+MutByteSpan AX_VkDeviceMemory::_mapMemory(IntRange range, VkMemoryMapFlags flags) {
 	void* outPtr = nullptr;
 	auto offset = AX_VkUtil::castVkDeviceSize(range.begin());
 	auto size =   AX_VkUtil::castVkDeviceSize(range.size());
@@ -1172,10 +1166,6 @@ MutByteSpan AX_VkDeviceMemory::mapMemory(IntRange range, VkMemoryMapFlags flags)
 	auto err = vkMapMemory(*_dev, _handle, offset, size, flags, &outPtr);
 	AX_VkUtil::throwIfError(err);
 	return MutByteSpan(static_cast<Byte*>(outPtr), ax_safe_cast(size));
-}
-
-void AX_VkDeviceMemory::unmapMemory() {
-	vkUnmapMemory(*_dev, _handle);
 }
 
 void AX_VkDeviceMemory::_create(

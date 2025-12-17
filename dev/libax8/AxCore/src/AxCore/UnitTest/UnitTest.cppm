@@ -11,8 +11,8 @@ struct UnitTestRequest : public NonCopyable {
 	// JsonValue	options;
 	bool verbose = false;
 
-	AX_NODISCARD ScopeValue<bool> scopedVerbose() {
-		return ScopeValue<bool>(&verbose, true);
+	AX_NODISCARD ScopedValue<bool> scopedVerbose() {
+		return ScopedValue<bool>(&verbose, true);
 	}
 };
 

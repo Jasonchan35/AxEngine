@@ -84,7 +84,7 @@ public:
 	
 	template<class CH> void onFormat(Format_<CH>& fmt) const {
 		LPWSTR tmp = nullptr;
-		auto scope = ScopeLambda([&tmp]() { LocalFree(tmp); });
+		auto scope = ScopedLambda([&tmp]() { LocalFree(tmp); });
 		
 		FormatMessage ( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 					   nullptr, _code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),

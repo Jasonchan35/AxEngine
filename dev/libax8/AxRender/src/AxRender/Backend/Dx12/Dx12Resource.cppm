@@ -22,8 +22,8 @@ public:
 	MutByteSpan	_mapMemory(IntRange range);
 	void		_unmapMemory();
 	
-	using ScopeMapMemory = ScopeDataProxy0<MutByteSpan, This, &This::_unmapMemory>;
-	ScopeMapMemory 	mapMemory(IntRange range) { return ScopeMapMemory(_mapMemory(range), this);  }
+	using ScopedMapMemory = ScopedMemFuncProxy0<MutByteSpan, This, &This::_unmapMemory>;
+	ScopedMapMemory 	mapMemory(IntRange range) { return ScopedMapMemory(_mapMemory(range), this);  }
 
 	void uploadToGpu(Int offset, ByteSpan data);
 
