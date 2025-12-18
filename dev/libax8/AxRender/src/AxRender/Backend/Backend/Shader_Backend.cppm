@@ -203,7 +203,7 @@ class ShaderPass_Backend : public RenderObject {
 	AX_RTTI_INFO(ShaderPass_Backend, RenderObject)
 public:
 	using CreateDesc = ShaderPass_Backend_CreateDesc;
-	using ParamSpaceType = ShaderParamSpaceType;
+	using SpaceType = ShaderParamSpaceType;
 
 	ShaderPass_Backend(const CreateDesc& desc);
 
@@ -220,19 +220,22 @@ public:
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
 	
-	template<class R>       R* getParamSpace_(ParamSpaceType s)       { return rttiCastCheck<R>(getParamSpace(s)); }
-	template<class R> const R* getParamSpace_(ParamSpaceType s) const { return rttiCastCheck<R>(getParamSpace(s)); }
-
-	ShaderParamSpace_Backend* getParamSpace(ParamSpaceType s) {
+	ShaderParamSpace_Backend* getParamSpace(SpaceType s) {
 		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(s));
 		return p ? p->ptr() : nullptr;
 	}
 
-	const ShaderParamSpace_Backend*	getParamSpace(ParamSpaceType s) const {
+	const ShaderParamSpace_Backend*	getParamSpace(SpaceType s) const {
 		return ax_const_cast(this)->getParamSpace(s);
 	}
 
-	const ShaderPass_Backend* getCommonPass() const;
+	ShaderPass_Backend* getCommonPass();
+	
+	ShaderParamSpace_Backend* getCommonParamSpace(SpaceType type) {
+		auto* commonPass = getCommonPass();
+		return commonPass ? commonPass->getParamSpace(type) : nullptr;
+	}
+
 
 friend class Shader_Backend;
 protected:

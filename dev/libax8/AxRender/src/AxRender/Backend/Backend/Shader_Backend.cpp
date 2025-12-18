@@ -173,7 +173,7 @@ void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
 		}
 
 		auto paramSpaceType = ax_enum_int(spaceType);
-		if (paramSpaceType < 0 || paramSpaceType >= ax_enum_int(ParamSpaceType::_COUNT)) {
+		if (paramSpaceType < 0 || paramSpaceType >= ax_enum_int(SpaceType::_COUNT)) {
 			AX_ASSERT(false);
 			continue;
 		}
@@ -275,7 +275,7 @@ void Shader_Backend::onDestroy() {
 	_passes.clear();
 }
 
-const ShaderPass_Backend* ShaderPass_Backend::getCommonPass() const {
+ShaderPass_Backend* ShaderPass_Backend::getCommonPass() {
 	auto* sh = Renderer_Backend::s_instance()->commonShader();
 	return sh ? sh->getPass(0) : nullptr;
 }

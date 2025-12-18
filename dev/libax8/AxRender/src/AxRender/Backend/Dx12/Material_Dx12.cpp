@@ -1,11 +1,38 @@
 module AxRender;
 import :Material_Dx12;
 import :Texture_Dx12;
+import :GpuBuffer_Dx12;
 
 #if AX_RENDERER_DX12
 
 namespace ax {
 
+void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, bool isCompute) {
+	auto* shdSpace = rttiCastCheck<ShaderParamSpace_Dx12>(_shaderParamSpace.ptr());
+	
+	auto& cmdList = req->_graphCmdBuf_dx12;
+	
+	Int cbIndex = 0;
+	for (auto& cb : _constBuffers) {
+		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(cb.getUploadedGpuBuffer(req));
+		if (!gpuBuf) throw Error_Undefined();
+
+		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		if (isCompute) {
+			cmdList->SetComputeRootConstantBufferView(ax_safe_cast_from(cbIndex), gpuBuf->gpuAddress());
+		} else {
+			cmdList->SetGraphicsRootConstantBufferView(ax_safe_cast_from(cbIndex), gpuBuf->gpuAddress());
+		}
+		cbIndex++;
+	}
+
+	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdSpace->_descTableIndexInRoot),
+	                                        _texDescHeap.handleStart().gpu);
+	
+	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdSpace->_samplerDescTableIndexInRoot),
+	                                        _samplerDescHeap.handleStart().gpu);
+}
 
 bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
@@ -16,8 +43,6 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 
 	if (!shdPass->_bindPipeline(req, cmd)) return false;
 
-#if 0	
-//	Array<VkDescriptorSet, 16>	bindDescSets;
 	auto* renderer = Renderer_Backend::s_instance();
 
 	for (auto& paramSpace_ : _materialParamSpaces) {
@@ -27,49 +52,17 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
 		auto spaceType = ax_enum_int(paramSpace->paramSpaceType());
-		if (spaceType >= ax_enum_int(ParamSpaceType::_COUNT)) {
+		if (spaceType >= ax_enum_int(SpaceType::_COUNT)) {
 			AX_ASSERT(false);
 			return false;
 		}
 
-		auto& dst = bindDescSets.ensureSizeAndGetElement(spaceType);
-		dst = paramSpace->getUpdatedDescriptorSet(req);
-		if (!dst) { AX_ASSERT(false); return false; }
+		paramSpace->_onDrawcall(req, shdPass->isCompute());
 	}
 
 	auto* commonMaterial = renderer->commonMaterial();
 	if (!commonMaterial) { AX_ASSERT(false); return false; }
 
-	auto addCommonBlock = [&](ParamSpaceType paramSpaceType) {
-		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, paramSpaceType);
-		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", paramSpaceType));
-
-		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(paramSpaceType));
-		dst = block->getUpdatedDescriptorSet(req);
-		if (!dst) throw Error_Undefined("cannot getUpdatedDescriptorSet");
-	};
-
-	addCommonBlock(ParamSpaceType::Global   );
-	addCommonBlock(ParamSpaceType::PerFrame );
-	// TODO: get from object
-	addCommonBlock(ParamSpaceType::PerObject);
-
-	if (bindDescSets.size() <= 0) {
-		AX_ASSERT(false);
-		return false;
-	}
-
-	if (bindDescSets.find(VK_NULL_HANDLE)) {
-		AX_ASSERT(false); // cannot contains null DescriptorSet
-		return false;
-	}
-
-	auto& graphCmdBuf = req->graphCmdBuf_vk();
-	AX_vkCmdBindDescriptorSets(	graphCmdBuf,
-								shdPass->isCompute() ? VK_PIPELINE_BIND_POINT_COMPUTE :  VK_PIPELINE_BIND_POINT_GRAPHICS, 
-								shdPass->pipelineLayout(), 
-								0, bindDescSets, {});
-#endif
 	return true;
 }
 

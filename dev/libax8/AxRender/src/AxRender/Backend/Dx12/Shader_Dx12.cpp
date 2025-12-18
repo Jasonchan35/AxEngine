@@ -57,25 +57,18 @@ bool VertexInputLayoutDesc_Dx12::init(const ShaderStageInfo& info, VertexLayout 
 ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
-	const auto* commonPass = rttiCastCheck<ShaderPass_Dx12>(getCommonPass());
-
 	D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	for (auto spaceType = ParamSpaceType::Default; spaceType < ParamSpaceType::_COUNT; ++spaceType) {
+	for (auto spaceType = SpaceType::Default; spaceType < SpaceType::_COUNT; ++spaceType) {
+		auto* space = getParamSpace_dx12(spaceType);
+		auto* selectSpace = space;
 		if (shouldUseCommonParamSpace(spaceType)) {
-			// get from commonPass
-			if (auto* sp = commonPass->getParamSpace_<ShaderParamSpace_Dx12>(spaceType)) {
-				_pipelineRootParamList.addTable(shaderVisibility, sp->_descTable);
-				_pipelineRootParamList.addTable(shaderVisibility, sp->_samplerDescTable);
-			}
+			selectSpace = getCommonParamSpace_dx12(spaceType);
 		} else {
-			// create own one
-			if (auto* sp = this->getParamSpace_<ShaderParamSpace_Dx12>(spaceType)) {
-				sp->createDescTable();
-				_pipelineRootParamList.addTable(shaderVisibility, sp->_descTable);
-				_pipelineRootParamList.addTable(shaderVisibility, sp->_samplerDescTable);
-			}
+			space->createDescTable();
 		}
+		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_descTable,        &space->_descTableIndexInRoot);
+		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_samplerDescTable, &space->_samplerDescTableIndexInRoot);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {

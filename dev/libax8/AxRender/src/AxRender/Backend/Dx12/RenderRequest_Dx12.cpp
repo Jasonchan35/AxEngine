@@ -143,7 +143,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 			cmdBuf->ClearDepthStencilView(depthBuffer->_view_dx12.handle.cpu,
 			                              D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
 			                              desc.clearDepth,
-			                              ax_safe_cast_<u8>(desc.clearStencil),
+			                              ax_safe_cast_to<u8>(desc.clearStencil),
 			                              0,
 			                              nullptr);
 		}

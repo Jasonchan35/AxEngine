@@ -9,7 +9,7 @@
 	#define AX_RENDERER_VK		1
 #endif
 
-#define AX_RENDER_BINDLESS		1
+#define AX_RENDER_BINDLESS		0
 
 
 

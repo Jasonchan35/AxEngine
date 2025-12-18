@@ -8,7 +8,7 @@ namespace  ax {
 void Dx12DescripterHeap_Base::destroy() {
 	_d3dHeap.unref();
 	_desc.NumDescriptors = 0;
-	_startHandle = Dx12DescriptorHandle();
+	_handleStart = Dx12DescriptorHandle();
 }
 
 void Dx12DescripterHeap_Base::_create(Int size, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
@@ -31,8 +31,8 @@ void Dx12DescripterHeap_Base::_create(Int size, D3D12_DESCRIPTOR_HEAP_TYPE type,
 	auto hr = d3dDevice->CreateDescriptorHeap(&_desc, IID_PPV_ARGS(_d3dHeap.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 
-	_startHandle.cpu = _d3dHeap->GetCPUDescriptorHandleForHeapStart();
-	_startHandle.gpu = _d3dHeap->GetGPUDescriptorHandleForHeapStart();
+	_handleStart.cpu = _d3dHeap->GetCPUDescriptorHandleForHeapStart();
+	_handleStart.gpu = _d3dHeap->GetGPUDescriptorHandleForHeapStart();
 }
 
 } // namespace

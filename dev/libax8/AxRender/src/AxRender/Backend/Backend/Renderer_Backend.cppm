@@ -31,8 +31,8 @@ public:
 
 	const Limits& limits() const { return _limits; }
 
-		  Material_Backend*	commonMaterial();
-	const Shader_Backend*	commonShader();
+	Material_Backend*	commonMaterial();
+	Shader_Backend*		commonShader();
 
 	ImFontAtlas* imguiFontAtlas() { return &_imguiFontAtlas; }
 

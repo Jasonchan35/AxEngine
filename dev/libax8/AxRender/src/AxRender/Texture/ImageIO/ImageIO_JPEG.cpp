@@ -37,8 +37,8 @@ boolean ImageIO_Reader_JPEG::s_fill_input_buffer (j_decompress_ptr cinfo) {
 void ImageIO_Reader_JPEG::s_skip_input_data (j_decompress_ptr cinfo, long num_bytes) {
 	if (num_bytes > 0) {
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
-		cinfo->src->next_input_byte += ax_safe_cast_<size_t>(num_bytes);
-		cinfo->src->bytes_in_buffer -= ax_safe_cast_<size_t>(num_bytes);
+		cinfo->src->next_input_byte += ax_safe_cast_to<size_t>(num_bytes);
+		cinfo->src->bytes_in_buffer -= ax_safe_cast_to<size_t>(num_bytes);
 AX_GCC_WARNING_POP()
 	}
 }

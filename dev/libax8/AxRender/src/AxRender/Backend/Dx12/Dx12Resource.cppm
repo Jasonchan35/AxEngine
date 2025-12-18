@@ -121,7 +121,7 @@ public:
 
 	bool wait(const Opt<Milliseconds>& timeout) {
 		AX_ASSERT(_h != nullptr);
-		DWORD dw = timeout ? ax_safe_cast_<DWORD>(timeout->value) : INFINITE;
+		DWORD dw = timeout ? ax_safe_cast_to<DWORD>(timeout->value) : INFINITE;
 		DWORD ret = ::WaitForSingleObject(_h, dw);
 		if (ret == WAIT_OBJECT_0) return true;
 		if (ret == WAIT_TIMEOUT) return false;
@@ -214,8 +214,9 @@ struct Dx12RootParameterList {
 	using BindPoint = ShaderResourceBindPoint;
 	using SpaceType = ShaderParamSpaceType;
 
-	void addTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table) {
+	void addTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table, UINT* rootIndex) {
 		if (table.descriptorRanges.size() <= 0) return;
+		*rootIndex = ax_safe_cast_from(parameters.size());
 		
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;

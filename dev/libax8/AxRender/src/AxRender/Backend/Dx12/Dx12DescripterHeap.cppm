@@ -25,6 +25,8 @@ public:
 	bool isValid() const { return _d3dHeap.ptr() != nullptr; }
 	void destroy();
 
+	const Dx12DescriptorHandle& handleStart() const { return _handleStart; }
+	
 protected:
 	void _create(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 
@@ -39,13 +41,13 @@ protected:
 		UINT i = ax_safe_cast_from(index);
 		if (i >= _desc.NumDescriptors) throw Error_Undefined();
 		auto offset = i * _stride;
-		outHandle.cpu.ptr = _startHandle.cpu.ptr + offset;
-		outHandle.gpu.ptr = _startHandle.gpu.ptr + offset;
+		outHandle.cpu.ptr = _handleStart.cpu.ptr + offset;
+		outHandle.gpu.ptr = _handleStart.gpu.ptr + offset;
 	}
 	
 	ComPtr<ID3D12DescriptorHeap>	_d3dHeap;
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
-	Dx12DescriptorHandle			_startHandle;
+	Dx12DescriptorHandle			_handleStart;
 	UINT							_stride = 0;
 };
 

@@ -9,17 +9,6 @@ export import :Shader_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
-	AX_RTTI_INFO(ShaderParamSpace_Vk, ShaderParamSpace_Backend)
-public:
-	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
-
-	void createLayout_vk();
-	
-	AX_VkDescriptorSetLayout	_layout_vk;
-};
-
-
 class ShaderPipeline_Vk : public NonCopyable {
 public:
 	struct PsoKey {
@@ -47,6 +36,16 @@ struct VertexInputLayoutDesc_Vk {
 	Array<VkVertexInputAttributeDescription,	64>		attrDesc;
 };
 
+class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
+	AX_RTTI_INFO(ShaderParamSpace_Vk, ShaderParamSpace_Backend)
+public:
+	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
+
+	void createLayout_vk();
+	
+	AX_VkDescriptorSetLayout	_layout_vk;
+};
+
 class ShaderPass_Vk : public ShaderPass_Backend {
 	AX_RTTI_INFO(ShaderPass_Vk, ShaderPass_Backend)
 public:
@@ -59,6 +58,16 @@ public:
 	bool _bindPipeline(class RenderRequest_Vk* req, Cmd_DrawCall& cmd) const;
 
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
+
+	ShaderPass_Vk* getCommonPass_vk() { return rttiCastCheck<ShaderPass_Vk>(getCommonPass()); }
+
+	ShaderParamSpace_Vk* getParamSpace_vk(SpaceType type) {
+		return rttiCastCheck<ShaderParamSpace_Vk>(getParamSpace(type)); 
+	}
+	
+	ShaderParamSpace_Vk* getCommonParamSpace_vk(SpaceType type) {
+		return rttiCastCheck<ShaderParamSpace_Vk>(getCommonParamSpace(type)); 
+	}
 
 private:
 	AX_VkPipelineLayout			_pipelineLayout;

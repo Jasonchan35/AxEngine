@@ -229,7 +229,7 @@ class MaterialPass_Backend : public RenderObject {
 	AX_RTTI_INFO(MaterialPass_Backend, RenderObject)
 public:
 	using CreateDesc = MaterialPass_Backend_CreateDesc;
-	using ParamSpaceType = ShaderParamSpaceType;
+	using SpaceType = ShaderParamSpaceType;
 
 	MaterialPass_Backend(const CreateDesc& desc);
 
@@ -243,17 +243,17 @@ public:
 	void logWarningOnce(StrView msg);
 
 	template<class R>
-	R* getParamSpace_(ParamSpaceType s) {
+	R* getParamSpace_(SpaceType s) {
 		return rttiCastCheck<R>(getParamSpace(s));
 	}
 
-	MaterialParamSpace_Backend* getParamSpace(ParamSpaceType s) {
+	MaterialParamSpace_Backend* getParamSpace(SpaceType s) {
 		auto* pp = _materialParamSpaces.tryGetElement(ax_enum_int(s));
 		return pp ? pp->ptr() : nullptr;
 	}
 
 	template<class V>
-	bool setParamSpaceParam(ParamSpaceType space, NameId name, const V& v) {
+	bool setParamSpaceParam(SpaceType space, NameId name, const V& v) {
 		auto* p = getParamSpace(space);
 		return p ? p->setParam(name, v) : false;
 	}

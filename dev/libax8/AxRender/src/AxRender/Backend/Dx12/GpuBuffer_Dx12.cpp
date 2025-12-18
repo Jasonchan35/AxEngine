@@ -7,8 +7,6 @@ import :RenderRequest_Dx12;
 namespace  ax {
 
 void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
-#if 1 // TODO: cause error when cmdList->Close()
-	
 	auto* dst_dx12 = this;
 	auto* src_dx12 = rttiCastCheck<GpuBuffer_Dx12>(src);
 	if (!dst_dx12 || !src_dx12) throw Error_Undefined();
@@ -30,8 +28,6 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 
 	// srcRes.resourceBarrier(cmdList_dx, srcOldState);
 	// dstRes.resourceBarrier(cmdList_dx, dstOldState);
-
-	#endif
 }
 
 }

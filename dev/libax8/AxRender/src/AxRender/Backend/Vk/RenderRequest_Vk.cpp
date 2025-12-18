@@ -117,7 +117,7 @@ void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
 		constexpr u32 firstBinding = ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
 		constexpr u32 bindingCount = 1 ;
 		auto vertexLayout = drawcall.vertexLayout;
-		VkDeviceSize offset = 0; // vertexStart * vertexLayout->strideInBytes;
+		VkDeviceSize offset = 0;
 		vkCmdBindVertexBuffers(_graphCmdBuf_vk, firstBinding, bindingCount, &vb->vkBufHandle(), &offset);
 	}
 

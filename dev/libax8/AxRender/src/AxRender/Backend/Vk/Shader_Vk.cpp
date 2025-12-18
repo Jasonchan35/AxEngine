@@ -47,21 +47,16 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 	Array<VkDescriptorSetLayout, 8> layouts;
 
-	const auto* commonPass = rttiCastCheck<ShaderPass_Vk>(getCommonPass());
-
-	for (auto spaceType = ParamSpaceType::Default; spaceType < ParamSpaceType::_COUNT; ++spaceType) {
+	for (auto spaceType = SpaceType::Default; spaceType < SpaceType::_COUNT; ++spaceType) {
+		auto* space = getParamSpace_vk(spaceType);
+		auto* selectSpace = space;
 		if (shouldUseCommonParamSpace(spaceType)) {
-			// get from commonPass
-			if (auto* sp = commonPass->getParamSpace_<ShaderParamSpace_Vk>(spaceType)) {
-				layouts.emplaceBack(sp->_layout_vk);
-			}
+			selectSpace = getCommonParamSpace_vk(spaceType);
 		} else {
-			// create own one
-			if (auto* sp = this->getParamSpace_<ShaderParamSpace_Vk>(spaceType)) {
-				sp->createLayout_vk();
-				layouts.emplaceBack(sp->_layout_vk);
-			}
+			space->createLayout_vk();
 		}
+
+		layouts.emplaceBack(selectSpace->_layout_vk);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {

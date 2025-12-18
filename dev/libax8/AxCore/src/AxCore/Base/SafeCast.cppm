@@ -37,7 +37,7 @@ constexpr Opt<DST> ax_try_safe_cast_(const SRC& src) noexcept {
 }
 
 template<class DST, class SRC> constexpr
-DST ax_safe_cast_(const SRC& src) {
+DST ax_safe_cast_to(const SRC& src) {
 	if constexpr (Type_IsSame<std::remove_cv_t<DST>, std::remove_cv_t<SRC>>) {
 		return src;
 
@@ -53,7 +53,7 @@ template<class SRC>
 struct ax_safe_cast_from {
 	const SRC& src;
 	constexpr ax_safe_cast_from(const SRC& src_) : src(src_) {}
-	template <typename DST>	constexpr operator DST() const { return ax_safe_cast_<DST>(src); }
+	template <typename DST>	constexpr operator DST() const { return ax_safe_cast_to<DST>(src); }
 };
 
 template<class SRC>

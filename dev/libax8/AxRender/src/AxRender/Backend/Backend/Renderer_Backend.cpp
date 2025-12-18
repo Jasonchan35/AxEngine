@@ -74,7 +74,7 @@ Material_Backend* Renderer_Backend::commonMaterial() {
 	return _privateData->commonMaterial;
 }
 
-const Shader_Backend* Renderer_Backend::commonShader() {
+Shader_Backend* Renderer_Backend::commonShader() {
 	auto& m = _privateData->commonMaterial;
 	return m ? m->shader_backend() : nullptr;
 }
