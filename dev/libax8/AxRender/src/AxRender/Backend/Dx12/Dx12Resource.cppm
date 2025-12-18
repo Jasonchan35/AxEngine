@@ -194,6 +194,94 @@ private:
 	ComPtr<AX_DX12_IDXGISwapChain>	_swapChain;
 };
 
+struct Dx12DescriptorTable {
+	Array<D3D12_DESCRIPTOR_RANGE>	descriptorRanges;
+
+	using BindPoint = ShaderResourceBindPoint;
+	using SpaceType = ShaderParamSpaceType;
+
+	void addDescriptor(D3D12_DESCRIPTOR_RANGE_TYPE type, BindPoint bindPoint, Int bindCount, SpaceType spaceType) {
+		auto& dst                             = descriptorRanges.emplaceBack();
+		dst.RangeType                         = type;
+		dst.NumDescriptors                    = Dx12Util::castUINT(bindCount);
+		dst.BaseShaderRegister                = Dx12Util::castUINT(ax_enum_int(bindPoint));
+		dst.RegisterSpace                     = Dx12Util::castUINT(ax_enum_int(spaceType));
+		dst.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	}
+};
+
+struct Dx12RootParameterList {
+	using BindPoint = ShaderResourceBindPoint;
+	using SpaceType = ShaderParamSpaceType;
+
+	void addTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table) {
+		auto& dst = parameters.emplaceBack();
+		dst.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		dst.ShaderVisibility                    = shaderVisibility;
+		dst.DescriptorTable.NumDescriptorRanges = Dx12Util::castUINT(table.descriptorRanges.size());
+		dst.DescriptorTable.pDescriptorRanges   = table.descriptorRanges.data();
+	}
+
+	void add_u32(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, SpaceType	spaceType, u32 u32_value) {
+		auto& dst = parameters.emplaceBack();
+		dst.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		dst.ShaderVisibility         = shaderVisibility;
+		dst.Constants.ShaderRegister = Dx12Util::castUINT(ax_enum_int(bindPoint));
+		dst.Constants.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(spaceType));
+		dst.Constants.Num32BitValues = u32_value;
+	}
+
+	void addCBV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, SpaceType spaceType) {
+		auto& dst = parameters.emplaceBack();
+		dst.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		dst.ShaderVisibility          = shaderVisibility;
+		dst.Descriptor.ShaderRegister = Dx12Util::castUINT(ax_enum_int(bindPoint));
+		dst.Descriptor.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(spaceType));	
+	}
+
+	void addSRV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, SpaceType spaceType) {
+		auto& dst = parameters.emplaceBack();
+		dst.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_SRV;
+		dst.ShaderVisibility          = shaderVisibility;
+		dst.Descriptor.ShaderRegister = Dx12Util::castUINT(ax_enum_int(bindPoint));
+		dst.Descriptor.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(spaceType));	
+	}
+
+	void addUAV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, SpaceType spaceType) {
+		auto& dst = parameters.emplaceBack();
+		dst.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_UAV;
+		dst.ShaderVisibility          = shaderVisibility;
+		dst.Descriptor.ShaderRegister = Dx12Util::castUINT(ax_enum_int(bindPoint));
+		dst.Descriptor.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(spaceType));	
+	}
+
+	void addStaticSampler(D3D12_SHADER_VISIBILITY shaderVisibility,
+	                      BindPoint               bindPoint,
+	                      SpaceType               spaceType,
+	                      SamplerFilter           filter,
+	                      SamplerWrapUVW          wrap
+	) {
+		auto& dst            = staticSamplers.emplaceBack();
+		dst.ShaderVisibility = shaderVisibility;
+		dst.Filter           = Dx12Util::getDxSamplerFilter(filter);
+		dst.AddressU         = Dx12Util::getDxSamplerWrap(wrap.u);
+		dst.AddressV         = Dx12Util::getDxSamplerWrap(wrap.v);
+		dst.AddressW         = Dx12Util::getDxSamplerWrap(wrap.w);
+		dst.MipLODBias       = 0;
+		dst.MaxAnisotropy    = 0;
+		dst.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
+		dst.BorderColor      = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+		dst.MinLOD           = 0.0f;
+		dst.MaxLOD           = D3D12_FLOAT32_MAX;
+		dst.ShaderRegister   = Dx12Util::castUINT(ax_enum_int(bindPoint));
+		dst.RegisterSpace    = Dx12Util::castUINT(ax_enum_int(spaceType));
+	}
+
+	Array<D3D12_ROOT_PARAMETER>		 parameters;
+	Array<D3D12_STATIC_SAMPLER_DESC> staticSamplers;
+};
+
+
 } // namespace
 
 #endif //AX_RENDERER_DX12

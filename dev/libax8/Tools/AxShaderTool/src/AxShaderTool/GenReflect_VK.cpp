@@ -234,7 +234,7 @@ template<class PARAM>
 void GenReflect_Vk::_genParamBase(PARAM& dst, ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	dst.stageFlags = outInfo.stageFlags;
 	dst.name  = StrView_c_str(binding->name);
-	dst.paramSpaceType = ax_safe_cast_from(binding->set);
+	dst.spaceType = ax_safe_cast_from(binding->set);
 	dst.bindPoint = ax_safe_cast_from(binding->binding);
 
 	if (binding->array.dims_count == 1) {

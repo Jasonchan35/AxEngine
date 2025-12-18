@@ -44,11 +44,11 @@ public:
 	struct ParamBase : public NonCopyable {
 		using Info = ShaderStageInfo::ParamBase;
 
-		NameId			 name() const { return _name; }
-		RenderDataType		 dataType() const { return _dataType; }
+		NameId           name() const { return _name; }
+		RenderDataType   dataType() const { return _dataType; }
 		ShaderStageFlags stageFlags() const { return _stageFlags; }
-		BindPoint		 bindPoint() const { return _bindPoint; }
-		Int				 bindCount() const { return _bindCount; }
+		BindPoint        bindPoint() const { return _bindPoint; }
+		Int              bindCount() const { return _bindCount; }
 
 	protected:
 		void	create(const Info& info);
@@ -216,6 +216,8 @@ public:
 
 	const ShaderPassInfo*	info() const	{ return _info; }
 
+	bool shouldUseCommonParamSpace(ShaderParamSpaceType spaceType) const;
+
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
 	
 	template<class R>       R* getParamSpace_(ParamSpaceType s)       { return rttiCastCheck<R>(getParamSpace(s)); }
@@ -229,6 +231,8 @@ public:
 	const ShaderParamSpace_Backend*	getParamSpace(ParamSpaceType s) const {
 		return ax_const_cast(this)->getParamSpace(s);
 	}
+
+	const ShaderPass_Backend* getCommonPass() const;
 
 friend class Shader_Backend;
 protected:
@@ -266,25 +270,17 @@ public:
 
 	NameId getPropSamplerName(NameId name) const;
 
-	template<class R> const R* getPassParamSpace_(Int pass, ParamSpaceType s) const {
-		return rttiCastCheck<R>(getPassParamSpace(pass, s));
-	}
-
 	const ShaderParamSpace_Backend*	getPassParamSpace(Int pass, ParamSpaceType s) const {
 		auto* pp = _passes.tryGetElement(pass);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;
 	}
 
-	template<class R> const R* getPass_(Int pass) const {
-		return rttiCastCheck<R>(getPass(pass));
-	}
-
 	const ShaderPass_Backend* getPass(Int pass) const {
 		auto* pp = _passes.tryGetElement(pass);
 		return pp ? pp->ptr() : nullptr;
 	}
-
+	
 	bool isGlobalCommonShader() const { return _isGlobalCommonShader; }
 
 	void hotReloadFile();
@@ -336,5 +332,9 @@ NameId Shader_Backend::getPropSamplerName(NameId name) const {
 	return NameId();
 }
 
+inline
+bool ShaderPass_Backend::shouldUseCommonParamSpace(ShaderParamSpaceType spaceType) const {
+	return !_shader->isGlobalCommonShader() && ShaderParamSpaceType_isCommon(spaceType);
+}
 
 } // namespace

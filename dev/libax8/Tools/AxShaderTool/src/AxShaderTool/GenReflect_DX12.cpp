@@ -400,20 +400,20 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 
 		if (resDesc.Type != D3D_SIT_CBUFFER) continue;
 
-		auto& outCB = outInfo.constBuffers.emplaceBack();
+		auto& outCB      = outInfo.constBuffers.emplaceBack();
 		outCB.stageFlags = outInfo.stageFlags;
-		outCB.dataType = RenderDataType::ConstBuffer;
+		outCB.dataType   = RenderDataType::ConstBuffer;
 
 		D3D12_SHADER_BUFFER_DESC bufDesc;
 		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);
 		hr = cb->GetDesc(&bufDesc);
 		checkError(hr);
 
-		outCB.name = StrView_c_str(bufDesc.Name);
-		outCB.bindPoint		 = ax_safe_cast_from(resDesc.BindPoint);
-		outCB.bindCount		 = ax_safe_cast_from(resDesc.BindCount);
-		outCB.paramSpaceType = ax_safe_cast_from(resDesc.Space);
-		outCB.dataSize		 = ax_safe_cast_from(bufDesc.Size);
+		outCB.name      = StrView_c_str(bufDesc.Name);
+		outCB.bindPoint = ax_safe_cast_from(resDesc.BindPoint);
+		outCB.bindCount = ax_safe_cast_from(resDesc.BindCount);
+		outCB.spaceType = ax_safe_cast_from(resDesc.Space);
+		outCB.dataSize  = ax_safe_cast_from(bufDesc.Size);
 
 		outCB.variables.ensureCapacity(bufDesc.Variables);
 		for (UINT j=0; j<bufDesc.Variables; j++) {
@@ -494,12 +494,12 @@ void GenReflect_Dx12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 
 		if (resDesc.Type != D3D_SIT_TEXTURE) continue;
 
-		auto& outTex = outInfo.textures.emplaceBack();
+		auto& outTex      = outInfo.textures.emplaceBack();
 		outTex.stageFlags = outInfo.stageFlags;
-		outTex.name = StrView_c_str(resDesc.Name);
-		outTex.bindPoint      = ax_safe_cast_from(resDesc.BindPoint);
-		outTex.bindCount      = ax_safe_cast_from(resDesc.BindCount);
-		outTex.paramSpaceType = ax_safe_cast_from(resDesc.Space);
+		outTex.name       = StrView_c_str(resDesc.Name);
+		outTex.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
+		outTex.bindCount  = ax_safe_cast_from(resDesc.BindCount);
+		outTex.spaceType  = ax_safe_cast_from(resDesc.Space);
 
 		switch (resDesc.Dimension) {
 			case D3D_SRV_DIMENSION_TEXTURE1D:		outTex.dataType = RenderDataType::Texture1D;   break;
@@ -536,13 +536,13 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 
 		if (resDesc.Type != D3D_SIT_SAMPLER) continue;
 
-		auto& outSampler = outInfo.samplers.emplaceBack();
+		auto& outSampler      = outInfo.samplers.emplaceBack();
 		outSampler.stageFlags = outInfo.stageFlags;
-		outSampler.dataType = RenderDataType::SamplerState;
-		outSampler.name = StrView_c_str(resDesc.Name);
-		outSampler.bindPoint      = ax_safe_cast_from(resDesc.BindPoint);
-		outSampler.bindCount      = ax_safe_cast_from(resDesc.BindCount);
-		outSampler.paramSpaceType = ax_safe_cast_from(resDesc.Space);
+		outSampler.dataType   = RenderDataType::SamplerState;
+		outSampler.name       = StrView_c_str(resDesc.Name);
+		outSampler.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
+		outSampler.bindCount  = ax_safe_cast_from(resDesc.BindCount);
+		outSampler.spaceType  = ax_safe_cast_from(resDesc.Space);
 	}
 }
 
@@ -558,15 +558,14 @@ void GenReflect_Dx12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, I
 		 && resDesc.Type != D3D_SIT_UAV_RWSTRUCTURED
 		 && resDesc.Type != D3D_SIT_UAV_RWBYTEADDRESS) continue;
 
-		auto& sbuf = outInfo.storageBuffers.emplaceBack();
+		auto& sbuf      = outInfo.storageBuffers.emplaceBack();
 		sbuf.stageFlags = outInfo.stageFlags;
-		sbuf.dataType = RenderDataType::StorageBuffer;
-		sbuf.name = StrView_c_str(resDesc.Name);
-		sbuf.bindPoint      = ax_safe_cast_from(resDesc.BindPoint);
-		sbuf.bindCount      = ax_safe_cast_from(resDesc.BindCount);
-		sbuf.paramSpaceType = ax_safe_cast_from(resDesc.Space);
-
-		sbuf.rawUAV = (resDesc.Type == D3D_SIT_UAV_RWBYTEADDRESS);
+		sbuf.dataType   = RenderDataType::StorageBuffer;
+		sbuf.name       = StrView_c_str(resDesc.Name);
+		sbuf.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
+		sbuf.bindCount  = ax_safe_cast_from(resDesc.BindCount);
+		sbuf.spaceType  = ax_safe_cast_from(resDesc.Space);
+		sbuf.rawUAV     = (resDesc.Type == D3D_SIT_UAV_RWBYTEADDRESS);
 	}
 }
 

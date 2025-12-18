@@ -21,9 +21,9 @@ void Sampler_Vk::onCreate(const CreateDesc& desc) {
 	info.magFilter					= AX_VkUtil::getVkSamplerFilter(ss.filter);
 	info.minFilter					= AX_VkUtil::getVkSamplerFilter(ss.filter);
 	info.mipmapMode					= AX_VkUtil::getVkSamplerMipmapMode(ss.filter);
-	info.addressModeU				= AX_VkUtil::getVkSamplerWrap(ss.wrapU);
-	info.addressModeV				= AX_VkUtil::getVkSamplerWrap(ss.wrapV);
-	info.addressModeW				= AX_VkUtil::getVkSamplerWrap(ss.wrapW);
+	info.addressModeU				= AX_VkUtil::getVkSamplerWrap(ss.wrap.u);
+	info.addressModeV				= AX_VkUtil::getVkSamplerWrap(ss.wrap.v);
+	info.addressModeW				= AX_VkUtil::getVkSamplerWrap(ss.wrap.w);
 	info.mipLodBias					= 0.0f;
 	info.anisotropyEnable			= VK_FALSE;
 	info.maxAnisotropy				= 1;

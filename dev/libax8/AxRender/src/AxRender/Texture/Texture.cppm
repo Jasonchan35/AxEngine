@@ -24,43 +24,79 @@ AX_ENUM_CLASS(AX_RENDER_SamplerFilter_ENUM_LIST, SamplerFilter, u8)
 //----
 AX_ENUM_CLASS(AX_RENDER_SamplerWrap_EnumList, SamplerWrap, u8)
 
+class SamplerWrapUVW {
+	using T = SamplerWrap;
+	static constexpr Int N = 3;
+public:
+	static constexpr Int kElementCount = N;
+
+	SamplerWrap u, v, w;
+	SamplerWrapUVW(SamplerWrap u_, SamplerWrap v_, SamplerWrap w_)
+		: u(u_)
+		, v(v_)
+		, w(w_) {
+	};
+
+	SamplerWrapUVW(TagAll_T, SamplerWrap wrap)
+		: u(wrap)
+		, v(wrap)
+		, w(wrap) {
+	}
+
+	void set(SamplerWrap u_, SamplerWrap v_, SamplerWrap w_) {
+		u = u_;
+		v = v_;
+		w = w_;
+	}
+
+	void set(TagAll_T, SamplerWrap wrap) {
+		u = wrap;
+		v = wrap;
+		w = wrap;
+	}
+
+	using CSpan =    Span<T>;
+	using MSpan = MutSpan<T>;
+
+	using CFixedSpan =    FixedSpan<T, N>;
+	using MFixedSpan = MutFixedSpan<T, N>;
+
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(&u); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(&u); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }	
+};
+
 class SamplerState {
 	using This = SamplerState;
 public:
 	SamplerState() {
 		filter	= SamplerFilter::Bilinear;
-		wrapU	= SamplerWrap::Repeat;
-		wrapV	= SamplerWrap::Repeat;
-		wrapW	= SamplerWrap::Repeat;
+		wrap	= {TagAll, SamplerWrap::Repeat};
 	}
 
 	union {
 		struct {
 			SamplerFilter	filter;
-			SamplerWrap		wrapU;
-			SamplerWrap		wrapV;
-			SamplerWrap		wrapW;
+			SamplerWrapUVW	wrap;
 		};
 		u32 _packed;
 	};
-
-	void setWrap(SamplerWrap wrap) { wrapU = wrapV = wrapW = wrap; }
-
+	
 	float	minLOD	= 0;
 	float	maxLOD	= Math::infinity();
 
 	template<class SE>
 	void onJsonIO(SE& se) {
 		AX_JSON_IO(se, filter);
-		AX_JSON_IO(se, wrapU);
-		AX_JSON_IO(se, wrapV);
-		AX_JSON_IO(se, wrapW);
+		AX_JSON_IO(se, wrap);
 		AX_JSON_IO(se, minLOD);
 		AX_JSON_IO(se, maxLOD);
 	}
 
 	HashInt onHashInt() const {
-		static_assert(AX_SIZEOF(_packed) == AX_SIZEOF(filter) + AX_SIZEOF(wrapU) + AX_SIZEOF(wrapV) + AX_SIZEOF(wrapW));
+		static_assert(AX_SIZEOF(_packed) == AX_SIZEOF(filter) + AX_SIZEOF(wrap));
 		u64 u = static_cast<u64>(_packed) ^ ax_bit_cast<u32>(minLOD) ^ ax_bit_cast<u32>(minLOD);
 		return HashInt::s_make(u);
 	}
@@ -87,10 +123,10 @@ public:
 	const ResourceKey& resourceKey() const { return _samplerState; }
 
 	static SPtr<Sampler> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-	static SPtr<Sampler> s_new(const MemAllocRequest& req, SamplerFilter filter, SamplerWrap wrap) {
+	static SPtr<Sampler> s_new(const MemAllocRequest& req, SamplerFilter filter, SamplerWrapUVW wrap) {
 		CreateDesc desc;
 		desc.samplerState.filter = filter;
-		desc.samplerState.setWrap(wrap);
+		desc.samplerState.wrap   = wrap;
 		return s_new(req, desc);
 	}
 

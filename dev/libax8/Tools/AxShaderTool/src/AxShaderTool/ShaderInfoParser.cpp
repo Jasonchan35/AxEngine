@@ -480,13 +480,13 @@ void ShaderInfoParser::readPass() {
 
 void ShaderInfoParser::readSamplerWrap(SamplerState& ss) {
 	if (matchOp("[")) {
-		readEnum(ss.wrapU);
+		readEnum(ss.wrap.u);
 
 		if (matchOp(",")) {
-			readEnum(ss.wrapV);
+			readEnum(ss.wrap.v);
 
 			if (matchOp(",")) {
-				readEnum(ss.wrapW);
+				readEnum(ss.wrap.w);
 			}
 		}
 
@@ -494,9 +494,9 @@ void ShaderInfoParser::readSamplerWrap(SamplerState& ss) {
 		return;
 	}
 	
-	readEnum(ss.wrapU);
-	ss.wrapV = ss.wrapU;
-	ss.wrapW = ss.wrapU;
+	readEnum(ss.wrap.w);
+	ss.wrap.v = ss.wrap.v;
+	ss.wrap.w = ss.wrap.w;
 }
 
 } // namespace

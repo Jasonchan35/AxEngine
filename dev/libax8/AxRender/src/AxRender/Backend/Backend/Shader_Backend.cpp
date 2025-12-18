@@ -25,7 +25,7 @@ void ShaderParamSpace_Backend::ConstBuffer::setVariableDefault(const VarInfo& va
 
 template<class T, class INFO>
 void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) {
-	AX_ASSERT(paramInfo.paramSpaceType == paramSpaceType());
+	AX_ASSERT(paramInfo.spaceType == spaceType());
 
 	auto& dst = arr.emplaceBack();
 	dst.create(paramInfo);
@@ -166,26 +166,23 @@ ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 
 template<class T>
 void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
-	auto isGlobalCommonShader = _shader->isGlobalCommonShader();
-
 	for (auto& param : paramInfoSpan) {
-		if (!isGlobalCommonShader) {
-			if (param.paramSpaceType != ParamSpaceType::Default)
-				continue;
+		auto spaceType = param.spaceType;
+		if (shouldUseCommonParamSpace(spaceType)) {
+			continue;
 		}
 
-		auto paramSpaceType = ax_enum_int(param.paramSpaceType);
+		auto paramSpaceType = ax_enum_int(spaceType);
 		if (paramSpaceType < 0 || paramSpaceType >= ax_enum_int(ParamSpaceType::_COUNT)) {
 			AX_ASSERT(false);
-			return;
+			continue;
 		}
 
 		auto& space = _shaderParamSpaces.ensureSizeAndGetElement(paramSpaceType);
-
 		if (!space) {
-			ShaderParamSpace_CreateDesc blockDesc;
-			blockDesc.paramSpaceType = param.paramSpaceType;
-			auto p = ShaderParamSpace::s_new(AX_ALLOC_REQ, blockDesc);
+			ShaderParamSpace_CreateDesc spaceDesc;
+			spaceDesc.spaceType = spaceType;
+			auto p = ShaderParamSpace::s_new(AX_ALLOC_REQ, spaceDesc);
 			space = rttiCastCheck<ShaderParamSpace_Backend>(p.ptr());
 		}
 
@@ -276,6 +273,11 @@ void Shader_Backend::onLoadFile() {
 
 void Shader_Backend::onDestroy() {
 	_passes.clear();
+}
+
+const ShaderPass_Backend* ShaderPass_Backend::getCommonPass() const {
+	auto* sh = Renderer_Backend::s_instance()->commonShader();
+	return sh ? sh->getPass(0) : nullptr;
 }
 
 void Shader_Backend::hotReloadFile() {

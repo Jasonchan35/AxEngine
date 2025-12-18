@@ -8,8 +8,15 @@ namespace ax {
 
 
 bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
-	// AX_ASSERT_TODO;
-	// return false;
+	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
+	if (!req) { AX_ASSERT(false); return false; }
+
+	auto* shdPass = shaderPass_dx12();
+	if (!shdPass) { AX_ASSERT(false); return false; }
+
+	if (!shdPass->_bindPipeline(req, cmd)) return false;
+	
+	
 
 	return true;
 }

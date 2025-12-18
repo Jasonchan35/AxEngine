@@ -51,6 +51,8 @@ class MaterialPass_Vk : public MaterialPass_Backend {
 public:
 	MaterialPass_Vk(const CreateDesc& desc);
 
+	const ShaderPass_Vk* shaderPass_vk() const { return rttiCastCheck<ShaderPass_Vk>(shaderPass()); }
+
 	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 };
 

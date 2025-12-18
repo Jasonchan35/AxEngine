@@ -23,6 +23,11 @@ struct RenderMemoryInfo {
 //-----
 AX_ENUM_CLASS(AX_RenderParamSpace_ENUM_LIST, ShaderParamSpaceType, u16);
 
+constexpr bool ShaderParamSpaceType_isCommon(ShaderParamSpaceType t) {
+	using Type = ShaderParamSpaceType;
+	return t == Type::Global || t == Type::PerFrame || t == Type::PerObject;
+}
+
 // HLSL: "shader register", DX: Space, Vulkan: "binding"
 enum class ShaderResourceBindPoint : u16 {
 	GlobalConstBuffer = 0,

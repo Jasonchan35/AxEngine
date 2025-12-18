@@ -128,8 +128,8 @@ public:
 	RenderContext_Null(const CreateDesc& desc) : Base(desc) {}
 	virtual ~RenderContext_Null() override = default;
 protected:
-	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return AxTag::Zero; }
-	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return AxTag::Zero; }
+	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return TagZero; }
+	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return TagZero; }
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override { return nullptr; }
 	virtual void	onPresentSurface(RenderRequest* req) override {}
 };

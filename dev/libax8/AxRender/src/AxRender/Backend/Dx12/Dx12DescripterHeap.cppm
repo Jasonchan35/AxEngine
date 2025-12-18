@@ -81,7 +81,7 @@ public:
 	}
 };
 
-struct Dx12DescriptorHandle_Sampler		 { Dx12DescriptorHandle handle; };
+struct Dx12DescriptorHandle_Sampler	{ Dx12DescriptorHandle handle; };
 
 class Dx12DescripterHeap_Sampler : public Dx12DescripterHeap_Base {
 public:

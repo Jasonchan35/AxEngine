@@ -21,9 +21,7 @@
         "defaultValue": "White", 
         "samplerState": {
           "filter": "Bilinear", 
-          "wrapU": "Repeat", 
-          "wrapV": "Clamp", 
-          "wrapW": "Repeat", 
+          "wrap": ["Repeat", "Clamp", "Repeat"], 
           "minLOD": 0, 
           "maxLOD": "Infinity"
         }
@@ -35,9 +33,7 @@
         "defaultValue": "Blue", 
         "samplerState": {
           "filter": "Bilinear", 
-          "wrapU": "Repeat", 
-          "wrapV": "Repeat", 
-          "wrapW": "Repeat", 
+          "wrap": ["Repeat", "Repeat", "Repeat"], 
           "minLOD": 0, 
           "maxLOD": "Infinity"
         }
@@ -85,7 +81,7 @@
           "name": "$Global", 
           "dataType": "ConstBuffer", 
           "stageFlags": 2, 
-          "paramSpaceType": 0, 
+          "spaceType": 0, 
           "bindPoint": 0, 
           "bindCount": 1, 
           "dataSize": 48, 

@@ -48,7 +48,7 @@
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
           "stageFlags": 3, 
-          "paramSpaceType": 0, 
+          "spaceType": 0, 
           "bindPoint": 0, 
           "bindCount": 1, 
           "dataSize": 80, 

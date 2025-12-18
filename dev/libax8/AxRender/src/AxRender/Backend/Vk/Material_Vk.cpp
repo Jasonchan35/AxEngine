@@ -159,7 +159,7 @@ void MaterialParamSpace_Vk::_nextDescriptorSet(RenderRequest_Vk* req, const Shad
 		_descriptorPool.create(dev, poolSizes, renderRequestCount, poolFlags);
 
 		for (Int i = 0; i < renderRequestCount; i++) {
-			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->descriptorSetLayout());
+			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->layout_vk());
 //#if AX_DEBUG_NAME
 //			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, paramSpaceType()));
 //#endif
@@ -177,12 +177,10 @@ VkDescriptorSet MaterialParamSpace_Vk::getLastDescriptorSet() {
 
 
 bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
-	if (!shaderPass()) { AX_ASSERT(false); return false; }
-
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return false; }
 
-	auto* shdPass = rttiCastCheck<ShaderPass_Vk>(shaderPass());
+	auto* shdPass = shaderPass_vk();
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
 	if (!shdPass->_bindPipeline(req, cmd)) return false;

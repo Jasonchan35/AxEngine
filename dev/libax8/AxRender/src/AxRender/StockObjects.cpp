@@ -20,10 +20,10 @@ StockObjects::Samplers::Samplers()
 }
 
 StockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
-	Clamp      = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrap::Clamp     );
-	Repeat     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrap::Repeat    );
-	Mirror     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrap::Mirror    );
-	MirrorOnce = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrap::MirrorOnce);
+	Clamp      = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Clamp     ));
+	Repeat     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Repeat    ));
+	Mirror     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Mirror    ));
+	MirrorOnce = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::MirrorOnce));
 }
 
 StockObjects* StockObjects::s_instance() { return StockObjects_instance; }

@@ -14,7 +14,7 @@ import :Material_Vk;
 namespace ax /*::AxRender*/ {
 
 
-VkDescriptorSetLayout ShaderParamSpace_Vk::createDescriptorSetLayout() {
+VkDescriptorSetLayout ShaderParamSpace_Vk::createLayout_vk() {
 	AX_VkDescriptorSetLayoutBindings	bindings;
 
 #if AX_RENDER_BINDLESS
@@ -25,26 +25,18 @@ VkDescriptorSetLayout ShaderParamSpace_Vk::createDescriptorSetLayout() {
 	VkDescriptorBindingFlags		 bindingFlags = 0;
 #endif
 
-	for (auto& param : _constBuffers) {
-		bindings.addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), param.bindCount(), param.stageFlags(), bindingFlags);
-	}
-
-	for (auto& param : _textureParams) {
-		bindings.addBinding(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, param.bindPoint(), param.bindCount(), param.stageFlags(), bindingFlags);
-	}
-
-	for (auto& param : _samplerParams) {
-		bindings.addBinding(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), param.bindCount(), param.stageFlags(), bindingFlags);
-	}
-
-	for (auto& param : _storageBufferParams) {
-		bindings.addBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), param.bindCount(), param.stageFlags(), bindingFlags);
-	}
+	auto addBinding = [&bindings, bindingFlags](ParamBase& p, VkDescriptorType type) {
+		bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
+	};
+	for (auto& param : _constBuffers       ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
+	for (auto& param : _textureParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
+	for (auto& param : _samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
+	for (auto& param : _storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
 	auto* renderer = Renderer_Vk::s_instance();
-	_descriptorSetLayout.create(renderer->device(), bindings, layoutFlags);
+	_layout_vk.create(renderer->device(), bindings, layoutFlags);
 
-	return _descriptorSetLayout.handle();
+	return _layout_vk.handle();
 }
 
 ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
@@ -57,36 +49,20 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 	Array<VkDescriptorSetLayout, 8> layouts;
 
-	auto addLayout = [&](const ShaderPass_Vk* pass, ParamSpaceType space) {
-		auto* block = pass->getParamSpace_<ShaderParamSpace_Vk>(space);
-		if (!block) return;
-		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->descriptorSetLayout();
-	};
+	const auto* commonPass = rttiCastCheck<ShaderPass_Vk>(getCommonPass());
 
-	auto createLayout = [&](ShaderPass_Vk* pass, ParamSpaceType space) {
-		auto* block = pass->getParamSpace_<ShaderParamSpace_Vk>(space);
-		if (!block) return;
-		layouts.ensureSizeAndGetElement(ax_enum_int(space)) = block->createDescriptorSetLayout();
-	};
-
-	if (_shader->isGlobalCommonShader()) {
-		for (auto space = ParamSpaceType::Default; space < ParamSpaceType::_COUNT; ++space) {
-			createLayout(this, space);
+	for (auto spaceType = ParamSpaceType::Default; spaceType < ParamSpaceType::_COUNT; ++spaceType) {
+		if (shouldUseCommonParamSpace(spaceType)) {
+			// get from commonPass
+			if (auto* sp = commonPass->getParamSpace_<ShaderParamSpace_Vk>(spaceType)) {
+				layouts.emplaceBack(sp->layout_vk());
+			}
+		} else {
+			// create own one
+			if (auto* sp = this->getParamSpace_<ShaderParamSpace_Vk>(spaceType)) {
+				layouts.emplaceBack(sp->createLayout_vk());
+			}
 		}
-
-	} else {
-	// Default Shader
-		createLayout(this, ParamSpaceType::Default);
-	//-----
-		auto* commonShader = renderer->commonShader();
-		if (!commonShader) throw Error_Undefined();
-
-		auto* commonPass = commonShader->getPass_<ShaderPass_Vk>(0);
-		if (!commonPass) throw Error_Undefined();
-
-		addLayout(commonPass, ParamSpaceType::Global);
-		addLayout(commonPass, ParamSpaceType::PerFrame);
-		addLayout(commonPass, ParamSpaceType::PerObject);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
@@ -101,7 +77,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 	_pipelineLayout.create(dev, layouts);
 }
 
-ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
+auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 	// TODO pick compatible key.renderPass instead
 
 	for (auto& pipeline : _pipelineTable) {
@@ -110,11 +86,11 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 		}
 	}
 
-	auto& outPipeline = _pipelineTable.emplaceNew(AX_ALLOC_REQ);
+	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_ALLOC_REQ);
 	outPipeline->key = key;
 
 	auto& dev = Renderer_Vk::s_instance()->device();
-	auto& renderState = _info->renderState;
+	auto& rs  = _info->renderState;
 
 //-----
 	VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
@@ -216,10 +192,11 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 
 	rasterizationState.rasterizerDiscardEnable	= VK_FALSE;
 
-	rasterizationState.polygonMode	= key.debugWireframe ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL;
+//	rasterizationState.polygonMode	= key.debugWireframe ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL;
+	rasterizationState.polygonMode	= VK_POLYGON_MODE_FILL;
 	AX_VkDevice_RequireFeature(feature_v10.fillModeNonSolid, rasterizationState.polygonMode, VK_POLYGON_MODE_FILL);
 
-	rasterizationState.cullMode					= AX_VkUtil::getVkCullMode(renderState.cull);
+	rasterizationState.cullMode					= AX_VkUtil::getVkCullMode(rs.cull);
 	rasterizationState.frontFace				= VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizationState.depthBiasEnable			= VK_FALSE;
 	rasterizationState.depthBiasConstantFactor	= 0;
@@ -241,16 +218,15 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 	Array<VkPipelineColorBlendAttachmentState, 16> colorBlendAttachmentStates;
 
 	{
-		auto& blend = renderState.blend;
 		auto& cb = colorBlendAttachmentStates.emplaceBack();
-		if (blend.isEnable()) {
-			cb.blendEnable			= blend.isEnable();
-			cb.colorBlendOp			= AX_VkUtil::getVkBlendOp(blend.rgb.op);
-			cb.alphaBlendOp			= AX_VkUtil::getVkBlendOp(blend.alpha.op);
-			cb.srcColorBlendFactor	= AX_VkUtil::getVkBlendFactor(blend.rgb.srcFactor);
-			cb.dstColorBlendFactor	= AX_VkUtil::getVkBlendFactor(blend.rgb.dstFactor);
-			cb.srcAlphaBlendFactor	= AX_VkUtil::getVkBlendFactor(blend.alpha.srcFactor);
-			cb.dstAlphaBlendFactor	= AX_VkUtil::getVkBlendFactor(blend.alpha.dstFactor);
+		if (rs.blend.isEnable()) {
+			cb.blendEnable			= rs.blend.isEnable();
+			cb.colorBlendOp			= AX_VkUtil::getVkBlendOp(rs.blend.rgb.op);
+			cb.alphaBlendOp			= AX_VkUtil::getVkBlendOp(rs.blend.alpha.op);
+			cb.srcColorBlendFactor	= AX_VkUtil::getVkBlendFactor(rs.blend.rgb.srcFactor);
+			cb.dstColorBlendFactor	= AX_VkUtil::getVkBlendFactor(rs.blend.rgb.dstFactor);
+			cb.srcAlphaBlendFactor	= AX_VkUtil::getVkBlendFactor(rs.blend.alpha.srcFactor);
+			cb.dstAlphaBlendFactor	= AX_VkUtil::getVkBlendFactor(rs.blend.alpha.dstFactor);
 		} else {
 			cb.blendEnable = false;
 		}
@@ -270,10 +246,9 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 	depthStencilState.sType	= VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 
 	{
-		auto& depthTest = renderState.depthTest;
-		depthStencilState.depthWriteEnable	= depthTest.writeMask;
-		depthStencilState.depthTestEnable	= depthTest.isEnable();
-		depthStencilState.depthCompareOp	= AX_VkUtil::getVkDepthTestOp(depthTest.op);
+		depthStencilState.depthWriteEnable	= rs.depthTest.writeMask;
+		depthStencilState.depthTestEnable	= rs.depthTest.isEnable();
+		depthStencilState.depthCompareOp	= AX_VkUtil::getVkDepthTestOp(rs.depthTest.op);
 		depthStencilState.stencilTestEnable = VK_FALSE;
 		depthStencilState.depthBoundsTestEnable = VK_FALSE;
 		AX_VkDevice_RequireFeature(feature_v10.depthBounds, depthStencilState.depthBoundsTestEnable, VK_FALSE);
@@ -286,20 +261,19 @@ ShaderPipeline_Vk* ShaderPass_Vk::getOrAddPipeline(const Pipeline::Key& key) {
 	return outPipeline;
 }
 
-bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req_, Cmd_DrawCall& cmd) const {
+bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req, Cmd_DrawCall& cmd) const {
 	// TODO lookup compatible renderPass instead
-	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return false; }
-
+	
 	auto* renderPass = req->currentRenderPass_vk();
 	if (!renderPass) { AX_ASSERT(false); return false; }
 
-	Pipeline::Key key;
-	key.vertexLayout	= cmd.vertexLayout;
-	key.primitiveType	= cmd.primitiveType;
-	key.renderPass		= renderPass->_renderPass_vk;
+	Pipeline::PsoKey psoKey;
+	psoKey.vertexLayout  = cmd.vertexLayout;
+	psoKey.primitiveType = cmd.primitiveType;
+	psoKey.renderPass    = renderPass->_renderPass_vk;
 
-	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(key);
+	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(psoKey);
 	if (!pipeline) { AX_ASSERT(false); return false; }
 
 	auto& graphCmdBuf = req->graphCmdBuf_vk();

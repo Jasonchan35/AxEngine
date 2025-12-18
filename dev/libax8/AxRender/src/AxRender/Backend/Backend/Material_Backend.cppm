@@ -158,7 +158,7 @@ public:
 	Int samplerParams_totalBindCount() const		{ return s_totalBindCount(_samplerParams.span()); }
 	Int storageBufferParams_totalBindCount() const	{ return s_totalBindCount(_storageBufferParams.span()); }
 	
-	ParamSpaceType	paramSpaceType() const { return _shaderParamSpace->paramSpaceType(); }
+	ParamSpaceType	paramSpaceType() const { return _shaderParamSpace->spaceType(); }
 
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 

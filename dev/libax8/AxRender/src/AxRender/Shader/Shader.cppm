@@ -28,11 +28,11 @@ template<class T> ShaderPropType ShaderPropType_get = ShaderPropType_get_<T>::va
 class ShaderStageInfo : public NonCopyable {
 public:
 	using BindPoint = ShaderResourceBindPoint;
-	using ParamSpaceType = ShaderParamSpaceType;
+	using SpaceType = ShaderParamSpaceType;
 
 	struct Input {
 		VertexSemantic	semantic = VertexSemantic::None;
-		RenderDataType		dataType = RenderDataType::None;
+		RenderDataType	dataType = RenderDataType::None;
 
 		template<class SE>
 		void onJsonIO(SE & se) {
@@ -63,7 +63,7 @@ public:
 	struct ParamBase {
 		String			name;
 		RenderDataType	dataType;
-		ParamSpaceType	paramSpaceType = ParamSpaceType::Default;
+		SpaceType	spaceType = SpaceType::Default;
 		BindPoint		bindPoint = BindPoint::Invalid;
 		u16				bindCount = 0;
 
@@ -75,7 +75,7 @@ public:
 			AX_JSON_IO(se, dataType);
 
 			AX_JSON_IO_ENUM_AS_INT(se, stageFlags);
-			AX_JSON_IO_ENUM_AS_INT(se, paramSpaceType);
+			AX_JSON_IO_ENUM_AS_INT(se, spaceType);
 			AX_JSON_IO_ENUM_AS_INT(se, bindPoint);
 
 			AX_JSON_IO(se, bindCount);
@@ -265,28 +265,28 @@ public:
 
 class ShaderParamSpace_CreateDesc : public NonCopyable {
 public:
-	using ParamSpaceType = ShaderParamSpaceType;
-	ParamSpaceType	paramSpaceType = ParamSpaceType::Invalid;
+	using SpaceType = ShaderParamSpaceType;
+	SpaceType spaceType = SpaceType::Invalid;
 };
 
 class ShaderParamSpace : public RenderObject {
 	AX_RTTI_INFO(ShaderParamSpace, RenderObject)
 public:
 	using CreateDesc = ShaderParamSpace_CreateDesc;
-	using BindPoint = ShaderResourceBindPoint;
-	using ParamSpaceType = ShaderParamSpaceType;
+	using BindPoint  = ShaderResourceBindPoint;
+	using SpaceType  = ShaderParamSpaceType;
 
-	ParamSpaceType	paramSpaceType() const { return _paramSpaceType; }
+	SpaceType	spaceType() const { return _spaceType; }
 
 	static SPtr<ShaderParamSpace> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	SPtr<class MaterialParamSpace> newMaterialParamSpace(const MemAllocRequest& req) const;
 
 
 protected:
-	ShaderParamSpace(const CreateDesc& desc) : _paramSpaceType(desc.paramSpaceType) {}
+	ShaderParamSpace(const CreateDesc& desc) : _spaceType(desc.spaceType) {}
 
 private:
-	ParamSpaceType _paramSpaceType = ParamSpaceType::Invalid;
+	SpaceType _spaceType = SpaceType::Invalid;
 };
 
 class Shader_CreateDesc : public NonCopyable {

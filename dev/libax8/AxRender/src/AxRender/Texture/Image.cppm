@@ -17,7 +17,7 @@ ImageFileType ImageFileType_fromFileExt(StrView ext);
 class ImageInfo {
 public:
 	ColorType	colorType = ColorType::None;
-	Vec3i		size = AxTag::Zero;
+	Vec3i		size = TagZero;
 	Int			strideInBytes = 0;
 	Int			mipLevels = 1;
 

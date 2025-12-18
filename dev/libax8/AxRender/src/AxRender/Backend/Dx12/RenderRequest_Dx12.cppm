@@ -7,6 +7,8 @@ export import :Dx12Resource;
 export import :Renderer_Backend;
 export import :RenderRequest_Backend;
 export import :CommandBuffer_Dx12;
+export import :RenderPass_Dx12;
+export import :RenderContext_Dx12;
 
 namespace ax {
 
@@ -15,6 +17,11 @@ class RenderRequest_Dx12 : public RenderRequest_Backend {
 public:
 	
 	RenderRequest_Dx12(const CreateDesc& desc);
+
+	RenderContext_Dx12*	renderContext_dx12()		{ return rttiCastCheck<RenderContext_Dx12>(_renderContext); }
+	RenderPass_Dx12*	currentRenderPass_dx12()	{ return rttiCastCheck<RenderPass_Dx12   >(_currentRenderPass); }
+	CommandBuffer_Dx12&	uploadCmdBuf_dx12()			{ return _uploadCmdBuf_dx12; }
+	CommandBuffer_Dx12&	graphCmdBuf_dx12()			{ return _graphCmdBuf_dx12; }
 
 	CommandBuffer_Dx12	_uploadCmdBuf_dx12; // submit earlier than graphCmdBuf
 	CommandBuffer_Dx12	_graphCmdBuf_dx12;

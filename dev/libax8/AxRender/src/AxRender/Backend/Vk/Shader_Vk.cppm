@@ -14,31 +14,29 @@ class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
 public:
 	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
-	VkDescriptorSetLayout	createDescriptorSetLayout();
-	VkDescriptorSetLayout	descriptorSetLayout() const { return _descriptorSetLayout.handle(); }
+	VkDescriptorSetLayout	createLayout_vk();
+	VkDescriptorSetLayout	layout_vk() const { return _layout_vk.handle(); }
 
 private:
-	AX_VkDescriptorSetLayout	_descriptorSetLayout;
+	AX_VkDescriptorSetLayout	_layout_vk;
 };
 
 
 class ShaderPipeline_Vk : public NonCopyable {
 public:
-	struct Key {
+	struct PsoKey {
 		VertexLayout  vertexLayout	 = nullptr;
 		RenderPrimitiveType primitiveType	 = RenderPrimitiveType::None;
-		bool		  debugWireframe = false;
 		VkRenderPass  renderPass	 = VK_NULL_HANDLE;
 
-		bool operator==(const Key& r) const {
+		bool operator==(const PsoKey& r) const {
 			return vertexLayout		== r.vertexLayout
 				&& primitiveType	== r.primitiveType
-				&& debugWireframe	== r.debugWireframe
 				&& renderPass		== r.renderPass;
 		}
 	};
 
-	Key					key;
+	PsoKey					key;
 	AX_VkPipelineCache	pipelineCache;
 	AX_VkPipeline		pipeline;
 };
@@ -58,7 +56,7 @@ public:
 
 	ShaderPass_Vk(const CreateDesc& desc);
 
-	ShaderPipeline_Vk* getOrAddPipeline(const Pipeline::Key& key);
+	Pipeline* getOrAddPipeline(const Pipeline::PsoKey& key);
 
 	bool _bindPipeline(class RenderRequest_Vk* req, Cmd_DrawCall& cmd) const;
 
