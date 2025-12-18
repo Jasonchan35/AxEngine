@@ -100,11 +100,15 @@ public:
 
 	template<class OBJ> constexpr bool tryParse(OBJ & obj) const { return view().tryParse(obj); }
 	
-	AX_INLINE constexpr void operator=(StrLit_<T> rhs) { copy(rhs); }
-	AX_INLINE constexpr void operator=(ZView      rhs) { copy(rhs); }
-	AX_INLINE constexpr void operator=(MView      rhs) { copy(rhs); }
-	AX_INLINE constexpr void operator=(CView      rhs) { copy(rhs); }
-	AX_INLINE constexpr void operator=(const IString_<T> & rhs) { copy(rhs); }
+	// AX_INLINE constexpr void operator=(StrLit_<T> rhs) { copy(rhs); }
+	// AX_INLINE constexpr void operator=(ZView      rhs) { copy(rhs); }
+	// AX_INLINE constexpr void operator=(MView      rhs) { copy(rhs); }
+	// AX_INLINE constexpr void operator=(CView      rhs) { copy(rhs); }
+	// AX_INLINE constexpr void operator=(const IString_<T> & rhs) { copy(rhs); }
+	
+	template<class R> requires std::is_convertible_v<R, CView>
+	AX_INLINE constexpr void operator=(const R& rhs) { copy(CView(rhs)); }
+	
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { move(AX_FORWARD(rhs)); }
 	
 	template<Int N>

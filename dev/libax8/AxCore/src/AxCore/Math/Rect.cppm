@@ -44,7 +44,7 @@ public:
 	void onFormat(Format_<CH>& ctx) const { _simd.onFormat(ctx); }
 
 	AX_INLINE constexpr Rect2_() = default;
-	AX_INLINE constexpr Rect2_(AxTag::Zero_) : _simd(AxTag::Zero) {}
+	AX_INLINE constexpr Rect2_(TagZero_T) : _simd(TagZero) {}
 	AX_INLINE constexpr Rect2_(const SimdData & simd) : _simd(simd) {}
 	AX_INLINE constexpr Rect2_(T x_, T y_, T w_, T h_) : _simd(x_,y_,w_,h_) {}
 	AX_INLINE constexpr Rect2_(const Vec2& pos_, const Vec2& size_) : pos(pos_), size(size_) {}

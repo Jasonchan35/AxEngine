@@ -155,7 +155,7 @@ public:
 	AX_INLINE constexpr bool      startsWith   (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
 	AX_INLINE constexpr bool      endsWith     (CView r, StrCase sc = StrCase::Sensitive) const noexcept;
 	inline    constexpr bool      matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const noexcept;
-	AX_INLINE constexpr bool      operator==	(CView r) const	{ return  equals(r); }
+//	AX_INLINE constexpr bool      operator==	(CView r) const	{ return  equals(r); }
 	AX_INLINE constexpr bool      operator!=	(CView r) const	{ return !equals(r); }
 	AX_INLINE constexpr bool      operator<		(CView r) const	{ return CmpResult_isLesser        (compare(r)); }
 	AX_INLINE constexpr bool      operator<=	(CView r) const	{ return CmpResult_isLesserOrEqual (compare(r)); }
@@ -293,7 +293,7 @@ public:
 	AX_INLINE constexpr bool      startsWith   (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().startsWith(r, sc); }
 	AX_INLINE constexpr bool      endsWith     (CView r, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().endsWith  (r, sc); }
 	AX_INLINE constexpr bool      matchWildcard(CView wildcard, StrCase sc = StrCase::Sensitive) const noexcept { return _obj_view().matchWildcard(wildcard, sc); }
-	AX_INLINE constexpr bool operator==	(CView r) const noexcept { return _obj_view().operator==(r); }
+//	AX_INLINE constexpr bool operator==	(CView r) const noexcept { return _obj_view().operator==(r); }
 	AX_INLINE constexpr bool operator!=	(CView r) const noexcept { return _obj_view().operator!=(r); }
 	AX_INLINE constexpr bool operator<	(CView r) const noexcept { return _obj_view().operator< (r); }
 	AX_INLINE constexpr bool operator>	(CView r) const noexcept { return _obj_view().operator> (r); }
@@ -497,5 +497,21 @@ constexpr auto MutStrView_<T>::splitByCharBack(const T& ch, StrCase sc) -> Split
 
 template<class T> inline
 std::ostream& operator << ( std::ostream & s, const MutStrView_<T> & v ) { return s << v.to_string_view(); }
+
+template<class A, class B> requires std::is_convertible_v<A, StrViewA> && std::is_convertible_v<B, StrViewA>
+AX_NODISCARD AX_INLINE constexpr bool operator==(const A& a, const B& b) { return StrViewA(a).equals(StrViewA(b)); }
+
+template<class A, class B> requires std::is_convertible_v<A, StrViewW> && std::is_convertible_v<B, StrViewW>
+AX_NODISCARD AX_INLINE constexpr bool operator==(const A& a, const B& b) { return StrViewW(a).equals(StrViewW(b)); }
+
+template<class A, class B> requires std::is_convertible_v<A, StrView8> && std::is_convertible_v<B, StrView8>
+AX_NODISCARD AX_INLINE constexpr bool operator==(const A& a, const B& b) { return StrView8(a).equals(StrView8(b)); }
+
+template<class A, class B> requires std::is_convertible_v<A, StrView16> && std::is_convertible_v<B, StrView16>
+AX_NODISCARD AX_INLINE constexpr bool operator==(const A& a, const B& b) { return StrView16(a).equals(StrView16(b)); }
+
+template<class A, class B> requires std::is_convertible_v<A, StrView32> && std::is_convertible_v<B, StrView32>
+AX_NODISCARD AX_INLINE constexpr bool operator==(const A& a, const B& b) { return StrView32(a).equals(StrView32(b)); }
+
 
 } // namespace

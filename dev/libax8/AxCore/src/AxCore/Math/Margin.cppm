@@ -35,7 +35,7 @@ public:
 
 	constexpr Margin2_() = default;
 	constexpr Margin2_(const SimdData & simd) : _simd(simd) {}
-	constexpr Margin2_(AxTag::Zero_) : _simd(AxTag::Zero) {}
+	constexpr Margin2_(TagZero_T) : _simd(TagZero) {}
 	constexpr Margin2_(T v) : _simd(SimdData::s_all(v)) {}
 	constexpr Margin2_(T x, T y) : Margin2_(Vec2(x,y)) { }
 	constexpr Margin2_(const Vec2& vec) : _simd(vec.y, vec.x, vec.y, vec.x) { }

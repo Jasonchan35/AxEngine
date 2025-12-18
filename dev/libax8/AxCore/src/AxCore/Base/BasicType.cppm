@@ -25,7 +25,8 @@ struct ax_static_cast {
 };
 
 template<class T> using Type_EnumInt = std::underlying_type_t<T>;
-template<class T> AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<Type_EnumInt<T>>(v); }
+template<class T> requires std::is_enum_v<T>
+AX_NODISCARD constexpr auto ax_enum_int(const T & v) { return static_cast<Type_EnumInt<T>>(v); }
 
 template<class T> requires std::is_enum_v<T>
 constexpr void ax_enum_set_int(T & v, Type_EnumInt<T> i) { v = static_cast<T>(i); }
@@ -94,12 +95,10 @@ constexpr f64 f64_max	= std::numeric_limits<f64>::max();
 constexpr f64 f64_inf	= std::numeric_limits<f64>::infinity();
 constexpr f64 f64_nan	= std::numeric_limits<f64>::quiet_NaN();
 
-
-namespace  AxTag {
-	class NewObject_{};		constexpr NewObject_	NewObject	= {};
-	class NoInit_{};		constexpr NoInit_		NoInit		= {};
-	class Zero_{};			constexpr Zero_			Zero		= {};
-} // AxTag
+class TagNewObject_T{};	constexpr TagNewObject_T	TagNewObject	= {};
+class TagNoInit_T{};	constexpr TagNoInit_T		TagNoInit		= {};
+class TagZero_T{};		constexpr TagZero_T			TagZero			= {};
+class TagAll_T{};		constexpr TagAll_T			TagAll			= {};
 
 template <class T>
 	struct No_rvalue_ {
@@ -277,7 +276,15 @@ public:
 	constexpr CZView	constView() const		{ return CZView(_data, _size); }
 	constexpr const T*	c_str() const			{ return _size ? _data : &kEmpty_c_str; }
 	
-	static constexpr This s_from_c_str(T *sz) { return This(sz, ax_strlen(sz)); } 
+	static constexpr This s_from_c_str(T *sz) { return This(sz, ax_strlen(sz)); }
+
+	constexpr bool operator==(const This& r) const {
+		if (_size != r._size) return false;
+		for (Int i = 0; i < _size; ++i) {
+			if (_data[i] != r._data[i]) return false;
+		}
+		return true;
+	}
 	
 private:
 	static constexpr T kEmpty_c_str = 0;
@@ -404,7 +411,7 @@ template<class A, class B> constexpr auto Pair_make(A && a, B && b) { return Pai
 // } // namespace Tag
 
 struct SrcLoc {
-	constexpr SrcLoc(AxTag::NoInit_) noexcept {}
+	constexpr SrcLoc(TagNoInit_T) noexcept {}
 	constexpr SrcLoc(const std::source_location & loc) noexcept : _loc(loc) {};
 
 	static constexpr SrcLoc s_current(const std::source_location & loc = std::source_location::current()) { return loc; }

@@ -156,7 +156,7 @@ public:
 	AX_INLINE	SPtr(T* p) noexcept { ref(p); }
 
 	template<class... ARGS>
-	AX_INLINE	SPtr(AxTag::NewObject_, const MemAllocRequest& req, ARGS&&... args) { newObject(req, AX_FORWARD(args)...); }
+	AX_INLINE	SPtr(TagNewObject_T, const MemAllocRequest& req, ARGS&&... args) { newObject(req, AX_FORWARD(args)...); }
 
 	template<class R>
 	AX_INLINE	SPtr(SPtr<R> && r) noexcept { _move(std::move(r)); }

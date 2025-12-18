@@ -41,7 +41,7 @@ public:
 	constexpr AX_INLINE	T& emplaceBack(Args&&... args)	{ resize(size() + 1, AX_FORWARD(args)...); return back(); }
 
 	template< class... Args >
-	constexpr AX_INLINE	T&	emplaceNew(const MemAllocRequest& req, Args&&... args ) { return emplaceBack(AxTag::NewObject, req, AX_FORWARD(args)...); }
+	constexpr AX_INLINE	T&	emplaceNewObject(const MemAllocRequest& req, Args&&... args ) { return emplaceBack(TagNewObject, req, AX_FORWARD(args)...); }
 	
 	constexpr void append(const T& item);
 	constexpr void append(T && item);

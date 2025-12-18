@@ -81,16 +81,17 @@ public:
 	// AX_INLINE constexpr void operator=(CView      rhs) { Base::operator=(rhs); }
 	// AX_INLINE constexpr void operator=(const IString_<T> & rhs) { Base::operator=(rhs); }
 
-	AX_INLINE constexpr void operator=(const This & rhs) { Base::operator=(rhs); }
-	
-	template<Int M>
-	AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::operator=(rhs); }
-	
-	template<Int N>
-	AX_INLINE constexpr void operator=(const T (&sz)[N]) { Base::operator=(CView(sz)); }
+	// template<Int M> AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::operator=(rhs); }
+	// template<Int N> AX_INLINE constexpr void operator=(const T (&sz)[N]) { Base::operator=(CView(sz)); }
 	
 	// template<Int M>
 	// AX_INLINE constexpr void operator=(const String_<T,M> & rhs) { Base::operator=(rhs.view()); }
+
+	AX_INLINE constexpr void operator=(const This & rhs) { Base::copy(rhs); }
+	
+	template<class R> requires std::is_convertible_v<R, CView>
+	AX_INLINE constexpr void operator=(const R& rhs) { Base::copy(CView(rhs)); }
+	
 	
 	AX_INLINE constexpr void operator=(IString_<T> && rhs) { Base::move(AX_FORWARD(rhs)); }
 
