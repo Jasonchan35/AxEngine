@@ -111,33 +111,34 @@ void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 	vkCmdSetScissor(_graphCmdBuf_vk, 0, 1, &rc);
 }
 
-void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& cmd) {
-	u32	vertexCount   = AX_VkUtil::castUInt32(cmd.vertexCount);
-	u32 vertexStart   = AX_VkUtil::castUInt32(cmd.vertexStart);
+void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
 
-	u32 indexStart    = AX_VkUtil::castUInt32(cmd.indexStart);
-	u32 indexCount    = AX_VkUtil::castUInt32(cmd.indexCount);
-
-	u32 instanceStart = AX_VkUtil::castUInt32(cmd.instanceStart);
-	u32 instanceCount = AX_VkUtil::castUInt32(cmd.instanceCount);
-
-	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(cmd.vertexBuffer)) {
-		// draw indirect doesn't support byte offset
-		// VkDeviceSize vertexBufferByteOffset = AX_VkUtil::castUInt32(cmd.vertexBufferByteOffset);
-		u32 firstBinding = ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
-		VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers(_graphCmdBuf_vk, firstBinding, 1, &vb->vkBufHandle(), &offset);
+	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(drawcall.vertexBuffer)) {
+		constexpr u32 firstBinding = ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
+		constexpr u32 bindingCount = 1 ;
+		auto vertexLayout = drawcall.vertexLayout;
+		VkDeviceSize offset = 0; // vertexStart * vertexLayout->strideInBytes;
+		vkCmdBindVertexBuffers(_graphCmdBuf_vk, firstBinding, bindingCount, &vb->vkBufHandle(), &offset);
 	}
 
-	if (cmd.indexType == IndexType::None) {
-		vkCmdDraw(_graphCmdBuf_vk, vertexCount, instanceCount, vertexStart, instanceStart);
-
-	} else if (auto* ib = rttiCastCheck<GpuBuffer_Vk>(cmd.indexBuffer)) {
-		vkCmdBindIndexBuffer(_graphCmdBuf_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(cmd.indexType));
-		vkCmdDrawIndexed(_graphCmdBuf_vk, indexCount, instanceCount, indexStart, ax_safe_cast_from(vertexStart), instanceStart);
+	if (drawcall.indexType == IndexType::None) {
+		vkCmdDraw(_graphCmdBuf_vk,
+		          ax_safe_cast_from(drawcall.vertexCount),
+		          ax_safe_cast_from(drawcall.instanceCount),
+		          ax_safe_cast_from(drawcall.vertexStart),
+		          ax_safe_cast_from(drawcall.instanceStart));
 
 	} else {
-		AX_ASSERT(false);
+		auto* ib = rttiCastCheck<GpuBuffer_Vk>(drawcall.indexBuffer);
+		if (!ib) throw Error_Undefined();
+
+		vkCmdBindIndexBuffer(_graphCmdBuf_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(drawcall.indexType));
+		vkCmdDrawIndexed(_graphCmdBuf_vk,
+		                 ax_safe_cast_from(drawcall.indexCount),
+		                 ax_safe_cast_from(drawcall.instanceCount),
+		                 ax_safe_cast_from(drawcall.indexStart),
+		                 ax_safe_cast_from(drawcall.vertexStart),
+		                 ax_safe_cast_from(drawcall.instanceStart));
 	}
 }
 

@@ -310,7 +310,7 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 		auto& dst = bindingDesc.emplaceBack();
 		dst.binding		= ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
 		dst.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
-		dst.stride		= AX_VkUtil::castUInt32(vertexLayout->stride);
+		dst.stride		= AX_VkUtil::castUInt32(vertexLayout->strideInBytes);
 	}
 
 	vertexInputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

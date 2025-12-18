@@ -85,7 +85,7 @@
 #define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \
 	virtual void onSetScissorRect(const Rect2f& rect) IMP; \
-	virtual void onDrawCall(Cmd_DrawCall& cmd) IMP; \
+	virtual void onDrawCall(Cmd_DrawCall& drawcall) IMP; \
 	virtual void onFrameBegin() IMP; \
 	virtual void onFrameEnd() IMP; \
 	virtual void onRenderPassBegin(RenderPass* pass) IMP; \

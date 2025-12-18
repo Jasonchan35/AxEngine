@@ -109,7 +109,7 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 	_material->setParam(AX_NAMEID("fontTexture"), _fontTex);
 
 	auto vertexLayout = _vertexBuffer.vertexLayout();
-	auto vertexStride = vertexLayout->stride;
+	auto vertexStride = vertexLayout->strideInBytes;
 	auto indexStride  = AX_SIZEOF(Index);
 
 	AX_ASSERT(vertexStride == AX_SIZEOF(ImDrawVert));

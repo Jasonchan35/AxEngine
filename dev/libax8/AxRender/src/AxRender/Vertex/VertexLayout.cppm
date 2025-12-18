@@ -155,15 +155,15 @@ struct VertexLayoutDesc {
 		}
 	};
 
-	Int	stride = 0;
+	Int	strideInBytes = 0;
 	Array<Element, 16>	elements;
 
 	bool operator==(const VertexLayoutDesc& r) const {
-		return stride == r.stride && elements == r.elements;
+		return strideInBytes == r.strideInBytes && elements == r.elements;
 	}
 
 	HashInt onHashInt() const {
-		HashInt v = HashInt::s_make(stride);
+		HashInt v = HashInt::s_make(strideInBytes);
 		v ^= HashInt::s_make(elements.toByteSpan());
 		return v;
 	}
@@ -210,7 +210,7 @@ private:
 			dst.offset   = static_cast<u16>(MemUtil::memberOffset(attr) + AX_SIZEOF(A) * index);
 			dst.dataType = DataType_get<A>;
 		}
-		stride = AX_SIZEOF(VERTEX);
+		strideInBytes = AX_SIZEOF(VERTEX);
 	}
 };
 

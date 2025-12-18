@@ -22,7 +22,7 @@ public:
 	void addVertices(Span<VERTEX> data) { addVertices(data.toByteSpan(), VERTEX::s_layout()); }
 	void addVertices(ByteSpan   data, VertexLayout vertexLayout);
 
-	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * _vertexLayout->stride); }
+	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * _vertexLayout->strideInBytes); }
 
 private:
 	VertexLayout		_vertexLayout;
@@ -67,7 +67,7 @@ void VertexBuffer::addVertices(ByteSpan data, VertexLayout vertexLayout) {
 		throw Error_Undefined();
 	}
 
-	const Int stride = vertexLayout->stride;
+	const Int stride = vertexLayout->strideInBytes;
 	if (data.size() % stride) AX_ASSERT(false);
 
 	Int newVertexCount = data.size() / stride;

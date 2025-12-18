@@ -34,7 +34,8 @@ public:
 	static bool formatHasDepth	(VkFormat f);
 	static bool formatHasStencil(VkFormat f);
 
-	static uint32_t		castUInt32(Int v) 		{ return ax_safe_cast_from(v); }
+	static u32		castUInt32(Int v) 		{ return ax_safe_cast_from(v); }
+	static i32		castInt32(Int v) 		{ return ax_safe_cast_from(v); }
 	static VkDeviceSize	castVkDeviceSize(Int v)	{ return ax_safe_cast_from(v); }
 
 	template<class R>
