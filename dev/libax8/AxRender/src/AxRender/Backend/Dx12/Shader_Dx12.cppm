@@ -17,7 +17,9 @@ public:
 	ShaderParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
 
 	Dx12DescriptorTable	_descTable;
-	Dx12DescriptorTable& createDescTable();
+	Dx12DescriptorTable	_samplerDescTable; // DX12: Samplers cannot be mixed with other resource types in a descriptor table
+	
+	void createDescTable();
 };
 
 class ShaderPipeline_Dx12 : public NonCopyable {

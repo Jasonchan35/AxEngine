@@ -159,7 +159,7 @@ void MaterialParamSpace_Vk::_nextDescriptorSet(RenderRequest_Vk* req, const Shad
 		_descriptorPool.create(dev, poolSizes, renderRequestCount, poolFlags);
 
 		for (Int i = 0; i < renderRequestCount; i++) {
-			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->layout_vk());
+			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->_layout_vk);
 //#if AX_DEBUG_NAME
 //			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, paramSpaceType()));
 //#endif

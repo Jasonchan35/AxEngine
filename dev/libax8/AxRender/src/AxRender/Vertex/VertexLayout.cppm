@@ -144,9 +144,9 @@ struct VertexLayoutDesc {
 	using Semantic = VertexSemantic;
 
 	struct Element {
-		Semantic	semantic = Semantic::None;
-		u16			offset   = 0;
-		RenderDataType	dataType = RenderDataType::None;
+		Semantic       semantic = Semantic::None;
+		u16            offset   = 0;
+		RenderDataType dataType = RenderDataType::None;
 
 		bool operator==(const Element& r) const {
 			return semantic == r.semantic

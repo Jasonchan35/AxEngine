@@ -6,28 +6,26 @@ import :Renderer_Dx12;
 
 namespace ax {
 
-Dx12DescriptorTable& ShaderParamSpace_Dx12::createDescTable() {
-	auto addDescriptor = [this](ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-		_descTable.addDescriptor(type, p.bindPoint(), p.bindCount(), spaceType());
+void ShaderParamSpace_Dx12::createDescTable() {
+	auto addDescriptor = [this](Dx12DescriptorTable& tbl, ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
+		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), spaceType());
 	};
 	
 	for (auto& p : _constBuffers) {
-		addDescriptor(p, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
+		addDescriptor(_descTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 	}
 
 	for (auto& p : _storageBufferParams) {
-		addDescriptor(p, D3D12_DESCRIPTOR_RANGE_TYPE_UAV);
+		addDescriptor(_descTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_UAV);
 	}
 
 	for (auto& p : _textureParams) {
-		addDescriptor(p, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+		addDescriptor(_descTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 	}
 
 	for (auto& p : _samplerParams) {
-		addDescriptor(p, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+		addDescriptor(_samplerDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
 	}
-
-	return _descTable;
 }
 
 bool VertexInputLayoutDesc_Dx12::init(const ShaderStageInfo& info, VertexLayout vertexLayout) {
@@ -68,11 +66,14 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 			// get from commonPass
 			if (auto* sp = commonPass->getParamSpace_<ShaderParamSpace_Dx12>(spaceType)) {
 				_pipelineRootParamList.addTable(shaderVisibility, sp->_descTable);
+				_pipelineRootParamList.addTable(shaderVisibility, sp->_samplerDescTable);
 			}
 		} else {
 			// create own one
 			if (auto* sp = this->getParamSpace_<ShaderParamSpace_Dx12>(spaceType)) {
-				_pipelineRootParamList.addTable(shaderVisibility, sp->createDescTable());
+				sp->createDescTable();
+				_pipelineRootParamList.addTable(shaderVisibility, sp->_descTable);
+				_pipelineRootParamList.addTable(shaderVisibility, sp->_samplerDescTable);
 			}
 		}
 	}
@@ -141,8 +142,11 @@ auto ShaderPass_Dx12::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline*
 	psoDesc.pRootSignature     = _rootSignature;
 	psoDesc.VS.pShaderBytecode = _vsStage.bytecode.data();
 	psoDesc.VS.BytecodeLength  = _vsStage.bytecode.sizeInBytes();
-	psoDesc.PS.pShaderBytecode = _vsStage.bytecode.data();
-	psoDesc.PS.BytecodeLength  = _vsStage.bytecode.sizeInBytes();
+	psoDesc.PS.pShaderBytecode = _psStage.bytecode.data();
+	psoDesc.PS.BytecodeLength  = _psStage.bytecode.sizeInBytes();
+	psoDesc.GS.pShaderBytecode = _gsStage.bytecode.data();
+	psoDesc.GS.BytecodeLength  = _gsStage.bytecode.sizeInBytes();
+
 //-----
 	psoDesc.RasterizerState.FillMode = key.debugWireframe ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;
 
@@ -221,9 +225,10 @@ bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) 
 	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(key);
 	if (!pipeline) { AX_ASSERT(false); return false; }
 
-//	auto& graphCmdBuf = req->graphCmdBuf_dx12();
-
-	AX_ASSERT_TODO;
+	auto& cmdList = req->graphCmdBuf_dx12();
+	cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
+	cmdList->SetPipelineState(pipeline->pipelineState);
+	
 	return true;
 }
 

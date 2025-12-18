@@ -62,10 +62,12 @@ struct Dx12Util {
 
 constexpr void Dx12Util::throwIfError(HRESULT hr, ID3DBlob* error) {
 	if (!checkError(hr)) {
+		StrView msg;
 		if (error) {
-			AX_LOG("DX12 error: {?}", errorToStrView(error));
+			msg = errorToStrView(error);
+			AX_LOG("DX12 error: {}", msg);
 		}
-		throw Error_Undefined();
+		throw Error_Undefined(msg);
 	}
 }
 
@@ -176,21 +178,84 @@ constexpr DXGI_FORMAT Dx12Util::getDxDepthType(RenderDepthType type) {
 constexpr DXGI_FORMAT Dx12Util::getDxDataType(RenderDataType v) {
 	using SRC = RenderDataType;
 	switch (v) {
-		case SRC::u8:		return DXGI_FORMAT_R8_UNORM; break;
-		case SRC::u8x2:		return DXGI_FORMAT_R8G8_UNORM; break;
-//		case SRC::u8x3:		return DXGI_FORMAT_R8G8B8_UNORM; break; //does not support in DX11
-		case SRC::u8x4:		return DXGI_FORMAT_R8G8B8A8_UNORM; break;
-	//--
-		case SRC::f16:		return DXGI_FORMAT_R16_FLOAT; break;
-		case SRC::f16x2:	return DXGI_FORMAT_R16G16_FLOAT; break;
-//		case SRC::f16x3:	return DXGI_FORMAT_R16G16B16_FLOAT; break; //does not support in DX11
-		case SRC::f16x4:	return DXGI_FORMAT_R16G16B16A16_FLOAT; break;
-	//---
-		case SRC::f32:		return DXGI_FORMAT_R32_FLOAT; break;
-		case SRC::f32x2:	return DXGI_FORMAT_R32G32_FLOAT; break;
-		case SRC::f32x3:	return DXGI_FORMAT_R32G32B32_FLOAT; break;
-		case SRC::f32x4:	return DXGI_FORMAT_R32G32B32A32_FLOAT; break;
-	//---
+//---- UInt8 ----
+		case SRC::u8:			return DXGI_FORMAT_R8_UINT;
+		case SRC::u8x2:			return DXGI_FORMAT_R8G8_UINT;
+//		case SRC::u8x3:			return DXGI_FORMAT_R8G8B8_UINT;			// not support in DX12
+		case SRC::u8x4:			return DXGI_FORMAT_R8G8B8A8_UINT;
+//---- UInt16 ----
+		case SRC::u16:			return DXGI_FORMAT_R16_UINT;
+		case SRC::u16x2:		return DXGI_FORMAT_R16G16_UINT;
+//		case SRC::u16x3:		return DXGI_FORMAT_R16G16B16_UINT;		// not support in DX12
+		case SRC::u16x4:		return DXGI_FORMAT_R16G16B16A16_UINT;
+//---- UInt32 ----
+		case SRC::u32:			return DXGI_FORMAT_R32_UINT;
+		case SRC::u32x2:		return DXGI_FORMAT_R32G32_UINT;
+		case SRC::u32x3:		return DXGI_FORMAT_R32G32B32_UINT;
+		case SRC::u32x4:		return DXGI_FORMAT_R32G32B32A32_UINT;
+//---- Int8 ----
+		case SRC::i8:			return DXGI_FORMAT_R8_SINT;
+		case SRC::i8x2:			return DXGI_FORMAT_R8G8_SINT;
+//		case SRC::i8x3:			return DXGI_FORMAT_R8G8B8_SINT;			// not support in DX12
+		case SRC::i8x4:			return DXGI_FORMAT_R8G8B8A8_SINT;
+//---- Int16 ----
+		case SRC::i16:			return DXGI_FORMAT_R16_SINT;
+		case SRC::i16x2:		return DXGI_FORMAT_R16G16_SINT;
+//		case SRC::i16x3:		return DXGI_FORMAT_R16G16B16_SINT;		// not support in DX12
+		case SRC::i16x4:		return DXGI_FORMAT_R16G16B16A16_SINT;
+//---- Int32 ----
+		case SRC::i32:			return DXGI_FORMAT_R32_SINT;
+		case SRC::i32x2:		return DXGI_FORMAT_R32G32_SINT;
+		case SRC::i32x3:		return DXGI_FORMAT_R32G32B32_SINT;
+		case SRC::i32x4:		return DXGI_FORMAT_R32G32B32A32_SINT;
+//---- UNorm8 ----
+		case SRC::UNorm8:		return DXGI_FORMAT_R8_UNORM;
+		case SRC::UNorm8x2:		return DXGI_FORMAT_R8G8_UNORM;
+//		case SRC::UNorm8x3:		return DXGI_FORMAT_R8G8B8_UNORM;		// not support in DX12  
+		case SRC::UNorm8x4:		return DXGI_FORMAT_R8G8B8A8_UNORM;
+//---- UNorm16 ----
+		case SRC::UNorm16:		return DXGI_FORMAT_R16_UNORM;
+		case SRC::UNorm16x2:	return DXGI_FORMAT_R16G16_UNORM;
+//		case SRC::UNorm16x3:	return DXGI_FORMAT_R16G16B16_UNORM;		// not support in DX12   
+		case SRC::UNorm16x4:	return DXGI_FORMAT_R16G16B16A16_UNORM;
+//---- SNorm8 ----
+		case SRC::SNorm8:		return DXGI_FORMAT_R8_SNORM;
+		case SRC::SNorm8x2:		return DXGI_FORMAT_R8G8_SNORM;
+//		case SRC::SNorm8x3:		return DXGI_FORMAT_R8G8B8_SNORM;		// not support in DX12
+		case SRC::SNorm8x4:		return DXGI_FORMAT_R8G8B8A8_SNORM;
+//---- SNorm16 ----
+		case SRC::SNorm16:		return DXGI_FORMAT_R16_SNORM;
+		case SRC::SNorm16x2:	return DXGI_FORMAT_R16G16_SNORM;
+//		case SRC::SNorm16x3:	return DXGI_FORMAT_R16G16B16_USORM;		// not support in DX12
+		case SRC::SNorm16x4:	return DXGI_FORMAT_R16G16B16A16_SNORM;
+//---- Float16 ----
+		case SRC::f16:			return DXGI_FORMAT_R16_FLOAT;
+		case SRC::f16x2:		return DXGI_FORMAT_R16G16_FLOAT;
+//		case SRC::f16x3:		return DXGI_FORMAT_R16G16B16_UFLOAT;	// not support in DX12
+		case SRC::f16x4:		return DXGI_FORMAT_R16G16B16A16_FLOAT;
+//---- Float32 ----
+		case SRC::f32:			return DXGI_FORMAT_R32_FLOAT;
+		case SRC::f32x2:		return DXGI_FORMAT_R32G32_FLOAT;
+		case SRC::f32x3:		return DXGI_FORMAT_R32G32B32_FLOAT;
+		case SRC::f32x4:		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+//---- Float64 ----
+//		case SRC::f64:			return DXGI_FORMAT_R64_FLOAT;
+//		case SRC::f64x2:		return DXGI_FORMAT_R64G64_FLOAT;
+//		case SRC::f64x3:		return DXGI_FORMAT_R64G64B64_FLOAT;
+//		case SRC::f64x4:		return DXGI_FORMAT_R64G64B64A64_FLOAT;
+//---- Color3 ------
+//		case SRC::Color3b:		return DXGI_FORMAT_R8G8B8_UNORM;
+//		case SRC::Color3s:		return DXGI_FORMAT_R16G16B16_UNORM;
+//		case SRC::Color3h:		return DXGI_FORMAT_R16G16B16_SFLOAT;
+//		case SRC::Color3f:		return DXGI_FORMAT_R32G32B32_SFLOAT;
+//		case SRC::Color3d:		return DXGI_FORMAT_R64G64B64_SFLOAT;
+//---- Color4 ------
+		case SRC::Color4b:		return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case SRC::Color4s:		return DXGI_FORMAT_R16G16B16A16_UNORM;
+		case SRC::Color4h:		return DXGI_FORMAT_R16G16B16A16_FLOAT;
+		case SRC::Color4f:		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+//		case SRC::Color4d:		return DXGI_FORMAT_R64G64B64A64_FLOAT;
+//---
 		default: throw Error_Undefined();
 	}
 }

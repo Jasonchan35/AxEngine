@@ -215,6 +215,8 @@ struct Dx12RootParameterList {
 	using SpaceType = ShaderParamSpaceType;
 
 	void addTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table) {
+		if (table.descriptorRanges.size() <= 0) return;
+		
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		dst.ShaderVisibility                    = shaderVisibility;

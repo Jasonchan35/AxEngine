@@ -14,10 +14,8 @@ class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
 public:
 	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
-	VkDescriptorSetLayout	createLayout_vk();
-	VkDescriptorSetLayout	layout_vk() const { return _layout_vk.handle(); }
-
-private:
+	void createLayout_vk();
+	
 	AX_VkDescriptorSetLayout	_layout_vk;
 };
 

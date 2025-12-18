@@ -14,7 +14,7 @@ import :Material_Vk;
 namespace ax /*::AxRender*/ {
 
 
-VkDescriptorSetLayout ShaderParamSpace_Vk::createLayout_vk() {
+void ShaderParamSpace_Vk::createLayout_vk() {
 	AX_VkDescriptorSetLayoutBindings	bindings;
 
 #if AX_RENDER_BINDLESS
@@ -35,8 +35,6 @@ VkDescriptorSetLayout ShaderParamSpace_Vk::createLayout_vk() {
 
 	auto* renderer = Renderer_Vk::s_instance();
 	_layout_vk.create(renderer->device(), bindings, layoutFlags);
-
-	return _layout_vk.handle();
 }
 
 ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
@@ -55,12 +53,13 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		if (shouldUseCommonParamSpace(spaceType)) {
 			// get from commonPass
 			if (auto* sp = commonPass->getParamSpace_<ShaderParamSpace_Vk>(spaceType)) {
-				layouts.emplaceBack(sp->layout_vk());
+				layouts.emplaceBack(sp->_layout_vk);
 			}
 		} else {
 			// create own one
 			if (auto* sp = this->getParamSpace_<ShaderParamSpace_Vk>(spaceType)) {
-				layouts.emplaceBack(sp->createLayout_vk());
+				sp->createLayout_vk();
+				layouts.emplaceBack(sp->_layout_vk);
 			}
 		}
 	}

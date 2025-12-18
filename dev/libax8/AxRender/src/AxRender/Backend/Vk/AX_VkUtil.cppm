@@ -249,13 +249,13 @@ VkFormat AX_VkUtil::getVkDataType(RenderDataType v) {
 		case SRC::f64x2:		return VK_FORMAT_R64G64_SFLOAT;
 		case SRC::f64x3:		return VK_FORMAT_R64G64B64_SFLOAT;
 		case SRC::f64x4:		return VK_FORMAT_R64G64B64A64_SFLOAT;
-//----------
+//---- Color3 ------
 		case SRC::Color3b:		return VK_FORMAT_R8G8B8_UNORM;
 		case SRC::Color3s:		return VK_FORMAT_R16G16B16_UNORM;
 		case SRC::Color3h:		return VK_FORMAT_R16G16B16_SFLOAT;
 		case SRC::Color3f:		return VK_FORMAT_R32G32B32_SFLOAT;
 		case SRC::Color3d:		return VK_FORMAT_R64G64B64_SFLOAT;
-//----------
+//---- Color4 ------
 		case SRC::Color4b:		return VK_FORMAT_R8G8B8A8_UNORM;
 		case SRC::Color4s:		return VK_FORMAT_R16G16B16A16_UNORM;
 		case SRC::Color4h:		return VK_FORMAT_R16G16B16A16_SFLOAT;

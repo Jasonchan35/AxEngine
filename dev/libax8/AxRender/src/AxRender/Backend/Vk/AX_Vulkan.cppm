@@ -699,7 +699,8 @@ public:
 class AX_VkDescriptorSetLayout : public NonCopyable {
 public:
 	const VkDescriptorSetLayout& handle() const { return _handle; }
-	operator const VkDescriptorSetLayout&() const { return _handle; }
+	operator const VkDescriptorSetLayout &() const { return _handle; }
+	
 	~AX_VkDescriptorSetLayout() { destroy(); }
 
 	AX_VkDescriptorSetLayout() = default;
