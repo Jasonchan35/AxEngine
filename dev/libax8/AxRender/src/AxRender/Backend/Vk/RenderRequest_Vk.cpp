@@ -37,7 +37,9 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 }
 
 void RenderRequest_Vk::onWaitCompleted() {
-	_completedFence_vk.wait();
+	if (!_completedFence_vk.wait(AxRenderConfig::kMaxRenderWaitTime)) {
+		throw Error_Undefined("Render - timeout");
+	}
 	_uploadCmdBuf_vk.resetAndReleaseResource();
 	_graphCmdBuf_vk.resetAndReleaseResource();
 }

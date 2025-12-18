@@ -7,7 +7,7 @@ import :UI;
 namespace ax /*::AxRender*/ {
 
 DefaultRenderGraph::DefaultRenderGraph() {
-	backBufferPass().color0.setClearColor(Color4f::kDarkBlue());
+	backBufferPass().color0.setClearColor(Color4f(0,0,0.2f));
 
 	if constexpr (false) {
 		auto shader = Shader::s_new(AX_ALLOC_REQ, "ImportedAssets/Shaders/core/test.axShader");

@@ -15,25 +15,66 @@ class RenderGraph_ColorBuffer : public NonCopyable {
 public:
 	using Graph  = RenderGraph;
 	using Pass   = RenderGraph_Pass;
+	using Desc   = RenderPassColorAttachmentDesc;
 
 	RenderGraph_ColorBuffer(Pass* pass, StrView name, ColorType colorType);
 
 	Pass*			pass() { return _pass; }
 	StrView			name() const { return _name; }
 
-	const RenderPassColorAttachmentDesc&	attachment() const { return _attachment; }
+	const Desc&	desc() const { return _desc; }
 
-	void setDesc(const RenderPassColorAttachmentDesc& attachment);
 	void setDirty();
-
-	void setClearColor(const Color4f& color);
-	void setLoadOp(RenderBufferLoadOp loadOp);
-	void setColorType(ColorType colorType);
+	void setDesc(const Desc& attachment)		{ _assignIfDiff(_desc, attachment); }
+	void setClearColor(const Color4f& color)	{ _assignIfDiff(_desc.clearColorValue, color); }
+	void setLoadOp(RenderBufferLoadOp loadOp)	{ _assignIfDiff(_desc.loadOp, loadOp); }
+	void setColorType(ColorType colorType)		{ _assignIfDiff(_desc.colorType, colorType); }
 
 private:
-	Pass*				_pass = nullptr;
-	String				_name;
-	RenderPassColorAttachmentDesc		_attachment;
+	template<class V>
+	void _assignIfDiff(V& dst, const V& src) {
+		if (dst == src) return;
+		dst = src;
+		setDirty();
+	}
+	
+	Pass*	_pass = nullptr;
+	String	_name;
+	Desc	_desc;
+};
+
+class RenderGraph_DepthBuffer : public NonCopyable {
+	using This = RenderGraph_DepthBuffer;
+public:
+	using Graph  = RenderGraph;
+	using Pass   = RenderGraph_Pass;
+	using Desc	 = RenderPassDepthAttachmentDesc;
+
+	RenderGraph_DepthBuffer(Pass* pass, StrView name, RenderDepthType depthType);
+	
+	Pass*		pass() { return _pass; }
+	StrView		name() const { return _name; }
+
+	const Desc&	desc() const { return _desc; }
+	
+	void setDirty();
+	void setDesc(const Desc& desc)	{ _assignIfDiff(_desc, desc); }
+	void setDepthType(RenderDepthType depthType)			{ _assignIfDiff(_desc.depthType, depthType); }
+	void setLoadOp(RenderBufferLoadOp loadOp)				{ _assignIfDiff(_desc.loadOp, loadOp); }
+	void setClearDepth(f32 depth)							{ _assignIfDiff(_desc.clearDepthValue, depth); }
+	void setClearStencil(u32 stencil)						{ _assignIfDiff(_desc.clearStencilValue, stencil); }
+
+private:
+	template<class V>
+	void _assignIfDiff(V& dst, const V& src) {
+		if (dst == src) return;
+		dst = src;
+		setDirty();
+	}
+	
+	Pass*	_pass = nullptr;
+	String	_name;
+	Desc	_desc;
 };
 
 class RenderGraph_Input : public NonCopyable {
@@ -61,11 +102,14 @@ public:
 	using Input       = RenderGraph_Input;
 	using Inputs      = RenderGraph_Inputs;
 	using ColorBuffer = RenderGraph_ColorBuffer;
+	using DepthBuffer = RenderGraph_DepthBuffer;
 
 	using RenderDelegate = Delegate_<void (RenderRequest* req, Span<Input> inputs)>;
 
 	template<class GRAPH>
-	RenderGraph_Pass(GRAPH* graph, StrView name, void (GRAPH::*func)(RenderRequest* req, Span<Input> inputs)) {
+	RenderGraph_Pass(GRAPH* graph, StrView name, void (GRAPH::*func)(RenderRequest* req, Span<Input> inputs))
+		: _depthBuffer(this, "depth", RenderDepthType::Depth_UNorm24_Stencil_UInt8)
+	{
 		static_assert(std::is_base_of_v<RenderGraph, GRAPH>);
 		_renderDelegate.bindUnowned(graph, func);
 		_init(graph, name);
@@ -85,9 +129,8 @@ public:
 	const Vec2i&		frameSize() const		{ return _frameSize; }
 	bool				isBackBuffer() const	{ return _isBackBuffer; }
 
-	Span<ColorBuffer*>	colorBuffers() { return _colorBuffers; }
-
-	void setDepthAttachmentDesc(const RenderPassDepthAttachmentDesc& v);
+	Span<ColorBuffer*> colorBuffers() { return _colorBuffers; }
+	DepthBuffer&       depthBuffer() { return _depthBuffer; }
 
 	void setFrameSize(Vec2i frameSize);
 
@@ -114,9 +157,9 @@ protected:
 
 	bool			_isBackBuffer = false;
 
-	Array<Input, 8>               _inputs;
-	Array<ColorBuffer*, 8>        _colorBuffers;
-	RenderPassDepthAttachmentDesc _depthAttachmentDesc;
+	Array<Input, 8>        _inputs;
+	Array<ColorBuffer*, 8> _colorBuffers;
+	DepthBuffer            _depthBuffer;
 
 	RenderDelegate			_renderDelegate;
 	SPtr<RenderPass>		_renderPass;

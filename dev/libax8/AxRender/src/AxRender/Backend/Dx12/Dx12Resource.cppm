@@ -119,20 +119,17 @@ public:
 		::SetEvent(_h);
 	}
 
-	bool wait() { return _wait(INFINITE); }
-	bool wait(const Milliseconds& timeout) { return _wait(Dx12Util::castDWORD(timeout.value)); }
+	bool wait(const Opt<Milliseconds>& timeout) {
+		AX_ASSERT(_h != nullptr);
+		DWORD dw = timeout ? ax_safe_cast_<DWORD>(timeout->value) : INFINITE;
+		DWORD ret = ::WaitForSingleObject(_h, dw);
+		if (ret == WAIT_OBJECT_0) return true;
+		if (ret == WAIT_TIMEOUT) return false;
+		throw Error_Undefined("Dx12Win32Event - wait");
+	}	
 	
 private:
-	
-	bool _wait(DWORD dwMilliseconds) {
-		AX_ASSERT(_h != nullptr);
-		DWORD ret = ::WaitForSingleObject(_h, dwMilliseconds);
-		if (ret == WAIT_TIMEOUT) return false;
-		if (ret == WAIT_OBJECT_0) return true;
-		throw Error_Undefined("Dx12Win32Event - wait");
-	}
-	
-	
+
 	HANDLE _h = nullptr; // // Event use nullptr, not INVALID_HANDLE_VALUE(-1)
 };
 

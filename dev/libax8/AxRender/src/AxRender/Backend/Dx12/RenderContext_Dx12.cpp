@@ -197,18 +197,15 @@ void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 	if (!req) { AX_ASSERT(false); return; }
 
-	_graphCmdQueue.signal(req->_fence, 0);
-
 	ID3D12CommandList* lists[] = {
 		req->_uploadCmdBuf_dx12,
 		req->_graphCmdBuf_dx12
 	};
+	_graphCmdQueue.signal(req->_fence, 0);
 	_graphCmdQueue.execCmdList(lists);
-	_graphCmdQueue.signal(req->_fence, req->_cpuEvent, 1);
-
-	req->_cpuEvent.wait();
 	
 	_swapChain_dx12.present(_swapChainDesc.vsync ? 1 : 0, 0);
+	_graphCmdQueue.signal(req->_fence, req->_cpuEvent, 1);
 }
 
 void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {

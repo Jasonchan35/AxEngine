@@ -12,40 +12,16 @@ RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, Colo
 	: _pass(pass)
 	, _name(name)
 {
-	_attachment.colorType = colorType;
+	_desc.colorType = colorType;
 	pass->_addColorBuffer(this);
 }
 
-void RenderGraph_ColorBuffer::setDesc(const RenderPassColorAttachmentDesc& attachment) {
-	if (_attachment == attachment) return;
-	setDirty();
-	_attachment = attachment;
+RenderGraph_DepthBuffer::RenderGraph_DepthBuffer(Pass* pass, StrView name, RenderDepthType depthType) {
+	_desc.depthType = depthType;
 }
 
-void RenderGraph_ColorBuffer::setClearColor(const Color4f& color) {
-	if (_attachment.clearColorValue == color) return;
-	_attachment.clearColorValue = color;
-	setDirty();
-}
-
-void RenderGraph_ColorBuffer::setColorType(ColorType colorType) {
-	if (_attachment.colorType == colorType) return;
-	_attachment.colorType = colorType;
-	setDirty();
-}
-
-void RenderGraph_ColorBuffer::setLoadOp(RenderBufferLoadOp loadOp) {
-	if (_attachment.loadOp == loadOp) return;
-	_attachment.loadOp = loadOp;
-	setDirty();
-}
-
-void RenderGraph_Pass::setDepthAttachmentDesc(const RenderPassDepthAttachmentDesc& attachmentDesc) {
-	if (_depthAttachmentDesc == attachmentDesc)
-		return;
-
-	setDirty();
-	_depthAttachmentDesc = attachmentDesc;
+void RenderGraph_DepthBuffer::setDirty() {
+	if (_pass) _pass->setDirty();
 }
 
 void RenderGraph_Pass::_createRenderPass() {
@@ -53,13 +29,13 @@ void RenderGraph_Pass::_createRenderPass() {
 
 	RenderPass_CreateDesc	desc;
 	desc.frameSize = _frameSize;
-	desc.depthAttachmentDesc = _depthAttachmentDesc;
+	desc.depthAttachmentDesc = _depthBuffer.desc();
 		
 	for (auto& col : _colorBuffers) {
 		if (!col) { AX_ASSERT(false); return; }
-		desc.colorAttachmentDescs.emplaceBack(col->attachment());
+		desc.colorAttachmentDescs.emplaceBack(col->desc());
 	}
-
+	
 	if (_renderPass && _renderPass->isCompatible(desc))
 		return;
 

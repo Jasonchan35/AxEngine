@@ -8,6 +8,7 @@ struct AxRenderConfig {
 	static constexpr Int kMaxBackBufferCount = 3;
 	static constexpr Int kMaxRenderRequestCount = 8;
 	static constexpr bool bindless = static_cast<bool>(AX_RENDER_BINDLESS);
+	static constexpr Opt<Milliseconds> kMaxRenderWaitTime = Milliseconds(15 * 1000);
 };
 
 } // namespace

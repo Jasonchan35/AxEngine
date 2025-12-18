@@ -1290,7 +1290,7 @@ VkMemoryRequirements AX_VkBuffer::getMemoryRequirements() {
 
 void AX_VkFence::destroy() {
 	if (_handle != VK_NULL_HANDLE) {
-		wait(UINT64_MAX);
+		// wait(std::nullopt);
 		vkDestroyFence(*_dev, _handle, AX_VkUtil::allocCallbacks());
 		_handle = VK_NULL_HANDLE;
 		_dev = nullptr;
@@ -1328,7 +1328,8 @@ bool AX_VkFence::check(bool doReset) {
 	return false;
 }
 
-bool AX_VkFence::wait(uint64_t nanoseconds) {
+bool AX_VkFence::wait(const Opt<Milliseconds>& timeout) {
+	u64 nanoseconds = timeout ? ax_safe_cast_<u64>(timeout->value) : u64_max;
 	auto err = vkWaitForFences(*_dev, 1, &_handle, true, nanoseconds);
 	if (err == VK_TIMEOUT)
 		return false;

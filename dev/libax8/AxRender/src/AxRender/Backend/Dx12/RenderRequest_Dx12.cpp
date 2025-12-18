@@ -31,7 +31,9 @@ void RenderRequest_Dx12::onFrameEnd() {
 }
 
 void RenderRequest_Dx12::onWaitCompleted() {
-	_cpuEvent.wait();
+	if (!_cpuEvent.wait(AxRenderConfig::kMaxRenderWaitTime)) {
+		throw Error_Undefined("Render - timeout");
+	}
 }
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
@@ -80,7 +82,10 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 		auto* colorBuffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
 		if (!colorBuffer) continue;
 		if (desc.loadOp == RenderBufferLoadOp::Clear) {
-			_graphCmdBuf_dx12->ClearRenderTargetView(colorBuffer->_view_dx12.handle.cpu, desc.clearColorValue.data(), 0, nullptr);
+			_graphCmdBuf_dx12->ClearRenderTargetView(	colorBuffer->_view_dx12.handle.cpu,
+														desc.clearColorValue.data(),
+														0,
+														nullptr);
 		}
 	}
 

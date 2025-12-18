@@ -650,7 +650,7 @@ public:
 	AX_VkFence& create(AX_VkDevice& dev, bool signaled);
 
 	void reset();
-	bool wait(uint64_t nanoseconds = UINT64_MAX);
+	bool wait(const Opt<Milliseconds>& timeout);
 
 	bool check(bool doReset);
 

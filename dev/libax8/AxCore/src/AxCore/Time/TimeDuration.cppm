@@ -30,7 +30,7 @@ public:
 	constexpr TimeDuration_(const TimeDuration_&) noexcept = default;
 
 	template<i64 R>
-	constexpr explicit TimeDuration_(const TimeDuration_<T, R>& v) noexcept { convert(v); }
+	constexpr TimeDuration_(const TimeDuration_<T, R>& v) noexcept { convert(v); }
 
 	AX_INLINE static constexpr This kZero() { return This(0); }
 	AX_INLINE static constexpr This kMax()  { return This(NumLimit<T>::max()); }
