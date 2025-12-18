@@ -12,7 +12,7 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 {
 	auto* dev = Renderer_Dx12::s_d3dDevice();
 
-	_uploadCmdBuf_dx12.create(dev, CommandBufferType::Copy);
+	_uploadCmdBuf_dx12.create(dev, CommandBufferType::Direct); // CommandBufferType::Copy
 	_graphCmdBuf_dx12.create(dev, CommandBufferType::Direct);
 	_computeCmdList_dx12.create(dev, CommandBufferType::Compute);
 	_fence.create(dev, 1);
