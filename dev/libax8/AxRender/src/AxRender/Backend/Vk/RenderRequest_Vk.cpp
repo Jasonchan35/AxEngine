@@ -37,7 +37,7 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 }
 
 void RenderRequest_Vk::onWaitCompleted() {
-	if (!_completedFence_vk.wait(AxRenderConfig::kMaxRenderWaitTime)) {
+	if (!_completedFence_vk.wait(AxRenderConfig::kMaxRenderWaitTime())) {
 		throw Error_Undefined("Render - timeout");
 	}
 	_uploadCmdBuf_vk.resetAndReleaseResource();
@@ -66,13 +66,13 @@ void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
 	Array<VkClearValue, 32>	clearValues;
 	for (auto& src : pass->colorAttachments()) {
 		auto& dst = clearValues.emplaceBack().color;
-		AX_VkUtil::setFloat4(dst.float32, src.desc.clearColorValue);
+		AX_VkUtil::setFloat4(dst.float32, src.desc.clearColor);
 	}
 	
 	if (auto& desc = pass->depthAttachment().desc) {
 		auto& dst         = clearValues.emplaceBack().depthStencil;
-		dst.depth         = desc.clearDepthValue;
-		dst.stencil       = desc.clearStencilValue;
+		dst.depth         = desc.clearDepth;
+		dst.stencil       = desc.clearStencil;
 	}
 
 	VkRenderPassBeginInfo info = {};

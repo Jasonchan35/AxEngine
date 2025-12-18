@@ -19,14 +19,13 @@ public:
 
 	RenderGraph_ColorBuffer(Pass* pass, StrView name, ColorType colorType);
 
-	Pass*			pass() { return _pass; }
-	StrView			name() const { return _name; }
-
-	const Desc&	desc() const { return _desc; }
+	Pass*       pass() { return _pass; }
+	StrView     name() const { return _name; }
+	const Desc& desc() const { return _desc; }
 
 	void setDirty();
 	void setDesc(const Desc& attachment)		{ _assignIfDiff(_desc, attachment); }
-	void setClearColor(const Color4f& color)	{ _assignIfDiff(_desc.clearColorValue, color); }
+	void setClearColor(const Color4f& color)	{ _assignIfDiff(_desc.clearColor, color); }
 	void setLoadOp(RenderBufferLoadOp loadOp)	{ _assignIfDiff(_desc.loadOp, loadOp); }
 	void setColorType(ColorType colorType)		{ _assignIfDiff(_desc.colorType, colorType); }
 
@@ -54,15 +53,14 @@ public:
 	
 	Pass*		pass() { return _pass; }
 	StrView		name() const { return _name; }
-
 	const Desc&	desc() const { return _desc; }
 	
 	void setDirty();
 	void setDesc(const Desc& desc)	{ _assignIfDiff(_desc, desc); }
 	void setDepthType(RenderDepthType depthType)			{ _assignIfDiff(_desc.depthType, depthType); }
 	void setLoadOp(RenderBufferLoadOp loadOp)				{ _assignIfDiff(_desc.loadOp, loadOp); }
-	void setClearDepth(f32 depth)							{ _assignIfDiff(_desc.clearDepthValue, depth); }
-	void setClearStencil(u32 stencil)						{ _assignIfDiff(_desc.clearStencilValue, stencil); }
+	void setClearDepth(f32 depth)							{ _assignIfDiff(_desc.clearDepth, depth); }
+	void setClearStencil(u32 stencil)						{ _assignIfDiff(_desc.clearStencil, stencil); }
 
 private:
 	template<class V>

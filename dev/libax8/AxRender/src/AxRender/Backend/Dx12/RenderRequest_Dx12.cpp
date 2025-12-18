@@ -31,7 +31,7 @@ void RenderRequest_Dx12::onFrameEnd() {
 }
 
 void RenderRequest_Dx12::onWaitCompleted() {
-	if (!_cpuEvent.wait(AxRenderConfig::kMaxRenderWaitTime)) {
+	if (!_cpuEvent.wait(AxRenderConfig::kMaxRenderWaitTime())) {
 		throw Error_Undefined("Render - timeout");
 	}
 }
@@ -65,6 +65,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	pass->colorBuf0_resourceBarrier(this, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	auto& renderTargetDescriptors = pass->_colorViewHandles_dx12;
+	auto& cmdBuf = _graphCmdBuf_dx12;
 
 	UINT                         rtCount        = ax_safe_cast_from(renderTargetDescriptors.size());
 	D3D12_CPU_DESCRIPTOR_HANDLE* rtViews        = renderTargetDescriptors.data();
@@ -75,31 +76,29 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	AX_ASSERT(rtViews);
 	AX_ASSERT(depthView);
 	
-	_graphCmdBuf_dx12->OMSetRenderTargets(rtCount, rtViews, rtSingleHandle, depthView);
+	cmdBuf->OMSetRenderTargets(rtCount, rtViews, rtSingleHandle, depthView);
 
 	for (auto& colorAttachment : pass->colorAttachments()) {
 		auto& desc = colorAttachment.desc;
 		auto* colorBuffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
 		if (!colorBuffer) continue;
 		if (desc.loadOp == RenderBufferLoadOp::Clear) {
-			_graphCmdBuf_dx12->ClearRenderTargetView(	colorBuffer->_view_dx12.handle.cpu,
-														desc.clearColorValue.data(),
-														0,
-														nullptr);
+			cmdBuf->ClearRenderTargetView(	colorBuffer->_view_dx12.handle.cpu,
+											desc.clearColor.data(),
+											0,
+											nullptr);
 		}
 	}
 
 	if (auto* depthBuffer = pass->depthBuffer_dx12()) {
 		auto& desc = pass->depthAttachment().desc;
 		if (desc.loadOp == RenderBufferLoadOp::Clear) {
-			float depthValue   = desc.clearDepthValue;
-			u8    stencilValue = static_cast<u8>(desc.clearStencilValue);
-			_graphCmdBuf_dx12->ClearDepthStencilView(depthBuffer->_view_dx12.handle.cpu,
-			                                         D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
-			                                         depthValue,
-			                                         stencilValue,
-			                                         0,
-			                                         nullptr);
+			cmdBuf->ClearDepthStencilView(depthBuffer->_view_dx12.handle.cpu,
+			                              D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
+			                              desc.clearDepth,
+			                              ax_safe_cast_<u8>(desc.clearStencil),
+			                              0,
+			                              nullptr);
 		}
 	}
 }
