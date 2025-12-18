@@ -18,8 +18,11 @@ public:
 
 	const ShaderParamSpace_Dx12* shaderParamSpace() const { return rttiCastCheck<ShaderParamSpace_Dx12>(_shaderParamSpace.ptr()); }
 
-	void _onDrawcall(RenderRequest_Dx12* req, bool isCompute);
-	
+	void _onDrawcall(RenderRequest_Dx12* req, const ShaderPass_Dx12* shdPass);
+
+protected:
+	virtual bool onSetParam(SamplerParam& param, Int index, Sampler* sampler) override;
+
 private:
 	Dx12DescripterHeap_Sampler		_samplerDescHeap;
 	Dx12DescripterHeap_CBV_SRV_UAV	_texDescHeap;

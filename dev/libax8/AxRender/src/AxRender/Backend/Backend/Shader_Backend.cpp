@@ -165,7 +165,7 @@ ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 }
 
 template<class T>
-void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
+void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 	for (auto& param : paramInfoSpan) {
 		auto spaceType = param.spaceType;
 		if (shouldUseCommonParamSpace(spaceType)) {
@@ -178,7 +178,7 @@ void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
 			continue;
 		}
 
-		auto& space = _shaderParamSpaces.ensureSizeAndGetElement(paramSpaceType);
+		auto& space = _shaderParamSpaces[paramSpaceType];
 		if (!space) {
 			ShaderParamSpace_CreateDesc spaceDesc;
 			spaceDesc.spaceType = spaceType;
@@ -191,10 +191,10 @@ void ShaderPass_Backend::_addParamSpace(const Array<T>& paramInfoSpan) {
 }
 
 void ShaderPass_Backend::_createParamSpaces() {
-	_addParamSpace(_stageInfo->constBuffers);
-	_addParamSpace(_stageInfo->storageBuffers);
-	_addParamSpace(_stageInfo->textures);
-	_addParamSpace(_stageInfo->samplers);
+	_addParamToSpace(_stageInfo->constBuffers);
+	_addParamToSpace(_stageInfo->storageBuffers);
+	_addParamToSpace(_stageInfo->textures);
+	_addParamToSpace(_stageInfo->samplers);
 
 	for (auto& prop : _shader->info()->declare.props) {
 		auto propName = NameId::s_make(prop.name);

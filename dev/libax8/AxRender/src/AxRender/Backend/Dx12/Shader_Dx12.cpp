@@ -67,8 +67,10 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		} else {
 			space->createDescTable();
 		}
-		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_descTable,        &space->_descTableIndexInRoot);
-		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_samplerDescTable, &space->_samplerDescTableIndexInRoot);
+
+		auto i = ax_enum_int(spaceType);
+		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_descTable,        &_descTableRootIndices[i]);
+		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_samplerDescTable, &_samplerDescTableRootIndices[i]);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {

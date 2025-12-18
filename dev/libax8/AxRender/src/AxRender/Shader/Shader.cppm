@@ -63,7 +63,7 @@ public:
 	struct ParamBase {
 		String			name;
 		RenderDataType	dataType;
-		SpaceType	spaceType = SpaceType::Default;
+		SpaceType		spaceType = SpaceType::Default;
 		BindPoint		bindPoint = BindPoint::Invalid;
 		u16				bindCount = 0;
 

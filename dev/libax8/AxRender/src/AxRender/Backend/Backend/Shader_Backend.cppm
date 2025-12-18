@@ -53,11 +53,11 @@ public:
 	protected:
 		void	create(const Info& info);
 
-		NameId			 _name;
-		RenderDataType		 _dataType	 = RenderDataType::None;
-		ShaderStageFlags _stageFlags = ShaderStageFlags::None;
-		ShaderResourceBindPoint		 _bindPoint	 = ShaderResourceBindPoint::Invalid;
-		Int				 _bindCount  = 0;
+		NameId                  _name;
+		RenderDataType          _dataType   = RenderDataType::None;
+		ShaderStageFlags        _stageFlags = ShaderStageFlags::None;
+		ShaderResourceBindPoint _bindPoint  = ShaderResourceBindPoint::Invalid;
+		Int                     _bindCount  = 0;
 	};
 
 	struct ConstBuffer : public ParamBase {
@@ -246,10 +246,10 @@ protected:
 	void _createParamSpaces();
 
 	template<class T>
-	void _addParamSpace(const Array<T>& paramInfoSpan);
+	void _addParamToSpace(const Array<T>& paramInfoSpan);
 
-
-	Array<SPtr<ShaderParamSpace_Backend>>	_shaderParamSpaces;
+	using ShaderParamSpaceList = FixedArray<SPtr<ShaderParamSpace_Backend>, ax_enum_int(SpaceType::_COUNT)>; 
+	ShaderParamSpaceList	_shaderParamSpaces;
 
 	const ShaderPassInfo*		_info = nullptr;
 	const ShaderStageInfo*		_stageInfo = nullptr;

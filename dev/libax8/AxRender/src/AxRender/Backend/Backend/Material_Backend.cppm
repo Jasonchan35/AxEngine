@@ -45,7 +45,7 @@ public:
 
 	using VarInfo	= ShaderParamSpace_Backend::VarInfo;
 	using BindPoint = ShaderResourceBindPoint;
-	using ParamSpaceType = ShaderParamSpaceType;
+	using SpaceType = ShaderParamSpaceType;
 
 	struct ParamBase {
 		void	  create(const ShaderParamSpace_Backend::ParamBase& shaderParam);
@@ -158,11 +158,13 @@ public:
 	Int samplerParams_totalBindCount() const		{ return s_totalBindCount(_samplerParams.span()); }
 	Int storageBufferParams_totalBindCount() const	{ return s_totalBindCount(_storageBufferParams.span()); }
 	
-	ParamSpaceType	paramSpaceType() const { return _shaderParamSpace->spaceType(); }
+	SpaceType	spaceType() const { return _shaderParamSpace->spaceType(); }
 
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
 protected:
+	virtual bool onSetParam(SamplerParam& param, Int index, Sampler* sampler) { return false; }
+	
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
 	template<class T> T*	_findParam(IArray<T>& arr, NameId name);

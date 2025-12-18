@@ -41,10 +41,7 @@ public:
 
 	Dx12DescriptorTable	_descTable;
 	Dx12DescriptorTable	_samplerDescTable; // DX12: Samplers cannot be mixed with other resource types in a descriptor table
-
-	UINT _descTableIndexInRoot = UINT_MAX;
-	UINT _samplerDescTableIndexInRoot = UINT_MAX;
-
+	
 	void createDescTable();
 };
 
@@ -87,6 +84,11 @@ public:
 	Stage _gsStage;
 	Stage _csStage;
 
+	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(SpaceType::_COUNT)>;
+
+	DescTableRootIndices        _descTableRootIndices;
+	DescTableRootIndices        _samplerDescTableRootIndices;
+	
 	Dx12RootParameterList       _pipelineRootParamList;
 	Array<UPtr<Pipeline>, 4>    _pipelineTable;
 	ComPtr<ID3D12RootSignature> _rootSignature;

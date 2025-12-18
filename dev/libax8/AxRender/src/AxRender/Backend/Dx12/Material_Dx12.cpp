@@ -7,9 +7,29 @@ import :GpuBuffer_Dx12;
 
 namespace ax {
 
-void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, bool isCompute) {
-	auto* shdSpace = rttiCastCheck<ShaderParamSpace_Dx12>(_shaderParamSpace.ptr());
-	
+bool MaterialParamSpace_Dx12::onSetParam(SamplerParam& param, Int index, Sampler* sampler) {
+	D3D12_SAMPLER_DESC desc = {};
+	if (sampler) {
+		auto& ss            = sampler->samplerState();
+		desc.Filter         = Dx12Util::getDxSamplerFilter(ss.filter);
+		desc.AddressU       = Dx12Util::getDxSamplerWrap(ss.wrap.u);
+		desc.AddressV       = Dx12Util::getDxSamplerWrap(ss.wrap.v);
+		desc.AddressW       = Dx12Util::getDxSamplerWrap(ss.wrap.w);
+		desc.MipLODBias     = 0;
+		desc.MaxAnisotropy  = 1;
+		desc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		desc.MinLOD         = 0;
+		desc.MaxLOD         = D3D12_FLOAT32_MAX;
+		desc.BorderColor[0] = 0; 
+		desc.BorderColor[1] = 0; 
+		desc.BorderColor[2] = 0; 
+		desc.BorderColor[3] = 0; 
+	}
+	_samplerDescHeap.createSampler(index, desc);
+	return true;
+}
+
+void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, const ShaderPass_Dx12* shdPass) {
 	auto& cmdList = req->_graphCmdBuf_dx12;
 	
 	Int cbIndex = 0;
@@ -19,7 +39,7 @@ void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, bool isComput
 
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		if (isCompute) {
+		if (shdPass->isCompute()) {
 			cmdList->SetComputeRootConstantBufferView(ax_safe_cast_from(cbIndex), gpuBuf->gpuAddress());
 		} else {
 			cmdList->SetGraphicsRootConstantBufferView(ax_safe_cast_from(cbIndex), gpuBuf->gpuAddress());
@@ -27,12 +47,15 @@ void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, bool isComput
 		cbIndex++;
 	}
 
-	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdSpace->_descTableIndexInRoot),
+	auto s = ax_enum_int(spaceType());
+
+	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdPass->_descTableRootIndices[s]),
 	                                        _texDescHeap.handleStart().gpu);
 	
-	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdSpace->_samplerDescTableIndexInRoot),
+	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdPass->_samplerDescTableRootIndices[s]),
 	                                        _samplerDescHeap.handleStart().gpu);
 }
+
 
 bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
@@ -51,13 +74,13 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Dx12>(paramSpace_.ptr());
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
-		auto spaceType = ax_enum_int(paramSpace->paramSpaceType());
+		auto spaceType = ax_enum_int(paramSpace->spaceType());
 		if (spaceType >= ax_enum_int(SpaceType::_COUNT)) {
 			AX_ASSERT(false);
 			return false;
 		}
 
-		paramSpace->_onDrawcall(req, shdPass->isCompute());
+		paramSpace->_onDrawcall(req, shdPass);
 	}
 
 	auto* commonMaterial = renderer->commonMaterial();

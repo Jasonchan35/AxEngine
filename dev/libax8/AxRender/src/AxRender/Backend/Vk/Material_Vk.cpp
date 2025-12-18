@@ -195,7 +195,7 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(paramSpace_.ptr());
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
-		auto paramSpaceType = ax_enum_int(paramSpace->paramSpaceType());
+		auto paramSpaceType = ax_enum_int(paramSpace->spaceType());
 		if (paramSpaceType >= ax_enum_int(SpaceType::_COUNT)) {
 			AX_ASSERT(false);
 			return false;

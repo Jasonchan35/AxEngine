@@ -100,7 +100,10 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 	if (!samplerName) return false;
 
 	auto* dst = _findParam(_samplerParams, samplerName);
-	return dst ? dst->setSampler(sampler) : false;
+	if (!dst) return false;
+	dst->setSampler(sampler);
+	auto index = dst - _samplerParams.data();
+	return onSetParam(*dst, index, sampler);
 #endif
 }
 
