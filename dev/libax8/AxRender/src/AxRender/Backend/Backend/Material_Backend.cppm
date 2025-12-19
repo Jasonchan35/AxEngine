@@ -46,6 +46,8 @@ public:
 	using VarInfo	= ShaderParamSpace_Backend::VarInfo;
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
+	using BindCount = ShaderParamBindCount;
+	using ParamIndex = ShaderParamSpace_Backend::ParamIndex;
 
 	struct ParamBase {
 		void	  create(const ShaderParamSpace_Backend::ParamBase& shaderParam);
@@ -53,8 +55,9 @@ public:
 
 	struct ConstBuffer : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
+		ParamIndex	paramIndex() const { return _shaderParam->paramIndex(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
-		Int			bindCount() const { return _shaderParam->bindCount(); }
+		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
 		void		create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam);
 		GpuBuffer*	getUploadedGpuBuffer(class RenderRequest* req) { return _dynamicGpuBuffer.getUploadedGpuBuffer(req); }
@@ -68,11 +71,12 @@ public:
 	};
 
 	struct TextureParam : public ParamBase {
-		NameId		name() const { return _shaderParam->name(); }
-		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
-		RenderDataType	dataType() const { return _shaderParam->dataType(); }
-		Int			bindCount() const { return _shaderParam->bindCount(); }
-
+		NameId         name() const { return _shaderParam->name(); }
+		ParamIndex     paramIndex() const { return _shaderParam->paramIndex(); }
+		BindPoint      bindPoint() const { return _shaderParam->bindPoint(); }
+		RenderDataType dataType() const { return _shaderParam->dataType(); }
+		BindCount      bindCount() const { return _shaderParam->bindCount(); }
+		
 		void		create(const ShaderParamSpace_Backend::TextureParam& shaderParam);
 		Texture*	texture() { return _texture; }
 		template<class TEX> bool setTexture(TEX* texture);
@@ -83,8 +87,9 @@ public:
 
 	struct SamplerParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
+		ParamIndex	paramIndex() const { return _shaderParam->paramIndex(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
-		Int			bindCount() const { return _shaderParam->bindCount(); }
+		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
 		void		create(const ShaderParamSpace_Backend::SamplerParam& shaderParam);
 		Sampler*	sampler() { return _sampler; }
@@ -96,8 +101,9 @@ public:
 
 	struct StorageBufferParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
+		ParamIndex	paramIndex() const { return _shaderParam->paramIndex(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
-		Int			bindCount() const { return _shaderParam->bindCount(); }
+		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
 		void		   create(const ShaderParamSpace_Backend::StorageBufferParam& shaderParam);
 		StorageBuffer* storageBuffer() { return _storageBuffer; }
@@ -146,8 +152,6 @@ public:
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
 
-	bool setParam(NameId name, StorageBuffer* v);
-
 	Span<ConstBuffer>			constBuffers()	const		{ return _constBuffers;        }
 	Span<TextureParam>			textureParams() const		{ return _textureParams;       }
 	Span<SamplerParam>			samplerParams() const		{ return _samplerParams;       }
@@ -163,11 +167,14 @@ public:
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
 protected:
-	virtual bool onSetParam(SamplerParam& param, Int index, Sampler* sampler) { return false; }
+	virtual void onSetSamplerParam(SamplerParam& param) {}
+	virtual void onSetTextureParam(TextureParam& param) {}
 	
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
-	template<class T> T*	_findParam(IArray<T>& arr, NameId name);
+	template<class T> Opt<Span_FindResult<T>> _findParam(IArray<T>& arr, NameId name) {
+		return arr.find_([&name](const T& e) { return e.name() == name; });
+	}
 	template<class V> bool	_setVariable(NameId name, const V& v);
 //	template<class V> bool	_setTextureParam(NameId name, V* v);
 
@@ -184,14 +191,6 @@ bool MaterialParamSpace_Backend::_setVariable(NameId name, const V& v) {
 		b = b || cb.setVariable(name, v);
 	}
 	return b;
-}
-
-template<class T> AX_INLINE
-T* MaterialParamSpace_Backend::_findParam(IArray<T>& arr, NameId name) {
-	for (auto& e : arr) {
-		if (e.name() == name) return &e;
-	}
-	return nullptr;
 }
 
 template<class V> inline

@@ -36,6 +36,8 @@ enum class ShaderParamBindPoint : u16 {
 	Invalid			   = u16_max,
 };
 
+using ShaderParamBindCount = u32;
+
 #define AX_ShaderStageFlags_ENUM_LIST(E) \
 	E(None,) \
 	E(Vertex,	= 1 << 0) \

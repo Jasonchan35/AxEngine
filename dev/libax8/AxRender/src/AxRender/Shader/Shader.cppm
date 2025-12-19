@@ -29,6 +29,7 @@ class ShaderStageInfo : public NonCopyable {
 public:
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
+	using BindCount = ShaderParamBindCount;
 
 	struct Input {
 		VertexSemantic	semantic = VertexSemantic::None;
@@ -62,10 +63,10 @@ public:
 
 	struct ParamBase {
 		String			name;
-		RenderDataType	dataType;
+		RenderDataType	dataType  = RenderDataType::None;
 		BindSpace		bindSpace = BindSpace::Default;
 		BindPoint		bindPoint = BindPoint::Invalid;
-		u16				bindCount = 0;
+		BindCount		bindCount = 0;
 
 		ShaderStageFlags stageFlags = ShaderStageFlags::None;
 
@@ -274,6 +275,7 @@ public:
 	using CreateDesc = ShaderParamSpace_CreateDesc;
 	using BindPoint  = ShaderParamBindPoint;
 	using BindSpace  = ShaderParamBindSpace;
+	using BindCount  = ShaderParamBindCount;
 
 	BindSpace	bindSpace() const { return _bindSpace; }
 

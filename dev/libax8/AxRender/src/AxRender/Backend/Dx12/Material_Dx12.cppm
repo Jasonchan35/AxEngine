@@ -21,7 +21,8 @@ public:
 	void _onDrawcall(RenderRequest_Dx12* req, const ShaderPass_Dx12* shdPass);
 
 protected:
-	virtual bool onSetParam(SamplerParam& param, Int index, Sampler* sampler) override;
+	virtual void onSetSamplerParam(SamplerParam& param) override;
+	virtual void onSetTextureParam(TextureParam& param) override;
 
 private:
 	Dx12DescripterHeap_Sampler		_samplerDescHeap;

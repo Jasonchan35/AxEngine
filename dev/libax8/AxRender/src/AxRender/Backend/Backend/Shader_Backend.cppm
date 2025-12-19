@@ -35,35 +35,39 @@ public:
 		bool	 rowMajor() const { return _rowMajor; }
 
 	private:
-		NameId	 _name;
-		u32		 _offset	= 0;
-		RenderDataType _dataType	= RenderDataType::None;
-		bool	 _rowMajor	= true;
+		NameId         _name;
+		u32            _offset   = 0;
+		RenderDataType _dataType = RenderDataType::None;
+		bool           _rowMajor = true;
 	};
 
+	using ParamIndex = u32;
+	
 	struct ParamBase : public NonCopyable {
 		using Info = ShaderStageInfo::ParamBase;
 
-		NameId           name() const { return _name; }
-		RenderDataType   dataType() const { return _dataType; }
+		NameId           name() const		{ return _name; }
+		ParamIndex       paramIndex() const { return _paramIndex; }
+		RenderDataType   dataType() const	{ return _dataType; }
 		ShaderStageFlags stageFlags() const { return _stageFlags; }
-		BindPoint        bindPoint() const { return _bindPoint; }
-		Int              bindCount() const { return _bindCount; }
+		BindPoint        bindPoint() const	{ return _bindPoint; }
+		BindCount        bindCount() const	{ return _bindCount; }
 
 	protected:
-		void	create(const Info& info);
+		void	create(ParamIndex paramIndex, const Info& info);
 
-		NameId                  _name;
-		RenderDataType          _dataType   = RenderDataType::None;
-		ShaderStageFlags        _stageFlags = ShaderStageFlags::None;
+		NameId               _name;
+		RenderDataType       _dataType   = RenderDataType::None;
 		ShaderParamBindPoint _bindPoint  = ShaderParamBindPoint::Invalid;
-		Int                     _bindCount  = 0;
+		ShaderParamBindCount _bindCount  = 0;
+		ParamIndex           _paramIndex = 0;
+		ShaderStageFlags     _stageFlags = ShaderStageFlags::None;
 	};
 
 	struct ConstBuffer : public ParamBase {
 		using Info = ShaderStageInfo::ConstBuffer;
 
-		void	create(const Info& info);
+		void	create(ParamIndex paramIndex, const Info& info);
 
 		template<class V>
 		void		setVariableDefault(const VarInfo& varInfo, const V& value);
@@ -87,7 +91,7 @@ public:
 	struct TextureParam : public ParamBase {
 		using Info = ShaderStageInfo::Texture;
 
-		void		create(const Info& info);
+		void		create(ParamIndex paramIndex, const Info& info);
 		Texture*	defaultTexture() const { return ax_const_cast(_defaultTexture); }
 
 		void setDefaultTexture(Texture* tex) {
@@ -101,7 +105,7 @@ public:
 	struct SamplerParam : public ParamBase {
 		using Info = ShaderStageInfo::Sampler;
 
-		void		create(const Info& info);
+		void		create(ParamIndex paramIndex, const Info& info);
 		Sampler*	defaultSampler() const { return ax_const_cast(_defaultSampler); }
 	private:
 		SPtr<Sampler>	_defaultSampler;
@@ -110,7 +114,7 @@ public:
 	struct StorageBufferParam : public ParamBase {
 		using Info = ShaderStageInfo::StorageBuffer;
 
-		void create(const Info& info);
+		void create(ParamIndex paramIndex, const Info& info);
 	private:
 	};
 

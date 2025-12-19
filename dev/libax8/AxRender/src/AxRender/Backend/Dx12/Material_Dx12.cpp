@@ -10,13 +10,14 @@ namespace ax {
 MaterialParamSpace_Dx12::MaterialParamSpace_Dx12(const CreateDesc& desc): Base(desc) {
 	auto* shaderParamSpace = rttiCastCheck<ShaderParamSpace_Dx12>(desc.shaderParamSpace);
 
-//	_samplerDescHeap.create(shaderParamSpace->_samplerDescTable.size());
+	_samplerDescHeap.create(shaderParamSpace->_samplerDescTable.size());
 	_textureDescHeap.create(shaderParamSpace->_textureDescTable.size());
 	_storageBufferDescHeap.create(shaderParamSpace->_storageBufferDescTable.size());
 }
 
-bool MaterialParamSpace_Dx12::onSetParam(SamplerParam& param, Int index, Sampler* sampler) {
+void MaterialParamSpace_Dx12::onSetSamplerParam(SamplerParam& param) {
 	D3D12_SAMPLER_DESC desc = {};
+	auto* sampler = param.sampler();
 	if (sampler) {
 		auto& ss            = sampler->samplerState();
 		desc.Filter         = Dx12Util::getDxSamplerFilter(ss.filter);
@@ -33,8 +34,18 @@ bool MaterialParamSpace_Dx12::onSetParam(SamplerParam& param, Int index, Sampler
 		desc.BorderColor[2] = 0; 
 		desc.BorderColor[3] = 0; 
 	}
-	_samplerDescHeap.setSampler(index, desc);
-	return true;
+	_samplerDescHeap.setSampler(param.paramIndex(), desc);
+}
+
+void MaterialParamSpace_Dx12::onSetTextureParam(TextureParam& param) {
+	switch (param.dataType()) {
+		case RenderDataType::Texture2D: {
+			auto* tex = rttiCastCheck<Texture2D_Dx12>(param.texture());
+			_textureDescHeap.setShaderResourceView(param.paramIndex(), tex->_texResource);
+			return;
+		}
+		default: AX_ASSERT_TODO; return;
+	}
 }
 
 void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, const ShaderPass_Dx12* shdPass) {

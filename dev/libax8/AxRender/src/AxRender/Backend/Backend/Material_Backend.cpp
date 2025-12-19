@@ -78,8 +78,12 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {
 	return setParam(bindlessName, ax_enum_int(slot));
 
 #else
-	auto* dst = _findParam(_textureParams, name);
-	return dst ? dst->setTexture(tex) : false;
+	auto f = _findParam(_textureParams, name);
+	if (!f) return false;
+	auto& param = f->value;
+	param.setTexture(tex);
+	onSetTextureParam(param);
+	return true;
 #endif
 }
 
@@ -99,21 +103,12 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 	auto samplerName = _shaderParamSpace->getSamplerName(name);
 	if (!samplerName) return false;
 
-	auto* dst = _findParam(_samplerParams, samplerName);
-	if (!dst) return false;
-	dst->setSampler(sampler);
-	auto index = dst - _samplerParams.data();
-	return onSetParam(*dst, index, sampler);
-#endif
-}
-
-bool MaterialParamSpace_Backend::setParam(NameId name, StorageBuffer* v) {
-#if AX_RENDER_BINDLESS
-	AX_ASSERT(false);
-	return false;
-#else
-	auto* dst = _findParam(_storageBufferParams, name);
-	return dst ? dst->setStorageParam(v) : false;
+	auto f = _findParam(_samplerParams, name);
+	if (!f) return false;
+	auto& param = f->value;
+	param.setSampler(sampler);
+	onSetSamplerParam(param);
+	return true;
 #endif
 }
 

@@ -362,18 +362,20 @@ public:
 	using MFindResult = Span_FindResult<T>;
 	using CFindResult = Span_FindResult<const T>;
 
-	template<class TARGET, class FUNC>
-	constexpr Opt<CFindResult> find(const TARGET& target, FUNC func) const {
-		return _obj_span().template find<TARGET, FUNC>(target, func);
-	}
+	template<class FUNC>
+	constexpr Opt<MFindResult> find_(FUNC func) { return _obj_span().template find_<FUNC>(func); }
 
-	template<class TARGET>
-	constexpr Opt<CFindResult> find(const TARGET& target) const {
-		return _obj_span().template find<TARGET>(target);
-	}
+	template<class FUNC>
+	constexpr Opt<CFindResult> find_(FUNC func) const { return _obj_span().template find_<FUNC>(func); }
+
+	template<class R>
+	constexpr Opt<MFindResult> find(const R& r) { return _obj_span().template find<R>(r); }
+
+	template<class R>
+	constexpr Opt<CFindResult> find(const R& r) const { return _obj_span().template find<R>(r); }
 	
 	template<class FUNC>
-	constexpr CFindResult findMin(FUNC func) const	{ return _obj_span().template findMin<FUNC>(func); }
+	constexpr CFindResult findMin_(FUNC func) const	{ return _obj_span().template findMin_<FUNC>(func); }
 	constexpr CFindResult findMin() const			{ return _obj_span().findMin(); }
 	
 	template<class FUNC>

@@ -27,9 +27,9 @@ template<class T, class INFO>
 void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) {
 	AX_ASSERT(paramInfo.bindSpace == bindSpace());
 
+	ParamIndex paramIndex = ax_safe_cast_from(arr.size());
 	auto& dst = arr.emplaceBack();
-	dst.create(paramInfo);
-
+	dst.create(paramIndex, paramInfo);
 
 	if constexpr (std::is_same_v<SamplerParam, T>) {
 		auto str = dst.name().toTempString();
@@ -61,17 +61,17 @@ void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Texture&       pa
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Sampler&       paramInfo) { _addParam(_samplerParams,       paramInfo); }
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StorageBuffer& paramInfo) { _addParam(_storageBufferParams, paramInfo); }
 
-inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
-	ParamBase::create(info);
+inline void ShaderParamSpace_Backend::SamplerParam::create(ParamIndex paramIndex, const Info& info) {
+	ParamBase::create(paramIndex, info);
 }
 
-inline void ShaderParamSpace_Backend::TextureParam::create(const Info& info) {
-	ParamBase::create(info);
+inline void ShaderParamSpace_Backend::TextureParam::create(ParamIndex paramIndex, const Info& info) {
+	ParamBase::create(paramIndex, info);
 	_dataType = info.dataType;
 }
 
-inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
-	ParamBase::create(info);
+inline void ShaderParamSpace_Backend::ConstBuffer::create(ParamIndex paramIndex, const Info& info) {
+	ParamBase::create(paramIndex, info);
 	_defaultValues.resize(info.dataSize);
 	_defaultValues.fillValues(0);
 
@@ -81,12 +81,13 @@ inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
 	}
 }
 
-void ShaderParamSpace_Backend::StorageBufferParam::create(const Info& info) {
-	ParamBase::create(info);
+void ShaderParamSpace_Backend::StorageBufferParam::create(ParamIndex paramIndex, const Info& info) {
+	ParamBase::create(paramIndex, info);
 }
 
-inline void ShaderParamSpace_Backend::ParamBase::create(const Info& info) {
+inline void ShaderParamSpace_Backend::ParamBase::create(ParamIndex paramIndex, const Info& info) {
 	_name		= NameId::s_make(info.name);
+	_paramIndex	= paramIndex;
 	_dataType	= info.dataType;
 	_stageFlags = info.stageFlags;
 	_bindPoint	= info.bindPoint;
