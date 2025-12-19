@@ -166,7 +166,7 @@ D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrierDebug(ID3D12GraphicsComma
 	D3D12_RESOURCE_STATES newResourceState
 ) {
 	if (_resourceState != newResourceState) {
-		AX_LOG("Dx12Debug: [{}] resourceBarrier {} -> {}", reinterpret_cast<void*>(this), _resourceState, newResourceState);
+		AX_LOG("Dx12Debug: [{}:{}] resourceBarrier {} -> {}", reinterpret_cast<void*>(_d3dResource.ptr()), _debugName, _resourceState, newResourceState);
 	}
 	return resourceBarrier(cmdList, newResourceState);
 }

@@ -14,9 +14,9 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 {
 	auto* dev = Renderer_Dx12::s_d3dDevice();
 
-	_uploadCmdBuf_dx12.create(dev, CommandBufferType::Direct); // CommandBufferType::Copy
-	_graphCmdBuf_dx12.create(dev, CommandBufferType::Direct);
-	_computeCmdList_dx12.create(dev, CommandBufferType::Compute);
+	_uploadCmdBuf_dx12.create(  dev, CommandBufferType::Direct,  "uploadCmdList"); // CommandBufferType::Copy
+	_graphCmdBuf_dx12.create(   dev, CommandBufferType::Direct,  "graphCmdList");
+	_computeCmdList_dx12.create(dev, CommandBufferType::Compute, "computeCmdList");
 	_fence.create(dev, 1);
 	_cpuEvent.create();
 	_cpuEvent.signalOnFenceCompletion(_fence, 1);

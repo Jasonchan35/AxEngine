@@ -13,7 +13,7 @@ namespace ax /*::AxRender*/ {
 class CommandBuffer_Dx12 : public CommandBuffer_Backend {
 	AX_RTTI_INFO(CommandBuffer_Dx12, CommandBuffer_Backend)
 public:
-	void create(ID3D12Device* dev, CommandBufferType type);
+	void create(ID3D12Device* dev, CommandBufferType type, StrView name);
 
 	void commandBegin() {
 		auto hr = _cmdAllocator_dx12->Reset();

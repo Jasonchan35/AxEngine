@@ -45,6 +45,10 @@ public:
 	operator ID3D12Resource*() { return _d3dResource; }
 
 	D3D12_RESOURCE_DESC&	desc() { return _desc; }
+
+#if AX_RENDER_DEBUG_NAME
+	void setDebugName(StrView debugName) { _debugName.setUtf(debugName); _d3dResource->SetName(_debugName.c_str()); }
+#endif
 	
 protected:
 	Dx12ResourceBase();
@@ -58,6 +62,10 @@ protected:
 	D3D12_RESOURCE_DESC		_desc  = {};
 	D3D12_HEAP_PROPERTIES	_heapProps = {};
 	D3D12_RESOURCE_STATES	_resourceState;
+
+#if AX_RENDER_DEBUG_NAME
+	StringW _debugName;
+#endif
 };
 
 class Dx12Resource_ColorBuffer : public Dx12ResourceBase {
