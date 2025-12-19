@@ -795,7 +795,7 @@ void AX_VkCommandBuffer::pipelineBarrier(
 							1, &barrier);
 }
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 void AX_VkCommandBuffer::setDebugName(const String& name) {
 	if (!_cmdPool) {
 		AX_ASSERT(false);

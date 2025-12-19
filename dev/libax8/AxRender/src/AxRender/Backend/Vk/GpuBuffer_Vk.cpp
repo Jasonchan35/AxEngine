@@ -53,7 +53,7 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 	_vkBuf.create(dev, AX_VkUtil::castVkDeviceSize(desc.bufferSize), usage);
 	_vkDevMem.createForBuffer(_vkBuf, memProps);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	_vkBuf.setDebugName(desc.name);
 	_vkDevMem.setDebugName(Fmt("{}-devMem", desc.name));
 #endif

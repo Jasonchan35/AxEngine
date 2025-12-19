@@ -15,6 +15,9 @@ class GpuBuffer_Dx12 : public GpuBuffer_Backend {
 public:
 	GpuBuffer_Dx12(const CreateDesc& desc) : Base(desc) {
 		_p.create(desc.bufferType, desc.bufferSize);
+#if AX_RENDER_DEBUG_NAME
+		_p.d3dResource()->SetName(TempStringW::s_utf(this->_name).c_str());
+#endif		
 	}
 
 	virtual void onUploadToGpu(Int offset, ByteSpan data) final {

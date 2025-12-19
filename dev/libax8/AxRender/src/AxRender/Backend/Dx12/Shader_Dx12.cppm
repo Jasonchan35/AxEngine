@@ -17,6 +17,7 @@ public:
 		VertexLayout        vertexLayout   = nullptr;
 		RenderPrimitiveType primitiveType  = RenderPrimitiveType::None;
 		bool                debugWireframe = false;
+		// TODO: add render pass colorType and depthType as part of the key
 
 		bool operator==(const PsoKey& r) const {
 			return vertexLayout		== r.vertexLayout
@@ -54,7 +55,7 @@ public:
 	
 	ShaderPass_Dx12(const CreateDesc& desc);
 
-	Pipeline* getOrAddPipeline(const Pipeline::PsoKey& key);
+	Pipeline* getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::PsoKey& key);
 	
 	bool _bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) const;
 	void _createRootSignature();

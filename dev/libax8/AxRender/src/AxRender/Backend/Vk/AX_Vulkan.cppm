@@ -171,7 +171,7 @@ public:
 		_setObjectDebugTag(t, objectHandle, tagName, tag);
 	}
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { setObjectDebugName(_handle, name); }
 #endif
 
@@ -241,7 +241,7 @@ public:
 					VkSwapchainKHR			swapchain,
 					Span<Int>				imageIndexInSwapchain);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -323,7 +323,7 @@ public:
 	AX_VkRenderPass& create(AX_VkDevice& dev, VkRenderPassCreateInfo& renderPassCreateInfo);
 	AX_VkRenderPass& create(AX_VkDevice& dev, VkFormat colorFormat, VkFormat depthStencilFormat, bool clear);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -343,7 +343,7 @@ public:
 	AX_VkSemaphore& create(AX_VkDevice& dev);
 	void destroy();
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -366,7 +366,7 @@ public:
 	void signal(u64 value);
 	bool wait(u64 value, const Nanoseconds& timeout = Nanoseconds::kMax());
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -387,7 +387,7 @@ public:
 
 	AX_VkDevice*	device() { return _dev; }
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -416,7 +416,7 @@ public:
 							AX_VkQueueFamilyIndex dstQueueFamilyIndex,
 							VkImage image);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name);
 #endif
 
@@ -453,7 +453,7 @@ public:
 
 	const VkExtent3D& size() const { return _size; }
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -486,7 +486,7 @@ public:
 
 	VkFormat	format() const { return _format; }
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -507,7 +507,7 @@ public:
 	void destroy();
 	void create(AX_VkDevice& dev, const VkSamplerCreateInfo& info);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -557,7 +557,7 @@ public:
 
 	const VkExtent2D& frameSize() const { return _frameSize; }
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -583,7 +583,7 @@ public:
 
 	AX_VkDevice*	device() { return _dev; }
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -619,7 +619,7 @@ public:
 	void flushMappedMemoryRanges(Span<IntRange> ranges);
 	void InvalidateMappedMemoryRanges(Span<IntRange> ranges);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -654,7 +654,7 @@ public:
 
 	bool check(bool doReset);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
@@ -675,7 +675,7 @@ public:
 	void create			(AX_VkDevice& dev, ByteSpan byteCode);
 	void createFromFile	(AX_VkDevice& dev, StrView  filename);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 

@@ -32,7 +32,9 @@ void Dx12DescripterHeap_Base::_create(Int size, D3D12_DESCRIPTOR_HEAP_TYPE type,
 	Dx12Util::throwIfError(hr);
 
 	_handleStart.cpu = _d3dHeap->GetCPUDescriptorHandleForHeapStart();
-	_handleStart.gpu = _d3dHeap->GetGPUDescriptorHandleForHeapStart();
+	if (flags & D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE) {
+		_handleStart.gpu = _d3dHeap->GetGPUDescriptorHandleForHeapStart();
+	}
 }
 
 } // namespace

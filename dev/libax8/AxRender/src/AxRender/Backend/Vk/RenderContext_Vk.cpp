@@ -28,7 +28,7 @@ void RenderContext_Vk_Base::onPostCreate(const CreateDesc& desc) {
 	_surface_vk.getGraphQueue(_graphQueue_vk, 0);
 	_surface_vk.getPresentQueue(_presentQueue_vk, 0);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	_graphQueue_vk.setDebugName("RenderContext-GraphQueue");
 	_presentQueue_vk.setDebugName("RenderContext-PresentQueue");
 #endif
@@ -207,7 +207,7 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 	if (!_presentCmdBuf_vk) {
 		_presentCmdBuf_vk.create(dev, surface.presentQueueFamilyIndex());
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 		_presentSemaphore_vk.setDebugName(Fmt("RenderReq_{}-presentSemaphore", index));
 			_presentCmdBuf_vk.setDebugName(Fmt("RenderReq_{}-presentCmdBuf",   index));
 #endif

@@ -61,7 +61,7 @@ Renderer_Vk::Renderer_Vk(const CreateDesc& desc)
 
 	_device.create(*phyDev);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	_device.setDebugName("Renderer-Device");
 #endif
 }

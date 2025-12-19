@@ -32,7 +32,7 @@ RenderPassColorBuffer_Vk::RenderPassColorBuffer_Vk(const CreateDesc& desc)
 		_image.createImage2D(dev, desc.frameSize, desc.colorType, 1);
 		_mem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 		_image.setDebugName(Fmt("{}-image",  desc.name));
 		_mem.setDebugName(Fmt("{}-devMem", desc.name));
 #endif
@@ -40,7 +40,7 @@ RenderPassColorBuffer_Vk::RenderPassColorBuffer_Vk(const CreateDesc& desc)
 
 	_view.create(_image);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	_view.setDebugName(Fmt("{}-view", desc.name));
 #endif
 }
@@ -54,7 +54,7 @@ RenderPassDepthBuffer_Vk::RenderPassDepthBuffer_Vk(const CreateDesc& desc)
 	_mem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	_view.create(_image);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	_image.setDebugName(Fmt("{}-image", desc.name));
 	_mem.setDebugName(Fmt("{}-mem",   desc.name));
 	_view.setDebugName(Fmt("{}-view",  desc.name));
@@ -196,7 +196,7 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 	_renderPass_vk.create(dev, renderPassCreateInfo);
 	_framebuffer_vk.create(dev, _renderPass_vk, imageViews, AX_VkUtil::castVkExtent2D(desc.frameSize));
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	_renderPass_vk.setDebugName(Fmt("{}-renderPass", desc.name));
 	_framebuffer_vk.setDebugName(Fmt("{}-framebuffer", desc.name));
 #endif

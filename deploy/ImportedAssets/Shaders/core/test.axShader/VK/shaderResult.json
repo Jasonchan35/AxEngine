@@ -45,7 +45,7 @@
   }, 
   "passStages": [{
       "bindless": false, 
-      "stageFlags": 3, 
+      "stageFlags": "", 
       "inputs": [{
           "semantic": "SV_VERTEXID", 
           "dataType": "u32"

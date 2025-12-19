@@ -8,7 +8,7 @@ class RenderObject : public RttiObject {
 	AX_RTTI_INFO(RenderObject, RttiObject)
 public:
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const StrView& name) { _name = name; onSetDebugName(_name); }
 #endif
 
@@ -16,7 +16,7 @@ public:
 
 protected:
 	String	_name;
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	virtual void onSetDebugName(const String& name) {}
 #endif
 };

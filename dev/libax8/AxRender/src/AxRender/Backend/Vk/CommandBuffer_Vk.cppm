@@ -24,12 +24,12 @@ public:
 	void commandBegin();
 	void commandEnd();
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) {
 		_pool.setDebugName(Fmt("{}-pool",		name));
 		_cmdBuf.setDebugName(Fmt("{}-cmdBuf",	name));
 	}
-#endif // AX_DEBUG_NAME
+#endif // AX_RENDER_DEBUG_NAME
 
 	void resetAndReleaseResource() {
 		_cmdBuf.resetAndReleaseResource();

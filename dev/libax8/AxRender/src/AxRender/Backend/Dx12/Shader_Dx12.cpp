@@ -113,7 +113,7 @@ void ShaderPass_Dx12::_createRootSignature() {
 	Dx12Util::throwIfError(hr);
 }
 
-auto ShaderPass_Dx12::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
+auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::PsoKey& key) -> Pipeline* {
 	for (auto& pipeline : _pipelineTable) {
 		if (pipeline->key == key) {
 			return pipeline.ptr();
@@ -191,10 +191,24 @@ auto ShaderPass_Dx12::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline*
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = Dx12Util::getDxPrimitiveTopologyType(key.primitiveType);
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	psoDesc.SampleDesc.Count = 1;
 
+	auto* pass = req->currentRenderPass();
+	auto rtv = Span(psoDesc.RTVFormats);
+	Int colorAttachmentCount = pass->colorAttachments().size();
+	if (colorAttachmentCount > rtv.size()) {
+		throw Error_Undefined("render pass has too many color attachments");
+	}
+
+	for (Int i = 0; i < colorAttachmentCount; ++i) {
+		auto* ca = pass->colorAttachment(i);
+		psoDesc.RTVFormats[i] = Dx12Util::getDxColorType(ca->desc.colorType);
+	}
+
+	if (pass->depthAttachment()) {
+		psoDesc.DSVFormat = Dx12Util::getDxDepthType(pass->depthAttachment().desc.depthType);
+	}
+	
 	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_ALLOC_REQ);
 	outPipeline->key = key;
 
@@ -214,7 +228,7 @@ bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) 
 	key.vertexLayout	= cmd.vertexLayout;
 	key.primitiveType	= cmd.primitiveType;
 
-	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(key);
+	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(req, key);
 	if (!pipeline) { AX_ASSERT(false); return false; }
 
 	auto& cmdList = req->graphCmdBuf_dx12();

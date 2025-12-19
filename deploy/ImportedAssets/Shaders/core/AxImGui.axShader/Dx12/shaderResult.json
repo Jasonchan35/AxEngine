@@ -33,7 +33,7 @@
   }, 
   "passStages": [{
       "bindless": false, 
-      "stageFlags": 3, 
+      "stageFlags": "", 
       "inputs": [{
           "semantic": "POSITION", 
           "dataType": "f32x2"
@@ -47,8 +47,8 @@
       "constBuffers": [{
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
-          "stageFlags": 1, 
-          "spaceType": 0, 
+          "stageFlags": "Vertex", 
+          "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
           "dataSize": 64, 
@@ -63,16 +63,16 @@
       "textures": [{
           "name": "fontTexture", 
           "dataType": "Texture2D", 
-          "stageFlags": 2, 
-          "spaceType": 0, 
+          "stageFlags": "Pixel", 
+          "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1
         }], 
       "samplers": [{
           "name": "AxSamplerState_fontTexture", 
           "dataType": "SamplerState", 
-          "stageFlags": 2, 
-          "spaceType": 0, 
+          "stageFlags": "Pixel", 
+          "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1
         }]

@@ -58,18 +58,18 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	Int alignment = 0;
 	switch (type) {
 		case GpuBufferType::Vertex: {
-			_resourceState	= D3D12_RESOURCE_STATE_COPY_DEST;
+			_resourceState	= D3D12_RESOURCE_STATE_COMMON;
 			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::Index: {
-			_resourceState	= D3D12_RESOURCE_STATE_COPY_DEST;
+			_resourceState	= D3D12_RESOURCE_STATE_COMMON;
 			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::Uniform: {
 			alignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
-			_resourceState	= D3D12_RESOURCE_STATE_COPY_DEST;
+			_resourceState	= D3D12_RESOURCE_STATE_COMMON;
 			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
@@ -80,7 +80,7 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 
 		case GpuBufferType::StagingToCpu: {
 			alignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
-			_resourceState = D3D12_RESOURCE_STATE_COPY_DEST;
+			_resourceState = D3D12_RESOURCE_STATE_COMMON;
 			_heapProps.Type = D3D12_HEAP_TYPE_READBACK;
 		}break;
 

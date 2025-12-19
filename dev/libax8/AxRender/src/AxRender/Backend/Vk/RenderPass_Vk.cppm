@@ -14,7 +14,7 @@ class RenderPassColorBuffer_Vk : public RenderPassColorBuffer_Backend {
 public:
 	RenderPassColorBuffer_Vk(const CreateDesc& desc);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	virtual void onSetDebugName(const String& name) override {
 		_image.setDebugName(Fmt("{}-image", name));
 		_mem.setDebugName(Fmt("{}-mem",   name));
@@ -32,7 +32,7 @@ class RenderPassDepthBuffer_Vk : public RenderPassDepthBuffer_Backend {
 public:
 	RenderPassDepthBuffer_Vk(const CreateDesc& desc);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	virtual void onSetDebugName(const String& name) override {
 		_image.setDebugName(Fmt("{}-image", name));
 		_mem.setDebugName(Fmt("{}-mem",   name));

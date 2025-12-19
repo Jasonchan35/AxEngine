@@ -25,7 +25,7 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 	_graphCmdBuf_vk.create(dev, dev.graphQueueFamilyIndex());
 	_graphCmdSem_vk.create(dev);
 
-#if AX_DEBUG_NAME
+#if AX_RENDER_DEBUG_NAME
 	auto debugIndex = desc.index;
 	        _completedFence_vk.setDebugName(Fmt("RenderReq_{}-completedFence",			debugIndex));
 	_imageAcquiredSemaphore_vk.setDebugName(Fmt("RenderReq_{}-imageAcquiredSemaphore",	debugIndex));
