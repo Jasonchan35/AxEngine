@@ -12,7 +12,7 @@ struct RenderMemoryInfo {
 	Int budget = 0;
 };
 
-// HLSL: "register space", DX: BindPoint, Vulkan: "set"
+// HLSL: "register space", DX Reflection: Space, Vulkan: "set"
 #define AX_RenderParamSpace_ENUM_LIST(E) \
 	E(Default       , = 0) \
 	E(Global        , = 1) \
@@ -21,15 +21,15 @@ struct RenderMemoryInfo {
 	E(_COUNT        ,    ) \
 	E(Invalid       ,= u16_max) \
 //-----
-AX_ENUM_CLASS(AX_RenderParamSpace_ENUM_LIST, ShaderParamSpaceType, u16);
+AX_ENUM_CLASS(AX_RenderParamSpace_ENUM_LIST, ShaderParamBindSpace, u16);
 
-constexpr bool ShaderParamSpaceType_isCommon(ShaderParamSpaceType t) {
-	using Type = ShaderParamSpaceType;
-	return t == Type::Global || t == Type::PerFrame || t == Type::PerObject;
+constexpr bool ShaderParamBindSpace_isCommon(ShaderParamBindSpace t) {
+	using BS = ShaderParamBindSpace;
+	return t == BS::Global || t == BS::PerFrame || t == BS::PerObject;
 }
 
-// HLSL: "shader register", DX: Space, Vulkan: "binding"
-enum class ShaderResourceBindPoint : u16 {
+// HLSL: "shader register", DX Reflection: BindPoint, Vulkan: "binding"
+enum class ShaderParamBindPoint : u16 {
 	GlobalConstBuffer = 0,
 	VertexBuffer	   = 30, // the max limit is 32 (0~31) on RTX 3080
 //-----

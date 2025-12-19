@@ -1710,7 +1710,7 @@ void AX_VkSampler::create(AX_VkDevice& dev, const VkSamplerCreateInfo& info) {
 }
 
 VkDescriptorSetLayoutBinding& AX_VkDescriptorSetLayoutBindings::addBinding(VkDescriptorType			type,
-																		   ShaderResourceBindPoint	bindPoint,
+																		   ShaderParamBindPoint	bindPoint,
 																		   Int						descriptorCount,
 																		   ShaderStageFlags			stageFlags,
 																		   VkDescriptorBindingFlags flags) {

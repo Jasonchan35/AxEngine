@@ -56,15 +56,15 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 	Vec4f timeSin		(sin(t),   sin(t*4), sin(t*9), sin(t*16));
 	Vec4f timeSlowSin   (sin(t/2), sin(t/4), sin(t/9), sin(t/16));
 
-	auto setParam = [&](ParamSpaceType space, NameId name, auto& value) {
+	auto setParam = [&](BindSpace space, NameId name, auto& value) {
 		if (!commonMaterial->setParamSpaceParam(space, name, value)) {
 			commonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
 		}
 	};
 
-	setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_time"       ), t);
-	setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_timeSin"    ), timeSin);
-	setParam(ParamSpaceType::PerFrame, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
+	setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_time"       ), t);
+	setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_timeSin"    ), timeSin);
+	setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
 }
 
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {

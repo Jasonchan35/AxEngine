@@ -61,11 +61,11 @@ public:
 
 	ShaderPass_Vk* getCommonPass_vk() { return rttiCastCheck<ShaderPass_Vk>(getCommonPass()); }
 
-	ShaderParamSpace_Vk* getParamSpace_vk(SpaceType type) {
+	ShaderParamSpace_Vk* getParamSpace_vk(BindSpace type) {
 		return rttiCastCheck<ShaderParamSpace_Vk>(getParamSpace(type)); 
 	}
 	
-	ShaderParamSpace_Vk* getCommonParamSpace_vk(SpaceType type) {
+	ShaderParamSpace_Vk* getCommonParamSpace_vk(BindSpace type) {
 		return rttiCastCheck<ShaderParamSpace_Vk>(getCommonParamSpace(type)); 
 	}
 

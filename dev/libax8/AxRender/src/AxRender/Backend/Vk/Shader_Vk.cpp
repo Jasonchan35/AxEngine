@@ -47,11 +47,11 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 	Array<VkDescriptorSetLayout, 8> layouts;
 
-	for (auto spaceType = SpaceType::Default; spaceType < SpaceType::_COUNT; ++spaceType) {
-		auto* space = getParamSpace_vk(spaceType);
+	for (auto bindSpace = BindSpace::Default; bindSpace < BindSpace::_COUNT; ++bindSpace) {
+		auto* space = getParamSpace_vk(bindSpace);
 		auto* selectSpace = space;
-		if (shouldUseCommonParamSpace(spaceType)) {
-			selectSpace = getCommonParamSpace_vk(spaceType);
+		if (shouldUseCommonParamSpace(bindSpace)) {
+			selectSpace = getCommonParamSpace_vk(bindSpace);
 		} else {
 			space->createLayout_vk();
 		}
@@ -292,7 +292,7 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 
 		auto& dst = attrDesc.emplaceBack();
 
-		dst.binding = ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
+		dst.binding = ax_enum_int(ShaderParamBindPoint::VertexBuffer);
 		dst.format	= AX_VkUtil::getVkDataType(src->dataType);
 		dst.offset  = AX_VkUtil::castUInt32(src->offset);
 		dst.location = loc;
@@ -303,7 +303,7 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 	if (attrDesc.size() > 0) {
 		// bind vertex buffer
 		auto& dst = bindingDesc.emplaceBack();
-		dst.binding		= ax_enum_int(ShaderResourceBindPoint::VertexBuffer);
+		dst.binding		= ax_enum_int(ShaderParamBindPoint::VertexBuffer);
 		dst.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
 		dst.stride		= AX_VkUtil::castUInt32(vertexLayout->strideInBytes);
 	}

@@ -56,7 +56,7 @@ public:
 		NameId                  _name;
 		RenderDataType          _dataType   = RenderDataType::None;
 		ShaderStageFlags        _stageFlags = ShaderStageFlags::None;
-		ShaderResourceBindPoint _bindPoint  = ShaderResourceBindPoint::Invalid;
+		ShaderParamBindPoint _bindPoint  = ShaderParamBindPoint::Invalid;
 		Int                     _bindCount  = 0;
 	};
 
@@ -203,7 +203,7 @@ class ShaderPass_Backend : public RenderObject {
 	AX_RTTI_INFO(ShaderPass_Backend, RenderObject)
 public:
 	using CreateDesc = ShaderPass_Backend_CreateDesc;
-	using SpaceType = ShaderParamSpaceType;
+	using BindSpace = ShaderParamBindSpace;
 
 	ShaderPass_Backend(const CreateDesc& desc);
 
@@ -216,22 +216,22 @@ public:
 
 	const ShaderPassInfo*	info() const	{ return _info; }
 
-	bool shouldUseCommonParamSpace(ShaderParamSpaceType spaceType) const;
+	bool shouldUseCommonParamSpace(ShaderParamBindSpace bindSpace) const;
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
 	
-	ShaderParamSpace_Backend* getParamSpace(SpaceType s) {
+	ShaderParamSpace_Backend* getParamSpace(BindSpace s) {
 		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(s));
 		return p ? p->ptr() : nullptr;
 	}
 
-	const ShaderParamSpace_Backend*	getParamSpace(SpaceType s) const {
+	const ShaderParamSpace_Backend*	getParamSpace(BindSpace s) const {
 		return ax_const_cast(this)->getParamSpace(s);
 	}
 
 	ShaderPass_Backend* getCommonPass();
 	
-	ShaderParamSpace_Backend* getCommonParamSpace(SpaceType type) {
+	ShaderParamSpace_Backend* getCommonParamSpace(BindSpace type) {
 		auto* commonPass = getCommonPass();
 		return commonPass ? commonPass->getParamSpace(type) : nullptr;
 	}
@@ -248,7 +248,7 @@ protected:
 	template<class T>
 	void _addParamToSpace(const Array<T>& paramInfoSpan);
 
-	using ShaderParamSpaceList = FixedArray<SPtr<ShaderParamSpace_Backend>, ax_enum_int(SpaceType::_COUNT)>; 
+	using ShaderParamSpaceList = FixedArray<SPtr<ShaderParamSpace_Backend>, ax_enum_int(BindSpace::_COUNT)>; 
 	ShaderParamSpaceList	_shaderParamSpaces;
 
 	const ShaderPassInfo*		_info = nullptr;
@@ -273,7 +273,7 @@ public:
 
 	NameId getPropSamplerName(NameId name) const;
 
-	const ShaderParamSpace_Backend*	getPassParamSpace(Int pass, ParamSpaceType s) const {
+	const ShaderParamSpace_Backend*	getPassParamSpace(Int pass, BindSpace s) const {
 		auto* pp = _passes.tryGetElement(pass);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;
@@ -336,8 +336,8 @@ NameId Shader_Backend::getPropSamplerName(NameId name) const {
 }
 
 inline
-bool ShaderPass_Backend::shouldUseCommonParamSpace(ShaderParamSpaceType spaceType) const {
-	return !_shader->isGlobalCommonShader() && ShaderParamSpaceType_isCommon(spaceType);
+bool ShaderPass_Backend::shouldUseCommonParamSpace(ShaderParamBindSpace bindSpace) const {
+	return !_shader->isGlobalCommonShader() && ShaderParamBindSpace_isCommon(bindSpace);
 }
 
 } // namespace

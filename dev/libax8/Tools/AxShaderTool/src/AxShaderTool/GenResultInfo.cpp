@@ -75,14 +75,14 @@ void GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSpan, FUNC func)
 	for (auto& src : srcSpan) {
 
 		if (!_resultInfo.declare.isGlobalCommonShader) {
-			if (src.spaceType != ShaderParamSpaceType::Default) continue;
+			if (src.bindSpace != ShaderParamBindSpace::Default) continue;
 		}
 
 		auto* dst = _findParam(dstArray.span(), src.name);
 		if (dst) {
-			if (dst->bindPoint		!= src.bindPoint		) throw Error_Runtime(Fmt("param'{}' bindPoint mismatch", src.name));
-			if (dst->bindCount		!= src.bindCount		) throw Error_Runtime(Fmt("param'{}' bindCount mismatch", src.name));
-			if (dst->spaceType != src.spaceType	) throw Error_Runtime(Fmt("param'{}' paramSpaceType mismatch", src.name));
+			if (dst->bindPoint != src.bindPoint) throw Error_Runtime(Fmt("param'{}' bindPoint mismatch", src.name));
+			if (dst->bindCount != src.bindCount) throw Error_Runtime(Fmt("param'{}' bindCount mismatch", src.name));
+			if (dst->bindSpace != src.bindSpace) throw Error_Runtime(Fmt("param'{}' bindSpace mismatch", src.name));
 
 		} else {
 			dst = &dstArray.emplaceBack(src);

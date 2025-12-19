@@ -161,7 +161,7 @@ void MaterialParamSpace_Vk::_nextDescriptorSet(RenderRequest_Vk* req, const Shad
 		for (Int i = 0; i < renderRequestCount; i++) {
 			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->_layout_vk);
 //#if AX_DEBUG_NAME
-//			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, paramSpaceType()));
+//			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, bindSpace()));
 //#endif
 		}
 	}
@@ -195,13 +195,13 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(paramSpace_.ptr());
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
-		auto paramSpaceType = ax_enum_int(paramSpace->spaceType());
-		if (paramSpaceType >= ax_enum_int(SpaceType::_COUNT)) {
+		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
+		if (bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
 			AX_ASSERT(false);
 			return false;
 		}
 
-		auto& dst = bindDescSets.ensureSizeAndGetElement(paramSpaceType);
+		auto& dst = bindDescSets.ensureSizeAndGetElement(bindSpace);
 		dst = paramSpace->getUpdatedDescriptorSet(req);
 		if (!dst) { AX_ASSERT(false); return false; }
 	}
@@ -209,19 +209,19 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* commonMaterial = renderer->commonMaterial();
 	if (!commonMaterial) { AX_ASSERT(false); return false; }
 
-	auto addCommonBlock = [&](SpaceType paramSpaceType) {
-		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, paramSpaceType);
-		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", paramSpaceType));
+	auto addCommonBlock = [&](BindSpace bindSpace) {
+		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, bindSpace);
+		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", bindSpace));
 
-		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(paramSpaceType));
+		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(bindSpace));
 		dst = block->getUpdatedDescriptorSet(req);
 		if (!dst) throw Error_Undefined("cannot getUpdatedDescriptorSet");
 	};
 
-	addCommonBlock(SpaceType::Global   );
-	addCommonBlock(SpaceType::PerFrame );
+	addCommonBlock(BindSpace::Global   );
+	addCommonBlock(BindSpace::PerFrame );
 	// TODO: get from object
-	addCommonBlock(SpaceType::PerObject);
+	addCommonBlock(BindSpace::PerObject);
 
 	if (bindDescSets.size() <= 0) {
 		AX_ASSERT(false);

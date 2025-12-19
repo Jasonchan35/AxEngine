@@ -28,7 +28,7 @@ private:
 class RenderRequest : public RenderObject {
 	AX_RTTI_INFO(RenderRequest, RenderObject)
 public:
-	using ParamSpaceType = ShaderParamSpaceType;
+	using BindSpace = ShaderParamBindSpace;
 	
 	RenderSeqId		renderSeqId() const		{ return _renderSeqId; }
 	

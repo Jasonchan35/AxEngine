@@ -50,7 +50,7 @@ class ShaderPass_Dx12 : public ShaderPass_Backend {
 	AX_RTTI_INFO(ShaderPass_Dx12, ShaderPass_Backend)
 public:
 	using Pipeline = ShaderPipeline_Dx12;
-	using SpaceType = ShaderParamSpaceType;
+	using BindSpace = ShaderParamBindSpace;
 	
 	ShaderPass_Dx12(const CreateDesc& desc);
 
@@ -59,11 +59,11 @@ public:
 	bool _bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) const;
 	void _createRootSignature();
 
-	ShaderParamSpace_Dx12* getParamSpace_dx12(SpaceType type) {
+	ShaderParamSpace_Dx12* getParamSpace_dx12(BindSpace type) {
 		return rttiCastCheck<ShaderParamSpace_Dx12>(getParamSpace(type));
 	}
 
-	ShaderParamSpace_Dx12* getCommonParamSpace_dx12(SpaceType type) {
+	ShaderParamSpace_Dx12* getCommonParamSpace_dx12(BindSpace type) {
 		return rttiCastCheck<ShaderParamSpace_Dx12>(getCommonParamSpace(type));
 	}
 	
@@ -85,7 +85,7 @@ public:
 	Stage _gsStage;
 	Stage _csStage;
 
-	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(SpaceType::_COUNT)>;
+	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(BindSpace::_COUNT)>;
 
 	DescTableRootIndices        _descTableRootIndices;
 	DescTableRootIndices        _samplerDescTableRootIndices;

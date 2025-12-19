@@ -11,7 +11,7 @@ namespace ax /*::AxRender*/ {
 template<class T>
 RenderRequest_Bindless_Vk::Table<T>::Table() {
 	auto* renderer	  = Renderer_Vk::s_instance();
-	auto* globalSpace = renderer->commonShader()->getPassParamSpace(0, ParamSpaceType::Global);
+	auto* globalSpace = renderer->commonShader()->getPassParamSpace(0, BindSpace::Global);
 
 	if constexpr (isSampler) {
 		_descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
@@ -50,7 +50,7 @@ void RenderRequest_Bindless_Vk::Table<T>::update(RenderRequest_Vk* req) {
 	auto* mtl = renderer->commonMaterial();
 	if (!mtl) return;
 
-	auto* mtlSpace = mtl->getPassParamSpace_<MaterialParamSpace_Vk>(0, ParamSpaceType::Global);
+	auto* mtlSpace = mtl->getPassParamSpace_<MaterialParamSpace_Vk>(0, BindSpace::Global);
 	if (!mtlSpace) return;
 
 	auto currentDescriptorSet = mtlSpace->getUpdatedDescriptorSet(req);

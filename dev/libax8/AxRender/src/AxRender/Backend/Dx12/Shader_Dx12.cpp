@@ -8,7 +8,7 @@ namespace ax {
 
 void ShaderParamSpace_Dx12::createDescTable() {
 	auto addDescriptor = [this](Dx12DescriptorTable& tbl, ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), spaceType());
+		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), bindSpace());
 	};
 	
 	for (auto& p : _constBuffers) {
@@ -59,16 +59,16 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 {
 	D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	for (auto spaceType = SpaceType::Default; spaceType < SpaceType::_COUNT; ++spaceType) {
-		auto* space = getParamSpace_dx12(spaceType);
+	for (auto bindSpace = BindSpace::Default; bindSpace < BindSpace::_COUNT; ++bindSpace) {
+		auto* space = getParamSpace_dx12(bindSpace);
 		auto* selectSpace = space;
-		if (shouldUseCommonParamSpace(spaceType)) {
-			selectSpace = getCommonParamSpace_dx12(spaceType);
+		if (shouldUseCommonParamSpace(bindSpace)) {
+			selectSpace = getCommonParamSpace_dx12(bindSpace);
 		} else {
 			space->createDescTable();
 		}
 
-		auto i = ax_enum_int(spaceType);
+		auto i = ax_enum_int(bindSpace);
 		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_textureDescTable,        &_descTableRootIndices[i]);
 		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_samplerDescTable, &_samplerDescTableRootIndices[i]);
 	}

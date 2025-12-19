@@ -55,7 +55,7 @@ void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, const ShaderP
 		cbIndex++;
 	}
 
-	auto s = ax_enum_int(spaceType());
+	auto s = ax_enum_int(bindSpace());
 
 	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdPass->_descTableRootIndices[s]),
 	                                        _textureDescHeap.handleStart().gpu);
@@ -82,8 +82,8 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Dx12>(paramSpace_.ptr());
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
-		auto spaceType = ax_enum_int(paramSpace->spaceType());
-		if (spaceType >= ax_enum_int(SpaceType::_COUNT)) {
+		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
+		if (bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
 			AX_ASSERT(false);
 			return false;
 		}

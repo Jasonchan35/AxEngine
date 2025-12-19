@@ -690,7 +690,7 @@ public:
 	Array<VkDescriptorBindingFlags,     32> bindingFlags;
 
 	VkDescriptorSetLayoutBinding& addBinding(VkDescriptorType		  type,
-											 ShaderResourceBindPoint  bindPoint,
+											 ShaderParamBindPoint  bindPoint,
 											 Int					  descriptorCount,
 											 ShaderStageFlags		  stageFlags,
 											 VkDescriptorBindingFlags flags);

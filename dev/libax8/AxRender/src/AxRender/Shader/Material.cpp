@@ -25,7 +25,7 @@ Material::Material(const CreateDesc& desc) {
 
 template<class V> AX_INLINE
 bool Material_setParam(Material* mtl, NameId name, const V& v) {
-	return rttiCastCheck<Material_Backend>(mtl)->setParamSpaceParam(ShaderParamSpaceType::Default, name, v);
+	return rttiCastCheck<Material_Backend>(mtl)->setParamSpaceParam(ShaderParamBindSpace::Default, name, v);
 }
 
 bool Material::setParam(NameId name, const i32&			v) { return Material_setParam(this, name, v); }

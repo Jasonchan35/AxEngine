@@ -412,7 +412,7 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		outCB.name      = StrView_c_str(bufDesc.Name);
 		outCB.bindPoint = ax_safe_cast_from(resDesc.BindPoint);
 		outCB.bindCount = ax_safe_cast_from(resDesc.BindCount);
-		outCB.spaceType = ax_safe_cast_from(resDesc.Space);
+		outCB.bindSpace = ax_safe_cast_from(resDesc.Space);
 		outCB.dataSize  = ax_safe_cast_from(bufDesc.Size);
 
 		outCB.variables.ensureCapacity(bufDesc.Variables);
@@ -499,7 +499,7 @@ void GenReflect_Dx12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 		outTex.name       = StrView_c_str(resDesc.Name);
 		outTex.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		outTex.bindCount  = ax_safe_cast_from(resDesc.BindCount);
-		outTex.spaceType  = ax_safe_cast_from(resDesc.Space);
+		outTex.bindSpace  = ax_safe_cast_from(resDesc.Space);
 
 		switch (resDesc.Dimension) {
 			case D3D_SRV_DIMENSION_TEXTURE1D:		outTex.dataType = RenderDataType::Texture1D;   break;
@@ -542,7 +542,7 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 		outSampler.name       = StrView_c_str(resDesc.Name);
 		outSampler.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		outSampler.bindCount  = ax_safe_cast_from(resDesc.BindCount);
-		outSampler.spaceType  = ax_safe_cast_from(resDesc.Space);
+		outSampler.bindSpace  = ax_safe_cast_from(resDesc.Space);
 	}
 }
 
@@ -564,7 +564,7 @@ void GenReflect_Dx12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, I
 		sbuf.name       = StrView_c_str(resDesc.Name);
 		sbuf.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		sbuf.bindCount  = ax_safe_cast_from(resDesc.BindCount);
-		sbuf.spaceType  = ax_safe_cast_from(resDesc.Space);
+		sbuf.bindSpace  = ax_safe_cast_from(resDesc.Space);
 		sbuf.rawUAV     = (resDesc.Type == D3D_SIT_UAV_RWBYTEADDRESS);
 	}
 }
