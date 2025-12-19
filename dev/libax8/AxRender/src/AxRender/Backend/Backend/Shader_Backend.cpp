@@ -1,6 +1,7 @@
 module;
 module AxRender;
 import :StockObjects;
+import :Material_Backend;
 import :Renderer_Backend;
 import :ResourceManager_Backend;
 
@@ -14,6 +15,11 @@ SPtr<ShaderParamSpace_Backend> ShaderParamSpace_Backend::s_new(const MemAllocReq
 	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newShaderParamSpace(req, desc));
 }
 
+SPtr<class MaterialParamSpace_Backend> ShaderParamSpace_Backend::newMaterialParamSpace(const MemAllocRequest& req) const {
+	MaterialParamSpace_CreateDesc desc;
+	desc.shaderParamSpace = this;
+	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newMaterialParamSpace(req, desc));
+}
 
 ShaderParamSpace_Backend::ShaderParamSpace_Backend(const CreateDesc& desc)
 	: Base(desc) {}

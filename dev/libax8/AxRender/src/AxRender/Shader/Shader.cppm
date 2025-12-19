@@ -280,7 +280,6 @@ public:
 	BindSpace	bindSpace() const { return _bindSpace; }
 
 	static SPtr<ShaderParamSpace> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-	SPtr<class MaterialParamSpace> newMaterialParamSpace(const MemAllocRequest& req) const;
 
 
 protected:

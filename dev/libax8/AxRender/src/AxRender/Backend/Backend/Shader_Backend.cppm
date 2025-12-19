@@ -14,6 +14,7 @@ class ShaderParamSpace_Backend : public ShaderParamSpace {
 	AX_RTTI_INFO(ShaderParamSpace_Backend, ShaderParamSpace)
 public:
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	SPtr<class MaterialParamSpace_Backend> newMaterialParamSpace(const MemAllocRequest& req) const;
 	
 	struct VarInfo {
 		VarInfo() = default;

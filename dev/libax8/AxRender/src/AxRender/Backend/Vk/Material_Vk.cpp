@@ -245,16 +245,6 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 MaterialPass_Vk::MaterialPass_Vk(const CreateDesc& desc)
 : Base(desc)
 {
-	auto shaderBlocks = shaderPass()->shaderParamSpaces();
-
-	_materialParamSpaces.resize(shaderBlocks.size());
-
-	for (Int i = 0; i < shaderBlocks.size(); i++) {
-		if (auto& src = shaderBlocks[i]) {
-			auto p = src->newMaterialParamSpace(AX_ALLOC_REQ);
-			_materialParamSpaces[i] = rttiCastCheck<MaterialParamSpace_Backend>(p.ptr());
-		}
-	}
 }
 
 

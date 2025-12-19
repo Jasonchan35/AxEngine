@@ -1,7 +1,6 @@
 module AxRender;
 import :Shader_Backend;
 import :Renderer_Backend;
-import :Material_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -25,12 +24,6 @@ ShaderPassInfo* ShaderDeclareInfo::findPass(StrView name) {
 		if (p.name == name) return &p;
 	}
 	return nullptr;
-}
-
-SPtr<MaterialParamSpace> ShaderParamSpace::newMaterialParamSpace(const MemAllocRequest& req) const {
-	MaterialParamSpace_CreateDesc desc;
-	desc.shaderParamSpace = this;
-	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newMaterialParamSpace(req, desc));
 }
 
 SPtr<ShaderParamSpace> ShaderParamSpace::s_new(const MemAllocRequest& req, const CreateDesc& desc) {

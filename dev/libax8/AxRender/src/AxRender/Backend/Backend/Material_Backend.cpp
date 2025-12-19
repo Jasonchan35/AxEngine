@@ -136,11 +136,26 @@ void Material_Backend::setShader_backend(Shader* shader_) {
 
 	_passes.ensureCapacity(passCount);
 
-	for (Int i = 0; i < passCount; i++) {
+	for (Int passIndex = 0; passIndex < passCount; passIndex++) {
 		MaterialPass_Backend_CreateDesc passDesc;
 		passDesc.material = this;
-		passDesc.passIndex = i;
-		_passes.emplaceBack(onNewPass(passDesc));
+		passDesc.passIndex = passIndex;
+		auto& newMaterialPass = _passes.emplaceBack(onNewPass(passDesc));
+
+		auto* shaderPass = shader->getPass(passIndex);
+		if (!shaderPass) {
+			throw Error_Undefined();
+		}
+
+		auto shaderSpaceSpan = shaderPass->shaderParamSpaces();
+		newMaterialPass->_materialParamSpaces.resize(shaderSpaceSpan.size());
+	
+		for (Int spaceIndex = 0; spaceIndex < shaderSpaceSpan.size(); ++spaceIndex) {
+			auto& shaderSpace = shaderSpaceSpan[spaceIndex];
+			if (!shaderSpace) continue;
+			auto materialSpace = shaderSpace->newMaterialParamSpace(AX_ALLOC_REQ);
+			newMaterialPass->_materialParamSpaces[spaceIndex] = materialSpace; 
+		} 
 	}
 
 	onSetShader();
