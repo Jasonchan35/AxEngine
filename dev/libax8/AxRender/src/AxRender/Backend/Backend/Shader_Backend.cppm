@@ -209,6 +209,7 @@ class ShaderPass_Backend : public RenderObject {
 public:
 	using CreateDesc = ShaderPass_Backend_CreateDesc;
 	using BindSpace = ShaderParamBindSpace;
+	static constexpr auto BindSpace_COUNT = ax_enum_int(BindSpace::_COUNT);
 
 	ShaderPass_Backend(const CreateDesc& desc);
 
@@ -253,8 +254,7 @@ protected:
 	template<class T>
 	void _addParamToSpace(const Array<T>& paramInfoSpan);
 
-	using ShaderParamSpaceList = FixedArray<SPtr<ShaderParamSpace_Backend>, ax_enum_int(BindSpace::_COUNT)>; 
-	ShaderParamSpaceList	_shaderParamSpaces;
+	FixedArray<SPtr<ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
 
 	const ShaderPassInfo*		_info = nullptr;
 	const ShaderStageInfo*		_stageInfo = nullptr;

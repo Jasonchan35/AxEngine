@@ -231,6 +231,7 @@ class MaterialPass_Backend : public RenderObject {
 public:
 	using CreateDesc = MaterialPass_Backend_CreateDesc;
 	using BindSpace = ShaderParamBindSpace;
+	static constexpr auto BindSpace_COUNT = ax_enum_int(BindSpace::_COUNT);
 
 	MaterialPass_Backend(const CreateDesc& desc);
 
@@ -265,8 +266,9 @@ private:
 
 friend class Material_Backend;
 protected:
-	Array<SPtr<MaterialParamSpace_Backend>>		_materialParamSpaces;
-
+	virtual void onSetShader() {}
+	
+	FixedArray<SPtr<MaterialParamSpace_Backend>, BindSpace_COUNT>	_materialParamSpaces;
 	template<class T> static T* _findParam(IArray<T>& arr, NameId name);
 };
 
@@ -308,7 +310,7 @@ protected:
 	bool _bShowWarning = true;
 	Array<UPtr<MaterialPass_Backend>>	_passes;
 	SPtr<Shader_Backend>	_shader;
-	virtual void onSetShader() {}
+	virtual void onSetShader();
 
 	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_Backend_CreateDesc& desc) = 0;
 };

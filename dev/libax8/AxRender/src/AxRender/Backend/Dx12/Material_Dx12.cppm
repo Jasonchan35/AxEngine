@@ -20,14 +20,12 @@ public:
 
 	void _onDrawcall(RenderRequest_Dx12* req, const ShaderPass_Dx12* shdPass);
 
-protected:
 	virtual void onSetSamplerParam(SamplerParam& param) override;
 	virtual void onSetTextureParam(TextureParam& param) override;
 
-private:
 	Dx12DescripterHeap_Sampler		_samplerDescHeap;
+	Dx12DescripterHeap_CBV_SRV_UAV	_constBufferDescHeap;
 	Dx12DescripterHeap_CBV_SRV_UAV	_textureDescHeap;
-	Dx12DescripterHeap_CBV_SRV_UAV	_storageBufferDescHeap;
 };
 
 class MaterialPass_Dx12 : public MaterialPass_Backend {
@@ -38,6 +36,9 @@ public:
 	const ShaderPass_Dx12* shaderPass_dx12() const { return rttiCastCheck<ShaderPass_Dx12>(shaderPass()); }
 	
 	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
+	virtual void onSetShader() override;
+
+	Array<ID3D12DescriptorHeap*, 32>	_allSpaceDescHeaps;
 };
 
 class Material_Dx12 : public Material_Backend {

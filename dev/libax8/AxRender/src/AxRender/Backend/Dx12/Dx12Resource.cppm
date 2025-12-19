@@ -210,7 +210,7 @@ struct Dx12DescriptorTable {
 	Array<D3D12_DESCRIPTOR_RANGE>	descriptorRanges;
 
 	Int size() const { return descriptorRanges.size(); }
-	
+
 	void addDescriptor(D3D12_DESCRIPTOR_RANGE_TYPE type, BindPoint bindPoint, Int bindCount, BindSpace bindSpace) {
 		auto& dst                             = descriptorRanges.emplaceBack();
 		dst.RangeType                         = type;
@@ -225,7 +225,7 @@ struct Dx12RootParameterList {
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
-	void addTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table, UINT* rootIndex) {
+	void addRootDescriptorTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table, UINT* rootIndex) {
 		if (table.descriptorRanges.size() <= 0) return;
 		*rootIndex = ax_safe_cast_from(parameters.size());
 		
@@ -236,7 +236,7 @@ struct Dx12RootParameterList {
 		dst.DescriptorTable.pDescriptorRanges   = table.descriptorRanges.data();
 	}
 
-	void add_u32(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace	bindSpace, u32 u32_value) {
+	void addRoot32BitConst(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace	bindSpace, u32 u32_value) {
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 		dst.ShaderVisibility         = shaderVisibility;
@@ -245,7 +245,7 @@ struct Dx12RootParameterList {
 		dst.Constants.Num32BitValues = u32_value;
 	}
 
-	void addCBV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace bindSpace) {
+	void addRootCBV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace bindSpace) {
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		dst.ShaderVisibility          = shaderVisibility;
@@ -253,7 +253,7 @@ struct Dx12RootParameterList {
 		dst.Descriptor.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(bindSpace));	
 	}
 
-	void addSRV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace bindSpace) {
+	void addRootSRV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace bindSpace) {
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_SRV;
 		dst.ShaderVisibility          = shaderVisibility;
@@ -261,7 +261,7 @@ struct Dx12RootParameterList {
 		dst.Descriptor.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(bindSpace));	
 	}
 
-	void addUAV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace bindSpace) {
+	void addRootUAV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace bindSpace) {
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType             = D3D12_ROOT_PARAMETER_TYPE_UAV;
 		dst.ShaderVisibility          = shaderVisibility;
@@ -269,7 +269,7 @@ struct Dx12RootParameterList {
 		dst.Descriptor.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(bindSpace));	
 	}
 
-	void addStaticSampler(D3D12_SHADER_VISIBILITY shaderVisibility,
+	void addRootStaticSampler(D3D12_SHADER_VISIBILITY shaderVisibility,
 	                      BindPoint               bindPoint,
 	                      BindSpace               bindSpace,
 	                      SamplerFilter           filter,

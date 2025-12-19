@@ -12,13 +12,9 @@ void ShaderParamSpace_Dx12::createDescTable() {
 	};
 	
 	for (auto& p : _constBuffers) {
-		addDescriptor(_textureDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
+		addDescriptor(_constBufferDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 	}
-
-	for (auto& p : _storageBufferParams) {
-		addDescriptor(_storageBufferDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_UAV);
-	}
-
+	
 	for (auto& p : _textureParams) {
 		addDescriptor(_textureDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 	}
@@ -68,9 +64,10 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 			space->createDescTable();
 		}
 
-		auto i = ax_enum_int(bindSpace);
-		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_textureDescTable,        &_descTableRootIndices[i]);
-		_pipelineRootParamList.addTable(shaderVisibility, selectSpace->_samplerDescTable, &_samplerDescTableRootIndices[i]);
+		auto spaceIndex = ax_enum_int(bindSpace);
+		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, selectSpace->_constBufferDescTable, &_constBufferDescTableRootIndices[spaceIndex]);
+		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, selectSpace->_textureDescTable,     &_textureDescTableRootIndices[spaceIndex]);
+		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, selectSpace->_samplerDescTable,     &_samplerDescTableRootIndices[spaceIndex]);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {

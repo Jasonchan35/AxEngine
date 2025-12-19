@@ -40,9 +40,9 @@ class ShaderParamSpace_Dx12 : public ShaderParamSpace_Backend {
 public:
 	ShaderParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
 
+	Dx12DescriptorTable	_constBufferDescTable;
 	Dx12DescriptorTable	_textureDescTable;
 	Dx12DescriptorTable	_samplerDescTable;
-	Dx12DescriptorTable	_storageBufferDescTable;
 	
 	void createDescTable();
 };
@@ -88,7 +88,8 @@ public:
 
 	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(BindSpace::_COUNT)>;
 
-	DescTableRootIndices        _descTableRootIndices;
+	DescTableRootIndices        _constBufferDescTableRootIndices;
+	DescTableRootIndices        _textureDescTableRootIndices;
 	DescTableRootIndices        _samplerDescTableRootIndices;
 	
 	Dx12RootParameterList       _pipelineRootParamList;

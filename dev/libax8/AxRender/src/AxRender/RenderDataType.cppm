@@ -13,7 +13,7 @@ struct RenderMemoryInfo {
 };
 
 // HLSL: "register space", DX Reflection: Space, Vulkan: "set"
-#define AX_RenderParamSpace_ENUM_LIST(E) \
+#define AX_ShaderParamBindSpace_ENUM_LIST(E) \
 	E(Default       , = 0) \
 	E(Global        , = 1) \
 	E(PerFrame      , = 2) \
@@ -21,7 +21,7 @@ struct RenderMemoryInfo {
 	E(_COUNT        ,    ) \
 	E(Invalid       ,= u16_max) \
 //-----
-AX_ENUM_CLASS(AX_RenderParamSpace_ENUM_LIST, ShaderParamBindSpace, u16);
+AX_ENUM_CLASS(AX_ShaderParamBindSpace_ENUM_LIST, ShaderParamBindSpace, u16);
 
 constexpr bool ShaderParamBindSpace_isCommon(ShaderParamBindSpace t) {
 	using BS = ShaderParamBindSpace;

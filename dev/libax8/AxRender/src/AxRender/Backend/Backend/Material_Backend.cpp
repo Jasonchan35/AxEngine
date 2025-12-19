@@ -126,6 +126,12 @@ void Material_Backend::logWarningOnce(StrView msg) {
 	AX_LOG_WARNING("Material: {}\n shader={}", msg, shaderAssetPath());
 }
 
+void Material_Backend::onSetShader() {
+	for (auto& ps : _passes) {
+		ps->onSetShader();
+	}
+}
+
 void Material_Backend::setShader_backend(Shader* shader_) {
 	auto* shader = rttiCastCheck<Shader_Backend>(shader_);
 
@@ -148,14 +154,15 @@ void Material_Backend::setShader_backend(Shader* shader_) {
 		}
 
 		auto shaderSpaceSpan = shaderPass->shaderParamSpaces();
-		newMaterialPass->_materialParamSpaces.resize(shaderSpaceSpan.size());
+//		newMaterialPass->_materialParamSpaces.resize(shaderSpaceSpan.size());
 	
 		for (Int spaceIndex = 0; spaceIndex < shaderSpaceSpan.size(); ++spaceIndex) {
 			auto& shaderSpace = shaderSpaceSpan[spaceIndex];
 			if (!shaderSpace) continue;
 			auto materialSpace = shaderSpace->newMaterialParamSpace(AX_ALLOC_REQ);
 			newMaterialPass->_materialParamSpaces[spaceIndex] = materialSpace; 
-		} 
+		}
+
 	}
 
 	onSetShader();
