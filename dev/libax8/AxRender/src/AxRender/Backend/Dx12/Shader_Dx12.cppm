@@ -70,7 +70,7 @@ public:
 	template<class FUNC>
 	void _visitStages(FUNC func) {
 		func(_vsStage, ShaderStageFlags::Vertex);
-		func(_csStage, ShaderStageFlags::Pixel);
+		func(_psStage, ShaderStageFlags::Pixel);
 		func(_gsStage, ShaderStageFlags::Geometry);
 		func(_csStage, ShaderStageFlags::Compute);
 	}

@@ -58,19 +58,19 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	Int alignment = 0;
 	switch (type) {
 		case GpuBufferType::Vertex: {
-			_resourceState	= D3D12_RESOURCE_STATE_GENERIC_READ;
-			_heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+			_resourceState	= D3D12_RESOURCE_STATE_COPY_DEST;
+			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::Index: {
-			_resourceState	= D3D12_RESOURCE_STATE_GENERIC_READ;
-			_heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+			_resourceState	= D3D12_RESOURCE_STATE_COPY_DEST;
+			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::Uniform: {
 			alignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
-			_resourceState	= D3D12_RESOURCE_STATE_GENERIC_READ;
-			_heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+			_resourceState	= D3D12_RESOURCE_STATE_COPY_DEST;
+			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::StagingToGpu: {
@@ -162,21 +162,32 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	_d3dResource->Unmap(0, nullptr);
 }
 
-D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state) {
+D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrierDebug(ID3D12GraphicsCommandList* cmdList,
+	D3D12_RESOURCE_STATES newResourceState
+) {
+	if (_resourceState != newResourceState) {
+		AX_LOG("Dx12Debug: [{}] resourceBarrier {} -> {}", reinterpret_cast<void*>(this), _resourceState, newResourceState);
+	}
+	return resourceBarrier(cmdList, newResourceState);
+}
+
+D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newResourceState) {
 	if (!_d3dResource) throw Error_Undefined();
-	auto oldState = _resourceState;
-	if (_resourceState & state) return state; // only change when does not have specify bit
+	if (_resourceState == newResourceState) return _resourceState;
+	
+//	if (_resourceState & newResourceState) return newResourceState; // only change when does not have specify bit
 
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type				   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags				   = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	barrier.Transition.pResource   = _d3dResource;
 	barrier.Transition.StateBefore = _resourceState;
-	barrier.Transition.StateAfter  = state;
+	barrier.Transition.StateAfter  = newResourceState;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	cmdList->ResourceBarrier(1, &barrier);
 
-	_resourceState = state;
+	auto oldState = _resourceState;
+	_resourceState = newResourceState;
 	return oldState;
 }
 

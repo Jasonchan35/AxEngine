@@ -116,7 +116,7 @@ public:
 };
 
 template<class T> requires Type_IsEnum<T>
-constexpr ZStrView ax_enum_str(const T& v) { return _ax_macro_enum_str(v); }
+constexpr StrLit ax_enum_str(const T& v) { return _ax_macro_enum_str(v); }
 
 template <class T, class FMT_CH> requires Type_IsEnum<T>
 class FormatHandler<T, FMT_CH> {

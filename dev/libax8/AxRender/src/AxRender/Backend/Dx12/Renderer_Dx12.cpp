@@ -35,6 +35,10 @@ void Renderer_Dx12::createDevice() {
 	// Enable the debug layer (requires the Graphics Tools "optional feature" from Windows Settings > System > Optional features).
 	// NOTE: Enabling the debug layer after device creation will invalidate the active device.
 	_d3dDebug->EnableDebugLayer();
+	_d3dDebug->SetEnableAutoName(true);
+	_d3dDebug->SetForceLegacyBarrierValidation(true);
+	_d3dDebug->SetEnableGPUBasedValidation(true);
+	_d3dDebug->SetEnableSynchronizedCommandQueueValidation(true);
 	dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 
 #endif
@@ -141,7 +145,7 @@ void Renderer_Dx12::_getHardwareAdapter() {
 				"	 Video  Memory = {}M\n"
 				"	 System Memory = {}M\n"
 				"	 Shared Memory = {}M\n",
-					desc.Description, 
+					_adapterInfo.name, 
 					desc.Revision,
 					desc.VendorId,
 					desc.DeviceId,

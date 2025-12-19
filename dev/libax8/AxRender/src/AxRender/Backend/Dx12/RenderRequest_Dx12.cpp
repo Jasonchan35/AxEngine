@@ -59,10 +59,10 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 }
 
 void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
-	auto topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
 	auto& cmdList = _graphCmdBuf_dx12;
 	
-	cmdList->IASetPrimitiveTopology(topology);
+//	auto topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
+//	cmdList->IASetPrimitiveTopology(topology); // already in pso
 
 	{ // bind vertex buffer
 		auto vertexLayout = drawcall.vertexLayout;
@@ -70,7 +70,7 @@ void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 		auto* vb = rttiCastCheck<GpuBuffer_Dx12>(drawcall.vertexBuffer);
 		if (!vb) throw Error_Undefined();
 
-		vb->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		vb->resource().resourceBarrierDebug(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 		D3D12_VERTEX_BUFFER_VIEW vbView = {};
 		vbView.BufferLocation = ax_safe_cast_from(vb->gpuAddress());
@@ -86,17 +86,15 @@ void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 		                       ax_safe_cast_from(drawcall.instanceStart));
 		
 	} else {
-		auto indexType = Dx12Util::getDxIndexType(drawcall.indexType);
-		if (!drawcall.indexBuffer) throw Error_Undefined();
 		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(drawcall.indexBuffer);
 		if (!ib) throw Error_Undefined();
 
-		//ib->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+		ib->resource().resourceBarrierDebug(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
 		D3D12_INDEX_BUFFER_VIEW ibView = {};
-		ibView.BufferLocation = Dx12Util::castUINT64(ib->gpuAddress());
-		ibView.SizeInBytes    = Dx12Util::castUINT(ib->bufferSize());
-		ibView.Format = indexType;
+		ibView.BufferLocation          = Dx12Util::castUINT64(ib->gpuAddress());
+		ibView.SizeInBytes             = Dx12Util::castUINT(ib->bufferSize());
+		ibView.Format                  = Dx12Util::getDxIndexType(drawcall.indexType);;
 
 		cmdList->IASetIndexBuffer(&ibView);
 		cmdList->DrawIndexedInstanced(Dx12Util::castUINT(drawcall.indexCount),

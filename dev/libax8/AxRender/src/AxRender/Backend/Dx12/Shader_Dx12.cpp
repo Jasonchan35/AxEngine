@@ -134,14 +134,11 @@ auto ShaderPass_Dx12::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline*
 	psoDesc.InputLayout.NumElements = Dx12Util::castUINT(vertexInputLayoutDesc.desc_dx12.size());
 	psoDesc.InputLayout.pInputElementDescs = vertexInputLayoutDesc.desc_dx12.data();
 //-----
-	psoDesc.pRootSignature     = _rootSignature;
-	psoDesc.VS.pShaderBytecode = _vsStage.bytecode.data();
-	psoDesc.VS.BytecodeLength  = _vsStage.bytecode.sizeInBytes();
-	psoDesc.PS.pShaderBytecode = _psStage.bytecode.data();
-	psoDesc.PS.BytecodeLength  = _psStage.bytecode.sizeInBytes();
-	psoDesc.GS.pShaderBytecode = _gsStage.bytecode.data();
-	psoDesc.GS.BytecodeLength  = _gsStage.bytecode.sizeInBytes();
+	psoDesc.pRootSignature = _rootSignature;
 
+	psoDesc.VS = Dx12Util::getDxBytecode(_vsStage.bytecode);
+	psoDesc.PS = Dx12Util::getDxBytecode(_psStage.bytecode);
+	psoDesc.GS = Dx12Util::getDxBytecode(_gsStage.bytecode);
 //-----
 	psoDesc.RasterizerState.FillMode = key.debugWireframe ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;
 

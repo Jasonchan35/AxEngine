@@ -13,7 +13,7 @@ void Dx12Util::reportError(HRESULT hr) {
 	
 	_com_error err(hr);
 	auto errMsg = StrView_c_str(err.ErrorMessage());
-	AX_LOG_ERROR("HRESULT = {:x} {}", static_cast<u32>(hr), errMsg); 
+	AX_LOG_ERROR("HRESULT = {:08x} {}", static_cast<u32>(hr), errMsg); 
 	
 #if 0 && _DEBUG
 	auto* d = renderer()->dxgiDebug();

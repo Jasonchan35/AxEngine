@@ -18,7 +18,7 @@ using AX_DX12_IDXGISwapChain  = IDXGISwapChain3;
 
 #if _DEBUG
 	using AX_DX12_IDXGIDebug	= IDXGIDebug1;
-	using AX_DX12_ID3D12Debug	= ID3D12Debug;
+	using AX_DX12_ID3D12Debug	= ID3D12Debug6;
 #endif
 
 struct Dx12Util {
@@ -52,6 +52,10 @@ struct Dx12Util {
 	static constexpr D3D12_CULL_MODE	getDxCullMode		(CullMode		v);
 
 	static constexpr D3D12_COMMAND_LIST_TYPE getDxCommandBufferType(CommandBufferType type);
+
+	static D3D12_SHADER_BYTECODE getDxBytecode(ByteSpan span) {
+		return {.pShaderBytecode = span.data(), .BytecodeLength = ax_safe_cast_from(span.sizeInBytes())};
+	} 
 	
 	static constexpr StrView	errorToStrView(ID3DBlob* blob);
 
@@ -343,6 +347,55 @@ constexpr D3D12_COMPARISON_FUNC Dx12Util::getDxDepthTestOp(DepthTestOp v) {
 		default: throw Error_Undefined();
 	}
 }
+
+template<>
+constexpr StrLit ax_enum_str(const D3D12_RESOURCE_STATES& v) {
+	switch (v) {
+		case D3D12_RESOURCE_STATE_COMMON								: return "COMMON";
+		case D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER			: return "VERTEX_AND_CONSTANT_BUFFER";
+		case D3D12_RESOURCE_STATE_INDEX_BUFFER							: return "INDEX_BUFFER";
+		case D3D12_RESOURCE_STATE_RENDER_TARGET							: return "RENDER_TARGET";
+		case D3D12_RESOURCE_STATE_UNORDERED_ACCESS						: return "UNORDERED_ACCESS";
+		case D3D12_RESOURCE_STATE_DEPTH_WRITE							: return "DEPTH_WRITE";
+		case D3D12_RESOURCE_STATE_DEPTH_READ							: return "DEPTH_READ";
+		case D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE				: return "NON_PIXEL_SHADER_RESOURCE";
+		case D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE					: return "PIXEL_SHADER_RESOURCE";
+		case D3D12_RESOURCE_STATE_STREAM_OUT							: return "STREAM_OUT";
+		case D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT						: return "INDIRECT_ARGUMENT";
+		case D3D12_RESOURCE_STATE_COPY_DEST								: return "COPY_DEST";
+		case D3D12_RESOURCE_STATE_COPY_SOURCE							: return "COPY_SOURCE";
+		case D3D12_RESOURCE_STATE_RESOLVE_DEST							: return "RESOLVE_DEST";
+		case D3D12_RESOURCE_STATE_RESOLVE_SOURCE						: return "RESOLVE_SOURCE";
+		case D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE		: return "RAYTRACING_ACCELERATION_STRUCTURE";
+		case D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE					: return "SHADING_RATE_SOURCE";
+		case D3D12_RESOURCE_STATE_RESERVED_INTERNAL_8000				: return "RESERVED_INTERNAL_8000";
+		case D3D12_RESOURCE_STATE_RESERVED_INTERNAL_4000				: return "RESERVED_INTERNAL_4000";
+		case D3D12_RESOURCE_STATE_RESERVED_INTERNAL_100000				: return "RESERVED_INTERNAL_100000";
+		case D3D12_RESOURCE_STATE_RESERVED_INTERNAL_40000000			: return "RESERVED_INTERNAL_40000000";
+		case D3D12_RESOURCE_STATE_RESERVED_INTERNAL_80000000			: return "RESERVED_INTERNAL_80000000";
+		case D3D12_RESOURCE_STATE_GENERIC_READ							: return "GENERIC_READ";
+		case D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE					: return "ALL_SHADER_RESOURCE";
+//		case D3D12_RESOURCE_STATE_PRESENT								: return "PRESENT";
+//		case D3D12_RESOURCE_STATE_PREDICATION							: return "PREDICATION";
+		case D3D12_RESOURCE_STATE_VIDEO_DECODE_READ						: return "VIDEO_DECODE_READ";
+		case D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE					: return "VIDEO_DECODE_WRITE";
+		case D3D12_RESOURCE_STATE_VIDEO_PROCESS_READ					: return "VIDEO_PROCESS_READ";
+		case D3D12_RESOURCE_STATE_VIDEO_PROCESS_WRITE					: return "VIDEO_PROCESS_WRITE";
+		case D3D12_RESOURCE_STATE_VIDEO_ENCODE_READ						: return "VIDEO_ENCODE_READ";
+		case D3D12_RESOURCE_STATE_VIDEO_ENCODE_WRITE					: return "VIDEO_ENCODE_WRITE";
+		default: return "";
+	}
+}
+
+template <class FMT_CH>
+class FormatHandler<D3D12_RESOURCE_STATES, FMT_CH> {
+public:
+	using Obj = D3D12_RESOURCE_STATES;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << Fmt("({:08x}:{})", ax_enum_int(obj), ax_enum_str(obj));
+	}
+};
+
 
 } // namespace
 
