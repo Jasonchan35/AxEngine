@@ -18,133 +18,6 @@ concept CON_onFormat_ = requires(const OBJ& obj, Format_<FMT_CH> & fmt) {
 	true;
 };
 
-template <class T, class FMT_CH> requires Type_IsFundamental<T>
-class FormatHandler<T, FMT_CH> {
-public:
-	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
-		std::formatter<T, FMT_CH> tmp;
-		tmp.format(obj, fmt.formatContext);
-	}
-};
-
-template <class T, class FMT_CH> requires Type_IsConvertibleToStrViewX<T>
-class FormatHandler<T, FMT_CH> {
-public:
-	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
-		
-		if constexpr (std::is_same_v<T, FMT_CH>) {
-			auto sv = StrView_<FMT_CH>(obj); 
-			fmt.formatter.format(sv.to_string_view(), fmt.formatContext);
-		} else {
-			auto utf = TempString_<FMT_CH>::s_utf(obj);
-			fmt.formatter.format(utf.to_string_view(), fmt.formatContext);
-		}
-	}
-};
-
-template <class T, class FMT_CH>
-class FormatHandler<MutSpan<T>, FMT_CH> {
-public:
-	using Obj = MutSpan<T>;
-	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << "[";
-		Int i = 0;
-		for (auto& it : obj) {
-			if (i > 0) fmt << ", ";
-			fmt << it;
-			++i;
-		}
-		fmt << "]";
-	}
-};
-
-template <class T, class FMT_CH>
-class FormatHandler<Span_FindResult<T>, FMT_CH> {
-public:
-	using Obj = Span_FindResult<T>;
-	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << "([" << obj.index << "], " << obj.value << ")";
-	}
-};
-
-template <CON_IsIArray OBJ, class FMT_CH> 
-class FormatHandler<OBJ, FMT_CH> {
-public:
-	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) {
-		fmt << obj.span();
-	}
-};
-
-template <class A, class B, class FMT_CH>
-class FormatHandler<Pair<A,B>, FMT_CH> {
-public:
-	using Obj = Pair<A,B>;
-	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << Fmt("({},{})", obj.first, obj.second);
-	}
-};
-
-template <class FMT_CH>
-class FormatHandler<std::exception, FMT_CH> {
-public:
-	using Obj = std::exception;
-	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << StrView_c_str(obj.what());
-	}
-};
-
-template <class FMT_CH>
-class FormatHandler<Error, FMT_CH> {
-public:
-	using Obj = Error;
-	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << StrView_c_str(obj.what());
-	}
-};
-
-template <class V, class FMT_CH>
-class FormatHandler<Opt<V>, FMT_CH> {
-public:
-	using Obj = Opt<V>;
-	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		if (!obj) {
-			fmt << "nullopt";
-		} else {
-			fmt << *obj;
-		}
-	}
-};
-
-template<class T> requires Type_IsEnum<T>
-constexpr StrLit ax_enum_str(const T& v) { return _ax_macro_enum_str(v); }
-
-template <class T, class FMT_CH> requires Type_IsEnum<T>
-class FormatHandler<T, FMT_CH> {
-public:
-	void onFormat(const T & v, Format_<FMT_CH> & fmt) {
-		if constexpr (Type_IsEnumFlag<T>) {
-			using IntType = Type_EnumInt<T>;
-			TempString str;
-			IntType value = ax_enum_int(v);
-			Int c = 0;
-			Int bitCount = AX_SIZEOF(value) * 8;
-			for (Int i = 0; i < bitCount; ++i) {
-				auto mask = IntType(1) << i;
-				if (value & mask) {
-					if (c) str << " | ";
-					str << ax_enum_str(static_cast<T>(mask));
-					c++;
-				}
-			}
-			fmt << str;
-		} else {
-			fmt << ax_enum_str(v);
-		}
-	}
-};
-
-//------------------------
-
 template< class STR_CH, class IN_FMT_CH, class ... ARGS> 
 inline void ax_format_to_internal(IString_<STR_CH> & output, const FormatString_<IN_FMT_CH, ARGS...> & fmt, const ARGS&... args) {
 	// std::format only support char and wchar_t format string
@@ -228,12 +101,14 @@ constexpr TempString32 Fmt(FormatString_<Char32, ARGS...>&& fmt, const ARGS&... 
 	return Fmt_<Char32, Char32>(AX_FORWARD(fmt), AX_FORWARD(args)...);
 }
 
-} // namespace
+} // namespace ax
 
-//----- global namespace ----------
+#if 0
+#pragma mark ----- global namespace - std::formatter ----------
+#endif
 
 // Wrapper to CustomClass::onFormat()
-template<class T, class FMT_CH> requires	ax::CON_onFormat_<T, FMT_CH>
+template<class T, class FMT_CH> requires ax::CON_onFormat_<T, FMT_CH>
 struct std::formatter<T, FMT_CH> : public  ax::StdFormatter_<FMT_CH> {
 	using Base = ax::StdFormatter_<FMT_CH>;
 
@@ -253,3 +128,144 @@ struct std::formatter<T, FMT_CH> : public  ax::StdFormatter_<FMT_CH> {
 		return ctx.out();
 	}
 };
+
+#if 0
+#pragma mark ----------- FormatHandler ------------
+#endif
+export namespace ax {
+
+template <class T, class FMT_CH> requires Type_IsFundamental<T>
+class FormatHandler<T, FMT_CH> {
+public:
+	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
+		std::formatter<T, FMT_CH> tmp;
+		tmp.format(obj, fmt.formatContext);
+	}
+};
+
+template <class T, class FMT_CH> requires Type_IsConvertibleToStrViewX<T>
+class FormatHandler<T, FMT_CH> {
+public:
+	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
+		
+		if constexpr (std::is_same_v<T, FMT_CH>) {
+			auto sv = StrView_<FMT_CH>(obj); 
+			fmt.formatter.format(sv.to_string_view(), fmt.formatContext);
+		} else {
+			auto utf = TempString_<FMT_CH>::s_utf(obj);
+			fmt.formatter.format(utf.to_string_view(), fmt.formatContext);
+		}
+	}
+};
+
+template <class T, class FMT_CH>
+class FormatHandler<MutSpan<T>, FMT_CH> {
+public:
+	using Obj = MutSpan<T>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << "[";
+		Int i = 0;
+		for (auto& it : obj) {
+			if (i > 0) fmt << ", ";
+			fmt << it;
+			++i;
+		}
+		fmt << "]";
+	}
+};
+
+template <class T, class FMT_CH>
+class FormatHandler<Span_FindResult<T>, FMT_CH> {
+public:
+	using Obj = Span_FindResult<T>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << "([" << obj.index << "], " << obj.value << ")";
+	}
+};
+
+template <CON_IsIArray OBJ, class FMT_CH> 
+class FormatHandler<OBJ, FMT_CH> {
+public:
+	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) {
+		fmt << obj.span();
+	}
+};
+
+template <class A, class B, class FMT_CH>
+class FormatHandler<Pair<A,B>, FMT_CH> {
+public:
+	using Obj = Pair<A,B>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << Fmt("({},{})", obj.first, obj.second);
+	}
+};
+
+template <class FMT_CH>
+class FormatHandler<std::exception, FMT_CH> {
+public:
+	using Obj = std::exception;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << StrView_c_str(obj.what());
+	}
+};
+
+template <class FMT_CH>
+class FormatHandler<SrcLoc, FMT_CH> {
+public:
+	using Obj = SrcLoc;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << Fmt("(SrcLoc:{}:{})", obj.file(), obj.line());
+	}
+};
+
+template <class FMT_CH>
+class FormatHandler<Error, FMT_CH> {
+public:
+	using Obj = Error;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << StrView_c_str(obj.what());
+	}
+};
+
+template <class V, class FMT_CH>
+class FormatHandler<Opt<V>, FMT_CH> {
+public:
+	using Obj = Opt<V>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		if (!obj) {
+			fmt << "nullopt";
+		} else {
+			fmt << *obj;
+		}
+	}
+};
+
+template<class T> requires Type_IsEnum<T>
+constexpr StrLit ax_enum_str(const T& v) { return _ax_macro_enum_str(v); }
+
+template <class T, class FMT_CH> requires Type_IsEnum<T>
+class FormatHandler<T, FMT_CH> {
+public:
+	void onFormat(const T & v, Format_<FMT_CH> & fmt) {
+		if constexpr (Type_IsEnumFlag<T>) {
+			using IntType = Type_EnumInt<T>;
+			TempString str;
+			IntType value = ax_enum_int(v);
+			Int c = 0;
+			Int bitCount = AX_SIZEOF(value) * 8;
+			for (Int i = 0; i < bitCount; ++i) {
+				auto mask = IntType(1) << i;
+				if (value & mask) {
+					if (c) str << " | ";
+					str << ax_enum_str(static_cast<T>(mask));
+					c++;
+				}
+			}
+			fmt << str;
+		} else {
+			fmt << ax_enum_str(v);
+		}
+	}
+};
+
+} // namespace

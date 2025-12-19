@@ -7,7 +7,7 @@ class Test_File : public UnitTestClass {
 public:
 	void test_case1() {
 		auto srcLoc = SrcLoc::s_current();
-		auto curFilename = StrView_c_str(srcLoc.file());
+		auto curFilename = srcLoc.file();
 		auto dir = FilePath::dirname(curFilename);
 		auto searchPath = Fmt("{}/Test_File_Example/**/*.*", dir);
 		Array<TempString> files;

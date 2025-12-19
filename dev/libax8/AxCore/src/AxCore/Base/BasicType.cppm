@@ -298,6 +298,15 @@ template<class T> using ZStrView_ = MutZStrView_<const T>;
 template<class T> inline
 ZStrView_<T> ZStrView_c_str(const T* sz) { return ZStrView_<T>(sz, ax_strlen(sz)); }
 
+template<class T> class MutStrLit_;
+template<class T> using StrLit_ = MutStrLit_<const T>;
+using StrLit   = StrLit_<Char>;
+using StrLitA  = StrLit_<CharA >;
+using StrLitW  = StrLit_<CharW >;
+using StrLit8  = StrLit_<Char8 >;
+using StrLit16 = StrLit_<Char16>;
+using StrLit32 = StrLit_<Char32>;
+
 template<class T>
 class MutStrLit_ : public MutZStrView_<T> {
 	using This = MutStrLit_;
@@ -317,7 +326,12 @@ public:
 	static consteval MutStrLit_ s_make(const T* data, Int size) noexcept { return MutStrLit_(data, size); }
 
 	// constexpr is ok for PersistString, because it's lifespan is guaranteed until the end of the program.
-	static constexpr MutStrLit_ s_from_PersistString(T* sz, Int size) noexcept { return MutStrLit_(sz, ax_strlen(sz)); }
+	static constexpr MutStrLit_ s_from_PersistString(T* sz, Int size) noexcept { return MutStrLit_(sz, size); }
+
+	// only use for static string liternal, because it's lifespan is guaranteed until the end of the program.
+	static constexpr StrLit_<T> s_from_static_c_str(const T* sz) noexcept {
+		return StrLit_<T>(sz, ax_strlen(sz));
+	}
 
 	AX_NODISCARD AX_INLINE constexpr explicit operator bool() const { return _size > 0; } 
 protected:
@@ -326,13 +340,6 @@ protected:
 	static constexpr T kEmpty_c_str = 0;
 };
 
-template<class T> using StrLit_ = MutStrLit_<const T>;
-using StrLit   = StrLit_<Char>;
-using StrLitA  = StrLit_<CharA >;
-using StrLitW  = StrLit_<CharW >;
-using StrLit8  = StrLit_<Char8 >;
-using StrLit16 = StrLit_<Char16>;
-using StrLit32 = StrLit_<Char32>;
 
 AX_INLINE constexpr StrLit ConstStrLit_bool(bool v) { return v ? StrLit("true") : StrLit("false"); }
 
@@ -419,10 +426,10 @@ struct SrcLoc {
 
 	static constexpr SrcLoc s_current(const std::source_location & loc = std::source_location::current()) { return loc; }
 	
-	constexpr Int    		column	() const noexcept	{ return _loc.column(); }
-	constexpr Int    		line	() const noexcept	{ return _loc.line(); }
-	constexpr const char*	file	() const noexcept	{ return _loc.file_name(); }
-	constexpr const char*	function() const noexcept	{ return _loc.function_name(); }
+	constexpr Int		column	() const noexcept	{ return _loc.column(); }
+	constexpr Int		line	() const noexcept	{ return _loc.line(); }
+	constexpr StrLit	file	() const noexcept	{ return StrLit::s_from_static_c_str(_loc.file_name()); }
+	constexpr StrLit	function() const noexcept	{ return StrLit::s_from_static_c_str(_loc.function_name()); }
 	
 protected:
 	std::source_location _loc;
