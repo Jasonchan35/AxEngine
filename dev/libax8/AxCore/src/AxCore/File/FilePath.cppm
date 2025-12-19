@@ -57,9 +57,9 @@ struct FilePath {
 	// e.g. changeExtension( "a.txt", ".doc" );
 	AX_NODISCARD	static	constexpr FilePathString	changeExtension	(StrView path, StrView ext);
 
-	AX_NODISCARD	static	constexpr 		StrView	dirname_sv	(No_rvalue_<StrView> path);
-	AX_NODISCARD	static	constexpr 		StrView	basename_sv	(No_rvalue_<StrView> path, bool withExtension);
-	AX_NODISCARD	static	constexpr 		StrView	extension_sv(No_rvalue_<StrView> path);
+	AX_NODISCARD	static	constexpr StrView 			dirname_sv	(StrView path);
+	AX_NODISCARD	static	constexpr StrView 			basename_sv	(StrView path, bool withExtension);
+	AX_NODISCARD	static	constexpr StrView 			extension_sv(StrView path);
 	
 	AX_NODISCARD	static	constexpr FilePathString	dirname		(StrView path)						{ return dirname_sv(path); }
 	AX_NODISCARD	static	constexpr FilePathString	basename	(StrView path, bool withExtension)	{ return basename_sv(path, withExtension); }
@@ -143,13 +143,13 @@ constexpr FilePath::SplitResult FilePath::split(StrView path) {
 	return o;
 }
 
-constexpr StrView FilePath::dirname_sv(No_rvalue_<StrView> path) {
-	auto s = path->splitByCharBack_(isPathSeparator);
+constexpr StrView FilePath::dirname_sv(StrView path) {
+	auto s = path.splitByCharBack_(isPathSeparator);
 	return s.second ? s.first : StrView();
 }
 
-constexpr StrView FilePath::basename_sv(No_rvalue_<StrView> path, bool withExtension) {
-	auto s = path->splitByCharBack_(isPathSeparator);
+constexpr StrView FilePath::basename_sv(StrView path, bool withExtension) {
+	auto s = path.splitByCharBack_(isPathSeparator);
 	auto f = s.second ? s.second : s.first;
 	if (withExtension) {
 		return f;
@@ -159,10 +159,10 @@ constexpr StrView FilePath::basename_sv(No_rvalue_<StrView> path, bool withExten
 	}
 }
 
-constexpr StrView FilePath::extension_sv(No_rvalue_<StrView> path) {
+constexpr StrView FilePath::extension_sv(StrView path) {
 	//	remove dir first to avoid corner case like: "/aaa/bbb/ccc.here/eee"
 	//	while should return "" instead or "here/eee"
-	auto s = path->splitByCharBack_(isPathSeparator);
+	auto s = path.splitByCharBack_(isPathSeparator);
 	auto f = s.second ? s.second : s.first;
 
 	s = f.splitByCharBack('.');

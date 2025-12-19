@@ -128,7 +128,7 @@ public:
 		StrView slice3 = str.sliceFrom(6);
 		AX_TEST_EQ(slice3, "World");
 
-		StrView slice4 = str.sliceBack(5);
+		StrView slice4 = str.sliceBack(0,5);
 		AX_TEST_EQ(slice4, "World");
 	}
 
@@ -220,6 +220,14 @@ public:
 		auto sv2 = to_StrviewTest(str);
 		AX_DUMP(sv2);
 	}
+
+	void test_at_back() {
+		auto str = StrView("abcd");
+		AX_TEST_EQ(str.back(0), 'd');
+		AX_TEST_EQ(str.back(1), 'c');
+		AX_TEST_EQ(str.at(0),   'a');
+		AX_TEST_EQ(str.at(1),   'b');
+	}
 };
 
 } // namespace
@@ -240,10 +248,11 @@ void Test_String() {
 	AX_TEST_RUN_CASE(Test_String::test_case10_string_c_str)
 	//AX_TEST_RUN_CASE(Test_String::test_case11_string_move)
 	AX_TEST_RUN_CASE(Test_String::test_case12_string_comparison_operators)
+	AX_TEST_RUN_CASE(Test_String::test_at_back)
 	AX_TEST_RUN_CASE(Test_String::test_split)
 	AX_TEST_RUN_CASE(Test_String::test_NameId)
 	AX_TEST_RUN_CASE(Test_String::test_utf)
-
+	
 	AX_TEST_RUN_CASE(Test_String::test_NoRValue_StrView)
 }
 

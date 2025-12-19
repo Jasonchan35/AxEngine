@@ -122,7 +122,24 @@ template <class T, class FMT_CH> requires Type_IsEnum<T>
 class FormatHandler<T, FMT_CH> {
 public:
 	void onFormat(const T & v, Format_<FMT_CH> & fmt) {
-		fmt << ax_enum_str(v);
+		if constexpr (Type_IsEnumFlag<T>) {
+			using IntType = Type_EnumInt<T>;
+			TempString str;
+			IntType value = ax_enum_int(v);
+			Int c = 0;
+			Int bitCount = AX_SIZEOF(value) * 8;
+			for (Int i = 0; i < bitCount; ++i) {
+				auto mask = IntType(1) << i;
+				if (value & mask) {
+					if (c) str << " | ";
+					str << ax_enum_str(static_cast<T>(mask));
+					c++;
+				}
+			}
+			fmt << str;
+		} else {
+			fmt << ax_enum_str(v);
+		}
 	}
 };
 

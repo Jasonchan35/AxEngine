@@ -244,7 +244,7 @@
 		using CURRENT_ENUM_T = T; \
 		switch (v) { \
 			LIST(AX_ENUM_STR__CASE) \
-			default: AX_ASSERT(false); return ""; \
+			default: return ""; \
 		} \
 	} \
 //----
@@ -278,7 +278,10 @@
 	AX_ENUM_ALL_OPERATOR(T) \
 //----
 
-#define AX_ENUM_FLAGS_CLASS(LIST,T, BASE_TYPE) AX_ENUM_CLASS(LIST, T, BASE_TYPE)
+#define AX_ENUM_FLAGS_CLASS(LIST,T, BASE_TYPE) \
+	AX_ENUM_CLASS(LIST, T, BASE_TYPE) \
+	template<> struct Type_IsEnumFlag_T<T> : std::true_type {};
+//------
 
 #define AX_NAMEID_FUNC(STR) [](){ static auto name = NameId::s_make(StrView(STR)); return name; }
 #define AX_NAMEID(STR) AX_NAMEID_FUNC(STR)()

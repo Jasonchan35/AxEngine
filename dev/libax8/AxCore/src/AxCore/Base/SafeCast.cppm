@@ -28,8 +28,8 @@ constexpr Opt<DST> ax_try_safe_cast_(const SRC& src) noexcept {
 		
 	} else {
 		// enum/int -> enum/int
-		using DST_INT = Type_MaybeEnumInt<DST>;
-		using SRC_INT = Type_MaybeEnumInt<SRC>;
+		using DST_INT = Type_IntOrEnumInt<DST>;
+		using SRC_INT = Type_IntOrEnumInt<SRC>;
 		
 		if (!std::in_range<DST_INT>(static_cast<SRC_INT>(src))) { AX_ASSERT_MSG(false, "safe_cast"); return std::nullopt; }
 		return static_cast<DST>(src);

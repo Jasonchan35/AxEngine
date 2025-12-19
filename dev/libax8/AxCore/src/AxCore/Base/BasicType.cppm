@@ -143,13 +143,16 @@ template<class T> constexpr bool Type_Is_f32        =  std::is_same_v<T, f32>;
 template<class T> constexpr bool Type_Is_f64        =  std::is_same_v<T, f64>;
 template<class T> constexpr bool Type_IsEnum        =  std::is_enum_v<T>;
 
+template<class T> struct Type_IsEnumFlag_T : std::false_type {}; 
+template<class T> constexpr bool Type_IsEnumFlag    =  Type_IsEnumFlag_T<T>::value;
+
 template<class T>
-struct Type_MaybeEnumInt_Struct { using Type = T; }; 
+struct Type_IntOrEnumInt_T { using Type = T; }; 
 
-template<class T>	requires std::is_enum_v<T>
-struct Type_MaybeEnumInt_Struct<T> { using Type = std::underlying_type_t<T>; }; 
+template<class T> requires std::is_enum_v<T>
+struct Type_IntOrEnumInt_T<T> { using Type = std::underlying_type_t<T>; }; 
 
-template<class T> using Type_MaybeEnumInt = Type_MaybeEnumInt_Struct<T>::Type;
+template<class T> using Type_IntOrEnumInt = Type_IntOrEnumInt_T<T>::Type;
 
 //--------
 template<Int N>		struct	Type_IntTypeBySize_T;
