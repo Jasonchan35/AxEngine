@@ -187,9 +187,11 @@ LRESULT WINAPI RenderContext_Dx12::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam,
 
 RenderPass_Backend* RenderContext_Dx12::onAcquireBackBufferRenderPass(RenderRequest* req) {
 	if (!_swapChain_dx12) return nullptr;
-	Int backBuffIndex = _swapChain_dx12.getCurrentBackBufferIndex();
-	auto* backBuffer = _getBackBuffer(backBuffIndex);
+	Int backBufferIndex = _swapChain_dx12.getCurrentBackBufferIndex();
+	auto* backBuffer = _getBackBuffer(backBufferIndex);
 	if (!backBuffer) return nullptr;
+
+//	AX_LOG("RenderContext_Dx12::onAcquireBackBufferRenderPass backBuffIndex={}", backBufferIndex);
 	return backBuffer->_renderPass_dx12;
 }
 

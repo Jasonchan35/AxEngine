@@ -6,7 +6,7 @@ export namespace ax /*::AxRender*/ {
 
 class MaterialParamSpace_CreateDesc : public NonCopyable {
 public:
-	const ShaderParamSpace*	paramSpace = nullptr;
+	const ShaderParamSpace*	shaderParamSpace = nullptr;
 };
 
 class MaterialParamSpace : public RenderObject {

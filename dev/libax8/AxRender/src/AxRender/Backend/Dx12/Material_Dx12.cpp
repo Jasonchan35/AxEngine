@@ -7,6 +7,14 @@ import :GpuBuffer_Dx12;
 
 namespace ax {
 
+MaterialParamSpace_Dx12::MaterialParamSpace_Dx12(const CreateDesc& desc): Base(desc) {
+	auto* shaderParamSpace = rttiCastCheck<ShaderParamSpace_Dx12>(desc.shaderParamSpace);
+
+//	_samplerDescHeap.create(shaderParamSpace->_samplerDescTable.size());
+	_textureDescHeap.create(shaderParamSpace->_textureDescTable.size());
+	_storageBufferDescHeap.create(shaderParamSpace->_storageBufferDescTable.size());
+}
+
 bool MaterialParamSpace_Dx12::onSetParam(SamplerParam& param, Int index, Sampler* sampler) {
 	D3D12_SAMPLER_DESC desc = {};
 	if (sampler) {
@@ -25,7 +33,7 @@ bool MaterialParamSpace_Dx12::onSetParam(SamplerParam& param, Int index, Sampler
 		desc.BorderColor[2] = 0; 
 		desc.BorderColor[3] = 0; 
 	}
-	_samplerDescHeap.createSampler(index, desc);
+	_samplerDescHeap.setSampler(index, desc);
 	return true;
 }
 
@@ -50,7 +58,7 @@ void MaterialParamSpace_Dx12::_onDrawcall(RenderRequest_Dx12* req, const ShaderP
 	auto s = ax_enum_int(spaceType());
 
 	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdPass->_descTableRootIndices[s]),
-	                                        _texDescHeap.handleStart().gpu);
+	                                        _textureDescHeap.handleStart().gpu);
 	
 	cmdList->SetGraphicsRootDescriptorTable(ax_safe_cast_from(shdPass->_samplerDescTableRootIndices[s]),
 	                                        _samplerDescHeap.handleStart().gpu);

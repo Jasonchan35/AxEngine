@@ -29,7 +29,7 @@ ShaderPassInfo* ShaderDeclareInfo::findPass(StrView name) {
 
 SPtr<MaterialParamSpace> ShaderParamSpace::newMaterialParamSpace(const MemAllocRequest& req) const {
 	MaterialParamSpace_CreateDesc desc;
-	desc.paramSpace = this;
+	desc.shaderParamSpace = this;
 	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newMaterialParamSpace(req, desc));
 }
 

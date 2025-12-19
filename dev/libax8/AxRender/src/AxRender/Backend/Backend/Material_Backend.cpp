@@ -24,7 +24,7 @@ void MaterialParamSpace_Backend_cloneParams(DST& dst, SRC srcSpan) {
 MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 : Base(desc)
 {
-	_shaderParamSpace = rttiCastCheck<const ShaderParamSpace_Backend>(desc.paramSpace);
+	_shaderParamSpace = rttiCastCheck<const ShaderParamSpace_Backend>(desc.shaderParamSpace);
 	if (!_shaderParamSpace) {
 		AX_ASSERT(false);
 		return;

@@ -14,7 +14,7 @@ namespace ax {
 class MaterialParamSpace_Dx12 : public MaterialParamSpace_Backend {
 	AX_RTTI_INFO(MaterialParamSpace_Dx12, MaterialParamSpace_Backend)
 public:
-	MaterialParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
+	MaterialParamSpace_Dx12(const CreateDesc& desc);
 
 	const ShaderParamSpace_Dx12* shaderParamSpace() const { return rttiCastCheck<ShaderParamSpace_Dx12>(_shaderParamSpace.ptr()); }
 
@@ -25,8 +25,8 @@ protected:
 
 private:
 	Dx12DescripterHeap_Sampler		_samplerDescHeap;
-	Dx12DescripterHeap_CBV_SRV_UAV	_texDescHeap;
-	Dx12DescripterHeap_CBV_SRV_UAV	_storageBufDescHeap;
+	Dx12DescripterHeap_CBV_SRV_UAV	_textureDescHeap;
+	Dx12DescripterHeap_CBV_SRV_UAV	_storageBufferDescHeap;
 };
 
 class MaterialPass_Dx12 : public MaterialPass_Backend {

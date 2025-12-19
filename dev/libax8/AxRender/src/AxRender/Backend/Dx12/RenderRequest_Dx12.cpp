@@ -61,8 +61,8 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 	auto& cmdList = _graphCmdBuf_dx12;
 	
-//	auto topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
-//	cmdList->IASetPrimitiveTopology(topology); // already in pso
+	D3D12_PRIMITIVE_TOPOLOGY topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
+	cmdList->IASetPrimitiveTopology(topology); // already in pso
 
 	{ // bind vertex buffer
 		auto vertexLayout = drawcall.vertexLayout;

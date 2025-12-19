@@ -45,8 +45,14 @@ public:
 	void colorBuf0_resourceBarrier(RenderRequest* req_, D3D12_RESOURCE_STATES state);
 	void releaseResources() {}
 
-	RenderPassDepthBuffer_Dx12*	depthBuffer_dx12()	{ return rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthAttachment.buffer.ptr()); }
-
+	RenderPassColorBuffer_Dx12*	colorBuffer_dx12(Int i) {
+		auto* ca = _colorAttachments.tryGetElement(0);
+		return ca ? rttiCastCheck<RenderPassColorBuffer_Dx12>(ca->buffer.ptr()) : nullptr;
+	}
+	
+	RenderPassDepthBuffer_Dx12*	depthBuffer_dx12() {
+		return rttiCastCheck<RenderPassDepthBuffer_Dx12>(_depthAttachment.buffer.ptr());
+	}
 
 	Array<D3D12_CPU_DESCRIPTOR_HANDLE>	_colorViewHandles_dx12;
 		  D3D12_CPU_DESCRIPTOR_HANDLE	_depthViewHandle_dx12;

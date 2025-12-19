@@ -59,7 +59,7 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle_ColorBuffer createView(Int i, Dx12Resource_ColorBuffer& res) {
+	Dx12DescriptorHandle_ColorBuffer setRenderTargetView(Int i, Dx12Resource_ColorBuffer& res) {
 		//	D3D12_RENDER_TARGET_VIEW_DESC desc = {};
 		auto h = _getHandle<Dx12DescriptorHandle_ColorBuffer>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateRenderTargetView(res.d3dResource(), nullptr, h.handle.cpu);
@@ -75,7 +75,7 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle_DepthBuffer createView(Int i, Dx12Resource_DepthBuffer& res) {
+	Dx12DescriptorHandle_DepthBuffer setDepthStencilView(Int i, Dx12Resource_DepthBuffer& res) {
 		//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 		auto h = _getHandle<Dx12DescriptorHandle_DepthBuffer>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateDepthStencilView(res.d3dResource(), nullptr, h.handle.cpu);
@@ -91,7 +91,7 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_Sampler createSampler(Int i, const D3D12_SAMPLER_DESC& desc) {
+	Dx12DescriptorHandle_Sampler setSampler(Int i, const D3D12_SAMPLER_DESC& desc) {
 		auto h = _getHandle<Dx12DescriptorHandle_Sampler>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateSampler(&desc, h.handle.cpu);
 		return h;
@@ -110,7 +110,7 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_ConstBuffer createViewCBV(Int i, Dx12Resource_GpuBuffer& res) {
+	Dx12DescriptorHandle_ConstBuffer createConstantBufferView(Int i, Dx12Resource_GpuBuffer& res) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 		desc.BufferLocation = res.gpuAddress();
 		desc.SizeInBytes    = Dx12Util::castUINT(res.alignedDataSize());
@@ -120,13 +120,13 @@ public:
 		return h;
 	}
 
-	Dx12DescriptorHandle_UAV createViewStructuredUAV(Int i, Dx12Resource_GpuBuffer& buf) {
+	Dx12DescriptorHandle_UAV setUnorderedAccessVie(Int i, Dx12Resource_GpuBuffer& buf) {
 		auto h = _getHandle<Dx12DescriptorHandle_UAV>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, nullptr, h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_RawUAV createViewRawUAV(Int i, Dx12Resource_GpuBuffer& buf) {
+	Dx12DescriptorHandle_RawUAV setUnorderedAccessVie_Typeless(Int i, Dx12Resource_GpuBuffer& buf) {
 		D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
@@ -141,7 +141,7 @@ public:
 		return h;
 	}
 
-	Dx12DescriptorHandle_Texture2D createViewSRV(Int i, Dx12Resource_Texture2D& res) {
+	Dx12DescriptorHandle_Texture2D setShaderResourceView(Int i, Dx12Resource_Texture2D& res) {
 		//	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 		auto h = _getHandle<Dx12DescriptorHandle_Texture2D>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateShaderResourceView(res.d3dResource(), nullptr, h.handle.cpu);

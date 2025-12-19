@@ -196,11 +196,13 @@ private:
 };
 
 struct Dx12DescriptorTable {
-	Array<D3D12_DESCRIPTOR_RANGE>	descriptorRanges;
-
 	using BindPoint = ShaderResourceBindPoint;
 	using SpaceType = ShaderParamSpaceType;
 
+	Array<D3D12_DESCRIPTOR_RANGE>	descriptorRanges;
+
+	Int size() const { return descriptorRanges.size(); }
+	
 	void addDescriptor(D3D12_DESCRIPTOR_RANGE_TYPE type, BindPoint bindPoint, Int bindCount, SpaceType spaceType) {
 		auto& dst                             = descriptorRanges.emplaceBack();
 		dst.RangeType                         = type;

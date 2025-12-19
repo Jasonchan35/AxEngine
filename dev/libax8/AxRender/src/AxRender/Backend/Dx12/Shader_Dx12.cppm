@@ -39,8 +39,9 @@ class ShaderParamSpace_Dx12 : public ShaderParamSpace_Backend {
 public:
 	ShaderParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
 
-	Dx12DescriptorTable	_descTable;
-	Dx12DescriptorTable	_samplerDescTable; // DX12: Samplers cannot be mixed with other resource types in a descriptor table
+	Dx12DescriptorTable	_textureDescTable;
+	Dx12DescriptorTable	_samplerDescTable;
+	Dx12DescriptorTable	_storageBufferDescTable;
 	
 	void createDescTable();
 };
