@@ -17,8 +17,9 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	auto& srcRes = src_dx12->resource();
 	auto& dstRes = dst_dx12->resource();
 
-	// auto srcOldState = srcRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
-	// auto dstOldState = dstRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
+//	auto srcOldState = srcRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
+//	auto dstOldState =
+	dstRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	cmdList_dx->CopyBufferRegion(dstRes,
 	                             ax_safe_cast_from(dstOffset),
@@ -27,7 +28,7 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	                             ax_safe_cast_from(srcRange.size()));
 
 	// srcRes.resourceBarrier(cmdList_dx, srcOldState);
-	// dstRes.resourceBarrier(cmdList_dx, dstOldState);
+//	dstRes.resourceBarrier(cmdList_dx, dstOldState);
 }
 
 }

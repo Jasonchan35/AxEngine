@@ -84,7 +84,7 @@ void RenderPass_Dx12::colorBuf0_resourceBarrier(RenderRequest* req_, D3D12_RESOU
 	if (!colorBuf) return;
 
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
-	colorBuf->_resource_dx12.resourceBarrierDebug(req->_graphCmdBuf_dx12, state);
+	colorBuf->_resource_dx12.resourceBarrier(req->_graphCmdBuf_dx12, state);
 }
 
 } // namespace

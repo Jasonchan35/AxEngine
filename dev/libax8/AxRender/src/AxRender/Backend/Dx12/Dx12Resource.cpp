@@ -162,11 +162,17 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	_d3dResource->Unmap(0, nullptr);
 }
 
-D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrierDebug(ID3D12GraphicsCommandList* cmdList,
-	D3D12_RESOURCE_STATES newResourceState
+D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier_Debug(ID3D12GraphicsCommandList* cmdList,
+                                                              D3D12_RESOURCE_STATES      newResourceState,
+                                                              const SrcLoc&              srcLoc
 ) {
 	if (_resourceState != newResourceState) {
-		AX_LOG("Dx12Debug: [{}:{}] resourceBarrier {} -> {}", reinterpret_cast<void*>(_d3dResource.ptr()), _debugName, _resourceState, newResourceState);
+		AX_LOG("Dx12Debug: [{}:{}] resourceBarrier {} -> {} - file:{}:{}",
+		       reinterpret_cast<void*>(_d3dResource.ptr()),
+		       _debugName,
+		       _resourceState,
+		       newResourceState,
+		       FilePath::basename(srcLoc.file(), true), srcLoc.line());
 	}
 	return resourceBarrier(cmdList, newResourceState);
 }

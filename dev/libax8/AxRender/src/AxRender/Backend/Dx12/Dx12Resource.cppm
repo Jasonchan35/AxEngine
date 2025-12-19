@@ -39,7 +39,7 @@ public:
 
 	D3D12_RESOURCE_STATES resourceState() const { return _resourceState; }
 
-	D3D12_RESOURCE_STATES resourceBarrierDebug(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newResourceState);
+	D3D12_RESOURCE_STATES resourceBarrier_Debug(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newResourceState, const SrcLoc& srcLoc = SrcLoc::s_current());
 	D3D12_RESOURCE_STATES resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newResourceState);
 
 	operator ID3D12Resource*() { return _d3dResource; }

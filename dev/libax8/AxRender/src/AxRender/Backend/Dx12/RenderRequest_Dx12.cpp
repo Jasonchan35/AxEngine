@@ -70,7 +70,7 @@ void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 		auto* vb = rttiCastCheck<GpuBuffer_Dx12>(drawcall.vertexBuffer);
 		if (!vb) throw Error_Undefined();
 
-		vb->resource().resourceBarrierDebug(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		vb->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 		D3D12_VERTEX_BUFFER_VIEW vbView = {};
 		vbView.BufferLocation = ax_safe_cast_from(vb->gpuAddress());
@@ -89,7 +89,7 @@ void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(drawcall.indexBuffer);
 		if (!ib) throw Error_Undefined();
 
-		ib->resource().resourceBarrierDebug(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+		ib->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
 		D3D12_INDEX_BUFFER_VIEW ibView = {};
 		ibView.BufferLocation          = Dx12Util::castUINT64(ib->gpuAddress());
