@@ -78,8 +78,7 @@ public:
 
 	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(BindSpace::_COUNT)>;
 
-	Dx12DescriptorTable         _constBufferDescTable;
-	Dx12DescriptorTable         _textureDescTable;
+	Dx12DescriptorTable         _CBV_SRV_UAV_DescTable;
 	Dx12DescriptorTable         _samplerDescTable;
 	
 	Dx12RootParameterList       _pipelineRootParamList;

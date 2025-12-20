@@ -55,7 +55,6 @@ public:
 
 	struct ConstBuffer : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
-		ParamIndex	paramIndex() const { return _shaderParam->paramIndex(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
@@ -75,7 +74,6 @@ public:
 
 	struct TextureParam : public ParamBase {
 		NameId         name() const { return _shaderParam->name(); }
-		ParamIndex     paramIndex() const { return _shaderParam->paramIndex(); }
 		BindPoint      bindPoint() const { return _shaderParam->bindPoint(); }
 		RenderDataType dataType() const { return _shaderParam->dataType(); }
 		BindCount      bindCount() const { return _shaderParam->bindCount(); }
@@ -90,7 +88,6 @@ public:
 
 	struct SamplerParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
-		ParamIndex	paramIndex() const { return _shaderParam->paramIndex(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
@@ -104,7 +101,6 @@ public:
 
 	struct StorageBufferParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
-		ParamIndex	paramIndex() const { return _shaderParam->paramIndex(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 

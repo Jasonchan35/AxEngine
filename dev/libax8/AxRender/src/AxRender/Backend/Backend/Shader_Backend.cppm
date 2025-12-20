@@ -48,27 +48,25 @@ public:
 		using Info = ShaderStageInfo::ParamBase;
 
 		NameId           name() const		{ return _name; }
-		ParamIndex       paramIndex() const { return _paramIndex; }
 		RenderDataType   dataType() const	{ return _dataType; }
 		ShaderStageFlags stageFlags() const { return _stageFlags; }
 		BindPoint        bindPoint() const	{ return _bindPoint; }
 		BindCount        bindCount() const	{ return _bindCount; }
 
 	protected:
-		void	create(ParamIndex paramIndex, const Info& info);
+		void	create(const Info& info);
 
 		NameId               _name;
 		RenderDataType       _dataType   = RenderDataType::None;
 		ShaderParamBindPoint _bindPoint  = ShaderParamBindPoint::Invalid;
 		ShaderParamBindCount _bindCount  = 0;
-		ParamIndex           _paramIndex = 0;
 		ShaderStageFlags     _stageFlags = ShaderStageFlags::None;
 	};
 
 	struct ConstBuffer : public ParamBase {
 		using Info = ShaderStageInfo::ConstBuffer;
 
-		void	create(ParamIndex paramIndex, const Info& info);
+		void	create(const Info& info);
 
 		template<class V>
 		void		setVariableDefault(const VarInfo& varInfo, const V& value);
@@ -92,7 +90,7 @@ public:
 	struct TextureParam : public ParamBase {
 		using Info = ShaderStageInfo::Texture;
 
-		void		create(ParamIndex paramIndex, const Info& info);
+		void		create(const Info& info);
 		Texture*	defaultTexture() const { return ax_const_cast(_defaultTexture); }
 
 		void setDefaultTexture(Texture* tex) {
@@ -106,7 +104,7 @@ public:
 	struct SamplerParam : public ParamBase {
 		using Info = ShaderStageInfo::Sampler;
 
-		void		create(ParamIndex paramIndex, const Info& info);
+		void		create(const Info& info);
 		Sampler*	defaultSampler() const { return ax_const_cast(_defaultSampler); }
 
 		void setDefaultSampler(Sampler* sampler) {
@@ -119,7 +117,7 @@ public:
 	struct StorageBufferParam : public ParamBase {
 		using Info = ShaderStageInfo::StorageBuffer;
 
-		void create(ParamIndex paramIndex, const Info& info);
+		void create(const Info& info);
 	private:
 	};
 

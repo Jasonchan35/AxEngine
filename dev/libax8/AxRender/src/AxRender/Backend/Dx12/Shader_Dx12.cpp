@@ -48,11 +48,11 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		if (!space) continue;
 	
 		for (auto& param : space->constBuffers()) {
-			addDescriptor(_constBufferDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
+			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 		}
 	
 		for (auto& param : space->textureParams()) {
-			addDescriptor(_textureDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}
 
 		for (auto& param : space->samplerParams()) {
@@ -60,8 +60,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		}
 	}
 
-	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _constBufferDescTable);
-	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _textureDescTable);
+	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _CBV_SRV_UAV_DescTable);
 	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _samplerDescTable);
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
