@@ -75,26 +75,17 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 	if (data->TotalVtxCount <= 0 || data->TotalIdxCount <= 0)
 		return;
 
-	if (req->viewportIsBottomUp()) {
-		float L = data->DisplayPos.x;
-		float R = data->DisplayPos.x + data->DisplaySize.x;
-		float T = data->DisplayPos.y + data->DisplaySize.y;
-		float B = data->DisplayPos.y;
-
-		Mat4f projectionMatrix(
-			{ 2.0f/(R-L),   0.0f,           0.0f,       0.0f },
-			{ 0.0f,         2.0f/(T-B),     0.0f,       0.0f },
-			{ 0.0f,         0.0f,           0.5f,       0.0f },
-			{ (R+L)/(L-R),  (T+B)/(B-T),    0.5f,       1.0f }
-		);
-
-		_material->setParam(AX_NAMEID("imguiProjectionMatrix"), projectionMatrix);
-
-	} else {
+	{
 		float L = data->DisplayPos.x;
 		float R = data->DisplayPos.x + data->DisplaySize.x;
 		float T = data->DisplayPos.y;
-		float B = data->DisplayPos.y + data->DisplaySize.y;
+		float B = data->DisplayPos.y;
+		
+		if (req->viewportIsBottomUp()) {
+			T += data->DisplaySize.y;
+		} else {
+			B += data->DisplaySize.y;
+		}
 
 		Mat4f projectionMatrix(
 			{ 2.0f/(R-L),   0.0f,           0.0f,       0.0f },
@@ -102,7 +93,6 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 			{ 0.0f,         0.0f,           0.5f,       0.0f },
 			{ (R+L)/(L-R),  (T+B)/(B-T),    0.5f,       1.0f }
 		);
-
 		_material->setParam(AX_NAMEID("imguiProjectionMatrix"), projectionMatrix);
 	}
 
