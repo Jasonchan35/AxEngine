@@ -40,7 +40,7 @@ void MaterialParamSpace_Backend::ConstBuffer::create(const ShaderParamSpace_Back
 	ParamBase::create(shaderParam);
 
 	_shaderParam = &shaderParam;
-	_dynamicGpuBuffer.create(	"Material_Backend-Uniform",
+	_dynamicGpuBuffer.create(	"Material_Backend-Dynamic-ConstBuffer",
 								GpuBufferType::Uniform,
 								_shaderParam->dataSize());
 
