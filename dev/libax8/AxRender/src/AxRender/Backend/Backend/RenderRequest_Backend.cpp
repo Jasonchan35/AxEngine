@@ -31,9 +31,9 @@ void RenderRequest_Backend::waitCompleted() {
 	resourcesToUpdateDescriptor.clear();
 }
 
-void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId renderSeqId) {
+void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 	waitCompleted();
-	_renderSeqId = renderSeqId;
+	_renderSeqId = newRenderSeqId;
 	resourcesToKeep.clear();
 	inlineUpload.reset();
 }

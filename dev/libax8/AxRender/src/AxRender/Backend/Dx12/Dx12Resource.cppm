@@ -110,7 +110,7 @@ public:
 	~Dx12CpuEvent() { destroy(); }
 	
 	void create() {
-		_h = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		_h = ::CreateEvent(nullptr, false, false, nullptr);
 		if (_h == nullptr) throw Error_Undefined("Dx12Win32Event - CreateEvent");
 	}
 

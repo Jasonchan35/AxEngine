@@ -26,7 +26,7 @@ public:
 	RenderRequest_Backend(const CreateDesc& desc);
 
 	void waitCompleted();
-	void waitCompletedAndReset(RenderSeqId renderSeqId);
+	void waitCompletedAndReset(RenderSeqId newRenderSeqId);
 
 	void frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass);
 	void frameEnd();

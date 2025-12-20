@@ -247,7 +247,6 @@ void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType color
 }
 
 void Dx12Fence::create(ID3D12Device* dev, u64 initialValue) {
-	// _event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	auto hr = Renderer_Dx12::s_d3dDevice()->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 }
@@ -278,10 +277,6 @@ void Dx12SwapChain::create(Dx12CommandQueue& cmdQueue, HWND hwnd, DXGI_SWAP_CHAI
 
 void Dx12SwapChain::present(UINT SyncInterval, UINT Flags) {
 	auto hr = _swapChain->Present(SyncInterval, Flags);
-	// if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-	// 	Renderer_Dx12::s_instance()->createDevice();
-	// 	return;
-	// }
 	Dx12Util::throwIfError(hr);
 }
 

@@ -17,12 +17,15 @@ class RenderRequest_Dx12 : public RenderRequest_Backend {
 public:
 	
 	RenderRequest_Dx12(const CreateDesc& desc);
-
+	
 	RenderContext_Dx12*	renderContext_dx12()		{ return rttiCastCheck<RenderContext_Dx12>(_renderContext); }
 	RenderPass_Dx12*	currentRenderPass_dx12()	{ return rttiCastCheck<RenderPass_Dx12   >(_currentRenderPass); }
 	CommandBuffer_Dx12&	uploadCmdBuf_dx12()			{ return _uploadCmdBuf_dx12; }
 	CommandBuffer_Dx12&	graphCmdBuf_dx12()			{ return _graphCmdBuf_dx12; }
 
+	AX_INLINE u64 fenceValue_dx12() const { return static_cast<u64>(_renderSeqId); }
+	void signalFence(Dx12CommandQueue& cmdQueue) { cmdQueue.signal(_fence, fenceValue_dx12()); }
+	
 	CommandBuffer_Dx12	_uploadCmdBuf_dx12; // submit earlier than graphCmdBuf
 	CommandBuffer_Dx12	_graphCmdBuf_dx12;
 	CommandBuffer_Dx12	_computeCmdList_dx12;
