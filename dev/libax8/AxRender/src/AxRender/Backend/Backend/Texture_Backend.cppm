@@ -45,6 +45,7 @@ protected:
 
 	void _onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 		resourceHandle.markDirty();
+		_info = handler.desc.info;
 		onImageIO_ReadHandler(handler);
 	}
 

@@ -30,7 +30,6 @@ void Dx12ResourceBase::_reset() {
 
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
 	_dataSize = 0;
-	_alignedDataSize = 0;
 
 	_d3dResource.unref();
 }
@@ -117,15 +116,11 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 		return;
 	}
 
-	_alignedDataSize = bufferSize;
-	if (alignment > 0) {
-		_alignedDataSize = Math::alignTo(_alignedDataSize, alignment);
-	}
-	_desc.Width = Dx12Util::castUINT(_alignedDataSize);
+	alignment = Math::max_1(alignment);
+	_desc.Width = Math::alignTo(bufferSize, alignment);
+	_dataSize = bufferSize;
 
 	_create();
-
-	_dataSize = bufferSize;
 }
 
 

@@ -11,6 +11,10 @@ SPtr<GpuBuffer> GpuBuffer::s_new(const MemAllocRequest& req, const CreateDesc& d
 }
 
 GpuBuffer::GpuBuffer(const CreateDesc& desc) {
+	static auto alignment = Renderer::s_instance()->copyGpuBufferAlignment();
+	if (!Math::isAlignedTo(desc.bufferSize, alignment))
+		throw Error_Undefined("GpuBuffer - bufferSize invalid alignment");
+	
 	_bufferType = desc.bufferType;
 	_bufferSize = desc.bufferSize;
 }
@@ -32,70 +36,48 @@ void DynamicGpuBuffer::create(const CreateDesc& desc) {
 
 void DynamicGpuBuffer::reset() {
 	_data.clear();
-	for (auto& slot : _slots) {
-		slot.dirtyRange.reset();
-	}
+	_dirtyRange.reset();
 }
 
 GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
+	auto* req = rttiCastCheck<RenderRequest_Backend>(req_);
 	AX_ASSERT(_bufferType != GpuBufferType::None);
 
 	if (_dirtyRange.size() <= 0 && _gpuBuffer) return _gpuBuffer;
 
-	auto  dataSize = _data.size();
+	auto dataSize    = _data.size();
 	auto uploadRange = _dirtyRange;
 
 	_dirtyRange.reset();
-
-	auto* req = rttiCastCheck<RenderRequest_Backend>(req_);
-	if (!req) { AX_ASSERT(false); return nullptr; }
-
+	
 	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataSize) {
-		uploadRange = IntRange(dataSize); // upload all for new buffer
 		_gpuBuffer = GpuBuffer::s_new(AX_ALLOC_REQ, _name, _bufferType, dataSize);
-	}
-
-// try inlineUpload
-	if (req->inlineUpload.tryCopyDataToGpuBuffer(_gpuBuffer, _data.slice(uploadRange), uploadRange.begin())) {
-		_dirtyRange.reset();
-		return _gpuBuffer;
-	}
-
-//----- use slot ---
-	{ // next slot
-		auto renderSeqId = req->renderSeqId();
-		if (_lastUpdateRenderSeqId == renderSeqId) {
-			AX_ASSERT(false); // don't upload twice in same frame
-
-		} else {
-			_lastUpdateRenderSeqId = req->renderSeqId();
-
-			Int maxSlots = req->renderer()->renderRequestCount();
-			_currentSlotIndex = (_currentSlotIndex + 1) % maxSlots;
-
-			if (_slots.size() <= _currentSlotIndex)
-				_slots.resize(_currentSlotIndex + 1);
-		}
-	}
-
-	auto& slot = _slots[_currentSlotIndex];
-	uploadRange |= slot.dirtyRange;
-
-	auto& uploadBuf = slot.uploadBuffer;
-
-	if (!uploadBuf || uploadBuf->bufferSize() < dataSize) {
 		uploadRange = IntRange(dataSize); // upload all for new buffer
-		uploadBuf = GpuBuffer::s_new(AX_ALLOC_REQ, Fmt("{}-upload", _name), GpuBufferType::StagingToGpu, dataSize);
 	}
 
-	auto* uploadBuf_backend = rttiCastCheck<GpuBuffer_Backend>(uploadBuf.ptr());
+	static auto copyGpuBufferAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
+	auto alignedRange = uploadRange.alignTo(copyGpuBufferAlignment);
 
-	req->resourcesToKeep.add(uploadBuf_backend);
+	_data.ensureCapacity(alignedRange.end());
+	auto dataToCopy = Span(_data.data() + alignedRange.begin(), alignedRange.size());
+	
+// try inlineUpload
+	// if (req->inlineUpload.tryCopyDataToGpuBuffer(_gpuBuffer, dataToCopy, alignedRange.begin())) {
+	// 	return _gpuBuffer;
+	// }
 
-	uploadBuf_backend->copyData(_data.slice(uploadRange), uploadRange.begin());
-	rttiCastCheck<GpuBuffer_Backend>(_gpuBuffer.ptr())->copyFromGpuBuffer(req, uploadBuf, uploadRange, uploadRange.begin());
+// use upload buffer
+	auto uploadBuf = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
+	                                          Fmt("{}-upload", _name),
+	                                          GpuBufferType::StagingToGpu,
+	                                          alignedRange.size());
 
-	slot.dirtyRange.reset();
+	req->resourcesToKeep.add(uploadBuf.ptr());
+	uploadBuf->copyData(_data.slice(uploadRange), uploadRange.begin());
+
+	auto* gpuBuffer = rttiCastCheck<GpuBuffer_Backend>(_gpuBuffer.ptr());
+	gpuBuffer->copyFromGpuBuffer(req, uploadBuf, uploadBuf->bufferRange(), alignedRange.begin());
+
 	return _gpuBuffer;
 }
 

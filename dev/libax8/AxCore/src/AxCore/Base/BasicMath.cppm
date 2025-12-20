@@ -239,7 +239,7 @@ AX_NODISCARD AX_INLINE constexpr T alignTo(const T& value, const T& alignment) {
 	}
 }
 
-template<class T> AX_NODISCARD AX_INLINE constexpr T isAlignTo(const T& n, const T& a) { return alignTo(n,a) == n; }
+template<class T> AX_NODISCARD AX_INLINE constexpr T isAlignedTo(const T& n, const T& a) { return alignTo(n,a) == n; }
 
 template<class T>
 AX_NODISCARD AX_INLINE constexpr T alignBeginTo(const T& value, const T& alignment) {

@@ -27,7 +27,7 @@ private:
 
 	jmp_buf _setjmp_buffer;
 	
-	jpeg_decompress_struct _cinfo;
+	jpeg_decompress_struct _jpeg;
 	ByteSpan _data;
 	ByteSpan _remain;
 

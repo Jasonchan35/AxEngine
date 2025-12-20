@@ -22,7 +22,7 @@ public:
 
 private:
 	RenderRequest* _req = nullptr;
-	Rect2f	_rect;
+	Rect2f         _rect = TagZero;
 };
 
 class RenderRequest : public RenderObject {
@@ -37,7 +37,7 @@ public:
 
 	void drawTexture(Texture2D* tex) {}
 
-	Texture2D* getTexture(RenderGraph_Output* v) { return nullptr; }
+	Texture2D*		getTexture(RenderGraph_Output* v) { return nullptr; }
 
 	Vec2i			frameSize() const { return _frameSize; }
 
@@ -66,22 +66,20 @@ public:
 	Statistics statistics;
 
 	void setViewport(const Rect2f& rect, float minDepth, float maxDepth);
-
+	void setScissorRect(const Rect2f& rect);
 	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
 
-	void setScissorRect(const Rect2f& rect);
 
 protected:
-	Renderer*			_renderer = nullptr;
-	RenderSeqId			_renderSeqId = 0;
-	RenderContext*		_renderContext = nullptr;
-	RenderPass*			_currentRenderPass = nullptr;
-	Vec2i				_frameSize {0,0};
-	Rect2f				_scissorRect {0,0,0,0};
-	Rect2f				_viewportRect {0,0,0,0};
-	f64					_uptime = 0;
-
-	bool	_viewportIsBottomUp = false;
+	Renderer*      _renderer          = nullptr;
+	RenderSeqId    _renderSeqId       = 0;
+	RenderContext* _renderContext     = nullptr;
+	RenderPass*    _currentRenderPass = nullptr;
+	Vec2i          _frameSize {0,0};
+	Rect2f         _scissorRect {0,0,0,0};
+	Rect2f         _viewportRect {0,0,0,0};
+	f64            _uptime              = 0;
+	bool           _viewportIsBottomUp  = false;
 };
 
 ScissorRectScope::ScissorRectScope(RenderRequest* req) noexcept {

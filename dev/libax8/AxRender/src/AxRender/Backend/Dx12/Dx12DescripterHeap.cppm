@@ -134,8 +134,7 @@ public:
 	Dx12DescriptorHandle_ConstBuffer setCBV(Int i, Dx12Resource_GpuBuffer& res) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 		desc.BufferLocation = res.gpuAddress();
-		desc.SizeInBytes    = Dx12Util::castUINT(res.alignedDataSize());
-
+		desc.SizeInBytes    = Dx12Util::castUINT(res.bufferSize());
 		auto h = _getHandle<Dx12DescriptorHandle_ConstBuffer>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateConstantBufferView(&desc, h.handle.cpu);
 		return h;

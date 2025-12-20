@@ -31,8 +31,6 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _d3dResource ? _d3dResource->GetGPUVirtualAddress() : 0; }
 
 	Int dataSize() const { return _dataSize; }
-	Int alignedDataSize() const { return _alignedDataSize; }
-
 	ID3D12Resource** ptrForInit() { return _d3dResource.ptrForInit(); }
 
 	bool isValid() const { return _d3dResource.ptr() != nullptr; }
@@ -46,6 +44,8 @@ public:
 
 	D3D12_RESOURCE_DESC&	desc() { return _desc; }
 
+	Int bufferSize() { return ax_safe_cast_from(_desc.Width); }
+
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(StrView debugName) { _debugName.setUtf(debugName); _d3dResource->SetName(_debugName.c_str()); }
 #endif
@@ -56,12 +56,10 @@ protected:
 	void _reset();
 
 	ComPtr<ID3D12Resource> _d3dResource;
-	Int _dataSize = 0;
-	Int _alignedDataSize = 0;
-
-	D3D12_RESOURCE_DESC		_desc  = {};
-	D3D12_HEAP_PROPERTIES	_heapProps = {};
-	D3D12_RESOURCE_STATES	_resourceState;
+	Int                    _dataSize  = 0;
+	D3D12_RESOURCE_DESC    _desc      = {};
+	D3D12_HEAP_PROPERTIES  _heapProps = {};
+	D3D12_RESOURCE_STATES  _resourceState = D3D12_RESOURCE_STATE_COMMON;
 
 #if AX_RENDER_DEBUG_NAME
 	StringW _debugName;

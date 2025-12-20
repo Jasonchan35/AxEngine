@@ -14,6 +14,19 @@ void GpuBuffer_Backend::copyData(ByteSpan data, Int offset) {
 	map->copyValues(data);
 }
 
+void GpuBuffer_Backend::copyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
+	static auto copyAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
+	AX_ASSERT(Math::isAlignedTo(srcRange.begin(), copyAlignment));
+	AX_ASSERT(Math::isAlignedTo(srcRange.end()  , copyAlignment));
+	AX_ASSERT(Math::isAlignedTo(dstOffset       , copyAlignment));
+
+	Int  copySize = srcRange.size();
+	auto dstRange = Range_BeginSize(dstOffset, copySize);
+	if (! src->inBound(srcRange)) throw Error_IndexOutOfRange();
+	if (!this->inBound(dstRange)) throw Error_IndexOutOfRange();
+	onCopyFromGpuBuffer(req, src, srcRange, dstOffset);
+}
+
 void GpuBuffer_Backend::flush(IntRange range) {
 	if (range.size() <= 0) return;
 

@@ -15,13 +15,7 @@ public:
 
 	void copyData(ByteSpan data, Int offset = 0);
 
-	void copyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
-		Int copySize = srcRange.size();
-		auto dstRange = Range_BeginSize(dstOffset, copySize);
-		if (! src->inBound(srcRange)) throw Error_IndexOutOfRange();
-		if (!this->inBound(dstRange)) throw Error_IndexOutOfRange();
-		onCopyFromGpuBuffer(req, src, srcRange, dstOffset);
-	}
+	void copyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset);
 
 	void		_unmapMemory() { onUnmapMemory(); }
 	MutByteSpan _mapMemory(IntRange range);

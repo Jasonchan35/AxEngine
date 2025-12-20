@@ -81,7 +81,6 @@ public:
 	ResourcesList	resourcesToKeep;
 	ResourcesList	resourcesToUpdateDescriptor;
 
-	// TODO: use circular-buffer and move to renderer
 	struct InlineUpload {
 		InlineUpload() { reset(); }
 

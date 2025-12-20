@@ -18,6 +18,9 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 
 	if (!shdPass->_bindPipeline(req, cmd)) return false;
 
+	Int CBV_SRV_UAV_index = 0;
+	Int samplerIndex = 0;
+	
 	for (auto& paramSpace_ : _materialParamSpaces) {
 		if (!paramSpace_) continue;
 
@@ -30,7 +33,6 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 			return false;
 		}
 
-		Int CBV_SRV_UAV_index = 0;
 		for (auto& cb : paramSpace->constBuffers()) {
 			auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(cb.getUploadedGpuBuffer(req));
 			if (!gpuBuf) throw Error_Undefined();
@@ -44,6 +46,8 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 			switch (texParam.dataType()) {
 				case RenderDataType::Texture2D: {
 					auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
+					tex->_bindImage(req);
+					
 					_CBV_SRV_UAV_DescHeap.setTexture(CBV_SRV_UAV_index, tex->_texResource);
 					CBV_SRV_UAV_index++;
 				} break;
@@ -52,7 +56,6 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		}
 
 		//TODO move to static sampler
-		Int samplerIndex = 0;
 		for (auto& samplerParam : paramSpace->samplerParams()) {
 			auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
 			auto& ss      = sampler->samplerState();

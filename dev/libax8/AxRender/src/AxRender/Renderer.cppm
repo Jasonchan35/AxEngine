@@ -80,6 +80,8 @@ public:
 
 	virtual void onFileChanged(FileDirWatcher_Result& result) {}
 
+	Int copyGpuBufferAlignment() const { return _copyGpuBufferAlignment; }
+	
 friend class RenderContext_Backend;
 protected:
 	void destroy();
@@ -90,6 +92,7 @@ protected:
 	AdapterInfo			_adapterInfo;
 	RenderSeqId			_renderSeqId = 0;
 	HiResTime			_startTime;
+	Int					_copyGpuBufferAlignment = 16;
 
 	RendererInfo		_info;
 

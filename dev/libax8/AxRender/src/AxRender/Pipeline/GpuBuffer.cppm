@@ -27,7 +27,7 @@ public:
 	GpuBuffer_CreateDesc(StrView name_, GpuBufferType bufferType_, Int bufferSize_)
 		: name(name_)
 		, bufferType(bufferType_)
-		, bufferSize(bufferSize_)
+		, bufferSize(Math::alignTo(bufferSize_, Renderer::s_instance()->copyGpuBufferAlignment()))
 	{}
 
 	StrView			name;
@@ -116,27 +116,14 @@ private:
 	Array<Byte>		_data;
 	SPtr<GpuBuffer> _gpuBuffer;
 
-	Int				_currentSlotIndex = 0;
 	RenderSeqId		_lastUpdateRenderSeqId = 0;
-
-	struct Slot {
-		SPtr<GpuBuffer>	uploadBuffer;
-		IntRange		dirtyRange;
-	};
-
-	IntRange	_dirtyRange = {};
-	Array<Slot, 8> _slots;
+	IntRange		_dirtyRange = {};
 };
 
 inline
 void DynamicGpuBuffer::markDirty(IntRange range) {
 	if (range.size() <= 0) return;
-
 	_dirtyRange |= range;
-
-	for (auto& slot : _slots) {
-		slot.dirtyRange |= range;
-	}
 }
 
 inline

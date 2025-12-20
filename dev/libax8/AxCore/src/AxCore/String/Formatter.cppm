@@ -200,6 +200,15 @@ public:
 	}
 };
 
+template <class T, class FMT_CH>
+class FormatHandler<Range_<T>, FMT_CH> {
+public:
+	using Obj = Range_<T>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
+		fmt << Fmt("Range({}~{}:Size:{})", obj.begin(), obj.end(), obj.size());
+	}
+};
+
 template <class FMT_CH>
 class FormatHandler<std::exception, FMT_CH> {
 public:

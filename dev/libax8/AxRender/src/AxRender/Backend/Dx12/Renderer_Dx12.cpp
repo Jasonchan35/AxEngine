@@ -18,6 +18,7 @@ AX_Renderer_FunctionBodies(Dx12);
 Renderer_Dx12::Renderer_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
+	_copyGpuBufferAlignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 	createDevice();
 }
 

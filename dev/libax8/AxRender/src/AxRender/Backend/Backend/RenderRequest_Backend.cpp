@@ -155,6 +155,10 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 }
 
 bool RenderRequest_Backend::InlineUpload::tryCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
+	static auto copyGpuBufferAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
+	if (!Math::isAlignedTo(data.size(), copyGpuBufferAlignment)) throw Error_Undefined();
+	if (!Math::isAlignedTo(dstOffset,   copyGpuBufferAlignment)) throw Error_Undefined();
+	
 	auto* dst_backend = rttiCastCheck<GpuBuffer_Backend>(dst);
 	if (!dst_backend) return false;
 

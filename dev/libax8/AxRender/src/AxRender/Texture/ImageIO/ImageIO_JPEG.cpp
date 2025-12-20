@@ -44,22 +44,22 @@ AX_GCC_WARNING_POP()
 }
 
 ImageIO_Reader_JPEG::ImageIO_Reader_JPEG() {
-	_cinfo  = {}; 
+	_jpeg  = {}; 
 	_errMgr = {};
 	_srcMgr = {};
-	_cinfo.client_data = this;
+	_jpeg.client_data = this;
 }
 
 ImageIO_Reader_JPEG::~ImageIO_Reader_JPEG() {
-	jpeg_destroy_decompress(&_cinfo);
+	jpeg_destroy_decompress(&_jpeg);
 }
 
 void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inData) {
-	_cinfo.err = jpeg_std_error(&_errMgr);
+	_jpeg.err = jpeg_std_error(&_errMgr);
 	_errMgr.output_message = s_output_message;
 	_errMgr.error_exit = s_error_exit;
 
-	jpeg_create_decompress(&_cinfo);
+	jpeg_create_decompress(&_jpeg);
 
 	_srcMgr.init_source = s_init_source;
 	_srcMgr.fill_input_buffer = s_fill_input_buffer;
@@ -70,13 +70,13 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 	_srcMgr.bytes_in_buffer = ax_safe_cast_from(inData.size());
 	_srcMgr.next_input_byte = reinterpret_cast<const JOCTET*>(inData.data());
 
-	_cinfo.src = &_srcMgr;
+	_jpeg.src = &_srcMgr;
 
 	//-------
 	if (error_exit_longjmp_restore_point()) {
 		throw Error_Undefined("error jpeg_read_header");
 	}
-	if (int code = jpeg_read_header(&_cinfo, TRUE); code != JPEG_HEADER_OK) {
+	if (int code = jpeg_read_header(&_jpeg, TRUE); code != JPEG_HEADER_OK) {
 		throw Error_Undefined(Fmt("error jpeg_read_header return={}", code));
 	}
 
@@ -84,20 +84,20 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 	if (error_exit_longjmp_restore_point()) {
 		throw Error_Undefined("error jpeg_start_decompress");
 	}
-	if (jpeg_start_decompress(&_cinfo) != TRUE) {
+	if (jpeg_start_decompress(&_jpeg) != TRUE) {
 		throw Error_Undefined("error jpeg_start_decompress return");
 	}
 	
-	_cinfo.out_color_space = JCS_RGB;
+	_jpeg.out_color_space = JCS_RGB;
 
-	Int width  = ax_safe_cast_from(_cinfo.output_width);
-	Int height = ax_safe_cast_from(_cinfo.output_height);
+	Int width  = ax_safe_cast_from(_jpeg.output_width);
+	Int height = ax_safe_cast_from(_jpeg.output_height);
 
 	if (width <= 0 || height <= 0) {
 		throw Error_Undefined("jpeg image size is 0");
 	}
 
-	int srcPixelSize = _cinfo.output_components;
+	int srcPixelSize = _jpeg.output_components;
 
 	auto out_color_type = ColorType::None;
 	auto src_color_type = ColorType::None;
@@ -141,7 +141,7 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 				if (error_exit_longjmp_restore_point()) {
 					throw Error_Undefined();
 				}
-				if (jpeg_read_scanlines(&_cinfo, scanline, 1) < 1) {
+				if (jpeg_read_scanlines(&_jpeg, scanline, 1) < 1) {
 					throw Error_Undefined();
 				}
 			}
@@ -154,7 +154,7 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 				if (error_exit_longjmp_restore_point()) {
 					throw Error_Undefined();
 				}
-				if (jpeg_read_scanlines(&_cinfo, scanline, 1) < 1) {
+				if (jpeg_read_scanlines(&_jpeg, scanline, 1) < 1) {
 					throw Error_Undefined();
 				}
 
@@ -169,7 +169,7 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 
 	callback.invoke(handler);
 
-	if (jpeg_finish_decompress(&_cinfo) != TRUE) {
+	if (jpeg_finish_decompress(&_jpeg) != TRUE) {
 		throw Error_Undefined("jpeg_finish_decompress");
 	}
 }
