@@ -214,31 +214,42 @@ constexpr T nextPow2_half(const T& v) {
 }
 
 template<class T>
-AX_NODISCARD AX_INLINE constexpr T alignTo(const T& n, const T& a) {
+AX_NODISCARD AX_INLINE constexpr T alignTo(const T& value, const T& alignment) {
 	if constexpr (std::is_floating_point_v<T>) {
-		T i = floor(n / a) * a;
-		if (almostEqual(i, n)) return i;
-		return (n > 0) ? i + a : i - a;
+		T i = floor(value / alignment) * alignment;
+		if (almostEqual(i, value)) return i;
+		return (value > 0) ? i + alignment : i - alignment;
 
 	} else if constexpr (std::is_unsigned_v<T>) {
-		T r = n % a;
-		if (r == 0) return n;
-		return n + (a - r);
+		T remain = value % alignment;
+		if (remain == 0) return value;
+		return value + (alignment - remain);
 
 	} else {
-		T abs_a = abs(a);
-		if (n >= 0) {
-			T r = n % abs_a;
-			if (r == 0) return n;
-			return n + (abs_a - r);
+		T abs_a = abs(alignment);
+		if (value >= 0) {
+			T remain = value % abs_a;
+			if (remain == 0) return value;
+			return value + (abs_a - remain);
 		} else {
-			T r = (-n) % abs_a;
-			if (r == 0) return n;
-			return n - (abs_a - r);
+			T remain = (-value) % abs_a;
+			if (remain == 0) return value;
+			return value - (abs_a - remain);
 		}
 	}
 }
 
 template<class T> AX_NODISCARD AX_INLINE constexpr T isAlignTo(const T& n, const T& a) { return alignTo(n,a) == n; }
+
+template<class T>
+AX_NODISCARD AX_INLINE constexpr T alignBeginTo(const T& value, const T& alignment) {
+	auto tmp = alignTo(value, alignment);
+	if (tmp == value) return value;
+	if (value >= 0) {
+		return tmp - alignment;
+	} else {
+		return tmp + alignment;
+	}
+}
 
 } // namespace
