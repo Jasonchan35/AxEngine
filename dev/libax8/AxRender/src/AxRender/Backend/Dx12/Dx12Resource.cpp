@@ -147,19 +147,15 @@ void Dx12ResourceBase::_unmapMemory() {
 void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	D3D12_RANGE readRange = {}; // We do not intend to read from this resource on the CPU.
 	UINT8* dst = nullptr;
-	
-	auto hr = _d3dResource->Map(0, &readRange, reinterpret_cast<void**>(&dst));
-	if (SUCCEEDED(hr)) {
-		return;
-	}
-	
-	Dx12Util::throwIfError(hr);
 
 	if (offset < 0 || offset + data.size() > _dataSize)
 		throw Error_Undefined();
-
+	
+	auto hr = _d3dResource->Map(0, &readRange, reinterpret_cast<void**>(&dst));
+	Dx12Util::throwIfError(hr);
+	auto scopedMap = ScopedLambda([&]() { _d3dResource->Unmap(0, nullptr); });
+	
 	MemUtil::copy(dst + offset, data.data(), data.sizeInBytes());
-	_d3dResource->Unmap(0, nullptr);
 }
 
 D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier_Debug(ID3D12GraphicsCommandList* cmdList,
