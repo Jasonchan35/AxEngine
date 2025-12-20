@@ -80,9 +80,7 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {
 #else
 	auto f = _findParam(_textureParams, name);
 	if (!f) return false;
-	auto& param = f->value;
-	param.setTexture(tex);
-	onSetTextureParam(param);
+	f->value.setTexture(tex);
 	return true;
 #endif
 }
@@ -105,9 +103,7 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 
 	auto f = _findParam(_samplerParams, name);
 	if (!f) return false;
-	auto& param = f->value;
-	param.setSampler(sampler);
-	onSetSamplerParam(param);
+	f->value.setSampler(sampler);
 	return true;
 #endif
 }

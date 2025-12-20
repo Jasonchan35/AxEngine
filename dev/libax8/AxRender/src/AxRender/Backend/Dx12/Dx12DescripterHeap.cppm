@@ -20,6 +20,10 @@ struct Dx12DescriptorHandle {
 
 class Dx12DescripterHeap_Base : public NonCopyable {
 public:
+	using BindPoint = ShaderParamBindPoint;
+	using BindCount = ShaderParamBindCount;
+	using BindSpace = ShaderParamBindSpace;
+
 	ID3D12DescriptorHeap*	d3dHeap() { return _d3dHeap; }
 
 //	bool isValid() const { return _d3dHeap.ptr() != nullptr; }
@@ -92,11 +96,27 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_Sampler setSampler(Int i, const D3D12_SAMPLER_DESC& desc) {
+	Dx12DescriptorHandle_Sampler setSampler(Int i, SamplerFilter filter, SamplerWrapUVW wrap) {
+		D3D12_SAMPLER_DESC desc;
+		desc.Filter           = Dx12Util::getDxSamplerFilter(filter);
+		desc.AddressU         = Dx12Util::getDxSamplerWrap(wrap.u);
+		desc.AddressV         = Dx12Util::getDxSamplerWrap(wrap.v);
+		desc.AddressW         = Dx12Util::getDxSamplerWrap(wrap.w);
+		desc.MipLODBias       = 0;
+		desc.MaxAnisotropy    = 0;
+		desc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
+		desc.BorderColor[0]   = 0;
+		desc.BorderColor[1]   = 0;
+		desc.BorderColor[2]   = 0;
+		desc.BorderColor[3]   = 0;
+		desc.MinLOD           = 0.0f;
+		desc.MaxLOD           = D3D12_FLOAT32_MAX;
+
 		auto h = _getHandle<Dx12DescriptorHandle_Sampler>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateSampler(&desc, h.handle.cpu);
 		return h;
 	}
+	
 };
 
 struct Dx12DescriptorHandle_ConstBuffer  { Dx12DescriptorHandle handle; };

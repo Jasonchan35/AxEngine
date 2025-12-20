@@ -151,9 +151,9 @@ public:
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
 
-	MutSpan<ConstBuffer>			constBuffers()		{ return _constBuffers;        }
-	MutSpan<TextureParam>			textureParams() 	{ return _textureParams;       }
-	MutSpan<SamplerParam>			samplerParams() 	{ return _samplerParams;       }
+	MutSpan<ConstBuffer>		constBuffers()			{ return _constBuffers;        }
+	MutSpan<TextureParam>		textureParams() 		{ return _textureParams;       }
+	MutSpan<SamplerParam>		samplerParams() 		{ return _samplerParams;       }
 	MutSpan<StorageBufferParam>	storageBufferParams() 	{ return _storageBufferParams; }
 
 	Int constBuffers_totalBindCount() const			{ return s_totalBindCount(_constBuffers.span()); }
@@ -166,9 +166,6 @@ public:
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
 protected:
-	virtual void onSetSamplerParam(SamplerParam& param) {}
-	virtual void onSetTextureParam(TextureParam& param) {}
-	
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
 	template<class T> Opt<Span_FindResult<T>> _findParam(IArray<T>& arr, NameId name) {

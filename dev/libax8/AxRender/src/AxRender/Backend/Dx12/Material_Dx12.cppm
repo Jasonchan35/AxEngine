@@ -15,13 +15,6 @@ class MaterialParamSpace_Dx12 : public MaterialParamSpace_Backend {
 	AX_RTTI_INFO(MaterialParamSpace_Dx12, MaterialParamSpace_Backend)
 public:
 	MaterialParamSpace_Dx12(const CreateDesc& desc) : Base(desc){}
-
-	const ShaderParamSpace_Dx12* shaderParamSpace() const { return rttiCastCheck<ShaderParamSpace_Dx12>(_shaderParamSpace.ptr()); }
-
-	void _onDrawcall(RenderRequest_Dx12* req, const ShaderPass_Dx12* shdPass);
-
-	virtual void onSetSamplerParam(SamplerParam& param) override;
-	virtual void onSetTextureParam(TextureParam& param) override;
 };
 
 class MaterialPass_Dx12 : public MaterialPass_Backend {

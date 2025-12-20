@@ -20,9 +20,9 @@ public:
 		using KeyCode = NativeUIKeyCode;
 		
 		if (App::s_getAsyncKeyState(KeyCode::Ctrl)) {
-			rendererDesc.info.api = RenderAPI::Vk;
-		} else if (App::s_getAsyncKeyState(KeyCode::Shift)) {
 			rendererDesc.info.api = RenderAPI::Dx12;
+		} else if (App::s_getAsyncKeyState(KeyCode::Shift)) {
+			rendererDesc.info.api = RenderAPI::Vk;
 		}
 	}
 };

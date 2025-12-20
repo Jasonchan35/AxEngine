@@ -272,10 +272,10 @@ struct Dx12RootParameterList {
 	}
 
 	void addRootStaticSampler(D3D12_SHADER_VISIBILITY shaderVisibility,
-	                      BindPoint               bindPoint,
-	                      BindSpace               bindSpace,
-	                      SamplerFilter           filter,
-	                      SamplerWrapUVW          wrap
+		                      BindPoint               bindPoint,
+		                      BindSpace               bindSpace,
+		                      SamplerFilter           filter,
+		                      SamplerWrapUVW          wrap
 	) {
 		auto& dst            = staticSamplers.emplaceBack();
 		dst.ShaderVisibility = shaderVisibility;
