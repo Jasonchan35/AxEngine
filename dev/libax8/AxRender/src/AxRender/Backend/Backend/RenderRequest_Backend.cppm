@@ -103,6 +103,9 @@ public:
 
 	InlineUpload	inlineUpload;
 
+	void copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
+	
+
 	Int index() const { return _index; }
 
 	void drawUI_backend();

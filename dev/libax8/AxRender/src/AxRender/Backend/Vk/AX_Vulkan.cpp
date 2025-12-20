@@ -1227,7 +1227,7 @@ void AX_VkDeviceMemory::_fillVkMappedMemoryRange(IArray<VkMappedMemoryRange>& ou
 		dst.memory = _handle;
 		dst.offset = AX_VkUtil::castVkDeviceSize(src.begin());
 		dst.size   = AX_VkUtil::castVkDeviceSize(src.size());
-		dst.size   = Math::alignTo(dst.size, atomSize);
+		dst.size   = Math::alignUp(dst.size, atomSize);
 		if (dst.size > bufferSize) 
 			dst.size = VK_WHOLE_SIZE;
 	}

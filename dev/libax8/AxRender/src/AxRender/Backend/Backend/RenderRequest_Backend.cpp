@@ -126,6 +126,30 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 	onSetScissorRect(rect);
 }
 
+void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
+	static auto copyGpuBufferAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
+	if (!Math::isAlignedTo(data.size(), copyGpuBufferAlignment)) throw Error_Undefined(); 
+	if (!Math::isAlignedTo(dstOffset,   copyGpuBufferAlignment)) throw Error_Undefined(); 
+	
+	// try inlineUpload
+	// if (req->inlineUpload.tryCopyDataToGpuBuffer(_gpuBuffer, dataToCopy, alignedRange.begin())) {
+	// 	return _gpuBuffer;
+	// }
+
+// use upload buffer
+	auto uploadBuf = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
+											  Fmt("{}-upload", _name),
+											  GpuBufferType::StagingToGpu,
+											  data.size());
+
+	resourcesToKeep.add(uploadBuf.ptr());
+	uploadBuf->copyData(data, dstOffset);
+
+	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
+	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadBuf->bufferRange(), dstOffset);
+	
+}
+
 void RenderRequest_Backend::drawUI_backend() {
 	renderContext_backend()->imgui.onDrawUI(this);
 }

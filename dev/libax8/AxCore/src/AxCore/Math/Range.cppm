@@ -59,8 +59,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr This operator/(const T& m) const noexcept { return Range_(_begin / m, _end / m); }
 
 	AX_NODISCARD AX_INLINE constexpr This alignTo(const T& alignment) const {
-		return s_beginEnd(	Math::alignBeginTo(_begin, alignment),
-							Math::alignTo(       _end, alignment));
+		return s_beginEnd(	Math::alignDown(_begin, alignment),
+							Math::alignUp(    _end, alignment));
 	}
 
 private:

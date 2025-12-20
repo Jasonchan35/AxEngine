@@ -42,12 +42,10 @@ void DynamicGpuBuffer::reset() {
 GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Backend>(req_);
 	AX_ASSERT(_bufferType != GpuBufferType::None);
-
 	if (_dirtyRange.size() <= 0 && _gpuBuffer) return _gpuBuffer;
 
 	auto dataSize    = _data.size();
 	auto uploadRange = _dirtyRange;
-
 	_dirtyRange.reset();
 	
 	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataSize) {
@@ -60,24 +58,8 @@ GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 
 	_data.ensureCapacity(alignedRange.end());
 	auto dataToCopy = Span(_data.data() + alignedRange.begin(), alignedRange.size());
-	
-// try inlineUpload
-	// if (req->inlineUpload.tryCopyDataToGpuBuffer(_gpuBuffer, dataToCopy, alignedRange.begin())) {
-	// 	return _gpuBuffer;
-	// }
 
-// use upload buffer
-	auto uploadBuf = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
-	                                          Fmt("{}-upload", _name),
-	                                          GpuBufferType::StagingToGpu,
-	                                          alignedRange.size());
-
-	req->resourcesToKeep.add(uploadBuf.ptr());
-	uploadBuf->copyData(_data.slice(uploadRange), uploadRange.begin());
-
-	auto* gpuBuffer = rttiCastCheck<GpuBuffer_Backend>(_gpuBuffer.ptr());
-	gpuBuffer->copyFromGpuBuffer(req, uploadBuf, uploadBuf->bufferRange(), alignedRange.begin());
-
+	req->copyDataToGpuBuffer(_gpuBuffer, dataToCopy, alignedRange.begin());
 	return _gpuBuffer;
 }
 
