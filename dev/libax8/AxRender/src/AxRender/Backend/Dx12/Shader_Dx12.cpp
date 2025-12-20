@@ -6,24 +6,6 @@ import :Renderer_Dx12;
 
 namespace ax {
 
-void ShaderParamSpace_Dx12::createDescTable() {
-	auto addDescriptor = [this](Dx12DescriptorTable& tbl, ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), bindSpace());
-	};
-	
-	for (auto& p : _constBuffers) {
-		addDescriptor(_constBufferDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
-	}
-	
-	for (auto& p : _textureParams) {
-		addDescriptor(_textureDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
-	}
-
-	for (auto& p : _samplerParams) {
-		addDescriptor(_samplerDescTable, p, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
-	}
-}
-
 bool VertexInputLayoutDesc_Dx12::init(const ShaderStageInfo& info, VertexLayout vertexLayout) {
 	if (!vertexLayout) {
 		vertexLayout = Vertex_None::s_layout();
@@ -55,20 +37,32 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 {
 	D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+	using ParamBase = ShaderParamSpace_Backend::ParamBase;
+	
+	auto addDescriptor = [](Dx12DescriptorTable& tbl, const ParamBase& p, BindSpace bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE type) {
+		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), bindSpace);
+	};
+	
 	for (auto bindSpace = BindSpace::Default; bindSpace < BindSpace::_COUNT; ++bindSpace) {
 		auto* space = getParamSpace_dx12(bindSpace);
-		auto* selectSpace = space;
-		if (shouldUseCommonParamSpace(bindSpace)) {
-			selectSpace = getCommonParamSpace_dx12(bindSpace);
-		} else {
-			space->createDescTable();
+		if (!space) continue;
+	
+		for (auto& param : space->constBuffers()) {
+			addDescriptor(_constBufferDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
+		}
+	
+		for (auto& param : space->textureParams()) {
+			addDescriptor(_textureDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}
 
-		auto spaceIndex = ax_enum_int(bindSpace);
-		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, selectSpace->_constBufferDescTable, &_constBufferDescTableRootIndices[spaceIndex]);
-		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, selectSpace->_textureDescTable,     &_textureDescTableRootIndices[spaceIndex]);
-		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, selectSpace->_samplerDescTable,     &_samplerDescTableRootIndices[spaceIndex]);
+		for (auto& param : space->samplerParams()) {
+			addDescriptor(_samplerDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+		}
 	}
+
+	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _constBufferDescTable);
+	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _textureDescTable);
+	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _samplerDescTable);
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
 		if (!desc.info->getFuncName(stageFlags)) return;

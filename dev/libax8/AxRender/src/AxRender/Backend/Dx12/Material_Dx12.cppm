@@ -14,7 +14,7 @@ namespace ax {
 class MaterialParamSpace_Dx12 : public MaterialParamSpace_Backend {
 	AX_RTTI_INFO(MaterialParamSpace_Dx12, MaterialParamSpace_Backend)
 public:
-	MaterialParamSpace_Dx12(const CreateDesc& desc);
+	MaterialParamSpace_Dx12(const CreateDesc& desc) : Base(desc){}
 
 	const ShaderParamSpace_Dx12* shaderParamSpace() const { return rttiCastCheck<ShaderParamSpace_Dx12>(_shaderParamSpace.ptr()); }
 
@@ -22,10 +22,6 @@ public:
 
 	virtual void onSetSamplerParam(SamplerParam& param) override;
 	virtual void onSetTextureParam(TextureParam& param) override;
-
-	Dx12DescripterHeap_Sampler		_samplerDescHeap;
-	Dx12DescripterHeap_CBV_SRV_UAV	_constBufferDescHeap;
-	Dx12DescripterHeap_CBV_SRV_UAV	_textureDescHeap;
 };
 
 class MaterialPass_Dx12 : public MaterialPass_Backend {
@@ -38,7 +34,13 @@ public:
 	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 	virtual void onSetShader() override;
 
-	Array<ID3D12DescriptorHeap*, 32>	_allSpaceDescHeaps;
+	
+
+	Dx12DescripterHeap_Sampler			_samplerDescHeap;
+	Dx12DescripterHeap_CBV_SRV_UAV		_constBufferDescHeap;
+	Dx12DescripterHeap_CBV_SRV_UAV		_textureDescHeap;
+	
+	Array<ID3D12DescriptorHeap*, 32>	_d3dDescHeaps;
 };
 
 class Material_Dx12 : public Material_Backend {

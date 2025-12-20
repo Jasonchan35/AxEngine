@@ -64,7 +64,7 @@ public:
 private:
 	using Util = AX_VkUtil;
 
-	Shader_Vk* shader_vk() { return static_cast<Shader_Vk*>(_shader.ptr()); }
+	Shader_Vk* shader_vk() { return static_cast<Shader_Vk*>(_shader_backend.ptr()); }
 
 	virtual UPtr<MaterialPass_Backend> onNewPass(const MaterialPass_Backend_CreateDesc& desc) override {
 		return UPtr_new<MaterialPass_Vk>(AX_ALLOC_REQ, desc);

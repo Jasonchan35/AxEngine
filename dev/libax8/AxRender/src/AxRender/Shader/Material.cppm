@@ -33,7 +33,6 @@ public:
 	void setShader(Shader* shader);
 	Shader* shader();
 
-
 	bool setParam(NameId name, const i32&		v);
 	bool setParam(NameId name, const i32x2&		v);
 	bool setParam(NameId name, const i32x3&		v);

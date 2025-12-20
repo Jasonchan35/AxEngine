@@ -41,7 +41,7 @@ class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
 public:
 	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
-	void createLayout_vk();
+	AX_VkDescriptorSetLayout& createLayout_vk();
 	
 	AX_VkDescriptorSetLayout	_layout_vk;
 };
@@ -59,16 +59,14 @@ public:
 
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
 
-	ShaderPass_Vk* getCommonPass_vk() { return rttiCastCheck<ShaderPass_Vk>(getCommonPass()); }
-
-	ShaderParamSpace_Vk* getParamSpace_vk(BindSpace type) {
+	const ShaderParamSpace_Vk* getParamSpace_vk(BindSpace type) const {
 		return rttiCastCheck<ShaderParamSpace_Vk>(getParamSpace(type)); 
 	}
-	
-	ShaderParamSpace_Vk* getCommonParamSpace_vk(BindSpace type) {
-		return rttiCastCheck<ShaderParamSpace_Vk>(getCommonParamSpace(type)); 
-	}
 
+	ShaderParamSpace_Vk* getOwnParamSpace_vk(BindSpace type) {
+		return rttiCastCheck<ShaderParamSpace_Vk>(getOwnParamSpace(type)); 
+	}
+	
 private:
 	AX_VkPipelineLayout			_pipelineLayout;
 	Array<UPtr<Pipeline>, 4>	_pipelineTable;

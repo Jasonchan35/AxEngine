@@ -223,6 +223,7 @@ inline void MaterialParamSpace_Backend::ParamBase::create(const ShaderParamSpace
 class MaterialPass_Backend_CreateDesc : public NonCopyable {
 public:
 	Material_Backend* material = nullptr;
+	ShaderPass_Backend* shaderPass = nullptr;
 	Int passIndex = 0;
 };
 
@@ -235,7 +236,7 @@ public:
 
 	MaterialPass_Backend(const CreateDesc& desc);
 
-	const ShaderPass_Backend*	shaderPass() const;
+	const ShaderPass_Backend*	shaderPass() const { return _shaderPass; }
 	const Shader_Backend*		shader() const;
 
 	virtual bool onDrawcall(class RenderRequest* req, Cmd_DrawCall& cmd) = 0;
@@ -260,14 +261,15 @@ public:
 		return p ? p->setParam(name, v) : false;
 	}
 
+	virtual void onSetShader() {}
+	
 private:
-	Material_Backend*	_material	= nullptr;
-	Int _passIndex = 0;
+	Material_Backend*   _material   = nullptr;
+	ShaderPass_Backend* _shaderPass = nullptr;
+	Int                 _passIndex  = 0;
 
 friend class Material_Backend;
 protected:
-	virtual void onSetShader() {}
-	
 	FixedArray<SPtr<MaterialParamSpace_Backend>, BindSpace_COUNT>	_materialParamSpaces;
 	template<class T> static T* _findParam(IArray<T>& arr, NameId name);
 };
@@ -281,7 +283,7 @@ public:
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView shaderAssetPath);
 
 	void setShader_backend(Shader* shader);
-	Shader_Backend* shader_backend() { return _shader; }
+	Shader_Backend* shader_backend() { return _shader_backend; }
 
 	template<class V> AX_INLINE
 	bool setParamSpaceParam(BindSpace space, NameId name, V& v);
@@ -290,7 +292,7 @@ public:
 
 	MaterialPass_Backend*	getPass(Int index);
 
-	StrView shaderAssetPath() const { return _shader ? StrView(_shader->assetPath()) : StrView(); }
+	StrView shaderAssetPath() const { return _shader_backend ? StrView(_shader_backend->assetPath()) : StrView(); }
 
 	template<class R> R* getPassParamSpace_(Int pass, BindSpace s) {
 		return rttiCastCheck<R>(getPassParamSpace(pass, s));
@@ -309,7 +311,7 @@ protected:
 
 	bool _bShowWarning = true;
 	Array<UPtr<MaterialPass_Backend>>	_passes;
-	SPtr<Shader_Backend>	_shader;
+	SPtr<Shader_Backend>	_shader_backend;
 	virtual void onSetShader();
 
 	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_Backend_CreateDesc& desc) = 0;
@@ -319,12 +321,6 @@ AX_INLINE
 const Shader_Backend* MaterialPass_Backend::shader() const {
 	auto* m = _material;
 	return m ? m->shader_backend() : nullptr;
-}
-
-AX_INLINE
-const ShaderPass_Backend* MaterialPass_Backend::shaderPass() const {
-	auto* s = shader();
-	return s ? s->getPass(_passIndex) : nullptr;
 }
 
 template<class V> AX_INLINE 

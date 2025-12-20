@@ -14,7 +14,7 @@ import :Material_Vk;
 namespace ax /*::AxRender*/ {
 
 
-void ShaderParamSpace_Vk::createLayout_vk() {
+AX_VkDescriptorSetLayout& ShaderParamSpace_Vk::createLayout_vk() {
 	AX_VkDescriptorSetLayoutBindings	bindings;
 
 #if AX_RENDER_BINDLESS
@@ -28,13 +28,16 @@ void ShaderParamSpace_Vk::createLayout_vk() {
 	auto addBinding = [&bindings, bindingFlags](ParamBase& p, VkDescriptorType type) {
 		bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 	};
+
+	// TODO: move to shaderPass
 	for (auto& param : _constBuffers       ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
 	for (auto& param : _textureParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
 	for (auto& param : _samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
 	for (auto& param : _storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
 	auto* renderer = Renderer_Vk::s_instance();
-	_layout_vk.create(renderer->device(), bindings, layoutFlags);
+	_layout_vk.create(renderer->device(), bindings, layoutFlags);\
+	return _layout_vk;
 }
 
 ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
@@ -47,16 +50,14 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 	Array<VkDescriptorSetLayout, 8> layouts;
 
-	for (auto bindSpace = BindSpace::Default; bindSpace < BindSpace::_COUNT; ++bindSpace) {
-		auto* space = getParamSpace_vk(bindSpace);
-		auto* selectSpace = space;
-		if (shouldUseCommonParamSpace(bindSpace)) {
-			selectSpace = getCommonParamSpace_vk(bindSpace);
-		} else {
-			space->createLayout_vk();
+	for (Int i = 0; i < BindSpace_COUNT; ++i) {
+		auto s = static_cast<BindSpace>(i);
+		if (auto* ownSpace = getOwnParamSpace_vk(s)) {
+			layouts.emplaceBack(ownSpace->createLayout_vk());
+			
+		} else if (auto* space = getParamSpace_vk(s)) {
+			layouts.emplaceBack(space->_layout_vk);
 		}
-
-		layouts.emplaceBack(selectSpace->_layout_vk);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {

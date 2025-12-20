@@ -196,7 +196,7 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
 		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
-		if (bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
+		if (bindSpace >= BindSpace_COUNT) {
 			AX_ASSERT(false);
 			return false;
 		}
@@ -206,6 +206,9 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		if (!dst) { AX_ASSERT(false); return false; }
 	}
 
+	// TODO: this part should be done from for-loop above
+	// because some _materialParamSpaces is pointing to common pass
+	
 	auto* commonMaterial = renderer->commonMaterial();
 	if (!commonMaterial) { AX_ASSERT(false); return false; }
 

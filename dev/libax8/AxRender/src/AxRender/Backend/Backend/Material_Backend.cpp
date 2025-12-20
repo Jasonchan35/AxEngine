@@ -127,35 +127,34 @@ void Material_Backend::logWarningOnce(StrView msg) {
 }
 
 void Material_Backend::onSetShader() {
-	for (auto& ps : _passes) {
-		ps->onSetShader();
+	for (auto& pass : _passes) {
+		if (pass) { pass->onSetShader(); }
 	}
 }
 
 void Material_Backend::setShader_backend(Shader* shader_) {
 	auto* shader = rttiCastCheck<Shader_Backend>(shader_);
 
-	if (_shader == shader) return;
-	_shader = shader;
+	if (_shader_backend == shader) return;
+	_shader_backend = shader;
 	_passes.clear();
 	Int passCount = shader->passes().size();
 
 	_passes.ensureCapacity(passCount);
 
 	for (Int passIndex = 0; passIndex < passCount; passIndex++) {
-		MaterialPass_Backend_CreateDesc passDesc;
-		passDesc.material = this;
-		passDesc.passIndex = passIndex;
-		auto& newMaterialPass = _passes.emplaceBack(onNewPass(passDesc));
-
 		auto* shaderPass = shader->getPass(passIndex);
 		if (!shaderPass) {
 			throw Error_Undefined();
 		}
-
+		
+		MaterialPass_Backend_CreateDesc passDesc;
+		passDesc.material = this;
+		passDesc.shaderPass = shaderPass;
+		passDesc.passIndex = passIndex;
+		
+		auto& newMaterialPass = _passes.emplaceBack(onNewPass(passDesc));
 		auto shaderSpaceSpan = shaderPass->shaderParamSpaces();
-//		newMaterialPass->_materialParamSpaces.resize(shaderSpaceSpan.size());
-	
 		for (Int spaceIndex = 0; spaceIndex < shaderSpaceSpan.size(); ++spaceIndex) {
 			auto& shaderSpace = shaderSpaceSpan[spaceIndex];
 			if (!shaderSpace) continue;
@@ -190,6 +189,7 @@ void MaterialPass_Backend::logWarningOnce(StrView msg) {
 
 MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 	: _material(desc.material)
+	, _shaderPass(desc.shaderPass)
 	, _passIndex(desc.passIndex)
 {
 	AX_ASSERT(_material);

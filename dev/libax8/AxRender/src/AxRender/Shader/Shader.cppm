@@ -279,9 +279,6 @@ public:
 
 	BindSpace	bindSpace() const { return _bindSpace; }
 
-	static SPtr<ShaderParamSpace> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-
-
 protected:
 	ShaderParamSpace(const CreateDesc& desc) : _bindSpace(desc.bindSpace) {}
 

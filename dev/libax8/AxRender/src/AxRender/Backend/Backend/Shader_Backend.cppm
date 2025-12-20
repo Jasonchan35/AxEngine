@@ -119,16 +119,16 @@ public:
 	private:
 	};
 
-	Span<ConstBuffer>			constBuffers() const		{ return _constBuffers; }
-	Span<TextureParam>			textureParams() const		{ return _textureParams; }
-	Span<SamplerParam>			samplerParams() const		{ return _samplerParams; }
-	Span<StorageBufferParam>	storageBufferParams() const	{ return _storageBufferParams; }
-
 	void addParam	(const ShaderStageInfo::ConstBuffer&   paramInfo);
 	void addParam	(const ShaderStageInfo::Texture&       paramInfo);
 	void addParam	(const ShaderStageInfo::Sampler&       paramInfo);
 	void addParam	(const ShaderStageInfo::StorageBuffer& paramInfo);
-
+	
+	Span<ConstBuffer>			constBuffers() const		{ return _constBuffers; }
+	Span<TextureParam>			textureParams() const		{ return _textureParams; }
+	Span<SamplerParam>			samplerParams() const		{ return _samplerParams; }
+	Span<StorageBufferParam>	storageBufferParams() const	{ return _storageBufferParams; }
+	
 	ConstBuffer*		findConstBuffer (NameId name) { return _findParam(_constBuffers       , name); }
 	TextureParam*		findTextureParam(NameId name) { return _findParam(_textureParams      , name); }
 	SamplerParam*		findSamplerParam(NameId name) { return _findParam(_samplerParams      , name); }
@@ -198,9 +198,10 @@ T* ShaderParamSpace_Backend::_findParam(IArray<T>& arr, NameId name) {
 
 class ShaderPass_Backend_CreateDesc : public NonCopyable {
 public:
-	Shader_Backend*		   shader = nullptr;
-	StrView				   name;
-	const ShaderPassInfo*  info		 = nullptr;
+	Shader_Backend*        shader    = nullptr;
+	Int                    passIndex = 0;
+	StrView                name;
+	const ShaderPassInfo*  info      = nullptr;
 	const ShaderStageInfo* stageInfo = nullptr;
 };
 
@@ -216,45 +217,44 @@ public:
 	      Shader_Backend* shader()       { return _shader; }
 	const Shader_Backend* shader() const { return _shader; }
 
+	//TODO: remove and use and change RenderObject::_name to NameId
 	NameId	name() const { return _name; }
 
-	Span<SPtr<ShaderParamSpace_Backend>>	shaderParamSpaces() const { return _shaderParamSpaces; }
+	Span<SPtr<const ShaderParamSpace_Backend>>	shaderParamSpaces() const { return _shaderParamSpaces; }
 
 	const ShaderPassInfo*	info() const	{ return _info; }
+	bool isGlobalCommonShaderPass() const	{ return _isGlobalCommonShaderPass; }
 
-	bool shouldUseCommonParamSpace(ShaderParamBindSpace bindSpace) const;
+	bool isOwnParamSpace(BindSpace s) const { return _isGlobalCommonShaderPass || !ShaderParamBindSpace_isCommon(s); }
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
 	
-	ShaderParamSpace_Backend* getParamSpace(BindSpace s) {
+	const ShaderParamSpace_Backend* getParamSpace(BindSpace s) const {
 		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(s));
 		return p ? p->ptr() : nullptr;
 	}
 
-	const ShaderParamSpace_Backend*	getParamSpace(BindSpace s) const {
-		return ax_const_cast(this)->getParamSpace(s);
+	ShaderParamSpace_Backend*	getOwnParamSpace(BindSpace s) {
+		if (!isOwnParamSpace(s)) return nullptr; 
+		return ax_const_cast(getParamSpace(s));
 	}
 
-	ShaderPass_Backend* getCommonPass();
-	
-	ShaderParamSpace_Backend* getCommonParamSpace(BindSpace type) {
-		auto* commonPass = getCommonPass();
-		return commonPass ? commonPass->getParamSpace(type) : nullptr;
-	}
-
+	const ShaderPass_Backend* getCommonPass() const;
 
 friend class Shader_Backend;
 protected:
 	Shader_Backend*		_shader = nullptr;
+	bool				_isGlobalCommonShaderPass : 1 = false;
+	Int					_passIndex = 0;
 	ShaderStageFlags	_stageFlags = ShaderStageFlags::None;
 	NameId				_name;
-
+	
 	void _createParamSpaces();
 
 	template<class T>
 	void _addParamToSpace(const Array<T>& paramInfoSpan);
 
-	FixedArray<SPtr<ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
+	FixedArray<SPtr<const ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
 
 	const ShaderPassInfo*		_info = nullptr;
 	const ShaderStageInfo*		_stageInfo = nullptr;
@@ -289,7 +289,7 @@ public:
 		return pp ? pp->ptr() : nullptr;
 	}
 	
-	bool isGlobalCommonShader() const { return _isGlobalCommonShader; }
+	AX_INLINE bool isGlobalCommonShader() const { return _isGlobalCommonShader; }
 
 	void hotReloadFile();
 
@@ -338,11 +338,6 @@ NameId Shader_Backend::getPropSamplerName(NameId name) const {
 		if (p.name == name) return p.samplerName;
 	}
 	return NameId();
-}
-
-inline
-bool ShaderPass_Backend::shouldUseCommonParamSpace(ShaderParamBindSpace bindSpace) const {
-	return !_shader->isGlobalCommonShader() && ShaderParamBindSpace_isCommon(bindSpace);
 }
 
 } // namespace

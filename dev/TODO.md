@@ -3,6 +3,7 @@
 - Type_EnumFlag<>
 - rename AxTag::Zero_ -> AxZero ?
 
+- IArrayStorage - init capacity = BUF_SIZE  - SmallExtra
 - rename CommandBuffer -> RenderCommandList
 
 - Runtime select bindless

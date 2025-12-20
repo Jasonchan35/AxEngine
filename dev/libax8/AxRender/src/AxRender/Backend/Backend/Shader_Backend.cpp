@@ -164,6 +164,8 @@ NameId ShaderParamSpace_Backend::getSamplerName(NameId name) const {
 
 ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 	: _shader(desc.shader)
+	, _isGlobalCommonShaderPass(_shader->isGlobalCommonShader())
+	, _passIndex(desc.passIndex)
 	, _name(NameId::s_make(desc.info->name))
 	, _info(desc.info)
 	, _stageInfo(desc.stageInfo)
@@ -174,26 +176,18 @@ ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 template<class T>
 void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 	for (auto& param : paramInfoSpan) {
-		auto bindSpace = param.bindSpace;
-		if (shouldUseCommonParamSpace(bindSpace)) {
-			continue;
-		}
+		auto s = param.bindSpace;
+		if (!isOwnParamSpace(s)) continue;
 
-		auto spaceIndex = ax_enum_int(bindSpace);
-		if (spaceIndex < 0 || spaceIndex >= ax_enum_int(BindSpace::_COUNT)) {
-			AX_ASSERT(false);
-			continue;
-		}
-
-		auto& space = _shaderParamSpaces[spaceIndex];
+		auto& space = _shaderParamSpaces[ax_enum_int(s)];
 		if (!space) {
 			ShaderParamSpace_CreateDesc spaceDesc;
-			spaceDesc.bindSpace = bindSpace;
-			auto p = ShaderParamSpace::s_new(AX_ALLOC_REQ, spaceDesc);
-			space = rttiCastCheck<ShaderParamSpace_Backend>(p.ptr());
+			spaceDesc.bindSpace = s;
+			auto newSpace = ShaderParamSpace_Backend::s_new(AX_ALLOC_REQ, spaceDesc);
+			space.ref(newSpace.ptr());
 		}
 
-		space->addParam(param);
+		ax_const_cast(space.ptr())->addParam(param);
 	}
 }
 
@@ -203,14 +197,21 @@ void ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 
-	for (auto& prop : _shader->info()->declare.props) {
-		auto propName = NameId::s_make(prop.name);
+	const auto* commonPass = getCommonPass();
 
-		for (auto& space : _shaderParamSpaces) {
-			if (space) space->setPropDefaultValue(propName, prop);
+	for (auto i = 0; i < BindSpace_COUNT; ++i) {
+		if (!isOwnParamSpace(static_cast<BindSpace>(i))) {
+			_shaderParamSpaces[i] = commonPass->_shaderParamSpaces[i].ptr();
+			continue;
+		}
+
+		for (auto& prop : _shader->info()->declare.props) {
+			auto propName = NameId::s_make(prop.name);
+			if (auto* space = getOwnParamSpace(static_cast<BindSpace>(i))) {
+				space->setPropDefaultValue(propName, prop);
+			}
 		}
 	}
-
 }
 
 #if 0
@@ -270,6 +271,7 @@ void Shader_Backend::onLoadFile() {
 	for (Int i = 0; i < n; i++) {
 		ShaderPass_Backend::CreateDesc passDesc;
 		passDesc.shader = this;
+		passDesc.passIndex = i;
 		passDesc.info = &_info.declare.passes[i];
 		passDesc.stageInfo = &_info.passStages[i];
 
@@ -282,7 +284,7 @@ void Shader_Backend::onDestroy() {
 	_passes.clear();
 }
 
-ShaderPass_Backend* ShaderPass_Backend::getCommonPass() {
+const ShaderPass_Backend* ShaderPass_Backend::getCommonPass() const {
 	auto* sh = Renderer_Backend::s_instance()->commonShader();
 	return sh ? sh->getPass(0) : nullptr;
 }

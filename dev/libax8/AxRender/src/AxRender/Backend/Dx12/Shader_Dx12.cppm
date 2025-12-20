@@ -39,12 +39,6 @@ class ShaderParamSpace_Dx12 : public ShaderParamSpace_Backend {
 	AX_RTTI_INFO(ShaderParamSpace_Dx12, ShaderParamSpace_Backend)
 public:
 	ShaderParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
-
-	Dx12DescriptorTable	_constBufferDescTable;
-	Dx12DescriptorTable	_textureDescTable;
-	Dx12DescriptorTable	_samplerDescTable;
-	
-	void createDescTable();
 };
 
 class ShaderPass_Dx12 : public ShaderPass_Backend {
@@ -60,12 +54,8 @@ public:
 	bool _bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) const;
 	void _createRootSignature();
 
-	ShaderParamSpace_Dx12* getParamSpace_dx12(BindSpace type) {
-		return rttiCastCheck<ShaderParamSpace_Dx12>(getParamSpace(type));
-	}
-
-	ShaderParamSpace_Dx12* getCommonParamSpace_dx12(BindSpace type) {
-		return rttiCastCheck<ShaderParamSpace_Dx12>(getCommonParamSpace(type));
+	const ShaderParamSpace_Dx12* getParamSpace_dx12(BindSpace s) const {
+		return rttiCastCheck<ShaderParamSpace_Dx12>(getParamSpace(s));
 	}
 	
 	
@@ -88,9 +78,9 @@ public:
 
 	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(BindSpace::_COUNT)>;
 
-	DescTableRootIndices        _constBufferDescTableRootIndices;
-	DescTableRootIndices        _textureDescTableRootIndices;
-	DescTableRootIndices        _samplerDescTableRootIndices;
+	Dx12DescriptorTable         _constBufferDescTable;
+	Dx12DescriptorTable         _textureDescTable;
+	Dx12DescriptorTable         _samplerDescTable;
 	
 	Dx12RootParameterList       _pipelineRootParamList;
 	Array<UPtr<Pipeline>, 4>    _pipelineTable;

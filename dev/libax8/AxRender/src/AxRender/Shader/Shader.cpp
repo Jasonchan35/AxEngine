@@ -26,10 +26,6 @@ ShaderPassInfo* ShaderDeclareInfo::findPass(StrView name) {
 	return nullptr;
 }
 
-SPtr<ShaderParamSpace> ShaderParamSpace::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	return ShaderParamSpace_Backend::s_new(req, desc);
-}
-
 SPtr<Shader> Shader::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	return Shader_Backend::s_new(req, desc);
 }

@@ -207,7 +207,7 @@ struct Dx12DescriptorTable {
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
-	Array<D3D12_DESCRIPTOR_RANGE>	descriptorRanges;
+	Array<D3D12_DESCRIPTOR_RANGE, 8>	descriptorRanges;
 
 	Int size() const { return descriptorRanges.size(); }
 
@@ -219,15 +219,17 @@ struct Dx12DescriptorTable {
 		dst.RegisterSpace                     = Dx12Util::castUINT(ax_enum_int(bindSpace));
 		dst.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	}
+
+	UINT rootParamIndex = 0;
 };
 
 struct Dx12RootParameterList {
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
-	void addRootDescriptorTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table, UINT* rootIndex) {
+	void addRootDescriptorTable(D3D12_SHADER_VISIBILITY shaderVisibility, Dx12DescriptorTable& table) {
 		if (table.descriptorRanges.size() <= 0) return;
-		*rootIndex = ax_safe_cast_from(parameters.size());
+		table.rootParamIndex = ax_safe_cast_from(parameters.size());
 		
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
