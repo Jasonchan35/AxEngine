@@ -108,6 +108,10 @@ public:
 
 		void		create(ParamIndex paramIndex, const Info& info);
 		Sampler*	defaultSampler() const { return ax_const_cast(_defaultSampler); }
+
+		void setDefaultSampler(Sampler* sampler) {
+			_defaultSampler = sampler;
+		}
 	private:
 		SPtr<Sampler>	_defaultSampler;
 	};

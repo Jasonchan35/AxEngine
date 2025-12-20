@@ -23,7 +23,7 @@ public:
 	ID3D12DescriptorHeap*	d3dHeap() { return _d3dHeap; }
 
 //	bool isValid() const { return _d3dHeap.ptr() != nullptr; }
-	UINT _numDescriptors() const { return _desc.NumDescriptors; }
+	UINT numDescriptors() const { return _desc.NumDescriptors; }
 	void destroy();
 
 	const Dx12DescriptorHandle& handleStart() const { return _handleStart; }
@@ -45,7 +45,7 @@ protected:
 		outHandle.cpu.ptr = _handleStart.cpu.ptr + offset;
 		outHandle.gpu.ptr = _handleStart.gpu.ptr + offset;
 	}
-	
+
 	ComPtr<ID3D12DescriptorHeap>	_d3dHeap;
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
 	Dx12DescriptorHandle			_handleStart;

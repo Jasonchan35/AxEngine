@@ -107,7 +107,7 @@ public:
 	void markDirty(IntRange range);
 
 	GpuBuffer*	getUploadedGpuBuffer(class RenderRequest* req);
-
+	
 private:
 
 	String	_name;

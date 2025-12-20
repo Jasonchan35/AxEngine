@@ -196,7 +196,7 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
 		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
-		if (bindSpace >= BindSpace_COUNT) {
+		if (bindSpace < 0 || bindSpace >= BindSpace_COUNT) {
 			AX_ASSERT(false);
 			return false;
 		}

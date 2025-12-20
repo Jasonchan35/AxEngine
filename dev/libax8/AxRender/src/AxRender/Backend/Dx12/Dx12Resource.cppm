@@ -220,7 +220,7 @@ struct Dx12DescriptorTable {
 		dst.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	}
 
-	UINT rootParamIndex = 0;
+	UINT rootParamIndex = UINT_MAX;
 };
 
 struct Dx12RootParameterList {

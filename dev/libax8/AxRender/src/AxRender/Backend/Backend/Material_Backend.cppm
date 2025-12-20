@@ -60,9 +60,12 @@ public:
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
 		void		create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam);
-		GpuBuffer*	getUploadedGpuBuffer(class RenderRequest* req) { return _dynamicGpuBuffer.getUploadedGpuBuffer(req); }
 		Int			dataSize() const { return _dynamicGpuBuffer.dataSize(); }
 
+		GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) {
+			return _dynamicGpuBuffer.getUploadedGpuBuffer(req);
+		}
+		
 		template<class V> bool setVariable(const VarInfo* varInfo, const V& value);
 		template<class V> bool setVariable(NameId name, const V& value);
 	private:
@@ -152,10 +155,10 @@ public:
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
 
-	Span<ConstBuffer>			constBuffers()	const		{ return _constBuffers;        }
-	Span<TextureParam>			textureParams() const		{ return _textureParams;       }
-	Span<SamplerParam>			samplerParams() const		{ return _samplerParams;       }
-	Span<StorageBufferParam>	storageBufferParams() const	{ return _storageBufferParams; }
+	MutSpan<ConstBuffer>			constBuffers()		{ return _constBuffers;        }
+	MutSpan<TextureParam>			textureParams() 	{ return _textureParams;       }
+	MutSpan<SamplerParam>			samplerParams() 	{ return _samplerParams;       }
+	MutSpan<StorageBufferParam>	storageBufferParams() 	{ return _storageBufferParams; }
 
 	Int constBuffers_totalBindCount() const			{ return s_totalBindCount(_constBuffers.span()); }
 	Int textureParams_totalBindCount() const		{ return s_totalBindCount(_textureParams.span()); }
@@ -244,11 +247,6 @@ public:
 	NameId getPropSamplerName(NameId name) const { auto* shd = shader(); return shd ? shd->getPropSamplerName(name) : NameId(); }
 
 	void logWarningOnce(StrView msg);
-
-	template<class R>
-	R* getParamSpace_(BindSpace s) {
-		return rttiCastCheck<R>(getParamSpace(s));
-	}
 
 	MaterialParamSpace_Backend* getParamSpace(BindSpace s) {
 		auto* pp = _materialParamSpaces.tryGetElement(ax_enum_int(s));

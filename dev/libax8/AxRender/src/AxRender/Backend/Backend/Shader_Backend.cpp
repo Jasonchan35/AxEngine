@@ -39,8 +39,8 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 
 	if constexpr (std::is_same_v<SamplerParam, T>) {
 		auto str = dst.name().toTempString();
-		if (auto sampler = str.extractFromPrefix("AxSamplerState_")) {
-			_nameToSampler.emplaceBack(Pair_make(NameId::s_make(sampler), dst.name()));
+		if (auto samplerName = str.extractFromPrefix("AxSamplerState_")) {
+			_nameToSampler.emplaceBack(Pair_make(NameId::s_make(samplerName), dst.name()));
 		}
 	}
 
@@ -48,14 +48,14 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 		for (auto& varInfo : dst.varInfos()) {
 			auto str = varInfo.name().toTempString();
 			
-			if (auto sampler = str.extractFromPrefix("AxSamplerState_")) {
-				_nameToSampler.emplaceBack(Pair_make(NameId::s_make(sampler), varInfo.name()));
+			if (auto samplerName = str.extractFromPrefix("AxSamplerState_")) {
+				_nameToSampler.emplaceBack(Pair_make(NameId::s_make(samplerName), varInfo.name()));
 
-			} else if (auto tex2d = str.extractFromPrefix("AxTexture2D_")) {
-				_nameToTexture2D.emplaceBack(Pair_make(NameId::s_make(tex2d), varInfo.name()));
+			} else if (auto tex2dName = str.extractFromPrefix("AxTexture2D_")) {
+				_nameToTexture2D.emplaceBack(Pair_make(NameId::s_make(tex2dName), varInfo.name()));
 
-			} else if (auto tex3d = str.extractFromPrefix("AxTexture3D_")) {
-				_nameToTexture3D.emplaceBack(Pair_make(NameId::s_make(tex3d), varInfo.name()));
+			} else if (auto tex3dName = str.extractFromPrefix("AxTexture3D_")) {
+				_nameToTexture3D.emplaceBack(Pair_make(NameId::s_make(tex3dName), varInfo.name()));
 
 			}
 		}
@@ -69,17 +69,19 @@ void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StorageBuffer& pa
 
 inline void ShaderParamSpace_Backend::SamplerParam::create(ParamIndex paramIndex, const Info& info) {
 	ParamBase::create(paramIndex, info);
+	_defaultSampler = StockObjects::s_instance()->samplers.defaultValue;
 }
 
 inline void ShaderParamSpace_Backend::TextureParam::create(ParamIndex paramIndex, const Info& info) {
 	ParamBase::create(paramIndex, info);
 	_dataType = info.dataType;
+	_defaultTexture = StockObjects::s_instance()->texture2Ds.kNone;
 }
 
 inline void ShaderParamSpace_Backend::ConstBuffer::create(ParamIndex paramIndex, const Info& info) {
 	ParamBase::create(paramIndex, info);
 	_defaultValues.resize(info.dataSize);
-	_defaultValues.fillValues(0);
+	_defaultValues.fillValues(0); // set all to zero by default
 
 	_varInfos.ensureCapacity(info.variables.size());
 	for (auto& src : info.variables) {
@@ -128,8 +130,9 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 
 		case ShaderPropType::Sampler: {
 			if (auto* param = findSamplerParam(propName)) {
-				AX_UNUSED(param);
-//				param->setPropDefaultValue(propInfo);
+				// TODO - pick the sampler base on propInfo.default
+				auto* sampler = StockObjects::s_instance()->samplers.defaultValue.ptr();
+				param->setDefaultSampler(sampler);
 			}
 		} break;
 		
@@ -205,9 +208,9 @@ void ShaderPass_Backend::_createParamSpaces() {
 			continue;
 		}
 
-		for (auto& prop : _shader->info()->declare.props) {
-			auto propName = NameId::s_make(prop.name);
-			if (auto* space = getOwnParamSpace(static_cast<BindSpace>(i))) {
+		if (auto* space = getOwnParamSpace(static_cast<BindSpace>(i))) {
+			for (auto& prop : _shader->info()->declare.props) {
+				auto propName = NameId::s_make(prop.name);
 				space->setPropDefaultValue(propName, prop);
 			}
 		}

@@ -27,6 +27,7 @@ void Renderer_Backend::onCreate() {
 	Base::onCreate();
 
 	ResourceManager_Backend::s_create(AX_ALLOC_REQ);
+	StockObjects::s_create();
 
 //----- common material
 	{
@@ -37,8 +38,6 @@ void Renderer_Backend::onCreate() {
 		mtl = rttiCastCheck<Material_Backend>(Material::s_new(AX_ALLOC_REQ).ptr());
 		mtl->setShader(commonParamShader);
 	}
-
-	StockObjects::s_create();
 
 //----- render request
 	if (_info.renderRequestCount > AxRenderConfig::kMaxRenderRequestCount)

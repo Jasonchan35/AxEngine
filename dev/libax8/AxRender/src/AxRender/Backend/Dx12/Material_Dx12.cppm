@@ -34,8 +34,6 @@ public:
 	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 	virtual void onSetShader() override;
 
-	
-
 	Dx12DescripterHeap_Sampler			_samplerDescHeap;
 	Dx12DescripterHeap_CBV_SRV_UAV		_constBufferDescHeap;
 	Dx12DescripterHeap_CBV_SRV_UAV		_textureDescHeap;

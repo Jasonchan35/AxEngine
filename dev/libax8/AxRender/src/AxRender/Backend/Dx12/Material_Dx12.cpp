@@ -90,14 +90,6 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 
 	if (!shdPass->_bindPipeline(req, cmd)) return false;
 
-	auto* renderer = Renderer_Backend::s_instance();
-
-	cmdList->SetDescriptorHeaps(ax_safe_cast_from(_d3dDescHeaps.size()), _d3dDescHeaps.data());
-
-	for (Int i = 0; i < BindSpace_COUNT; ++i) {
-		
-	}
-	
 	for (auto& paramSpace_ : _materialParamSpaces) {
 		if (!paramSpace_) continue;
 
@@ -105,16 +97,64 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		if (!paramSpace) { AX_ASSERT(false); return false; }
 
 		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
-		if (bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
+		if (bindSpace < 0 || bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
 			AX_ASSERT(false);
 			return false;
 		}
 
-		paramSpace->_onDrawcall(req, shdPass);
+		for (auto& cb : paramSpace->constBuffers()) {
+			auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(cb.getUploadedGpuBuffer(req));
+			if (!gpuBuf) throw Error_Undefined();
+
+			gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+			_constBufferDescHeap.setCBV(cb.paramIndex(), gpuBuf->resource());
+		}
+
+		for (auto& texParam : paramSpace->textureParams()) {
+			switch (texParam.dataType()) {
+				case RenderDataType::Texture2D: {
+					auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
+					_textureDescHeap.setTexture(texParam.paramIndex(), tex->_texResource);
+				} break;
+				default: throw Error_Undefined();
+			}
+		}
+
+		//TODO move to static sampler
+		for (auto& samplerParam : paramSpace->samplerParams()) {
+			auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
+			auto& ss      = sampler->samplerState();
+		
+			D3D12_SAMPLER_DESC samplerDesc = {};
+			samplerDesc.Filter         = Dx12Util::getDxSamplerFilter(ss.filter);
+			samplerDesc.AddressU       = Dx12Util::getDxSamplerWrap(ss.wrap.u);
+			samplerDesc.AddressV       = Dx12Util::getDxSamplerWrap(ss.wrap.v);
+			samplerDesc.AddressW       = Dx12Util::getDxSamplerWrap(ss.wrap.w);
+			samplerDesc.MipLODBias     = 0;
+			samplerDesc.MaxAnisotropy  = 1;
+			samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+			samplerDesc.MinLOD         = 0;
+			samplerDesc.MaxLOD         = D3D12_FLOAT32_MAX;
+			samplerDesc.BorderColor[0] = 0; 
+			samplerDesc.BorderColor[1] = 0; 
+			samplerDesc.BorderColor[2] = 0; 
+			samplerDesc.BorderColor[3] = 0; 
+	
+			_samplerDescHeap.setSampler(samplerParam.paramIndex(), samplerDesc);
+		}
 	}
 
-	auto* commonMaterial = renderer->commonMaterial();
-	if (!commonMaterial) { AX_ASSERT(false); return false; }
+	cmdList->SetDescriptorHeaps(ax_safe_cast_from(_d3dDescHeaps.size()), _d3dDescHeaps.data());
+
+	auto setRootDescTable = [&cmdList](auto& shaderTable, auto& heap) {
+		if (heap.numDescriptors() > 0) {
+			cmdList->SetGraphicsRootDescriptorTable(shaderTable.rootParamIndex, heap.handleStart().gpu);
+		}
+	};
+
+	setRootDescTable(shdPass->_constBufferDescTable,	_constBufferDescHeap);
+	setRootDescTable(shdPass->_textureDescTable,		_textureDescHeap);
+	setRootDescTable(shdPass->_samplerDescTable,		_samplerDescHeap);
 
 	return true;
 }
