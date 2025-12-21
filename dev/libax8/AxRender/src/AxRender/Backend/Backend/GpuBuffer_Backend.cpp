@@ -15,10 +15,10 @@ void GpuBuffer_Backend::copyData(ByteSpan data, Int offset) {
 }
 
 void GpuBuffer_Backend::copyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
-	static auto copyAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
-	AX_ASSERT(Math::isAlignedTo(srcRange.begin(), copyAlignment));
-	AX_ASSERT(Math::isAlignedTo(srcRange.end()  , copyAlignment));
-	AX_ASSERT(Math::isAlignedTo(dstOffset       , copyAlignment));
+	static auto minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
+	AX_ASSERT(Math::isAlignedTo(srcRange.begin(), minMemoryMapAlignment));
+	AX_ASSERT(Math::isAlignedTo(srcRange.end()  , minMemoryMapAlignment));
+	AX_ASSERT(Math::isAlignedTo(dstOffset       , minMemoryMapAlignment));
 
 	Int  copySize = srcRange.size();
 	auto dstRange = Range_BeginSize(dstOffset, copySize);

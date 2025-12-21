@@ -103,7 +103,7 @@ public:
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
-//	AX_INLINE constexpr Vec_(Tag::All_, const T& t) : _simd(s_all(t)) {}
+//	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
 	AX_INLINE constexpr Vec_(const Num1& v) : _simd(v.e00) {}
 	AX_INLINE constexpr Vec_(const T& x_) : _simd(x_) {}
 	AX_INLINE constexpr Vec_(TagZero_T) : _simd(TagZero) {}
@@ -183,7 +183,7 @@ public:
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
-//	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SimdData::s_all(vec)) {}
+//	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
 	AX_INLINE constexpr Vec_(const Num2& v) : _simd(v.e00, v.e01) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_) : _simd(x_, y_) {}
 	AX_INLINE constexpr Vec_(TagZero_T) : _simd(TagZero) {}
@@ -293,7 +293,7 @@ public:
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
-//	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SimdData::s_all(vec)) {}
+//	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
 	AX_INLINE constexpr Vec_(const Num3& v) : _simd(v.e00, v.e01, v.e02) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_) : _simd(x_, y_, z_) {}
 	AX_INLINE constexpr Vec_(const Vec2& v_, const T& z_) : _simd(v_.x, v_.y, z_) {}
@@ -407,7 +407,7 @@ public:
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
-//	AX_INLINE constexpr Vec_(Tag::All_, const T& vec) : _simd(SimdData::s_all(vec)) {}
+//	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
 	AX_INLINE constexpr Vec_(const Num4_<T>& v) : _simd(v) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
 	AX_INLINE constexpr Vec_(const Vec3& v_, const T& w_) : _simd(v_.x,v_.y,v_.z,w_) {}

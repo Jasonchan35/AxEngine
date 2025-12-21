@@ -127,14 +127,13 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
-	// TODO: don't know why doesn't work on DX12
-	// if (inlineCopyDataToGpuBuffer(dst, data, dstOffset)) {
-	// 	return;
-	// }
-	
-	static auto copyGpuBufferAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
-	if (!Math::isAlignedTo(data.size(), copyGpuBufferAlignment)) throw Error_Undefined(); 
-	if (!Math::isAlignedTo(dstOffset,   copyGpuBufferAlignment)) throw Error_Undefined(); 
+	if (inlineCopyDataToGpuBuffer(dst, data, dstOffset)) {
+		return;
+	}
+
+	static auto minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
+	if (!Math::isAlignedTo(data.size(), minMemoryMapAlignment)) throw Error_Undefined(); 
+	if (!Math::isAlignedTo(dstOffset,   minMemoryMapAlignment)) throw Error_Undefined(); 
 
 // use upload buffer
 	auto uploadBuf = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
@@ -147,8 +146,36 @@ void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, I
 
 	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
 	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadBuf->bufferRange(), dstOffset);
-	
 }
+
+bool RenderRequest_Backend::inlineCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
+#if 0 // TODO: don't know why doesn't work on DX12
+	return false;
+#endif
+	
+	static auto minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
+	if (!Math::isAlignedTo(data.size(), 		minMemoryMapAlignment)) throw Error_Undefined();
+	if (!Math::isAlignedTo(dstOffset,   		minMemoryMapAlignment)) throw Error_Undefined();
+	if (!Math::isAlignedTo(inlineUpload._used,	minMemoryMapAlignment)) throw Error_Undefined();
+
+	auto dataSize = data.size();
+	if (dataSize > inlineUpload._limitPerEach) return false;
+	if (dataSize > inlineUpload.remainSize()) return false;
+
+	auto& uploadBuf = inlineUpload._stagingToGpuBuffer;
+	
+	resourcesToKeep.add(uploadBuf.ptr());
+	uploadBuf->copyData(data, inlineUpload._used);
+
+	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
+
+	IntRange uploadRange = IntRange::s_beginSize(inlineUpload._used, dataSize);
+	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadRange, dstOffset);
+
+	inlineUpload._used += dataSize;
+	return true;
+}
+
 
 void RenderRequest_Backend::drawUI_backend() {
 	renderContext_backend()->imgui.onDrawUI(this);
@@ -176,30 +203,6 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 	matPass->onDrawcall(this, cmd);
 
 	onDrawCall(cmd);
-}
-
-bool RenderRequest_Backend::inlineCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
-	static auto copyGpuBufferAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
-	if (!Math::isAlignedTo(data.size(), copyGpuBufferAlignment)) throw Error_Undefined();
-	if (!Math::isAlignedTo(dstOffset,   copyGpuBufferAlignment)) throw Error_Undefined();
-	if (!Math::isAlignedTo(inlineUpload._used, copyGpuBufferAlignment)) throw Error_Undefined();
-
-	auto dataSize = data.size();
-	if (dataSize > inlineUpload._limitPerEach) return false;
-	if (dataSize > inlineUpload.remainSize()) return false;
-
-	auto& uploadBuf = inlineUpload._stagingToGpuBuffer;
-	
-	resourcesToKeep.add(uploadBuf.ptr());
-	uploadBuf->copyData(data, inlineUpload._used);
-
-	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
-
-	IntRange uploadRange = IntRange::s_beginSize(inlineUpload._used, dataSize);
-	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadRange, dstOffset);
-
-	inlineUpload._used += dataSize;
-	return true;
 }
 
 void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {

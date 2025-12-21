@@ -27,7 +27,7 @@ public:
 	GpuBuffer_CreateDesc(StrView name_, GpuBufferType bufferType_, Int bufferSize_)
 		: name(name_)
 		, bufferType(bufferType_)
-		, bufferSize(Math::alignUp(bufferSize_, Renderer::s_instance()->copyGpuBufferAlignment()))
+		, bufferSize(Math::alignUp(bufferSize_, Renderer::s_instance()->adapterInfo().minMemoryMapAlignment))
 	{}
 
 	StrView			name;

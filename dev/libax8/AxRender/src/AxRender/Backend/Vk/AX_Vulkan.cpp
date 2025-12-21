@@ -1173,7 +1173,7 @@ MutByteSpan AX_VkDeviceMemory::_mapMemory(IntRange range, VkMemoryMapFlags flags
 	void* outPtr = nullptr;
 	auto offset = AX_VkUtil::castVkDeviceSize(range.begin());
 	auto size =   AX_VkUtil::castVkDeviceSize(range.size());
-
+	
 	auto err = vkMapMemory(*_dev, _handle, offset, size, flags, &outPtr);
 	AX_VkUtil::throwIfError(err);
 	return MutByteSpan(static_cast<Byte*>(outPtr), ax_safe_cast_from(size));

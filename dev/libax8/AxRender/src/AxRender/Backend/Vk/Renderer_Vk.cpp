@@ -36,9 +36,14 @@ Renderer_Vk::Renderer_Vk(const CreateDesc& desc)
 	bool supportBindless = true;
 	auto& features = phyDev->features();
 
-	Int tex2DSize = ax_safe_cast_from(phyDev->props().limits.maxImageDimension2D);
-	_limits.maxTexture2DSize = Vec2i(tex2DSize, tex2DSize);
-
+	auto& limits = phyDev->props().limits;
+	
+	_adapterInfo.maxTexture1DSize                = Vec1i::s_all(ax_safe_cast_from(limits.maxImageDimension1D));
+	_adapterInfo.maxTexture2DSize                = Vec2i::s_all(ax_safe_cast_from(limits.maxImageDimension2D));
+	_adapterInfo.maxTexture3DSize                = Vec3i::s_all(ax_safe_cast_from(limits.maxImageDimension3D));
+	_adapterInfo.minMemoryMapAlignment           = ax_safe_cast_from(limits.minMemoryMapAlignment);
+	_adapterInfo.minUniformBufferOffsetAlignment = ax_safe_cast_from(limits.minUniformBufferOffsetAlignment);
+	
 	auto bindlessRequire = [&](VkBool32 b, StrView name) {
 		if (!b) {
 			supportBindless = false;

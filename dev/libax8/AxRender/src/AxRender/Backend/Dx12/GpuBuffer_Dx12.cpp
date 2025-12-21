@@ -10,12 +10,12 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	auto dstRange = Range_BeginSize(dstOffset, srcRange.size());
 	if (!inBound(dstRange)) throw Error_Undefined();
 
-	static Int copyGpuBufferAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
+	static Int minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
 //	AX_ASSERT(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT == copyGpuBufferAlignment);
 
-	if (!Math::isAlignedTo(srcRange.begin(), copyGpuBufferAlignment)) throw Error_Undefined();
-	if (!Math::isAlignedTo(srcRange.end()  , copyGpuBufferAlignment)) throw Error_Undefined();
-	if (!Math::isAlignedTo(dstOffset       , copyGpuBufferAlignment)) throw Error_Undefined();
+	if (!Math::isAlignedTo(srcRange.begin(), minMemoryMapAlignment)) throw Error_Undefined();
+	if (!Math::isAlignedTo(srcRange.end()  , minMemoryMapAlignment)) throw Error_Undefined();
+	if (!Math::isAlignedTo(dstOffset       , minMemoryMapAlignment)) throw Error_Undefined();
 	
 	auto* dst_dx12 = this;
 	auto* src_dx12 = rttiCastCheck<GpuBuffer_Dx12>(src);

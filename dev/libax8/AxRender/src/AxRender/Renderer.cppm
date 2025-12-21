@@ -53,12 +53,17 @@ public:
 	bool		vsync() const		{ return _info.vsync; }
 
 	struct AdapterInfo {
-		String	name;
-		Int		memorySize = 0;
-		bool	multithread = false;
-		bool	computeShader = false;
-		bool	shaderFloat64 = false;
-		Int		minThreadGroupSize = 1;
+		String name;
+		Int    memorySize                      = 0;
+		bool   multithread                     = false;
+		bool   computeShader                   = false;
+		bool   shaderFloat64                   = false;
+		Int    minThreadGroupSize              = 1;
+		Vec1i  maxTexture1DSize                = {0};
+		Vec2i  maxTexture2DSize                = {0, 0};
+		Vec3i  maxTexture3DSize                = {0, 0, 0};
+		Int    minMemoryMapAlignment           = 1;
+		Int    minUniformBufferOffsetAlignment = 1;
 	};
 
 	const AdapterInfo&		adapterInfo() const { return _adapterInfo; }
@@ -79,8 +84,6 @@ public:
 	HiResTime	getCurrentUptime() const { return HiResTime::s_now() - _startTime; }
 
 	virtual void onFileChanged(FileDirWatcher_Result& result) {}
-
-	Int copyGpuBufferAlignment() const { return _copyGpuBufferAlignment; }
 	
 friend class RenderContext_Backend;
 protected:
@@ -92,7 +95,6 @@ protected:
 	AdapterInfo			_adapterInfo;
 	RenderSeqId			_renderSeqId = 0;
 	HiResTime			_startTime;
-	Int					_copyGpuBufferAlignment = 16;
 
 	RendererInfo		_info;
 

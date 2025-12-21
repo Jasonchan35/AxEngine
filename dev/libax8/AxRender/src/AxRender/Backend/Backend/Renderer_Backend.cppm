@@ -25,12 +25,6 @@ public:
 	virtual void getBindlessTable(BindlessTable<class Texture2D_Backend>* & outList) { outList = nullptr; }
 	virtual void onUpdateBindlessTables(RenderRequest_Backend* req) {}
 
-	struct Limits {
-		Vec2i	maxTexture2DSize {0,0};
-	};
-
-	const Limits& limits() const { return _limits; }
-
 	Material_Backend*	commonMaterial();
 	Shader_Backend*		commonShader();
 
@@ -44,8 +38,6 @@ protected:
 	virtual void onCreate() override;
 	virtual void onDestroy() override;
 	virtual void onFileChanged(FileDirWatcher_Result& result) override;
-
-	Limits	_limits;
 
 	ImFontAtlas _imguiFontAtlas;
 private:
