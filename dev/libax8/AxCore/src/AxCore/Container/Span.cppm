@@ -146,7 +146,7 @@ struct Span_FindResult {
 template<class T>
 class MutSpan { // copyable
 	using This = MutSpan;
-	using MutByte =	typename std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
+	using MutByte =	std::conditional_t<std::is_const_v<T>, const Byte, Byte>;
 	using MSpan = MutSpan<T>;
 	using CSpan = MutSpan<const T>;
 public:
@@ -263,7 +263,7 @@ public:
 		auto* pMinValue = _data;
 		auto* p = _data + 1;
 		auto* e = _data + _size;
-		for (; p < e; p++) {
+		for (; p < e; ++p) {
 			if (func(*p, *pMinValue)) {
 				pMinValue = p;
 			}
@@ -271,7 +271,7 @@ public:
 		return MFindResult(pMinValue - _data, *p);
 	}
 
-	template<class FUNC> constexpr CFindResult findMin_(FUNC func) const { ax_const_cast(this)->findMin_(func); }
+	template<class FUNC> constexpr CFindResult findMin_(FUNC func) const { return ax_const_cast(this)->findMin_(func); }
 	constexpr MFindResult findMin()			{ return findMin_(ax_op_less<T>); }
 	constexpr CFindResult findMin() const	{ return ax_const_cast(this)->findMin_(); }
 	
@@ -409,7 +409,7 @@ template<class T> constexpr
 void MutSpan<T>::fillValues(const T& v) {
 	T* p = _data;
 	T* end = _data + _size;
-	for (; p < end; p++) {
+	for (; p < end; ++p) {
 		*p = v;
 	}
 }
@@ -454,8 +454,7 @@ constexpr CmpResult MutSpan<T>::compare(Span<R> r, Func func) const noexcept {
 	const T* p0 = _data;
 	const T* p1 = r.data();
 
-	Int i = 0;
-	for( i=0; i<n; ++p0, ++p1, i++ ) {
+	for (Int i = 0; i < n; ++p0, ++p1, i++) {
 		auto res = func(*p0, *p1);
 		if (res != CmpResult::Equal) return res;
 	}
