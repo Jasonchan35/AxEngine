@@ -12,12 +12,12 @@ class NameId_ { // copyable
 	using This	= NameId_;
 public:
 	using Id	= ID;
-	using Str	= PersistString_<CH>;
+	using PStr	= PersistString_<CH>;
 	using View  = StrView_<CH>;
 
 	NameId_() = default;
 	NameId_(const NameId_&) = default;
-	NameId_(const Str& name_, const Id& id_) : _name(name_), _id(id_) {}
+	NameId_(const PStr& name_, const Id& id_) : _name(name_), _id(id_) {}
 
 	static NameId_ s_make(StrView_<CH> str);
 
@@ -35,18 +35,27 @@ public:
 		if (_id >= 0) f << _id;
 	}
 
-	TempString_<CH> toTempString() { return Fmt_<CH, CharA>("{}", *this); }
+	TempString_<CH> toString() { return Fmt("{}", *this); }
 
 	AX_NODISCARD bool hasNoId() const { return _id == kNoId; }
 
 	AX_NODISCARD HashInt onHashInt() const { return HashInt::s_make(_name) ^ HashInt::s_make(_id); }
 	static constexpr Id kNoId = -1;
 private:
-	Str	_name;
-	Id	_id = kNoId;
+	PStr _name;
+	Id   _id = kNoId;
 };
 
-using NameId = NameId_<Char, Int>;
+template<class CH, class ID>
+class InNameId_ : public NameId_<CH, ID> {
+	using Base = NameId_<CH, ID>;
+public:
+	InNameId_(Base r) : Base(r) {}
+	template<class R> constexpr InNameId_(const R& r) : Base(Base::s_make(r)) {}
+};
+
+using NameId   = NameId_<Char, Int>;
+using InNameId = InNameId_<Char, Int>;
 
 template<class CH, class ID> inline
 auto NameId_<CH, ID>::s_make(StrView_<CH> str) -> NameId_ {
@@ -68,7 +77,13 @@ auto NameId_<CH, ID>::s_make(StrView_<CH> str) -> NameId_ {
 		if (!StrView(p, len).tryParse(outId)) { throw Error_ParseString(); }
 	}
 
-	return NameId_(Str::s_make(StrView_<CH>(s, p - s)), outId);
+	return NameId_(PStr::s_make(StrView_<CH>(s, p - s)), outId);
 }
+
+template <class... ARGS>
+constexpr NameId FmtName(FormatString_<Char, ARGS...>&& fmt, const ARGS&... args) {
+	return NameId::s_make(Fmt(AX_FORWARD(fmt), AX_FORWARD(args)...));
+}
+
 
 } // namespace

@@ -86,7 +86,7 @@ void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
 	info.clearValueCount		= AX_VkUtil::castUInt32(clearValues.size());
 	info.pClearValues			= clearValues.data();
 
-	_graphCmdBuf_vk->debugLabelBegin(pass->name(), Color4f(0, 0, 0.25f,1));
+	_graphCmdBuf_vk->debugLabelBegin(pass->name().toString(), Color4f(0, 0, 0.25f,1));
 	vkCmdBeginRenderPass(_graphCmdBuf_vk, &info, VK_SUBPASS_CONTENTS_INLINE);
 }
 

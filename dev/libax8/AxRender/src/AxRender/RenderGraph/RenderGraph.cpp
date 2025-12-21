@@ -8,7 +8,7 @@ import :RenderPass_Backend;
 
 namespace ax /*::AxRender*/ {
 
-RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, ColorType colorType)
+RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, InNameId name, ColorType colorType)
 	: _pass(pass)
 	, _name(name)
 {
@@ -16,7 +16,9 @@ RenderGraph_ColorBuffer::RenderGraph_ColorBuffer( Pass* pass, StrView name, Colo
 	pass->_addColorBuffer(this);
 }
 
-RenderGraph_DepthBuffer::RenderGraph_DepthBuffer(Pass* pass, StrView name, RenderDepthType depthType) {
+RenderGraph_DepthBuffer::RenderGraph_DepthBuffer(Pass* pass, InNameId name, RenderDepthType depthType)
+	: _name(name)
+{
 	_desc.depthType = depthType;
 }
 
@@ -61,7 +63,7 @@ void RenderGraph_Pass::_render(RenderRequest_Backend* req) {
 	req->renderPassEnd(outPass);
 }
 
-void RenderGraph_Pass::_init(RenderGraph* graph, StrView name) {
+void RenderGraph_Pass::_init(RenderGraph* graph, NameId name) {
 	_graph = graph;
 	_name = name;
 	_graph->_addPass(this);

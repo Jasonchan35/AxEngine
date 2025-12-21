@@ -79,12 +79,11 @@ void RenderContext_Dx12::_createBackBuffers() {
 
 void RenderContext_Dx12::BackBuffer_Dx12::createOrUpdate(RenderContext_Dx12* renderContext, Int index, Vec2i frameSize) {
 	_index = index;
-	auto  backBufferName  = Fmt("BackBuffer_{}-color", index);
 	auto& colorBufferAttachment = renderContext->_swapChainDesc.colorAttachmentDesc;
 	auto& depthBufferAttachment = renderContext->_swapChainDesc.depthAttachmentDesc;
 
 	RenderPassColorBuffer_CreateDesc	colorBuf_createDesc;
-	colorBuf_createDesc.name = backBufferName;
+	colorBuf_createDesc.name = FmtName("BackBuffer_{}-color", index);
 	colorBuf_createDesc.frameSize = frameSize;
 	colorBuf_createDesc.fromBackBuffer.set(renderContext, index);
 	colorBuf_createDesc.colorType = colorBufferAttachment.colorType;
@@ -92,7 +91,7 @@ void RenderContext_Dx12::BackBuffer_Dx12::createOrUpdate(RenderContext_Dx12* ren
 	_colorBuf_dx12 = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 
 	RenderPass_CreateDesc renderPass_createDesc;
-	renderPass_createDesc.name = Fmt("BackBuffer_{}", index);
+	renderPass_createDesc.name = FmtName("BackBuffer_{}", index);
 	renderPass_createDesc.fromBackBuffer.set(renderContext, index);
 	renderPass_createDesc.colorAttachmentDescs.emplaceBack(colorBufferAttachment);
 	renderPass_createDesc.depthAttachmentDesc = depthBufferAttachment;

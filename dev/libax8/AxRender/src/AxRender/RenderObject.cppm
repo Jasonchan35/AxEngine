@@ -9,15 +9,15 @@ class RenderObject : public RttiObject {
 public:
 
 #if AX_RENDER_DEBUG_NAME
-	void setDebugName(const StrView& name) { _name = name; onSetDebugName(_name); }
+	void setDebugName(InNameId name) { _name = name; onSetDebugName(_name); }
 #endif
 
-	StrView	name() const { return _name; }
+	NameId	name() const { return _name; }
 
 protected:
-	String	_name;
+	NameId	_name;
 #if AX_RENDER_DEBUG_NAME
-	virtual void onSetDebugName(const String& name) {}
+	virtual void onSetDebugName(NameId name) {}
 #endif
 };
 

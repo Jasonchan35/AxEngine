@@ -219,9 +219,6 @@ public:
 	      Shader_Backend* shader()       { return _shader; }
 	const Shader_Backend* shader() const { return _shader; }
 
-	//TODO: remove and use and change RenderObject::_name to NameId
-	NameId	name() const { return _name; }
-
 	Span<SPtr<const ShaderParamSpace_Backend>>	shaderParamSpaces() const { return _shaderParamSpaces; }
 
 	const ShaderPassInfo*	info() const	{ return _info; }

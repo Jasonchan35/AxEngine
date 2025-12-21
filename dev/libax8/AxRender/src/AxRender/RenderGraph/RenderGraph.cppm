@@ -17,10 +17,10 @@ public:
 	using Pass   = RenderGraph_Pass;
 	using Desc   = RenderPassColorAttachmentDesc;
 
-	RenderGraph_ColorBuffer(Pass* pass, StrView name, ColorType colorType);
+	RenderGraph_ColorBuffer(Pass* pass, InNameId name, ColorType colorType);
 
 	Pass*       pass() { return _pass; }
-	StrView     name() const { return _name; }
+	NameId      name() const { return _name; }
 	const Desc& desc() const { return _desc; }
 
 	void setDirty();
@@ -38,7 +38,7 @@ private:
 	}
 	
 	Pass*	_pass = nullptr;
-	String	_name;
+	NameId	_name;
 	Desc	_desc;
 };
 
@@ -49,10 +49,10 @@ public:
 	using Pass   = RenderGraph_Pass;
 	using Desc	 = RenderPassDepthAttachmentDesc;
 
-	RenderGraph_DepthBuffer(Pass* pass, StrView name, RenderDepthType depthType);
+	RenderGraph_DepthBuffer(Pass* pass, InNameId name, RenderDepthType depthType);
 	
 	Pass*		pass() { return _pass; }
-	StrView		name() const { return _name; }
+	NameId		name() const { return _name; }
 	const Desc&	desc() const { return _desc; }
 	
 	void setDirty();
@@ -71,7 +71,7 @@ private:
 	}
 	
 	Pass*	_pass = nullptr;
-	String	_name;
+	NameId	_name;
 	Desc	_desc;
 };
 
@@ -105,7 +105,7 @@ public:
 	using RenderDelegate = Delegate_<void (RenderRequest* req, Span<Input> inputs)>;
 
 	template<class GRAPH>
-	RenderGraph_Pass(GRAPH* graph, StrView name, void (GRAPH::*func)(RenderRequest* req, Span<Input> inputs))
+	RenderGraph_Pass(GRAPH* graph, InNameId name, void (GRAPH::*func)(RenderRequest* req, Span<Input> inputs))
 		: _depthBuffer(this, "depth", RenderDepthType::Depth_UNorm24_Stencil_UInt8)
 	{
 		static_assert(std::is_base_of_v<RenderGraph, GRAPH>);
@@ -121,9 +121,9 @@ public:
 
 	void setInputs(Span<ColorBuffer*> inputs);
 
-	ColorBuffer*		addColorBuffer(StrView name);
+	ColorBuffer*		addColorBuffer(NameId name);
 
-	StrView				name() const			{ return _name; }
+	NameId				name() const			{ return _name; }
 	const Vec2i&		frameSize() const		{ return _frameSize; }
 	bool				isBackBuffer() const	{ return _isBackBuffer; }
 
@@ -141,7 +141,7 @@ friend class RenderGraph;
 friend class RenderGraph_ColorBuffer;
 protected:
 
-	void _init(RenderGraph* graph, StrView name);
+	void _init(RenderGraph* graph, NameId name);
 	void _addColorBuffer(ColorBuffer* colorBuf);
 	bool _compareInputs(Span<ColorBuffer*> inputs);
 
@@ -149,7 +149,7 @@ protected:
 	void _render(class RenderRequest_Backend* req);
 
 	RenderGraph*	_graph = nullptr;
-	String			_name;
+	NameId			_name;
 	Vec2i			_frameSize {0,0};
 	AutoFrameSize	_autoFrameSize = AutoFrameSize::Full;
 

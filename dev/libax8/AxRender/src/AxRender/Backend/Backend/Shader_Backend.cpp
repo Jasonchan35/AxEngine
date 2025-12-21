@@ -37,7 +37,7 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 	dst.create(paramInfo);
 
 	if constexpr (std::is_same_v<SamplerParam, T>) {
-		auto str = dst.name().toTempString();
+		auto str = dst.name().toString();
 		if (auto samplerName = str.extractFromPrefix("AxSamplerState_")) {
 			_nameToSampler.emplaceBack(Pair_make(NameId::s_make(samplerName), dst.name()));
 		}
@@ -45,7 +45,7 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 
 	if constexpr (std::is_same_v<ConstBuffer, T> ) {
 		for (auto& varInfo : dst.varInfos()) {
-			auto str = varInfo.name().toTempString();
+			auto str = varInfo.name().toString();
 			
 			if (auto samplerName = str.extractFromPrefix("AxSamplerState_")) {
 				_nameToSampler.emplaceBack(Pair_make(NameId::s_make(samplerName), varInfo.name()));

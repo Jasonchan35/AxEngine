@@ -19,7 +19,7 @@ struct RenderBackBufferRef {
 
 class RenderPassColorBuffer_CreateDesc : public NonCopyable {
 public:
-	String              name;
+	NameId              name;
 	Vec2i               frameSize{0, 0};
 	ColorType           colorType = ColorType::RGBAb;
 	RenderBackBufferRef fromBackBuffer;
@@ -66,7 +66,7 @@ protected:
 
 class RenderPass_CreateDesc : public NonCopyable {
 public:
-	String              name;
+	NameId              name;
 	Vec2i               frameSize{0, 0};
 	RenderBackBufferRef fromBackBuffer;
 

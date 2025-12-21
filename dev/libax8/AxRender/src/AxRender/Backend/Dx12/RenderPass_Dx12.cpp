@@ -50,7 +50,7 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 			
 		} else {
 			RenderPassColorBuffer_CreateDesc colorBuf_createDesc;
-			colorBuf_createDesc.name      = Fmt("{}-color", desc.name);
+			colorBuf_createDesc.name      = FmtName("{}-color", desc.name);
 			colorBuf_createDesc.colorType = newColorAttachment.desc.colorType;
 			newColorAttachment.buffer     = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 		}
