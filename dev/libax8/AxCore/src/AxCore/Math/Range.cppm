@@ -13,13 +13,11 @@ class Range_ {
 	T	_begin = 0;
 	T	_end   = 0;
 
-	// please use Range_BeginEnd() or Range_BeginSize()
-	AX_INLINE constexpr Range_(const T& begin_, const T& end_) noexcept : _begin(begin_), _end(end_) {}
 public:
+	AX_INLINE constexpr Range_(const T& begin_, const T& end_) noexcept : _begin(begin_), _end(end_) {}
 
 	operator Range_<const T>() const { return Range_<const T>(_begin, _end); }
 
-	static AX_INLINE constexpr This s_beginEnd (const T& begin_, const T& end_ ) noexcept { return Range_(begin_, end_); }
 	static AX_INLINE constexpr This s_beginSize(const T& begin_, const T& size_) noexcept { return Range_(begin_, begin_ + size_); }
 	
 	AX_INLINE constexpr Range_() = default;
@@ -84,40 +82,11 @@ private:
 using IntRange = Range_<Int>;
 
 template<class T>
-AX_NODISCARD AX_INLINE constexpr Range_<T> Range_Size(const T& end) noexcept {
-	return Range_<T>::s_beginEnd(0, end);
-}
-
-template<class T>
-AX_NODISCARD AX_INLINE constexpr Range_<T> Range_BeginEnd(const T& begin, const T& end) noexcept {
-	return Range_<T>::s_beginEnd(begin, end);
-}
-
-template<class T>
 AX_NODISCARD AX_INLINE constexpr Range_<T> Range_BeginSize(const T& begin, const T& size) noexcept {
 	return Range_<T>::s_beginSize(begin, size);
 }
-
-AX_NODISCARD AX_INLINE constexpr IntRange IntRange_BeginEnd(const Int& begin, const Int& end) noexcept {
-	return IntRange::s_beginEnd(begin, end);
-}
-
 AX_NODISCARD AX_INLINE constexpr IntRange IntRange_BeginSize(const Int& begin, const Int& end) noexcept {
 	return IntRange::s_beginSize(begin, end);
 }
-
-template<class T>
-class RangeEx_  {
-	using This = RangeEx_;
-	T	_begin	= 0;
-	T	_end	= 0;
-	T	_step	= 0;
-
-	// please use s_beginAndEnd() or s_beginAndSize()
-	AX_INLINE constexpr RangeEx_(const T& begin_, const T& end_, const T& step_) noexcept 
-								: _begin(begin_), _end(end_), _step(step_) {}
-public:
-	
-};
 
 } // namespace
