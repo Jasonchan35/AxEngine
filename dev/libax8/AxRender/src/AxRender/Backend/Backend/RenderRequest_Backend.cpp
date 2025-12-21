@@ -14,15 +14,13 @@ UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& 
 	CreateDesc desc;
 	desc.renderer = renderer;
 	desc.index = index;
-	auto o = Renderer_Backend::s_instance()->newRenderRequest(req, desc);
-	AX_ASSERT(o->inlineUpload._stagingToGpuBuffer);
-	return o;
+	return Renderer_Backend::s_instance()->newRenderRequest(req, desc);
 }
 
 RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
 	_renderer = desc.renderer;
 	_index = desc.index;
-	inlineUpload.create(this);
+	_inlineUpload.create(this);
 }
 
 void RenderRequest_Backend::waitCompleted() {
@@ -35,7 +33,7 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 	waitCompleted();
 	_renderSeqId = newRenderSeqId;
 	resourcesToKeep.clear();
-	inlineUpload.reset();
+	_inlineUpload.reset();
 }
 
 void RenderRequest_Backend::_updateCommonMaterial() {
@@ -126,12 +124,7 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 	onSetScissorRect(rect);
 }
 
-void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
-	if (inlineCopyDataToGpuBuffer(dst, data, dstOffset)) {
-		return;
-	}
-	
-// use upload buffer
+void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
 	auto uploadBuf = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
 											  Fmt("{}-upload", _name),
 											  GpuBufferType::StagingToGpu,
@@ -144,22 +137,20 @@ void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, I
 	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadBuf->bufferRange(), dstOffset);
 }
 
-bool RenderRequest_Backend::inlineCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
+bool RenderRequest_Backend::copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
 	auto dataSize = data.size();
-	if (dataSize > inlineUpload._limitPerEach) return false;
-	if (dataSize > inlineUpload.remainSize()) return false;
+	if (dataSize > _inlineUpload.limitPerEach) return false;
+	if (dataSize > _inlineUpload.remainSize()) return false;
 
-	auto& uploadBuf = inlineUpload._stagingToGpuBuffer;
-	
-	resourcesToKeep.add(uploadBuf.ptr());
-	uploadBuf->copyData(data, inlineUpload._used);
+	auto& uploadBuf = _inlineUpload.stagingToGpuBuffer;
+	uploadBuf->copyData(data, _inlineUpload.usedBytes);
 
 	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
 
-	IntRange uploadRange = IntRange::s_beginSize(inlineUpload._used, dataSize);
+	auto uploadRange = IntRange_BeginSize(_inlineUpload.usedBytes, dataSize);
 	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadRange, dstOffset);
 
-	inlineUpload._used += dataSize;
+	_inlineUpload.usedBytes += dataSize;
 	return true;
 }
 
@@ -193,15 +184,13 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 }
 
 void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {
-	_req = req;
-
 	auto& info = req->renderer()->info().inlineUpload;
 
-	_limitPerEach = info.limitPerEach;
+	limitPerEach = info.limitPerEach;
 	if (info.bufferSize <= 0) return;
 
-	_stagingToGpuBuffer = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
-	                                               "InlineBuffer",
+	stagingToGpuBuffer = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
+	                                               Fmt("{}-InlineUpload", req->name()),
 	                                               GpuBufferType::StagingToGpu,
 	                                               info.bufferSize);
 }

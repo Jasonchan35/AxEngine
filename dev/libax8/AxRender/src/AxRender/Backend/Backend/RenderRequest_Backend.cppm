@@ -81,28 +81,9 @@ public:
 	ResourcesList	resourcesToKeep;
 	ResourcesList	resourcesToUpdateDescriptor;
 
-	struct InlineUpload {
-		InlineUpload() { reset(); }
-
-		Int remainSize() const	{ return bufferSize() - _used; }
-		Int bufferSize() const	{ return _stagingToGpuBuffer->bufferSize(); }
-
-	friend class RenderRequest_Backend;
-	protected:
-		void create(RenderRequest_Backend* req);
-		void reset() { _used = 0; }
-
-	private:
-		RenderRequest*	_req = nullptr;
-		Int				_used = 0;
-		Int				_limitPerEach = 0;
-		SPtr<GpuBuffer_Backend>	_stagingToGpuBuffer;
-	};
-
-	InlineUpload	inlineUpload;
-
 	void copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
-	bool inlineCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
+	bool copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
+	void copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
 	
 
 	Int index() const { return _index; }
@@ -120,6 +101,28 @@ private:
 	
 	Int _index = 0;
 	SPtr<RenderPass_Backend>	_backBufferRenderPass;
+
+	struct InlineUpload {
+		Int remainSize() const	{ return bufferSize() - usedBytes; }
+		Int bufferSize() const	{ return stagingToGpuBuffer->bufferSize(); }
+		void create(RenderRequest_Backend* req);
+
+		void reset() { usedBytes = 0; }
+		Int	usedBytes = 0;
+		Int	limitPerEach = 0;
+		SPtr<GpuBuffer_Backend>	stagingToGpuBuffer;
+	};
+
+	InlineUpload _inlineUpload;
 };
+
+inline
+void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
+	if (copyDataToGpuBuffer_InlineBuffer(dst, data, dstOffset)) {
+		return;
+	}
+	copyDataToGpuBuffer_StagingBuffer(dst, data, dstOffset);
+}
+
 
 } // namespace
