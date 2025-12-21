@@ -11,7 +11,7 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	if (!inBound(dstRange)) throw Error_Undefined();
 
 	static Int copyGpuBufferAlignment = Renderer::s_instance()->copyGpuBufferAlignment();
-	AX_ASSERT(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT == copyGpuBufferAlignment);
+//	AX_ASSERT(D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT == copyGpuBufferAlignment);
 
 	if (!Math::isAlignedTo(srcRange.begin(), copyGpuBufferAlignment)) throw Error_Undefined();
 	if (!Math::isAlignedTo(srcRange.end()  , copyGpuBufferAlignment)) throw Error_Undefined();
@@ -27,7 +27,8 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	auto& srcRes = src_dx12->resource();
 	auto& dstRes = dst_dx12->resource();
 
-//	auto srcOldState = srcRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
+//	auto srcOldState =
+	srcRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
 //	auto dstOldState =
 	dstRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -37,7 +38,7 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	                             ax_safe_cast_from(srcRange.begin()),
 	                             ax_safe_cast_from(srcRange.size()));
 
-	// srcRes.resourceBarrier(cmdList_dx, srcOldState);
+//	srcRes.resourceBarrier(cmdList_dx, srcOldState);
 //	dstRes.resourceBarrier(cmdList_dx, dstOldState);
 }
 

@@ -84,8 +84,6 @@ public:
 	struct InlineUpload {
 		InlineUpload() { reset(); }
 
-		bool tryCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
-
 		Int remainSize() const	{ return bufferSize() - _used; }
 		Int bufferSize() const	{ return _stagingToGpuBuffer->bufferSize(); }
 
@@ -104,6 +102,7 @@ public:
 	InlineUpload	inlineUpload;
 
 	void copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
+	bool inlineCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
 	
 
 	Int index() const { return _index; }
