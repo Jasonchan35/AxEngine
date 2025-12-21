@@ -179,7 +179,7 @@ IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf,
 	auto* dst = reinterpret_cast<V*>(buf.data() + range.begin());
 	AX_GCC_WARNING_POP()
 
-	if (Math::exactlyEqual(*dst, value)) return IntRange(0);
+	if (Math::exactlyEqual(*dst, value)) return IntRange();
 
 	*dst = value;
 	return range;
