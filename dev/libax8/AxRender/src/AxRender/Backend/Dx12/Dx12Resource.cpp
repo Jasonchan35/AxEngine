@@ -132,6 +132,8 @@ MutByteSpan Dx12ResourceBase::_mapMemory(IntRange range) {
 	UINT8* dst = nullptr;
 	auto hr = _d3dResource->Map(0, &dxRange, reinterpret_cast<void**>(&dst));
 	Dx12Util::throwIfError(hr);
+	
+	dst += dxRange.Begin; // ID3D12Resource::Map() ppData pointer returned is never offset by any values in pReadRange.
 	return MutByteSpan(dst, range.size());
 }
 
