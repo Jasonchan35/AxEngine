@@ -145,9 +145,6 @@ void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, I
 }
 
 bool RenderRequest_Backend::inlineCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
-#if 0 // TODO: don't know why doesn't work on DX12
-	return false;
-#endif
 	auto dataSize = data.size();
 	if (dataSize > inlineUpload._limitPerEach) return false;
 	if (dataSize > inlineUpload.remainSize()) return false;
