@@ -11,10 +11,6 @@ SPtr<GpuBuffer> GpuBuffer::s_new(const MemAllocRequest& req, const CreateDesc& d
 }
 
 GpuBuffer::GpuBuffer(const CreateDesc& desc) {
-	static auto minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
-	if (!Math::isAlignedTo(desc.bufferSize, minMemoryMapAlignment))
-		throw Error_Undefined("GpuBuffer - bufferSize invalid alignment");
-	
 	_bufferType = desc.bufferType;
 	_bufferSize = desc.bufferSize;
 }
@@ -53,13 +49,7 @@ GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 		uploadRange = IntRange(dataSize); // upload all for new buffer
 	}
 
-	static auto minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
-	auto alignedRange = uploadRange.alignTo(minMemoryMapAlignment);
-
-	_data.ensureCapacity(alignedRange.end());
-	auto dataToCopy = Span(_data.data() + alignedRange.begin(), alignedRange.size());
-
-	req->copyDataToGpuBuffer(_gpuBuffer, dataToCopy, alignedRange.begin());
+	req->copyDataToGpuBuffer(_gpuBuffer, _data.slice(uploadRange), uploadRange.begin());
 	return _gpuBuffer;
 }
 

@@ -130,11 +130,7 @@ void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, I
 	if (inlineCopyDataToGpuBuffer(dst, data, dstOffset)) {
 		return;
 	}
-
-	static auto minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
-	if (!Math::isAlignedTo(data.size(), minMemoryMapAlignment)) throw Error_Undefined(); 
-	if (!Math::isAlignedTo(dstOffset,   minMemoryMapAlignment)) throw Error_Undefined(); 
-
+	
 // use upload buffer
 	auto uploadBuf = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
 											  Fmt("{}-upload", _name),
@@ -152,12 +148,6 @@ bool RenderRequest_Backend::inlineCopyDataToGpuBuffer(GpuBuffer* dst, ByteSpan d
 #if 0 // TODO: don't know why doesn't work on DX12
 	return false;
 #endif
-	
-	static auto minMemoryMapAlignment = Renderer::s_instance()->adapterInfo().minMemoryMapAlignment;
-	if (!Math::isAlignedTo(data.size(), 		minMemoryMapAlignment)) throw Error_Undefined();
-	if (!Math::isAlignedTo(dstOffset,   		minMemoryMapAlignment)) throw Error_Undefined();
-	if (!Math::isAlignedTo(inlineUpload._used,	minMemoryMapAlignment)) throw Error_Undefined();
-
 	auto dataSize = data.size();
 	if (dataSize > inlineUpload._limitPerEach) return false;
 	if (dataSize > inlineUpload.remainSize()) return false;
