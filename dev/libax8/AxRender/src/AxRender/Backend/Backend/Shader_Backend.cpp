@@ -213,6 +213,21 @@ void ShaderPass_Backend::_createParamSpaces() {
 			}
 		}
 	}
+
+	for (auto& paramSpace : _shaderParamSpaces) {
+		for (auto& param : paramSpace->_constBuffers) {
+			_constBuffers_totalBindCount += param.bindCount();
+		}
+		for (auto& param : paramSpace->_samplerParams) {
+			_samplerParams_totalBindCount += param.bindCount();
+		}
+		for (auto& param : paramSpace->_textureParams) {
+			_textureParams_totalBindCount += param.bindCount();
+		}
+		for (auto& param : paramSpace->_storageBufferParams) {
+			_storageBufferParams_totalBindCount += param.bindCount();
+		}
+	}	
 }
 
 #if 0

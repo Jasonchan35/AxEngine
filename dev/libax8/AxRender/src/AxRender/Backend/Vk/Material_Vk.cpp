@@ -12,169 +12,175 @@ import :RenderContext_Vk;
 
 namespace ax /*::AxRender*/ {
 
-MaterialParamSpace_Vk::MaterialParamSpace_Vk(const CreateDesc& desc)
-	: Base(desc) {}
-
-VkDescriptorSet MaterialParamSpace_Vk::getUpdatedDescriptorSet(RenderRequest_Vk* req) {
-	auto* shaderParamSpace = rttiCastCheck<ShaderParamSpace_Vk>(_shaderParamSpace.ptr());
-	if (!shaderParamSpace) return VK_NULL_HANDLE;
-
+Span<VkDescriptorSet> MaterialPass_Vk::getUpdatedDescriptorSets(RenderRequest_Vk* req) {
 	auto seqId = req->renderSeqId();
 
 	if (_lastUpdateRenderSeqId != seqId) {
 		_lastUpdateRenderSeqId = seqId;
-		_updateDescriptorSet(req, shaderParamSpace);
+		_nextFrameData(req);
 	}
 
-	return _currentDescriptorSet();
+	return _currentFrameData().descSets;
 }
 
-void MaterialParamSpace_Vk::_updateDescriptorSet(RenderRequest_Vk* req, const ShaderParamSpace_Vk* shaderParamSpace) {
-	_nextDescriptorSet(req, shaderParamSpace);
-	auto curSet = _currentDescriptorSet();
+void MaterialPass_Vk::_nextFrameData(RenderRequest_Vk* req) {
+	_currentFrameDataIndex = (_currentFrameDataIndex + 1) % _perFrameData.size();
+	auto& curFrameData = _currentFrameData();
+	curFrameData.update(this, req);
+}
 
-//---
-	_updateUniformBufferInfos.clear();
-	_updateStorageBufferInfos.clear();
-	_updateTextureInfos.clear();
-	_updateSamplerInfos.clear();
-	_updateWriteDescriptorSets.clear();
+void MaterialPass_Vk::PerFrameData::create(MaterialPass_Vk* pass, RenderRequest_Vk* req) {
+	Array<VkDescriptorPoolSize, 8>	poolSizes;
 
-	auto addWriteDesc = [&](
-		VkDescriptorType descType, 
-		BindPoint dstBinding, 
-		VkDescriptorBufferInfo* bufInfo, 
-		VkDescriptorImageInfo* imageInfo
-	) {
-		auto& w				= _updateWriteDescriptorSets.emplaceBack();
-		w.sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		w.pNext				= nullptr;
-		w.dstSet			= curSet;
-		w.dstBinding		= AX_VkUtil::castUInt32(ax_enum_int(dstBinding));
-		w.dstArrayElement	= 0;
-		w.descriptorType	= descType;
-		w.descriptorCount	= 1;
-		w.pBufferInfo		= bufInfo;
-		w.pImageInfo		= imageInfo;
+	auto addPoolSize = [&](Int descriptorCount, VkDescriptorType descType) -> void {
+		if (descriptorCount <= 0) return;
+		auto& dst           = poolSizes.emplaceBack();
+		dst.type            = descType;
+		dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
 	};
 
-	for (auto& param : _constBuffers) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
-		if (!gpuBuf) throw Error_Undefined("cannot get const buffer");
-
-		auto& dst = _updateUniformBufferInfos.emplaceBack();
-		dst.offset  = 0;
-		dst.range	= AX_VkUtil::castUInt32(param.dataSize());
-		dst.buffer	= gpuBuf->vkBufHandle();
-		if (!dst.buffer) throw Error_Undefined();
-
-		addWriteDesc(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), &dst, nullptr);
-	}
-
-#if !AX_RENDER_BINDLESS
-
-	for (auto& param : _storageBufferParams) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.gpuBuffer());
-		if (!gpuBuf) throw Error_Undefined("cannot get storage buffer");
-
-		auto& dst = _updateStorageBufferInfos.emplaceBack();
-		dst.offset  = 0;
-		dst.range	= AX_VkUtil::castUInt32(param.dataSize());
-		dst.buffer	= gpuBuf->vkBufHandle();
-		if (!dst.buffer) throw Error_Undefined();
+	addPoolSize(pass->_shaderPass->constBuffers_totalBindCount(),			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+	addPoolSize(pass->_shaderPass->textureParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
+	addPoolSize(pass->_shaderPass->samplerParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLER);
+	addPoolSize(pass->_shaderPass->storageBufferParams_totalBindCount(),	VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
 		
-		addWriteDesc(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), &dst, nullptr);
-	}
-
-	for (auto& param : _samplerParams) {
-		auto* sampler = param.sampler();
-		if (!sampler) {
-			sampler = StockObjects::s_instance()->samplers.defaultValue.ptr();
-		}
-
-		auto* sampler_vk = rttiCastCheck<Sampler_Vk>(sampler);
-		if (!sampler_vk) throw Error_Undefined();
-
-		req->resourcesToKeep.add(sampler_vk);
-
-		auto& dst = _updateSamplerInfos.emplaceBack();
-		dst.sampler = sampler_vk->vkHandle();
-		addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), nullptr, &dst);
-	}
-
-	for (auto& param : _textureParams) {
-		auto* tex = param.texture();
-		if (!tex) {
-			tex = StockObjects::s_instance()->texture2Ds.kError.ptr();
-		}
-		
-		auto& dst = _updateTextureInfos.emplaceBack();
-		switch (tex->type()) {
-			case RenderDataType::Texture2D: {
-				auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
-				if (!tex2d) throw Error_Undefined();
-				tex2d->_bindImage(req, dst);
-			}break;
-
-			default: throw Error_Undefined();
-		}
-
-		addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, param.bindPoint(), nullptr, &dst);
-	}
+	VkDescriptorPoolCreateFlags poolFlags = 0;
+#if AX_RENDER_BINDLESS
+	poolFlags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 #endif
 
 	auto* renderer = req->renderer_vk();
-	AX_vkUpdateDescriptorSets(renderer->device(), _updateWriteDescriptorSets, {});
+	auto& dev      = renderer->device();
+		
+	auto& shaderDescSetLayouts = pass->shaderPass_vk()->_spaceDescSetLayout;
+	pool.create(dev, poolSizes, shaderDescSetLayouts.size(), poolFlags);
+		
+	for (Int i = 0; i < BindSpace_COUNT; ++i) {
+		if (!shaderDescSetLayouts[i]) continue;
+		descSets[i] = pool.allocDescriptorSet(shaderDescSetLayouts[i]);
+
+#if AX_RENDER_DEBUG_NAME
+		dev.setObjectDebugName(descSets[i], Fmt("{}-DescSet[{}][{}]", pass->_name, pass->_currentFrameDataIndex, i));
+#endif
+	}
 }
 
-void MaterialParamSpace_Vk::_nextDescriptorSet(RenderRequest_Vk* req, const ShaderParamSpace_Vk* shaderParamSpace) {
+void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_Vk* req) {
+	if (!pool) {
+		create(pass, req);
+	}
 
-	auto renderRequestCount = req->renderer()->info().renderRequestCount;
+	auto* shaderPass = pass->_shaderPass;
+	
+	// avoid resize cause the pointer to element change
+	req->_writeDescriptor_BufferInfos.clear();
+	req->_writeDescriptor_BufferInfos.ensureCapacity(
+		shaderPass->constBuffers_totalBindCount() + shaderPass->storageBufferParams_totalBindCount());
 
-	if (!_descriptorPool) {
-		Array<VkDescriptorPoolSize, 64>	poolSizes;
+	req->_writeDescriptor_ImageInfos.clear();
+	req->_writeDescriptor_ImageInfos.ensureCapacity(
+		shaderPass->textureParams_totalBindCount() + shaderPass->samplerParams_totalBindCount());
 
-		auto helper = [&](Int descriptorCount, VkDescriptorType descType) -> void {
-			if (descriptorCount <= 0) return;
+	//------------
+	req->_writeDescriptorSets.clear();
+	req->_writeDescriptorSets.ensureCapacity(
+		req->_writeDescriptor_BufferInfos.capacity() + req->_writeDescriptor_ImageInfos.capacity());
+	
+	auto addWriteDesc = [&](VkDescriptorType        descType,
+	                        BindPoint               bindPoint,
+	                        BindSpace               bindSpace,
+	                        VkDescriptorBufferInfo* bufInfo,
+	                        VkDescriptorImageInfo*  imageInfo
+	) {
+		auto& wds			= req->_writeDescriptorSets.emplaceBack();
+		wds.sType			= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		wds.pNext			= nullptr;
+		wds.dstSet			= descSets[ax_enum_int(bindSpace)];
+		wds.dstBinding		= AX_VkUtil::castUInt32(ax_enum_int(bindPoint));
+		wds.dstArrayElement	= 0;
+		wds.descriptorType	= descType;
+		wds.descriptorCount	= 1;
+		wds.pBufferInfo		= bufInfo;
+		wds.pImageInfo		= imageInfo;
+	};
 
-			auto& dst = poolSizes.emplaceBack();
-			dst.type = descType;
-			dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
-		};
+	for (auto& paramSpace_ : pass->_materialParamSpaces) {
+		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(paramSpace_.ptr());
+		if (!paramSpace) continue;
+		BindSpace bindSpace = paramSpace->bindSpace();
+		
+		for (auto& param : paramSpace->_constBuffers) {
+			auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
+			if (!gpuBuf) throw Error_Undefined("cannot get const buffer");
+			auto& dst  = req->_writeDescriptor_BufferInfos.emplaceBack();
+			dst.offset = 0;
+			dst.range  = AX_VkUtil::castUInt32(param.dataSize());
+			dst.buffer = gpuBuf->vkBufHandle();
+			if (!dst.buffer) throw Error_Undefined();
 
-		helper(constBuffers_totalBindCount(),			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-		helper(textureParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
-		helper(samplerParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLER);
-		helper(storageBufferParams_totalBindCount(),	VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+			addWriteDesc(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), bindSpace, &dst, nullptr);
+		}
 
-		_descriptorSets.resize(renderRequestCount);
+		if constexpr  (AxRenderConfig::bindless) {
+			if (!pass->shader()->isGlobalCommonShader())
+				continue; //-- skip for non-common shaders in bindless
+		}
 
-		VkDescriptorPoolCreateFlags poolFlags = 0;
-#if AX_RENDER_BINDLESS
-		poolFlags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
-#endif
+		for (auto& param : paramSpace->_storageBufferParams) {
+			auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.gpuBuffer());
+			if (!gpuBuf) throw Error_Undefined("cannot get storage buffer");
 
-		auto* renderer = req->renderer_vk();
-		auto& dev = renderer->device();
-		_descriptorPool.create(dev, poolSizes, renderRequestCount, poolFlags);
+			auto& dst  = req->_writeDescriptor_BufferInfos.emplaceBack();
+			dst.offset = 0;
+			dst.range  = AX_VkUtil::castUInt32(param.dataSize());
+			dst.buffer = gpuBuf->vkBufHandle();
+			if (!dst.buffer) throw Error_Undefined();
+			
+			addWriteDesc(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), bindSpace, &dst, nullptr);
+		}
 
-		for (Int i = 0; i < renderRequestCount; i++) {
-			_descriptorSets[i] = _descriptorPool.allocDescriptorSet(shaderParamSpace->_layout_vk);
-//#if AX_RENDER_DEBUG_NAME
-//			dev.setObjectDebugName(_descriptorSets[i], Fmt("DescSet[{}]-{}", i, bindSpace()));
-//#endif
+		for (auto& param : paramSpace->_samplerParams) {
+			auto* sampler = param.sampler();
+			if (!sampler) {
+				sampler = StockObjects::s_instance()->samplers.defaultValue.ptr();
+			}
+
+			auto* sampler_vk = rttiCastCheck<Sampler_Vk>(sampler);
+			if (!sampler_vk) throw Error_Undefined();
+
+			req->resourcesToKeep.add(sampler_vk);
+
+			auto& dst = req->_writeDescriptor_ImageInfos.emplaceBack();
+			dst.sampler = sampler_vk->vkHandle();
+			if (!dst.sampler) throw Error_Undefined();
+			
+			addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), bindSpace, nullptr, &dst);
+		}
+
+		for (auto& param : paramSpace->_textureParams) {
+			auto* tex = param.texture();
+			if (!tex) {
+				tex = StockObjects::s_instance()->texture2Ds.kError.ptr();
+			}
+			
+			auto& dst = req->_writeDescriptor_ImageInfos.emplaceBack();
+			switch (tex->type()) {
+				case RenderDataType::Texture2D: {
+					auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
+					if (!tex2d) throw Error_Undefined();
+					tex2d->_bindImage(req, dst);
+				}break;
+
+				default: throw Error_Undefined();
+			}
+
+			addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, param.bindPoint(), bindSpace, nullptr, &dst);
 		}
 	}
 
-	_currentDescriptorSetsIndex = (_currentDescriptorSetsIndex + 1) % _descriptorSets.size();
+	auto* renderer = req->renderer_vk();
+	AX_vkUpdateDescriptorSets(renderer->device(), req->_writeDescriptorSets, {});
 }
-
-VkDescriptorSet MaterialParamSpace_Vk::getLastDescriptorSet() {
-	Int n = _descriptorSets.size();
-	Int last = (_currentDescriptorSetsIndex + n - 1) % n;
-	return _descriptorSets[last];
-}
-
 
 bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
@@ -184,10 +190,6 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
 	if (!shdPass->_bindPipeline(req, cmd)) return false;
-
-	Array<VkDescriptorSet, 16>	bindDescSets;
-
-	auto* renderer = Renderer_Vk::s_instance();
 
 	for (auto& paramSpace_ : _materialParamSpaces) {
 		if (!paramSpace_) continue;
@@ -200,47 +202,20 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 			AX_ASSERT(false);
 			return false;
 		}
-
-		auto& dst = bindDescSets.ensureSizeAndGetElement(bindSpace);
-		dst = paramSpace->getUpdatedDescriptorSet(req);
-		if (!dst) { AX_ASSERT(false); return false; }
 	}
 
-	// TODO: this part should be done from for-loop above
-	// because some _materialParamSpaces is pointing to common pass
-	
-	auto* commonMaterial = renderer->commonMaterial();
-	if (!commonMaterial) { AX_ASSERT(false); return false; }
+	Array<VkDescriptorSet, BindSpace_COUNT> destSet;
+	for (auto& s : getUpdatedDescriptorSets(req)) {
+		if (!s) continue; // destSet cannot contains null
+		destSet.emplaceBack(s);
+	} 
 
-	auto addCommonBlock = [&](BindSpace bindSpace) {
-		auto* block = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, bindSpace);
-		if (!block) throw Error_Undefined(Fmt("cannot get commonParamSpace {}", bindSpace));
-
-		auto& dst = bindDescSets.ensureSizeAndGetElement(ax_enum_int(bindSpace));
-		dst = block->getUpdatedDescriptorSet(req);
-		if (!dst) throw Error_Undefined("cannot getUpdatedDescriptorSet");
-	};
-
-	addCommonBlock(BindSpace::Global   );
-	addCommonBlock(BindSpace::PerFrame );
-	// TODO: get from object
-	addCommonBlock(BindSpace::PerObject);
-
-	if (bindDescSets.size() <= 0) {
-		AX_ASSERT(false);
-		return false;
-	}
-
-	if (bindDescSets.find(VK_NULL_HANDLE)) {
-		AX_ASSERT(false); // cannot contains null DescriptorSet
-		return false;
-	}
-
-	auto& graphCmdBuf = req->graphCmdBuf_vk();
-	AX_vkCmdBindDescriptorSets(	graphCmdBuf,
-								shdPass->isCompute() ? VK_PIPELINE_BIND_POINT_COMPUTE :  VK_PIPELINE_BIND_POINT_GRAPHICS, 
-								shdPass->pipelineLayout(), 
-								0, bindDescSets, {});
+	AX_vkCmdBindDescriptorSets(req->graphCmdBuf_vk(),
+	                           shdPass->isCompute() ? VK_PIPELINE_BIND_POINT_COMPUTE : VK_PIPELINE_BIND_POINT_GRAPHICS,
+	                           shdPass->pipelineLayout(),
+	                           0,
+	                           destSet,
+	                           {});
 
 	return true;
 }
@@ -248,6 +223,7 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 MaterialPass_Vk::MaterialPass_Vk(const CreateDesc& desc)
 : Base(desc)
 {
+	_perFrameData.resize(Renderer::s_instance()->info().renderRequestCount);
 }
 
 

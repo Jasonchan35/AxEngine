@@ -41,8 +41,23 @@ public:
 	class Renderer_Backend* renderer_backend() { return rttiCastCheck<Renderer_Backend>(_renderer); }
 	class RenderContext_Backend* renderContext_backend() { return rttiCastCheck<RenderContext_Backend>(_renderContext); }
 
-//	CommandBuffer&	cmdBuf() { return *_cmdBuf; }
+#if AX_RENDER_BINDLESS
+	struct UpdatedBindlessResources {
+		Array<SPtr<Sampler_Backend  >>	samplers;
+		Array<SPtr<Texture2D_Backend>>	texture2Ds;
 
+		void swap(Array<SPtr<Sampler_Backend    >> r) { std::swap(r, samplers  ); }
+		void swap(Array<SPtr<Texture2D_Backend  >> r) { std::swap(r, texture2Ds); }
+
+		void clear() {
+			samplers.clear();
+			texture2Ds.clear();
+		}
+	};
+
+	UpdatedBindlessResources updatedBindlessResources;
+#endif	
+	
 	struct ResourcesList {
 		template<class T> Array<SPtr<T>>& getList() { return _all_list.get< Array<SPtr<T>> >(); }
 
@@ -79,7 +94,6 @@ public:
 	};
 
 	ResourcesList	resourcesToKeep;
-	ResourcesList	resourcesToUpdateDescriptor;
 
 	void copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
 	bool copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);

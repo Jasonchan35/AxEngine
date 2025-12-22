@@ -23,7 +23,7 @@ public:
 		}
 	};
 
-	PsoKey					key;
+	PsoKey				key;
 	AX_VkPipelineCache	pipelineCache;
 	AX_VkPipeline		pipeline;
 };
@@ -40,10 +40,6 @@ class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
 	AX_RTTI_INFO(ShaderParamSpace_Vk, ShaderParamSpace_Backend)
 public:
 	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
-
-	AX_VkDescriptorSetLayout& createLayout_vk();
-	
-	AX_VkDescriptorSetLayout	_layout_vk;
 };
 
 class ShaderPass_Vk : public ShaderPass_Backend {
@@ -63,10 +59,9 @@ public:
 		return rttiCastCheck<ShaderParamSpace_Vk>(getParamSpace(type)); 
 	}
 
-	ShaderParamSpace_Vk* getOwnParamSpace_vk(BindSpace type) {
-		return rttiCastCheck<ShaderParamSpace_Vk>(getOwnParamSpace(type)); 
-	}
-	
+	// TODO: change to Array or remove array
+	FixedArray<AX_VkDescriptorSetLayout, BindSpace_COUNT>	_spaceDescSetLayout;
+
 private:
 	AX_VkPipelineLayout			_pipelineLayout;
 	Array<UPtr<Pipeline>, 4>	_pipelineTable;

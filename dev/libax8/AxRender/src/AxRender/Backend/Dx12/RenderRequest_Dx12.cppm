@@ -23,6 +23,11 @@ public:
 	CommandBuffer_Dx12&	uploadCmdBuf_dx12()			{ return _uploadCmdBuf_dx12; }
 	CommandBuffer_Dx12&	graphCmdBuf_dx12()			{ return _graphCmdBuf_dx12; }
 
+#if AX_RENDER_BINDLESS
+	virtual void onBindlessResourceUpdates(Span<SPtr<Sampler_Backend  >>) {};
+	virtual void onBindlessResourceUpdates(Span<SPtr<Texture2D_Backend>>) {};
+#endif
+	
 	AX_INLINE u64 fenceValue_dx12() const { return static_cast<u64>(_renderSeqId); }
 	void signalFence(Dx12CommandQueue& cmdQueue) { cmdQueue.signal(_fence, fenceValue_dx12()); }
 	

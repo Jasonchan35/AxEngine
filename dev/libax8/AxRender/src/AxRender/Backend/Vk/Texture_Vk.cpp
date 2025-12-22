@@ -81,7 +81,7 @@ void Texture2D_Vk::_bindImage(RenderRequest_Vk* req, VkDescriptorImageInfo& outI
 		_image.setLayout(	cmdBuf,
 							VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 							VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-		
+
 		_uploadBuffer = nullptr;
 	}
 

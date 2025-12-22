@@ -115,13 +115,6 @@ public:
 		SPtr<StorageBuffer>									_storageBuffer;
 	};
 
-	template<class PARAM>
-	static Int s_totalBindCount(Span<PARAM> params) {
-		Int total = 0;
-		for (auto& param : params) { total += param.bindCount(); }
-		return total;
-	}
-
 	bool setParam(NameId name, const i32&		v) { return _setVariable(name, v); }
 	bool setParam(NameId name, const i32x2&		v) { return _setVariable(name, v); }
 	bool setParam(NameId name, const i32x3&		v) { return _setVariable(name, v); }
@@ -151,20 +144,15 @@ public:
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
 
-	MutSpan<ConstBuffer>		constBuffers()			{ return _constBuffers;        }
-	MutSpan<TextureParam>		textureParams() 		{ return _textureParams;       }
-	MutSpan<SamplerParam>		samplerParams() 		{ return _samplerParams;       }
-	MutSpan<StorageBufferParam>	storageBufferParams() 	{ return _storageBufferParams; }
-
-	Int constBuffers_totalBindCount() const			{ return s_totalBindCount(_constBuffers.span()); }
-	Int textureParams_totalBindCount() const		{ return s_totalBindCount(_textureParams.span()); }
-	Int samplerParams_totalBindCount() const		{ return s_totalBindCount(_samplerParams.span()); }
-	Int storageBufferParams_totalBindCount() const	{ return s_totalBindCount(_storageBufferParams.span()); }
-	
 	BindSpace	bindSpace() const { return _shaderParamSpace->bindSpace(); }
 
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
+	Array<ConstBuffer,        1>	_constBuffers;
+	Array<StorageBufferParam, 0>	_storageBufferParams;
+	Array<TextureParam,       2>	_textureParams;
+	Array<SamplerParam,       2>	_samplerParams;
+	
 protected:
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
@@ -173,11 +161,6 @@ protected:
 	}
 	template<class V> bool	_setVariable(NameId name, const V& v);
 //	template<class V> bool	_setTextureParam(NameId name, V* v);
-
-	Array<ConstBuffer,        1>	_constBuffers;
-	Array<StorageBufferParam, 0>	_storageBufferParams;
-	Array<TextureParam,       2>	_textureParams;
-	Array<SamplerParam,       2>	_samplerParams;
 };
 
 template<class V> AX_INLINE
@@ -227,6 +210,8 @@ class MaterialPass_Backend : public RenderObject {
 	AX_RTTI_INFO(MaterialPass_Backend, RenderObject)
 public:
 	using CreateDesc = MaterialPass_Backend_CreateDesc;
+	using BindPoint = ShaderParamBindPoint;
+	using BindCount = ShaderParamBindCount;
 	using BindSpace = ShaderParamBindSpace;
 	static constexpr auto BindSpace_COUNT = ax_enum_int(BindSpace::_COUNT);
 
@@ -253,8 +238,8 @@ public:
 	}
 
 	virtual void onSetShader() {}
-	
-private:
+
+protected:
 	Material_Backend*   _material   = nullptr;
 	ShaderPass_Backend* _shaderPass = nullptr;
 	Int                 _passIndex  = 0;

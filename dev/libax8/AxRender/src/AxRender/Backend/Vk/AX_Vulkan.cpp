@@ -1709,21 +1709,5 @@ void AX_VkSampler::create(AX_VkDevice& dev, const VkSamplerCreateInfo& info) {
 	vkCreateSampler(dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
 }
 
-VkDescriptorSetLayoutBinding& AX_VkDescriptorSetLayoutBindings::addBinding(VkDescriptorType			type,
-																		   ShaderParamBindPoint	bindPoint,
-																		   Int						descriptorCount,
-																		   ShaderStageFlags			stageFlags,
-																		   VkDescriptorBindingFlags flags) {
-	auto& dst = bindings.emplaceBack();
-	dst.binding = ax_enum_int(bindPoint);
-	dst.descriptorType = type;
-	dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
-	dst.stageFlags = AX_VkUtil::getVkShaderStageFlagBits(stageFlags);
-	dst.pImmutableSamplers = nullptr;
-
-	bindingFlags.emplaceBack(flags);
-	return dst;
-}
-
 } // namespace
 #endif // AX_RENDERER_VK

@@ -15,36 +15,10 @@ class RenderRequest_Vk;
 class MaterialParamSpace_Vk : public MaterialParamSpace_Backend {
 	AX_RTTI_INFO(MaterialParamSpace_Vk, MaterialParamSpace_Backend)
 public:
-	MaterialParamSpace_Vk(const CreateDesc& desc);
-
-	VkDescriptorSet getUpdatedDescriptorSet(RenderRequest_Vk* req);
-	VkDescriptorSet getLastDescriptorSet();
+	MaterialParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	const ShaderParamSpace_Vk* shaderParamSpace() const { return rttiCastCheck<ShaderParamSpace_Vk>(_shaderParamSpace.ptr()); }
-
-private:
-	VkDescriptorSet	_currentDescriptorSet() { return _descriptorSets[_currentDescriptorSetsIndex]; }
-	void _nextDescriptorSet  (RenderRequest_Vk* req, const ShaderParamSpace_Vk* shaderParamSpace);
-	void _updateDescriptorSet(RenderRequest_Vk* req, const ShaderParamSpace_Vk* shaderParamSpace);
-
-	Array<VkDescriptorBufferInfo, 16> _updateUniformBufferInfos;
-	Array<VkDescriptorBufferInfo, 16> _updateStorageBufferInfos;
-	Array<VkDescriptorImageInfo,  16> _updateSamplerInfos;
-	Array<VkDescriptorImageInfo,  16> _updateTextureInfos;
-
-	Array<VkWriteDescriptorSet,   64> _updateWriteDescriptorSets;
-
-	static constexpr Int kMaxRenderRequestCount = AxRenderConfig::kMaxRenderRequestCount;
-	Array<VkDescriptorSet, kMaxRenderRequestCount>	_descriptorSets;
-
-
-	AX_VkDescriptorPool		_descriptorPool;
-
-	RenderSeqId	_lastUpdateRenderSeqId = 0;
-	Int			_currentDescriptorSetsIndex = 0;
 }; 
-
-
 
 class MaterialPass_Vk : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Vk, MaterialPass_Backend)
@@ -54,6 +28,27 @@ public:
 	const ShaderPass_Vk* shaderPass_vk() const { return rttiCastCheck<ShaderPass_Vk>(shaderPass()); }
 
 	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
+
+	static constexpr Int kMaxRenderRequestCount = AxRenderConfig::kMaxRenderRequestCount;
+
+	Span<VkDescriptorSet> getUpdatedDescriptorSets(RenderRequest_Vk* req);
+	
+private:
+	struct PerFrameData {
+		FixedArray<VkDescriptorSet, BindSpace_COUNT> descSets;
+		AX_VkDescriptorPool pool;
+
+		void create(MaterialPass_Vk* pass, RenderRequest_Vk* req);
+		void update(MaterialPass_Vk* pass, RenderRequest_Vk* req);
+	};
+
+	PerFrameData& _currentFrameData() { return _perFrameData[_currentFrameDataIndex]; }
+	void _nextFrameData(RenderRequest_Vk* req);
+
+	Array<PerFrameData, kMaxRenderRequestCount>	_perFrameData;
+
+	RenderSeqId	_lastUpdateRenderSeqId = 0;
+	Int			_currentFrameDataIndex = 0;
 };
 
 class Material_Vk : public Material_Backend {

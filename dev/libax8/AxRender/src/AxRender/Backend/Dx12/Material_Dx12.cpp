@@ -16,10 +16,11 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* shdPass = shaderPass_dx12();
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
-	if (!shdPass->_bindPipeline(req, cmd)) return false;
-
 	Int CBV_SRV_UAV_index = 0;
+	
+#if !AX_RENDER_BINDLESS
 	Int samplerIndex = 0;
+#endif
 	
 	for (auto& paramSpace_ : _materialParamSpaces) {
 		if (!paramSpace_) continue;
@@ -33,7 +34,7 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 			return false;
 		}
 
-		for (auto& cb : paramSpace->constBuffers()) {
+		for (auto& cb : paramSpace->_constBuffers) {
 			auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(cb.getUploadedGpuBuffer(req));
 			if (!gpuBuf) throw Error_Undefined();
 
@@ -42,13 +43,13 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 			CBV_SRV_UAV_index++;
 		}
 
-		for (auto& texParam : paramSpace->textureParams()) {
+#if !AX_RENDER_BINDLESS
+		for (auto& texParam : paramSpace->_textureParams) {
 			switch (texParam.dataType()) {
 				case RenderDataType::Texture2D: {
 					auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
-					tex->_bindImage(req);
-					
-					_CBV_SRV_UAV_DescHeap.setTexture(CBV_SRV_UAV_index, tex->_texResource);
+					if (!tex) throw Error_Undefined();
+					_CBV_SRV_UAV_DescHeap.setTexture(CBV_SRV_UAV_index, tex->_bindImage(req));
 					CBV_SRV_UAV_index++;
 				} break;
 				default: throw Error_Undefined();
@@ -56,15 +57,21 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		}
 
 		//TODO move to static sampler
-		for (auto& samplerParam : paramSpace->samplerParams()) {
+		for (auto& samplerParam : paramSpace->_samplerParams) {
 			auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
 			auto& ss      = sampler->samplerState();
 			_samplerDescHeap.setSampler(samplerIndex, ss.filter, ss.wrap);
 			samplerIndex++;
 		}
+#endif // #if !AX_RENDER_BINDLESS
 	}
 
 	cmdList->SetDescriptorHeaps(ax_safe_cast_from(_d3dDescHeaps.size()), _d3dDescHeaps.data());
+	
+	// Bindless: SetGraphicsRootSignature:
+	// SetDescriptorHeaps must be called to bind a sampler descriptor before setting a root signature
+	// with D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED flag.
+	if (!shdPass->_bindPipeline(req, cmd)) return false;
 
 	auto setRootDescTable = [&cmdList](auto& shaderTable, auto& heap) {
 		if (heap.numDescriptors() > 0) {
@@ -74,7 +81,7 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 
 	setRootDescTable(shdPass->_CBV_SRV_UAV_DescTable,	_CBV_SRV_UAV_DescHeap);
 	setRootDescTable(shdPass->_samplerDescTable,		_samplerDescHeap);
-
+	
 	return true;
 }
 

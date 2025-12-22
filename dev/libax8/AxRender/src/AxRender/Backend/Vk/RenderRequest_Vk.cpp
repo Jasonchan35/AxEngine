@@ -7,6 +7,7 @@ import :Renderer_Vk;
 import :RenderContext_Vk;
 import :Material_Vk;
 import :GpuBuffer_Vk;
+import :Texture_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -42,6 +43,63 @@ void RenderRequest_Vk::onWaitCompleted() {
 	}
 	_uploadCmdBuf_vk.resetAndReleaseResource();
 	_graphCmdBuf_vk.resetAndReleaseResource();
+
+	_writeDescriptorSets.clear();
+	_writeDescriptor_BufferInfos.clear();
+	_writeDescriptor_ImageInfos.clear();
+}
+
+void RenderRequest_Vk::_updatedBindlessResources() {
+#if AX_RENDER_BINDLESS
+	auto* renderer =  renderer_vk();
+	auto* commonMaterial = renderer->commonMaterial();
+	if (!commonMaterial) return;
+
+	auto* mtlSpace = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, BindSpace::Global);
+	if (!mtlSpace) return;
+
+	auto* shdSpace = mtlSpace->shaderParamSpace();
+	if (!shdSpace) return; 
+
+	auto currentDescriptorSet = mtlSpace->getUpdatedDescriptorSet(this);
+
+	using ParamBase = ShaderParamSpace_Backend::ParamBase;
+	
+	auto addWriteSet = [&](auto* param, VkDescriptorType _descriptorType, ResourceSlotId slotId) -> VkWriteDescriptorSet& {
+		auto& w = _writeDescriptorSet.emplaceBack();
+		w.sType			  = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		w.pNext			  = nullptr;
+		w.descriptorType  = _descriptorType;
+		w.dstSet		  = currentDescriptorSet;
+		w.dstBinding	  = AX_VkUtil::castUInt32(ax_enum_int(param->bindPoint()));
+		w.dstArrayElement = ax_enum_int(slotId);
+		w.descriptorCount = 1;
+		return w;
+	};
+
+	auto* samplerParam   = shdSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
+	for (auto& sampler_ : updatedBindlessResources.samplers) {
+		if (!sampler_) continue;
+		auto* sampler         = rttiCast<Sampler_Vk>(sampler_.ptr());
+		auto& desc            = addWriteSet(samplerParam, VK_DESCRIPTOR_TYPE_SAMPLER, sampler->resourceHandle.slotId());
+		auto& imageInfo       = _writeDescriptor_imageInfos.emplaceBack();
+		imageInfo.imageView   = VK_NULL_HANDLE;
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		imageInfo.sampler     = sampler->vkHandle();
+		desc.pImageInfo       = &imageInfo;
+	}
+	auto* texture2DParam = shdSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
+	for (auto& tex_ : updatedBindlessResources.texture2Ds) {
+		if (!tex_) continue;
+		auto* tex       = rttiCastCheck<Texture2D_Vk>(tex_.ptr());
+		auto& desc      = addWriteSet(texture2DParam, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, tex->resourceHandle.slotId());
+		auto& imageInfo = _writeDescriptor_imageInfos.emplaceBack();
+		tex->_bindImage(this, imageInfo);
+		desc.pImageInfo = &imageInfo;
+	}
+	
+	AX_vkUpdateDescriptorSets(renderer->device(), _writeDescriptorSet, {});
+#endif
 }
 
 void RenderRequest_Vk::onFrameBegin() {
@@ -50,9 +108,7 @@ void RenderRequest_Vk::onFrameBegin() {
 }
 
 void RenderRequest_Vk::onFrameEnd() {
-#if AX_RENDER_BINDLESS
-	_bindless.update(this);
-#endif
+	_updatedBindlessResources();
 	_graphCmdBuf_vk.commandEnd();
 	_uploadCmdBuf_vk.commandEnd();
 }

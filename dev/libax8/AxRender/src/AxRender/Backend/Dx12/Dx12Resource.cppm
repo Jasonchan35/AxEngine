@@ -209,13 +209,15 @@ struct Dx12DescriptorTable {
 
 	Int size() const { return descriptorRanges.size(); }
 
-	void addDescriptor(D3D12_DESCRIPTOR_RANGE_TYPE type, BindPoint bindPoint, Int bindCount, BindSpace bindSpace) {
+	Int addDescriptor(D3D12_DESCRIPTOR_RANGE_TYPE type, BindPoint bindPoint, Int bindCount, BindSpace bindSpace) {
+		Int descriptprIndex = descriptorRanges.size();
 		auto& dst                             = descriptorRanges.emplaceBack();
 		dst.RangeType                         = type;
 		dst.NumDescriptors                    = Dx12Util::castUINT(bindCount);
 		dst.BaseShaderRegister                = Dx12Util::castUINT(ax_enum_int(bindPoint));
 		dst.RegisterSpace                     = Dx12Util::castUINT(ax_enum_int(bindSpace));
 		dst.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+		return descriptprIndex;
 	}
 
 	UINT rootParamIndex = UINT_MAX;

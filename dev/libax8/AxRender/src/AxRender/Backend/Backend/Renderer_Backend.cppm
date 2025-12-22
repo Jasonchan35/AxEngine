@@ -20,11 +20,7 @@ public:
 	AX_Renderer_FunctionInterfaces_pure()
 
 	RenderRequest_Backend*		nextRenderRequest();
-
-	virtual void getBindlessTable(BindlessTable<class Sampler_Backend  >* & outList) { outList = nullptr; }
-	virtual void getBindlessTable(BindlessTable<class Texture2D_Backend>* & outList) { outList = nullptr; }
-	virtual void onUpdateBindlessTables(RenderRequest_Backend* req) {}
-
+	
 	Material_Backend*	commonMaterial();
 	Shader_Backend*		commonShader();
 

@@ -22,13 +22,11 @@ public:
 	CommandBuffer_Vk&	uploadCmdBuf_vk()		{ return _uploadCmdBuf_vk; }
 	CommandBuffer_Vk&	graphCmdBuf_vk()		{ return _graphCmdBuf_vk; }
 
+	void _updatedBindlessResources();
+	
 	Renderer_Vk*	renderer_vk() { return rttiCastCheck<Renderer_Vk>(_renderer); }
 
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
-	
-#if AX_RENDER_BINDLESS
-	RenderRequest_Bindless_Vk _bindless;
-#endif
 
 	CommandBuffer_Vk	_uploadCmdBuf_vk; // submit earlier than graphCmdBuf
 	AX_VkSemaphore		_uploadCmdSem_vk;
@@ -38,6 +36,10 @@ public:
 	
 	AX_VkSemaphore		_imageAcquiredSemaphore_vk;
 	AX_VkFence			_completedFence_vk;
+
+	Array<VkWriteDescriptorSet>		_writeDescriptorSets;
+	Array<VkDescriptorBufferInfo> 	_writeDescriptor_BufferInfos;
+	Array<VkDescriptorImageInfo>  	_writeDescriptor_ImageInfos;
 };
 
 } // namespace

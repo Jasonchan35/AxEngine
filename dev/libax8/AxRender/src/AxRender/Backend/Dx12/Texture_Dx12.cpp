@@ -18,7 +18,7 @@ void Texture2D_Dx12::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	handler.readPixelsTo(map.data());
 }
 
-void Texture2D_Dx12::_bindImage(RenderRequest_Dx12* req) {
+Dx12Resource_Texture2D& Texture2D_Dx12::_bindImage(RenderRequest_Dx12* req) {
 	req->resourcesToKeep.add(this);
 
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Dx12>(_uploadBuffer.ptr())) {
@@ -63,6 +63,8 @@ void Texture2D_Dx12::_bindImage(RenderRequest_Dx12* req) {
 		_texResource.resourceBarrier(cmdBuf, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 		_uploadBuffer = nullptr;
 	}
+
+	return _texResource;
 }
 
 } // namespace

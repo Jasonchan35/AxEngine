@@ -8,6 +8,8 @@ import :Material_Vk;
 
 namespace ax /*::AxRender*/ {
 
+#if 0
+
 template<class T>
 RenderRequest_Bindless_Vk::Table<T>::Table() {
 	auto* renderer	  = Renderer_Vk::s_instance();
@@ -116,7 +118,7 @@ void RenderRequest_Bindless_Vk::Table<T>::update(RenderRequest_Vk* req) {
 		return w;
 	};
 
-	auto& srcList = req->resourcesToUpdateDescriptor;
+	auto& srcList = req->bindlessDescriptorUpdateList;
 
 	if constexpr (isSampler) {
 		auto& samplersList = srcList.getList<Sampler_Backend>();
@@ -162,6 +164,8 @@ void RenderRequest_Bindless_Vk::update(RenderRequest_Vk * req) {
 /*---- The explicit instantiation ---*/ \
 template class RenderRequest_Bindless_Vk::Table<Sampler>;
 template class RenderRequest_Bindless_Vk::Table<Texture2D>;
+
+#endif
 
 } // namespace
 

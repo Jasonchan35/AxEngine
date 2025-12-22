@@ -1,5 +1,6 @@
 module AxRender;
 import :ResourceManager_Backend;
+import :RenderRequest_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -17,6 +18,13 @@ void ResourceManager_Backend::s_create(const MemAllocRequest& req) {
 void ResourceManager_Backend::s_destroy() {
 	AX_ASSERT(ResourceManager_Backend_instance);
 	AxDelete::deleteObject(ResourceManager_Backend_instance);
+}
+
+void ResourceManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
+}
+
+void ResourceManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
+	visit([&](auto& table){ table.scopedLock()->onFrameEnd(req); });
 }
 
 void ResourceManager_Backend::onFileChanged(FileDirWatcher_Result& result) {

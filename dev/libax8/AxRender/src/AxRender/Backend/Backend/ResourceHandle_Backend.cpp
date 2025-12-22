@@ -99,11 +99,14 @@ void ResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 	for (auto& e : _dirtyObjects) {
 		if (!e) { AX_ASSERT(false); continue; }
 		e->resourceHandle._dirty = false;
-
-		if constexpr (kNeedDescriptorUpdate) {
-			req->resourcesToUpdateDescriptor.add(std::move(e));
-		}
 	}
+
+#if AX_RENDER_BINDLESS
+	if constexpr (kNeedDescriptorUpdate) {
+		req->updatedBindlessResources.swap(_dirtyObjects);
+	}
+#endif
+	
 	_dirtyObjects.clear();
 }
 

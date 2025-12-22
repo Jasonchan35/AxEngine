@@ -13,33 +13,6 @@ import :Material_Vk;
 
 namespace ax /*::AxRender*/ {
 
-
-AX_VkDescriptorSetLayout& ShaderParamSpace_Vk::createLayout_vk() {
-	AX_VkDescriptorSetLayoutBindings	bindings;
-
-#if AX_RENDER_BINDLESS
-	VkDescriptorSetLayoutCreateFlags layoutFlags  = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
-	VkDescriptorBindingFlags		 bindingFlags = VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT | VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
-#else
-	VkDescriptorSetLayoutCreateFlags layoutFlags = 0;
-	VkDescriptorBindingFlags		 bindingFlags = 0;
-#endif
-
-	auto addBinding = [&bindings, bindingFlags](ParamBase& p, VkDescriptorType type) {
-		bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
-	};
-
-	// TODO: move to shaderPass
-	for (auto& param : _constBuffers       ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
-	for (auto& param : _textureParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
-	for (auto& param : _samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
-	for (auto& param : _storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
-
-	auto* renderer = Renderer_Vk::s_instance();
-	_layout_vk.create(renderer->device(), bindings, layoutFlags);
-	return _layout_vk;
-}
-
 ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 : Base(desc)
 {	
@@ -48,15 +21,30 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 // create pipeline layout
 
-	Array<VkDescriptorSetLayout, 8> layouts;
+#if AX_RENDER_BINDLESS
+	VkDescriptorSetLayoutCreateFlags layoutFlags  = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
+	VkDescriptorBindingFlags		 bindingFlags = VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT | VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
+#else
+	VkDescriptorSetLayoutCreateFlags layoutFlags  = 0;
+	VkDescriptorBindingFlags		 bindingFlags = 0;
+#endif
 
-	for (Int i = 0; i < BindSpace_COUNT; ++i) {
-		auto s = static_cast<BindSpace>(i);
-		if (auto* ownSpace = getOwnParamSpace_vk(s)) {
-			layouts.emplaceBack(ownSpace->createLayout_vk());
-			
-		} else if (auto* space = getParamSpace_vk(s)) {
-			layouts.emplaceBack(space->_layout_vk);
+	for (auto& paramSpace : _shaderParamSpaces) {
+		auto bindSpace = paramSpace->bindSpace();
+		auto bindSpaceIndex = ax_enum_int(bindSpace);
+
+		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
+		auto addBinding = [&bindings, bindingFlags](const ParamBase& p, VkDescriptorType type) {
+			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
+		};
+
+		for (auto& param : paramSpace->_constBuffers       ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
+		for (auto& param : paramSpace->_textureParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
+		for (auto& param : paramSpace->_samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
+		for (auto& param : paramSpace->_storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
+
+		if (bindings.bindings.size() > 0) {
+			_spaceDescSetLayout[bindSpaceIndex].create(dev, bindings, layoutFlags);
 		}
 	}
 
@@ -67,9 +55,14 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		FileMemMap bytecode(filename);
 		stage.vkShaderModule.create(dev, bytecode);
 	};
-
 	_visitStages(loadStage);
-	_pipelineLayout.create(dev, layouts);
+
+	Array<VkDescriptorSetLayout, BindSpace_COUNT> descSet;
+	for (auto& s : _spaceDescSetLayout) {
+		if (s) descSet.emplaceBack(s);
+	}
+
+	_pipelineLayout.create(dev, descSet);
 }
 
 auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {

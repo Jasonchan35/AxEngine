@@ -684,16 +684,29 @@ private:
 	AX_VkDevice*	_dev = nullptr;
 };
 
-class AX_VkDescriptorSetLayoutBindings : public NonCopyable {
+template<Int BUF_SIZE>
+class AX_VkDescriptorSetLayoutBindings_ : public NonCopyable {
 public:
-	Array<VkDescriptorSetLayoutBinding, 32> bindings;
-	Array<VkDescriptorBindingFlags,     32> bindingFlags;
+	Array<VkDescriptorSetLayoutBinding, BUF_SIZE> bindings;
+	Array<VkDescriptorBindingFlags,     BUF_SIZE> bindingFlags;
 
 	VkDescriptorSetLayoutBinding& addBinding(VkDescriptorType		  type,
 											 ShaderParamBindPoint  bindPoint,
 											 Int					  descriptorCount,
 											 ShaderStageFlags		  stageFlags,
-											 VkDescriptorBindingFlags flags);
+											 VkDescriptorBindingFlags flags)
+	{
+		auto& dst = bindings.emplaceBack();
+		dst.binding = ax_enum_int(bindPoint);
+		dst.descriptorType = type;
+		dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
+		dst.stageFlags = AX_VkUtil::getVkShaderStageFlagBits(stageFlags);
+		dst.pImmutableSamplers = nullptr;
+
+		bindingFlags.emplaceBack(flags);
+		return dst;
+		
+	}
 };
 
 class AX_VkDescriptorSetLayout : public NonCopyable {
@@ -712,8 +725,9 @@ public:
 				Span<VkDescriptorBindingFlags>     bindingFlags,
 				VkDescriptorSetLayoutCreateFlags   flags = 0);
 
+	template<Int BUF_SIZE>
 	void create(AX_VkDevice& dev,
-				AX_VkDescriptorSetLayoutBindings& bindings,
+				AX_VkDescriptorSetLayoutBindings_<BUF_SIZE> & bindings,
 				VkDescriptorSetLayoutCreateFlags flags = 0)
 	{
 		create(dev, bindings.bindings, bindings.bindingFlags, flags);
@@ -809,10 +823,17 @@ private:
 
 class AX_VkDescriptorPool : public NonCopyable {
 public:
-	const VkDescriptorPool& handle() { return _handle; }
-	operator const VkDescriptorPool&() { return _handle; }
+	AX_VkDescriptorPool() = default;
+	AX_VkDescriptorPool(AX_VkDescriptorPool && r) noexcept
+		: _handle(r._handle), _dev(r._dev) {
+		r._handle = VK_NULL_HANDLE;
+		r._dev = nullptr;
+	}
 	~AX_VkDescriptorPool() { destroy(); }
 
+	const VkDescriptorPool& handle() { return _handle; }
+	operator const VkDescriptorPool&() { return _handle; }
+	
 	void destroy();
 	void create(AX_VkDevice& dev, Span<VkDescriptorPoolSize> poolSizes, Int maxSets, VkDescriptorPoolCreateFlags flags);
 

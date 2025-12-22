@@ -13,14 +13,9 @@ public:
 	static void s_create(const MemAllocRequest& req);
 	static void s_destroy();
 
-	void onFrameBegin(RenderRequest_Backend* req) {
-	}
-	
-	void onFrameEnd(RenderRequest_Backend* req) {
-		visit([&](auto& table){
-			table.scopedLock()->onFrameEnd(req);
-		});
-	}
+	void onFrameBegin(RenderRequest_Backend* req);
+
+	void onFrameEnd(RenderRequest_Backend* req);
 
 	template<class T, class CreateDesc = typename T::CreateDesc, class ResourceKey = typename T::ResourceKey>
 	bool getOrNewResource(SPtr<T> & sp, const MemAllocRequest& req, const CreateDesc& desc, const ResourceKey& key);

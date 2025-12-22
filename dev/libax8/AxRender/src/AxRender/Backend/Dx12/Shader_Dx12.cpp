@@ -47,15 +47,15 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		auto* space = getParamSpace_dx12(bindSpace);
 		if (!space) continue;
 	
-		for (auto& param : space->constBuffers()) {
+		for (auto& param : space->_constBuffers) {
 			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 		}
 	
-		for (auto& param : space->textureParams()) {
+		for (auto& param : space->_textureParams) {
 			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}
 
-		for (auto& param : space->samplerParams()) {
+		for (auto& param : space->_samplerParams) {
 			addDescriptor(_samplerDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
 		}
 	}
@@ -81,7 +81,13 @@ void ShaderPass_Dx12::_createRootSignature() {
 
 	if (!isCompute()) {
 		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	}	
+	}
+
+#if AX_RENDER_BINDLESS
+	desc.Flags |= D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
+	desc.Flags |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
+#endif
+	
 	desc.NumParameters		= Dx12Util::castUINT(_pipelineRootParamList.parameters.size());
 	desc.pParameters		= _pipelineRootParamList.parameters.data();
 	desc.NumStaticSamplers	= Dx12Util::castUINT(_pipelineRootParamList.staticSamplers.size());

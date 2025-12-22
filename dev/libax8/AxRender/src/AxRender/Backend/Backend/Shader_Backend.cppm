@@ -125,12 +125,12 @@ public:
 	void addParam	(const ShaderStageInfo::Texture&       paramInfo);
 	void addParam	(const ShaderStageInfo::Sampler&       paramInfo);
 	void addParam	(const ShaderStageInfo::StorageBuffer& paramInfo);
-	
-	Span<ConstBuffer>			constBuffers() const		{ return _constBuffers; }
-	Span<TextureParam>			textureParams() const		{ return _textureParams; }
-	Span<SamplerParam>			samplerParams() const		{ return _samplerParams; }
-	Span<StorageBufferParam>	storageBufferParams() const	{ return _storageBufferParams; }
-	
+
+	Array<ConstBuffer,        1>	_constBuffers;
+	Array<StorageBufferParam, 0>	_storageBufferParams;
+	Array<TextureParam,       4>	_textureParams;
+	Array<SamplerParam,       4>	_samplerParams;
+
 	ConstBuffer*		findConstBuffer (NameId name) { return _findParam(_constBuffers       , name); }
 	TextureParam*		findTextureParam(NameId name) { return _findParam(_textureParams      , name); }
 	SamplerParam*		findSamplerParam(NameId name) { return _findParam(_samplerParams      , name); }
@@ -154,12 +154,7 @@ protected:
 	void _addParam(IArray<T>& arr, const INFO& paramInfo);
 
 	template<class T> static T* _findParam(IArray<T>& arr, NameId name);
-
-	Array<ConstBuffer,        1>	_constBuffers;
-	Array<StorageBufferParam, 0>	_storageBufferParams;
-	Array<TextureParam,       4>	_textureParams;
-	Array<SamplerParam,       4>	_samplerParams;
-
+	
 	Array<Pair<NameId, NameId>>		_nameToTexture2D;
 	Array<Pair<NameId, NameId>>		_nameToTexture3D;
 	Array<Pair<NameId, NameId>>		_nameToSampler;
@@ -211,6 +206,9 @@ class ShaderPass_Backend : public RenderObject {
 	AX_RTTI_INFO(ShaderPass_Backend, RenderObject)
 public:
 	using CreateDesc = ShaderPass_Backend_CreateDesc;
+	using ParamBase = ShaderParamSpace_Backend::ParamBase;
+	using BindPoint = ShaderParamBindPoint;
+	using BindCount = ShaderParamBindCount;
 	using BindSpace = ShaderParamBindSpace;
 	static constexpr auto BindSpace_COUNT = ax_enum_int(BindSpace::_COUNT);
 
@@ -240,6 +238,11 @@ public:
 
 	const ShaderPass_Backend* getCommonPass() const;
 
+	Int constBuffers_totalBindCount() const			{ return _constBuffers_totalBindCount        ; }
+	Int textureParams_totalBindCount() const		{ return _textureParams_totalBindCount       ; }
+	Int samplerParams_totalBindCount() const		{ return _samplerParams_totalBindCount       ; }
+	Int storageBufferParams_totalBindCount() const	{ return _storageBufferParams_totalBindCount ; }
+	
 friend class Shader_Backend;
 protected:
 	Shader_Backend*		_shader = nullptr;
@@ -247,7 +250,12 @@ protected:
 	Int					_passIndex = 0;
 	ShaderStageFlags	_stageFlags = ShaderStageFlags::None;
 	NameId				_name;
-	
+
+	Int _constBuffers_totalBindCount        = 0;
+	Int _textureParams_totalBindCount       = 0;
+	Int _samplerParams_totalBindCount       = 0;
+	Int _storageBufferParams_totalBindCount = 0;
+
 	void _createParamSpaces();
 
 	template<class T>

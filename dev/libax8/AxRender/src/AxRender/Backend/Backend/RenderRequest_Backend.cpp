@@ -26,7 +26,6 @@ RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
 void RenderRequest_Backend::waitCompleted() {
 	onWaitCompleted();
 	resourcesToKeep.clear();
-	resourcesToUpdateDescriptor.clear();
 }
 
 void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
@@ -34,6 +33,10 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 	_renderSeqId = newRenderSeqId;
 	resourcesToKeep.clear();
 	_inlineUpload.reset();
+
+#if AX_RENDER_BINDLESS
+	updatedBindlessResources.clear();
+#endif
 }
 
 void RenderRequest_Backend::_updateCommonMaterial() {
@@ -81,11 +84,6 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 void RenderRequest_Backend::frameEnd() {
 	renderContext_backend()->imgui.onEndRender();
 	ResourceManager_Backend::s_instance()->onFrameEnd(this);
-
-	if (auto* r = rttiCastCheck<Renderer_Backend>(_renderer)) {
-		r->onUpdateBindlessTables(this);
-	}
-
 	onFrameEnd();
 }
 

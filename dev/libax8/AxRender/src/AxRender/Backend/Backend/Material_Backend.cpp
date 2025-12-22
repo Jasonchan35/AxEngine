@@ -13,11 +13,11 @@ namespace ax /*::AxRender*/ {
 #endif
 
 template<class DST, class SRC>
-void MaterialParamSpace_Backend_cloneParams(DST& dst, SRC srcSpan) {
-	Int n = srcSpan.size();
+void MaterialParamSpace_Backend_cloneParams(IArray<DST>& dst, const IArray<SRC>& srcArray) {
+	Int n = srcArray.size();
 	dst.resize(n);
 	for (Int i = 0; i < n; i++) {
-		dst[i].create(srcSpan[i]);
+	 	dst[i].create(srcArray[i]);
 	}
 }
 
@@ -30,10 +30,10 @@ MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 		return;
 	}
 
-	MaterialParamSpace_Backend_cloneParams(_constBuffers		, _shaderParamSpace->constBuffers());
-	MaterialParamSpace_Backend_cloneParams(_samplerParams		, _shaderParamSpace->samplerParams());
-	MaterialParamSpace_Backend_cloneParams(_textureParams		, _shaderParamSpace->textureParams());
-	MaterialParamSpace_Backend_cloneParams(_storageBufferParams	, _shaderParamSpace->storageBufferParams());
+	MaterialParamSpace_Backend_cloneParams(_constBuffers		, _shaderParamSpace->_constBuffers       );
+	MaterialParamSpace_Backend_cloneParams(_samplerParams		, _shaderParamSpace->_samplerParams      );
+	MaterialParamSpace_Backend_cloneParams(_textureParams		, _shaderParamSpace->_textureParams      );
+	MaterialParamSpace_Backend_cloneParams(_storageBufferParams	, _shaderParamSpace->_storageBufferParams);
 }
 
 void MaterialParamSpace_Backend::ConstBuffer::create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam) {
@@ -109,6 +109,24 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 }
 
 #if 0
+#pragma mark "============ MaterialPass_Backend ==============="
+#endif
+
+void MaterialPass_Backend::logWarningOnce(StrView msg) {
+	if (_material) _material->logWarningOnce(msg);
+}
+
+MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
+	: _material(desc.material)
+	, _shaderPass(desc.shaderPass)
+	, _passIndex(desc.passIndex)
+{
+	AX_ASSERT(_material);
+	AX_ASSERT(_shaderPass);
+}
+
+
+#if 0
 #pragma mark "============ Material_Backend ==============="
 #endif
 
@@ -157,7 +175,6 @@ void Material_Backend::setShader_backend(Shader* shader_) {
 			auto materialSpace = shaderSpace->newMaterialParamSpace(AX_ALLOC_REQ);
 			newMaterialPass->_materialParamSpaces[spaceIndex] = materialSpace; 
 		}
-
 	}
 
 	onSetShader();
@@ -173,22 +190,6 @@ SPtr<Material_Backend> Material_Backend::s_new(const MemAllocRequest& req, Shade
 SPtr<Material_Backend> Material_Backend::s_new(const MemAllocRequest& req, StrView shaderAssetPath) {
 	auto shd = Shader::s_new(req, shaderAssetPath);
 	return s_new(req, shd);
-}
-
-#if 0
-#pragma mark "============ MaterialPass_Backend ==============="
-#endif
-
-void MaterialPass_Backend::logWarningOnce(StrView msg) {
-	if (_material) _material->logWarningOnce(msg);
-}
-
-MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
-	: _material(desc.material)
-	, _shaderPass(desc.shaderPass)
-	, _passIndex(desc.passIndex)
-{
-	AX_ASSERT(_material);
 }
 
 } // namespace
