@@ -36,7 +36,7 @@ AX_VkDescriptorSetLayout& ShaderParamSpace_Vk::createLayout_vk() {
 	for (auto& param : _storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
 	auto* renderer = Renderer_Vk::s_instance();
-	_layout_vk.create(renderer->device(), bindings, layoutFlags);\
+	_layout_vk.create(renderer->device(), bindings, layoutFlags);
 	return _layout_vk;
 }
 

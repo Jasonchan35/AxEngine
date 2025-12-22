@@ -84,7 +84,7 @@ void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
 	outStr.append(Fmt("SourceFile={}\n\n", filename));
 
 	auto func = [&](RenderAPI api) {
-		outStr.append(Fmt("build {}/shaderResult.json: build_api_shader {} | ${{AxShaderTool}} ${{SourceFile}}\n", api, api));
+		outStr.append(Fmt("build {}/shaderResult.json: build_api_shader {} | ${{SourceFile}} ${{AxShaderTool}} \n", api, api));
 		genNinja_Shader_API(api, parser.info, outDir, filename);
 	};
 
@@ -197,7 +197,6 @@ int AxShaderTool_App::onRun() {
 		if (a == "-genNinja"			) { opt.genNinja			= true; continue; }
 		if (a == "-genResultInfo"		) { opt.genResultInfo		= true; continue; }
 		if (a == "-keepUnusedVariable"	) { opt.keepUnusedVariable	= true; continue; }
-		if (a == "-quiet"				) { opt.quiet				= true; continue; }
 #if AX_RENDERER_NULL
 		if (a == "-genReflect_Null"		) { opt.genReflect_Null		= true; continue; }
 #endif
@@ -227,6 +226,16 @@ int AxShaderTool_App::onRun() {
 			if (!v.tryParse(opt.api)) {
 				throw Error_Undefined(Fmt("'-api={}' unknown api", v));
 			}
+			continue;
+		}
+
+		if (a == "-quiet") { opt.quiet= true; continue; }
+		if (auto v = a.extractFromPrefix("-quiet=")) {
+			int tmp = 0;
+			if (!v.tryParse(tmp)) {
+				throw Error_Undefined(Fmt("'-quiet={}' unknown value", v));
+			}
+			opt.quiet = tmp;
 			continue;
 		}
 

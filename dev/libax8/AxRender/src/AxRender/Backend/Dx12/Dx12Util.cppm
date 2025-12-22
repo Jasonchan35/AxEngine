@@ -349,7 +349,7 @@ constexpr D3D12_COMPARISON_FUNC Dx12Util::getDxDepthTestOp(DepthTestOp v) {
 }
 
 template<>
-constexpr StrLit ax_enum_str(const D3D12_RESOURCE_STATES& v) {
+constexpr StrLit ax_enum_entry_strlit(const D3D12_RESOURCE_STATES& v) {
 	switch (v) {
 		case D3D12_RESOURCE_STATE_COMMON								: return "COMMON";
 		case D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER			: return "VERTEX_AND_CONSTANT_BUFFER";
