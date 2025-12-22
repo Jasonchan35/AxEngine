@@ -6,8 +6,10 @@ export import :CmdOptions;
 export namespace ax /*::AxRender*/ {
 
 class AxShaderTool_App : public ConsoleApp {
-	using This = AxShaderTool_App;
+	AX_RTTI_INFO(AxShaderTool_App, ConsoleApp)
 public:
+	AX_DOWNCAST_GET_INSTANCE();
+	
 	AxShaderTool_App();
 
 	void genNinja_ShadersInFolder	(StrView outDir, StrView filename);
@@ -16,18 +18,7 @@ public:
 	void genNinja_Shader_API		(RenderAPI api, ShaderDeclareInfo& info, StrView outDir, StrView filename);
 
 	void writeNinja_Header			(IString& outStr);
-
-#if AX_RENDERER_NULL
-	void writeNinja_NullPass		(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
-#endif
 	
-#if AX_RENDERER_VK
-	void writeNinja_VkPass			(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
-#endif
-#if AX_RENDERER_DX12
-	void writeNinja_Dx12Pass		(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
-#endif
-
 	void showHelp();
 	int onRun() override;
 

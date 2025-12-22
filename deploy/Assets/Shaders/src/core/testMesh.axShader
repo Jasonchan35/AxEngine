@@ -29,7 +29,7 @@ Pass "Pass0" { // Forward
 }
 #endif
 
-#include <Ax/Common.hlsl>
+#include "AxRender.hlsl"
 
 Color4f 	color;
 Sampler_Texture2D(tex0)

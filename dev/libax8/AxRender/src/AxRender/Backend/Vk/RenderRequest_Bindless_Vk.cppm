@@ -13,7 +13,7 @@ class RenderRequest_Vk;
 
 class RenderRequest_Bindless_Vk {
 public:
-	using BindPoint = ShaderResourceBindPoint;
+	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
 	template<class T>

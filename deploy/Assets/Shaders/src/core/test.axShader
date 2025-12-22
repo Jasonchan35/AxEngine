@@ -19,7 +19,7 @@ Pass "Pass0" { // Forward
 }
 #endif	
 
-#include <Ax/Common.hlsl>
+#include "AxRender.hlsl"
 
 static float2 pos[3] = {
 	float2(0.0, -0.5),

@@ -1,11 +1,13 @@
 module;
 
-#if AX_RENDERER_VK
+#if !AX_RENDERER_VK
+export module AxShaderTool:GenReflect_Vk;
+#else
 
 #include "spirv_reflect.h"
 
 export module AxShaderTool:GenReflect_Vk;
-export import AxRender;
+export import :GenNinja_Vk;
 
 export namespace ax /*::AxRender*/ {
 

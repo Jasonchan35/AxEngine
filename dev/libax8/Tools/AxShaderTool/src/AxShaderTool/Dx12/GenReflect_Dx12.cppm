@@ -1,6 +1,7 @@
 module;
-
-#if AX_RENDERER_DX12
+#if !AX_RENDERER_DX12
+export module AxShaderTool:GenReflect_Dx12;
+#else
 	#if AX_OS_WINDOWS
 		using AX_WinBOOL = BOOL;
 		#include <dxcapi.h> // from Windows SDK
@@ -14,12 +15,9 @@ module;
 		AX_STATIC_ASSERT(std::is_same_v<BOOL, AX_WinBOOL>);
 		#undef BOOL
 	#endif
-#endif
 
 export module AxShaderTool:GenReflect_Dx12;
-
-#if AX_RENDERER_DX12
-export import AxRender;
+export import :GenNinja_Dx12;
 
 export namespace ax /*::AxRender*/ {
 

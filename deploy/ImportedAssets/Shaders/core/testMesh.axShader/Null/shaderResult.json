@@ -69,59 +69,11 @@
   }, 
   "passStages": [{
       "bindless": false, 
-      "stageFlags": "", 
-      "inputs": [{
-          "semantic": "POSITION", 
-          "dataType": "f32x4"
-        }, {
-          "semantic": "TEXCOORD0", 
-          "dataType": "f32x2"
-        }], 
-      "constBuffers": [{
-          "name": "$Global", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 0, 
-          "bindCount": 1, 
-          "dataSize": 16, 
-          "variables": [{
-              "name": "color", 
-              "offset": 0, 
-              "dataType": "f32x4", 
-              "rowMajor": true
-            }]
-        }], 
+      "stageFlags": "None", 
+      "inputs": [], 
+      "constBuffers": [], 
       "storageBuffers": [], 
-      "textures": [{
-          "name": "tex0", 
-          "dataType": "Texture2D", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 2, 
-          "bindCount": 1
-        }, {
-          "name": "tex1", 
-          "dataType": "Texture2D", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 4, 
-          "bindCount": 1
-        }], 
-      "samplers": [{
-          "name": "AxSamplerState_tex0", 
-          "dataType": "SamplerState", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 1, 
-          "bindCount": 1
-        }, {
-          "name": "AxSamplerState_tex1", 
-          "dataType": "SamplerState", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 3, 
-          "bindCount": 1
-        }]
+      "textures": [], 
+      "samplers": []
     }]
 }

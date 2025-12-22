@@ -1,5 +1,6 @@
 module AxShaderTool;
 import :App;
+import :GenReflect_Null;
 import :GenReflect_Dx12;
 import :GenReflect_Vk;
 import :ShaderInfoParser;
@@ -118,6 +119,8 @@ void AxShaderTool_App::writeNinja_Header(IString& outStr) {
 		outStr.append(Fmt("{}={}\n", name, v));
 	};
 
+	outStr.append("\n#-------- Common Header -----------------\n");
+	
 	writeEnvVar("ninja");
 	writeEnvVar("vulkan_sdk");
 	writeEnvVar("windows_sdk_bin");
@@ -137,22 +140,24 @@ void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& inf
 
 	Array<String, 64>	depFileList;
 //---
+	outStr.append("\n#---------- API -----------------\n");
 	for (auto& pass : info.passes) {
 		switch (api) {
 #if AX_RENDERER_NULL
-			case RenderAPI::Null:   writeNinja_NullPass(outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::Null:   GenNinja_Null().writeNinjaPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 #if AX_RENDERER_VK
-			case RenderAPI::Vk:		writeNinja_VkPass(outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::Vk:		GenNinja_Vk().writeNinjaPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 #if AX_RENDERER_DX12
-			case RenderAPI::Dx12:	writeNinja_Dx12Pass  (outStr, depFileList, pass, absSourceFilename); break;
+			case RenderAPI::Dx12:	GenNinja_Dx12().writeNinjaPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 			default: break;
 		}
 	}
 
-	outStr.append(	"rule build_shaderResult_json\n"
+	outStr.append(	"\n#--------- shaderResult --------------------------\n"
+					"rule build_shaderResult_json\n"
 					"  command = ${AxShaderTool} $\n"
 					"    -genResultInfo $\n"
 					"    -api=$param_api $\n"
@@ -171,204 +176,6 @@ void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& inf
 	auto outFilename = Fmt("{}/build.ninja", apiOutDir);
 	File::writeFileIfChanged(outFilename, outStr, true);
 }
-
-#if AX_RENDERER_DX12
-void AxShaderTool_App::writeNinja_Dx12Pass(IString& outStr, IArray<String>& outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename) {
-
-	outStr.append(	"#---- DX12 ----\n"
-					"rule build_Shader_Dx12_json\n"
-					"  depfile = $out.d\n"
-					"  command = \"${AxShaderTool}\" $\n"
-					"    -genReflect_Dx12 $\n");
-
-	if (opt.keepUnusedVariable) {
-		outStr.append("    -keepUnusedVariable $\n");
-	}
-
-	outStr.append(	"    -profile=$param_profile $\n"
-					"    -entry=$param_entry_point $\n"
-					"    -I=\"$AxIncludeDir\" $\n"
-					"    -out=\"$out\" $\n"
-					"    -file=\"$in\""
-					"\n\n"
-					"rule build_Shader_Dx12_bin\n"
-					"  command = \"$windows_sdk_bin/dxc\" $\n"
-#if AX_RENDER_BINDLESS
-					"    -DAX_RENDER_BINDLESS=1 $\n"
-#endif
-					"    -WX $\n" // Treat warnings as errors
-					"    -T $param_profile $\n"
-					"    -E $param_entry_point $\n"
-					"    -I \"$AxIncludeDir\" $\n"
-					"    -Fo \"$out\" \"$in\""
-					"\n\n");
-
-
-	outStr.append(Fmt("SourceFile={}\n\n", relSourceFilename));
-
-	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
-		if (!entryPoint) return;
-
-		String outJsonFilename = Fmt("Shader_Dx12-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
-		outJsonFileList.append(outJsonFilename);
-
-		outStr.append(Fmt("build {}: build_Shader_Dx12_json ${{SourceFile}} | ${{AxShaderTool}}\n", outJsonFilename, pass.name, stageFlags));
-		outStr.append(Fmt("  param_entry_point = {}\n", entryPoint));
-		outStr.append(Fmt("  param_profile     = {}\n", profile));
-		outStr.append("\n");
-
-		// have to use dxc.exe from MS, because that add validate hash in the bin file
-		outStr.append(Fmt("build Shader_Dx12-{}-{}.bin: build_Shader_Dx12_bin ${{SourceFile}} | {} \n", pass.name, stageFlags, outJsonFilename));
-		outStr.append(Fmt("  param_entry_point = {}\n", entryPoint));
-		outStr.append(Fmt("  param_profile     = {}\n", profile));
-		outStr.append("\n");
-	};
-
-	writePass(pass.vsFunc, ShaderStageFlags::Vertex  , "vs_6_0");
-	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "ps_6_0");
-	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "gs_6_0");
-}
-#endif // #if AX_RENDERER_DX12
-
-#if AX_RENDERER_NULL
-void AxShaderTool_App::writeNinja_NullPass(IString& outStr,
-	IArray<String>& outJsonFileList,
-	ShaderPassInfo& pass,
-	StrView relSourceFilename
-) {
-	outStr.append(	"#---- Null ----\n"
-					"rule build_Shader_Null_bin\n"
-					"  depfile = $out.d\n"
-					"  command = \"$vulkan_sdk/Bin/glslc\" $\n"
-					"    -x hlsl $\n"
-					"    -fshader-stage=$param_shader_stage $\n"
-					"    -fentry-point=$param_entry_point $\n"
-					"    -fauto-bind-uniforms $\n"
-#if AX_RENDER_BINDLESS
-					"    -DAX_RENDER_BINDLESS=1 $\n"
-#endif
-					"    -Werror $\n" // Treat warnings as errors
-					"    -MD -MF \"$out.d\""
-					"    -I \"$AxIncludeDir\""
-					"    -o \"$out\" \"$in\""
-					"\n\n");
-
-#if 0
-	outStr.append(	"rule build_Shdaer_Null_reflect\n"
-					"  command = \"$vulkan_sdk/Bin/spirv-cross\" $\n"
-					"    --reflect $\n"
-					"    --remove-unused-variables $\n"
-					"    --hlsl-auto-binding sampler $\n" // assign register id "Texture2D NAME : register(t ## REG); "
-					"    --set-hlsl-vertex-input-semantic 100 POSITION $\n"
-					"    --output \"$out\" \"$in\""
-					"\n\n");
-#endif
-
-	outStr.append(	"rule build_Shader_Null_json\n"
-					"  command = \"${AxShaderTool}\" $\n"
-					"    -genReflect_Null $\n"
-					"    -file=\"$in\""
-					"    -out=\"$out\" $\n"
-					"\n\n");
-
-	outStr.append(Fmt("SourceFile={}\n\n", relSourceFilename));
-
-	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
-		if (!entryPoint) return;
-
-		outStr.append(Fmt("build Shader_Null-{0}-{1}.bin: build_Shader_Null_bin ${{SourceFile}} | ${{AxShaderTool}}\n", pass.name, stageFlags));
-		outStr.append(Fmt("  param_shader_stage = {}\n", profile));
-		outStr.append(Fmt("  param_entry_point  = {}\n", entryPoint));
-		outStr.append("\n");
-
-#if 0
-		outStr.append(Fmt("build Shader_Null-{0}-{1}.reflect.json.tmp: build_null_reflect NULL-{0}-{1}.bin\n", pass.name, stageFlags));
-		outStr.append("\n");
-#endif
-
-		String outJsonFilename = Fmt("Shader_Null-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
-		outJsonFileList.append(outJsonFilename);
-
-		outStr.append(Fmt("build {}: build_Shader_Null_json Shader_Null-{}-{}.bin\n", outJsonFilename, pass.name, stageFlags));
-		outStr.append("\n");
-	};
-
-	writePass(pass.vsFunc, ShaderStageFlags::Vertex  , "vertex"  );
-	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "fragment");
-	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "geometry");
-}
-#endif // #if AX_RENDERER_NULL
-
-#if AX_RENDERER_VK
-void AxShaderTool_App::writeNinja_VkPass(IString& outStr, IArray<String>& outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename) {
-	outStr.append(	"#---- Vulkan ----\n"
-					"rule build_Shader_Vk_bin\n"
-					"  depfile = $out.d\n"
-					"  command = \"$vulkan_sdk/Bin/glslc\" $\n"
-					"    -x hlsl $\n"
-					"    -fshader-stage=$param_shader_stage $\n"
-					"    -fentry-point=$param_entry_point $\n"
-					"    -fauto-bind-uniforms $\n"
-					//"    -fubo-binding-base 16 $\n"
-					"    -fsampler-binding-base 4 $\n"
-					"    -ftexture-binding-base 4 $\n"
-					"      -fimage-binding-base 4 $\n"
-					"        -fuav-binding-base 4 $\n"
-					"       -fssbo-binding-base 4 $\n"
-#if AX_RENDER_BINDLESS
-					"    -DAX_RENDER_BINDLESS=1 $\n"
-#endif
-					"    -Werror $\n" // Treat warnings as errors
-					"    -MD -MF \"$out.d\""
-					"    -I \"$AxIncludeDir\""
-					"    -o \"$out\" \"$in\""
-					"\n\n");
-
-#if 0
-	outStr.append(	"rule build_Shader_Vk_reflect\n"
-					"  command = \"$vulkan_sdk/Bin/spirv-cross\" $\n"
-					"    --reflect $\n"
-					"    --remove-unused-variables $\n"
-					"    --hlsl-auto-binding sampler $\n" // assign register id "Texture2D NAME : register(t ## REG); "
-					"    --set-hlsl-vertex-input-semantic 100 POSITION $\n"
-					"    --output \"$out\" \"$in\""
-					"\n\n");
-#endif
-
-	outStr.append(	"rule build_Shader_Vk_json\n"
-					"  command = \"${AxShaderTool}\" $\n"
-					"    -genReflect_Vk $\n"
-					"    -file=\"$in\""
-					"    -out=\"$out\" $\n"
-					"\n\n");
-
-	outStr.append(Fmt("SourceFile={}\n\n", relSourceFilename));
-
-	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
-		if (!entryPoint) return;
-
-		outStr.append(Fmt("build Shader_Vk-{0}-{1}.bin: build_Shader_Vk_bin ${{SourceFile}} | ${{AxShaderTool}}\n", pass.name, stageFlags));
-		outStr.append(Fmt("  param_shader_stage = {}\n", profile));
-		outStr.append(Fmt("  param_entry_point  = {}\n", entryPoint));
-		outStr.append("\n");
-
-#if 0
-		outStr.append(Fmt("build Shader_Vk-{0}-{1}.reflect.json.tmp: build_Shader_Vk_reflect VK-{0}-{1}.bin\n", pass.name, stageFlags));
-		outStr.append("\n");
-#endif
-
-		String outJsonFilename = Fmt("Shader_Vk-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
-		outJsonFileList.append(outJsonFilename);
-
-		outStr.append(Fmt("build {}: build_Shader_Vk_json Shader_Vk-{}-{}.bin\n", outJsonFilename, pass.name, stageFlags));
-		outStr.append("\n");
-	};
-
-	writePass(pass.vsFunc, ShaderStageFlags::Vertex  , "vertex"  );
-	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "fragment");
-	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "geometry");
-}
-#endif // #if AX_RENDERER_VK
 
 void AxShaderTool_App::showHelp() {
 	AX_LOG(	"\n==== AxShaderTool_App Help: ====\n"
@@ -443,7 +250,7 @@ int AxShaderTool_App::onRun() {
 		return -1;
 	}
 
-	if (!opt.file) {
+	if (!opt.file && !opt.genReflect_Null) {
 		AX_LOG("missing -file=<input file>");
 		showHelp(); return -1;
 	}
@@ -453,7 +260,7 @@ int AxShaderTool_App::onRun() {
 
 #if AX_RENDERER_NULL
 	} else if (opt.genReflect_Null) {
-		GenReflect_Vk c;
+		GenReflect_Null c;
 		c.generate(opt.out, opt.file, RenderAPI::Null);
 #endif
 

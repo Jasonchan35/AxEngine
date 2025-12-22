@@ -8,7 +8,7 @@ Pass "Pass0" {
 }
 #endif
 
-#include <Ax/Common.hlsl>
+#include "AxRender.hlsl"
  
 struct Pixel
 {

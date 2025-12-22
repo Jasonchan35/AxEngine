@@ -20,7 +20,7 @@ Pass "Pass0" { // Forward
 }
 #endif	
 
-#include <Ax/Common.hlsl>
+#include "AxRender.hlsl"
 
 struct VS_Input {
 	sem_pos(float4)

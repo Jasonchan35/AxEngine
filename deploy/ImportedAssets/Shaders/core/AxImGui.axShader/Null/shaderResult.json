@@ -33,48 +33,11 @@
   }, 
   "passStages": [{
       "bindless": false, 
-      "stageFlags": "", 
-      "inputs": [{
-          "semantic": "POSITION", 
-          "dataType": "f32x2"
-        }, {
-          "semantic": "COLOR0", 
-          "dataType": "f32x4"
-        }, {
-          "semantic": "TEXCOORD0", 
-          "dataType": "f32x2"
-        }], 
-      "constBuffers": [{
-          "name": "$Global", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex", 
-          "bindSpace": "Default", 
-          "bindPoint": 0, 
-          "bindCount": 1, 
-          "dataSize": 64, 
-          "variables": [{
-              "name": "imguiProjectionMatrix", 
-              "offset": 0, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
-            }]
-        }], 
+      "stageFlags": "None", 
+      "inputs": [], 
+      "constBuffers": [], 
       "storageBuffers": [], 
-      "textures": [{
-          "name": "fontTexture", 
-          "dataType": "Texture2D", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 1, 
-          "bindCount": 1
-        }], 
-      "samplers": [{
-          "name": "AxSamplerState_fontTexture", 
-          "dataType": "SamplerState", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 0, 
-          "bindCount": 1
-        }]
+      "textures": [], 
+      "samplers": []
     }]
 }

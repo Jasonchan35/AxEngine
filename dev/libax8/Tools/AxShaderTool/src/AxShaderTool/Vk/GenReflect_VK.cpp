@@ -1,6 +1,8 @@
 module;
 
-#if AX_RENDERER_VK
+#if !AX_RENDERER_VK
+module AxShaderTool;
+#else
 
 AX_GCC_WARNING_PUSH_AND_DISABLE("-Wmicrosoft-enum-value") // INVALID_VALUE  = 0xFFFFFFFF,
 AX_VC_WARNING_PUSH_AND_DISABLE(5039)
@@ -64,7 +66,7 @@ private:
 	}
 };
 
-ShaderStageFlags getShaderStageGlags(SpvReflectShaderStageFlagBits f) {
+ShaderStageFlags getShaderStageFlags(SpvReflectShaderStageFlagBits f) {
 	using DST = ShaderStageFlags;
 	DST o = DST::None;
 	if (ax_bit_has(f, SPV_REFLECT_SHADER_STAGE_VERTEX_BIT  )) o |= DST::Vertex;
@@ -169,7 +171,7 @@ void GenReflect_Vk::generate(StrView outFilename, StrView filename, RenderAPI ap
 	_throwIfError(spirvReflect.GetResult());
 
 	ShaderStageInfo outInfo;
-	outInfo.stageFlags = getShaderStageGlags(spirvReflect.GetShaderStage());
+	outInfo.stageFlags = getShaderStageFlags(spirvReflect.GetShaderStage());
 
 	_genVertexInputs	(outInfo, spirvReflect);
 	_genBindings		(outInfo, spirvReflect);
