@@ -33,7 +33,7 @@
   }, 
   "passStages": [{
       "bindless": false, 
-      "stageFlags": "None", 
+      "stageFlags": "", 
       "inputs": [], 
       "constBuffers": [], 
       "storageBuffers": [], 

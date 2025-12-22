@@ -33,7 +33,7 @@
   }, 
   "passStages": [{
       "bindless": false, 
-      "stageFlags": "", 
+      "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
           "dataType": "f32x4"
