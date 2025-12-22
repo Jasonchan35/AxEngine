@@ -20,7 +20,7 @@ bool VertexInputLayoutDesc_Dx12::init(const ShaderStageInfo& info, VertexLayout 
 		}
 
 		auto& dst = desc_dx12.emplaceBack();
-		dst.SemanticName = ax_enum_str(VertexSemanticUtil::getType(input.semantic)).c_str();
+		dst.SemanticName = ax_enum_entry_strlit(VertexSemanticUtil::getType(input.semantic)).c_str();
 		dst.SemanticIndex = VertexSemanticUtil::getIndex(input.semantic);
 		dst.Format = Dx12Util::getDxDataType(src->dataType);
 		dst.InputSlot = 0;
