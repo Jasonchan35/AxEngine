@@ -209,7 +209,16 @@
 
 	<!-- MutStrView_<*> -->
 	<Type Name="ax::MutStrView_&lt;*&gt;">
-		<DisplayString>size={_size} {_data, [_size]na}</DisplayString>
+		<DisplayString>{_data, [_size]na}</DisplayString>
+		<StringView>_data, [_size]na</StringView>
+		<Expand>
+			<Item Name="size">_size</Item>
+		</Expand>
+	</Type>
+
+	<!-- MutZStrView_<*> -->
+	<Type Name="ax::MutZStrView_&lt;*&gt;">
+		<DisplayString>{_data, [_size]na}</DisplayString>
 		<StringView>_data, [_size]na</StringView>
 		<Expand>
 			<Item Name="size">_size</Item>
@@ -241,13 +250,13 @@
 
 	<!-- ax::PersistString_<*> -->
 	<Type Name="ax::PersistString_&lt; * &gt;">
-		<DisplayString>{_p->_data,[_p->_size]na}</DisplayString>
+		<DisplayString>{_data->str}</DisplayString>
 	</Type>
 
 	<!-- ax::NameId_<*,*> -->
 	<Type Name="ax::NameId_&lt; *, * &gt;">
-		<DisplayString  Condition="_id &lt; 0">NameId({_name._p->_data,[_name._p->_size]na})</DisplayString>
-		<DisplayString                        >NameId({_name._p->_data,[_name._p->_size]na}#{_id})</DisplayString>
+		<DisplayString  Condition="_id &lt; 0">NameId({_name})</DisplayString>
+		<DisplayString                        >NameId({_name}#{_id})</DisplayString>
 	</Type>
 
 </AutoVisualizer>
