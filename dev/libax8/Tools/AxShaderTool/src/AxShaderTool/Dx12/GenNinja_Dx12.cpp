@@ -40,7 +40,11 @@ void GenNinja_Dx12::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
 		if (!entryPoint) return;
 
-		String outJsonFilename = Fmt("Shader_Dx12-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
+		// Dependency:
+		// - shaderResult.json       <-+ Shader_Dx12-{}-{}.bin.json.tmp <- Shader_Dx12-{}-{}.bin.json.tmp.d
+		// - Shader_Dx12-{0}-{1}.bin <-+ same above 
+		
+		String outJsonFilename = Fmt("Shader_Dx12-{}-{}.bin.json.tmp", pass.name, stageFlags);
 		outJsonFileList.append(outJsonFilename);
 
 		outStr.append(Fmt("build {}: build_Shader_Dx12_json ${{SourceFile}} | ${{AxShaderTool}}\n", outJsonFilename, pass.name, stageFlags));
@@ -49,7 +53,7 @@ void GenNinja_Dx12::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 		outStr.append("\n");
 
 		// have to use dxc.exe from MS, because that add validate hash in the bin file
-		outStr.append(Fmt("build Shader_Dx12-{}-{}.bin: build_Shader_Dx12_bin ${{SourceFile}} | {} \n", pass.name, stageFlags, outJsonFilename));
+		outStr.append(Fmt("build Shader_Dx12-{}-{}.bin: build_Shader_Dx12_bin ${{SourceFile}} | {} ${{AxShaderTool}} \n", pass.name, stageFlags, outJsonFilename));
 		outStr.append(Fmt("  param_entry_point = {}\n", entryPoint));
 		outStr.append(Fmt("  param_profile     = {}\n", profile));
 		outStr.append("\n");

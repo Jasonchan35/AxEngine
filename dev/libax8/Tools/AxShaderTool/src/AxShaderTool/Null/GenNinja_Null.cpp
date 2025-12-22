@@ -22,7 +22,7 @@ void GenNinja_Null::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 		String outJsonFilename = Fmt("Shader_Null-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
 		outJsonFileList.append(outJsonFilename);
 
-		outStr.append(Fmt("build {}: build_Shader_Null_json\n", outJsonFilename, pass.name, stageFlags));
+		outStr.append(Fmt("build {}: build_Shader_Null_json | ${{AxShaderTool}}\n", outJsonFilename));
 		outStr.append("\n");
 	};
 	

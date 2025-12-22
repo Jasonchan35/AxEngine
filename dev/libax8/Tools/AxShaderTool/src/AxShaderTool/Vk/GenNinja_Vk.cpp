@@ -65,7 +65,7 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 		String outJsonFilename = Fmt("Shader_Vk-{0}-{1}.bin.json.tmp", pass.name, stageFlags);
 		outJsonFileList.append(outJsonFilename);
 
-		outStr.append(Fmt("build {}: build_Shader_Vk_json Shader_Vk-{}-{}.bin\n", outJsonFilename, pass.name, stageFlags));
+		outStr.append(Fmt("build {}: build_Shader_Vk_json Shader_Vk-{}-{}.bin | ${{AxShaderTool}}\n", outJsonFilename, pass.name, stageFlags));
 		outStr.append("\n");
 	};
 
