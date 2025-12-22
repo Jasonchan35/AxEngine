@@ -237,31 +237,33 @@
 	AX_ENUM_COMPARE_OPERATOR(T) \
 //-------
 
-#define AX_ENUM_STR__CASE(V, ...) case CURRENT_ENUM_T::V: return #V;
+#define AX_ENUM_ENTRY_STRLIT__SWITCH_CASE(V, ...) case CURRENT_ENUM_T::V: return #V;
 
-#define AX_ENUM_STR(LIST, T) \
-	constexpr StrLit _ax_macro_enum_str(const T& v) { \
+#define AX_ENUM_ENTRY_STRLIT(LIST, T) \
+	template<> \
+	constexpr StrLit ax_enum_entry_strlit(const T& v) { \
 		using CURRENT_ENUM_T = T; \
 		switch (v) { \
-			LIST(AX_ENUM_STR__CASE) \
+			LIST(AX_ENUM_ENTRY_STRLIT__SWITCH_CASE) \
 			default: return ""; \
 		} \
 	} \
 //----
 
-#define AX_ENUM_TRY_PARSE__CASE(V, ...) if (str == StrView(#V)) { outValue = CURRENT_ENUM_T::V; return true; }
+#define AX_ENUM_TRY_PARSE__SWITCH_CASE(V, ...) if (str == StrView(#V)) { outValue = CURRENT_ENUM_T::V; return true; }
 
-#define AX_ENUM_TRY_PARSE(LIST, T) \
-	constexpr bool _ax_macro_enum_try_parse(StrView str, T& outValue) { \
+#define AX_ENUM_ENTRY_TRY_PARSE(LIST, T) \
+	template<> \
+	constexpr bool ax_enum_entry_try_parse(StrView str, T& outValue) { \
 		using CURRENT_ENUM_T = T; \
-		LIST(AX_ENUM_TRY_PARSE__CASE) \
+		LIST(AX_ENUM_TRY_PARSE__SWITCH_CASE) \
 		return false; \
 	} \
 //----
 
 #define AX_ENUM_STR_UTIL(LIST, T) \
-	AX_ENUM_STR(LIST, T) \
-	AX_ENUM_TRY_PARSE(LIST, T) \
+	AX_ENUM_ENTRY_STRLIT(LIST, T) \
+	AX_ENUM_ENTRY_TRY_PARSE(LIST, T) \
 //----
 
 #define AX_ENUM_DECLARE__ITEM(ITEM, VALUE, ...) ITEM VALUE,

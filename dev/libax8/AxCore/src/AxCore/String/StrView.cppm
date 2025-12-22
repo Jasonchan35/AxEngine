@@ -24,6 +24,12 @@ using StrView8  = StrView_<Char8 >;
 using StrView16 = StrView_<Char16>;
 using StrView32 = StrView_<Char32>;
 
+template<class T> requires Type_IsEnum<T>
+constexpr StrLit ax_enum_entry_strlit(const T& v);
+
+template<class T> requires Type_IsEnum<T>
+constexpr bool ax_enum_entry_try_parse(StrView str, T& outValue);
+
 template<class T, class CH> constexpr bool Type_IsConvertibleToStrView_	= std::is_convertible_v<T, StrView_<CH>>;
 
 template<class T> constexpr bool Type_IsConvertibleToStrViewX	=  Type_IsConvertibleToStrView_<T, CharA >
@@ -59,7 +65,7 @@ struct StrView_ParseHandler<CH, T> {
 				auto s = pair.first.trimSpaceTabBoth();
 				if (!s) break;
 				T e;
-				if (!_ax_macro_enum_try_parse(s, e)) {
+				if (!ax_enum_entry_try_parse(s, e)) {
 					return false;
 				}
 				obj |= e;
@@ -67,7 +73,7 @@ struct StrView_ParseHandler<CH, T> {
 			}
 			return true;
 		} else {
-			return _ax_macro_enum_try_parse(inStr, obj);
+			return ax_enum_entry_try_parse(inStr, obj);
 		}
 		
 	}
@@ -557,7 +563,7 @@ template<class T>
 template<class FUNC>
 constexpr typename MutStrView_<T>::MView MutStrView_<T>::_trim(FUNC func) {
 	Int offset = 0;
-	for (offset = 0; offset < _size; ++offset) {
+	for (; offset < _size; ++offset) {
 		if (!func(_data[offset])) break;
 	}
 	return sliceFrom(offset);
@@ -567,7 +573,7 @@ template<class T>
 template<class FUNC>
 constexpr typename MutStrView_<T>::MView MutStrView_<T>::_trimBack(FUNC func) {
 	Int offset = 0;
-	for (offset = 0; offset < _size; ++offset) {
+	for (; offset < _size; ++offset) {
 		if (!func(back(offset))) break;
 	}
 	return sliceFromBack(offset);
