@@ -15,11 +15,10 @@ RenderResourceTable_Backend<T>::RenderResourceTable_Backend() {
 	_slots.emplaceBack(); // slot 0 for fall back when error
 }
 
-template<class T> inline
-MutexProtected<RenderResourceTable_Backend<T>>* RenderResourceTable_Backend<T>::s_get() {
-	MutexProtected<This>* p = nullptr;
-	RenderResourceManager_Backend::s_instance()->getTable(p);
-	return p;
+template<class T>
+auto RenderResourceTable_Backend<T>::s_get() -> MutexProtected<UPtr<This>>& {
+	auto* mgr = RenderResourceManager_Backend::s_instance();
+	return mgr->getTable<T>();
 }
 
 template<class T>

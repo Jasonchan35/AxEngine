@@ -62,7 +62,6 @@ public:
 #endif	
 	
 	struct ResourcesList {
-		template<class T> Array<SPtr<T>>& getList() { return _all_list.get< Array<SPtr<T>> >(); }
 
 		void add(const  GpuBuffer_Backend* p) { _add(p); }
 		void add(const   Material_Backend* p) { _add(p); }
@@ -70,21 +69,22 @@ public:
 		void add(const    Sampler_Backend* p) { _add(p); }
 		void add(const  Texture2D_Backend* p) { _add(p); }
 
-		void add(SPtr<const  GpuBuffer_Backend> && p) { _add(AX_FORWARD(p)); }
-		void add(SPtr<const   Material_Backend> && p) { _add(AX_FORWARD(p)); }
-		void add(SPtr<const RenderPass_Backend> && p) { _add(AX_FORWARD(p)); }
-		void add(SPtr<const    Sampler_Backend> && p) { _add(AX_FORWARD(p)); }
-		void add(SPtr<const  Texture2D_Backend> && p) { _add(AX_FORWARD(p)); }
-
 		void clear() {
-			_all_list.apply([](auto&... list) {
-				(list.clear(),...);
-			});
+			visit([](auto& list) { list.clear(); });
 		}
 
+		template<class FUNC>
+		void visit(FUNC func) {
+			_all_list.apply([&func](auto&... list) {
+				(func(list),...);
+			});
+		}
+		
+		template<class T> Array<SPtr<const T>>& getList() { return _all_list.get< Array<SPtr<const T>> >(); }
+
 	private:
-		template<class T> void _add(     T  *  p) { getList<T>().emplaceBack(p); }
-		template<class T> void _add(SPtr<T> && p) { getList<T>().emplaceBack(std::move(p)); }
+		template<class T> void _add(     const T  *  p) { getList<const T>().emplaceBack(p); }
+		template<class T> void _add(SPtr<const T> && p) { getList<const T>().emplaceBack(std::move(p)); }
 		
 		using All_List = Tuple<
 			Array< SPtr<const  GpuBuffer_Backend> >,

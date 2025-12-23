@@ -30,26 +30,44 @@ public:
 
 	void hotReloadFile(StrView filename);
 
-	using ShaderTable      = RenderResourceTable_Backend<Shader_Backend>;
-	using SamplerTable     = RenderResourceTable_Backend<Sampler_Backend>;
-	using Texture2DTable   = RenderResourceTable_Backend<Texture2D_Backend>;
+	template<class T>
+	using Table = RenderResourceTable_Backend<T>;
 
-	MutexProtected<ShaderTable     > shaderTable;
-	MutexProtected<SamplerTable    > samplerTable;
-	MutexProtected<Texture2DTable  > texture2DTable;
-	
-	void getTable(MutexProtected<ShaderTable     >* & o) { o = &shaderTable; }
-	void getTable(MutexProtected<SamplerTable    >* & o) { o = &samplerTable; }
-	void getTable(MutexProtected<Texture2DTable  >* & o) { o = &texture2DTable; }
-	
-	template<class FUNC>
-	void visit(FUNC func) {
-		func(shaderTable);
-		func(samplerTable);
-		func(texture2DTable);
+	template<class T>
+	AX_NODISCARD MutexProtected<UPtr<Table<T>>>& getTable() {
+		using TABLE = MutexProtected<UPtr<Table<T>>>; 
+		return _all_table.get<TABLE>();
 	}
 
+	auto& table_shader()	{ return getTable<Shader_Backend>(); }
+	auto& table_sampler()	{ return getTable<Sampler_Backend>(); }
+	auto& table_texture2D()	{ return getTable<Texture2D_Backend>(); }
+
 protected:
+	template<class FUNC>
+	void visit(FUNC func) {
+		_all_table.apply([&func](auto&... list) {
+			(func(list),...);
+		});
+	}
+
+	using All_Table = Tuple<
+		MutexProtected<UPtr<Table<Shader_Backend>   >>,
+		MutexProtected<UPtr<Table<Sampler_Backend>  >>,
+		MutexProtected<UPtr<Table<Texture2D_Backend>>>
+	>;
+	All_Table _all_table;
+
+	void         _created(const CreateDesc& desc);
+	virtual void onCreated(const CreateDesc& desc) {}
+
+	template<class T>
+	void newTableIfNull(const MemAllocRequest& allocaReq) {
+		auto lock = getTable<T>().scopedLock();
+		if (lock->get()) return;
+		lock->move(UPtr_new<Table<T>>(allocaReq));
+	}
+	
 	RenderResourceManager_Backend(const CreateDesc& desc) {}
 };
 
@@ -59,11 +77,8 @@ bool RenderResourceManager_Backend::getOrNewResource(SPtr<T>&               sp,
                                                      const CREATE_DESC&     desc,
                                                      const RESOURCE_KEY&    key
 ) {
-	MutexProtected<RenderResourceTable_Backend<T>>* table = nullptr;
-	getTable(table);
-
-	auto tableLock = table->scopedLock();
-	if (auto* p = tableLock->findObject(key)) {
+	auto lock = getTable<T>().scopedLock();
+	if (auto* p = lock->get()->findObject(key)) {
 		sp = p;
 		return false;
 	}

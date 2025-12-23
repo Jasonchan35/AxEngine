@@ -22,15 +22,15 @@ public:
 	AX_INLINE T*	 owner() { return _owner; }
 
 	RenderResourceHandle_Backend(T* owner) : _owner(owner) {
-		Table::s_get()->scopedLock()->add(_owner);
+		Table::s_get().scopedLock()->get()->add(_owner);
 	}
 
 	~RenderResourceHandle_Backend() {
-		Table::s_get()->scopedLock()->remove(_owner); 
+		Table::s_get().scopedLock()->get()->remove(_owner); 
 	}
 
 	void markDirty() {
-		Table::s_get()->scopedLock()->markDirty(_owner);
+		Table::s_get().scopedLock()->get()->markDirty(_owner);
 	}
 
 friend class RenderResourceTable_Backend<T>;
@@ -68,7 +68,7 @@ public:
 
 	void onFrameEnd(class RenderRequest_Backend* req);
 
-	static MutexProtected<This>*	s_get();
+	static MutexProtected<UPtr<This>>&	s_get();
 
 protected:
 	Array<T*>				_slots;
