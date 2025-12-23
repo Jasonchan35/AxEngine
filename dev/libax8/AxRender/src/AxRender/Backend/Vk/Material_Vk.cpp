@@ -72,8 +72,6 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 
 	auto* shaderPass = pass->_shaderPass;
 	
-	// avoid resize cause the pointer to element change
-
 	req->_writeDescriptor_BufferInfos.clear();
 	req->_writeDescriptor_BufferInfos.ensureCapacity(
 		shaderPass->constBuffers_totalBindCount() + shaderPass->storageBufferParams_totalBindCount());
@@ -125,8 +123,7 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 			addWriteDesc(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), bindSpace, &dst, nullptr);
 		}
 
-		if constexpr  (!AxRenderConfig::bindless) continue;
-
+#if !AX_RENDER_BINDLESS
 		for (auto& param : paramSpace->_samplerParams) {
 			auto* sampler = param.sampler();
 			if (!sampler) {
@@ -181,6 +178,7 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 
 			addWriteDesc(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), bindSpace, &dst, nullptr);
 		}
+#endif // #if !AX_RENDER_BINDLESS
 	}
 	auto* renderer = req->renderer_vk();
 	AX_vkUpdateDescriptorSets(renderer->device(), req->_writeDescriptorSets, {});

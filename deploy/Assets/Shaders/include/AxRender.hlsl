@@ -26,15 +26,13 @@ typedef float4 	Color4f;
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"
 // HLSL: register space                | DX: "Space"                      |  Vulkan "set"
 #define AX_BindSpace_Default		space0
-#define AX_BindSpace_Global 		space1  // Global and Bindless
-#define AX_BindSpace_PerFrame 		space2
-#define AX_BindSpace_PerObject		space3
+#define AX_BindSpace_World   		space1
+#define AX_BindSpace_Object 		space2
+#define AX_BindSpace_Bindless		space3
 
-cbuffer AX_ConstBuffer_Global : register(b0, AX_BindSpace_Global) {
+cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
 	float		ax_g_test;
-}
 
-cbuffer AX_ConstBuffer_PerFrame : register(b0, AX_BindSpace_PerFrame) {
 	float		ax_g_time;
 	float4		ax_g_timeSin;
 	float4		ax_g_timeSlowSin;
@@ -44,7 +42,7 @@ cbuffer AX_ConstBuffer_PerFrame : register(b0, AX_BindSpace_PerFrame) {
 	float4x4	ax_g_cameraInvProjection;
 }
 
-cbuffer AX_ConstBuffer_PerObject : register(b0, AX_BindSpace_PerObject) {
+cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
 	float4x4 	ax_object_mvp;
 	float4x4 	ax_object_mv;
 	float4x4 	ax_object_mv_t;
@@ -56,9 +54,9 @@ cbuffer AX_ConstBuffer_PerObject : register(b0, AX_BindSpace_PerObject) {
 }
 
 #if AX_RENDER_BINDLESS
-	SamplerState AxBindless_SamplerState[1024]  : register(s1, AX_BindSpace_Global);
-	Texture2D    AxBindless_Texture2D[16*1024]  : register(t2, AX_BindSpace_Global);
-	Texture3D    AxBindless_Texture3D[   1024]  : register(t3, AX_BindSpace_Global);
+	SamplerState AxBindless_SamplerState[1024]  : register(s1, AX_BindSpace_Bindless);
+	Texture2D    AxBindless_Texture2D[16*1024]  : register(t2, AX_BindSpace_Bindless);
+	Texture3D    AxBindless_Texture3D[   1024]  : register(t3, AX_BindSpace_Bindless);
 
 	// $Global UniformBuffer should be register(x, space0)
 

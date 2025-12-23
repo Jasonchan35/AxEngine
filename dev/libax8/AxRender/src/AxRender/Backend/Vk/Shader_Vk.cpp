@@ -30,6 +30,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 #endif
 
 	for (auto& paramSpace : _shaderParamSpaces) {
+		if (!paramSpace) continue;
 		auto bindSpace = paramSpace->bindSpace();
 		auto bindSpaceIndex = ax_enum_int(bindSpace);
 

@@ -66,7 +66,7 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
-		case GpuBufferType::Uniform: {
+		case GpuBufferType::Const: {
 			alignment       = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
 			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;

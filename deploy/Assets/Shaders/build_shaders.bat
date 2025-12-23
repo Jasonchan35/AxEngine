@@ -17,7 +17,7 @@ set AxIncludeDir=include
 set AxEngine_bin=%projectRoot%\dev\_build\vs2022-x64-windows\bin\Debug
 set AxShaderTool=%AxEngine_bin%\AxShaderTool.exe
 
-%AxShaderTool% -genNinja -file=src -quiet=0 -out="%outputDir%"
+%AxShaderTool% -genNinja -file=src -quiet=1 -out="%outputDir%"
 
 IF NOT %ERRORLEVEL% EQU 0 GOTO :error_handler
 

@@ -9,7 +9,7 @@ export namespace ax /*::AxRender*/ {
 	E(None,			) \
 	E(Vertex,		) \
 	E(Index,		) \
-	E(Uniform,		) \
+	E(Const,		) \
 	E(Storage,		) \
 	E(StagingToGpu,	) \
 	E(StagingToCpu,	) \

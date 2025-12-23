@@ -1,3 +1,7 @@
+- Vulkan - Bindless
+	- use only one set for bindless
+
+
 - GC
 - using Texture = SPtr<OBJ_Texture>
 - Type_EnumFlag<>

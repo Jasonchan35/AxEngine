@@ -222,7 +222,9 @@ public:
 	const ShaderPassInfo*	info() const	{ return _info; }
 	bool isGlobalCommonShaderPass() const	{ return _isGlobalCommonShaderPass; }
 
-	bool isOwnParamSpace(BindSpace s) const { return _isGlobalCommonShaderPass || !ShaderParamBindSpace_isCommon(s); }
+	bool isOwnParamSpace(BindSpace s) const {
+		return _isGlobalCommonShaderPass || s == BindSpace::Default || s == BindSpace::Object;
+	}
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
 	
@@ -236,7 +238,7 @@ public:
 		return ax_const_cast(getParamSpace(s));
 	}
 
-	const ShaderPass_Backend* getCommonPass() const;
+	const ShaderPass_Backend* getCommonShaderPass() const;
 
 	Int constBuffers_totalBindCount() const			{ return _constBuffers_totalBindCount        ; }
 	Int textureParams_totalBindCount() const		{ return _textureParams_totalBindCount       ; }

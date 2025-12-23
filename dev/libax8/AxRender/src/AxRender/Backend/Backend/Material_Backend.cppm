@@ -224,6 +224,8 @@ public:
 
 	NameId getPropSamplerName(NameId name) const { auto* shd = shader(); return shd ? shd->getPropSamplerName(name) : NameId(); }
 
+	bool isGlobalCommonPass() const { return _shaderPass->isGlobalCommonShaderPass(); }
+	
 	void logWarningOnce(StrView msg);
 
 	MaterialParamSpace_Backend* getParamSpace(BindSpace s) {

@@ -53,30 +53,21 @@
               "rowMajor": true
             }]
         }, {
-          "name": "AX_ConstBuffer_Global", 
+          "name": "AX_ConstBuffer_World", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Pixel", 
-          "bindSpace": "Global", 
+          "bindSpace": "World", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 16, 
+          "dataSize": 208, 
           "variables": [{
               "name": "ax_g_test", 
               "offset": 0, 
               "dataType": "f32", 
               "rowMajor": true
-            }]
-        }, {
-          "name": "AX_ConstBuffer_PerFrame", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "PerFrame", 
-          "bindPoint": 0, 
-          "bindCount": 1, 
-          "dataSize": 208, 
-          "variables": [{
+            }, {
               "name": "ax_g_time", 
-              "offset": 0, 
+              "offset": 4, 
               "dataType": "f32", 
               "rowMajor": true
             }, {
@@ -111,10 +102,10 @@
               "rowMajor": true
             }]
         }, {
-          "name": "AX_ConstBuffer_PerObject", 
+          "name": "AX_ConstBuffer_Object", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Pixel", 
-          "bindSpace": "PerObject", 
+          "bindSpace": "Object", 
           "bindPoint": 0, 
           "bindCount": 1, 
           "dataSize": 512, 

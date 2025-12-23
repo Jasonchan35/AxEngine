@@ -63,9 +63,9 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 		}
 	};
 
-	setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_time"       ), t);
-	setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_timeSin"    ), timeSin);
-	setParam(BindSpace::PerFrame, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
+	setParam(BindSpace::World, AX_NAMEID("ax_g_time"       ), t);
+	setParam(BindSpace::World, AX_NAMEID("ax_g_timeSin"    ), timeSin);
+	setParam(BindSpace::World, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
 }
 
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
