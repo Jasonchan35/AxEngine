@@ -13,7 +13,9 @@ RenderResourceManager_Backend* RenderResourceManager_Backend::s_instance() {
 
 void RenderResourceManager_Backend::s_create(const MemAllocRequest& req) {
 	AX_ASSERT(ResourceManager_Backend_instance == nullptr);
-	ResourceManager_Backend_instance = std::move(UPtr_new<This>(AX_ALLOC_REQ));
+	RenderResourceManager_CreateDesc desc;
+	auto p = Renderer_Backend::s_instance()->newRenderResourceManager(req, desc);
+	ResourceManager_Backend_instance = std::move(p);
 }
 
 void RenderResourceManager_Backend::s_destroy() {

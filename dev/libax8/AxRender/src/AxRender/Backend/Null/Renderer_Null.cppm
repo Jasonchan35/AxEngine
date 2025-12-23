@@ -140,5 +140,11 @@ protected:
 	virtual void	onPresentSurface(RenderRequest* req) override {}
 };
 
+class RenderResourceManager_Null : public RenderResourceManager_Backend {
+	AX_RTTI_INFO(RenderResourceManager_Null, RenderResourceManager_Backend)
+public:
+	RenderResourceManager_Null(const CreateDesc& desc) : Base(desc) {}
+};
+
 } // namespace
 

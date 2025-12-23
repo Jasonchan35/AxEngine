@@ -6,10 +6,15 @@ export import :Renderer_Backend;
 
 export namespace ax /*::AxRender*/ {
 
+class RenderResourceManager_CreateDesc {
+public:
+};
+
 class RenderResourceManager_Backend : public RenderObject {
 	AX_RTTI_INFO(RenderResourceManager_Backend, RenderObject)
 public:
-	RenderResourceManager_Backend() {}
+	using CreateDesc = RenderResourceManager_CreateDesc;
+	RenderResourceManager_Backend(const CreateDesc& desc) {}
 	
 	static RenderResourceManager_Backend* s_instance();
 	static void s_create(const MemAllocRequest& req);
