@@ -8,7 +8,7 @@ import :RenderContext_Backend;
 namespace ax /*::AxRender*/ {
 
 template<class T>
-ResourceTable_Backend<T>::ResourceTable_Backend() {
+RenderResourceTable_Backend<T>::RenderResourceTable_Backend() {
 	auto frameCount = Renderer::s_instance()->renderRequestCount();
 	if (frameCount < 1) throw Error_Undefined();
 	_frames.resize(frameCount);
@@ -16,14 +16,14 @@ ResourceTable_Backend<T>::ResourceTable_Backend() {
 }
 
 template<class T> inline
-MutexProtected<ResourceTable_Backend<T>>* ResourceTable_Backend<T>::s_get() {
+MutexProtected<RenderResourceTable_Backend<T>>* RenderResourceTable_Backend<T>::s_get() {
 	MutexProtected<This>* p = nullptr;
 	RenderResourceManager_Backend::s_instance()->getTable(p);
 	return p;
 }
 
 template<class T>
-void ResourceTable_Backend<T>::add(T* obj) {
+void RenderResourceTable_Backend<T>::add(T* obj) {
 	if (!obj) return;
 
 	if (auto& key = obj->resourceKey()) { _keyDict.add(key, obj); }
@@ -49,7 +49,7 @@ void ResourceTable_Backend<T>::add(T* obj) {
 }
 
 template<class T>
-void ResourceTable_Backend<T>::markDirty(T* obj) {
+void RenderResourceTable_Backend<T>::markDirty(T* obj) {
 	if (!obj) { AX_ASSERT(false); return; }
 	auto& handle = obj->resourceHandle;
 	if (!handle) { AX_ASSERT(false); return; }
@@ -63,7 +63,7 @@ void ResourceTable_Backend<T>::markDirty(T* obj) {
 }
 
 template<class T>
-void ResourceTable_Backend<T>::remove(T* obj) {
+void RenderResourceTable_Backend<T>::remove(T* obj) {
 	if (!obj) return;
 
 	if (auto& key = obj->resourceKey()) {
@@ -89,7 +89,7 @@ void ResourceTable_Backend<T>::remove(T* obj) {
 }
 
 template<class T>
-void ResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
+void RenderResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 	_currentFrameIndex = (_currentFrameIndex + 1) % _frames.size();
 	auto& curFrame	   = currentFrame();
 
@@ -111,8 +111,8 @@ void ResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 }
 
 /*---- The explicit instantiation ---*/
-template class ResourceTable_Backend<Shader_Backend>;
-template class ResourceTable_Backend<Sampler_Backend>;
-template class ResourceTable_Backend<Texture2D_Backend>;
+template class RenderResourceTable_Backend<Shader_Backend>;
+template class RenderResourceTable_Backend<Sampler_Backend>;
+template class RenderResourceTable_Backend<Texture2D_Backend>;
 
 } // namespace

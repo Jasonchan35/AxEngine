@@ -30,9 +30,9 @@ public:
 
 	void hotReloadFile(StrView filename);
 
-	using ShaderTable      = ResourceTable_Backend<Shader_Backend>;
-	using SamplerTable     = ResourceTable_Backend<Sampler_Backend>;
-	using Texture2DTable   = ResourceTable_Backend<Texture2D_Backend>;
+	using ShaderTable      = RenderResourceTable_Backend<Shader_Backend>;
+	using SamplerTable     = RenderResourceTable_Backend<Sampler_Backend>;
+	using Texture2DTable   = RenderResourceTable_Backend<Texture2D_Backend>;
 
 	MutexProtected<ShaderTable     > shaderTable;
 	MutexProtected<SamplerTable    > samplerTable;
@@ -59,7 +59,7 @@ bool RenderResourceManager_Backend::getOrNewResource(SPtr<T>&               sp,
                                                      const CREATE_DESC&     desc,
                                                      const RESOURCE_KEY&    key
 ) {
-	MutexProtected<ResourceTable_Backend<T>>* table = nullptr;
+	MutexProtected<RenderResourceTable_Backend<T>>* table = nullptr;
 	getTable(table);
 
 	auto tableLock = table->scopedLock();

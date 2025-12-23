@@ -1,19 +1,19 @@
 module;
-export module AxRender:ResourceHandle_Backend;
+export module AxRender:RenderResourceHandle_Backend;
 export import :Texture;
 export import :GpuBuffer;
 
 export namespace ax /*::AxRender*/ {
 
-template<class T> class ResourceTable_Backend;
+template<class T> class RenderResourceTable_Backend;
 
 enum class ResourceSlotId : u32 { None };
 AX_ENUM_ALL_OPERATOR(ResourceSlotId)
 
 template<class T>
-class ResourceHandle_Backend : public NonCopyable {
+class RenderResourceHandle_Backend : public NonCopyable {
 public:
-	using Table = ResourceTable_Backend<T>;
+	using Table = RenderResourceTable_Backend<T>;
 	using ResourceKey = typename T::ResourceKey;
 
 	explicit operator bool() const { return _slotId != ResourceSlotId::None; }
@@ -21,11 +21,11 @@ public:
 	AX_INLINE ResourceSlotId slotId() const { return _slotId; }
 	AX_INLINE T*	 owner() { return _owner; }
 
-	ResourceHandle_Backend(T* owner) : _owner(owner) {
+	RenderResourceHandle_Backend(T* owner) : _owner(owner) {
 		Table::s_get()->scopedLock()->add(_owner);
 	}
 
-	~ResourceHandle_Backend() {
+	~RenderResourceHandle_Backend() {
 		Table::s_get()->scopedLock()->remove(_owner); 
 	}
 
@@ -33,7 +33,7 @@ public:
 		Table::s_get()->scopedLock()->markDirty(_owner);
 	}
 
-friend class ResourceTable_Backend<T>;
+friend class RenderResourceTable_Backend<T>;
 protected:
 	ResourceSlotId _slotId = ResourceSlotId::None;
 	bool _dirty = false;
@@ -42,10 +42,10 @@ private:
 };
 
 template<class T>
-class ResourceTable_Backend : public NonCopyable {
-	using This = ResourceTable_Backend;
+class RenderResourceTable_Backend : public NonCopyable {
+	using This = RenderResourceTable_Backend;
 public:
-	using Handle = ResourceHandle_Backend<T>;
+	using Handle = RenderResourceHandle_Backend<T>;
 	using ResourceKey = typename T::ResourceKey;
 
 	static constexpr bool kNeedDescriptorUpdate = std::is_base_of_v<Sampler    , T>
@@ -64,7 +64,7 @@ public:
 
 	Int count() const { return _slots.size() - _freeSlots.size(); }
 
-	ResourceTable_Backend();
+	RenderResourceTable_Backend();
 
 	void onFrameEnd(class RenderRequest_Backend* req);
 
