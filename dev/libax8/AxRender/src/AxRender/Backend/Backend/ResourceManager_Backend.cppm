@@ -1,15 +1,21 @@
 module;
-export module AxRender:ResourceManager_Backend;
+export module AxRender:RenderResourceManager_Backend;
 export import :Texture_Backend;
 export import :Shader_Backend;
 export import :Renderer_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class ResourceManager_Backend : public NonCopyable {
-	using This = ResourceManager_Backend;
+class RenderResourceManager_CreateDesc {
+	
+};
+
+class RenderResourceManager_Backend : public RenderObject {
+	AX_RTTI_INFO(RenderResourceManager_Backend, RenderObject)
 public:
-	static ResourceManager_Backend* s_instance();
+	using CreateDesc = RenderResourceManager_CreateDesc;
+	
+	static RenderResourceManager_Backend* s_instance();
 	static void s_create(const MemAllocRequest& req);
 	static void s_destroy();
 
@@ -17,8 +23,8 @@ public:
 
 	void onFrameEnd(RenderRequest_Backend* req);
 
-	template<class T, class CreateDesc = typename T::CreateDesc, class ResourceKey = typename T::ResourceKey>
-	bool getOrNewResource(SPtr<T> & sp, const MemAllocRequest& req, const CreateDesc& desc, const ResourceKey& key);
+	template<class T, class CREATE_DESC = typename T::CreateDesc, class RESOURCE_KEY = typename T::ResourceKey>
+	bool getOrNewResource(SPtr<T> & sp, const MemAllocRequest& req, const CREATE_DESC& desc, const RESOURCE_KEY& key);
 
 	void onFileChanged(FileDirWatcher_Result& result);
 
@@ -43,13 +49,16 @@ public:
 		func(texture2DTable);
 	}
 
+protected:
+	RenderResourceManager_Backend(const CreateDesc& desc) {}
 };
 
-template<class T, class CreateDesc, class ResourceKey>
-bool ResourceManager_Backend::getOrNewResource(SPtr<T>&			   sp,
-											   const MemAllocRequest& req,
-											   const CreateDesc&   desc,
-											   const ResourceKey&  key) {
+template<class T, class CREATE_DESC, class RESOURCE_KEY>
+bool RenderResourceManager_Backend::getOrNewResource(SPtr<T>&               sp,
+                                                     const MemAllocRequest& req,
+                                                     const CREATE_DESC&     desc,
+                                                     const RESOURCE_KEY&    key
+) {
 	MutexProtected<ResourceTable_Backend<T>>* table = nullptr;
 	getTable(table);
 

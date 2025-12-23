@@ -4,7 +4,7 @@ import :Material_Backend;
 import :StockObjects;
 import :RenderRequest_Backend;
 import :RenderContext_Backend;
-import :ResourceManager_Backend;
+import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -26,7 +26,7 @@ Renderer_Backend::~Renderer_Backend() {
 void Renderer_Backend::onCreate() {
 	Base::onCreate();
 
-	ResourceManager_Backend::s_create(AX_ALLOC_REQ);
+	RenderResourceManager_Backend::s_create(AX_ALLOC_REQ);
 	StockObjects::s_create();
 
 //----- common material
@@ -52,7 +52,7 @@ void Renderer_Backend::onCreate() {
 void Renderer_Backend::onDestroy() {
 	StockObjects::s_destroy();
 	_privateData.unref();
-	ResourceManager_Backend::s_destroy();
+	RenderResourceManager_Backend::s_destroy();
 	Base::onDestroy();
 }
 
@@ -100,7 +100,7 @@ void Renderer_Backend::waitAllRenderCompleted() {
 void Renderer_Backend::onFileChanged(FileDirWatcher_Result& result) {
 	waitAllRenderCompleted();
 
-	if (auto* mgr = ResourceManager_Backend::s_instance()) {
+	if (auto* mgr = RenderResourceManager_Backend::s_instance()) {
 		mgr->onFileChanged(result);
 	}
 }

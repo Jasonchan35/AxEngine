@@ -1,33 +1,37 @@
 module AxRender;
-import :ResourceManager_Backend;
+import :RenderResourceManager_Backend;
 import :RenderRequest_Backend;
+import :Renderer_Backend;
 
 namespace ax /*::AxRender*/ {
 
-static ResourceManager_Backend* ResourceManager_Backend_instance = nullptr;
+static UPtr<RenderResourceManager_Backend> ResourceManager_Backend_instance;
 
-ResourceManager_Backend* ResourceManager_Backend::s_instance() {
+RenderResourceManager_Backend* RenderResourceManager_Backend::s_instance() {
 	return ResourceManager_Backend_instance;
 }
 
-void ResourceManager_Backend::s_create(const MemAllocRequest& req) {
+void RenderResourceManager_Backend::s_create(const MemAllocRequest& req) {
 	AX_ASSERT(ResourceManager_Backend_instance == nullptr);
-	ResourceManager_Backend_instance = new (req) ResourceManager_Backend();
+
+	RenderResourceManager_CreateDesc desc;
+	auto p = Renderer_Backend::s_instance()->newRenderResourceManager(req, desc);
+	ResourceManager_Backend_instance = std::move(p);
 }
 
-void ResourceManager_Backend::s_destroy() {
+void RenderResourceManager_Backend::s_destroy() {
 	AX_ASSERT(ResourceManager_Backend_instance);
-	AxDelete::deleteObject(ResourceManager_Backend_instance);
+	ResourceManager_Backend_instance.unref();
 }
 
-void ResourceManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
+void RenderResourceManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
 }
 
-void ResourceManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
+void RenderResourceManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
 	visit([&](auto& table){ table.scopedLock()->onFrameEnd(req); });
 }
 
-void ResourceManager_Backend::onFileChanged(FileDirWatcher_Result& result) {
+void RenderResourceManager_Backend::onFileChanged(FileDirWatcher_Result& result) {
 	for (auto& e : result.list) {
 		if (e.action == FileDirWatcher_Action::Modified) {
 			hotReloadFile(e.filename);
@@ -35,7 +39,7 @@ void ResourceManager_Backend::onFileChanged(FileDirWatcher_Result& result) {
 	}
 }
 
-void ResourceManager_Backend::hotReloadFile(StrView filename) {
+void RenderResourceManager_Backend::hotReloadFile(StrView filename) {
 	auto ext = FilePath::extension(filename);
 	auto basenameWithExt = FilePath::basename(filename, true);
 

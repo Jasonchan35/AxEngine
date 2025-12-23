@@ -1,11 +1,10 @@
 module;
 
 export module AxRender:Renderer_Dx12;
-export import :Dx12Util;
-
 #if AX_RENDERER_DX12
 
-import :Renderer_Backend;
+export import :Dx12Util;
+export import :Renderer_Backend;
 
 namespace ax {
 

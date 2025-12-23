@@ -6,7 +6,7 @@ import :Material_Backend;
 import :RenderPass;
 import :GpuBuffer;
 import :RenderContext_Backend;
-import :ResourceManager_Backend;
+import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -71,7 +71,7 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize()); // TODO: move to frame update, to enable draw ui in update loop as well
-	ResourceManager_Backend::s_instance()->onFrameBegin(this);
+	RenderResourceManager_Backend::s_instance()->onFrameBegin(this);
 
 	_renderContext        = renderContext;
 	_viewportIsBottomUp   = renderContext->viewportIsBottomUp();
@@ -84,7 +84,7 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 
 void RenderRequest_Backend::frameEnd() {
 	renderContext_backend()->imgui.onEndRender();
-	ResourceManager_Backend::s_instance()->onFrameEnd(this);
+	RenderResourceManager_Backend::s_instance()->onFrameEnd(this);
 	onFrameEnd();
 }
 

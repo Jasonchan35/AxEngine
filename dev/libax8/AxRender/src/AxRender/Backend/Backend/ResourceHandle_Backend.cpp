@@ -1,6 +1,6 @@
 module;
 module AxRender;
-import :ResourceManager_Backend;
+import :RenderResourceManager_Backend;
 import :RenderRequest_Backend;
 import :RenderContext_Backend;
 
@@ -18,7 +18,7 @@ ResourceTable_Backend<T>::ResourceTable_Backend() {
 template<class T> inline
 MutexProtected<ResourceTable_Backend<T>>* ResourceTable_Backend<T>::s_get() {
 	MutexProtected<This>* p = nullptr;
-	ResourceManager_Backend::s_instance()->getTable(p);
+	RenderResourceManager_Backend::s_instance()->getTable(p);
 	return p;
 }
 

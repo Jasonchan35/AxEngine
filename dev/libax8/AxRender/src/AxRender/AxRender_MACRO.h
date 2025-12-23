@@ -43,6 +43,7 @@
 
 #define AX_RenderObject_LIST(E, API, SUFFIX) \
 	E(RenderContext				, API, SUFFIX) \
+	E(RenderResourceManager     , API, SUFFIX) \
 	E(RenderPass				, API, SUFFIX) \
 	E(RenderPassColorBuffer		, API, SUFFIX) \
 	E(RenderPassDepthBuffer		, API, SUFFIX) \

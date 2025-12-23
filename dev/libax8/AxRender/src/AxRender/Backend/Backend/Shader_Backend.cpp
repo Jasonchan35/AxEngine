@@ -3,7 +3,7 @@ module AxRender;
 import :StockObjects;
 import :Material_Backend;
 import :Renderer_Backend;
-import :ResourceManager_Backend;
+import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -242,7 +242,7 @@ void ShaderPass_Backend::_createParamSpaces() {
 
 SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<Shader_Backend> o;
-	if (ResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
+	if (RenderResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
 		o->_create(desc);
 	return o;
 }
