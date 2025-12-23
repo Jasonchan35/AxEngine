@@ -55,8 +55,8 @@ public:
 
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
 
-	const ShaderParamSpace_Vk* getParamSpace_vk(BindSpace type) const {
-		return rttiCastCheck<ShaderParamSpace_Vk>(getParamSpace(type)); 
+	const ShaderParamSpace_Vk* getParamSpace_vk(BindSpace bs) const {
+		return getParamSpace_<ShaderParamSpace_Vk>(bs); 
 	}
 
 	// TODO: change to Array or remove array

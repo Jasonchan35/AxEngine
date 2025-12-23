@@ -71,13 +71,13 @@ void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 	{ // bind vertex buffer
 		auto vertexLayout = drawcall.vertexLayout;
 
-		auto* vb = rttiCastCheck<GpuBuffer_Dx12>(drawcall.vertexBuffer);
+		auto* vb = ax_const_cast(rttiCastCheck<GpuBuffer_Dx12>(drawcall.vertexBuffer));
 		if (!vb) throw Error_Undefined();
 
 		vb->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 		D3D12_VERTEX_BUFFER_VIEW vbView = {};
-		vbView.BufferLocation = ax_safe_cast_from(vb->gpuAddress());
+		vbView.BufferLocation = ax_safe_cast_from(vb->resource().gpuAddress());
 		vbView.SizeInBytes    = ax_safe_cast_from(vb->bufferSize());
 		vbView.StrideInBytes  = ax_safe_cast_from(vertexLayout->strideInBytes);
 		cmdList->IASetVertexBuffers(0, 1, &vbView);
@@ -90,13 +90,13 @@ void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 		                       ax_safe_cast_from(drawcall.instanceStart));
 		
 	} else {
-		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(drawcall.indexBuffer);
+		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(drawcall.indexBuffer));
 		if (!ib) throw Error_Undefined();
 
 		ib->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
 		D3D12_INDEX_BUFFER_VIEW ibView = {};
-		ibView.BufferLocation          = Dx12Util::castUINT64(ib->gpuAddress());
+		ibView.BufferLocation          = Dx12Util::castUINT64(ib->resource().gpuAddress());
 		ibView.SizeInBytes             = Dx12Util::castUINT(ib->bufferSize());
 		ibView.Format                  = Dx12Util::getDxIndexType(drawcall.indexType);;
 

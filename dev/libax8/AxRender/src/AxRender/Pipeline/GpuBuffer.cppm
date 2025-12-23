@@ -69,7 +69,7 @@ public:
 	using CreateDesc = StorageBuffer_CreateDesc;
 
 	Int bufferSize() const { return _gpuBuffer ? _gpuBuffer->bufferSize() : 0; }
-	GpuBuffer* gpuBuffer() { return _gpuBuffer; }
+	const GpuBuffer* gpuBuffer() const { return _gpuBuffer; }
 
 protected:
 	StorageBuffer(const CreateDesc& desc);
@@ -106,9 +106,12 @@ public:
 	MutByteSpan mutSpan() { return _data; }
 	void markDirty(IntRange range);
 
-	GpuBuffer*	getUploadedGpuBuffer(class RenderRequest* req);
+	const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
+		return ax_const_cast(this)->_getUploadedGpuBuffer(req);
+	}
 	
 private:
+	GpuBuffer*	_getUploadedGpuBuffer(class RenderRequest* req);
 
 	String	_name;
 	GpuBufferType	_bufferType = GpuBufferType::None;

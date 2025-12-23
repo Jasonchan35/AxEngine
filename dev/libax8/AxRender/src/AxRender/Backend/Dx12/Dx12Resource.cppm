@@ -42,9 +42,9 @@ public:
 
 	operator ID3D12Resource*() { return _d3dResource; }
 
-	D3D12_RESOURCE_DESC&	desc() { return _desc; }
+	const D3D12_RESOURCE_DESC&	desc() const { return _desc; }
 
-	Int bufferSize() { return ax_safe_cast_from(_desc.Width); }
+	Int bufferSize() const { return ax_safe_cast_from(_desc.Width); }
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(StrView debugName) { _debugName.setUtf(debugName); _d3dResource->SetName(_debugName.c_str()); }

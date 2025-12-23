@@ -21,26 +21,18 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 #if !AX_RENDER_BINDLESS
 	Int samplerIndex = 0;
 #endif
-	
-	for (auto& paramSpace_ : _materialParamSpaces) {
-		if (!paramSpace_) continue;
 
-		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Dx12>(paramSpace_.ptr());
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto* paramSpace = getParamSpace(bindSpace);
 		if (!paramSpace) { AX_ASSERT(false); return false; }
-
-		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
-		if (bindSpace < 0 || bindSpace >= ax_enum_int(BindSpace::_COUNT)) {
-			AX_ASSERT(false);
-			return false;
-		}
-
+		
 		for (auto& cb : paramSpace->_constBuffers) {
-			auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(cb.getUploadedGpuBuffer(req));
+			auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(cb.getUploadedGpuBuffer(req)));
 			if (!gpuBuf) throw Error_Undefined();
 
 			gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 			_CBV_SRV_UAV_DescHeap.setCBV(CBV_SRV_UAV_index, gpuBuf->resource());
-			CBV_SRV_UAV_index++;
+			++CBV_SRV_UAV_index;
 		}
 
 #if !AX_RENDER_BINDLESS
@@ -49,8 +41,8 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 				case RenderDataType::Texture2D: {
 					auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
 					if (!tex) throw Error_Undefined();
-					_CBV_SRV_UAV_DescHeap.setTexture(CBV_SRV_UAV_index, tex->_bindImage(req));
-					CBV_SRV_UAV_index++;
+					_CBV_SRV_UAV_DescHeap.setTexture(CBV_SRV_UAV_index, ax_const_cast(tex)->_bindImage(req));
+					++CBV_SRV_UAV_index;
 				} break;
 				default: throw Error_Undefined();
 			}
@@ -61,7 +53,7 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 			auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
 			auto& ss      = sampler->samplerState();
 			_samplerDescHeap.setSampler(samplerIndex, ss.filter, ss.wrap);
-			samplerIndex++;
+			++samplerIndex;
 		}
 #endif // #if !AX_RENDER_BINDLESS
 	}

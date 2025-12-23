@@ -131,22 +131,25 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_ConstBuffer setCBV(Int i, Dx12Resource_GpuBuffer& res) {
+	Dx12DescriptorHandle_ConstBuffer setCBV(Int i, const Dx12Resource_GpuBuffer& res) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-		desc.BufferLocation = res.gpuAddress();
+		desc.BufferLocation = ax_const_cast(res).gpuAddress();
 		desc.SizeInBytes    = Dx12Util::castUINT(res.bufferSize());
 		auto h = _getHandle<Dx12DescriptorHandle_ConstBuffer>(i);
 		Renderer_Dx12::s_d3dDevice()->CreateConstantBufferView(&desc, h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_UAV setUAV(Int i, Dx12Resource_GpuBuffer& buf) {
+	Dx12DescriptorHandle_UAV setUAV(Int i, const Dx12Resource_GpuBuffer& buf) {
 		auto h = _getHandle<Dx12DescriptorHandle_UAV>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, nullptr, h.handle.cpu);
+		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
+		                                                        nullptr,
+		                                                        nullptr,
+		                                                        h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_RawUAV setTypelessUAV(Int i, Dx12Resource_GpuBuffer& buf) {
+	Dx12DescriptorHandle_RawUAV setTypelessUAV(Int i, const Dx12Resource_GpuBuffer& buf) {
 		D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
@@ -157,14 +160,17 @@ public:
 		desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
 		auto h = _getHandle<Dx12DescriptorHandle_RawUAV>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(buf.d3dResource(), nullptr, &desc, h.handle.cpu);
+		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
+		                                                        nullptr,
+		                                                        &desc,
+		                                                        h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_Texture2D setTexture(Int i, Dx12Resource_Texture2D& res) {
+	Dx12DescriptorHandle_Texture2D setTexture(Int i, const Dx12Resource_Texture2D& res) {
 		//	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 		auto h = _getHandle<Dx12DescriptorHandle_Texture2D>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateShaderResourceView(res.d3dResource(), nullptr, h.handle.cpu);
+		Renderer_Dx12::s_d3dDevice()->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);
 		return h;
 	}
 };

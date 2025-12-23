@@ -28,7 +28,7 @@ Dx12Resource_Texture2D& Texture2D_Dx12::_bindImage(RenderRequest_Dx12* req) {
 		req->resourcesToKeep.add(uploadBuf);
 
 		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
-		srcLoc.pResource = uploadBuf->d3dResource();
+		srcLoc.pResource = uploadBuf->resource().d3dResource();
 		srcLoc.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 
 		auto& fp = srcLoc.PlacedFootprint;

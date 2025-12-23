@@ -19,11 +19,10 @@ public:
 	virtual void		onFlush(IntRange range) override;
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override;
 
-	AX_VkBuffer& vkBuf()			{ return _vkBuf; }
-	const VkBuffer&  vkBufHandle()	{ return _vkBuf; }
+	const VkBuffer&	vkBufHandle() const { return _vkBuf.handle(); }
 
-	AX_VkDeviceMemory& vkDevMem()		{ return _vkDevMem; }
-	   VkDeviceMemory  vkDevMemHandle() { return _vkDevMem; }
+	AX_VkDeviceMemory&	vkDevMem()		{ return _vkDevMem; }
+	   VkDeviceMemory	vkDevMemHandle() { return _vkDevMem; }
 
 	operator AX_VkBuffer&()			{ return _vkBuf; }
 	operator    VkBuffer()			{ return _vkBuf; }

@@ -61,7 +61,7 @@ public:
 		void		create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam);
 		Int			dataSize() const { return _dynamicGpuBuffer.dataSize(); }
 
-		GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) {
+		const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
 			return _dynamicGpuBuffer.getUploadedGpuBuffer(req);
 		}
 		
@@ -78,12 +78,12 @@ public:
 		RenderDataType dataType() const { return _shaderParam->dataType(); }
 		BindCount      bindCount() const { return _shaderParam->bindCount(); }
 		
-		void		create(const ShaderParamSpace_Backend::TextureParam& shaderParam);
-		Texture*	texture() { return _texture; }
-		template<class TEX> bool setTexture(TEX* texture);
+		void			create(const ShaderParamSpace_Backend::TextureParam& shaderParam);
+		const Texture*	texture() const { return _texture; }
+		template<class TEX> bool setTexture(const TEX* texture);
 	private:
 		const ShaderParamSpace_Backend::TextureParam* _shaderParam = nullptr;
-		SPtr<Texture>	_texture;
+		SPtr<const Texture>	_texture;
 	};
 
 	struct SamplerParam : public ParamBase {
@@ -91,12 +91,12 @@ public:
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
-		void		create(const ShaderParamSpace_Backend::SamplerParam& shaderParam);
-		Sampler*	sampler() { return _sampler; }
-		bool		setSampler(Sampler* sampler) { _sampler = sampler; return true; }
+		void			create(const ShaderParamSpace_Backend::SamplerParam& shaderParam);
+		const Sampler*	sampler() const { return _sampler; }
+		bool			setSampler(const Sampler* sampler) { _sampler = sampler; return true; }
 	private:
 		const ShaderParamSpace_Backend::SamplerParam* _shaderParam = nullptr;
-		SPtr<Sampler>		_sampler;
+		SPtr<const Sampler>		_sampler;
 	};
 
 	struct StorageBufferParam : public ParamBase {
@@ -104,15 +104,20 @@ public:
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
-		void		   create(const ShaderParamSpace_Backend::StorageBufferParam& shaderParam);
-		StorageBuffer* storageBuffer() { return _storageBuffer; }
-		bool		   setStorageParam(StorageBuffer* vb) { _storageBuffer.ref(vb); return true; }
-		GpuBuffer*	   gpuBuffer() { return _storageBuffer ? _storageBuffer->gpuBuffer() : nullptr; }
-		Int			   dataSize() const { return _storageBuffer ? _storageBuffer->bufferSize() : 0; }
+		void                 create(const ShaderParamSpace_Backend::StorageBufferParam& shaderParam);
+		const StorageBuffer* storageBuffer() const { return _storageBuffer; }
+
+		bool setStorageParam(StorageBuffer* vb) {
+			_storageBuffer.ref(vb);
+			return true;
+		}
+
+		const GpuBuffer* gpuBuffer() const { return _storageBuffer ? _storageBuffer->gpuBuffer() : nullptr; }
+		Int              dataSize() const { return _storageBuffer ? _storageBuffer->bufferSize() : 0; }
 
 	private:
 		const ShaderParamSpace_Backend::StorageBufferParam* _shaderParam = nullptr;
-		SPtr<StorageBuffer>									_storageBuffer;
+		SPtr<const StorageBuffer>	_storageBuffer;
 	};
 
 	bool setParam(NameId name, const i32&		v) { return _setVariable(name, v); }
@@ -188,7 +193,7 @@ bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(const VarInfo* va
 }
 
 template<class TEX> inline
-bool MaterialParamSpace_Backend::TextureParam::setTexture(TEX* texture) {
+bool MaterialParamSpace_Backend::TextureParam::setTexture(const TEX* texture) {
 	if (dataType() != DataType_get<TEX>) {
 		return false;
 	}
@@ -230,7 +235,7 @@ public:
 	
 	void logWarningOnce(StrView msg);
 
-	MaterialParamSpace_Backend* getParamSpace(BindSpace s) {
+	const MaterialParamSpace_Backend* getParamSpace(BindSpace s) const {
 		auto* pp = _materialParamSpaces.tryGetElement(ax_enum_int(s));
 		return pp ? pp->ptr() : nullptr;
 	}
@@ -249,8 +254,8 @@ protected:
 	Int                 _passIndex  = 0;
 
 friend class Material_Backend;
-protected:
-	FixedArray<SPtr<MaterialParamSpace_Backend>, BindSpace_COUNT>	_materialParamSpaces;
+private:
+	FixedArray<SPtr<const MaterialParamSpace_Backend>, BindSpace_COUNT>	_materialParamSpaces;
 	template<class T> static T* _findParam(IArray<T>& arr, NameId name);
 };
 
@@ -266,7 +271,7 @@ public:
 	Shader_Backend* shader_backend() { return _shader_backend; }
 
 	template<class V> AX_INLINE
-	bool setParamSpaceParam(BindSpace space, NameId name, V& v);
+	bool setParam(BindSpace space, NameId name, V& v);
 
 	Int		passCount() const { return _passes.size(); }
 
@@ -274,14 +279,14 @@ public:
 
 	StrView shaderAssetPath() const { return _shader_backend ? StrView(_shader_backend->assetPath()) : StrView(); }
 
-	template<class R> R* getPassParamSpace_(Int pass, BindSpace s) {
-		return rttiCastCheck<R>(getPassParamSpace(pass, s));
-	}
-
-	MaterialParamSpace_Backend*	getPassParamSpace(Int passIndex, BindSpace s) {
+	const MaterialParamSpace_Backend*	getPassParamSpace(Int passIndex, BindSpace s) const {
 		auto* pp = _passes.tryGetElement(passIndex);
 		auto* p  = pp ? pp->ptr() : nullptr;
 		return p ? p->getParamSpace(s) : nullptr;
+	}
+
+	template<class R> const R* getPassParamSpace_(Int pass, BindSpace s) const {
+		return rttiCastCheck<R>(getPassParamSpace(pass, s));
 	}
 
 	void logWarningOnce(StrView msg);
@@ -304,7 +309,7 @@ const Shader_Backend* MaterialPass_Backend::shader() const {
 }
 
 template<class V> AX_INLINE 
-bool Material_Backend::setParamSpaceParam(BindSpace space, NameId name, V& v) {
+bool Material_Backend::setParam(BindSpace space, NameId name, V& v) {
 	bool b = false;
 	for (auto& p : _passes) {
 		if (p) { b = b || p->setParamSpaceParam(space, name, v); }

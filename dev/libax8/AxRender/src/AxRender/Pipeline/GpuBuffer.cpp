@@ -35,7 +35,7 @@ void DynamicGpuBuffer::reset() {
 	_dirtyRange.reset();
 }
 
-GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
+GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Backend>(req_);
 	AX_ASSERT(_bufferType != GpuBufferType::None);
 	if (_dirtyRange.size() <= 0 && _gpuBuffer) return _gpuBuffer;

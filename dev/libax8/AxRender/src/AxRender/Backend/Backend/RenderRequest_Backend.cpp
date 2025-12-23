@@ -58,7 +58,7 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 	Vec4f timeSlowSin   (sin(t/2), sin(t/4), sin(t/9), sin(t/16));
 
 	auto setParam = [&](BindSpace space, NameId name, auto& value) {
-		if (!commonMaterial->setParamSpaceParam(space, name, value)) {
+		if (!commonMaterial->setParam(space, name, value)) {
 			commonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
 		}
 	};

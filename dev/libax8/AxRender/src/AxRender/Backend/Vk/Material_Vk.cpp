@@ -121,10 +121,9 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 		if (!wds.dstSet) throw Error_Undefined();
 	};
 
-	for (Int i = 0; i < BindSpace_COUNT; ++i) {
-		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(pass->_materialParamSpaces[i].ptr());
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto* paramSpace = pass->getParamSpace(bindSpace);
 		if (!paramSpace) continue;
-		auto bindSpace = static_cast<BindSpace>(i);
 		
 		for (auto& param : paramSpace->_constBuffers) {
 			auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
@@ -151,7 +150,7 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 			req->resourcesToKeep.add(sampler_vk);
 
 			auto& dst   = req->_writeDescriptor_ImageInfos.emplaceBack();
-			dst.sampler = sampler_vk->vkHandle();
+			dst.sampler = ax_const_cast(sampler_vk)->vkHandle();
 			if (!dst.sampler) throw Error_Undefined();
 
 			addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), bindSpace, nullptr, &dst);
@@ -168,7 +167,7 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 				case RenderDataType::Texture2D: {
 					auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
 					if (!tex2d) throw Error_Undefined();
-					tex2d->_bindImage(req, dst);
+					ax_const_cast(tex2d)->_bindImage(req, dst);
 				}
 				break;
 
@@ -207,19 +206,6 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
 	if (!shdPass->_bindPipeline(req, cmd)) return false;
-
-	for (auto& paramSpace_ : _materialParamSpaces) {
-		if (!paramSpace_) continue;
-
-		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(paramSpace_.ptr());
-		if (!paramSpace) { AX_ASSERT(false); return false; }
-
-		auto bindSpace = ax_enum_int(paramSpace->bindSpace());
-		if (bindSpace < 0 || bindSpace >= BindSpace_COUNT) {
-			AX_ASSERT(false);
-			return false;
-		}
-	}
 
 	Array<VkDescriptorSet, BindSpace_COUNT> destSet;
 	for (auto& s : getUpdatedFrameData(req)._descSets) {

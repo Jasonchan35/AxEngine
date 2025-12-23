@@ -11,24 +11,23 @@ export namespace ax /*::AxRender*/ {
 
 class Cmd_DrawCall : public NonCopyable {
 public:
-	RenderPrimitiveType	primitiveType	= RenderPrimitiveType::Triangles;
-	IndexType		indexType		= IndexType::None;
-
-	VertexLayout	vertexLayout = nullptr;
-
-	GpuBuffer*		vertexBuffer	= nullptr;
-	Int				vertexStart		= 0;
-	Int				vertexCount		= 0;
-
-	GpuBuffer*		indexBuffer		= nullptr;
-	Int				indexStart		= 0;
-	Int				indexCount		= 0;
-
-	Int				instanceStart	= 0;
-	Int				instanceCount	= 1;
-
-	Material*		material		= nullptr;
-	Int				materialPassIndex = 0;
+	RenderPrimitiveType primitiveType     = RenderPrimitiveType::Triangles;
+	IndexType           indexType         = IndexType::None;
+	
+	VertexLayout        vertexLayout      = nullptr;
+	const GpuBuffer*    vertexBuffer      = nullptr;
+	Int                 vertexStart       = 0;
+	Int                 vertexCount       = 0;
+	
+	const GpuBuffer*    indexBuffer       = nullptr;
+	Int                 indexStart        = 0;
+	Int                 indexCount        = 0;
+	
+	Int                 instanceStart     = 0;
+	Int                 instanceCount     = 1;
+	
+	Material*           material          = nullptr;
+	Int                 materialPassIndex = 0;
 
 	void setSubMesh(RenderRequest* req, RenderSubMesh& sm) {
 		primitiveType = sm.primitiveType();

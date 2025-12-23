@@ -569,7 +569,7 @@ private:
 
 class AX_VkBuffer : public NonCopyable {
 public:
-	const VkBuffer& handle() { return _handle; }
+	const VkBuffer& handle() const { return _handle; }
 	operator const VkBuffer&() { return _handle; }
 	~AX_VkBuffer() { destroy(); }
 

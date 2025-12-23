@@ -199,15 +199,15 @@ void ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->samplers);
 
 	auto* commonShaderPass = Renderer_Backend::s_instance()->commonShaderPass(); 
-	
-	for (Int i = 0; i < BindSpace_COUNT; ++i) {
-		auto bindSpace = static_cast<BindSpace>(i);
-		auto& ownParamSpace = _shaderParamSpaces[i];
+
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto i = ax_enum_int(bindSpace);
 		if (!isOwnParamSpace(bindSpace)) {
-			ownParamSpace = commonShaderPass->_shaderParamSpaces[i];
+			_shaderParamSpaces[i] = commonShaderPass->getParamSpace(bindSpace);
 			continue;
 		}
 
+		auto* ownParamSpace = getMutParamSpace(bindSpace);
 		if (!ownParamSpace) continue;
 		
 		for (auto& prop : _shader->info()->declare.props) {
@@ -299,11 +299,6 @@ void Shader_Backend::onLoadFile() {
 
 void Shader_Backend::onDestroy() {
 	_passes.clear();
-}
-
-const ShaderPass_Backend* ShaderPass_Backend::getCommonShaderPass() const {
-	auto* sh = Renderer_Backend::s_instance()->commonShader();
-	return sh ? sh->getPass(0) : nullptr;
 }
 
 void Shader_Backend::hotReloadFile() {

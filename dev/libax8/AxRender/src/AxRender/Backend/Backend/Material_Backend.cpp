@@ -126,15 +126,15 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 
 	auto* commonMaterialPass = Renderer_Backend::s_instance()->commonMaterialPass();
 		
-	for (Int i = 0; i < BindSpace_COUNT; ++i) {
-		auto bindSpace = static_cast<BindSpace>(i);
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto i = ax_enum_int(bindSpace);
 		auto& ownParamSpace = _materialParamSpaces[i];
 		if (!isOwnParamSpace(bindSpace)) {
-			ownParamSpace = commonMaterialPass->_materialParamSpaces[i];
+			ownParamSpace = commonMaterialPass->getParamSpace(bindSpace);
 			continue;
 		}
 		
-		auto& shaderParamSpace = _shaderPass->_shaderParamSpaces[i];
+		auto* shaderParamSpace = _shaderPass->getParamSpace(bindSpace);
 		if (!shaderParamSpace) continue;
 		ownParamSpace = shaderParamSpace->newMaterialParamSpace(AX_ALLOC_REQ); 
 	}

@@ -9,10 +9,8 @@ class VertexBuffer : public NonCopyable {
 public:
 	void clear() { _vertexCount = 0; _buffer.reset(); }
 
-	AX_INLINE GpuBuffer*	getUploadedGpuBuffer(class RenderRequest* req) { return _buffer.getUploadedGpuBuffer(req); }
 	AX_INLINE Int			vertexCount() const		{ return _vertexCount; }
-
-	AX_INLINE VertexLayout vertexLayout() const { return _vertexLayout; }
+	AX_INLINE VertexLayout	vertexLayout() const { return _vertexLayout; }
 
 							void create(VertexLayout vertexLayout);
 	template<class VERTEX>	void create() { create(VERTEX::s_layout()); }
@@ -24,6 +22,10 @@ public:
 
 	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * _vertexLayout->strideInBytes); }
 
+	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
+		return _buffer.getUploadedGpuBuffer(req);
+	}
+	
 private:
 	VertexLayout		_vertexLayout;
 	Int					_vertexCount = 0;
@@ -34,7 +36,6 @@ class IndexBuffer : public NonCopyable {
 public:
 	void clear() { _indexCount = 0; _buffer.reset(); }
 
-	AX_INLINE GpuBuffer*	getUploadedGpuBuffer(RenderRequest* req)	{ return _buffer.getUploadedGpuBuffer(req); }
 	AX_INLINE Int			indexCount() const		{ return _indexCount; }
 	AX_INLINE IndexType		indexType() const		{ return _indexType; }
 
@@ -47,6 +48,10 @@ public:
 	void addIndices(ByteSpan data, IndexType indexType);
 
 	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * IndexType_stride(_indexType)); }
+
+	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const {
+		return _buffer.getUploadedGpuBuffer(req);
+	}
 
 private:
 	IndexType			_indexType = IndexType::None;

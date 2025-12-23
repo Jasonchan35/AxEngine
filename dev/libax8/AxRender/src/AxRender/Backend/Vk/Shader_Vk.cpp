@@ -29,9 +29,10 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 	VkDescriptorBindingFlags		 bindingFlags = 0;
 #endif
 
-	for (Int i = 0; i < BindSpace_COUNT; ++i) {
-		auto& paramSpace = _shaderParamSpaces[i];
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto* paramSpace = getParamSpace_vk(bindSpace);
 		if (!paramSpace) continue;
+		auto i = ax_enum_int(bindSpace);
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
 		auto addBinding = [&bindings, bindingFlags](const ParamBase& p, VkDescriptorType type) {

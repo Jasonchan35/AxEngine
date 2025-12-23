@@ -217,8 +217,6 @@ public:
 	      Shader_Backend* shader()       { return _shader; }
 	const Shader_Backend* shader() const { return _shader; }
 
-	FixedArray<SPtr<ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
-	
 	const ShaderPassInfo*	info() const	{ return _info; }
 	bool isGlobalCommonShaderPass() const	{ return _isGlobalCommonShaderPass; }
 
@@ -227,26 +225,33 @@ public:
 	}
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
-	
-	const ShaderParamSpace_Backend* getParamSpace(BindSpace s) const {
-		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(s));
+
+	const ShaderParamSpace_Backend* getParamSpace(BindSpace bs) const {
+		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(bs));
 		return p ? p->ptr() : nullptr;
 	}
 
-	template<class T>
-	const ShaderParamSpace_Backend* getParamSpace_(BindSpace s) const {
-		return rttiCastCheck<T>(getParamSpace(s));
+	template<class R>
+	const R* getParamSpace_(BindSpace bs) const {
+		return rttiCastCheck<R>(getParamSpace(bs));
 	}
 
-	const ShaderPass_Backend* getCommonShaderPass() const;
+	ShaderParamSpace_Backend* getMutParamSpace(BindSpace bs) {
+		if (!isOwnParamSpace(bs)) return nullptr;
+		return ax_const_cast(_shaderParamSpaces[ax_enum_int(bs)].ptr());
+	}	
 
 	Int constBuffers_totalBindCount() const			{ return _constBuffers_totalBindCount        ; }
 	Int textureParams_totalBindCount() const		{ return _textureParams_totalBindCount       ; }
 	Int samplerParams_totalBindCount() const		{ return _samplerParams_totalBindCount       ; }
 	Int storageBufferParams_totalBindCount() const	{ return _storageBufferParams_totalBindCount ; }
 
+private:
+	FixedArray<SPtr<const ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
+	
 friend class Shader_Backend;
 protected:
+	
 	Shader_Backend*		_shader = nullptr;
 	bool				_isGlobalCommonShaderPass : 1 = false;
 	Int					_passIndex = 0;

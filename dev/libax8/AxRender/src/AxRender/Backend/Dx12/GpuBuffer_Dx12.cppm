@@ -24,10 +24,11 @@ public:
 		_p.uploadToGpu(offset, data);
 	}
 
-	Dx12Resource_GpuBuffer& resource() { return _p; }
+	Dx12Resource_GpuBuffer&       resource() { return _p; }
+	const Dx12Resource_GpuBuffer& resource() const { return _p; }
 
-	ID3D12Resource*	d3dResource() { return _p.d3dResource(); }
-	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _p.gpuAddress(); }
+//	ID3D12Resource*	d3dResource() { return _p.d3dResource(); }
+//	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _p.gpuAddress(); }
 
 protected:
 	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _p._mapMemory(range); }
