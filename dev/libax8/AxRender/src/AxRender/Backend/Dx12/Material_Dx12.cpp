@@ -24,7 +24,7 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* paramSpace = getParamSpace(bindSpace);
-		if (!paramSpace) { AX_ASSERT(false); return false; }
+		if (!paramSpace) continue;
 		
 		for (auto& cb : paramSpace->_constBuffers) {
 			auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(cb.getUploadedGpuBuffer(req)));
