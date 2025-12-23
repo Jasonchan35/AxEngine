@@ -45,13 +45,16 @@ public:
 	struct UpdatedBindlessResources {
 		Array<SPtr<Sampler_Backend  >>	samplers;
 		Array<SPtr<Texture2D_Backend>>	texture2Ds;
+		Array<SPtr<StorageBuffer_Backend>>	storageBuffers;
 
-		void swap(Array<SPtr<Sampler_Backend    >> r) { std::swap(r, samplers  ); }
-		void swap(Array<SPtr<Texture2D_Backend  >> r) { std::swap(r, texture2Ds); }
+		void swap(Array<SPtr<Sampler_Backend>> r) { std::swap(r, samplers); }
+		void swap(Array<SPtr<Texture2D_Backend>> r) { std::swap(r, texture2Ds); }
+		void swap(Array<SPtr<StorageBuffer_Backend>> r) { std::swap(r, storageBuffers); }
 
 		void clear() {
 			samplers.clear();
 			texture2Ds.clear();
+			storageBuffers.clear();
 		}
 	};
 

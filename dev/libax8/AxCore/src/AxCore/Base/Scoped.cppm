@@ -42,7 +42,7 @@ private:
 	T* _p = nullptr;
 };
 
-struct ScopeEnterOnce : public NonCopyable {
+struct ScopedEnterOnce : public NonCopyable {
 	struct Scoped : public NonCopyable {
 		AX_NODISCARD Scoped(Scoped && r) noexcept { std::swap(_p, r._p); }
 		AX_NODISCARD Scoped(bool& entered) noexcept {

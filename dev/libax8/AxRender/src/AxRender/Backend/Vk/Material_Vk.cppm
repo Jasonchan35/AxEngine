@@ -23,6 +23,11 @@ public:
 class MaterialPass_Vk : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Vk, MaterialPass_Backend)
 public:
+	using ConstBufferParam   = MaterialParamSpace_Backend::ConstBufferParam;
+	using SamplerParam       = MaterialParamSpace_Backend::SamplerParam;
+	using TextureParam       = MaterialParamSpace_Backend::TextureParam;
+	using StorageBufferParam = MaterialParamSpace_Backend::StorageBufferParam;
+	
 	MaterialPass_Vk(const CreateDesc& desc);
 
 	const ShaderPass_Vk* shaderPass_vk() const { return rttiCastCheck<ShaderPass_Vk>(shaderPass()); }
@@ -31,10 +36,7 @@ public:
 
 	static constexpr Int kMaxRenderRequestCount = AxRenderConfig::kMaxRenderRequestCount;
 
-	Span<VkDescriptorSet> getUpdatedDescriptorSets(RenderRequest_Vk* req);
-	
-private:
-	struct PerFrameData {
+	struct PerFrameData : public NonCopyable {
 		FixedArray<VkDescriptorSet, BindSpace_COUNT> descSets;
 		AX_VkDescriptorPool pool;
 
@@ -42,6 +44,8 @@ private:
 		void update(MaterialPass_Vk* pass, RenderRequest_Vk* req);
 	};
 
+	PerFrameData& getUpdatedFrameData(RenderRequest_Vk* req);
+private:
 	PerFrameData& _currentFrameData() { return _perFrameData[_currentFrameDataIndex]; }
 	void _nextFrameData(RenderRequest_Vk* req);
 

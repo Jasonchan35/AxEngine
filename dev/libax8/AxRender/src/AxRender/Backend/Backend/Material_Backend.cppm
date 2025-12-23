@@ -53,7 +53,7 @@ public:
 		void	  create(const ShaderParamSpace_Backend::ParamBase& shaderParam);
 	};
 
-	struct ConstBuffer : public ParamBase {
+	struct ConstBufferParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
@@ -148,7 +148,7 @@ public:
 
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
-	Array<ConstBuffer,        1>	_constBuffers;
+	Array<ConstBufferParam,   1>	_constBuffers;
 	Array<StorageBufferParam, 0>	_storageBufferParams;
 	Array<TextureParam,       2>	_textureParams;
 	Array<SamplerParam,       2>	_samplerParams;
@@ -173,13 +173,13 @@ bool MaterialParamSpace_Backend::_setVariable(NameId name, const V& v) {
 }
 
 template<class V> inline
-bool MaterialParamSpace_Backend::ConstBuffer::setVariable(NameId name, const V& value) {
+bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(NameId name, const V& value) {
 	if (!_shaderParam) return false;
 	return setVariable(_shaderParam->findVarInfo(name), value);
 }
 
 template<class V> inline
-bool MaterialParamSpace_Backend::ConstBuffer::setVariable(const VarInfo* varInfo, const V& value) {
+bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(const VarInfo* varInfo, const V& value) {
 	if (!varInfo) return false;
 	if (varInfo->dataType() != DataType_get<V>) { AX_ASSERT(false); return false; }
 	auto range = varInfo->assignValueToBuffer(_dynamicGpuBuffer.mutSpan(), value);

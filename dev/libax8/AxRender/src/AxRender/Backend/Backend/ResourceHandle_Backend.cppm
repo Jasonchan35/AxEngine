@@ -1,6 +1,7 @@
 module;
 export module AxRender:ResourceHandle_Backend;
 export import :Texture;
+export import :GpuBuffer;
 
 export namespace ax /*::AxRender*/ {
 

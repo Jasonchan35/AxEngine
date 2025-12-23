@@ -52,53 +52,71 @@ void RenderRequest_Vk::onWaitCompleted() {
 void RenderRequest_Vk::_updatedBindlessResources() {
 #if AX_RENDER_BINDLESS
 	auto* renderer =  renderer_vk();
-	auto* commonMaterial = renderer->commonMaterial();
+	auto* commonMaterial = rttiCastCheck<Material_Vk>(renderer->commonMaterial());
 	if (!commonMaterial) return;
+
+	auto* commonPass = rttiCastCheck<MaterialPass_Vk>(commonMaterial->getPass(0));
+	if (!commonPass) return;
+
+	auto& curFrameData = commonPass->getUpdatedFrameData(this);
+	auto& curDescSet = curFrameData.descSets[ax_enum_int(BindSpace::Global)];
 
 	auto* mtlSpace = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, BindSpace::Global);
 	if (!mtlSpace) return;
 
 	auto* shdSpace = mtlSpace->shaderParamSpace();
-	if (!shdSpace) return; 
+	if (!shdSpace) return;
+	
+	auto* samplerParam   = shdSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
+	auto* texture2DParam = shdSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
+	
+	//----
+	_writeDescriptor_ImageInfos.clear();
+	_writeDescriptor_ImageInfos.ensureCapacity(
+		updatedBindlessResources.samplers.size() + updatedBindlessResources.texture2Ds.size());
+	auto imageInfos_capacityChecl = ScopedArrayCapacityCheck(_writeDescriptor_ImageInfos);
+	
+	_writeDescriptor_BufferInfos.clear();
+	_writeDescriptor_BufferInfos.ensureCapacity(updatedBindlessResources.storageBuffers.size());
+	auto bufferInfos_capacityChecl = ScopedArrayCapacityCheck(_writeDescriptor_BufferInfos);
 
-	auto currentDescriptorSet = mtlSpace->getUpdatedDescriptorSet(this);
-
-	using ParamBase = ShaderParamSpace_Backend::ParamBase;
+	_writeDescriptorSets.clear();
+	_writeDescriptorSets.ensureCapacity(
+		_writeDescriptor_ImageInfos.capacity() + _writeDescriptor_BufferInfos.capacity());
 	
 	auto addWriteSet = [&](auto* param, VkDescriptorType _descriptorType, ResourceSlotId slotId) -> VkWriteDescriptorSet& {
-		auto& w = _writeDescriptorSet.emplaceBack();
+		auto& w =  _writeDescriptorSets.emplaceBack();
 		w.sType			  = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		w.pNext			  = nullptr;
 		w.descriptorType  = _descriptorType;
-		w.dstSet		  = currentDescriptorSet;
+		w.dstSet		  = curDescSet;
 		w.dstBinding	  = AX_VkUtil::castUInt32(ax_enum_int(param->bindPoint()));
 		w.dstArrayElement = ax_enum_int(slotId);
 		w.descriptorCount = 1;
 		return w;
 	};
 
-	auto* samplerParam   = shdSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
 	for (auto& sampler_ : updatedBindlessResources.samplers) {
 		if (!sampler_) continue;
 		auto* sampler         = rttiCast<Sampler_Vk>(sampler_.ptr());
 		auto& desc            = addWriteSet(samplerParam, VK_DESCRIPTOR_TYPE_SAMPLER, sampler->resourceHandle.slotId());
-		auto& imageInfo       = _writeDescriptor_imageInfos.emplaceBack();
+		auto& imageInfo       = _writeDescriptor_ImageInfos.emplaceBack();
 		imageInfo.imageView   = VK_NULL_HANDLE;
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		imageInfo.sampler     = sampler->vkHandle();
 		desc.pImageInfo       = &imageInfo;
 	}
-	auto* texture2DParam = shdSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
+	
 	for (auto& tex_ : updatedBindlessResources.texture2Ds) {
 		if (!tex_) continue;
 		auto* tex       = rttiCastCheck<Texture2D_Vk>(tex_.ptr());
 		auto& desc      = addWriteSet(texture2DParam, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, tex->resourceHandle.slotId());
-		auto& imageInfo = _writeDescriptor_imageInfos.emplaceBack();
+		auto& imageInfo = _writeDescriptor_ImageInfos.emplaceBack();
 		tex->_bindImage(this, imageInfo);
 		desc.pImageInfo = &imageInfo;
 	}
 	
-	AX_vkUpdateDescriptorSets(renderer->device(), _writeDescriptorSet, {});
+	AX_vkUpdateDescriptorSets(renderer->device(), _writeDescriptorSets, {});
 #endif
 }
 

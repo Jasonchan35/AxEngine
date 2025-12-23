@@ -2,6 +2,7 @@ module;
 export module AxRender:GpuBuffer_Backend;
 export import :Renderer_Backend;
 export import :GpuBuffer;
+export import :ResourceHandle_Backend;
 
 export namespace ax /*::AxRender*/ {
 
@@ -43,5 +44,11 @@ inline MutByteSpan GpuBuffer_Backend::_mapMemory(IntRange range) {
 	return onMapMemory(range);
 }
 
+class StorageBuffer_Backend : public StorageBuffer {
+	AX_RTTI_INFO(StorageBuffer_Backend, StorageBuffer)
+public:
+	StorageBuffer_Backend(const CreateDesc& desc) : Base(desc) {}
+	
+};
 
 } // namespace

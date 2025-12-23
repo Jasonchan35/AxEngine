@@ -12,7 +12,7 @@ import :RenderContext_Vk;
 
 namespace ax /*::AxRender*/ {
 
-Span<VkDescriptorSet> MaterialPass_Vk::getUpdatedDescriptorSets(RenderRequest_Vk* req) {
+auto MaterialPass_Vk::getUpdatedFrameData(RenderRequest_Vk* req) -> PerFrameData& {
 	auto seqId = req->renderSeqId();
 
 	if (_lastUpdateRenderSeqId != seqId) {
@@ -20,7 +20,7 @@ Span<VkDescriptorSet> MaterialPass_Vk::getUpdatedDescriptorSets(RenderRequest_Vk
 		_nextFrameData(req);
 	}
 
-	return _currentFrameData().descSets;
+	return _currentFrameData();
 }
 
 void MaterialPass_Vk::_nextFrameData(RenderRequest_Vk* req) {
@@ -73,13 +73,17 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 	auto* shaderPass = pass->_shaderPass;
 	
 	// avoid resize cause the pointer to element change
+
 	req->_writeDescriptor_BufferInfos.clear();
 	req->_writeDescriptor_BufferInfos.ensureCapacity(
 		shaderPass->constBuffers_totalBindCount() + shaderPass->storageBufferParams_totalBindCount());
+	auto checkCapacity_BufferInfos = ScopedArrayCapacityCheck(req->_writeDescriptor_BufferInfos);
 
+	//------------
 	req->_writeDescriptor_ImageInfos.clear();
 	req->_writeDescriptor_ImageInfos.ensureCapacity(
 		shaderPass->textureParams_totalBindCount() + shaderPass->samplerParams_totalBindCount());
+	auto checkCapacity_ImageInfos = ScopedArrayCapacityCheck(req->_writeDescriptor_ImageInfos);
 
 	//------------
 	req->_writeDescriptorSets.clear();
@@ -121,23 +125,7 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 			addWriteDesc(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), bindSpace, &dst, nullptr);
 		}
 
-		if constexpr  (AxRenderConfig::bindless) {
-			if (!pass->shader()->isGlobalCommonShader())
-				continue; //-- skip for non-common shaders in bindless
-		}
-
-		for (auto& param : paramSpace->_storageBufferParams) {
-			auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.gpuBuffer());
-			if (!gpuBuf) throw Error_Undefined("cannot get storage buffer");
-
-			auto& dst  = req->_writeDescriptor_BufferInfos.emplaceBack();
-			dst.offset = 0;
-			dst.range  = AX_VkUtil::castUInt32(param.dataSize());
-			dst.buffer = gpuBuf->vkBufHandle();
-			if (!dst.buffer) throw Error_Undefined();
-			
-			addWriteDesc(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), bindSpace, &dst, nullptr);
-		}
+		if constexpr  (!AxRenderConfig::bindless) continue;
 
 		for (auto& param : paramSpace->_samplerParams) {
 			auto* sampler = param.sampler();
@@ -150,10 +138,10 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 
 			req->resourcesToKeep.add(sampler_vk);
 
-			auto& dst = req->_writeDescriptor_ImageInfos.emplaceBack();
+			auto& dst   = req->_writeDescriptor_ImageInfos.emplaceBack();
 			dst.sampler = sampler_vk->vkHandle();
 			if (!dst.sampler) throw Error_Undefined();
-			
+
 			addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), bindSpace, nullptr, &dst);
 		}
 
@@ -162,22 +150,38 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 			if (!tex) {
 				tex = StockObjects::s_instance()->texture2Ds.kError.ptr();
 			}
-			
+
 			auto& dst = req->_writeDescriptor_ImageInfos.emplaceBack();
 			switch (tex->type()) {
 				case RenderDataType::Texture2D: {
 					auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
 					if (!tex2d) throw Error_Undefined();
 					tex2d->_bindImage(req, dst);
-				}break;
+				}
+				break;
 
 				default: throw Error_Undefined();
 			}
 
 			addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, param.bindPoint(), bindSpace, nullptr, &dst);
 		}
-	}
+		
+		for (auto& param : paramSpace->_storageBufferParams) {
+			auto* storageBuffer = rttiCastCheck<StorageBuffer_Backend>(param.storageBuffer());
+			if (!storageBuffer) throw Error_Undefined("cannot get storage buffer");
 
+			auto* gpuBuffer = rttiCastCheck<GpuBuffer_Vk>(storageBuffer->gpuBuffer());
+			if (!gpuBuffer) throw Error_Undefined("cannot get storage gpu buffer");
+
+			auto& dst  = req->_writeDescriptor_BufferInfos.emplaceBack();
+			dst.offset = 0;
+			dst.range  = AX_VkUtil::castUInt32(param.dataSize());
+			dst.buffer = gpuBuffer->vkBufHandle();
+			if (!dst.buffer) throw Error_Undefined();
+
+			addWriteDesc(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), bindSpace, &dst, nullptr);
+		}
+	}
 	auto* renderer = req->renderer_vk();
 	AX_vkUpdateDescriptorSets(renderer->device(), req->_writeDescriptorSets, {});
 }
@@ -205,7 +209,7 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	}
 
 	Array<VkDescriptorSet, BindSpace_COUNT> destSet;
-	for (auto& s : getUpdatedDescriptorSets(req)) {
+	for (auto& s : getUpdatedFrameData(req).descSets) {
 		if (!s) continue; // destSet cannot contains null
 		destSet.emplaceBack(s);
 	} 

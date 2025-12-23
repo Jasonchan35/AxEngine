@@ -129,6 +129,32 @@ private:
 	}	
 };
 
+template<class OBJ>
+struct ScopedArrayCapacityCheck : public NonCopyable {
+	AX_NODISCARD ScopedArrayCapacityCheck(const OBJ& obj) {
+		_capacity = obj.capacity();
+	}
+
+	~ScopedArrayCapacityCheck() {
+		if (_obj) {
+			AX_ASSERT(check());
+		}
+	}
+
+	bool check() {
+		if (!_obj) return true;
+		return _obj->capacity() == _capacity;
+	}
+	
+	void detach() noexcept {
+		_obj = nullptr;
+	}
+
+private:
+	OBJ* _obj = nullptr;
+	Int _capacity = 0;
+};
+
 template <class T>
 template <class FUNC> constexpr
 Int IArray<T>::eraseIf(FUNC func) {

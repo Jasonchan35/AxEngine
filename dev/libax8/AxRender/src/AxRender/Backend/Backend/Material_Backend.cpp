@@ -36,7 +36,7 @@ MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 	MaterialParamSpace_Backend_cloneParams(_storageBufferParams	, _shaderParamSpace->_storageBufferParams);
 }
 
-void MaterialParamSpace_Backend::ConstBuffer::create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam) {
+void MaterialParamSpace_Backend::ConstBufferParam::create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam) {
 	ParamBase::create(shaderParam);
 
 	_shaderParam = &shaderParam;
