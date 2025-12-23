@@ -82,8 +82,8 @@ public:
 	};
 
 	constexpr AX_INLINE This slice(IntRange range) {
-		auto* s = MemUtil::addOffsetInBytes(_begin, range.begin() * _stride);
-		auto* e = MemUtil::addOffsetInBytes(_begin, range.end()   * _stride);
+		auto* s = MemUtil::addOffsetInBytes(_begin, range.start() * _stride);
+		auto* e = MemUtil::addOffsetInBytes(_begin, range.stop()  * _stride);
 		if (s < _begin || e < _begin || s > _end || e > _end) {
 			throw Error_IndexOutOfRange();
 		}
@@ -226,8 +226,8 @@ public:
 		return MSpan(_data + offset, newSize);
 	}
 	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(Int offset, Int newSize) const	{ return ax_const_cast(this)->slice(offset, newSize); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(IntRange range)				{ return slice(range.begin(), range.size()); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return slice(range.begin(), range.size()); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(IntRange range)				{ return slice(range.start(), range.size()); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return slice(range.start(), range.size()); }
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return slice(_size - newSize, newSize); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return slice(_size - newSize, newSize); }
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFrom		(Int offset)					{ return slice(offset, _size - offset); }

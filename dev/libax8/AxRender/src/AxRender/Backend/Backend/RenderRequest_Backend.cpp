@@ -145,7 +145,7 @@ bool RenderRequest_Backend::copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, Byt
 
 	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
 
-	auto uploadRange = IntRange_BeginSize(_inlineUpload.usedBytes, dataSize);
+	auto uploadRange = IntRange_StartAndSize(_inlineUpload.usedBytes, dataSize);
 	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadRange, dstOffset);
 
 	_inlineUpload.usedBytes += dataSize;

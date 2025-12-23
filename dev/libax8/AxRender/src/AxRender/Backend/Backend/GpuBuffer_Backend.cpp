@@ -10,13 +10,13 @@ SPtr<GpuBuffer_Backend> GpuBuffer_Backend::s_new(const MemAllocRequest& req, con
 }
 
 void GpuBuffer_Backend::copyData(ByteSpan data, Int offset) {
-	auto map = mapMemory(Range_BeginSize(offset, data.size()));
+	auto map = mapMemory(Range_StartAndSize(offset, data.size()));
 	map->copyValues(data);
 }
 
 void GpuBuffer_Backend::copyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
 	Int  copySize = srcRange.size();
-	auto dstRange = Range_BeginSize(dstOffset, copySize);
+	auto dstRange = Range_StartAndSize(dstOffset, copySize);
 	if (! src->inBound(srcRange)) throw Error_IndexOutOfRange();
 	if (!this->inBound(dstRange)) throw Error_IndexOutOfRange();
 	onCopyFromGpuBuffer(req, src, srcRange, dstOffset);

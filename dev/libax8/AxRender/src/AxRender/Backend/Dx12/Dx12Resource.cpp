@@ -127,8 +127,8 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 
 MutByteSpan Dx12ResourceBase::_mapMemory(IntRange range) {
 	D3D12_RANGE dxRange;
-	dxRange.Begin = ax_safe_cast_from(range.begin());
-	dxRange.End   = ax_safe_cast_from(range.end());
+	dxRange.Begin = ax_safe_cast_from(range.start());
+	dxRange.End   = ax_safe_cast_from(range.stop());
 
 	UINT8* dst = nullptr;
 	auto hr = _d3dResource->Map(0, &dxRange, reinterpret_cast<void**>(&dst));

@@ -1165,13 +1165,13 @@ void AX_VkDeviceMemory::copyData(
 	VkMemoryMapFlags flags
 ) {
 	if (data.size() <= 0) return;
-	auto map = mapMemory(Range_BeginSize(offset, data.size()), flags);
+	auto map = mapMemory(Range_StartAndSize(offset, data.size()), flags);
 	map->copyValues(data);
 }
 
 MutByteSpan AX_VkDeviceMemory::_mapMemory(IntRange range, VkMemoryMapFlags flags) {
 	void* outPtr = nullptr;
-	auto offset = AX_VkUtil::castVkDeviceSize(range.begin());
+	auto offset = AX_VkUtil::castVkDeviceSize(range.start());
 	auto size =   AX_VkUtil::castVkDeviceSize(range.size());
 	
 	auto err = vkMapMemory(*_dev, _handle, offset, size, flags, &outPtr);
@@ -1225,7 +1225,7 @@ void AX_VkDeviceMemory::_fillVkMappedMemoryRange(IArray<VkMappedMemoryRange>& ou
 		dst.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 		dst.pNext  = nullptr;
 		dst.memory = _handle;
-		dst.offset = AX_VkUtil::castVkDeviceSize(src.begin());
+		dst.offset = AX_VkUtil::castVkDeviceSize(src.start());
 		dst.size   = AX_VkUtil::castVkDeviceSize(src.size());
 		dst.size   = Math::alignUp(dst.size, atomSize);
 		if (dst.size > bufferSize) 

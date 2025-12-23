@@ -84,13 +84,13 @@ public:
 
 	AX_NODISCARD AX_INLINE constexpr T& ensureSizeAndGetElement(Int i)	{ ensureSize(i+1); return at(i); }
 	
-	AX_INLINE constexpr		T&	insertAt	(Int i)				{ return *insertAt(IntRange_BeginSize(i, 1)).data(); }
-	AX_INLINE constexpr		T&	insertAt	(Int i, T && value)	{ auto dst = insertAt(IntRange_BeginSize(i, 1)); *dst.data() = std::move(value); return *dst.data(); }
+	AX_INLINE constexpr		T&	insertAt	(Int i)				{ return *insertAt(IntRange_StartAndSize(i, 1)).data(); }
+	AX_INLINE constexpr		T&	insertAt	(Int i, T && value)	{ auto dst = insertAt(IntRange_StartAndSize(i, 1)); *dst.data() = std::move(value); return *dst.data(); }
 	AX_INLINE constexpr	MSpan	insertAt	(IntRange range);
 
 	AX_INLINE constexpr		T	popBack()					{ T tmp = back(); decSize(1); return tmp; }
 	
-	AX_INLINE constexpr	Int		eraseAt	(Int i)				{ return eraseAt(IntRange_BeginSize(i, 1)); }
+	AX_INLINE constexpr	Int		eraseAt	(Int i)				{ return eraseAt(IntRange_StartAndSize(i, 1)); }
 	AX_INLINE constexpr	Int		eraseAt	(IntRange range);
 	AX_INLINE constexpr	void	eraseAt_Unordered( Int i );
 
@@ -274,14 +274,14 @@ template <class T>
 constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
 	if (range.size() <= 0) return;
 	auto oldSize = size();
-	if (range.begin() > oldSize) { AX_ASSERT(false); return; }
+	if (range.start() > oldSize) { AX_ASSERT(false); return; }
 
 	auto newSize = oldSize + range.size();
 	resize(newSize);
 
 	auto* p = data();
 
-	auto* src = p + range.begin() + range.size() - 1;
+	auto* src = p + range.stop() - 1;
 	auto* end = p + oldSize - range.size();
 	auto* dst = end + range.size();
 	auto* tail = p + size();
@@ -298,7 +298,7 @@ constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
 
 template <class T>
 constexpr Int IArray<T>::eraseAt(IntRange range) {
-	if (range.begin() < 0 || range.size() < 0) {
+	if (range.start() < 0 || range.size() < 0) {
 		AX_ASSERT(false);
 		return 0;
 	}
@@ -306,14 +306,14 @@ constexpr Int IArray<T>::eraseAt(IntRange range) {
 	auto* p = data();
 	Int oldSize = size();
 	
-	auto* dst = p + range.begin();
+	auto* dst = p + range.start();
 	auto* end = p + oldSize;
 
 	if (dst >= end) { AX_ASSERT(false); return 0; }
 
 	Int erasedCount = 0;
 
-	auto* src = p + range.end();
+	auto* src = p + range.stop();
 	if (src >= end) {
 		AX_ASSERT(src == end);
 		erasedCount = end - dst;

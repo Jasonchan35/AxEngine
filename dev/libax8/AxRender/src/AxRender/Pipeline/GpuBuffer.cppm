@@ -133,7 +133,7 @@ void DynamicGpuBuffer::setData(ByteSpan src, Int offset) {
 		throw Error_IndexOutOfRange();
 	}
 
-	auto range = Range_BeginSize(offset, src.size());
+	auto range = Range_StartAndSize(offset, src.size());
 	_data.copyValues(src, offset);
 	markDirty(range);
 }
@@ -142,10 +142,10 @@ inline
 void DynamicGpuBuffer::appendData(ByteSpan src) {
 	if (src.size() <= 0) return;
 
-	auto range = Range_BeginSize(_data.size(), src.size());
-	_data.resize(range.end());
+	auto range = Range_StartAndSize(_data.size(), src.size());
+	_data.resize(range.stop());
 	markDirty(range);
-	setData(src, range.begin());
+	setData(src, range.start());
 }
 
 } // namespace

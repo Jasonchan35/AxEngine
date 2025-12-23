@@ -49,7 +49,7 @@ GpuBuffer* DynamicGpuBuffer::getUploadedGpuBuffer(RenderRequest* req_) {
 		uploadRange = IntRange(dataSize); // upload all for new buffer
 	}
 
-	req->copyDataToGpuBuffer(_gpuBuffer, _data.slice(uploadRange), uploadRange.begin());
+	req->copyDataToGpuBuffer(_gpuBuffer, _data.slice(uploadRange), uploadRange.start());
 	return _gpuBuffer;
 }
 

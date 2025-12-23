@@ -82,9 +82,9 @@ void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, Int
 	if (!src   ) { AX_ASSERT(false); return; }
 	if (!req   ) { AX_ASSERT(false); return; }
 
-	auto srcOffset  = srcRange.begin();
+	auto srcOffset  = srcRange.start();
 	auto sizeToCopy = srcRange.size();
-	auto dstRange   = Range_BeginSize(dstOffset, sizeToCopy);
+	auto dstRange   = Range_StartAndSize(dstOffset, sizeToCopy);
 
 	if (!bufferRange().contains(dstRange))
 		throw Error_Undefined();

@@ -7,7 +7,7 @@ import :RenderRequest_Dx12;
 namespace  ax {
 
 void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
-	auto dstRange = Range_BeginSize(dstOffset, srcRange.size());
+	auto dstRange = Range_StartAndSize(dstOffset, srcRange.size());
 	if (!inBound(dstRange)) throw Error_Undefined();
 	
 	auto* dst_dx12 = this;
@@ -28,7 +28,7 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	cmdList_dx->CopyBufferRegion(dstRes,
 	                             ax_safe_cast_from(dstOffset),
 	                             srcRes,
-	                             ax_safe_cast_from(srcRange.begin()),
+	                             ax_safe_cast_from(srcRange.start()),
 	                             ax_safe_cast_from(srcRange.size()));
 
 //	srcRes.resourceBarrier(cmdList_dx, srcOldState);

@@ -156,8 +156,8 @@ public:
 	//  sliceFromBack [<------------- till to front -------](offset)
 	AX_INLINE constexpr MView	  slice         (Int offset, Int newSize)		{ return _slice(offset, newSize); }
 	AX_INLINE constexpr CView     slice	        (Int offset, Int newSize) const	{ return ax_const_cast(this)->_slice(offset, newSize); }
-	AX_INLINE constexpr MView     slice	        (IntRange range)				{ return _slice(range.begin(), range.size()); }
-	AX_INLINE constexpr CView     slice	        (IntRange range) const			{ return _slice(range.begin(), range.size()); }
+	AX_INLINE constexpr MView     slice	        (IntRange range)				{ return _slice(range.start(), range.size()); }
+	AX_INLINE constexpr CView     slice	        (IntRange range) const			{ return _slice(range.start(), range.size()); }
 	AX_INLINE constexpr MView     sliceFrom	    (Int offset)					{ return _slice(offset, _size - offset); }
 	AX_INLINE constexpr CView     sliceFrom	    (Int offset) const				{ return _slice(offset, _size - offset); }
 	AX_INLINE constexpr MView     sliceBack	    (Int offset, Int newSize)		{ return _slice(_size - newSize - offset, newSize); }

@@ -6,8 +6,8 @@ namespace ax {
 	E(None,) \
 	E(A,   ) \
 	E(B,   ) \
-	E(C,=10) \
-	E(D,   ) \
+	E(C,   ) \
+	E(D,=10) \
 	E(_COUNT,) \
 //----
 AX_ENUM_CLASS(AX_Example_ENUM_LIST, Example, u8)
@@ -48,20 +48,23 @@ public:
 	void test_Enum() {
 		Example t = Example::C;
 		AX_TEST_EQ(ax_enum_str(t), "C");
-#if 0
+
 		Int sum_i = 0;
 		for (auto e : Range_(ax_enum_int(Example::_COUNT))) {
 			sum_i += (e);
+			AX_DUMP(e);
 		}
+		AX_TEST_EQ(sum_i, 55);
 		
 		Int sum = 0;
-		for (auto e : Range_<Example>(Example::_COUNT)) {
+		for (auto e : Range_(Example::_COUNT)) {
 			sum += ax_enum_int(e);
+			AX_DUMP(e);
 		}
 
+		AX_TEST_EQ(sum, 55);
 		AX_TEST_EQ(sum, sum_i);
-		AX_TEST_EQ(sum, 1+2+10+11);
-#endif	
+
 		switch (t) {
 #if 0 // test vc warning: #warning C5262: switch-case fallthrough warning
 			case Example::A: AX_LOG("A"); // AX_FALLTHROUGH

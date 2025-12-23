@@ -205,7 +205,7 @@ class FormatHandler<Range_<T>, FMT_CH> {
 public:
 	using Obj = Range_<T>;
 	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << Fmt("Range({}~{}:Size:{})", obj.begin(), obj.end(), obj.size());
+		fmt << Fmt("Range({}~{}:Size:{})", obj.start(), obj.stop(), obj.size());
 	}
 };
 
