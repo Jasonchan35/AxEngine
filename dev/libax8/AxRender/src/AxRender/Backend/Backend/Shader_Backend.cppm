@@ -193,7 +193,7 @@ T* ShaderParamSpace_Backend::_findParam(IArray<T>& arr, NameId name) {
 	return nullptr;
 }
 
-class ShaderPass_Backend_CreateDesc : public NonCopyable {
+class ShaderPass_CreateDesc : public NonCopyable {
 public:
 	Shader_Backend*        shader    = nullptr;
 	Int                    passIndex = 0;
@@ -205,7 +205,7 @@ public:
 class ShaderPass_Backend : public RenderObject {
 	AX_RTTI_INFO(ShaderPass_Backend, RenderObject)
 public:
-	using CreateDesc = ShaderPass_Backend_CreateDesc;
+	using CreateDesc = ShaderPass_CreateDesc;
 	using ParamBase = ShaderParamSpace_Backend::ParamBase;
 	using BindPoint = ShaderParamBindPoint;
 	using BindCount = ShaderParamBindCount;
@@ -217,8 +217,8 @@ public:
 	      Shader_Backend* shader()       { return _shader; }
 	const Shader_Backend* shader() const { return _shader; }
 
-	Span<SPtr<const ShaderParamSpace_Backend>>	shaderParamSpaces() const { return _shaderParamSpaces; }
-
+	FixedArray<SPtr<ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
+	
 	const ShaderPassInfo*	info() const	{ return _info; }
 	bool isGlobalCommonShaderPass() const	{ return _isGlobalCommonShaderPass; }
 
@@ -233,9 +233,9 @@ public:
 		return p ? p->ptr() : nullptr;
 	}
 
-	ShaderParamSpace_Backend*	getOwnParamSpace(BindSpace s) {
-		if (!isOwnParamSpace(s)) return nullptr; 
-		return ax_const_cast(getParamSpace(s));
+	template<class T>
+	const ShaderParamSpace_Backend* getParamSpace_(BindSpace s) const {
+		return rttiCastCheck<T>(getParamSpace(s));
 	}
 
 	const ShaderPass_Backend* getCommonShaderPass() const;
@@ -244,7 +244,7 @@ public:
 	Int textureParams_totalBindCount() const		{ return _textureParams_totalBindCount       ; }
 	Int samplerParams_totalBindCount() const		{ return _samplerParams_totalBindCount       ; }
 	Int storageBufferParams_totalBindCount() const	{ return _storageBufferParams_totalBindCount ; }
-	
+
 friend class Shader_Backend;
 protected:
 	Shader_Backend*		_shader = nullptr;
@@ -262,9 +262,7 @@ protected:
 
 	template<class T>
 	void _addParamToSpace(const Array<T>& paramInfoSpan);
-
-	FixedArray<SPtr<const ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
-
+	
 	const ShaderPassInfo*		_info = nullptr;
 	const ShaderStageInfo*		_stageInfo = nullptr;
 };
@@ -277,11 +275,12 @@ public:
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView assetPath);
 
-	virtual UPtr<ShaderPass_Backend > onNewPass (const ShaderPass_Backend_CreateDesc& desc) = 0;
+	virtual UPtr<ShaderPass_Backend > onNewPass (const ShaderPass_CreateDesc& desc) = 0;
 
 	const ShaderResultInfo* info() const { return &_info; }
 	MutSpan<UPtr<ShaderPass_Backend>>	passes() { return _passes; }
 
+	Int passCount() const { return _passes.size(); }
 	ShaderPass_Backend*		getPass(Int i);
 	const ShaderPropInfo*	findPropInfo(NameId name) const;
 

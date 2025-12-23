@@ -123,6 +123,21 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 {
 	AX_ASSERT(_material);
 	AX_ASSERT(_shaderPass);
+
+	auto* commonMaterialPass = Renderer_Backend::s_instance()->commonMaterialPass();
+		
+	for (Int i = 0; i < BindSpace_COUNT; ++i) {
+		auto bindSpace = static_cast<BindSpace>(i);
+		auto& ownParamSpace = _materialParamSpaces[i];
+		if (!isOwnParamSpace(bindSpace)) {
+			ownParamSpace = commonMaterialPass->_materialParamSpaces[i];
+			continue;
+		}
+		
+		auto& shaderParamSpace = _shaderPass->_shaderParamSpaces[i];
+		if (!shaderParamSpace) continue;
+		ownParamSpace = shaderParamSpace->newMaterialParamSpace(AX_ALLOC_REQ); 
+	}
 }
 
 
@@ -152,7 +167,7 @@ void Material_Backend::setShader_backend(Shader* shader_) {
 	if (_shader_backend == shader) return;
 	_shader_backend = shader;
 	_passes.clear();
-	Int passCount = shader->passes().size();
+	Int passCount = shader->passCount();
 
 	_passes.ensureCapacity(passCount);
 
@@ -162,21 +177,12 @@ void Material_Backend::setShader_backend(Shader* shader_) {
 			throw Error_Undefined();
 		}
 		
-		MaterialPass_Backend_CreateDesc passDesc;
+		MaterialPass_CreateDesc passDesc;
 		passDesc.material = this;
 		passDesc.shaderPass = shaderPass;
 		passDesc.passIndex = passIndex;
-		
-		auto& newMaterialPass = _passes.emplaceBack(onNewPass(passDesc));
-		auto shaderSpaceSpan = shaderPass->shaderParamSpaces();
-		for (Int spaceIndex = 0; spaceIndex < shaderSpaceSpan.size(); ++spaceIndex) {
-			auto& shaderSpace = shaderSpaceSpan[spaceIndex];
-			if (!shaderSpace) continue;
-			auto materialSpace = shaderSpace->newMaterialParamSpace(AX_ALLOC_REQ);
-			newMaterialPass->_materialParamSpaces[spaceIndex] = materialSpace; 
-		}
+		_passes.emplaceBack(onNewPass(passDesc));
 	}
-
 	onSetShader();
 }
 

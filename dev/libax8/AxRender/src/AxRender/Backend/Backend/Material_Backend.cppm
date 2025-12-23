@@ -199,7 +199,7 @@ bool MaterialParamSpace_Backend::TextureParam::setTexture(TEX* texture) {
 inline void MaterialParamSpace_Backend::ParamBase::create(const ShaderParamSpace_Backend::ParamBase& shaderParam) {
 }
 
-class MaterialPass_Backend_CreateDesc : public NonCopyable {
+class MaterialPass_CreateDesc : public NonCopyable {
 public:
 	Material_Backend* material = nullptr;
 	ShaderPass_Backend* shaderPass = nullptr;
@@ -209,7 +209,7 @@ public:
 class MaterialPass_Backend : public RenderObject {
 	AX_RTTI_INFO(MaterialPass_Backend, RenderObject)
 public:
-	using CreateDesc = MaterialPass_Backend_CreateDesc;
+	using CreateDesc = MaterialPass_CreateDesc;
 	using BindPoint = ShaderParamBindPoint;
 	using BindCount = ShaderParamBindCount;
 	using BindSpace = ShaderParamBindSpace;
@@ -221,6 +221,8 @@ public:
 	const Shader_Backend*		shader() const;
 
 	virtual bool onDrawcall(class RenderRequest* req, Cmd_DrawCall& cmd) = 0;
+
+	bool isOwnParamSpace(BindSpace s) const { return _shaderPass->isOwnParamSpace(s); }
 
 	NameId getPropSamplerName(NameId name) const { auto* shd = shader(); return shd ? shd->getPropSamplerName(name) : NameId(); }
 
@@ -235,7 +237,7 @@ public:
 
 	template<class V>
 	bool setParamSpaceParam(BindSpace space, NameId name, const V& v) {
-		auto* p = getParamSpace(space);
+		auto* p = ax_const_cast(getParamSpace(space));
 		return p ? p->setParam(name, v) : false;
 	}
 
@@ -292,7 +294,7 @@ protected:
 	SPtr<Shader_Backend>	_shader_backend;
 	virtual void onSetShader();
 
-	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_Backend_CreateDesc& desc) = 0;
+	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_CreateDesc& desc) = 0;
 };
 
 AX_INLINE

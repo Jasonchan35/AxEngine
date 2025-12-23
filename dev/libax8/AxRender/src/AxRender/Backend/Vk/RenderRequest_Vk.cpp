@@ -59,7 +59,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 	if (!commonPass) return;
 
 	auto& curFrameData = commonPass->getUpdatedFrameData(this);
-	auto& curDescSet = curFrameData.descSets[ax_enum_int(BindSpace::Bindless)];
+	auto& curDescSet = curFrameData._descSets[ax_enum_int(BindSpace::Bindless)];
 
 	auto* mtlSpace = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, BindSpace::Bindless);
 	if (!mtlSpace) return;

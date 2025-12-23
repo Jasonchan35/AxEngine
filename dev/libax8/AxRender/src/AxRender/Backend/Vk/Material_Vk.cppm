@@ -34,22 +34,24 @@ public:
 
 	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 
-	static constexpr Int kMaxRenderRequestCount = AxRenderConfig::kMaxRenderRequestCount;
-
 	struct PerFrameData : public NonCopyable {
-		FixedArray<VkDescriptorSet, BindSpace_COUNT> descSets;
-		AX_VkDescriptorPool pool;
+		bool _created = false;
+		FixedArray<VkDescriptorSet, BindSpace_COUNT>  _descSets;
 
 		void create(MaterialPass_Vk* pass, RenderRequest_Vk* req);
 		void update(MaterialPass_Vk* pass, RenderRequest_Vk* req);
 	};
 
 	PerFrameData& getUpdatedFrameData(RenderRequest_Vk* req);
+
 private:
 	PerFrameData& _currentFrameData() { return _perFrameData[_currentFrameDataIndex]; }
 	void _nextFrameData(RenderRequest_Vk* req);
+	void _createDescPool();
 
-	Array<PerFrameData, kMaxRenderRequestCount>	_perFrameData;
+	AX_VkDescriptorPool _descPool;
+	
+	Array<PerFrameData, AxRenderConfig::kMaxRenderRequestCount>	_perFrameData;
 
 	RenderSeqId	_lastUpdateRenderSeqId = 0;
 	Int			_currentFrameDataIndex = 0;
@@ -65,7 +67,7 @@ private:
 
 	Shader_Vk* shader_vk() { return static_cast<Shader_Vk*>(_shader_backend.ptr()); }
 
-	virtual UPtr<MaterialPass_Backend> onNewPass(const MaterialPass_Backend_CreateDesc& desc) override {
+	virtual UPtr<MaterialPass_Backend> onNewPass(const MaterialPass_CreateDesc& desc) override {
 		return UPtr_new<MaterialPass_Vk>(AX_ALLOC_REQ, desc);
 	}
 };

@@ -91,7 +91,7 @@ class Shader_Dx12 : public Shader_Backend {
 public:
 	Shader_Dx12(const CreateDesc& desc) : Base(desc) {}
 	
-	virtual UPtr<ShaderPass_Backend> onNewPass(const ShaderPass_Backend_CreateDesc& desc) override {
+	virtual UPtr<ShaderPass_Backend> onNewPass(const ShaderPass_CreateDesc& desc) override {
 		return UPtr_new<ShaderPass_Dx12>(AX_ALLOC_REQ, desc);
 	}	
 };

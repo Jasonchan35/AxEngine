@@ -15,7 +15,7 @@ class Range_ {
 
 public:
 	AX_INLINE constexpr Range_() = default;
-	AX_INLINE constexpr Range_(const T& end_) noexcept { set(0, end_); }
+	AX_INLINE constexpr Range_(const T& end_) noexcept { set(T(0), end_); }
 	AX_INLINE constexpr Range_(const T& begin_, const T& end_) noexcept : _begin(begin_), _end(end_) {}
 
 	static AX_INLINE constexpr This s_beginSize(const T& begin_, const T& size_) noexcept { return Range_(begin_, begin_ + size_); }

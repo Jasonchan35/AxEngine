@@ -198,44 +198,37 @@ void ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 
-	const auto* commonShaderPass = getCommonShaderPass();
-
-	for (auto i = 0; i < BindSpace_COUNT; ++i) {
+	auto* commonShaderPass = Renderer_Backend::s_instance()->commonShaderPass(); 
+	
+	for (Int i = 0; i < BindSpace_COUNT; ++i) {
 		auto bindSpace = static_cast<BindSpace>(i);
+		auto& ownParamSpace = _shaderParamSpaces[i];
 		if (!isOwnParamSpace(bindSpace)) {
-			_shaderParamSpaces[i] = commonShaderPass->_shaderParamSpaces[i].ptr();
+			ownParamSpace = commonShaderPass->_shaderParamSpaces[i];
 			continue;
 		}
+
+		if (!ownParamSpace) continue;
 		
-		if (auto* space = getOwnParamSpace(bindSpace)) {
-			for (auto& prop : _shader->info()->declare.props) {
-				auto propName = NameId::s_make(prop.name);
-				space->setPropDefaultValue(propName, prop);
-			}
+		for (auto& prop : _shader->info()->declare.props) {
+			auto propName = NameId::s_make(prop.name);
+			ownParamSpace->setPropDefaultValue(propName, prop);
 		}
-	}
 
-	for (auto& paramSpace : _shaderParamSpaces) {
-		// if (!isGlobalCommonShaderPass()) {
-		// 	if (paramSpace->bindSpace() == BindSpace::Bindless)
-		// 		continue;
-		// }
-
-		if (!paramSpace) continue;
-		
-		for (auto& param : paramSpace->_constBuffers) {
+		for (auto& param : ownParamSpace->_constBuffers) {
 			_constBuffers_totalBindCount += param.bindCount();
 		}
-		for (auto& param : paramSpace->_samplerParams) {
+		for (auto& param : ownParamSpace->_samplerParams) {
 			_samplerParams_totalBindCount += param.bindCount();
 		}
-		for (auto& param : paramSpace->_textureParams) {
+		for (auto& param : ownParamSpace->_textureParams) {
 			_textureParams_totalBindCount += param.bindCount();
 		}
-		for (auto& param : paramSpace->_storageBufferParams) {
+		for (auto& param : ownParamSpace->_storageBufferParams) {
 			_storageBufferParams_totalBindCount += param.bindCount();
 		}
-	}	
+		
+	}
 }
 
 #if 0

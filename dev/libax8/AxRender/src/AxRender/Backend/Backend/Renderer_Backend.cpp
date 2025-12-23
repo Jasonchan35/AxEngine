@@ -73,9 +73,21 @@ Material_Backend* Renderer_Backend::commonMaterial() {
 	return _privateData->commonMaterial;
 }
 
+MaterialPass_Backend* Renderer_Backend::commonMaterialPass() {
+	auto* p = commonMaterial();
+	if (!p || p->passCount() <= 0) return nullptr;
+	return p->getPass(0);  
+}
+
 Shader_Backend* Renderer_Backend::commonShader() {
 	auto& m = _privateData->commonMaterial;
 	return m ? m->shader_backend() : nullptr;
+}
+
+ShaderPass_Backend* Renderer_Backend::commonShaderPass() {
+	auto* p = commonShader();
+	if (!p || p->passCount() <= 0) return nullptr;
+	return p->getPass(0);
 }
 
 void Renderer_Backend::waitAllRenderCompleted() {

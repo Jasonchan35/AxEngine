@@ -49,8 +49,10 @@
 	E(RenderRequest				, API, SUFFIX) \
 	E(GpuBuffer					, API, SUFFIX) \
 	E(Shader					, API, SUFFIX) \
+	E(ShaderPass				, API, SUFFIX) \
 	E(ShaderParamSpace			, API, SUFFIX) \
 	E(Material					, API, SUFFIX) \
+	E(MaterialPass				, API, SUFFIX) \
 	E(MaterialParamSpace		, API, SUFFIX) \
 	E(Sampler					, API, SUFFIX) \
 	E(Texture2D					, API, SUFFIX) \

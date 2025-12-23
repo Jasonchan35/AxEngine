@@ -21,8 +21,11 @@ public:
 
 	RenderRequest_Backend*		nextRenderRequest();
 	
-	Material_Backend*	commonMaterial();
-	Shader_Backend*		commonShader();
+	Material_Backend*			commonMaterial();
+	MaterialPass_Backend*		commonMaterialPass();
+	
+	Shader_Backend*				commonShader();
+	ShaderPass_Backend*			commonShaderPass();
 
 	ImFontAtlas* imguiFontAtlas() { return &_imguiFontAtlas; }
 

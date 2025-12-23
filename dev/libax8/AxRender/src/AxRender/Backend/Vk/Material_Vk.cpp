@@ -24,51 +24,64 @@ auto MaterialPass_Vk::getUpdatedFrameData(RenderRequest_Vk* req) -> PerFrameData
 }
 
 void MaterialPass_Vk::_nextFrameData(RenderRequest_Vk* req) {
+	if (!_descPool) {
+		_createDescPool();
+	}
+	
 	_currentFrameDataIndex = (_currentFrameDataIndex + 1) % _perFrameData.size();
 	auto& curFrameData = _currentFrameData();
 	curFrameData.update(this, req);
 }
 
-void MaterialPass_Vk::PerFrameData::create(MaterialPass_Vk* pass, RenderRequest_Vk* req) {
+void MaterialPass_Vk::_createDescPool() {
+	bool isStaticMaterial = false; // TODO
+	auto maxFrameDataCount = isStaticMaterial ? 1 : Renderer::s_instance()->info().renderRequestCount;
+	
 	Array<VkDescriptorPoolSize, 8>	poolSizes;
 
 	auto addPoolSize = [&](Int descriptorCount, VkDescriptorType descType) -> void {
 		if (descriptorCount <= 0) return;
 		auto& dst           = poolSizes.emplaceBack();
 		dst.type            = descType;
-		dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
+		dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount * maxFrameDataCount);
 	};
 
-	addPoolSize(pass->_shaderPass->constBuffers_totalBindCount(),			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-	addPoolSize(pass->_shaderPass->textureParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
-	addPoolSize(pass->_shaderPass->samplerParams_totalBindCount(),			VK_DESCRIPTOR_TYPE_SAMPLER);
-	addPoolSize(pass->_shaderPass->storageBufferParams_totalBindCount(),	VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
-		
+	addPoolSize(_shaderPass->constBuffers_totalBindCount(),			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+	addPoolSize(_shaderPass->textureParams_totalBindCount(),		VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
+	addPoolSize(_shaderPass->samplerParams_totalBindCount(),		VK_DESCRIPTOR_TYPE_SAMPLER);
+	addPoolSize(_shaderPass->storageBufferParams_totalBindCount(),	VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+
 	VkDescriptorPoolCreateFlags poolFlags = 0;
 #if AX_RENDER_BINDLESS
 	poolFlags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 #endif
+	
+	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& layouts = shaderPass_vk()->_spaceDescSetLayout;
+	_descPool.create(dev, poolSizes, layouts.size() * maxFrameDataCount, poolFlags);
+}
 
-	auto* renderer = req->renderer_vk();
-	auto& dev      = renderer->device();
-		
-	auto& shaderDescSetLayouts = pass->shaderPass_vk()->_spaceDescSetLayout;
-	pool.create(dev, poolSizes, shaderDescSetLayouts.size(), poolFlags);
+void MaterialPass_Vk::PerFrameData::create(MaterialPass_Vk* pass, RenderRequest_Vk* req) {
+	_created = true;
+	if (!pass->_descPool) {
+		pass->_createDescPool();
+	}
+	
+	auto& layouts = pass->shaderPass_vk()->_spaceDescSetLayout;
 		
 	for (Int i = 0; i < BindSpace_COUNT; ++i) {
-		if (!shaderDescSetLayouts[i]) continue;
-		descSets[i] = pool.allocDescriptorSet(shaderDescSetLayouts[i]);
+		if (!layouts[i]) continue;
+		_descSets[i] = pass->_descPool.allocDescriptorSet(layouts[i]);
 
 #if AX_RENDER_DEBUG_NAME
-		dev.setObjectDebugName(descSets[i], Fmt("{}-DescSet[{}][{}]", pass->_name, pass->_currentFrameDataIndex, i));
+		auto& dev = Renderer_Vk::s_instance()->device();
+		dev.setObjectDebugName(_descSets[i], Fmt("{}-DescSet[{}][{}]", pass->_name, pass->_currentFrameDataIndex, i));
 #endif
 	}
 }
 
 void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_Vk* req) {
-	if (!pool) {
-		create(pass, req);
-	}
+	if (!_created) create(pass, req);
 
 	auto* shaderPass = pass->_shaderPass;
 	
@@ -97,19 +110,21 @@ void MaterialPass_Vk::PerFrameData::update(MaterialPass_Vk* pass, RenderRequest_
 		auto& wds			= req->_writeDescriptorSets.emplaceBack();
 		wds.sType			= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		wds.pNext			= nullptr;
-		wds.dstSet			= descSets[ax_enum_int(bindSpace)];
+		wds.dstSet			= _descSets[ax_enum_int(bindSpace)];
 		wds.dstBinding		= AX_VkUtil::castUInt32(ax_enum_int(bindPoint));
 		wds.dstArrayElement	= 0;
 		wds.descriptorType	= descType;
 		wds.descriptorCount	= 1;
 		wds.pBufferInfo		= bufInfo;
 		wds.pImageInfo		= imageInfo;
+
+		if (!wds.dstSet) throw Error_Undefined();
 	};
 
-	for (auto& paramSpace_ : pass->_materialParamSpaces) {
-		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(paramSpace_.ptr());
+	for (Int i = 0; i < BindSpace_COUNT; ++i) {
+		auto* paramSpace = rttiCastCheck<MaterialParamSpace_Vk>(pass->_materialParamSpaces[i].ptr());
 		if (!paramSpace) continue;
-		BindSpace bindSpace = paramSpace->bindSpace();
+		auto bindSpace = static_cast<BindSpace>(i);
 		
 		for (auto& param : paramSpace->_constBuffers) {
 			auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
@@ -207,7 +222,7 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	}
 
 	Array<VkDescriptorSet, BindSpace_COUNT> destSet;
-	for (auto& s : getUpdatedFrameData(req).descSets) {
+	for (auto& s : getUpdatedFrameData(req)._descSets) {
 		if (!s) continue; // destSet cannot contains null
 		destSet.emplaceBack(s);
 	} 

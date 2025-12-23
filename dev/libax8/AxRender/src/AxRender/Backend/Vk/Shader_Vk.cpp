@@ -29,10 +29,9 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 	VkDescriptorBindingFlags		 bindingFlags = 0;
 #endif
 
-	for (auto& paramSpace : _shaderParamSpaces) {
+	for (Int i = 0; i < BindSpace_COUNT; ++i) {
+		auto& paramSpace = _shaderParamSpaces[i];
 		if (!paramSpace) continue;
-		auto bindSpace = paramSpace->bindSpace();
-		auto bindSpaceIndex = ax_enum_int(bindSpace);
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
 		auto addBinding = [&bindings, bindingFlags](const ParamBase& p, VkDescriptorType type) {
@@ -45,7 +44,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		for (auto& param : paramSpace->_storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
 		if (bindings.bindings.size() > 0) {
-			_spaceDescSetLayout[bindSpaceIndex].create(dev, bindings, layoutFlags);
+			_spaceDescSetLayout[i].create(dev, bindings, layoutFlags);
 		}
 	}
 
