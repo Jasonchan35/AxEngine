@@ -11,13 +11,31 @@ export import :Shader_Vk;
 export namespace ax /*::AxRender*/ {
 
 class RenderRequest_Vk;
+class MaterialPass_Vk;
 
 class MaterialParamSpace_Vk : public MaterialParamSpace_Backend {
 	AX_RTTI_INFO(MaterialParamSpace_Vk, MaterialParamSpace_Backend)
 public:
 	MaterialParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
-	const ShaderParamSpace_Vk* shaderParamSpace() const { return rttiCastCheck<ShaderParamSpace_Vk>(_shaderParamSpace.ptr()); }
+	struct PerFrameData : public NonCopyable {
+		VkDescriptorSet _descSet;
+	};
+
+	const PerFrameData& getUpdatedFrameData(RenderRequest_Vk* req) const {
+		return ax_const_cast(this)->_getUpdatedFrameData(req);
+	}
+	
+	const ShaderParamSpace_Vk* shaderParamSpace_vk() const { return rttiCastCheck<ShaderParamSpace_Vk>(_shaderParamSpace.ptr()); }
+
+private:
+	PerFrameData& _currentFrameData() { return _perFrameData[_currentFrameDataIndex]; }
+	void		  _updateFrameData(RenderRequest_Vk* req, PerFrameData& frameData);
+	PerFrameData& _getUpdatedFrameData(RenderRequest_Vk* req);
+	
+	Array<PerFrameData, AxRenderConfig::kMaxRenderRequestCount>	_perFrameData;
+	RenderSeqId	_lastUpdateRenderSeqId = 0;
+	Int			_currentFrameDataIndex = 0;
 }; 
 
 class MaterialPass_Vk : public MaterialPass_Backend {
@@ -35,23 +53,31 @@ public:
 	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 
 	struct PerFrameData : public NonCopyable {
-		bool _created = false;
-		FixedArray<VkDescriptorSet, BindSpace_COUNT>  _descSets;
+		Array<VkDescriptorSet, BindSpace_COUNT>  _allDescSets;
 
-		void create(MaterialPass_Vk* pass, RenderRequest_Vk* req);
 		void update(MaterialPass_Vk* pass, RenderRequest_Vk* req);
 	};
 
 	PerFrameData& getUpdatedFrameData(RenderRequest_Vk* req);
 
-private:
-	PerFrameData& _currentFrameData() { return _perFrameData[_currentFrameDataIndex]; }
-	void _nextFrameData(RenderRequest_Vk* req);
-	void _createDescPool();
+	const MaterialParamSpace_Vk* getParamSpace_vk(BindSpace bs) const {
+		return rttiCastCheck<MaterialParamSpace_Vk>(getParamSpace(bs));
+	}
 
-	AX_VkDescriptorPool _descPool;
+	MaterialParamSpace_Vk* getOwnParamSpace_vk(BindSpace bs) {
+		return rttiCastCheck<MaterialParamSpace_Vk>(getOwnParamSpace(bs));
+	}
+
+	AX_VkDescriptorPool& descPool() {
+		if (!_descPool) _createDescPool();
+		return _descPool;
+	}
+
+private:
+	void _createDescPool();
 	
-	Array<PerFrameData, AxRenderConfig::kMaxRenderRequestCount>	_perFrameData;
+	AX_VkDescriptorPool _descPool;
+	PerFrameData	_perFrameData;
 
 	RenderSeqId	_lastUpdateRenderSeqId = 0;
 	Int			_currentFrameDataIndex = 0;

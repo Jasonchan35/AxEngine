@@ -40,6 +40,7 @@ class ShaderParamSpace_Vk : public ShaderParamSpace_Backend {
 	AX_RTTI_INFO(ShaderParamSpace_Vk, ShaderParamSpace_Backend)
 public:
 	ShaderParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
+	AX_VkDescriptorSetLayout _descSetLayout_vk;
 };
 
 class ShaderPass_Vk : public ShaderPass_Backend {
@@ -56,11 +57,15 @@ public:
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
 
 	const ShaderParamSpace_Vk* getParamSpace_vk(BindSpace bs) const {
-		return getParamSpace_<ShaderParamSpace_Vk>(bs); 
+		return rttiCastCheck<ShaderParamSpace_Vk>(getParamSpace(bs)); 
 	}
 
-	// TODO: change to Array or remove array
-	FixedArray<AX_VkDescriptorSetLayout, BindSpace_COUNT>	_spaceDescSetLayout;
+	ShaderParamSpace_Vk* getOwnParamSpace_vk(BindSpace bs) {
+		return rttiCastCheck<ShaderParamSpace_Vk>(getOwnParamSpace(bs)); 
+	}
+	
+	Array<VkDescriptorSetLayout, BindSpace_COUNT>	_allLayouts_vk;
+	Int _ownDescSetCount = 0;
 
 private:
 	AX_VkPipelineLayout			_pipelineLayout;

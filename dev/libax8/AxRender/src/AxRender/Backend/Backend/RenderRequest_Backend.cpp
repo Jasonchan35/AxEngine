@@ -21,6 +21,7 @@ RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
 	_renderer = desc.renderer;
 	_index = desc.index;
 	_inlineUpload.create(this);
+	_renderRequestCount = _renderer->renderRequestCount();
 }
 
 void RenderRequest_Backend::waitCompleted() {

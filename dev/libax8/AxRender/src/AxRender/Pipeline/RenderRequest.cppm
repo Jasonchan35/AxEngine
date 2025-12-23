@@ -45,6 +45,8 @@ public:
 	RenderContext*	renderContext() { return _renderContext; }
 	RenderPass*		currentRenderPass()	{ return _currentRenderPass; }
 
+	Int				renderRequestCount() const { return _renderRequestCount; }
+	
 	AX_NODISCARD	ScissorRectScope	scissorRectScope()	{ return ScissorRectScope(this); }
 
 	void drawCall(Cmd_DrawCall& cmd);
@@ -69,17 +71,17 @@ public:
 	void setScissorRect(const Rect2f& rect);
 	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
 
-
 protected:
-	Renderer*      _renderer          = nullptr;
-	RenderSeqId    _renderSeqId       = 0;
-	RenderContext* _renderContext     = nullptr;
-	RenderPass*    _currentRenderPass = nullptr;
-	Vec2i          _frameSize {0,0};
-	Rect2f         _scissorRect {0,0,0,0};
-	Rect2f         _viewportRect {0,0,0,0};
-	f64            _uptime              = 0;
-	bool           _viewportIsBottomUp  = false;
+	Renderer*      _renderer              = nullptr;
+	RenderSeqId    _renderSeqId           = 0;
+	RenderContext* _renderContext         = nullptr;
+	RenderPass*    _currentRenderPass     = nullptr;
+	Int            _renderRequestCount = 0;
+	Vec2i          _frameSize{0, 0};
+	Rect2f         _scissorRect{0, 0, 0, 0};
+	Rect2f         _viewportRect{0, 0, 0, 0};
+	f64            _uptime             = 0;
+	bool           _viewportIsBottomUp = false;
 };
 
 ScissorRectScope::ScissorRectScope(RenderRequest* req) noexcept {

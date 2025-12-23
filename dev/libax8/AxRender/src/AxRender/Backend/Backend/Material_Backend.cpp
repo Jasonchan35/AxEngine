@@ -21,8 +21,18 @@ void MaterialParamSpace_Backend_cloneParams(IArray<DST>& dst, const IArray<SRC>&
 	}
 }
 
+SPtr<MaterialParamSpace_Backend> MaterialParamSpace_Backend::s_new(MaterialPass_Backend*           pass,
+                                                                   const ShaderParamSpace_Backend* shaderParamSpace
+) {
+	MaterialParamSpace_CreateDesc desc;
+	desc.materialPass = pass;
+	desc.shaderParamSpace = shaderParamSpace;
+	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newMaterialParamSpace(AX_ALLOC_REQ, desc));
+}
+
 MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
-: Base(desc)
+: _materialPass(desc.materialPass)
+, _shaderParamSpace(desc.shaderParamSpace)
 {
 	_shaderParamSpace = rttiCastCheck<const ShaderParamSpace_Backend>(desc.shaderParamSpace);
 	if (!_shaderParamSpace) {
@@ -136,7 +146,7 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 		
 		auto* shaderParamSpace = _shaderPass->getParamSpace(bindSpace);
 		if (!shaderParamSpace) continue;
-		ownParamSpace = shaderParamSpace->newMaterialParamSpace(AX_ALLOC_REQ); 
+		ownParamSpace = MaterialParamSpace_Backend::s_new(this, shaderParamSpace); 
 	}
 }
 
@@ -146,7 +156,10 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 #endif
 
 Material_Backend::Material_Backend(const CreateDesc& desc) 
-: Base(desc) {
+: Base(desc)
+{
+	constexpr bool isStaticMaterial = false; // TODO
+	_maxFrameDataCount = isStaticMaterial ? 1 : Renderer::s_instance()->renderRequestCount();
 }
 
 void Material_Backend::logWarningOnce(StrView msg) {

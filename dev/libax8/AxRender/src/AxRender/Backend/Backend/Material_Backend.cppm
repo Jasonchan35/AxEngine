@@ -38,9 +38,20 @@ class MaterialPass_Backend;
 class Cmd_DrawCall;
 class Material_Backend;
 
-class MaterialParamSpace_Backend : public MaterialParamSpace {
-	AX_RTTI_INFO(MaterialParamSpace_Backend, MaterialParamSpace)
+class MaterialParamSpace_CreateDesc : public NonCopyable {
 public:
+	MaterialPass_Backend* materialPass = nullptr;
+	const ShaderParamSpace_Backend*	shaderParamSpace = nullptr;
+};
+
+class MaterialParamSpace_Backend : public RenderObject {
+	AX_RTTI_INFO(MaterialParamSpace_Backend, RenderObject)
+public:
+	using CreateDesc = MaterialParamSpace_CreateDesc;
+
+	static SPtr<MaterialParamSpace_Backend> s_new(MaterialPass_Backend*           pass,
+	                                              const ShaderParamSpace_Backend* shaderParamSpace); 
+	
 	MaterialParamSpace_Backend(const CreateDesc& desc);
 
 	using VarInfo	= ShaderParamSpace_Backend::VarInfo;
@@ -159,6 +170,7 @@ public:
 	Array<SamplerParam,       2>	_samplerParams;
 	
 protected:
+	MaterialPass_Backend* _materialPass = nullptr;
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
 	template<class T> Opt<Span_FindResult<T>> _findParam(IArray<T>& arr, NameId name) {
@@ -240,18 +252,24 @@ public:
 		return pp ? pp->ptr() : nullptr;
 	}
 
+	MaterialParamSpace_Backend* getOwnParamSpace(BindSpace s) {
+		if (!isOwnParamSpace(s)) return nullptr;
+		return ax_const_cast(getParamSpace(s));
+	}
+	
 	template<class V>
-	bool setParamSpaceParam(BindSpace space, NameId name, const V& v) {
-		auto* p = ax_const_cast(getParamSpace(space));
+	bool setParam(BindSpace space, NameId name, const V& v) {
+		auto* p = ax_const_cast(getOwnParamSpace(space));
 		return p ? p->setParam(name, v) : false;
 	}
 
 	virtual void onSetShader() {}
+	Int maxFrameDataCount() const;
 
 protected:
-	Material_Backend*   _material   = nullptr;
-	ShaderPass_Backend* _shaderPass = nullptr;
-	Int                 _passIndex  = 0;
+	Material_Backend*   _material          = nullptr;
+	ShaderPass_Backend* _shaderPass        = nullptr;
+	Int                 _passIndex         = 0;
 
 friend class Material_Backend;
 private:
@@ -290,11 +308,13 @@ public:
 	}
 
 	void logWarningOnce(StrView msg);
+	Int maxFrameDataCount() const { return _maxFrameDataCount; }
 
 friend class MaterialPass_Backend;
 protected:
-
 	bool _bShowWarning = true;
+	Int _maxFrameDataCount = 0;
+	
 	Array<UPtr<MaterialPass_Backend>>	_passes;
 	SPtr<Shader_Backend>	_shader_backend;
 	virtual void onSetShader();
@@ -312,7 +332,7 @@ template<class V> AX_INLINE
 bool Material_Backend::setParam(BindSpace space, NameId name, V& v) {
 	bool b = false;
 	for (auto& p : _passes) {
-		if (p) { b = b || p->setParamSpaceParam(space, name, v); }
+		if (p) { b = b || p->setParam(space, name, v); }
 	}
 	return b;
 }
@@ -334,5 +354,6 @@ MaterialPass_Backend* Material_Backend::getPass(Int index) {
 	return _passes[index].get();
 }
 
+AX_INLINE Int MaterialPass_Backend::maxFrameDataCount() const { return _material->maxFrameDataCount(); }
 
 } // namespace

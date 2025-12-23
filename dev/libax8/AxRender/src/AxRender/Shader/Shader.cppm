@@ -263,29 +263,6 @@ public:
 	}
 };
 
-class ShaderParamSpace_CreateDesc : public NonCopyable {
-public:
-	using BindSpace = ShaderParamBindSpace;
-	BindSpace bindSpace = BindSpace::Invalid;
-};
-
-class ShaderParamSpace : public RenderObject {
-	AX_RTTI_INFO(ShaderParamSpace, RenderObject)
-public:
-	using CreateDesc = ShaderParamSpace_CreateDesc;
-	using BindPoint  = ShaderParamBindPoint;
-	using BindSpace  = ShaderParamBindSpace;
-	using BindCount  = ShaderParamBindCount;
-
-	BindSpace	bindSpace() const { return _bindSpace; }
-
-protected:
-	ShaderParamSpace(const CreateDesc& desc) : _bindSpace(desc.bindSpace) {}
-
-private:
-	BindSpace _bindSpace = BindSpace::Invalid;
-};
-
 class Shader_CreateDesc : public NonCopyable {
 public:
 	StrView		assetPath;

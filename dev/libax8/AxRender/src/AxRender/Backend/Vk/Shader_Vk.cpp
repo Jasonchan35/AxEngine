@@ -30,23 +30,30 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 #endif
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
-		auto* paramSpace = getParamSpace_vk(bindSpace);
-		if (!paramSpace) continue;
-		auto i = ax_enum_int(bindSpace);
+		auto* ownParamSpace = getOwnParamSpace_vk(bindSpace);
+		if (!ownParamSpace) continue;
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
 		auto addBinding = [&bindings, bindingFlags](const ParamBase& p, VkDescriptorType type) {
 			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 		};
 
-		for (auto& param : paramSpace->_constBuffers       ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
-		for (auto& param : paramSpace->_textureParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
-		for (auto& param : paramSpace->_samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
-		for (auto& param : paramSpace->_storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
+		for (auto& param : ownParamSpace->_constBuffers       ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
+		for (auto& param : ownParamSpace->_textureParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
+		for (auto& param : ownParamSpace->_samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
+		for (auto& param : ownParamSpace->_storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
 		if (bindings.bindings.size() > 0) {
-			_spaceDescSetLayout[i].create(dev, bindings, layoutFlags);
+			ownParamSpace->_descSetLayout_vk.create(dev, bindings, layoutFlags);
+			_ownDescSetCount++;
 		}
+	}
+
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto* paramSpace = getParamSpace_vk(bindSpace);
+		if (!paramSpace) continue;
+		if (!paramSpace->_descSetLayout_vk) continue;
+		_allLayouts_vk.emplaceBack(paramSpace->_descSetLayout_vk);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
@@ -57,13 +64,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		stage.vkShaderModule.create(dev, bytecode);
 	};
 	_visitStages(loadStage);
-
-	Array<VkDescriptorSetLayout, BindSpace_COUNT> descSet;
-	for (auto& s : _spaceDescSetLayout) {
-		if (s) descSet.emplaceBack(s);
-	}
-
-	_pipelineLayout.create(dev, descSet);
+	_pipelineLayout.create(dev, _allLayouts_vk);
 }
 
 auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {

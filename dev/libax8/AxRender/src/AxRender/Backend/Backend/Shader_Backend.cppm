@@ -8,13 +8,23 @@ export namespace ax /*::AxRender*/ {
 class Shader_Backend;
 class ShaderPass_Backend;
 
+class ShaderParamSpace_CreateDesc : public NonCopyable {
+public:
+	using BindSpace = ShaderParamBindSpace;
+	ShaderPass_Backend* shaderPass = nullptr;
+	BindSpace bindSpace = BindSpace::Invalid;
+};
 
 // mapping to DX: DescriptorTable, VK: DescriptorSet
-class ShaderParamSpace_Backend : public ShaderParamSpace {
-	AX_RTTI_INFO(ShaderParamSpace_Backend, ShaderParamSpace)
+class ShaderParamSpace_Backend : public RenderObject {
+	AX_RTTI_INFO(ShaderParamSpace_Backend, RenderObject)
 public:
+	using CreateDesc = ShaderParamSpace_CreateDesc;
+	using BindPoint  = ShaderParamBindPoint;
+	using BindSpace  = ShaderParamBindSpace;
+	using BindCount  = ShaderParamBindCount;
+	
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-	SPtr<class MaterialParamSpace_Backend> newMaterialParamSpace(const MemAllocRequest& req) const;
 	
 	struct VarInfo {
 		VarInfo() = default;
@@ -147,13 +157,31 @@ public:
 	NameId getTexture3DName(NameId name) const;
 	NameId getSamplerName(NameId name) const;
 
+	Int totalBindCount_constBuffers        () const	{ return _totalBindCount_constBuffers        ; }
+	Int totalBindCount_textureParams       () const	{ return _totalBindCount_textureParams       ; }
+	Int totalBindCount_samplerParams       () const	{ return _totalBindCount_samplerParams       ; }
+	Int totalBindCount_storageBufferParams () const	{ return _totalBindCount_storageBufferParams ; }
+
+	BindSpace bindSpace() const { return _bindSpace; }
+	
 protected:
+	friend class ShaderPass_Backend;
+
 	ShaderParamSpace_Backend(const CreateDesc& desc);
+	void _postCreate(ShaderPass_Backend* shdPass);
 
 	template<class T, class INFO>
 	void _addParam(IArray<T>& arr, const INFO& paramInfo);
 
 	template<class T> static T* _findParam(IArray<T>& arr, NameId name);
+
+	ShaderPass_Backend* _shaderPass = nullptr;
+	BindSpace _bindSpace = BindSpace::Invalid;
+	
+	Int _totalBindCount_constBuffers        = 0;
+	Int _totalBindCount_textureParams       = 0;
+	Int _totalBindCount_samplerParams       = 0;
+	Int _totalBindCount_storageBufferParams = 0;
 	
 	Array<Pair<NameId, NameId>>		_nameToTexture2D;
 	Array<Pair<NameId, NameId>>		_nameToTexture3D;
@@ -231,26 +259,21 @@ public:
 		return p ? p->ptr() : nullptr;
 	}
 
-	template<class R>
-	const R* getParamSpace_(BindSpace bs) const {
-		return rttiCastCheck<R>(getParamSpace(bs));
-	}
-
-	ShaderParamSpace_Backend* getMutParamSpace(BindSpace bs) {
+	ShaderParamSpace_Backend* getOwnParamSpace(BindSpace bs) {
 		if (!isOwnParamSpace(bs)) return nullptr;
 		return ax_const_cast(_shaderParamSpaces[ax_enum_int(bs)].ptr());
-	}	
+	}
 
-	Int constBuffers_totalBindCount() const			{ return _constBuffers_totalBindCount        ; }
-	Int textureParams_totalBindCount() const		{ return _textureParams_totalBindCount       ; }
-	Int samplerParams_totalBindCount() const		{ return _samplerParams_totalBindCount       ; }
-	Int storageBufferParams_totalBindCount() const	{ return _storageBufferParams_totalBindCount ; }
-
+	Int ownParamSpaceTotalBindCount_constBuffers       () const { return _ownParamSpaceTotalBindCount_constBuffers       ; }
+	Int ownParamSpaceTotalBindCount_textureParams      () const { return _ownParamSpaceTotalBindCount_textureParams      ; }
+	Int ownParamSpaceTotalBindCount_samplerParams      () const { return _ownParamSpaceTotalBindCount_samplerParams      ; }
+	Int ownParamSpaceTotalBindCount_storageBufferParams() const { return _ownParamSpaceTotalBindCount_storageBufferParams; }
+	
 private:
 	FixedArray<SPtr<const ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
 	
-friend class Shader_Backend;
 protected:
+	friend class Shader_Backend;
 	
 	Shader_Backend*		_shader = nullptr;
 	bool				_isGlobalCommonShaderPass : 1 = false;
@@ -258,10 +281,10 @@ protected:
 	ShaderStageFlags	_stageFlags = ShaderStageFlags::None;
 	NameId				_name;
 
-	Int _constBuffers_totalBindCount        = 0;
-	Int _textureParams_totalBindCount       = 0;
-	Int _samplerParams_totalBindCount       = 0;
-	Int _storageBufferParams_totalBindCount = 0;
+	Int _ownParamSpaceTotalBindCount_constBuffers        = 0;
+	Int _ownParamSpaceTotalBindCount_textureParams       = 0;
+	Int _ownParamSpaceTotalBindCount_samplerParams       = 0;
+	Int _ownParamSpaceTotalBindCount_storageBufferParams = 0;
 
 	void _createParamSpaces();
 

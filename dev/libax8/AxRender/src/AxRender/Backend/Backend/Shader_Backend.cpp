@@ -15,14 +15,31 @@ SPtr<ShaderParamSpace_Backend> ShaderParamSpace_Backend::s_new(const MemAllocReq
 	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newShaderParamSpace(req, desc));
 }
 
-SPtr<class MaterialParamSpace_Backend> ShaderParamSpace_Backend::newMaterialParamSpace(const MemAllocRequest& req) const {
-	MaterialParamSpace_CreateDesc desc;
-	desc.shaderParamSpace = this;
-	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newMaterialParamSpace(req, desc));
-}
-
 ShaderParamSpace_Backend::ShaderParamSpace_Backend(const CreateDesc& desc)
-	: Base(desc) {}
+: _shaderPass(desc.shaderPass)
+, _bindSpace(desc.bindSpace)
+{}
+
+void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
+	auto* info = shdPass->shader()->info();
+	for (auto& prop : info->declare.props) {
+		auto propName = NameId::s_make(prop.name);
+		setPropDefaultValue(propName, prop);
+	}
+
+	for (auto& param : _constBuffers) {
+		_totalBindCount_constBuffers += param.bindCount();
+	}
+	for (auto& param : _samplerParams) {
+		_totalBindCount_samplerParams += param.bindCount();
+	}
+	for (auto& param : _textureParams) {
+		_totalBindCount_textureParams += param.bindCount();
+	}
+	for (auto& param : _storageBufferParams) {
+		_totalBindCount_storageBufferParams += param.bindCount();
+	}
+}
 
 template<class V>
 void ShaderParamSpace_Backend::ConstBuffer::setVariableDefault(const VarInfo& varInfo, const V& value) {
@@ -207,27 +224,15 @@ void ShaderPass_Backend::_createParamSpaces() {
 			continue;
 		}
 
-		auto* ownParamSpace = getMutParamSpace(bindSpace);
+		auto* ownParamSpace = getOwnParamSpace(bindSpace);
 		if (!ownParamSpace) continue;
-		
-		for (auto& prop : _shader->info()->declare.props) {
-			auto propName = NameId::s_make(prop.name);
-			ownParamSpace->setPropDefaultValue(propName, prop);
-		}
 
-		for (auto& param : ownParamSpace->_constBuffers) {
-			_constBuffers_totalBindCount += param.bindCount();
-		}
-		for (auto& param : ownParamSpace->_samplerParams) {
-			_samplerParams_totalBindCount += param.bindCount();
-		}
-		for (auto& param : ownParamSpace->_textureParams) {
-			_textureParams_totalBindCount += param.bindCount();
-		}
-		for (auto& param : ownParamSpace->_storageBufferParams) {
-			_storageBufferParams_totalBindCount += param.bindCount();
-		}
-		
+		ownParamSpace->_postCreate(this);
+
+		_ownParamSpaceTotalBindCount_constBuffers        += ownParamSpace->totalBindCount_constBuffers       ();
+		_ownParamSpaceTotalBindCount_textureParams       += ownParamSpace->totalBindCount_textureParams      ();
+		_ownParamSpaceTotalBindCount_samplerParams       += ownParamSpace->totalBindCount_samplerParams      ();
+		_ownParamSpaceTotalBindCount_storageBufferParams += ownParamSpace->totalBindCount_storageBufferParams();
 	}
 }
 
