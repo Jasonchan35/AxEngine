@@ -6,14 +6,10 @@ export import :Renderer_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class RenderResourceManager_CreateDesc {
-	
-};
-
 class RenderResourceManager_Backend : public RenderObject {
 	AX_RTTI_INFO(RenderResourceManager_Backend, RenderObject)
 public:
-	using CreateDesc = RenderResourceManager_CreateDesc;
+	RenderResourceManager_Backend() {}
 	
 	static RenderResourceManager_Backend* s_instance();
 	static void s_create(const MemAllocRequest& req);
@@ -34,8 +30,8 @@ public:
 	using Table = RenderResourceTable_Backend<T>;
 
 	template<class T>
-	AX_NODISCARD MutexProtected<UPtr<Table<T>>>& getTable() {
-		using TABLE = MutexProtected<UPtr<Table<T>>>; 
+	AX_NODISCARD MutexProtected<Table<T>>& getTable() {
+		using TABLE = MutexProtected<Table<T>>; 
 		return _all_table.get<TABLE>();
 	}
 
@@ -52,23 +48,11 @@ protected:
 	}
 
 	using All_Table = Tuple<
-		MutexProtected<UPtr<Table<Shader_Backend>   >>,
-		MutexProtected<UPtr<Table<Sampler_Backend>  >>,
-		MutexProtected<UPtr<Table<Texture2D_Backend>>>
+		MutexProtected<Table<Shader_Backend>   >,
+		MutexProtected<Table<Sampler_Backend>  >,
+		MutexProtected<Table<Texture2D_Backend>>
 	>;
 	All_Table _all_table;
-
-	void         _created(const CreateDesc& desc);
-	virtual void onCreated(const CreateDesc& desc) {}
-
-	template<class T>
-	void newTableIfNull(const MemAllocRequest& allocaReq) {
-		auto lock = getTable<T>().scopedLock();
-		if (lock->get()) return;
-		lock->move(UPtr_new<Table<T>>(allocaReq));
-	}
-	
-	RenderResourceManager_Backend(const CreateDesc& desc) {}
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>
@@ -77,8 +61,8 @@ bool RenderResourceManager_Backend::getOrNewResource(SPtr<T>&               sp,
                                                      const CREATE_DESC&     desc,
                                                      const RESOURCE_KEY&    key
 ) {
-	auto lock = getTable<T>().scopedLock();
-	if (auto* p = lock->get()->findObject(key)) {
+	auto table = getTable<T>().scopedLock();
+	if (auto* p = table->findObject(key)) {
 		sp = p;
 		return false;
 	}

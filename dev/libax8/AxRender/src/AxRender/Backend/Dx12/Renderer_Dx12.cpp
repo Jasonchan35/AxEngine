@@ -6,7 +6,6 @@ import :Renderer_Dx12;
 import :GpuBuffer_Dx12;
 import :Material_Dx12;
 import :RenderContext_Dx12;
-import :RenderResourceManager_Dx12;
 import :RenderPass_Dx12;
 import :RenderRequest_Dx12;
 import :Shader_Dx12;

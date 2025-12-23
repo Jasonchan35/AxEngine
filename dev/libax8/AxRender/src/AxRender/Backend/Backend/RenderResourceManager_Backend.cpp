@@ -13,11 +13,7 @@ RenderResourceManager_Backend* RenderResourceManager_Backend::s_instance() {
 
 void RenderResourceManager_Backend::s_create(const MemAllocRequest& req) {
 	AX_ASSERT(ResourceManager_Backend_instance == nullptr);
-
-	RenderResourceManager_CreateDesc desc;
-	auto p = Renderer_Backend::s_instance()->newRenderResourceManager(req, desc);
-	p->_created(desc);
-	ResourceManager_Backend_instance = std::move(p);
+	ResourceManager_Backend_instance = std::move(UPtr_new<This>(AX_ALLOC_REQ));
 }
 
 void RenderResourceManager_Backend::s_destroy() {
@@ -25,18 +21,11 @@ void RenderResourceManager_Backend::s_destroy() {
 	ResourceManager_Backend_instance.unref();
 }
 
-void RenderResourceManager_Backend::_created(const CreateDesc& desc) {
-	onCreated(desc);
-	newTableIfNull<Shader_Backend   >(AX_ALLOC_REQ);
-	newTableIfNull<Sampler_Backend  >(AX_ALLOC_REQ);
-	newTableIfNull<Texture2D_Backend>(AX_ALLOC_REQ);
-}
-
 void RenderResourceManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
 }
 
 void RenderResourceManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
-	visit([&](auto& table){ table.scopedLock()->get()->onFrameEnd(req); });
+	visit([&](auto& table){ table.scopedLock()->onFrameEnd(req); });
 }
 
 void RenderResourceManager_Backend::onFileChanged(FileDirWatcher_Result& result) {
@@ -54,7 +43,7 @@ void RenderResourceManager_Backend::hotReloadFile(StrView filename) {
 	auto imageFileType = ImageFileType_fromFileExt(ext);
 	if (imageFileType != ImageFileType::None) {
 		auto table = table_texture2D().scopedLock();
-		if (auto* tex = table->get()->findObject(filename)) {
+		if (auto* tex = table->findObject(filename)) {
 			AX_LOG("Hot reload texture {}", filename);
 			tex->hotReloadFile();
 		}
@@ -64,7 +53,7 @@ void RenderResourceManager_Backend::hotReloadFile(StrView filename) {
 	if (basenameWithExt == "shaderResult.json") {
 		auto shaderAssetPath = FilePath::dirname_sv(FilePath::dirname_sv(filename));
 		auto table = table_shader().scopedLock();
-		if (auto* shader = table->get()->findObject(shaderAssetPath)) {
+		if (auto* shader = table->findObject(shaderAssetPath)) {
 			AX_LOG("Hot reload shader {}", shaderAssetPath);
 			shader->hotReloadFile();
 		}

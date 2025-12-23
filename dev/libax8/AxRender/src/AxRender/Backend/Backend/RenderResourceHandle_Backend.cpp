@@ -16,7 +16,7 @@ RenderResourceTable_Backend<T>::RenderResourceTable_Backend() {
 }
 
 template<class T>
-auto RenderResourceTable_Backend<T>::s_get() -> MutexProtected<UPtr<This>>& {
+auto RenderResourceTable_Backend<T>::s_get() -> MutexProtected<This>& {
 	auto* mgr = RenderResourceManager_Backend::s_instance();
 	return mgr->getTable<T>();
 }
