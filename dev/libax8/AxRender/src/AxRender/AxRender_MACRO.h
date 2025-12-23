@@ -80,9 +80,8 @@
 	} \
 //----
 
-#define AX_Renderer_FunctionInterfaces_pure()			AX_RenderObject_LIST(AX_Renderer_NewObject,    AX_EMPTY,  =0)
-#define AX_Renderer_FunctionInterfaces_override(API)	AX_RenderObject_LIST(AX_Renderer_NewObject,    API, override)
-#define AX_Renderer_FunctionBodies(             API)	AX_RenderObject_LIST(AX_Renderer_NewObjectImp, API, override)
+#define AX_Renderer_FunctionInterfaces(API, SUFFIX)		AX_RenderObject_LIST(AX_Renderer_NewObject,    API,  SUFFIX)
+#define AX_Renderer_FunctionBodies(API)					AX_RenderObject_LIST(AX_Renderer_NewObjectImp, API, override)
 
 #define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \

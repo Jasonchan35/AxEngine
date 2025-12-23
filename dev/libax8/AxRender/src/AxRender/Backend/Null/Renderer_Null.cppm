@@ -19,7 +19,7 @@ public:
 	Renderer_Null(const CreateDesc& desc) : Base(desc) {}
 	virtual ~Renderer_Null() override { destroy(); }
 
-	AX_Renderer_FunctionInterfaces_override(Null)
+	AX_Renderer_FunctionInterfaces(Null, override)
 };
 
 

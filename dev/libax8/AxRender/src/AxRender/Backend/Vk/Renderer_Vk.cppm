@@ -29,7 +29,7 @@ public:
 protected:
 	DescriptorSets	_descriptorSets;
 
-	AX_Renderer_FunctionInterfaces_override(Vk)
+	AX_Renderer_FunctionInterfaces(Vk, override)
 
 private:
 	void _createVkInstance();

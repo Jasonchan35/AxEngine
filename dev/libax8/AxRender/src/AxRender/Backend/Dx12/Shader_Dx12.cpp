@@ -42,20 +42,20 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	auto addDescriptor = [](Dx12DescriptorTable& tbl, const ParamBase& p, BindSpace bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE type) {
 		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), bindSpace);
 	};
+
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto* paramSpace = getParamSpace_dx12(bindSpace);
+		if (!paramSpace) continue;
 	
-	for (auto bindSpace = BindSpace::Default; bindSpace < BindSpace::_COUNT; ++bindSpace) {
-		auto* space = getParamSpace_dx12(bindSpace);
-		if (!space) continue;
-	
-		for (auto& param : space->_constBuffers) {
+		for (auto& param : paramSpace->_constBuffers) {
 			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 		}
 	
-		for (auto& param : space->_textureParams) {
+		for (auto& param : paramSpace->_textureParams) {
 			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}
 
-		for (auto& param : space->_samplerParams) {
+		for (auto& param : paramSpace->_samplerParams) {
 			addDescriptor(_samplerDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
 		}
 	}

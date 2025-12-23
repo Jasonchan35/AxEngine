@@ -17,7 +17,7 @@ public:
 	Renderer_Backend(const CreateDesc& desc);
 	virtual ~Renderer_Backend() override;
 
-	AX_Renderer_FunctionInterfaces_pure()
+	AX_Renderer_FunctionInterfaces(AX_EMPTY, =0)
 
 	RenderRequest_Backend*		nextRenderRequest();
 	
