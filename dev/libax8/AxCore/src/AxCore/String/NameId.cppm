@@ -15,17 +15,17 @@ public:
 	using PStr	= PersistString_<CH>;
 	using View  = StrView_<CH>;
 
-	NameId_() = default;
-	NameId_(const NameId_&) = default;
-	NameId_(const PStr& name_, const Id& id_) : _name(name_), _id(id_) {}
+	constexpr NameId_() = default;
+	constexpr NameId_(const NameId_&) = default;
+	constexpr NameId_(const PStr& name_, const Id& id_) : _name(name_), _id(id_) {}
 
 	static NameId_ s_make(StrView_<CH> str);
 
 	constexpr StrView	name() const { return _name; }
 	constexpr Id		id() const   { return _id; }
 
-	AX_NODISCARD bool operator==(const This& r) const { return _name == r._name && _id == r._id; }
-	AX_NODISCARD bool operator!=(const This& r) const { return !operator==(); }
+	AX_NODISCARD constexpr bool operator==(const This& r) const { return _name == r._name && _id == r._id; }
+	AX_NODISCARD constexpr bool operator!=(const This& r) const { return !operator==(); }
 
 	explicit operator bool() const { return _name || _id >= 0; }
 

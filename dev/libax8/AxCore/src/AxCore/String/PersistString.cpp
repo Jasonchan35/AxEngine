@@ -5,16 +5,6 @@ module AxCore.PersistString;
 namespace ax {
 
 template<class T>
-const PersistString_Data<T>* PersistString_Data_Empty() {
-	static PersistString_Data<T> s;
-	return &s;
-}
-
-template<class T>
-PersistString_<T>::PersistString_() : _data(PersistString_Data_Empty<T>()) {}
-
-
-template<class T>
 class PersistString_<T>::Manager : public NonCopyable {
 	using This = Manager;
 public:

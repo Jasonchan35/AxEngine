@@ -22,13 +22,13 @@ class PersistString_ { // copyable
 	using This = PersistString_;
 public:
 	using Data = PersistString_Data<T>;
-	
-	PersistString_();
 
+	constexpr PersistString_() = default;
+	
 	static This s_make(StrView_<T> s);
 	AX_INLINE constexpr Int size() const { return strLit().size(); }
 	
-	AX_INLINE constexpr const StrLit_<T>& strLit() const { return _data->str; }
+	AX_INLINE constexpr StrLit_<T>  strLit() const { return _data ? _data->str : StrLit_<T>(); }
 	AX_INLINE constexpr const T*	c_str() const { return strLit().c_str(); }
 
 	AX_INLINE constexpr StrView_<T> view() const { return strLit(); }
@@ -46,8 +46,8 @@ public:
 	class Manager;
 	friend class Manager;
 protected:
-	PersistString_(const Data* data) : _data(data) {}
-	const Data*	_data;
+	constexpr PersistString_(const Data* data) : _data(data) {}
+	const Data*	_data = nullptr;
 };
 
 using PersistString   = PersistString_<Char>;
