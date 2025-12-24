@@ -28,16 +28,16 @@ void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
 	}
 
 	for (auto& param : _constBuffers) {
-		_totalBindCount_constBuffers += param.bindCount();
+		_bindCount_constBuffers += param.bindCount();
 	}
 	for (auto& param : _samplerParams) {
-		_totalBindCount_samplerParams += param.bindCount();
+		_bindCount_samplerParams += param.bindCount();
 	}
 	for (auto& param : _textureParams) {
-		_totalBindCount_textureParams += param.bindCount();
+		_bindCount_textureParams += param.bindCount();
 	}
 	for (auto& param : _storageBufferParams) {
-		_totalBindCount_storageBufferParams += param.bindCount();
+		_bindCount_storageBufferParams += param.bindCount();
 	}
 }
 
@@ -223,10 +223,12 @@ void ShaderPass_Backend::_createParamSpaces() {
 			auto* commonParamSpace = commonShaderPass->getParamSpace(bindSpace);
 			_shaderParamSpaces[i] = commonParamSpace;
 
-			_allParamSpaceTotalBindCount_constBuffers        += commonParamSpace->totalBindCount_constBuffers       ();
-			_allParamSpaceTotalBindCount_textureParams       += commonParamSpace->totalBindCount_textureParams      ();
-			_allParamSpaceTotalBindCount_samplerParams       += commonParamSpace->totalBindCount_samplerParams      ();
-			_allParamSpaceTotalBindCount_storageBufferParams += commonParamSpace->totalBindCount_storageBufferParams();
+			if (commonParamSpace) {
+				_allBindCount_constBuffers        += commonParamSpace->bindCount_constBuffers       ();
+				_allBindCount_textureParams       += commonParamSpace->bindCount_textureParams      ();
+				_allBindCount_samplerParams       += commonParamSpace->bindCount_samplerParams      ();
+				_allBindCount_storageBufferParams += commonParamSpace->bindCount_storageBufferParams();
+			}
 			
 			continue;
 		}
@@ -236,11 +238,18 @@ void ShaderPass_Backend::_createParamSpaces() {
 
 		ownParamSpace->_postCreate(this);
 
-		_ownParamSpaceTotalBindCount_constBuffers        += ownParamSpace->totalBindCount_constBuffers       ();
-		_ownParamSpaceTotalBindCount_textureParams       += ownParamSpace->totalBindCount_textureParams      ();
-		_ownParamSpaceTotalBindCount_samplerParams       += ownParamSpace->totalBindCount_samplerParams      ();
-		_ownParamSpaceTotalBindCount_storageBufferParams += ownParamSpace->totalBindCount_storageBufferParams();
+		_ownBindCount_constBuffers        += ownParamSpace->bindCount_constBuffers       ();
+		_ownBindCount_textureParams       += ownParamSpace->bindCount_textureParams      ();
+		_ownBindCount_samplerParams       += ownParamSpace->bindCount_samplerParams      ();
+		_ownBindCount_storageBufferParams += ownParamSpace->bindCount_storageBufferParams();
 	}
+
+
+	_allBindCount_constBuffers        += _ownBindCount_constBuffers       ;
+	_allBindCount_textureParams       += _ownBindCount_textureParams      ;
+	_allBindCount_samplerParams       += _ownBindCount_samplerParams      ;
+	_allBindCount_storageBufferParams += _ownBindCount_storageBufferParams;
+	
 }
 
 #if 0
@@ -297,11 +306,11 @@ void Shader_Backend::onLoadFile() {
 	_passes.clear();
 	_passes.ensureCapacity(n);
 
-	for (Int i = 0; i < n; i++) {
+	for (i32 i = 0; i < n; i++) {
 		ShaderPass_Backend::CreateDesc passDesc;
-		passDesc.shader = this;
+		passDesc.shader    = this;
 		passDesc.passIndex = i;
-		passDesc.info = &_info.declare.passes[i];
+		passDesc.info      = &_info.declare.passes[i];
 		passDesc.stageInfo = &_info.passStages[i];
 
 		auto pass = onNewPass(passDesc);

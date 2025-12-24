@@ -146,10 +146,10 @@ void MaterialPass_Vk::_createDescPool() {
 		dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount * frameCount);
 	};
 
-	addPoolSize(_shaderPass->ownParamSpaceTotalBindCount_constBuffers		(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-	addPoolSize(_shaderPass->ownParamSpaceTotalBindCount_textureParams		(), VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
-	addPoolSize(_shaderPass->ownParamSpaceTotalBindCount_samplerParams		(), VK_DESCRIPTOR_TYPE_SAMPLER);
-	addPoolSize(_shaderPass->ownParamSpaceTotalBindCount_storageBufferParams(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+	addPoolSize(_shaderPass->ownBindCount_constBuffers       (), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+	addPoolSize(_shaderPass->ownBindCount_textureParams      (), VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
+	addPoolSize(_shaderPass->ownBindCount_samplerParams      (), VK_DESCRIPTOR_TYPE_SAMPLER);
+	addPoolSize(_shaderPass->ownBindCount_storageBufferParams(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
 
 	VkDescriptorPoolCreateFlags poolFlags = 0;
 #if AX_RENDER_BINDLESS
