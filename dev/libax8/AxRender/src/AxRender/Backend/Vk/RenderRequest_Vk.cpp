@@ -3,7 +3,7 @@ module AxRender;
 #if AX_RENDERER_VK
 
 import :RenderRequest_Vk;
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 import :RenderContext_Vk;
 import :Material_Vk;
 import :GpuBuffer_Vk;
@@ -14,8 +14,8 @@ namespace ax /*::AxRender*/ {
 RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 : Base(desc)
 {
-	auto* renderer = Renderer_Vk::s_instance();
-	auto& dev = renderer->device();
+	auto* renderSystem = RenderSystem_Vk::s_instance();
+	auto& dev = renderSystem->device();
 
 	_completedFence_vk.create(dev, true);
 	_imageAcquiredSemaphore_vk.create(dev);
@@ -50,8 +50,8 @@ void RenderRequest_Vk::onWaitCompleted() {
 
 void RenderRequest_Vk::_updatedBindlessResources() {
 #if AX_RENDER_BINDLESS
-	auto* renderer =  renderer_vk();
-	auto* commonMaterial = rttiCastCheck<Material_Vk>(renderer->commonMaterial());
+	auto* renderSystem =  renderSystem_vk();
+	auto* commonMaterial = rttiCastCheck<Material_Vk>(renderSystem->commonMaterial());
 	if (!commonMaterial) return;
 
 	auto* commonPass = rttiCastCheck<MaterialPass_Vk>(commonMaterial->getPass(0));
@@ -115,7 +115,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 		desc.pImageInfo = &imageInfo;
 	}
 	
-	AX_vkUpdateDescriptorSets(renderer->device(), _writeDescriptorSets, {});
+	AX_vkUpdateDescriptorSets(renderSystem->device(), _writeDescriptorSets, {});
 #endif
 }
 

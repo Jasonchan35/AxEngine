@@ -1,12 +1,12 @@
 module;
 module AxRender;
 import :GpuBuffer_Backend;
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 
 namespace ax /*::AxRender*/ {
 
 SPtr<GpuBuffer_Backend> GpuBuffer_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newGpuBuffer(req, desc));
+	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newGpuBuffer(req, desc));
 }
 
 void GpuBuffer_Backend::copyData(ByteSpan data, Int offset) {

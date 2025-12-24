@@ -3,7 +3,7 @@ module AxRender;
 #if AX_RENDERER_VK
 
 import :RenderPass_Vk;
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 import :RenderContext_Vk;
 import :GpuBuffer_Vk;
 import :RenderRequest_Vk;
@@ -14,7 +14,7 @@ namespace ax /*::AxRender*/ {
 RenderPassColorBuffer_Vk::RenderPassColorBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 
 	if (desc.fromBackBuffer) {
 		auto* renderContext_vk = rttiCast<RenderContext_Vk>(desc.fromBackBuffer.renderContext);
@@ -48,7 +48,7 @@ RenderPassColorBuffer_Vk::RenderPassColorBuffer_Vk(const CreateDesc& desc)
 RenderPassDepthBuffer_Vk::RenderPassDepthBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 
 	_image.createDepthStencil(dev, desc.frameSize, desc.depthType);
 	_mem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -65,7 +65,7 @@ RenderPassDepthBuffer_Vk::RenderPassDepthBuffer_Vk(const CreateDesc& desc)
 RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 
 	Array<VkImageView, 16>				imageViews;
 

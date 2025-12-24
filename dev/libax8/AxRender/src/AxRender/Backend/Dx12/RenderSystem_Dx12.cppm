@@ -1,19 +1,19 @@
 module;
 
-export module AxRender:Renderer_Dx12;
+export module AxRender:RenderSystem_Dx12;
 #if AX_RENDERER_DX12
 
 export import :Dx12Util;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 
 namespace ax {
 
 
-class Renderer_Dx12 : public Renderer_Backend {
-	AX_RTTI_INFO(Renderer_Dx12, Renderer_Backend)
+class RenderSystem_Dx12 : public RenderSystem_Backend {
+	AX_RTTI_INFO(RenderSystem_Dx12, RenderSystem_Backend)
 public:
 	AX_DOWNCAST_GET_INSTANCE();
-	Renderer_Dx12(const CreateDesc& desc);
+	RenderSystem_Dx12(const CreateDesc& desc);
 
 	static Dx12_ID3D12Device* s_d3dDevice() { auto* t = s_instance(); return t ? t->d3dDevice() : nullptr; }
 
@@ -27,7 +27,7 @@ public:
 #endif
 
 protected:
-	AX_Renderer_FunctionInterfaces(Dx12, override)
+	AX_RenderSystem_FunctionInterfaces(Dx12, override)
 	
 	virtual void onGetMemoryInfo(MemoryInfo& info) override;
 

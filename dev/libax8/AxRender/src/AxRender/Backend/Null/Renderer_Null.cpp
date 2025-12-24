@@ -1,10 +1,10 @@
 ﻿module;
 
 module AxRender;
-import :Renderer_Null;
+import :RenderSystem_Null;
 
 namespace ax /*::AxRender*/ {
 
-AX_Renderer_FunctionBodies(Null)
+AX_RenderSystem_FunctionBodies(Null)
 
 } // namespace

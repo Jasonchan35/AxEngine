@@ -12,8 +12,8 @@ namespace ax /*::AxRender*/ {
 
 template<class T>
 RenderRequest_Bindless_Vk::Table<T>::Table() {
-	auto* renderer	  = Renderer_Vk::s_instance();
-	auto* globalSpace = renderer->commonShader()->getPassParamSpace(0, BindSpace::Global);
+	auto* renderSystem	  = RenderSystem_Vk::s_instance();
+	auto* globalSpace = renderSystem->commonShader()->getPassParamSpace(0, BindSpace::Global);
 
 	if constexpr (isSampler) {
 		_descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
@@ -47,9 +47,9 @@ void RenderRequest_Bindless_Vk::Table<T>::update(RenderRequest_Vk* req) {
 
 	if (!req) return;
 
-	auto* renderer = Renderer_Vk::s_instance();
+	auto* renderSystem = RenderSystem_Vk::s_instance();
 
-	auto* mtl = renderer->commonMaterial();
+	auto* mtl = renderSystem->commonMaterial();
 	if (!mtl) return;
 
 	auto* mtlSpace = mtl->getPassParamSpace_<MaterialParamSpace_Vk>(0, BindSpace::Global);
@@ -59,11 +59,11 @@ void RenderRequest_Bindless_Vk::Table<T>::update(RenderRequest_Vk* req) {
 	auto* lastDescriptorSet   = mtlSpace->getLastDescriptorSet();
 
 	{ // carry updated slots from N previous frames
-		auto renderRequestCount = renderer->renderRequestCount();
+		auto renderRequestCount = renderSystem->renderRequestCount();
 		
 		for (Int i = 1; i < renderRequestCount; i++) {
 			auto otherReqIndex = (i + req->index()) % renderRequestCount;
-			auto* otherReq = rttiCastCheck<RenderRequest_Vk>(renderer->getRenderRequest(otherReqIndex));
+			auto* otherReq = rttiCastCheck<RenderRequest_Vk>(renderSystem->getRenderRequest(otherReqIndex));
 			if (!otherReq) { AX_ASSERT(false); continue; }
 
 			Table<T>* otherTable = nullptr;
@@ -152,8 +152,8 @@ void RenderRequest_Bindless_Vk::Table<T>::update(RenderRequest_Vk* req) {
 	if (_writeSets.size() <= 0 && _temp.copySets.size() <= 0) return;
 
 	// vkUpdateDescriptorSets() will handle writeSets before copySets, but we need copySets before writeSets
-	AX_vkUpdateDescriptorSets(renderer->device(), {}, _temp.copySets);
-	AX_vkUpdateDescriptorSets(renderer->device(), _writeSets, {});
+	AX_vkUpdateDescriptorSets(renderSystem->device(), {}, _temp.copySets);
+	AX_vkUpdateDescriptorSets(renderSystem->device(), _writeSets, {});
 }
 
 void RenderRequest_Bindless_Vk::update(RenderRequest_Vk * req) {

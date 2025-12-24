@@ -33,12 +33,12 @@ void Sampler_Vk::onCreate(const CreateDesc& desc) {
 	info.borderColor				= VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 	info.unnormalizedCoordinates	= VK_FALSE;
 
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 	_sampler.create(dev, info);
 }
 
 void Texture2D_Vk::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 	_image.createImage2D(dev, _info.size.xy(), _info.colorType, _info.mipLevels);
 	_devMem.createForImage(_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	_view.create(_image);

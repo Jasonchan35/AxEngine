@@ -5,7 +5,7 @@ import :Dx12DescripterHeap;
 
 #if AX_RENDERER_DX12
 
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 import :Material_Backend;
 import :Shader_Dx12;
 

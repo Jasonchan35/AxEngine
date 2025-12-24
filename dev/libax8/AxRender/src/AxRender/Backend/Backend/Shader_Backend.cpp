@@ -2,7 +2,7 @@ module;
 module AxRender;
 import :StockObjects;
 import :Material_Backend;
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
@@ -12,7 +12,7 @@ namespace ax /*::AxRender*/ {
 #endif
 
 SPtr<ShaderParamSpace_Backend> ShaderParamSpace_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newShaderParamSpace(req, desc));
+	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newShaderParamSpace(req, desc));
 }
 
 ShaderParamSpace_Backend::ShaderParamSpace_Backend(const CreateDesc& desc)
@@ -215,7 +215,7 @@ void ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 
-	auto* commonShaderPass = Renderer_Backend::s_instance()->commonShaderPass(); 
+	auto* commonShaderPass = RenderSystem_Backend::s_instance()->commonShaderPass(); 
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);
@@ -275,8 +275,8 @@ Shader_Backend::Shader_Backend(const CreateDesc& desc)
 {}
 
 void Shader_Backend::onLoadFile() {
-	auto* renderer = Renderer::s_instance();
-	auto infoFilename = Fmt("{}/{}/shaderResult.json", _assetPath, renderer->api());
+	auto* renderSystem = RenderSystem::s_instance();
+	auto infoFilename = Fmt("{}/{}/shaderResult.json", _assetPath, renderSystem->api());
 	JsonIO::readFile(infoFilename, _info);
 
 	_isGlobalCommonShader = _info.declare.isGlobalCommonShader;
@@ -323,7 +323,7 @@ void Shader_Backend::onDestroy() {
 }
 
 void Shader_Backend::hotReloadFile() {
-	Renderer_Backend::s_instance()->waitAllRenderCompleted();
+	RenderSystem_Backend::s_instance()->waitAllRenderCompleted();
 	onLoadFile();
 
 	// TODO: Reload Material

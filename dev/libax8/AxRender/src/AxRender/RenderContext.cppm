@@ -51,7 +51,7 @@ public:
 
 	void render() { onRender(); }
 
-friend class Renderer;
+friend class RenderSystem;
 friend class RenderRequest;
 protected:
 	virtual void onPostCreate(const CreateDesc& desc) {}
@@ -65,7 +65,7 @@ protected:
 	virtual void onLoadImGuiIniFile() {}
 	virtual void onSaveImGuiIniFile() {}
 
-	Renderer*       _renderer           = nullptr;
+	RenderSystem*       _renderSystem           = nullptr;
 	NativeUIWindow* _window             = nullptr;
 	bool            _viewportIsBottomUp = false;
 	const	Vec2i	_minFrameSize		= {8,8}; 

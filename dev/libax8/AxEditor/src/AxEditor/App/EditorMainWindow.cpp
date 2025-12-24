@@ -7,12 +7,12 @@ import :EditorApp;
 namespace ax::AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
-	auto* renderer = Renderer::s_instance();
+	auto* renderSystem = RenderSystem::s_instance();
 	auto  title    = Fmt("AxEditor - {}{}, MT: {}, VSync: {}",
-	                     renderer->api(),
+	                     renderSystem->api(),
 	                     AxRenderConfig::bindless ? "-bindless" : "",
-	                     renderer->multithread(),
-	                     renderer->vsync());
+	                     renderSystem->multithread(),
+	                     renderSystem->vsync());
 
 	setWindowTitle(title);
 

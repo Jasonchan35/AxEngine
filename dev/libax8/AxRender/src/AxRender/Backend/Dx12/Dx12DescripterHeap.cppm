@@ -2,11 +2,11 @@ module;
 
 export module AxRender:Dx12DescripterHeap;
 import :Dx12Resource;
-import :Renderer_Dx12;
+import :RenderSystem_Dx12;
 
 #if AX_RENDERER_DX12
 
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 
 namespace ax {
 

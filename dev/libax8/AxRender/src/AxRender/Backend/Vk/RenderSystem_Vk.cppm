@@ -1,20 +1,20 @@
 ﻿module;
 
-export module AxRender:Renderer_Vk;
+export module AxRender:RenderSystem_Vk;
 
 #if AX_RENDERER_VK
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :AX_Vulkan;
 
 export namespace ax /*::AxRender*/ {
 
-class Renderer_Vk : public Renderer_Backend {
-	AX_RTTI_INFO(Renderer_Vk, Renderer_Backend)
+class RenderSystem_Vk : public RenderSystem_Backend {
+	AX_RTTI_INFO(RenderSystem_Vk, RenderSystem_Backend)
 public:
 	AX_DOWNCAST_GET_INSTANCE()
 
-	Renderer_Vk(const CreateDesc& desc);
-	virtual ~Renderer_Vk() override { destroy(); }
+	RenderSystem_Vk(const CreateDesc& desc);
+	virtual ~RenderSystem_Vk() override { destroy(); }
 
 	AX_VkPhysicalDeviceList& physicalDeviceList() { return _physicalDeviceList; }
 	AX_VkDevice& device() { return _device; }
@@ -29,7 +29,7 @@ public:
 protected:
 	DescriptorSets	_descriptorSets;
 
-	AX_Renderer_FunctionInterfaces(Vk, override)
+	AX_RenderSystem_FunctionInterfaces(Vk, override)
 
 private:
 	void _createVkInstance();

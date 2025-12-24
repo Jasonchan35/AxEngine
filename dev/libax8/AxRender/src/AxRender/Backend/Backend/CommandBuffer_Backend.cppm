@@ -1,6 +1,6 @@
 ﻿module;
 export module AxRender:CommandBuffer_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :CommandBuffer;
 
 export namespace ax /*::AxRender*/ {

@@ -6,7 +6,7 @@ export module AxRender:RenderRequest_Vk;
 export import :CommandBuffer_Vk;
 export import :RenderContext_Vk;
 export import :RenderRequest_Bindless_Vk;
-export import :Renderer_Vk;
+export import :RenderSystem_Vk;
 export import :RenderPass_Vk;
 
 export namespace ax /*::AxRender*/ {
@@ -24,7 +24,7 @@ public:
 
 	void _updatedBindlessResources();
 	
-	Renderer_Vk*	renderer_vk() { return rttiCastCheck<Renderer_Vk>(_renderer); }
+	RenderSystem_Vk*	renderSystem_vk() { return rttiCastCheck<RenderSystem_Vk>(_renderSystem); }
 
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 

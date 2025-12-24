@@ -33,20 +33,20 @@ struct RendererInfo {
 	} inlineUpload;
 };
 
-struct Renderer_CreateDesc {
+struct RenderSystem_CreateDesc {
 	RendererInfo	info;
 };
 
-class Renderer : public RenderObject {
-	AX_RTTI_INFO(Renderer, RenderObject)
+class RenderSystem : public RenderObject {
+	AX_RTTI_INFO(RenderSystem, RenderObject)
 public:
-	using CreateDesc = Renderer_CreateDesc;
+	using CreateDesc = RenderSystem_CreateDesc;
 
-	static Renderer*		s_instance();
-	static UPtr<Renderer>	s_create(const CreateDesc& desc);
+	static RenderSystem*		s_instance();
+	static UPtr<RenderSystem>	s_create(const CreateDesc& desc);
 
-	Renderer(const CreateDesc& desc);
-	virtual ~Renderer() override;
+	RenderSystem(const CreateDesc& desc);
+	virtual ~RenderSystem() override;
 
 	RenderAPI	api() const			{ return _info.api; }
 	bool		multithread() const	{ return _info.multithread; }

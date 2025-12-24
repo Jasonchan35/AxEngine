@@ -6,7 +6,7 @@ import :Dx12Util;
 #if AX_RENDERER_DX12
 
 export import :Shader_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :RenderRequest_Dx12;
 
 namespace ax {

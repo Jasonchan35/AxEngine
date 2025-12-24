@@ -2,7 +2,7 @@ module;
 export module AxRender:RenderResourceManager_Backend;
 export import :Texture_Backend;
 export import :Shader_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 
 export namespace ax /*::AxRender*/ {
 
@@ -73,7 +73,7 @@ bool RenderResourceManager_Backend::getOrNewResource(SPtr<T>&               sp,
 	}
 
 	UPtr<T> u;
-	Renderer_Backend::s_instance()->_newObject(u, req, desc);
+	RenderSystem_Backend::s_instance()->_newObject(u, req, desc);
 	sp = SPtr_fromUPtr(std::move(u));
 	return true;
 }

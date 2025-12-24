@@ -5,7 +5,7 @@ export import :Common;
 export namespace ax::AxUI {
 
 struct UIApp_CreateDesc : public NativeUIApp_CreateDesc {
-	Renderer::CreateDesc	rendererDesc;
+	RenderSystem::CreateDesc	renderSystemDesc;
 };
 
 class UIApp : public NativeUIApp {
@@ -15,17 +15,17 @@ public:
 
 	using CreateDesc = UIApp_CreateDesc;
 	UIApp(const CreateDesc& desc = CreateDesc()) : Base(desc) {
-		_rendererDesc = desc.rendererDesc;
+		_renderSystemDesc = desc.renderSystemDesc;
 	}
 
-	Renderer*	renderer() { return _renderer.ptr(); }
+	RenderSystem*	renderSystem() { return _renderSystem.ptr(); }
 
 protected:
 	virtual void onCreate() override;
-	Renderer::CreateDesc	_rendererDesc;
+	RenderSystem::CreateDesc	_renderSystemDesc;
 
 private:
-	UPtr<Renderer>			_renderer;
+	UPtr<RenderSystem>			_renderSystem;
 };
 
 } // namespace

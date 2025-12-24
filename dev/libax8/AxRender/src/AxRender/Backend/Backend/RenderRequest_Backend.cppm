@@ -12,7 +12,7 @@ export namespace ax /*::AxRender*/ {
 
 class RenderRequest_CreateDesc : public NonCopyable {
 public:
-	Renderer*	renderer = nullptr;
+	RenderSystem*	renderSystem = nullptr;
 	Int index = 0;
 };
 
@@ -21,7 +21,7 @@ class RenderRequest_Backend : public RenderRequest {
 public:
 	using CreateDesc = RenderRequest_CreateDesc;
 
-	static UPtr<This> s_new(const MemAllocRequest& req, Renderer* renderer, Int index);
+	static UPtr<This> s_new(const MemAllocRequest& req, RenderSystem* renderSystem, Int index);
 
 	RenderRequest_Backend(const CreateDesc& desc);
 
@@ -38,7 +38,7 @@ public:
 
 	RenderPass_Backend*	backBufferRenderPass()	{ return _backBufferRenderPass; }
 
-	class Renderer_Backend* renderer_backend() { return rttiCastCheck<Renderer_Backend>(_renderer); }
+	class RenderSystem_Backend* renderSystem_backend() { return rttiCastCheck<RenderSystem_Backend>(_renderSystem); }
 	class RenderContext_Backend* renderContext_backend() { return rttiCastCheck<RenderContext_Backend>(_renderContext); }
 
 #if AX_RENDER_BINDLESS

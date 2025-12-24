@@ -3,7 +3,7 @@ module AxRender;
 #if AX_RENDERER_VK
 
 import :Shader_Vk;
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 import :RenderPass_Vk;
 import :Vertex;
 import :CommandBuffer_Vk;
@@ -16,8 +16,8 @@ namespace ax /*::AxRender*/ {
 ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 : Base(desc)
 {	
-	auto* renderer = Renderer_Vk::s_instance();
-	auto& dev = renderer->device();
+	auto* renderSystem = RenderSystem_Vk::s_instance();
+	auto& dev = renderSystem->device();
 
 // create pipeline layout
 
@@ -79,7 +79,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_ALLOC_REQ);
 	outPipeline->key = key;
 
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 	auto& rs  = _info->renderState;
 
 //-----

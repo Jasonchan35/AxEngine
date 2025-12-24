@@ -35,12 +35,12 @@ SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, con
 }
 
 void Texture2D_Backend::hotReloadFile() {
-	Renderer_Backend::s_instance()->waitAllRenderCompleted();
+	RenderSystem_Backend::s_instance()->waitAllRenderCompleted();
 	_loadFile();
 }
 
 void Texture2D_Backend::hotCreateFromImage(const ImageInfo& info, ByteSpan pixelData) {
-	Renderer_Backend::s_instance()->waitAllRenderCompleted();
+	RenderSystem_Backend::s_instance()->waitAllRenderCompleted();
 	_loadImage(info, pixelData);
 }
 

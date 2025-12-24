@@ -67,22 +67,22 @@
 	class OBJ ## _CreateDesc; \
 //---
 
-#define AX_Renderer_NewObject(OBJ, API, SUFFIX) \
+#define AX_RenderSystem_NewObject(OBJ, API, SUFFIX) \
 	virtual UPtr<OBJ##_Backend> new##OBJ(const MemAllocRequest& req, const OBJ##_CreateDesc& desc) SUFFIX; \
 	virtual void _newObject(UPtr<OBJ##_Backend> & outObj, const MemAllocRequest& req, const OBJ##_CreateDesc& desc) SUFFIX; \
 //----
 
-#define AX_Renderer_NewObjectImp(OBJ, API, SUFFIX) \
-	UPtr<OBJ##_Backend> Renderer_##API::new##OBJ(const MemAllocRequest& req, const OBJ##_CreateDesc& desc ) { \
+#define AX_RenderSystem_NewObjectImp(OBJ, API, SUFFIX) \
+	UPtr<OBJ##_Backend> RenderSystem_##API::new##OBJ(const MemAllocRequest& req, const OBJ##_CreateDesc& desc ) { \
 		return UPtr_new<OBJ##_##API>(req, desc); \
 	} \
-	void Renderer_##API::_newObject(UPtr<OBJ##_Backend> & outObj, const MemAllocRequest& req, const OBJ##_CreateDesc& desc) { \
+	void RenderSystem_##API::_newObject(UPtr<OBJ##_Backend> & outObj, const MemAllocRequest& req, const OBJ##_CreateDesc& desc) { \
 		outObj = UPtr_new<OBJ##_##API>(req, desc); \
 	} \
 //----
 
-#define AX_Renderer_FunctionInterfaces(API, SUFFIX)		AX_RenderObject_LIST(AX_Renderer_NewObject,    API,  SUFFIX)
-#define AX_Renderer_FunctionBodies(API)					AX_RenderObject_LIST(AX_Renderer_NewObjectImp, API, override)
+#define AX_RenderSystem_FunctionInterfaces(API, SUFFIX)		AX_RenderObject_LIST(AX_RenderSystem_NewObject,    API,  SUFFIX)
+#define AX_RenderSystem_FunctionBodies(API)					AX_RenderObject_LIST(AX_RenderSystem_NewObjectImp, API, override)
 
 #define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \

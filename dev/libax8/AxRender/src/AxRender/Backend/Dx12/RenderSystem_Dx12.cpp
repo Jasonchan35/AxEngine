@@ -2,7 +2,7 @@ module AxRender;
 
 #if AX_RENDERER_DX12
 
-import :Renderer_Dx12;
+import :RenderSystem_Dx12;
 import :GpuBuffer_Dx12;
 import :Material_Dx12;
 import :RenderContext_Dx12;
@@ -14,15 +14,15 @@ import :Texture_Dx12;
 
 namespace ax {
 
-AX_Renderer_FunctionBodies(Dx12);
+AX_RenderSystem_FunctionBodies(Dx12);
 
-Renderer_Dx12::Renderer_Dx12(const CreateDesc& desc)
+RenderSystem_Dx12::RenderSystem_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
 	createDevice();
 }
 
-void Renderer_Dx12::createDevice() {
+void RenderSystem_Dx12::createDevice() {
 	HRESULT hr;
 	UINT dxgiFactoryFlags = 0;
 
@@ -99,7 +99,7 @@ void Renderer_Dx12::createDevice() {
 
 }
 
-void Renderer_Dx12::onGetMemoryInfo(MemoryInfo& info) {
+void RenderSystem_Dx12::onGetMemoryInfo(MemoryInfo& info) {
 	DXGI_QUERY_VIDEO_MEMORY_INFO  i;
 	auto hr = _dxgiAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &i);
 	Dx12Util::throwIfError(hr);
@@ -108,7 +108,7 @@ void Renderer_Dx12::onGetMemoryInfo(MemoryInfo& info) {
 	info.budget = i.Budget;
 }
 
-void Renderer_Dx12::_getHardwareAdapter() {
+void RenderSystem_Dx12::_getHardwareAdapter() {
 	for (UINT i = 0; ; ++i) {
 		ComPtr<IDXGIAdapter1> adapter;
 		auto hr =  _dxgiFactory->EnumAdapters1(i, adapter.ptrForInit());

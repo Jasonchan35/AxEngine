@@ -4,7 +4,7 @@ module AxRender;
 
 #if AX_RENDERER_VK
 import :GpuBuffer_Vk;
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 import :RenderContext_Vk;
 import :RenderRequest_Vk;
 
@@ -13,7 +13,7 @@ namespace ax /*::AxRender*/ {
 GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 
 	VkBufferUsageFlags usage = 0;
 	VkMemoryPropertyFlags memProps = 0;

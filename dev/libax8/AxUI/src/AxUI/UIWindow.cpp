@@ -48,8 +48,8 @@ UIWindow::UIWindow() {
 		_contentView->createRenderContext(desc);
 	}
 
-	auto* renderer = Renderer::s_instance();
-	auto title = Fmt("Test - {}, MT: {}, VSync: {}", renderer->api(), renderer->multithread(), renderer->vsync());
+	auto* renderSystem = RenderSystem::s_instance();
+	auto title = Fmt("Test - {}, MT: {}, VSync: {}", renderSystem->api(), renderSystem->multithread(), renderSystem->vsync());
 	setWindowTitle(title);
 //	setWindowActive(true);
 

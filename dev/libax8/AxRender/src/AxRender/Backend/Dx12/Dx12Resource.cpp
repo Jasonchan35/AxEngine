@@ -1,6 +1,6 @@
 module AxRender;
 import :Dx12Resource;
-import :Renderer_Dx12;
+import :RenderSystem_Dx12;
 
 #if AX_RENDERER_DX12
 
@@ -35,7 +35,7 @@ void Dx12ResourceBase::_reset() {
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
-	auto hr = Renderer_Dx12::s_d3dDevice()->CreateCommittedResource(
+	auto hr = RenderSystem_Dx12::s_d3dDevice()->CreateCommittedResource(
 		&_heapProps,
 		D3D12_HEAP_FLAG_NONE,
 		&_desc,
@@ -241,7 +241,7 @@ void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType color
 }
 
 void Dx12Fence::create(ID3D12Device* dev, u64 initialValue) {
-	auto hr = Renderer_Dx12::s_d3dDevice()->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.ptrForInit()));
+	auto hr = RenderSystem_Dx12::s_d3dDevice()->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 }
 
@@ -257,7 +257,7 @@ void Dx12CommandQueue::create(ID3D12Device* dev) {
 }
 
 void Dx12SwapChain::create(Dx12CommandQueue& cmdQueue, HWND hwnd, DXGI_SWAP_CHAIN_DESC1& desc) {
-	auto* factory = Renderer_Dx12::s_instance()->dxgiFactory();
+	auto* factory = RenderSystem_Dx12::s_instance()->dxgiFactory();
 	
 	HRESULT hr;
 	

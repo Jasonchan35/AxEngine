@@ -1,6 +1,6 @@
 module AxRender;
 import :Shader_Dx12;
-import :Renderer_Dx12;
+import :RenderSystem_Dx12;
 
 #if AX_RENDERER_DX12
 
@@ -101,7 +101,7 @@ void ShaderPass_Dx12::_createRootSignature() {
 	                                               errorBlob.ptrForInit());
 	Dx12Util::throwIfError(hr, errorBlob);
 
-	auto* d3dDevice = Renderer_Dx12::s_d3dDevice();
+	auto* d3dDevice = RenderSystem_Dx12::s_d3dDevice();
 	hr = d3dDevice->CreateRootSignature(0, 
 										rootSignatureBlob->GetBufferPointer(), 
 										rootSignatureBlob->GetBufferSize(), 
@@ -208,7 +208,7 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_ALLOC_REQ);
 	outPipeline->key = key;
 
-	auto* dev = Renderer_Dx12::s_d3dDevice();
+	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	auto hr = dev->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(outPipeline->pipelineState.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 	return outPipeline;

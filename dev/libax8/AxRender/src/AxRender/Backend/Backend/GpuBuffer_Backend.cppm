@@ -1,6 +1,6 @@
 module;
 export module AxRender:GpuBuffer_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :GpuBuffer;
 export import :RenderResourceHandle_Backend;
 

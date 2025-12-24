@@ -4,7 +4,7 @@ module AxRender;
 
 #if AX_RENDERER_VK
 import :Material_Vk;
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 import :RenderRequest_Vk;
 import :Texture_Vk;
 import :GpuBuffer_Vk;
@@ -36,7 +36,7 @@ void MaterialParamSpace_Vk::_updateFrameData(RenderRequest_Vk* req, PerFrameData
 		frameData._descSet = mtlPass_vk->descPool().allocDescriptorSet(layout);
 		
 #if AX_RENDER_DEBUG_NAME
-		auto& dev = Renderer_Vk::s_instance()->device();
+		auto& dev = RenderSystem_Vk::s_instance()->device();
 		dev.setObjectDebugName(frameData._descSet,
 		                       Fmt("{}--DescSet[{}#{}]", mtlPass_vk->name(), bindSpace(), _currentFrameDataIndex));
 #endif
@@ -157,7 +157,7 @@ void MaterialPass_Vk::_createDescPool() {
 #endif
 	
 	auto ownDescSetCount = shaderPass_vk()->_ownDescSetCount;
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 	_descPool.create(dev, poolSizes, ownDescSetCount * frameCount, poolFlags);
 }
 
@@ -176,8 +176,8 @@ auto MaterialPass_Vk::getUpdatedFrameData(RenderRequest_Vk* req) -> PerFrameData
 		_perFrameData._allDescSets.emplaceBack(f._descSet);
 	}
 
-	auto* renderer = req->renderer_vk();
-	AX_vkUpdateDescriptorSets(renderer->device(), req->_writeDescriptorSets, {});
+	auto* renderSystem = req->renderSystem_vk();
+	AX_vkUpdateDescriptorSets(renderSystem->device(), req->_writeDescriptorSets, {});
 
 	return _perFrameData;
 }

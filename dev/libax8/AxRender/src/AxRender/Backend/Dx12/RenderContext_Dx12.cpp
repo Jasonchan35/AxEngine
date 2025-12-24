@@ -17,8 +17,8 @@ void RenderContext_Dx12::_createSwapChain() {
 	::GetClientRect(_hwnd, &clientRect);
 
 	auto  frameSize   = Math::max(_minFrameSize, Rect2i::s_from(clientRect).size);
-	auto* renderer    = Renderer_Dx12::s_instance();
-	auto* dev		  = renderer->d3dDevice();
+	auto* renderSystem    = RenderSystem_Dx12::s_instance();
+	auto* dev		  = renderSystem->d3dDevice();
 
 	_graphCmdQueue.create(dev);
 	_computeCmdQueue.create(dev);

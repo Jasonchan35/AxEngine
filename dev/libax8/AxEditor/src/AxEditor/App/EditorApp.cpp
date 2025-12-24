@@ -12,17 +12,17 @@ class EditorApp_CreateDesc : public EditorApp::CreateDesc {
 public:
 	EditorApp_CreateDesc() {
 		peekMessage = true;
-//		rendererDesc.info.api = RenderAPI::Null;
-		rendererDesc.info.api = RenderAPI::Vk;
-		rendererDesc.info.api = RenderAPI::Dx12;
+//		renderSystemDesc.info.api = RenderAPI::Null;
+		renderSystemDesc.info.api = RenderAPI::Vk;
+		renderSystemDesc.info.api = RenderAPI::Dx12;
 
 		using App = NativeUIApp;
 		using KeyCode = NativeUIKeyCode;
 		
 		// if (App::s_getAsyncKeyState(KeyCode::Ctrl)) {
-		// 	rendererDesc.info.api = RenderAPI::Dx12;
+		// 	renderSystemDesc.info.api = RenderAPI::Dx12;
 		// } else if (App::s_getAsyncKeyState(KeyCode::Shift)) {
-		// 	rendererDesc.info.api = RenderAPI::Vk;
+		// 	renderSystemDesc.info.api = RenderAPI::Vk;
 		// }
 	}
 };
@@ -59,8 +59,8 @@ void EditorApp::onPeekMessage() {
 }
 
 void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
-	if (auto* renderer = Renderer::s_instance()) {
-		renderer->onFileChanged(result);
+	if (auto* renderSystem = RenderSystem::s_instance()) {
+		renderSystem->onFileChanged(result);
 	}
 }
 

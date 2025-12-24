@@ -5,7 +5,7 @@ export module AxRender:CommandBuffer_Vk;
 #if AX_RENDERER_VK
 export import :AX_Vulkan;
 export import :CommandBuffer_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :RenderRequest_Backend;
 
 namespace ax /*::AxRender*/ {

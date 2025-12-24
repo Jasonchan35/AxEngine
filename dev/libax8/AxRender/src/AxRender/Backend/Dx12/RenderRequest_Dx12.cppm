@@ -4,7 +4,7 @@ export module AxRender:RenderRequest_Dx12;
 
 #if AX_RENDERER_DX12
 export import :Dx12Resource;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :RenderRequest_Backend;
 export import :CommandBuffer_Dx12;
 export import :RenderPass_Dx12;

@@ -2,7 +2,7 @@ module;
 module AxRender;
 import :RenderRequest_Backend;
 import :GpuBuffer;
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -12,15 +12,15 @@ RenderContext_Backend::RenderContext_Backend(const CreateDesc& desc)
 }
 
 void RenderContext_Backend::onPostCreate(const CreateDesc& desc) {
-	auto* r = Renderer_Backend::s_instance();
+	auto* r = RenderSystem_Backend::s_instance();
 	imgui.create(r->imguiFontAtlas());
 	Base::onPostCreate(desc);
 }
 
 void RenderContext_Backend::onRender() {
-	auto* renderer = Renderer_Backend::s_instance();
+	auto* renderSystem = RenderSystem_Backend::s_instance();
 
-	auto* req = renderer->nextRenderRequest();
+	auto* req = renderSystem->nextRenderRequest();
 
 	auto* backBufferRenderPass = onAcquireBackBufferRenderPass(req);
 	if (!backBufferRenderPass) return;

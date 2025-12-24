@@ -4,7 +4,7 @@ module AxRender;
 
 #if AX_RENDERER_VK
 import :AX_Vulkan;
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -87,9 +87,9 @@ void AX_VkInstanceCreateInfo::logInfo() {
  AX_VkApplicationInfo::AX_VkApplicationInfo() {
 	sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	pNext = nullptr;
-	pApplicationName = "Renderer_VK";
+	pApplicationName = "RenderSystem_VK";
 	applicationVersion = 0;
-	pEngineName = "Renderer_VK";
+	pEngineName = "RenderSystem_VK";
 	engineVersion = 0;
 	apiVersion = AX_VkUtil::makeApiVersion(0, 1, 3, 0);
 //	apiVersion = VK_API_VERSION_1_3;
@@ -1482,7 +1482,7 @@ void AX_VkDeviceQueue::submit(Span<VkSubmitInfo> infos, VkFence fenceToSignal) {
 	auto err = vkQueueSubmit(_handle, AX_VkUtil::castUInt32(infos.size()), infos.data(), fenceToSignal);
 	if (!AX_VkUtil::checkResult(err)) {
 		uint32_t count = 0;
-		//			renderer_->procList()->vkGetQueueCheckpointDataNV(_swapChainData->_graphQueue, &count, nullptr);
+		//			renderSystem_->procList()->vkGetQueueCheckpointDataNV(_swapChainData->_graphQueue, &count, nullptr);
 		Array<VkCheckpointDataNV, 128> checkPoints;
 		checkPoints.resize(count);
 
@@ -1493,7 +1493,7 @@ void AX_VkDeviceQueue::submit(Span<VkSubmitInfo> infos, VkFence fenceToSignal) {
 			e.stage				= VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
 		}
 
-		//			renderer_->procList()->vkGetQueueCheckpointDataNV(_swapChainData->_graphQueue, &count,
+		//			renderSystem_->procList()->vkGetQueueCheckpointDataNV(_swapChainData->_graphQueue, &count,
 		//checkPoints.data());
 
 		for (auto& e : checkPoints.revForEach()) {

@@ -3,7 +3,7 @@ module AxRender;
 import :RenderContext;
 import :StockObjects;
 import :Texture_Backend;
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 import :Material_Backend;
 
 namespace ax /*::AxRender*/ {
@@ -27,7 +27,7 @@ SPtr<MaterialParamSpace_Backend> MaterialParamSpace_Backend::s_new(MaterialPass_
 	MaterialParamSpace_CreateDesc desc;
 	desc.materialPass = pass;
 	desc.shaderParamSpace = shaderParamSpace;
-	return SPtr_fromUPtr(Renderer_Backend::s_instance()->newMaterialParamSpace(AX_ALLOC_REQ, desc));
+	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newMaterialParamSpace(AX_ALLOC_REQ, desc));
 }
 
 MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
@@ -134,7 +134,7 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 	AX_ASSERT(_material);
 	AX_ASSERT(_shaderPass);
 
-	auto* commonMaterialPass = Renderer_Backend::s_instance()->commonMaterialPass();
+	auto* commonMaterialPass = RenderSystem_Backend::s_instance()->commonMaterialPass();
 		
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);
@@ -159,7 +159,7 @@ Material_Backend::Material_Backend(const CreateDesc& desc)
 : Base(desc)
 {
 	constexpr bool isStaticMaterial = false; // TODO
-	_maxFrameDataCount = isStaticMaterial ? 1 : Renderer::s_instance()->renderRequestCount();
+	_maxFrameDataCount = isStaticMaterial ? 1 : RenderSystem::s_instance()->renderRequestCount();
 }
 
 void Material_Backend::logWarningOnce(StrView msg) {
@@ -201,7 +201,7 @@ void Material_Backend::setShader_backend(Shader* shader_) {
 
 SPtr<Material_Backend> Material_Backend::s_new(const MemAllocRequest& req, Shader* shader) {
 	CreateDesc desc;
-	auto sp = SPtr_fromUPtr(Renderer_Backend::s_instance()->newMaterial(req, desc));
+	auto sp = SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newMaterial(req, desc));
 	if (sp) sp->setShader(shader);
 	return sp;
 }

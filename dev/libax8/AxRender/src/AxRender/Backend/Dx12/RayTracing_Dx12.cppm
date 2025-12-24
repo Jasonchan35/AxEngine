@@ -154,7 +154,7 @@ public:
 
 private:
 	axMemMap				_shaderByteCode;
-	Renderer_Dx12*			_renderer = nullptr;
+	RenderSystem_Dx12*			_renderSystem = nullptr;
 
 	ComPtr<ID3D12Device5>					_dxrDevice;
 	ComPtr<ID3D12CommandQueue>			_cmdQueue;

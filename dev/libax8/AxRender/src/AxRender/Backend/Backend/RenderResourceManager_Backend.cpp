@@ -1,7 +1,7 @@
 module AxRender;
 import :RenderResourceManager_Backend;
 import :RenderRequest_Backend;
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -14,7 +14,7 @@ RenderResourceManager_Backend* RenderResourceManager_Backend::s_instance() {
 void RenderResourceManager_Backend::s_create(const MemAllocRequest& req) {
 	AX_ASSERT(ResourceManager_Backend_instance == nullptr);
 	RenderResourceManager_CreateDesc desc;
-	auto p = Renderer_Backend::s_instance()->newRenderResourceManager(req, desc);
+	auto p = RenderSystem_Backend::s_instance()->newRenderResourceManager(req, desc);
 	ResourceManager_Backend_instance = std::move(p);
 }
 

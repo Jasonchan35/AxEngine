@@ -1,6 +1,6 @@
 ﻿module;
-export module AxRender:Renderer_Null;
-export import :Renderer_Backend;
+export module AxRender:RenderSystem_Null;
+export import :RenderSystem_Backend;
 export import :GpuBuffer_Backend;
 export import :RenderContext_Backend;
 export import :RenderResourceManager_Backend;
@@ -12,15 +12,15 @@ export import :ImageIO;
 
 export namespace ax /*::AxRender*/ {
 
-class Renderer_Null : public Renderer_Backend {
-	AX_RTTI_INFO(Renderer_Null, Renderer_Backend)
+class RenderSystem_Null : public RenderSystem_Backend {
+	AX_RTTI_INFO(RenderSystem_Null, RenderSystem_Backend)
 public:
 	AX_DOWNCAST_GET_INSTANCE()
 
-	Renderer_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual ~Renderer_Null() override { destroy(); }
+	RenderSystem_Null(const CreateDesc& desc) : Base(desc) {}
+	virtual ~RenderSystem_Null() override { destroy(); }
 
-	AX_Renderer_FunctionInterfaces(Null, override)
+	AX_RenderSystem_FunctionInterfaces(Null, override)
 };
 
 

@@ -3,7 +3,7 @@ module;
 module AxRender;
 
 #if AX_RENDERER_VK
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 import :GpuBuffer_Vk;
 import :Material_Vk;
 import :RenderContext_Vk;
@@ -15,9 +15,9 @@ import :Texture_Vk;
 
 namespace ax /*::AxRender*/ {
 
-AX_Renderer_FunctionBodies(Vk);
+AX_RenderSystem_FunctionBodies(Vk);
 
-Renderer_Vk::Renderer_Vk(const CreateDesc& desc)
+RenderSystem_Vk::RenderSystem_Vk(const CreateDesc& desc)
 : Base(desc)
 {
 	_createVkInstance();
@@ -72,7 +72,7 @@ Renderer_Vk::Renderer_Vk(const CreateDesc& desc)
 #endif
 }
 
-void Renderer_Vk::_createVkInstance() {
+void RenderSystem_Vk::_createVkInstance() {
 
 #ifdef AX_NATIVE_UI_MACOSX
 //	EnvVar::setValue("VULKAN_SDK", "/Applications/VulkanSDK/vulkansdk-macos-1.2.141.2/macOS");
@@ -127,7 +127,7 @@ void Renderer_Vk::_createVkInstance() {
 	_vkInst.create(info);
 }
 
-VkBool32 VKAPI_PTR Renderer_Vk::s_debugReport(
+VkBool32 VKAPI_PTR RenderSystem_Vk::s_debugReport(
 	VkDebugReportFlagsEXT flags, 
 	VkDebugReportObjectTypeEXT objectType,
 	uint64_t object,

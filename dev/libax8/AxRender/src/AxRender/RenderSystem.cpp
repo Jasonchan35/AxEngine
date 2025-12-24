@@ -1,32 +1,32 @@
 ﻿module AxRender;
 
-import :Renderer_Null;
+import :RenderSystem_Null;
 
 #if AX_RENDERER_VK
-	import :Renderer_Vk;
+	import :RenderSystem_Vk;
 #endif
 
 #if AX_RENDERER_DX12
-	import :Renderer_Dx12;
+	import :RenderSystem_Dx12;
 #endif
 
 namespace ax /*::AxRender*/ {
 
-static Renderer* Renderer_instance = nullptr;
+static RenderSystem* RenderSystem_instance = nullptr;
 
-Renderer* Renderer::s_instance() {
-	return Renderer_instance;
+RenderSystem* RenderSystem::s_instance() {
+	return RenderSystem_instance;
 }
 
-UPtr<Renderer> Renderer::s_create(const CreateDesc& desc) {
-	UPtr<Renderer> o;
+UPtr<RenderSystem> RenderSystem::s_create(const CreateDesc& desc) {
+	UPtr<RenderSystem> o;
 	switch (desc.info.api) {
-		case RenderAPI::Null:	o = UPtr_new<Renderer_Null>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Null:	o = UPtr_new<RenderSystem_Null>(AX_ALLOC_REQ, desc); break;
 #if AX_RENDERER_VK
-		case RenderAPI::Vk:		o = UPtr_new<Renderer_Vk>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Vk:		o = UPtr_new<RenderSystem_Vk>(AX_ALLOC_REQ, desc); break;
 #endif
 #if AX_RENDERER_DX12
-		case RenderAPI::Dx12:	o = UPtr_new<Renderer_Dx12>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Dx12:	o = UPtr_new<RenderSystem_Dx12>(AX_ALLOC_REQ, desc); break;
 #endif
 		default:	throw Error_Undefined(); break;
 	}
@@ -35,24 +35,24 @@ UPtr<Renderer> Renderer::s_create(const CreateDesc& desc) {
 	return o;
 }
 
-Renderer::Renderer(const CreateDesc& desc)
+RenderSystem::RenderSystem(const CreateDesc& desc)
 : _info(desc.info)
 , _enableDebugReport(desc.info.enableDebugReport)
 , _enableDebugUtils(desc.info.enableDebugUtils)
 , _enableDebugMarker(desc.info.enableDebugMarker)
 {
-	AX_ASSERT(Renderer_instance == nullptr);
-	Renderer_instance = this;
+	AX_ASSERT(RenderSystem_instance == nullptr);
+	RenderSystem_instance = this;
 
 	_startTime = getCurrentTime();
 }
 
-Renderer::~Renderer() {
-	AX_ASSERT(Renderer_instance == this);
-	Renderer_instance = nullptr;
+RenderSystem::~RenderSystem() {
+	AX_ASSERT(RenderSystem_instance == this);
+	RenderSystem_instance = nullptr;
 }
 
-void Renderer::destroy() {
+void RenderSystem::destroy() {
 	onDestroy(); 
 }
 

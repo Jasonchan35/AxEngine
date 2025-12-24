@@ -3,7 +3,7 @@
 #if AX_RENDERER_VK
 import :RenderContext_Vk;
 import :RenderRequest;
-import :Renderer_Vk;
+import :RenderSystem_Vk;
 import :Texture_Vk;
 import :RenderRequest_Vk;
 import :GpuBuffer_Vk;
@@ -17,8 +17,8 @@ RenderContext_Vk_Base::RenderContext_Vk_Base(const CreateDesc& desc)
 }
 
 RenderContext_Vk_Base::~RenderContext_Vk_Base() {
-	if (auto* renderer = Renderer_Vk::s_instance()) {
-		renderer->device().waitIdle(); // wait all commandQueue is done
+	if (auto* renderSystem = RenderSystem_Vk::s_instance()) {
+		renderSystem->device().waitIdle(); // wait all commandQueue is done
 	}
 }
 
@@ -37,7 +37,7 @@ void RenderContext_Vk_Base::onPostCreate(const CreateDesc& desc) {
 }
 
 void RenderContext_Vk_Base::_createSwapChain() {
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 
 	auto cap = _surface_vk.getCapabilities();
 	Vec2i frameSize = Math::max(_minFrameSize, AX_VkUtil::castVec2i(cap.currentExtent));
@@ -280,7 +280,7 @@ RenderContext_Vk_Win32::RenderContext_Vk_Win32(const CreateDesc& desc)
 		throw Error_Undefined();
 	}
 
-	auto& dev = Renderer_Vk::s_instance()->device();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
 	_surface_vk.create_Win32(dev, hInstance, _hwnd);
 }
 

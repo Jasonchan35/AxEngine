@@ -3,8 +3,8 @@
 #include "axDX12RayTracing.h"
 
 bool axDX12RayTracing::create() {
-	_renderer = renderer();
-	auto* d3dDevice = _renderer->d3dDevice();
+	_renderSystem = renderSystem();
+	auto* d3dDevice = _renderSystem->d3dDevice();
 	HRESULT hr;
 
 	D3D12_FEATURE_DATA_D3D12_OPTIONS5 featureSupportData = {};

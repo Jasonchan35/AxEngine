@@ -9,7 +9,7 @@ namespace ax /*::AxRender*/ {
 
 template<class T>
 RenderResourceTable_Backend<T>::RenderResourceTable_Backend() {
-	auto frameCount = Renderer::s_instance()->renderRequestCount();
+	auto frameCount = RenderSystem::s_instance()->renderRequestCount();
 	if (frameCount < 1) throw Error_Undefined();
 	_frames.resize(frameCount);
 	_slots.emplaceBack(); // slot 0 for fall back when error

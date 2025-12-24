@@ -6,7 +6,7 @@ namespace ax::AxUI {
 void UIApp::onCreate() {
 	Base::onCreate();
 
-	_renderer = Renderer::s_create(_rendererDesc);
+	_renderSystem = RenderSystem::s_create(_renderSystemDesc);
 }
 
 } // namespace

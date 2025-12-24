@@ -9,7 +9,7 @@ export import :CommandBuffer;
 
 namespace ax /*::AxRender*/ {
 
-class Renderer_Dx12;
+class RenderSystem_Dx12;
 
 using Dx12_IDXGIFactory    = IDXGIFactory6;
 using Dx12_ID3D12Device    = ID3D12Device9;

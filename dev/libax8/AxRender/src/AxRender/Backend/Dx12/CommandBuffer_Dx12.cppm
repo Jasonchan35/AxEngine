@@ -6,7 +6,7 @@ export module AxRender:CommandBuffer_Dx12;
 
 export import :Dx12Util;
 export import :CommandBuffer_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :RenderRequest_Backend;
 
 namespace ax /*::AxRender*/ {

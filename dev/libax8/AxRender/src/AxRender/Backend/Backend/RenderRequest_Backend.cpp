@@ -1,7 +1,7 @@
 module;
 module AxRender;
 import :RenderRequest_Backend;
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 import :Material_Backend;
 import :RenderPass;
 import :GpuBuffer;
@@ -10,18 +10,18 @@ import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
-UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& req, Renderer* renderer, Int index) {
+UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& req, RenderSystem* renderSystem, Int index) {
 	CreateDesc desc;
-	desc.renderer = renderer;
+	desc.renderSystem = renderSystem;
 	desc.index = index;
-	return Renderer_Backend::s_instance()->newRenderRequest(req, desc);
+	return RenderSystem_Backend::s_instance()->newRenderRequest(req, desc);
 }
 
 RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
-	_renderer = desc.renderer;
+	_renderSystem = desc.renderSystem;
 	_index = desc.index;
 	_inlineUpload.create(this);
-	_renderRequestCount = _renderer->renderRequestCount();
+	_renderRequestCount = _renderSystem->renderRequestCount();
 }
 
 void RenderRequest_Backend::waitCompleted() {
@@ -43,16 +43,16 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 void RenderRequest_Backend::_updateCommonMaterial() {
 	using namespace Math;
 
-	auto* renderer_ = renderer_backend();
-	if (!renderer_) throw Error_Undefined();
+	auto* renderSystem_ = renderSystem_backend();
+	if (!renderSystem_) throw Error_Undefined();
 
 	
-	auto* commonMaterial = renderer_->commonMaterial();
+	auto* commonMaterial = renderSystem_->commonMaterial();
 	if (!commonMaterial) throw Error_Undefined();
 
 	resourcesToKeep.add(commonMaterial);
 
-	_uptime = renderer_->getCurrentUptime().seconds_f64();
+	_uptime = renderSystem_->getCurrentUptime().seconds_f64();
 	
 	f32 t = static_cast<f32>(_uptime);
 	Vec4f timeSin		(sin(t),   sin(t*4), sin(t*9), sin(t*16));
@@ -183,7 +183,7 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 }
 
 void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {
-	auto& info = req->renderer()->info().inlineUpload;
+	auto& info = req->renderSystem()->info().inlineUpload;
 
 	limitPerEach = info.limitPerEach;
 	if (info.bufferSize <= 0) return;

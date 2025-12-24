@@ -4,7 +4,7 @@ export module AxRender:RenderResourceManager_Vk;
 #if AX_RENDERER_VK
 
 export import :RenderResourceManager_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 
 namespace ax {
 

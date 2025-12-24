@@ -8,22 +8,22 @@ import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
-struct Renderer_Backend::PrivateData {
+struct RenderSystem_Backend::PrivateData {
 	Array<UPtr<RenderRequest_Backend>>	renderRequests;
 	SPtr<Material_Backend>	commonMaterial;
 };
 
-Renderer_Backend::Renderer_Backend(const CreateDesc& desc) 
+RenderSystem_Backend::RenderSystem_Backend(const CreateDesc& desc) 
 : Base(desc)
 {
 	_imguiFontAtlas.AddFontDefault();
 	_privateData.newObject(AX_ALLOC_REQ);
 }
 
-Renderer_Backend::~Renderer_Backend() {
+RenderSystem_Backend::~RenderSystem_Backend() {
 }
 
-void Renderer_Backend::onCreate() {
+void RenderSystem_Backend::onCreate() {
 	Base::onCreate();
 
 	RenderResourceManager_Backend::s_create(AX_ALLOC_REQ);
@@ -49,14 +49,14 @@ void Renderer_Backend::onCreate() {
 	}
 }
 
-void Renderer_Backend::onDestroy() {
+void RenderSystem_Backend::onDestroy() {
 	StockObjects::s_destroy();
 	_privateData.unref();
 	RenderResourceManager_Backend::s_destroy();
 	Base::onDestroy();
 }
 
-RenderRequest_Backend* Renderer_Backend::nextRenderRequest() {
+RenderRequest_Backend* RenderSystem_Backend::nextRenderRequest() {
 	auto& reqs = _privateData->renderRequests;
 
 	if (reqs.size() <= 0) {
@@ -69,35 +69,35 @@ RenderRequest_Backend* Renderer_Backend::nextRenderRequest() {
 	return req;
 }
 
-Material_Backend* Renderer_Backend::commonMaterial() {
+Material_Backend* RenderSystem_Backend::commonMaterial() {
 	return _privateData->commonMaterial;
 }
 
-MaterialPass_Backend* Renderer_Backend::commonMaterialPass() {
+MaterialPass_Backend* RenderSystem_Backend::commonMaterialPass() {
 	auto* p = commonMaterial();
 	if (!p || p->passCount() <= 0) return nullptr;
 	return p->getPass(0);  
 }
 
-Shader_Backend* Renderer_Backend::commonShader() {
+Shader_Backend* RenderSystem_Backend::commonShader() {
 	auto& m = _privateData->commonMaterial;
 	return m ? m->shader_backend() : nullptr;
 }
 
-ShaderPass_Backend* Renderer_Backend::commonShaderPass() {
+ShaderPass_Backend* RenderSystem_Backend::commonShaderPass() {
 	auto* p = commonShader();
 	if (!p || p->passCount() <= 0) return nullptr;
 	return p->getPass(0);
 }
 
-void Renderer_Backend::waitAllRenderCompleted() {
+void RenderSystem_Backend::waitAllRenderCompleted() {
 	for (auto& req : _privateData->renderRequests) {
 		if (!req) { AX_ASSERT(false); continue; }
 		req->waitCompleted();
 	}
 }
 
-void Renderer_Backend::onFileChanged(FileDirWatcher_Result& result) {
+void RenderSystem_Backend::onFileChanged(FileDirWatcher_Result& result) {
 	waitAllRenderCompleted();
 
 	if (auto* mgr = RenderResourceManager_Backend::s_instance()) {
@@ -105,7 +105,7 @@ void Renderer_Backend::onFileChanged(FileDirWatcher_Result& result) {
 	}
 }
 
-RenderRequest_Backend* Renderer_Backend::getRenderRequest(Int i) {
+RenderRequest_Backend* RenderSystem_Backend::getRenderRequest(Int i) {
 	return _privateData->renderRequests[i];
 }
 

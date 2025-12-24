@@ -5,7 +5,7 @@ export module AxRender:RenderResourceManager_Dx12;
 
 export import :Dx12DescripterHeap;
 export import :RenderResourceManager_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 
 namespace ax {
 

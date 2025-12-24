@@ -1,6 +1,6 @@
 module;
 #include <imgui.h>
-export module AxRender:Renderer_Backend;
+export module AxRender:RenderSystem_Backend;
 export import :Renderer;
 
 export namespace ax /*::AxRender*/ {
@@ -9,15 +9,15 @@ class RenderRequest_Backend;
 
 template<class T> class BindlessTable;
 
-class Renderer_Backend : public Renderer {
-	AX_RTTI_INFO(Renderer_Backend, Renderer)
+class RenderSystem_Backend : public RenderSystem {
+	AX_RTTI_INFO(RenderSystem_Backend, RenderSystem)
 public:
 	AX_DOWNCAST_GET_INSTANCE()
 
-	Renderer_Backend(const CreateDesc& desc);
-	virtual ~Renderer_Backend() override;
+	RenderSystem_Backend(const CreateDesc& desc);
+	virtual ~RenderSystem_Backend() override;
 
-	AX_Renderer_FunctionInterfaces(AX_EMPTY, =0)
+	AX_RenderSystem_FunctionInterfaces(AX_EMPTY, =0)
 
 	RenderRequest_Backend*		nextRenderRequest();
 	

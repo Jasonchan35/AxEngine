@@ -5,7 +5,7 @@ export module AxRender:Texture_Dx12;
 
 export import :Dx12Resource;
 export import :Texture_Backend;
-export import :Renderer_Backend;
+export import :RenderSystem_Backend;
 export import :GpuBuffer_Backend;
 export import :RenderRequest_Dx12;
 

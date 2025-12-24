@@ -6,7 +6,7 @@ export import :RenderPass_Backend;
 
 #if AX_RENDERER_DX12
 
-import :Renderer_Backend;
+import :RenderSystem_Backend;
 
 namespace ax {
 

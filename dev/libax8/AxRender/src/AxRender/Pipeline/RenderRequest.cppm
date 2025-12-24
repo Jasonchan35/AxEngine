@@ -41,7 +41,7 @@ public:
 
 	Vec2i			frameSize() const { return _frameSize; }
 
-	Renderer*		renderer() { return _renderer; }
+	RenderSystem*		renderSystem() { return _renderSystem; }
 	RenderContext*	renderContext() { return _renderContext; }
 	RenderPass*		currentRenderPass()	{ return _currentRenderPass; }
 
@@ -72,7 +72,7 @@ public:
 	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
 
 protected:
-	Renderer*      _renderer              = nullptr;
+	RenderSystem*      _renderSystem              = nullptr;
 	RenderSeqId    _renderSeqId           = 0;
 	RenderContext* _renderContext         = nullptr;
 	RenderPass*    _currentRenderPass     = nullptr;
