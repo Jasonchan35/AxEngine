@@ -16,16 +16,12 @@ RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): 
 	} else {
 		_resource_dx12.create(desc.frameSize, desc.colorType);
 	}
-	_descHeap_dx12.create(1);
-	_view_dx12 = _descHeap_dx12.setRenderTargetView(0, _resource_dx12);
 }
 
 RenderPassDepthBuffer_Dx12::RenderPassDepthBuffer_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
 	_resource_dx12.create(desc.frameSize, desc.depthType);
-	_descHeap_dx12.create(1);
-	_view_dx12 = _descHeap_dx12.setDepthStencilView(0, _resource_dx12);
 }
 
 RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
@@ -54,9 +50,6 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 			colorBuf_createDesc.colorType = newColorAttachment.desc.colorType;
 			newColorAttachment.buffer     = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
 		}
-
-		auto* colorBuffer_dx12 = rttiCastCheck<RenderPassColorBuffer_Dx12>(newColorAttachment.buffer.ptr());
-		_colorViewHandles_dx12.emplaceBack(colorBuffer_dx12->_view_dx12.handle.cpu);
 	}
 
 	//----- depth ------
@@ -73,8 +66,6 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 
 			_depthAttachment.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
 		}
-
-		_depthViewHandle_dx12 = depthBuffer_dx12()->_view_dx12.handle.cpu;
 	}	
 	
 }

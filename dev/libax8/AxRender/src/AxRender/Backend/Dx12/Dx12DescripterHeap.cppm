@@ -30,11 +30,28 @@ public:
 	UINT numDescriptors() const { return _desc.NumDescriptors; }
 	void destroy();
 
+	void reset() { _used = 0; }
+
+	Dx12DescriptorHandle currentHandle() { Dx12DescriptorHandle h; _baseGetHandle(h, _used); return h; }
+	
 	const Dx12DescriptorHandle& handleStart() const { return _handleStart; }
 	
 protected:
 	void _create(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 
+	template<class HANDLE>
+	HANDLE _allocHandle() {
+		if (_used >= _desc.NumDescriptors) {
+			throw Error_Undefined();
+		}
+		
+		HANDLE h;
+		_baseGetHandle(h.handle, _used);
+		_used++;
+		return h;
+	}
+	
+	
 	template<class HANDLE>
 	HANDLE _getHandle(Int index) {
 		HANDLE h;
@@ -54,6 +71,7 @@ protected:
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
 	Dx12DescriptorHandle			_handleStart;
 	UINT							_stride = 0;
+	UINT							_used = 0;
 };
 
 struct Dx12DescriptorHandle_ColorBuffer { Dx12DescriptorHandle handle; };
@@ -64,10 +82,9 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle_ColorBuffer setRenderTargetView(Int i, Dx12Resource_ColorBuffer& res) {
-		//	D3D12_RENDER_TARGET_VIEW_DESC desc = {};
-		auto h = _getHandle<Dx12DescriptorHandle_ColorBuffer>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateRenderTargetView(res.d3dResource(), nullptr, h.handle.cpu);
+	Dx12DescriptorHandle_ColorBuffer addRenderTargetView(Dx12_ID3D12Device* dev, Dx12Resource_ColorBuffer& res) {
+		auto h = _allocHandle<Dx12DescriptorHandle_ColorBuffer>();
+		dev->CreateRenderTargetView(res.d3dResource(), nullptr, h.handle.cpu);
 		return h;
 	}
 };
@@ -80,10 +97,10 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle_DepthBuffer setDepthStencilView(Int i, Dx12Resource_DepthBuffer& res) {
+	Dx12DescriptorHandle_DepthBuffer addDepthStencilView(Dx12_ID3D12Device* dev, Dx12Resource_DepthBuffer& res) {
 		//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
-		auto h = _getHandle<Dx12DescriptorHandle_DepthBuffer>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateDepthStencilView(res.d3dResource(), nullptr, h.handle.cpu);
+		auto h = _allocHandle<Dx12DescriptorHandle_DepthBuffer>();
+		dev->CreateDepthStencilView(res.d3dResource(), nullptr, h.handle.cpu);
 		return h;
 	}
 };
@@ -96,7 +113,7 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_Sampler setSampler(Int i, SamplerFilter filter, SamplerWrapUVW wrap) {
+	Dx12DescriptorHandle_Sampler addSampler(Dx12_ID3D12Device* dev, SamplerFilter filter, SamplerWrapUVW wrap) {
 		D3D12_SAMPLER_DESC desc;
 		desc.Filter           = Dx12Util::getDxSamplerFilter(filter);
 		desc.AddressU         = Dx12Util::getDxSamplerWrap(wrap.u);
@@ -112,11 +129,10 @@ public:
 		desc.MinLOD           = 0.0f;
 		desc.MaxLOD           = D3D12_FLOAT32_MAX;
 
-		auto h = _getHandle<Dx12DescriptorHandle_Sampler>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateSampler(&desc, h.handle.cpu);
+		auto h = _allocHandle<Dx12DescriptorHandle_Sampler>();
+		dev->CreateSampler(&desc, h.handle.cpu);
 		return h;
-	}
-	
+	}	
 };
 
 struct Dx12DescriptorHandle_ConstBuffer  { Dx12DescriptorHandle handle; };
@@ -131,25 +147,25 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_ConstBuffer setCBV(Int i, const Dx12Resource_GpuBuffer& res) {
+	Dx12DescriptorHandle_ConstBuffer addCBV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& res) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 		desc.BufferLocation = ax_const_cast(res).gpuAddress();
 		desc.SizeInBytes    = Dx12Util::castUINT(res.bufferSize());
-		auto h = _getHandle<Dx12DescriptorHandle_ConstBuffer>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateConstantBufferView(&desc, h.handle.cpu);
+		auto h = _allocHandle<Dx12DescriptorHandle_ConstBuffer>();
+		dev->CreateConstantBufferView(&desc, h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_UAV setUAV(Int i, const Dx12Resource_GpuBuffer& buf) {
-		auto h = _getHandle<Dx12DescriptorHandle_UAV>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
-		                                                        nullptr,
-		                                                        nullptr,
-		                                                        h.handle.cpu);
+	Dx12DescriptorHandle_UAV addUAV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& buf) {
+		auto h = _allocHandle<Dx12DescriptorHandle_UAV>();
+		dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
+																nullptr,
+																nullptr,
+																h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_RawUAV setTypelessUAV(Int i, const Dx12Resource_GpuBuffer& buf) {
+	Dx12DescriptorHandle_RawUAV addTypelessUAV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& buf) {
 		D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
@@ -159,18 +175,18 @@ public:
 		desc.Buffer.CounterOffsetInBytes = 0;
 		desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
-		auto h = _getHandle<Dx12DescriptorHandle_RawUAV>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
-		                                                        nullptr,
-		                                                        &desc,
-		                                                        h.handle.cpu);
+		auto h = _allocHandle<Dx12DescriptorHandle_RawUAV>();
+		dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
+																nullptr,
+																&desc,
+																h.handle.cpu);
 		return h;
 	}
 
-	Dx12DescriptorHandle_Texture2D setTexture(Int i, const Dx12Resource_Texture2D& res) {
+	Dx12DescriptorHandle_Texture2D addTexture(Dx12_ID3D12Device* dev, const Dx12Resource_Texture2D& res) {
 		//	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-		auto h = _getHandle<Dx12DescriptorHandle_Texture2D>(i);
-		Renderer_Dx12::s_d3dDevice()->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);
+		auto h = _allocHandle<Dx12DescriptorHandle_Texture2D>();
+		dev->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);
 		return h;
 	}
 };

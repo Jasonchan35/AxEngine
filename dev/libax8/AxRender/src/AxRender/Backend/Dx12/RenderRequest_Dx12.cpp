@@ -19,11 +19,29 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_computeCmdList_dx12.create(dev, CommandBufferType::Compute, "computeCmdList");
 	_fence.create(dev, static_cast<u64>(_renderSeqId));
 	_cpuEvent.create();
+
+	_heap_ColorBuffer.create(256);
+	_heap_DepthBuffer.create(64);
+	_heap_CBV_SRV_UAV.create(4000);
+	_heap_sampler.create(4000);
+
+	_d3dDescHeaps.emplaceBack(_heap_CBV_SRV_UAV.d3dHeap());
+	_d3dDescHeaps.emplaceBack(_heap_sampler.d3dHeap());
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
 	_uploadCmdBuf_dx12.commandBegin();
 	_graphCmdBuf_dx12.commandBegin();
+	
+	_d3dDevice = Renderer_Dx12::s_instance()->d3dDevice();
+
+	_heap_ColorBuffer.reset();
+	_heap_DepthBuffer.reset();
+	_heap_CBV_SRV_UAV.reset();
+	_heap_sampler.reset();
+	
+	_graphCmdBuf_dx12->SetDescriptorHeaps(ax_safe_cast_from(_d3dDescHeaps.size()), _d3dDescHeaps.data());
+	
 }
 
 void RenderRequest_Dx12::onFrameEnd() {
@@ -113,36 +131,41 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	auto* pass = rttiCastCheck<RenderPass_Dx12>(pass_);
 	pass->colorBuf0_resourceBarrier(this, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	auto& renderTargetDescriptors = pass->_colorViewHandles_dx12;
-	auto& cmdBuf = _graphCmdBuf_dx12;
+	Array<D3D12_CPU_DESCRIPTOR_HANDLE, 16> rtViews;
+	for (auto& colorAttachment : pass->colorAttachments()) {
+		auto* colorBuf = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
+		auto h = _heap_ColorBuffer.addRenderTargetView(_d3dDevice, colorBuf->_resource_dx12);
+		rtViews.emplaceBack(h.handle.cpu);
+	}
 
-	UINT                         rtCount        = ax_safe_cast_from(renderTargetDescriptors.size());
-	D3D12_CPU_DESCRIPTOR_HANDLE* rtViews        = renderTargetDescriptors.data();
-	D3D12_CPU_DESCRIPTOR_HANDLE* depthView      = &pass->_depthViewHandle_dx12;
-	BOOL                         rtSingleHandle = FALSE;
+	D3D12_CPU_DESCRIPTOR_HANDLE depthView;
+	{
+		auto* depthBuf = rttiCastCheck<RenderPassDepthBuffer_Dx12>(pass->depthAttachment().buffer.ptr());
+		depthView = _heap_DepthBuffer.addDepthStencilView(_d3dDevice, depthBuf->_resource_dx12).handle.cpu;
+	}
 
-	AX_ASSERT(rtCount > 0);
-	AX_ASSERT(rtViews);
-	AX_ASSERT(depthView);
-	
-	cmdBuf->OMSetRenderTargets(rtCount, rtViews, rtSingleHandle, depthView);
+	auto& cmdBuf         = _graphCmdBuf_dx12;
+	BOOL  rtSingleHandle = FALSE;
+	cmdBuf->OMSetRenderTargets(ax_safe_cast_from(rtViews.size()), rtViews.data(), rtSingleHandle, &depthView);
 
+	Int colorBufIndex = 0;
 	for (auto& colorAttachment : pass->colorAttachments()) {
 		auto& desc = colorAttachment.desc;
 		auto* colorBuffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
-		if (!colorBuffer) continue;
-		if (desc.loadOp == RenderBufferLoadOp::Clear) {
-			cmdBuf->ClearRenderTargetView(	colorBuffer->_view_dx12.handle.cpu,
-											desc.clearColor.data(),
-											0,
-											nullptr);
+		if (colorBuffer) {
+			if (desc.loadOp == RenderBufferLoadOp::Clear) {
+				cmdBuf->ClearRenderTargetView(	rtViews[colorBufIndex],
+												desc.clearColor.data(),
+												0,
+												nullptr);
+			}
 		}
+		++colorBufIndex;
 	}
 
-	if (auto* depthBuffer = pass->depthBuffer_dx12()) {
-		auto& desc = pass->depthAttachment().desc;
+	if (auto& desc = pass->depthAttachment().desc) {
 		if (desc.loadOp == RenderBufferLoadOp::Clear) {
-			cmdBuf->ClearDepthStencilView(depthBuffer->_view_dx12.handle.cpu,
+			cmdBuf->ClearDepthStencilView(depthView,
 			                              D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
 			                              desc.clearDepth,
 			                              ax_safe_cast_to<u8>(desc.clearStencil),

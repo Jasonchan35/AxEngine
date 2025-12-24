@@ -130,7 +130,7 @@ void Renderer_Dx12::_getHardwareAdapter() {
 
 		// Check to see if the adapter supports Direct3D 12, but don't create the
 		// actual device yet.
-		hr = D3D12CreateDevice(_dxgiAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(AX_DX12_ID3D12Device), nullptr);
+		hr = D3D12CreateDevice(_dxgiAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(Dx12_ID3D12Device), nullptr);
 		if (!Dx12Util::checkError(hr))
 			continue;
 

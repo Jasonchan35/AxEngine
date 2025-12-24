@@ -68,7 +68,7 @@ protected:
 
 class Dx12Resource_ColorBuffer : public Dx12ResourceBase {
 public:
-	void createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex);
+	void createFromSwapChain(Dx12_IDXGISwapChain* swapChain, UINT backBufIndex);
 	void create(Vec2i size, ColorType colorType);
 };
 
@@ -194,11 +194,11 @@ public:
 
 	void present(UINT SyncInterval, UINT Flags);
 
-	AX_DX12_IDXGISwapChain* ptr()			{ return _swapChain; }
-	operator AX_DX12_IDXGISwapChain*()		{ return _swapChain; }
+	Dx12_IDXGISwapChain* ptr()			{ return _swapChain; }
+	operator Dx12_IDXGISwapChain*()		{ return _swapChain; }
 	
 private:
-	ComPtr<AX_DX12_IDXGISwapChain>	_swapChain;
+	ComPtr<Dx12_IDXGISwapChain>	_swapChain;
 };
 
 struct Dx12DescriptorTable {

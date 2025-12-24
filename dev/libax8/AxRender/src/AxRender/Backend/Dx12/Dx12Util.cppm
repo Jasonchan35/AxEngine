@@ -11,14 +11,14 @@ namespace ax /*::AxRender*/ {
 
 class Renderer_Dx12;
 
-using AX_DX12_IDXGIFactory    = IDXGIFactory4;
-using AX_DX12_ID3D12Device    = ID3D12Device;
-using AX_DX12_IDXGIAdapter    = IDXGIAdapter3;
-using AX_DX12_IDXGISwapChain  = IDXGISwapChain3;
+using Dx12_IDXGIFactory    = IDXGIFactory6;
+using Dx12_ID3D12Device    = ID3D12Device9;
+using Dx12_IDXGIAdapter    = IDXGIAdapter4;
+using Dx12_IDXGISwapChain  = IDXGISwapChain4;
 
 #if _DEBUG
-	using AX_DX12_IDXGIDebug	= IDXGIDebug1;
-	using AX_DX12_ID3D12Debug	= ID3D12Debug6;
+	using Dx12_IDXGIDebug	= IDXGIDebug1;
+	using Dx12_ID3D12Debug	= ID3D12Debug6;
 #endif
 
 struct Dx12Util {

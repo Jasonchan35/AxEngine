@@ -191,7 +191,7 @@ D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandLis
 	return oldState;
 }
 
-void Dx12Resource_ColorBuffer::createFromSwapChain(AX_DX12_IDXGISwapChain* swapChain, UINT backBufIndex) {
+void Dx12Resource_ColorBuffer::createFromSwapChain(Dx12_IDXGISwapChain* swapChain, UINT backBufIndex) {
 	auto hr = swapChain->GetBuffer(backBufIndex, IID_PPV_ARGS(_d3dResource.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 	_desc = _d3dResource->GetDesc();
