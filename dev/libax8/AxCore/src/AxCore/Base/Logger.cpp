@@ -19,14 +19,16 @@ void Logger::write(Level lv, StrView msg) {
 
 	// \x1b = ANSI escape sequences
 	switch (lv) {		
-		case Level::Warning: tmp.append(L"\x1b[33mWarning: "); break; // yellow
-		case Level::Error:   tmp.append(L"\x1b[31mError: ");   break; // red
+		// case Level::Warning: tmp.append(L"\x1b[33mWarning: "); break; // yellow
+		// case Level::Error:   tmp.append(L"\x1b[31mError: ");   break; // red
+		case Level::Warning: tmp.append(L"Warning: "); break; // yellow
+		case Level::Error:   tmp.append(L"Error: ");   break; // red
 		default: break;
 	}
 
 	tmp.appendUtf(msg);
 	tmp.append(L"\n");
-	tmp.append(L"\x1b[0m"); // reset color
+//	tmp.append(L"\x1b[0m"); // reset color
 
 	_output->write(lv, tmp);
 }

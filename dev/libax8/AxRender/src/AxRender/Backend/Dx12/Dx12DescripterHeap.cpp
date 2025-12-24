@@ -17,33 +17,6 @@ void Dx12DescripterHeap_Base::reset() {
 	_currentChunk = 0;
 }
 
-Dx12DescripterHeapReserved Dx12DescripterHeap_Base::reserveHandles(Dx12_ID3D12Device* dev, Int count) {
-	if (count > _desc.NumDescriptors) {
-		throw Error_Undefined();
-	}
-	
-	Chunk* chunk = nullptr;
-
-	//---- pick chunk ----
-	for (Int i = _currentChunk; i < _chunks.size(); ++i) {
-		auto& c = _chunks[i]; 
-		if (c.remain() >= count) {
-			c._used += count;
-			
-			chunk = &c;
-			_currentChunk = i;
-			break;
-		}
-	}
-	
-	if (!chunk) {
-		_currentChunk = _chunks.size();
-		chunk = &_chunks.emplaceBack(dev, _desc);
-	}
-
-	return {.handle = chunk->currentHandle(), .d3dHeap = chunk->_d3dHeap};
-}
-
 void Dx12DescripterHeap_Base::_create(Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
 	destroy();
 	_desc.NumDescriptors = ax_safe_cast_from(numDescriptorsPerChunk);

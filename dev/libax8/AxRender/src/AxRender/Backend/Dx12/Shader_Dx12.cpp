@@ -32,36 +32,44 @@ bool VertexInputLayoutDesc_Dx12::init(const ShaderStageInfo& info, VertexLayout 
 	return true;
 }
 
+ShaderParamSpace_Dx12::ShaderParamSpace_Dx12(const CreateDesc& desc): Base(desc) {
+
+}
+
 ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
 	D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	using ParamBase = ShaderParamSpace_Backend::ParamBase;
-	
-	auto addDescriptor = [](Dx12DescriptorTable& tbl, const ParamBase& p, BindSpace bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), bindSpace);
-	};
+
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		auto* ownParamSpace = getOwnParamSpace_dx12(bindSpace);
+		if (!ownParamSpace) continue;
+
+		auto addDescriptor = [&](Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
+			tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), ownParamSpace->bindSpace());
+		};
+		
+		for (auto& param : ownParamSpace->_constBuffers) {
+			addDescriptor(ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
+		}
+		
+		for (auto& param : ownParamSpace->_textureParams) {
+			addDescriptor(ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+		}
+
+		for (auto& param : ownParamSpace->_samplerParams) {
+			addDescriptor(ownParamSpace->_samplerDescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+		}
+	}
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* paramSpace = getParamSpace_dx12(bindSpace);
 		if (!paramSpace) continue;
-	
-		for (auto& param : paramSpace->_constBuffers) {
-			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
-		}
-	
-		for (auto& param : paramSpace->_textureParams) {
-			addDescriptor(_CBV_SRV_UAV_DescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
-		}
-
-		for (auto& param : paramSpace->_samplerParams) {
-			addDescriptor(_samplerDescTable, param, bindSpace, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
-		}
+		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, paramSpace->_CBV_SRV_UAV_DescTable);
+		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, paramSpace->_samplerDescTable);
 	}
-
-	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _CBV_SRV_UAV_DescTable);
-	_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, _samplerDescTable);
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
 		if (!desc.info->getFuncName(stageFlags)) return;
@@ -70,10 +78,10 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	};
 
 	_visitStages(loadStage);
-	_createRootSignature();	
+	_createRootSignature(_pipelineRootParamList);	
 }
 
-void ShaderPass_Dx12::_createRootSignature() {
+void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList) {
 	D3D12_VERSIONED_ROOT_SIGNATURE_DESC versionedDesc;
 	versionedDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_0;
 	auto& desc = versionedDesc.Desc_1_0;
@@ -88,10 +96,10 @@ void ShaderPass_Dx12::_createRootSignature() {
 	desc.Flags |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
 #endif
 	
-	desc.NumParameters		= Dx12Util::castUINT(_pipelineRootParamList.parameters.size());
-	desc.pParameters		= _pipelineRootParamList.parameters.data();
-	desc.NumStaticSamplers	= Dx12Util::castUINT(_pipelineRootParamList.staticSamplers.size());
-	desc.pStaticSamplers	= _pipelineRootParamList.staticSamplers.data();
+	desc.NumParameters		= Dx12Util::castUINT(rootParamList.parameters.size());
+	desc.pParameters		= rootParamList.parameters.data();
+	desc.NumStaticSamplers	= Dx12Util::castUINT(rootParamList.staticSamplers.size());
+	desc.pStaticSamplers	= rootParamList.staticSamplers.data();
 
 	ComPtr<ID3DBlob> rootSignatureBlob;
 	ComPtr<ID3DBlob> errorBlob;

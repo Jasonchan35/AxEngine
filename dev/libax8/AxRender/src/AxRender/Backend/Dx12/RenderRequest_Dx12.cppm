@@ -38,22 +38,6 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 
-	Dx12DescriptorHandle_ConstBuffer addDescCBV(const Dx12Resource_GpuBuffer& res) {
-		return _heap_CBV_SRV_UAV.addCBV(_d3dDevice, res);
-	}
-
-	Dx12DescriptorHandle_UAV addDescUAV(const Dx12Resource_GpuBuffer& buf) {
-		return _heap_CBV_SRV_UAV.addUAV(_d3dDevice, buf);
-	}
-
-	Dx12DescriptorHandle_Texture2D addDescTexture(const Dx12Resource_Texture2D& res) {
-		return _heap_CBV_SRV_UAV.addTexture(_d3dDevice, res);
-	}	
-
-	Dx12DescriptorHandle_Sampler addDescSampler(SamplerFilter filter, SamplerWrapUVW wrap) {
-		return _heap_sampler.addSampler(_d3dDevice, filter, wrap);
-	}	
-
 	Dx12DescripterHeap_ColorBuffer		_heap_ColorBuffer;
 	Dx12DescripterHeap_DepthBuffer		_heap_DepthBuffer;
 	Dx12DescripterHeap_CBV_SRV_UAV		_heap_CBV_SRV_UAV;

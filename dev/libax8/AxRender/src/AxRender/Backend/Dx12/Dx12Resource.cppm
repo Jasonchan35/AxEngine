@@ -222,7 +222,6 @@ struct Dx12DescriptorTable : public NonCopyable {
 	}
 
 	Int totalBindCount() const { return _totalBindCount; }
-	UINT rootParamIndex = UINT_MAX;
 private:	
 	Int _totalBindCount = 0; 
 };
@@ -231,15 +230,17 @@ struct Dx12RootParameterList {
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
-	void addRootDescriptorTable(D3D12_SHADER_VISIBILITY shaderVisibility, Dx12DescriptorTable& table) {
-		if (table.descriptorRanges.size() <= 0) return;
-		table.rootParamIndex = ax_safe_cast_from(parameters.size());
+	UINT addRootDescriptorTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table) {
+		if (table.descriptorRanges.size() <= 0) return UINT_MAX;
+		UINT rootParamIndex = ax_safe_cast_from(parameters.size());
 		
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		dst.ShaderVisibility                    = shaderVisibility;
 		dst.DescriptorTable.NumDescriptorRanges = Dx12Util::castUINT(table.descriptorRanges.size());
 		dst.DescriptorTable.pDescriptorRanges   = table.descriptorRanges.data();
+
+		return rootParamIndex;
 	}
 
 	void addRoot32BitConst(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace	bindSpace, u32 u32_value) {

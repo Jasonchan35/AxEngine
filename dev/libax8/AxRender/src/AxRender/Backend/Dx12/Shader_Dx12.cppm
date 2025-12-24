@@ -38,7 +38,10 @@ struct VertexInputLayoutDesc_Dx12 {
 class ShaderParamSpace_Dx12 : public ShaderParamSpace_Backend {
 	AX_RTTI_INFO(ShaderParamSpace_Dx12, ShaderParamSpace_Backend)
 public:
-	ShaderParamSpace_Dx12(const CreateDesc& desc) : Base(desc) {}
+	ShaderParamSpace_Dx12(const CreateDesc& desc);
+
+	Dx12DescriptorTable         _CBV_SRV_UAV_DescTable;
+	Dx12DescriptorTable         _samplerDescTable;
 };
 
 class ShaderPass_Dx12 : public ShaderPass_Backend {
@@ -52,10 +55,14 @@ public:
 	Pipeline* getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::PsoKey& key);
 	
 	bool _bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) const;
-	void _createRootSignature();
+	void _createRootSignature(Dx12RootParameterList& rootParamList);
 
 	const ShaderParamSpace_Dx12* getParamSpace_dx12(BindSpace s) const {
 		return rttiCastCheck<ShaderParamSpace_Dx12>(getParamSpace(s));
+	}
+
+	ShaderParamSpace_Dx12* getOwnParamSpace_dx12(BindSpace s) {
+		return rttiCastCheck<ShaderParamSpace_Dx12>(getOwnParamSpace(s));
 	}
 	
 	
@@ -77,9 +84,6 @@ public:
 	Stage _csStage;
 
 	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(BindSpace::_COUNT)>;
-
-	Dx12DescriptorTable         _CBV_SRV_UAV_DescTable;
-	Dx12DescriptorTable         _samplerDescTable;
 	
 	Dx12RootParameterList       _pipelineRootParamList;
 	Array<UPtr<Pipeline>, 4>    _pipelineTable;

@@ -16,11 +16,40 @@ struct Dx12DescriptorHandle {
 
 	// operator D3D12_CPU_DESCRIPTOR_HANDLE () const { return cpu; }
 	// operator D3D12_GPU_DESCRIPTOR_HANDLE () const { return gpu; }
+
+	Dx12DescriptorHandle operator+(Int offset) const {
+		Dx12DescriptorHandle h;
+		h.cpu.ptr = cpu.ptr ? cpu.ptr + offset : 0;
+		h.gpu.ptr = gpu.ptr ? gpu.ptr + offset : 0;
+		return h;
+	}
 };
 
-struct Dx12DescripterHeapReserved {
-	Dx12DescriptorHandle  handle;
-	ID3D12DescriptorHeap* d3dHeap = nullptr;
+struct Dx12DescripterHeapBlock : public NonCopyable {
+	template<class HANDLE>
+	HANDLE _allocHandle() {
+		if (_used >= _size) throw Error_Undefined();
+			
+		HANDLE h;
+		h.handle = _startHandle + _stride * _used;
+		_used++;
+		return h;
+	}
+
+	Int size() const { return _size; }
+	Int used() const { return _used; }
+	Int remain() const { return _size - _used; }
+	ID3D12DescriptorHeap* d3dHeap() const { return _d3dHeap; }
+	Dx12DescriptorHandle  startHandle() const { return _startHandle; }
+
+protected:
+	friend class Dx12DescripterHeap_Base;
+		
+	Dx12DescriptorHandle  _startHandle;
+	Int                   _size    = 0;
+	Int                   _used    = 0;
+	Int                   _stride  = 0;
+	ID3D12DescriptorHeap* _d3dHeap = nullptr;
 };
 
 class Dx12DescripterHeap_Base : public NonCopyable {
@@ -28,28 +57,33 @@ public:
 	using BindPoint = ShaderParamBindPoint;
 	using BindCount = ShaderParamBindCount;
 	using BindSpace = ShaderParamBindSpace;
+	using BlockBase = Dx12DescripterHeapBlock;
 
 	void destroy();
 	void reset();
 
-	Dx12DescripterHeapReserved reserveHandles(Dx12_ID3D12Device* dev, Int count);
-
 protected:
-	void _create(Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
-
-	template<class HANDLE>
-	HANDLE _allocHandle() {
-		if (_currentChunk >= _chunks.size()) throw Error_Undefined();
-		auto& chunk = _chunks[_currentChunk];
-		if (chunk.remain() < 1) throw Error_Undefined();
+	void _allocaBlock(BlockBase & block, Dx12_ID3D12Device* dev, Int count) {
+		if (count > _desc.NumDescriptors) throw Error_Undefined();
+		auto& chunk = _getReserveChunk(dev, count);
 		
-		HANDLE h;
-		h.handle = chunk.currentHandle();
-		++chunk._used;
-		return h;
+		block._startHandle = chunk.currentHandle();
+		block._size        = count;
+		block._d3dHeap     = chunk._d3dHeap;
+		block._stride      = chunk._stride;
 	}
 
-	struct Chunk {
+	void _returnBlockRemain(BlockBase& block) {
+		auto& chunk = _chunks[_currentChunk];
+		if (chunk._d3dHeap != block.d3dHeap()) throw Error_Undefined();
+		if (chunk._used < block.remain()) throw Error_Undefined();
+		chunk._used += block.remain();
+		block._used = block._size;
+	}	
+	
+	void _create(Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+
+	struct Chunk : public NonCopyable {
 		ComPtr<ID3D12DescriptorHeap> _d3dHeap;
 		Dx12DescriptorHandle         _startHandle;
 		Int                          _size   = 0;
@@ -58,16 +92,26 @@ protected:
 		Int                          remain() const { return _size - _used; }
 
 		Dx12DescriptorHandle currentHandle() {
-			Dx12DescriptorHandle h = _startHandle;
-			Int offset = _stride * _used;
-			if (h.cpu.ptr) h.cpu.ptr += offset;
-			if (h.gpu.ptr) h.gpu.ptr += offset;
-			return h;
+			return _startHandle + _stride * _used;
 		}
 		
 		Chunk(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc);
 	};
 
+	Chunk& _getReserveChunk(Dx12_ID3D12Device* dev, Int count) {
+		for (Int i = _currentChunk; i < _chunks.size(); ++i) {
+			auto& chunk = _chunks[i]; 
+			if (chunk.remain() >= count) {
+				chunk._used += count;
+				_currentChunk = i;
+				return chunk;
+			}
+		}
+
+		_currentChunk = _chunks.size();
+		return _chunks.emplaceBack(dev, _desc);
+	}
+	
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
 	Array<Chunk>					_chunks;
 	Int								_currentChunk = 0;
@@ -81,11 +125,16 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle_ColorBuffer addRenderTargetView(Dx12_ID3D12Device* dev, Dx12Resource_ColorBuffer& res) {
-		auto h = _allocHandle<Dx12DescriptorHandle_ColorBuffer>();
-		dev->CreateRenderTargetView(res.d3dResource(), nullptr, h.handle.cpu);
-		return h;
-	}
+	struct Block : public BlockBase {
+		Dx12DescriptorHandle_ColorBuffer addRenderTargetView(Dx12_ID3D12Device* dev, Dx12Resource_ColorBuffer& res) {
+			auto h = _allocHandle<Dx12DescriptorHandle_ColorBuffer>();
+			dev->CreateRenderTargetView(res.d3dResource(), nullptr, h.handle.cpu);
+			return h;
+		}
+	};
+
+	void allocaBlock(Block& outBlock, Dx12_ID3D12Device* dev, Int size) { return _allocaBlock(outBlock, dev, size); }
+	void returnBlockRemain(Block& outBlock) { _returnBlockRemain(outBlock); }
 };
 
 struct Dx12DescriptorHandle_DepthBuffer { Dx12DescriptorHandle handle; };
@@ -96,12 +145,17 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 
-	Dx12DescriptorHandle_DepthBuffer addDepthStencilView(Dx12_ID3D12Device* dev, Dx12Resource_DepthBuffer& res) {
-		//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
-		auto h = _allocHandle<Dx12DescriptorHandle_DepthBuffer>();
-		dev->CreateDepthStencilView(res.d3dResource(), nullptr, h.handle.cpu);
-		return h;
-	}
+	struct Block : public BlockBase {
+		Dx12DescriptorHandle_DepthBuffer addDepthStencilView(Dx12_ID3D12Device* dev, Dx12Resource_DepthBuffer& res) {
+			//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
+			auto h = _allocHandle<Dx12DescriptorHandle_DepthBuffer>();
+			dev->CreateDepthStencilView(res.d3dResource(), nullptr, h.handle.cpu);
+			return h;
+		}
+	};	
+
+	void allocaBlock(Block& outBlock, Dx12_ID3D12Device* dev, Int size) { return _allocaBlock(outBlock, dev, size); }
+	void returnBlockRemain(Block& outBlock) { _returnBlockRemain(outBlock); }
 };
 
 struct Dx12DescriptorHandle_Sampler	{ Dx12DescriptorHandle handle; };
@@ -112,26 +166,31 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_Sampler addSampler(Dx12_ID3D12Device* dev, SamplerFilter filter, SamplerWrapUVW wrap) {
-		D3D12_SAMPLER_DESC desc;
-		desc.Filter           = Dx12Util::getDxSamplerFilter(filter);
-		desc.AddressU         = Dx12Util::getDxSamplerWrap(wrap.u);
-		desc.AddressV         = Dx12Util::getDxSamplerWrap(wrap.v);
-		desc.AddressW         = Dx12Util::getDxSamplerWrap(wrap.w);
-		desc.MipLODBias       = 0;
-		desc.MaxAnisotropy    = 0;
-		desc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
-		desc.BorderColor[0]   = 0;
-		desc.BorderColor[1]   = 0;
-		desc.BorderColor[2]   = 0;
-		desc.BorderColor[3]   = 0;
-		desc.MinLOD           = 0.0f;
-		desc.MaxLOD           = D3D12_FLOAT32_MAX;
+	struct Block : public BlockBase {
+		Dx12DescriptorHandle_Sampler addSampler(Dx12_ID3D12Device* dev, SamplerFilter filter, SamplerWrapUVW wrap) {
+			D3D12_SAMPLER_DESC desc;
+			desc.Filter           = Dx12Util::getDxSamplerFilter(filter);
+			desc.AddressU         = Dx12Util::getDxSamplerWrap(wrap.u);
+			desc.AddressV         = Dx12Util::getDxSamplerWrap(wrap.v);
+			desc.AddressW         = Dx12Util::getDxSamplerWrap(wrap.w);
+			desc.MipLODBias       = 0;
+			desc.MaxAnisotropy    = 0;
+			desc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
+			desc.BorderColor[0]   = 0;
+			desc.BorderColor[1]   = 0;
+			desc.BorderColor[2]   = 0;
+			desc.BorderColor[3]   = 0;
+			desc.MinLOD           = 0.0f;
+			desc.MaxLOD           = D3D12_FLOAT32_MAX;
 
-		auto h = _allocHandle<Dx12DescriptorHandle_Sampler>();
-		dev->CreateSampler(&desc, h.handle.cpu);
-		return h;
-	}	
+			auto h = _allocHandle<Dx12DescriptorHandle_Sampler>();
+			dev->CreateSampler(&desc, h.handle.cpu);
+			return h;
+		}
+	};
+
+	void allocaBlock(Block& outBlock, Dx12_ID3D12Device* dev, Int size) { return _allocaBlock(outBlock, dev, size); }
+	void returnBlockRemain(Block& outBlock) { _returnBlockRemain(outBlock); }
 };
 
 struct Dx12DescriptorHandle_ConstBuffer  { Dx12DescriptorHandle handle; };
@@ -146,48 +205,53 @@ public:
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
-	Dx12DescriptorHandle_ConstBuffer addCBV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& res) {
-		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-		desc.BufferLocation = ax_const_cast(res).gpuAddress();
-		desc.SizeInBytes    = Dx12Util::castUINT(res.bufferSize());
-		auto h = _allocHandle<Dx12DescriptorHandle_ConstBuffer>();
-		dev->CreateConstantBufferView(&desc, h.handle.cpu);
-		return h;
-	}
+	struct Block : public BlockBase {
+		Dx12DescriptorHandle_ConstBuffer addCBV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& res) {
+			D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+			desc.BufferLocation = ax_const_cast(res).gpuAddress();
+			desc.SizeInBytes    = Dx12Util::castUINT(res.bufferSize());
+			auto h = _allocHandle<Dx12DescriptorHandle_ConstBuffer>();
+			dev->CreateConstantBufferView(&desc, h.handle.cpu);
+			return h;
+		}
 
-	Dx12DescriptorHandle_UAV addUAV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& buf) {
-		auto h = _allocHandle<Dx12DescriptorHandle_UAV>();
-		dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
-																nullptr,
-																nullptr,
-																h.handle.cpu);
-		return h;
-	}
+		Dx12DescriptorHandle_UAV addUAV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& buf) {
+			auto h = _allocHandle<Dx12DescriptorHandle_UAV>();
+			dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
+																	nullptr,
+																	nullptr,
+																	h.handle.cpu);
+			return h;
+		}
 
-	Dx12DescriptorHandle_RawUAV addTypelessUAV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& buf) {
-		D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
-		desc.Format = DXGI_FORMAT_R32_TYPELESS;
-		desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-		desc.Buffer.FirstElement = 0;
-		desc.Buffer.NumElements = Dx12Util::castUINT(buf.dataSize() / 4);
-		desc.Buffer.StructureByteStride = 0;
-		desc.Buffer.CounterOffsetInBytes = 0;
-		desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
+		Dx12DescriptorHandle_RawUAV addTypelessUAV(Dx12_ID3D12Device* dev, const Dx12Resource_GpuBuffer& buf) {
+			D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
+			desc.Format = DXGI_FORMAT_R32_TYPELESS;
+			desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			desc.Buffer.FirstElement = 0;
+			desc.Buffer.NumElements = Dx12Util::castUINT(buf.dataSize() / 4);
+			desc.Buffer.StructureByteStride = 0;
+			desc.Buffer.CounterOffsetInBytes = 0;
+			desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
-		auto h = _allocHandle<Dx12DescriptorHandle_RawUAV>();
-		dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
-																nullptr,
-																&desc,
-																h.handle.cpu);
-		return h;
-	}
+			auto h = _allocHandle<Dx12DescriptorHandle_RawUAV>();
+			dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
+																	nullptr,
+																	&desc,
+																	h.handle.cpu);
+			return h;
+		}
 
-	Dx12DescriptorHandle_Texture2D addTexture(Dx12_ID3D12Device* dev, const Dx12Resource_Texture2D& res) {
-		//	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-		auto h = _allocHandle<Dx12DescriptorHandle_Texture2D>();
-		dev->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);
-		return h;
-	}
+		Dx12DescriptorHandle_Texture2D addTexture(Dx12_ID3D12Device* dev, const Dx12Resource_Texture2D& res) {
+			//	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+			auto h = _allocHandle<Dx12DescriptorHandle_Texture2D>();
+			dev->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);
+			return h;
+		}		
+	};
+
+	void allocaBlock(Block& outBlock, Dx12_ID3D12Device* dev, Int size) { return _allocaBlock(outBlock, dev, size); }
+	void returnBlockRemain(Block& outBlock) { _returnBlockRemain(outBlock); }
 };
 
 } // namespace

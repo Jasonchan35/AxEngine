@@ -133,6 +133,39 @@ private:
 	InlineUpload _inlineUpload;
 };
 
+template<class OWNER, class DATA, class...ARGS>
+struct RenderPerFrameDataSet_ {
+	RenderPerFrameDataSet_(OWNER* owner_) : _owner(owner_) {}
+	virtual ~RenderPerFrameDataSet_() = default;
+	
+	static constexpr auto kCount = AxRenderConfig::kMaxRenderRequestCount;
+	using Data = DATA;
+
+	const DATA& getUpdated(RenderRequest_Backend* req, ARGS&&... ages) const {
+		return ax_const_cast(this)->_getUpdated(req, AX_FORWARD(ages)...);
+	}
+	
+private:
+
+	DATA& _current() { return _perFrameData[_currentFrameDataIndex]; }
+	DATA& _getUpdated(RenderRequest_Backend* req, ARGS&&... ages) {
+		auto seqId = req->renderSeqId();
+		if (_lastUpdateRenderSeqId != seqId) {
+			_lastUpdateRenderSeqId = seqId;
+			
+			_currentFrameDataIndex = (_currentFrameDataIndex + 1) % _perFrameData.size();
+			_owner->onUpdatePerFrameData(req, _current(), AX_FORWARD(ages)...);
+		}
+		return _current();
+	}
+
+	OWNER*                   _owner                 = nullptr;
+	RenderSeqId              _lastUpdateRenderSeqId = 0;
+	Int                      _currentFrameDataIndex = 0;
+	FixedArray<DATA, kCount> _perFrameData;
+};
+
+
 inline
 void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
 	if (copyDataToGpuBuffer_InlineBuffer(dst, data, dstOffset)) {
