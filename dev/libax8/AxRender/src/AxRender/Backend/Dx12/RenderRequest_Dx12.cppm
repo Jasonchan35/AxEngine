@@ -58,8 +58,8 @@ public:
 	Dx12DescripterHeap_DepthBuffer		_heap_DepthBuffer;
 	Dx12DescripterHeap_CBV_SRV_UAV		_heap_CBV_SRV_UAV;
 	Dx12DescripterHeap_Sampler			_heap_sampler;
-	
-	Array<ID3D12DescriptorHeap*, 2>		_d3dDescHeaps;
+
+	Array<ID3D12DescriptorHeap*>		_currentDescHeaps;
 
 	Dx12_ID3D12Device* _d3dDevice = nullptr;
 	

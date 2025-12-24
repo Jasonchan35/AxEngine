@@ -201,7 +201,7 @@ private:
 	ComPtr<Dx12_IDXGISwapChain>	_swapChain;
 };
 
-struct Dx12DescriptorTable {
+struct Dx12DescriptorTable : public NonCopyable {
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
@@ -210,6 +210,7 @@ struct Dx12DescriptorTable {
 	Int size() const { return descriptorRanges.size(); }
 
 	Int addDescriptor(D3D12_DESCRIPTOR_RANGE_TYPE type, BindPoint bindPoint, Int bindCount, BindSpace bindSpace) {
+		_totalBindCount += bindCount;
 		Int descriptprIndex = descriptorRanges.size();
 		auto& dst                             = descriptorRanges.emplaceBack();
 		dst.RangeType                         = type;
@@ -220,7 +221,10 @@ struct Dx12DescriptorTable {
 		return descriptprIndex;
 	}
 
+	Int totalBindCount() const { return _totalBindCount; }
 	UINT rootParamIndex = UINT_MAX;
+private:	
+	Int _totalBindCount = 0; 
 };
 
 struct Dx12RootParameterList {

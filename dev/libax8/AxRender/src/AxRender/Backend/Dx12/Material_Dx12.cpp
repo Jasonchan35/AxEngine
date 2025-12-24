@@ -22,12 +22,29 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	// SetDescriptorHeaps must be called to bind a sampler descriptor before setting a root signature
 	// with D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED flag.
 	if (!shdPass->_bindPipeline(req, cmd)) return false;
+
+	auto& cbvTable     = shdPass->_CBV_SRV_UAV_DescTable;
+	auto& samplerTable = shdPass->_samplerDescTable; 
 	
-	auto setRootDescTable = [&cmdList](auto& shaderTable, auto& heap) {
-		cmdList->SetGraphicsRootDescriptorTable(shaderTable.rootParamIndex, heap.currentHandle().gpu);
+	Array<ID3D12DescriptorHeap*> descHeaps;
+	
+	auto setRootDescTable = [&](const Dx12DescriptorTable& shaderTable, Dx12DescripterHeap_Base& heap) {
+		auto bindCount = shaderTable.totalBindCount();
+		auto res = heap.reserveHandles(req->_d3dDevice, bindCount);
+		descHeaps.emplaceBack(res.d3dHeap);
+		return res.handle;
 	};
-	setRootDescTable(shdPass->_CBV_SRV_UAV_DescTable,	req->_heap_CBV_SRV_UAV);
-	setRootDescTable(shdPass->_samplerDescTable,		req->_heap_sampler);
+
+	auto cbvHandle      = setRootDescTable(cbvTable    , req->_heap_CBV_SRV_UAV);
+	auto samplerHandler = setRootDescTable(samplerTable, req->_heap_sampler);
+
+	if (req->_currentDescHeaps != descHeaps) {
+		req->_currentDescHeaps = descHeaps;
+		cmdList->SetDescriptorHeaps(ax_safe_cast_from(descHeaps.size()), descHeaps.data());
+	}
+
+	cmdList->SetGraphicsRootDescriptorTable(cbvTable.rootParamIndex    , cbvHandle.gpu);
+	cmdList->SetGraphicsRootDescriptorTable(samplerTable.rootParamIndex, samplerHandler.gpu);
 	
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {

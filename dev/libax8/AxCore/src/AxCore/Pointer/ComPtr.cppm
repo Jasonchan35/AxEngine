@@ -10,10 +10,7 @@ class ComPtr : public NonCopyable {
 public:
 	ComPtr() = default;
 	ComPtr(const ComPtr& r) { ref(r.ptr()); }
-	ComPtr( ComPtr && r ) noexcept {
-		_p = r._p;
-		r._p = nullptr;
-	}
+	ComPtr( ComPtr && r ) noexcept : _p(r._p) { r._p = nullptr; }
 
 	~ComPtr() noexcept { unref(); }
 

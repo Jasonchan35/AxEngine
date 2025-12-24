@@ -18,60 +18,59 @@ struct Dx12DescriptorHandle {
 	// operator D3D12_GPU_DESCRIPTOR_HANDLE () const { return gpu; }
 };
 
+struct Dx12DescripterHeapReserved {
+	Dx12DescriptorHandle  handle;
+	ID3D12DescriptorHeap* d3dHeap = nullptr;
+};
+
 class Dx12DescripterHeap_Base : public NonCopyable {
 public:
 	using BindPoint = ShaderParamBindPoint;
 	using BindCount = ShaderParamBindCount;
 	using BindSpace = ShaderParamBindSpace;
 
-	ID3D12DescriptorHeap*	d3dHeap() { return _d3dHeap; }
-
-//	bool isValid() const { return _d3dHeap.ptr() != nullptr; }
-	UINT numDescriptors() const { return _desc.NumDescriptors; }
 	void destroy();
+	void reset();
 
-	void reset() { _used = 0; }
+	Dx12DescripterHeapReserved reserveHandles(Dx12_ID3D12Device* dev, Int count);
 
-	Dx12DescriptorHandle currentHandle() { Dx12DescriptorHandle h; _baseGetHandle(h, _used); return h; }
-	
-	const Dx12DescriptorHandle& handleStart() const { return _handleStart; }
-	
 protected:
-	void _create(Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+	void _create(Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 
 	template<class HANDLE>
 	HANDLE _allocHandle() {
-		if (_used >= _desc.NumDescriptors) {
-			throw Error_Undefined();
-		}
+		if (_currentChunk >= _chunks.size()) throw Error_Undefined();
+		auto& chunk = _chunks[_currentChunk];
+		if (chunk.remain() < 1) throw Error_Undefined();
 		
 		HANDLE h;
-		_baseGetHandle(h.handle, _used);
-		_used++;
-		return h;
-	}
-	
-	
-	template<class HANDLE>
-	HANDLE _getHandle(Int index) {
-		HANDLE h;
-		_baseGetHandle(h.handle, index);
+		h.handle = chunk.currentHandle();
+		++chunk._used;
 		return h;
 	}
 
-	void _baseGetHandle(Dx12DescriptorHandle& outHandle, Int index) {
-		UINT i = ax_safe_cast_from(index);
-		if (i >= _desc.NumDescriptors) throw Error_Undefined();
-		auto offset = i * _stride;
-		outHandle.cpu.ptr = _handleStart.cpu.ptr + offset;
-		outHandle.gpu.ptr = _handleStart.gpu.ptr + offset;
-	}
+	struct Chunk {
+		ComPtr<ID3D12DescriptorHeap> _d3dHeap;
+		Dx12DescriptorHandle         _startHandle;
+		Int                          _size   = 0;
+		Int                          _used   = 0;
+		Int                          _stride = 0;
+		Int                          remain() const { return _size - _used; }
 
-	ComPtr<ID3D12DescriptorHeap>	_d3dHeap;
+		Dx12DescriptorHandle currentHandle() {
+			Dx12DescriptorHandle h = _startHandle;
+			Int offset = _stride * _used;
+			if (h.cpu.ptr) h.cpu.ptr += offset;
+			if (h.gpu.ptr) h.gpu.ptr += offset;
+			return h;
+		}
+		
+		Chunk(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc);
+	};
+
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
-	Dx12DescriptorHandle			_handleStart;
-	UINT							_stride = 0;
-	UINT							_used = 0;
+	Array<Chunk>					_chunks;
+	Int								_currentChunk = 0;
 };
 
 struct Dx12DescriptorHandle_ColorBuffer { Dx12DescriptorHandle handle; };
