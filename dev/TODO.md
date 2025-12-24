@@ -1,5 +1,10 @@
 - Vulkan - Bindless
-	- use only one set for bindless
+	- use only one destSet for bindless
+	
+- Dx12
+	- RenderRequest - linear allocate CRV_Heap, Sampler_Heap
+	- Material update 
+	- move some CBV, Texture to root parameter
 
 
 - GC
