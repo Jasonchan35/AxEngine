@@ -16,6 +16,7 @@ export import AxCore.Formatter;
 export import AxCore.GlobalSingleton;
 export import AxCore.HashInt;
 export import AxCore.JsonIO;
+export import AxCore.LinearAllocator;
 export import AxCore.Logger;
 export import AxCore.LockProtected;
 export import AxCore.Mat;

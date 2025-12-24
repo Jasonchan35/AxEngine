@@ -38,8 +38,10 @@ public:
 	AX_VkFence			_completedFence_vk;
 
 	Array<VkWriteDescriptorSet>		_writeDescriptorSets;
-	Array<VkDescriptorBufferInfo> 	_writeDescriptor_BufferInfos;
-	Array<VkDescriptorImageInfo>  	_writeDescriptor_ImageInfos;
+	LinearAllocator					_writeDescLinearAllocator;
+
+	VkDescriptorBufferInfo*		_getWriteDescBufferInfo() { return _writeDescLinearAllocator.newObject<VkDescriptorBufferInfo>(); }
+	VkDescriptorImageInfo*		_getWriteDescImageInfo()  { return _writeDescLinearAllocator.newObject<VkDescriptorImageInfo>();   }
 };
 
 } // namespace

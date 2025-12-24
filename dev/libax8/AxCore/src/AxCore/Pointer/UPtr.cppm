@@ -4,7 +4,7 @@ module;
 export module AxCore.UPtr;
 
 export import AxCore.BasicType;
-export import AxCore.Allocator;
+export import AxCore.MemAllocator;
 export import AxCore.Span;
 
 export namespace ax {

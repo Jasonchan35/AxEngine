@@ -28,6 +28,7 @@ MaterialParamSpace_Vk::PerFrameData& MaterialParamSpace_Vk::_getUpdatedFrameData
 }
 
 void MaterialParamSpace_Vk::_updateFrameData(RenderRequest_Vk* req, PerFrameData& frameData) {
+	//----- create -----
 	if (!frameData._descSet) {
 		auto* mtlPass_vk = rttiCastCheck<MaterialPass_Vk>(_materialPass);
 		
@@ -41,6 +42,7 @@ void MaterialParamSpace_Vk::_updateFrameData(RenderRequest_Vk* req, PerFrameData
 #endif
 	}
 
+	//------- update -----
 	auto addWriteDesc = [&](VkDescriptorType        descType,
 	                        BindPoint               bindPoint,
 	                        VkDescriptorSet&        descSet,
@@ -64,13 +66,13 @@ void MaterialParamSpace_Vk::_updateFrameData(RenderRequest_Vk* req, PerFrameData
 	for (auto& param : _constBuffers) {
 		auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
 		if (!gpuBuf) throw Error_Undefined("cannot get const buffer");
-		auto& dst  = req->_writeDescriptor_BufferInfos.emplaceBack();
-		dst.offset = 0;
-		dst.range  = AX_VkUtil::castUInt32(param.dataSize());
-		dst.buffer = gpuBuf->vkBufHandle();
-		if (!dst.buffer) throw Error_Undefined();
+		auto* dst  = req->_getWriteDescBufferInfo();
+		dst->offset = 0;
+		dst->range  = AX_VkUtil::castUInt32(param.dataSize());
+		dst->buffer = gpuBuf->vkBufHandle();
+		if (!dst->buffer) throw Error_Undefined();
 
-		addWriteDesc(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), frameData._descSet, &dst, nullptr);
+		addWriteDesc(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), frameData._descSet, dst, nullptr);
 	}
 
 #if !AX_RENDER_BINDLESS
@@ -85,11 +87,11 @@ void MaterialParamSpace_Vk::_updateFrameData(RenderRequest_Vk* req, PerFrameData
 
 		req->resourcesToKeep.add(sampler_vk);
 
-		auto& dst   = req->_writeDescriptor_ImageInfos.emplaceBack();
-		dst.sampler = ax_const_cast(sampler_vk)->vkHandle();
-		if (!dst.sampler) throw Error_Undefined();
+		auto* dst   = req->_getWriteDescImageInfo();
+		dst->sampler = ax_const_cast(sampler_vk)->vkHandle();
+		if (!dst->sampler) throw Error_Undefined();
 
-		addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), frameData._descSet, nullptr, &dst);
+		addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), frameData._descSet, nullptr, dst);
 	}
 
 	for (auto& param : _textureParams) {
@@ -98,19 +100,19 @@ void MaterialParamSpace_Vk::_updateFrameData(RenderRequest_Vk* req, PerFrameData
 			tex = StockObjects::s_instance()->texture2Ds.kError.ptr();
 		}
 
-		auto& dst = req->_writeDescriptor_ImageInfos.emplaceBack();
+		auto* dst = req->_getWriteDescImageInfo();
 		switch (tex->type()) {
 			case RenderDataType::Texture2D: {
 				auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
 				if (!tex2d) throw Error_Undefined();
-				ax_const_cast(tex2d)->_bindImage(req, dst);
+				ax_const_cast(tex2d)->_bindImage(req, *dst);
 			}
 			break;
 
 			default: throw Error_Undefined();
 		}
 
-		addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, param.bindPoint(), frameData._descSet, nullptr, &dst);
+		addWriteDesc(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, param.bindPoint(), frameData._descSet, nullptr, dst);
 	}
 	
 	for (auto& param : _storageBufferParams) {
@@ -120,13 +122,13 @@ void MaterialParamSpace_Vk::_updateFrameData(RenderRequest_Vk* req, PerFrameData
 		auto* gpuBuffer = rttiCastCheck<GpuBuffer_Vk>(storageBuffer->gpuBuffer());
 		if (!gpuBuffer) throw Error_Undefined("cannot get storage gpu buffer");
 
-		auto& dst  = req->_writeDescriptor_BufferInfos.emplaceBack();
-		dst.offset = 0;
-		dst.range  = AX_VkUtil::castUInt32(param.dataSize());
-		dst.buffer = gpuBuffer->vkBufHandle();
-		if (!dst.buffer) throw Error_Undefined();
+		auto* dst  = req->_getWriteDescBufferInfo();
+		dst->offset = 0;
+		dst->range  = AX_VkUtil::castUInt32(param.dataSize());
+		dst->buffer = gpuBuffer->vkBufHandle();
+		if (!dst->buffer) throw Error_Undefined();
 
-		addWriteDesc(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), frameData._descSet, &dst, nullptr);
+		addWriteDesc(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), frameData._descSet, dst, nullptr);
 	}
 #endif // #if !AX_RENDER_BINDLESS
 
@@ -160,18 +162,10 @@ void MaterialPass_Vk::_createDescPool() {
 }
 
 auto MaterialPass_Vk::getUpdatedFrameData(RenderRequest_Vk* req) -> PerFrameData& {
-	req->_writeDescriptor_BufferInfos.clear();
-	req->_writeDescriptor_BufferInfos.ensureCapacity(1000);
-	auto checkCapacity_BufferInfos = ScopedArrayCapacityCheck(req->_writeDescriptor_BufferInfos);
-
-	//------------
-	req->_writeDescriptor_ImageInfos.clear();
-	req->_writeDescriptor_ImageInfos.ensureCapacity(1000);
-	auto checkCapacity_ImageInfos = ScopedArrayCapacityCheck(req->_writeDescriptor_ImageInfos);
-
-	//------------
+	req->_writeDescLinearAllocator.reset();
+	//-----
 	req->_writeDescriptorSets.clear();
-	req->_writeDescriptorSets.ensureCapacity(1000); // TODO: replace by ChunkArray
+	req->_writeDescriptorSets.ensureCapacity(64);
 
 	_perFrameData._allDescSets.clear();
 

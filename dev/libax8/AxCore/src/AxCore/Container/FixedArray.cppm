@@ -1,6 +1,6 @@
 ﻿module;
 export module AxCore.FixedArray;
-export import AxCore.Allocator;
+export import AxCore.MemAllocator;
 export import AxCore.MemUtil;
 export import AxCore.FixedSpan;
 

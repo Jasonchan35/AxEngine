@@ -10,13 +10,13 @@ public:
 
 	void test_align() {
 		auto scope = s_testRequest().scopedVerbose();
-		AX_TEST_EQ(Math::alignUp( 10, 4),  12);
-		AX_TEST_EQ(Math::alignUp(-10, 4), -12);
+		AX_TEST_EQ(Math::alignTo( 10, 4),  12);
+		AX_TEST_EQ(Math::alignTo(-10, 4), -12);
 		AX_TEST_EQ(Math::alignDown( 10, 4),  8);
 		AX_TEST_EQ(Math::alignDown(-10, 4), -8);
 
-		AX_TEST_EQ(Math::alignUp( 2, 4),  4);
-		AX_TEST_EQ(Math::alignUp(-2, 4), -4);
+		AX_TEST_EQ(Math::alignTo( 2, 4),  4);
+		AX_TEST_EQ(Math::alignTo(-2, 4), -4);
 		AX_TEST_EQ(Math::alignDown( 2, 4), 0);
 		AX_TEST_EQ(Math::alignDown(-2, 4), 0);
 	}

@@ -1,7 +1,6 @@
 ﻿module;
 
-
-export module AxCore.Allocator;
+export module AxCore.MemAllocator;
 export import AxCore.Math;
 export import AxCore.MemUtil;
 
@@ -63,7 +62,7 @@ public:
 	}
 
 	AX_INLINE T* peekData() noexcept { return _data; }
-	
+
 private:
 	class MemAllocator* _allocator = nullptr;
 	T*  _data	= nullptr;
@@ -72,6 +71,7 @@ private:
 
 class MemAllocator {
 public:
+	MemAllocator(MemAllocator* parent) : _parent(parent) {}
 	virtual ~MemAllocator() = default;
 	
 	template<class T>
@@ -84,16 +84,40 @@ public:
 		req.dataSize = reqSize * AX_SIZEOF(T);
 		req.alignment = alignment;
 		
-		auto block = onAlloc(req);
+		auto block = allocBytes(req);
 		T* data = reinterpret_cast<T*>(block.takeOwnership());
 		return MemAllocResult<T>(this, data, reqSize);
 	}
 
-	MemAllocResult<u8> allocBytes(const MemAllocRequest & req) { return onAlloc(req); }
+	MemAllocResult<u8> allocBytes(const MemAllocRequest & req) {
+		incCounter(req.dataSize);
+		return onAlloc(req);
+	}
 	
-	void dealloc(void* p) { return onDealloc(p); }
-	
+	void dealloc(void* p) {
+		onDealloc(p);
+		decCounter(0); // TODO
+	}
+
+	Int allocatedCount() const { return _allocatedCount; }
+	Int allocatedBytes() const { return _allocatedBytes; }
+
 protected:
+	void incCounter(Int sizeInBytes) {
+		_allocatedCount++;
+		_allocatedBytes += sizeInBytes;
+	}
+
+	void decCounter(Int sizeInBytes) {
+		_allocatedCount--;
+		_allocatedBytes -= sizeInBytes;
+		AX_ASSERT(_allocatedCount >= 0 && _allocatedBytes >= 0);
+	}
+	
+	MemAllocator* _parent;
+	Int _allocatedCount = 0;
+	Int _allocatedBytes = 0;
+	
 	virtual MemAllocResult<u8> onAlloc(const MemAllocRequest & req) {
 		void* data = ax_malloc(req.dataSize, req.alignment);
 //		std::cout << std::format("onAlloc size={} data={}\n", req.dataSize, data);
@@ -105,6 +129,13 @@ protected:
 //		std::cout << std::format("onDealloc data={}\n", data);
 		ax_free(data);
 	}
+
+	MemAllocResult<u8> allocFromParent(Int dataSize, const SrcLoc& srcLoc = SrcLoc::s_current()) {
+		MemAllocRequest req(this, srcLoc); 
+		req.dataSize = dataSize;
+		return _parent->allocBytes(req);
+	}
+	
 };
 
 template<class T> inline

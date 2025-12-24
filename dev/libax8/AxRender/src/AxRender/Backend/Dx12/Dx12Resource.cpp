@@ -119,7 +119,7 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	if (bufferSize <= 0) {
 		return;
 	}
-	_desc.Width = Math::alignUp(bufferSize, alignment);
+	_desc.Width = Math::alignTo(bufferSize, alignment);
 	_dataSize = bufferSize;
 	_create();
 }

@@ -82,7 +82,7 @@ public:
 	
 	AX_NODISCARD AX_INLINE constexpr This alignTo(const T& alignment) const {
 		return This(Math::alignDown(_start, alignment),
-					Math::alignUp(    _stop, alignment));
+					Math::alignTo(   _stop, alignment));
 	}
 
 	using MIter = Range_Iterator<T>;

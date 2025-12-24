@@ -1,12 +1,11 @@
 ﻿module;
 
-
-module AxCore.Allocator;
+module AxCore.MemAllocator;
 
 namespace ax {
 
 MemAllocator* ax_default_allocator() {
-	static MemAllocator s;
+	static MemAllocator s(nullptr);
 	return &s;
 }
 

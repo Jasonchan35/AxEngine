@@ -45,8 +45,7 @@ void RenderRequest_Vk::onWaitCompleted() {
 	_graphCmdBuf_vk.resetAndReleaseResource();
 
 	_writeDescriptorSets.clear();
-	_writeDescriptor_BufferInfos.clear();
-	_writeDescriptor_ImageInfos.clear();
+	_writeDescLinearAllocator.reset();
 }
 
 void RenderRequest_Vk::_updatedBindlessResources() {

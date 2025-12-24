@@ -7,7 +7,7 @@ export import AxCore.Format;
 export import AxCore.UtfUtil;
 export import AxCore.Array;
 
-import AxCore.Allocator;
+import AxCore.MemAllocator;
 import AxCore.MemUtil;
 import AxCore.Array;
 
