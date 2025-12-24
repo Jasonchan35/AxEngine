@@ -49,7 +49,7 @@
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex", 
           "bindSpace": "Default", 
-          "bindPoint": 0, 
+          "bindPoint": 1, 
           "bindCount": 1, 
           "dataSize": 64, 
           "variables": [{

@@ -8,6 +8,23 @@ export namespace ax /*::AxRender*/ {
 class Shader_Backend;
 class ShaderPass_Backend;
 
+struct ShaderParamTotalBindCount {
+	using This = ShaderParamTotalBindCount;
+	
+	Int constBuffers        = 0;
+	Int textureParams       = 0;
+	Int samplerParams       = 0;
+	Int storageBufferParams = 0;
+
+	template<class FUNC>
+	void unroll(const This& rhs, FUNC func) {
+		func(constBuffers       , rhs);
+		func(textureParams      , rhs);
+		func(samplerParams      , rhs);
+		func(storageBufferParams, rhs);
+	} 
+};
+
 class ShaderParamSpace_CreateDesc : public NonCopyable {
 public:
 	using BindSpace = ShaderParamBindSpace;
@@ -286,6 +303,11 @@ protected:
 	Int _ownParamSpaceTotalBindCount_samplerParams       = 0;
 	Int _ownParamSpaceTotalBindCount_storageBufferParams = 0;
 
+	Int _allParamSpaceTotalBindCount_constBuffers        = 0;
+	Int _allParamSpaceTotalBindCount_textureParams       = 0;
+	Int _allParamSpaceTotalBindCount_samplerParams       = 0;
+	Int _allParamSpaceTotalBindCount_storageBufferParams = 0;
+	
 	void _createParamSpaces();
 
 	template<class T>

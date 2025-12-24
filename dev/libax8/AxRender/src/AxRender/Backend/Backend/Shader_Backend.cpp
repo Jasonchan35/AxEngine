@@ -220,7 +220,14 @@ void ShaderPass_Backend::_createParamSpaces() {
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);
 		if (!isOwnParamSpace(bindSpace)) {
-			_shaderParamSpaces[i] = commonShaderPass->getParamSpace(bindSpace);
+			auto* commonParamSpace = commonShaderPass->getParamSpace(bindSpace);
+			_shaderParamSpaces[i] = commonParamSpace;
+
+			_allParamSpaceTotalBindCount_constBuffers        += commonParamSpace->totalBindCount_constBuffers       ();
+			_allParamSpaceTotalBindCount_textureParams       += commonParamSpace->totalBindCount_textureParams      ();
+			_allParamSpaceTotalBindCount_samplerParams       += commonParamSpace->totalBindCount_samplerParams      ();
+			_allParamSpaceTotalBindCount_storageBufferParams += commonParamSpace->totalBindCount_storageBufferParams();
+			
 			continue;
 		}
 

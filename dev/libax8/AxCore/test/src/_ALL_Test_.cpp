@@ -15,6 +15,7 @@ void AxCore_Test_Base() {
     AX_TEST_FUNC(Test_HashInt)
     AX_TEST_FUNC(Test_Math)
     AX_TEST_FUNC(Test_Scoped)
+    AX_TEST_FUNC(Test_StructUtil)
     AX_TEST_FUNC(Test_Uuid)
 }
 

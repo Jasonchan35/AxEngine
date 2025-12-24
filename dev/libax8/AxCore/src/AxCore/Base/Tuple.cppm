@@ -136,7 +136,7 @@ public:
 };
 
 template<class... ELEMENTS>
-Tuple<ELEMENTS...> Tuple_make(ELEMENTS ... args) {
+Tuple<ELEMENTS...> Tuple_make(ELEMENTS&& ... args) {
 	return Tuple<ELEMENTS...>(AX_FORWARD(args)...);
 }
 
