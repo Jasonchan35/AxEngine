@@ -228,13 +228,13 @@
 	<!-- ax::IString_<*> -->
 	<Type Name="ax::IString_&lt;*&gt;">
 		<DisplayString Condition="_storage._small.isSmall">
-			{_storage} {
+			{
 				&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]
 				, [_storage._small.size]na 
 			}
 		</DisplayString>
 		<DisplayString Condition="!_storage._small.isSmall">
-			{_storage} {_storage._normal.data, [_storage._normal.size]na}
+			{_storage._normal.data, [_storage._normal.size]na}
 		</DisplayString>
 
 		<StringView  Condition="_storage._small.isSmall">
@@ -255,8 +255,8 @@
 
 	<!-- ax::NameId_<*,*> -->
 	<Type Name="ax::NameId_&lt; *, * &gt;">
-		<DisplayString  Condition="_id &lt; 0">NameId({_name})</DisplayString>
-		<DisplayString                        >NameId({_name}#{_id})</DisplayString>
+		<DisplayString  Condition="_id &lt; 0">[{_name}]</DisplayString>
+		<DisplayString                        >[{_name}#{_id}]</DisplayString>
 	</Type>
 
 </AutoVisualizer>

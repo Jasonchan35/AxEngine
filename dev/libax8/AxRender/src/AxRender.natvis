@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010"> 	
+
+<!--
+	Reference Document 
+	https://msdn.microsoft.com/en-us/library/jj620914.aspx
+	
+	Expression[,<FormatSpecifier> ]
+	https://msdn.microsoft.com/en-us/library/windows/hardware/dn936815(v=vs.85).aspx
+-->
+	<Type Name="ax::ShaderParamSpace_Backend">
+		<DisplayString>BindSpace::{_bindSpace}[{*_shaderPass}]</DisplayString>
+	</Type>
+
+	<Type Name="ax::ShaderPass_Backend">
+		<DisplayString>{_name}[{_shader->_assetPath}]</DisplayString>
+	</Type>
+
+	<Type Name="ax::Shader">
+		<DisplayString>{_assetPath}</DisplayString>
+	</Type>
+
+</AutoVisualizer>
