@@ -258,6 +258,7 @@ public:
 	static constexpr auto BindSpace_COUNT = ax_enum_int(BindSpace::_COUNT);
 
 	ShaderPass_Backend(const CreateDesc& desc);
+	virtual ~ShaderPass_Backend() override;
 
 	      Shader_Backend* shader()       { return _shader; }
 	const Shader_Backend* shader() const { return _shader; }

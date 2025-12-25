@@ -150,6 +150,13 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 	}
 }
 
+MaterialPass_Backend::~MaterialPass_Backend() {
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		if (auto* ownParamSpace = getOwnParamSpace(bindSpace)) {
+			ownParamSpace->_materialPass = nullptr; // the lifespan of ParamSpace might be longer
+		}
+	}
+}
 
 #if 0
 #pragma mark "============ Material_Backend ==============="

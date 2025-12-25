@@ -170,6 +170,7 @@ public:
 	Array<SamplerParam,       2>	_samplerParams;
 	
 protected:
+	friend class MaterialPass_Backend;
 	MaterialPass_Backend* _materialPass = nullptr;
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
@@ -233,6 +234,7 @@ public:
 	static constexpr auto BindSpace_COUNT = ax_enum_int(BindSpace::_COUNT);
 
 	MaterialPass_Backend(const CreateDesc& desc);
+	virtual ~MaterialPass_Backend() override;
 
 	const ShaderPass_Backend*	shaderPass() const { return _shaderPass; }
 	const Shader_Backend*		shader() const;

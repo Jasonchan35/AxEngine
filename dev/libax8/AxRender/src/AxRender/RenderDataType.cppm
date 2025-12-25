@@ -35,6 +35,8 @@ enum class ShaderParamBindPoint : u16 {
 //-----
 	Invalid			   = u16_max,
 };
+AX_ENUM_STR_FROM_INT(ShaderParamBindPoint)
+
 
 using ShaderParamBindCount = u32;
 

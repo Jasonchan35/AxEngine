@@ -34,7 +34,13 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		if (!ownParamSpace) continue;
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
-		auto addBinding = [&bindings, bindingFlags](const ParamBase& p, VkDescriptorType type) {
+		auto addBinding = [&](const ParamBase& p, VkDescriptorType type) {
+			AX_LOG("addBinding shader={}, bindSpace={}, bindPoint={}, bindCount={} type={}",
+			       _shader->assetPath(),
+			       bindSpace,
+			       p.bindPoint(),
+			       p.bindCount(),
+			       int(type));
 			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 		};
 

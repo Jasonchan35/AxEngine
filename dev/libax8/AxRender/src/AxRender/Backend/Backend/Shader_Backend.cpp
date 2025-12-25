@@ -191,6 +191,14 @@ ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 	_createParamSpaces();
 }
 
+ShaderPass_Backend::~ShaderPass_Backend() {
+	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
+		if (auto* ownParamSpace = getOwnParamSpace(bindSpace)) {
+			ownParamSpace->_shaderPass = nullptr; // the lifespan of ParamSpace might be longer
+		}
+	}
+}
+
 template<class T>
 void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 	for (auto& param : paramInfoSpan) {
@@ -201,6 +209,7 @@ void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 		if (!space) {
 			ShaderParamSpace_CreateDesc spaceDesc;
 			spaceDesc.bindSpace = s;
+			spaceDesc.shaderPass = this;
 			auto newSpace = ShaderParamSpace_Backend::s_new(AX_ALLOC_REQ, spaceDesc);
 			space.ref(newSpace.ptr());
 		}

@@ -34,6 +34,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 
 		writeDescSetHelper.addConstBufferInfo(param.bindPoint(),
 		                                      frameData._descSet,
+		                                      0,
 		                                      gpuBuf->vkBufHandle(),
 		                                      0,
 		                                      param.dataSize());
@@ -52,7 +53,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 		req->resourcesToKeep.add(sampler_vk);
 
 		auto samplerHandle = ax_const_cast(sampler_vk)->vkHandle();
-		writeDescSetHelper.addSamplerInfo(param.bindPoint(), frameData._descSet, samplerHandle);
+		writeDescSetHelper.addSamplerInfo(param.bindPoint(), frameData._descSet, 0, samplerHandle);
 	}
 
 	for (auto& param : _textureParams) {
@@ -66,7 +67,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 				auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
 				if (!tex2d) throw Error_Undefined();
 				auto info = ax_const_cast(tex2d)->_bindImage(req);
-				writeDescSetHelper.addImageInfo(param.bindPoint(), frameData._descSet, info.imageView, info.imageLayout);
+				writeDescSetHelper.addImageInfo(param.bindPoint(), frameData._descSet, 0, info.imageView, info.imageLayout);
 			}
 			break;
 
@@ -83,6 +84,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 
 		writeDescSetHelper.addStorageBufferInfo(param.bindPoint(),
 		                                frameData._descSet,
+		                                0,
 		                                gpuBuffer->vkBufHandle(),
 		                                0,
 		                                param.dataSize());

@@ -29,6 +29,8 @@ public:
 
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 
+	AX_VkDevice*		_device_vk = nullptr;
+
 	CommandBuffer_Vk	_uploadCmdBuf_vk; // submit earlier than graphCmdBuf
 	AX_VkSemaphore		_uploadCmdSem_vk;
 
@@ -38,7 +40,8 @@ public:
 	AX_VkSemaphore		_imageAcquiredSemaphore_vk;
 	AX_VkFence			_completedFence_vk;
 
-	AX_VkDescriptorPool			_descriptorPool;
+	AX_VkDescriptorPool	_descriptorPool;
+	
 
 
 	struct WriteDescSetHelper;
@@ -59,6 +62,7 @@ public:
 
 		void addConstBufferInfo(BindPoint        bindPoint,
 		                          VkDescriptorSet& descSet,
+		                          u32              arrayElementIndex,
 		                          VkBuffer         buffer,
 		                          Int              offset,
 		                          Int              range
@@ -68,11 +72,12 @@ public:
 			info->buffer = buffer;
 			info->offset = AX_VkUtil::castUInt32(offset);
 			info->range  = AX_VkUtil::castUInt32(range);
-			_add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, bindPoint, descSet, info, nullptr);
+			_add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, bindPoint, descSet, arrayElementIndex, info, nullptr);
 		}
 
 		void addStorageBufferInfo(BindPoint        bindPoint,
 		                            VkDescriptorSet& descSet,
+		                            u32              arrayElementIndex,
 		                            VkBuffer         buffer,
 		                            VkDeviceSize     offset,
 		                            VkDeviceSize     range
@@ -82,11 +87,12 @@ public:
 			info->buffer = buffer;
 			info->offset = offset;
 			info->range  = range;
-			_add(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, bindPoint, descSet, info, nullptr);
+			_add(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, bindPoint, descSet, arrayElementIndex, info, nullptr);
 		}
 
 		void addImageInfo(BindPoint        bindPoint,
 		                    VkDescriptorSet& descSet,
+		                    u32              arrayElementIndex,
 		                    VkImageView      imageView,
 		                    VkImageLayout    imageLayout
 		) {
@@ -97,11 +103,12 @@ public:
 			info->sampler     = nullptr;
 			info->imageView   = imageView;
 			info->imageLayout = imageLayout;
-			_add(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, bindPoint, descSet, nullptr, info);
+			_add(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, bindPoint, descSet, arrayElementIndex, nullptr, info);
 		}
 
 		void addSamplerInfo(BindPoint        bindPoint,
 						   VkDescriptorSet& descSet,
+						   u32              arrayElementIndex,
 						   VkSampler        sampler
 		) {
 			if (!sampler) throw Error_Undefined();
@@ -109,13 +116,14 @@ public:
 			info->sampler     = sampler;
 			info->imageView   = nullptr;
 			info->imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			_add(VK_DESCRIPTOR_TYPE_SAMPLER, bindPoint, descSet, nullptr, info);
+			_add(VK_DESCRIPTOR_TYPE_SAMPLER, bindPoint, descSet, arrayElementIndex, nullptr, info);
 		}		
 
 	private:
 		auto _add(VkDescriptorType        descType,
 		          BindPoint               bindPoint,
 		          VkDescriptorSet&        descSet,
+		          u32                     arrayElementIndex,
 		          VkDescriptorBufferInfo* bufInfo,
 		          VkDescriptorImageInfo*  imageInfo
 		) {
@@ -124,7 +132,7 @@ public:
 			wds.pNext           = nullptr;
 			wds.dstSet          = descSet;
 			wds.dstBinding      = AX_VkUtil::castUInt32(ax_enum_int(bindPoint));
-			wds.dstArrayElement = 0;
+			wds.dstArrayElement = arrayElementIndex;
 			wds.descriptorType  = descType;
 			wds.descriptorCount = 1;
 			wds.pBufferInfo     = bufInfo;
