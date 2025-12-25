@@ -1655,42 +1655,88 @@ void AX_VkDebugReportCallbackEXT::destroy() {
 	}
 }
 
-void AX_VkDescriptorPool::destroy() {
-	if (_handle) {
-		vkDestroyDescriptorPool(*_dev, _handle, AX_VkUtil::allocCallbacks());
-		_handle = VK_NULL_HANDLE;
-		_dev = nullptr;
-	}
+void AX_VkDescriptorPool::create(AX_VkDevice& dev, const CreateDesc& desc) {
+	destroy();
+	_dev  = &dev;
+	_desc = desc;
 }
 
-void AX_VkDescriptorPool::create(AX_VkDevice& dev, Span<VkDescriptorPoolSize> poolSizes, Int maxSets, VkDescriptorPoolCreateFlags flags) {
-	destroy();
-	_dev = &dev;
-
-	VkDescriptorPoolCreateInfo info = {};
-
-	info.sType		   = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	info.maxSets	   = AX_VkUtil::castUInt32(maxSets);
-	info.poolSizeCount = AX_VkUtil::castUInt32(poolSizes.size());
-	info.pPoolSizes	   = poolSizes.data();
-	info.flags		   = flags;
-
-	auto err = vkCreateDescriptorPool(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
-	AX_VkUtil::throwIfError(err);
+void AX_VkDescriptorPool::destroy() {
+	_chunks.clear();
 }
 
 VkDescriptorSet AX_VkDescriptorPool::allocDescriptorSet(VkDescriptorSetLayout descSetLayout) {
+	_allocatedCount++;
+	
+	for (; _currentChunk < _chunks.size(); ++_currentChunk) {
+		auto& chunk = _chunks[_currentChunk];
+		if (auto descSet = chunk.allocDescriptorSet(descSetLayout)) {
+			return descSet;
+		}
+	}
+
+	auto& chunk = _chunks.emplaceBack();
+	chunk.create(_dev, _desc);
+	
+	if (auto descSet = chunk.allocDescriptorSet(descSetLayout)) {
+		return descSet;
+	}
+	throw Error_Undefined();
+}
+
+void AX_VkDescriptorPool::reset() {
+	for (auto& chunk : _chunks) {
+		chunk.reset();
+	}
+	_currentChunk = 0;
+	_allocatedCount = 0;
+}
+
+void AX_VkDescriptorPool::Chunk::create(AX_VkDevice* dev, const CreateDesc& desc) {
+	destroy();
+	
+	VkDescriptorPoolCreateInfo info = {};
+	info.sType                      = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	info.maxSets                    = AX_VkUtil::castUInt32(desc.maxDestSetCount);
+	info.poolSizeCount              = AX_VkUtil::castUInt32(desc.poolSizes.size());
+	info.pPoolSizes                 = desc.poolSizes.data();
+	info.flags                      = desc.flags;
+
+	_dev     = dev;
+	auto err = vkCreateDescriptorPool(*_dev, &info, AX_VkUtil::allocCallbacks(), &_pool);
+	AX_VkUtil::throwIfError(err);
+}
+
+void AX_VkDescriptorPool::Chunk::destroy() {
+	if (_pool) {
+		vkDestroyDescriptorPool(*_dev, _pool, AX_VkUtil::allocCallbacks());
+		_pool = VK_NULL_HANDLE;
+		_dev  = nullptr;
+	}
+}
+
+AX_VkDescriptorPool::Chunk::~Chunk() {
+	destroy();
+}
+
+void AX_VkDescriptorPool::Chunk::reset() {
+	vkResetDescriptorPool(*_dev, _pool, 0);
+}
+
+VkDescriptorSet AX_VkDescriptorPool::Chunk::allocDescriptorSet(VkDescriptorSetLayout descSetLayout) {
 	VkDescriptorSetAllocateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	info.pNext = nullptr;
-	info.descriptorPool = _handle;
+	info.descriptorPool = _pool;
 	info.descriptorSetCount = 1;
 	info.pSetLayouts = &descSetLayout;
 
 	VkDescriptorSet outSet = VK_NULL_HANDLE;
 	auto err = vkAllocateDescriptorSets(*_dev, &info, &outSet);
+	if (err == VK_ERROR_OUT_OF_POOL_MEMORY) {
+		return nullptr;
+	}
 	AX_VkUtil::throwIfError(err);
-
 	return outSet;
 }
 

@@ -35,6 +35,20 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 	           _graphCmdBuf_vk.setDebugName(Fmt("RenderReq_{}-graphCmdBuf",				debugIndex));
 	           _graphCmdSem_vk.setDebugName(Fmt("RenderReq_{}-graphCmdSem",				debugIndex));
 #endif
+
+	{
+		AX_VkDescriptorPool_CreateDesc poolDesc;
+		Int n = 1000;
+		poolDesc.maxDestSetCount = n;
+		poolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_SAMPLER       , n * 4);
+		poolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE , n * 4);
+		poolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, n * 2);
+		poolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, n * 1);
+#if AX_RENDER_BINDLESS		
+		poolDesc.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+#endif		
+		_descriptorPool.create(dev, poolDesc);
+	}
 }
 
 void RenderRequest_Vk::onWaitCompleted() {
@@ -120,6 +134,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 }
 
 void RenderRequest_Vk::onFrameBegin() {
+	_descriptorPool.reset();
 	_uploadCmdBuf_vk.commandBegin();
 	_graphCmdBuf_vk.commandBegin();
 }

@@ -144,24 +144,27 @@ struct RenderPerFrameDataSet_ {
 	const DATA& getUpdated(RenderRequest_Backend* req, ARGS&&... ages) const {
 		return ax_const_cast(this)->_getUpdated(req, AX_FORWARD(ages)...);
 	}
+
+	// callback to owner
+	// void onUpdatePerFrameData(Int currentIndex, RenderRequest_Backend* req, DATA& data, ARGS&&... ages);
 	
 private:
 
-	DATA& _current() { return _perFrameData[_currentFrameDataIndex]; }
+	DATA& _current() { return _perFrameData[_currentIndex]; }
 	DATA& _getUpdated(RenderRequest_Backend* req, ARGS&&... ages) {
 		auto seqId = req->renderSeqId();
 		if (_lastUpdateRenderSeqId != seqId) {
 			_lastUpdateRenderSeqId = seqId;
 			
-			_currentFrameDataIndex = (_currentFrameDataIndex + 1) % _perFrameData.size();
-			_owner->onUpdatePerFrameData(req, _current(), AX_FORWARD(ages)...);
+			_currentIndex = (_currentIndex + 1) % _perFrameData.size();
+			_owner->onUpdatePerFrameData(_currentIndex, req, _current(), AX_FORWARD(ages)...);
 		}
 		return _current();
 	}
 
 	OWNER*                   _owner                 = nullptr;
 	RenderSeqId              _lastUpdateRenderSeqId = 0;
-	Int                      _currentFrameDataIndex = 0;
+	Int                      _currentIndex = 0;
 	FixedArray<DATA, kCount> _perFrameData;
 };
 

@@ -821,33 +821,56 @@ private:
 	VkDebugReportCallbackEXT	_handle	= VK_NULL_HANDLE;
 };
 
+struct AX_VkDescriptorPool_CreateDesc {
+	Array<VkDescriptorPoolSize, 8> poolSizes;
+	Int                            maxDestSetCount = 0;
+	VkDescriptorPoolCreateFlags    flags           = 0;
+
+	void addPoolSize(VkDescriptorType descType, Int descriptorCount) {
+		if (descriptorCount <= 0) return;
+		auto& dst           = poolSizes.emplaceBack();
+		dst.type            = descType;
+		dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
+	}
+};
+
 class AX_VkDescriptorPool : public NonCopyable {
 public:
-	AX_VkDescriptorPool() = default;
-	AX_VkDescriptorPool(AX_VkDescriptorPool && r) noexcept
-		: _handle(r._handle), _dev(r._dev) {
-		r._handle = VK_NULL_HANDLE;
-		r._dev = nullptr;
-	}
-	~AX_VkDescriptorPool() { destroy(); }
-
-	const VkDescriptorPool& handle() { return _handle; }
-	operator const VkDescriptorPool&() { return _handle; }
+	using CreateDesc = AX_VkDescriptorPool_CreateDesc;
 	
+	AX_VkDescriptorPool() = default;
+	void create(AX_VkDevice& dev, const CreateDesc& desc);
 	void destroy();
-	void create(AX_VkDevice& dev, Span<VkDescriptorPoolSize> poolSizes, Int maxSets, VkDescriptorPoolCreateFlags flags);
 
 	VkDescriptorSet allocDescriptorSet(VkDescriptorSetLayout descSetLayout);
 
-	void resetPool() {
-		vkResetDescriptorPool(*_dev, _handle, 0);
-	}
-
-	AX_VkDevice& device() { return *_dev; }
+	void reset();
 
 private:
-	VkDescriptorPool  _handle = VK_NULL_HANDLE;
+	struct Chunk : public NonCopyable {
+		VkDescriptorPool _pool = VK_NULL_HANDLE;
+		AX_VkDevice*     _dev  = nullptr;
+
+		Chunk() = default;
+		Chunk(Chunk && r) noexcept
+			: _pool(r._pool), _dev(r._dev) {
+			r._pool = VK_NULL_HANDLE;
+			r._dev = nullptr;
+		}
+		~Chunk();
+		
+		void create(AX_VkDevice* dev, const CreateDesc& desc);
+		void destroy();
+		void reset();
+
+		VkDescriptorSet allocDescriptorSet(VkDescriptorSetLayout descSetLayout);
+	};
+
 	AX_VkDevice* _dev = nullptr;
+	CreateDesc   _desc;
+	Array<Chunk> _chunks;
+	Int          _currentChunk = 0;
+	Int _allocatedCount = 0;
 };
 
 } // namespace ax /*::AxRender*/

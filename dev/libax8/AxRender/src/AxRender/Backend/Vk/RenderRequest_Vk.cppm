@@ -42,6 +42,8 @@ public:
 
 	VkDescriptorBufferInfo*		_getWriteDescBufferInfo() { return _writeDescLinearAllocator.newObject<VkDescriptorBufferInfo>(); }
 	VkDescriptorImageInfo*		_getWriteDescImageInfo()  { return _writeDescLinearAllocator.newObject<VkDescriptorImageInfo>();   }
+
+	AX_VkDescriptorPool			_descriptorPool;
 };
 
 } // namespace
