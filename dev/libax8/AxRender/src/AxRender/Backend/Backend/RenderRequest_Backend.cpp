@@ -70,6 +70,8 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 }
 
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
+//	AX_LOG("---- FrameBegin {} -----", _renderSeqId);
+	
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize()); // TODO: move to frame update, to enable draw ui in update loop as well
 	RenderResourceManager_Backend::s_instance()->onFrameBegin(this);
 
@@ -86,6 +88,7 @@ void RenderRequest_Backend::frameEnd() {
 	renderContext_backend()->imgui.onEndRender();
 	RenderResourceManager_Backend::s_instance()->onFrameEnd(this);
 	onFrameEnd();
+//	AX_LOG("---- FrameEnd {} -----", _renderSeqId);
 }
 
 void RenderRequest_Backend::renderPassBegin(RenderPass_Backend* pass) {

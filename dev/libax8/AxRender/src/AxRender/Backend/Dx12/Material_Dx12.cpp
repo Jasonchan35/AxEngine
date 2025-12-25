@@ -11,6 +11,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12*          
                                                    Dx12DescripterHeap_CBV_SRV_UAV::Block& cbvHeapBlock,
                                                    Dx12DescripterHeap_Sampler::Block&     samplerHeapBlock
 ) -> PerFrameData& {
+//	AX_LOG("update {} {} {}", (void*)this, this->_materialPass->shader()->assetPath(), bindSpace());
 	_lastRenderSeqId = req->renderSeqId();
 	
 //--- update ----
@@ -106,6 +107,7 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		setRootDescTable(data._sampler);
 	}
 
+	//----- return Block remain ----
 	req->_heap_CBV_SRV_UAV.returnBlockRemain(cbvHeapBlock);
 	req->_heap_sampler.returnBlockRemain(samplerHeapBlock);
 

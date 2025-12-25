@@ -77,6 +77,8 @@ protected:
 		auto& chunk = _chunks[_currentChunk];
 		if (chunk._d3dHeap != block.d3dHeap()) throw Error_Undefined();
 		if (chunk._used < block.remain()) throw Error_Undefined();
+		if (block.remain() < 0) throw Error_Undefined();
+		if (block.remain() == 0) return;
 		chunk._used += block.remain();
 		block._used = block._size;
 	}	

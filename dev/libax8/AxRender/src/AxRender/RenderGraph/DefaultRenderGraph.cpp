@@ -81,7 +81,7 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 
 	{
 		UI::Window	win("Testing");
-		float f = 10;
+		static float f = 10;
 		UI::DragFloat("float", &f);
 	}
 
