@@ -266,6 +266,13 @@
 	AX_ENUM_ENTRY_TRY_PARSE(LIST, T) \
 //----
 
+#define AX_ENUM_STR_FROM_INT(T) \
+	template<> \
+	AX_NODISCARD constexpr TempString ax_enum_str(const ShaderParamBindPoint & v) { \
+		return Fmt("{}", ax_enum_int(v)); \
+	} \
+//--------
+
 #define AX_ENUM_DECLARE__ITEM(ITEM, VALUE, ...) ITEM VALUE,
 
 #define AX_ENUM_DECLARE(LIST, T, BASE_TYPE) \
