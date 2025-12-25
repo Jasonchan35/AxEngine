@@ -3,7 +3,7 @@
 export module AxRender:RenderResourceManager_Dx12;
 #if AX_RENDERER_DX12
 
-export import :Dx12DescripterHeap;
+export import :Dx12DescriptorHeap;
 export import :RenderResourceManager_Backend;
 export import :RenderSystem_Backend;
 
@@ -16,28 +16,25 @@ public:
 	
 	RenderResourceManager_Dx12(const CreateDesc& desc);
 
-#if AX_RENDER_BINDLESS
-	Dx12DescripterHeap		bindlessHeap_CBV_SRV_UAV;
-	Dx12DescripterHeap		bindlessHeap_Sampler;
-#endif	
+	virtual void onUpdateDescriptors(Array<SPtr<Sampler_Backend  >>& list) {}
+	virtual void onUpdateDescriptors(Array<SPtr<Texture2D_Backend>>& list) {}
 	
-protected:
+	Dx12DescriptorHeap		descriptorHeap_CBV_SRV_UAV;
+	Dx12DescriptorHeap		descriptorHeap_Sampler;
 };
 
 RenderResourceManager_Dx12::RenderResourceManager_Dx12(const CreateDesc& desc): Base(desc) {
 
-#if AX_RENDER_BINDLESS
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-	heapDesc.NumDescriptors = 1000;
+	heapDesc.NumDescriptors = 256 * 1024;
 	heapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	heapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-	bindlessHeap_CBV_SRV_UAV.create(dev, heapDesc);
+	descriptorHeap_CBV_SRV_UAV.create(dev, heapDesc);
 	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-	bindlessHeap_Sampler.create(dev, heapDesc);
-#endif
-
+	heapDesc.NumDescriptors = 1000;
+	descriptorHeap_Sampler.create(dev, heapDesc);
 }
 
 } // namespace

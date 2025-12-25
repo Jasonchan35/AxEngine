@@ -9,8 +9,8 @@ import :RenderResourceManager_Dx12;
 namespace ax {
 
 auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12*                    req,
-                                                   Dx12DescripterHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
-                                                   Dx12DescripterHeapPool_Sampler::Block&     samplerHeapBlock
+                                                   Dx12DescriptorHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
+                                                   Dx12DescriptorHeapPool_Sampler::Block&     samplerHeapBlock
 ) -> PerFrameData& {
 //	AX_LOG("update {} {} {}", (void*)this, this->_materialPass->shader()->assetPath(), bindSpace());
 	_lastRenderSeqId = req->renderSeqId();
@@ -80,21 +80,17 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
 	// alloc block to ensure same heap can hold all descriptors
-	Dx12DescripterHeapPool_CBV_SRV_UAV::Block cbvHeapBlock;
+	Dx12DescriptorHeapPool_CBV_SRV_UAV::Block cbvHeapBlock;
 	req->_heap_CBV_SRV_UAV.allocaBlock(cbvHeapBlock, dev,
 		  shdPass->allBindCount_constBuffers()
 		+ shdPass->allBindCount_textureParams()
 		+ shdPass->allBindCount_storageBufferParams());
 
-	Dx12DescripterHeapPool_Sampler::Block samplerHeapBlock;
+	Dx12DescriptorHeapPool_Sampler::Block samplerHeapBlock;
 	req->_heap_Sampler.allocaBlock(samplerHeapBlock, dev, shdPass->allBindCount_samplerParams());
 	
 	//----- SetDescriptorHeaps ----
 	auto descHeaps = Span({
-#if AX_RENDER_BINDLESS
-		req->_bindlessHeap_CBV_SRV_UAV->d3dHeap(),
-		req->_bindlessHeap_Sampler->d3dHeap(),
-#endif
 		cbvHeapBlock.d3dHeap(),
 		samplerHeapBlock.d3dHeap()
 	});

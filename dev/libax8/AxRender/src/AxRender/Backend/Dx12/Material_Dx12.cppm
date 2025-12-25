@@ -1,7 +1,7 @@
 module;
 
 export module AxRender:Material_Dx12;
-import :Dx12DescripterHeap;
+import :Dx12DescriptorHeap;
 
 #if AX_RENDERER_DX12
 
@@ -25,7 +25,7 @@ public:
 		Dx12DescriptorHandle  handle;
 		Int bindCount = 0;
 
-		void update(Dx12DescripterHeapPool_Block& block) {
+		void update(Dx12DescriptorHeapPool_Block& block) {
 			d3dHeap = block.d3dHeap();
 			handle = block.startHandle();
 			bindCount = 0;
@@ -38,8 +38,8 @@ public:
 	};
 
 	const PerFrameData& getUpdatedPerFrameData(RenderRequest_Dx12*                    req,
-	                                           Dx12DescripterHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
-	                                           Dx12DescripterHeapPool_Sampler::Block&     samplerHeapBlock
+	                                           Dx12DescriptorHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
+	                                           Dx12DescriptorHeapPool_Sampler::Block&     samplerHeapBlock
 	) const {
 		if (_lastRenderSeqId == req->renderSeqId()
 		 && cbvHeapBlock.d3dHeap() == _perFrameData.heapStart_CBV_SRV_UAV.d3dHeap
@@ -52,8 +52,8 @@ public:
 	}
 private:
 	PerFrameData& _updatedPerFrameData(RenderRequest_Dx12*                    req,
-										 Dx12DescripterHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
-										 Dx12DescripterHeapPool_Sampler::Block&     samplerHeapBlock);
+										 Dx12DescriptorHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
+										 Dx12DescriptorHeapPool_Sampler::Block&     samplerHeapBlock);
 	
 	RenderSeqId  _lastRenderSeqId = 0;
 	PerFrameData _perFrameData;

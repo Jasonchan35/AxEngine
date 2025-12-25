@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:Dx12DescripterHeap;
+export module AxRender:Dx12DescriptorHeap;
 import :Dx12Resource;
 import :RenderSystem_Dx12;
 
@@ -25,7 +25,7 @@ struct Dx12DescriptorHandle {
 	}
 };
 
-struct Dx12DescripterHeap : public NonCopyable {
+struct Dx12DescriptorHeap : public NonCopyable {
 	ID3D12DescriptorHeap* d3dHeap() { return _d3dHeap; }
 	
 	void create(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc);
@@ -51,7 +51,7 @@ private:
 };
 
 
-struct Dx12DescripterHeapPool_Block : public NonCopyable {
+struct Dx12DescriptorHeapPool_Block : public NonCopyable {
 	template<class HANDLE>
 	HANDLE _allocHandle() {
 		if (_used >= _size) throw Error_Undefined();
@@ -69,7 +69,7 @@ struct Dx12DescripterHeapPool_Block : public NonCopyable {
 	Dx12DescriptorHandle  startHandle() const { return _startHandle; }
 
 protected:
-	friend class Dx12DescripterHeapPool;
+	friend class Dx12DescriptorHeapPool;
 		
 	Dx12DescriptorHandle  _startHandle;
 	Int                   _size    = 0;
@@ -78,19 +78,21 @@ protected:
 	ID3D12DescriptorHeap* _d3dHeap = nullptr;
 };
 
-class Dx12DescripterHeapPool : public NonCopyable {
+class Dx12DescriptorHeapPool : public NonCopyable {
 public:
 	using BindPoint = ShaderParamBindPoint;
 	using BindCount = ShaderParamBindCount;
 	using BindSpace = ShaderParamBindSpace;
-	using BlockBase = Dx12DescripterHeapPool_Block;
-	using Chunk     = Dx12DescripterHeap;
+	using BlockBase = Dx12DescriptorHeapPool_Block;
+	using Chunk     = Dx12DescriptorHeap;
 
 	void destroy();
 	void reset();
 
 protected:
 	void _allocaBlock(BlockBase & block, Dx12_ID3D12Device* dev, Int count) {
+		// AX_LOG("Dx12DescriptorHeapPool::_allocaBlock type={} count={}", ax_enum_int(_desc.Type), count);
+		
 		if (count > _desc.NumDescriptors) throw Error_Undefined();
 		auto& chunk = _getReserveChunk(dev, count);
 		
@@ -140,7 +142,7 @@ protected:
 
 struct Dx12DescriptorHandle_ColorBuffer { Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeapPool_ColorBuffer : public Dx12DescripterHeapPool {
+class Dx12DescriptorHeapPool_ColorBuffer : public Dx12DescriptorHeapPool {
 public:
 	void create(Int numDescriptors) {
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
@@ -160,7 +162,7 @@ public:
 
 struct Dx12DescriptorHandle_DepthBuffer { Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeapPool_DepthBuffer : public Dx12DescripterHeapPool {
+class Dx12DescriptorHeapPool_DepthBuffer : public Dx12DescriptorHeapPool {
 public:
 	void create(Int numDescriptors) {
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
@@ -181,7 +183,7 @@ public:
 
 struct Dx12DescriptorHandle_Sampler	{ Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeapPool_Sampler : public Dx12DescripterHeapPool {
+class Dx12DescriptorHeapPool_Sampler : public Dx12DescriptorHeapPool {
 public:
 	void create(Int numDescriptors) {
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
@@ -220,7 +222,7 @@ struct Dx12DescriptorHandle_RawUAV		 { Dx12DescriptorHandle handle; };
 struct Dx12DescriptorHandle_Texture		 { Dx12DescriptorHandle handle; };
 struct Dx12DescriptorHandle_Texture2D	 { Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeapPool_CBV_SRV_UAV : public Dx12DescripterHeapPool {
+class Dx12DescriptorHeapPool_CBV_SRV_UAV : public Dx12DescriptorHeapPool {
 public:
 	void create(Int numDescriptorsPerChunk) {
 		_create(numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);

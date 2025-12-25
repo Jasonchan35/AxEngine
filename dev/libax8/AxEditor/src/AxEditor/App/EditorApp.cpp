@@ -14,7 +14,7 @@ public:
 		peekMessage = true;
 //		renderSystemDesc.info.api = RenderAPI::Null;
 		renderSystemDesc.info.api = RenderAPI::Vk;
-//		renderSystemDesc.info.api = RenderAPI::Dx12;
+		renderSystemDesc.info.api = RenderAPI::Dx12;
 
 		using App = NativeUIApp;
 		using KeyCode = NativeUIKeyCode;

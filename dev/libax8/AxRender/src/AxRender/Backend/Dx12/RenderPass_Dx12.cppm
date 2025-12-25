@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxRender:RenderPass_Dx12;
-export import :Dx12DescripterHeap;
+export import :Dx12DescriptorHeap;
 export import :RenderPass_Backend;
 
 #if AX_RENDERER_DX12

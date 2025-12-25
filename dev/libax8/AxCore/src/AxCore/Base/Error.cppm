@@ -7,9 +7,7 @@ export namespace ax {
 
 class Error : public std::exception {
 public:
-	Error(std::string_view msg, const SrcLoc& srcLoc) : _what(msg), _srcLoc(srcLoc) {
-		AX_ASSERT(false);
-	}
+	Error(std::string_view msg, const SrcLoc& srcLoc);
 	Error(const SrcLoc& srcLoc) : Error(std::string_view(), srcLoc) {}
 
 	virtual char const* what() const override { return _what.c_str(); }

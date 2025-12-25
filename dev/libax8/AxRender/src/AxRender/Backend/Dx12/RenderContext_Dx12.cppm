@@ -1,7 +1,7 @@
 module;
 
 export module AxRender:RenderContext_Dx12;
-export import :Dx12DescripterHeap;
+export import :Dx12DescriptorHeap;
 export import :RenderContext_Backend;
 export import :RenderPass_Dx12;
 

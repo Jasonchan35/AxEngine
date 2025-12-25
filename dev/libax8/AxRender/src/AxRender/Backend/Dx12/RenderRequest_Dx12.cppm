@@ -39,14 +39,11 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 
-	Dx12DescripterHeapPool_ColorBuffer		_heap_ColorBuffer;
-	Dx12DescripterHeapPool_DepthBuffer		_heap_DepthBuffer;
-	Dx12DescripterHeapPool_CBV_SRV_UAV		_heap_CBV_SRV_UAV;
-	Dx12DescripterHeapPool_Sampler			_heap_Sampler;
-
-	Dx12DescripterHeap* _bindlessHeap_CBV_SRV_UAV = nullptr;
-	Dx12DescripterHeap* _bindlessHeap_Sampler     = nullptr;
-
+	Dx12DescriptorHeapPool_ColorBuffer		_heap_ColorBuffer;
+	Dx12DescriptorHeapPool_DepthBuffer		_heap_DepthBuffer;
+	Dx12DescriptorHeapPool_CBV_SRV_UAV		_heap_CBV_SRV_UAV;
+	Dx12DescriptorHeapPool_Sampler			_heap_Sampler;
+	
 	void _updatedBindlessResources();
 
 	void setDescriptorHeaps(Span<ID3D12DescriptorHeap*> heaps) {

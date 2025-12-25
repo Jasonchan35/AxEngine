@@ -112,14 +112,14 @@ public:
 
 	Material_Backend*		commonMaterial()		{ return _commonMaterial; };
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
-	
+
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
 
 	RenderSystem_Backend* _renderSystem_backend = nullptr;
 	Material_Backend*     _commonMaterial       = nullptr;
 	MaterialPass_Backend* _commonMaterialPass   = nullptr;
-	
+
 private:
 	void _updateCommonMaterial();
 	

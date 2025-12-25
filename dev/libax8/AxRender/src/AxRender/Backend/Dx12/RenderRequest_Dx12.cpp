@@ -29,12 +29,6 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
-#if AX_RENDER_BINDLESS
-	auto* resMgr = RenderResourceManager_Dx12::s_instance();
-	_bindlessHeap_CBV_SRV_UAV = &resMgr->bindlessHeap_CBV_SRV_UAV;
-	_bindlessHeap_Sampler     = &resMgr->bindlessHeap_Sampler;
-#endif
-
 	_uploadCmdBuf_dx12.commandBegin();
 	_graphCmdBuf_dx12.commandBegin();
 	
@@ -64,18 +58,20 @@ void RenderRequest_Dx12::onWaitCompleted() {
 }
 
 void RenderRequest_Dx12::_updatedBindlessResources() {
-#if AX_RENDER_BINDLESS
+#if 0
 	auto* mgr = RenderResourceManager_Dx12::s_instance();
 
-	auto descHeaps = Span({_bindlessHeap_CBV_SRV_UAV->d3dHeap(), _bindlessHeap_Sampler->d3dHeap()});
-	setDescriptorHeaps(descHeaps);
+	auto* commonMaterialPass = rttiCastCheck<MaterialPass_Dx12>(_commonMaterialPass);
+//	auto* bindlessParamSpace = commonMaterialPass->getParamSpace_dx12(BindSpace::Bindless);
 
+//	bindlessParamSpace->getUpdatedPerFrameData()
+	
 	for (auto& tex_ : updatedBindlessResources.texture2Ds) {
 		auto* tex = rttiCastCheck<Texture2D_Dx12>(tex_.ptr());
 		if (!tex) throw Error_Undefined();
 
 		Int index = ax_enum_int(tex->resourceHandle.slotId());
-		auto handle = mgr->bindlessHeap_CBV_SRV_UAV.getHandle(index);
+		auto handle =   mgr->bindlessHeap_CBV_SRV_UAV.getHandle(index);
 		auto& texResource = tex->_bindImage(this);
 		_d3dDevice->CreateShaderResourceView(texResource, nullptr, handle.cpu);
 	}
@@ -104,8 +100,8 @@ void RenderRequest_Dx12::_updatedBindlessResources() {
 		desc.MaxLOD           = D3D12_FLOAT32_MAX;
 		
 		_d3dDevice->CreateSampler(&desc, handle.cpu);
-	}	
-#endif // #if AX_RENDER_BINDLESS	
+	}
+#endif
 }
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
@@ -181,7 +177,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	Array<D3D12_CPU_DESCRIPTOR_HANDLE, 16> rtViews;
 	{
-		Dx12DescripterHeapPool_ColorBuffer::Block heapBlock;
+		Dx12DescriptorHeapPool_ColorBuffer::Block heapBlock;
 		_heap_ColorBuffer.allocaBlock(heapBlock, _d3dDevice, pass->colorAttachments().size());
 		for (auto& colorAttachment : pass->colorAttachments()) {
 			auto* colorBuf = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
@@ -192,7 +188,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	D3D12_CPU_DESCRIPTOR_HANDLE depthView;
 	{
-		Dx12DescripterHeapPool_DepthBuffer::Block heapBlock;
+		Dx12DescriptorHeapPool_DepthBuffer::Block heapBlock;
 		_heap_DepthBuffer.allocaBlock(heapBlock, _d3dDevice, pass->colorAttachments().size());
 		auto* depthBuf = rttiCastCheck<RenderPassDepthBuffer_Dx12>(pass->depthAttachment().buffer.ptr());
 		depthView = heapBlock.addDepthStencilView(_d3dDevice, depthBuf->_resource_dx12).handle.cpu;

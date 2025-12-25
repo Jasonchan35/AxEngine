@@ -100,12 +100,9 @@ void RenderResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 		e->resourceHandle._dirty = false;
 	}
 
-#if AX_RENDER_BINDLESS
 	if constexpr (kNeedDescriptorUpdate) {
-		req->updatedBindlessResources.swap(_dirtyObjects);
+		RenderResourceManager_Backend::s_instance()->onUpdateDescriptors(_dirtyObjects);
 	}
-#endif
-	
 	_dirtyObjects.clear();
 }
 

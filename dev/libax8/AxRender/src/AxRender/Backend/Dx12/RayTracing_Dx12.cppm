@@ -5,7 +5,7 @@ export module AxCore:RayTracing_Dx12;
 #if AX_RENDERER_DX12_DXR
 
 #include "axDX12CommonBase.h"
-#include "axDX12DescripterHeap.h"
+#include "axDX12DescriptorHeap.h"
 #include "axDX12Resource.h"
 
 class axDX12RayTracing : public axRenderRayTracing {
@@ -161,7 +161,7 @@ private:
 	ComPtr<ID3D12CommandAllocator>		_cmdAllocator;
 	ComPtr<ID3D12GraphicsCommandList4>	_dxrCmdList;
 
-	axDX12DescripterHeap_CBV_SRV_UAV		_descriptorHeap;
+	axDX12DescriptorHeap_CBV_SRV_UAV		_descriptorHeap;
 	PipelineStateObject						_pipelineStateObject;
 };
 

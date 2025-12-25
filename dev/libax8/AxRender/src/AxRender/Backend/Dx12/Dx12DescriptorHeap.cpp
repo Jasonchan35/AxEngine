@@ -1,12 +1,14 @@
 module AxRender;
-import :Dx12DescripterHeap;
+import :Dx12DescriptorHeap;
 
 #if AX_RENDERER_DX12
 
 namespace  ax {
 
-void Dx12DescripterHeap::create(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc) {
+void Dx12DescriptorHeap::create(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc) {
 	destroy();
+
+	AX_LOG("Dx12DescriptorHeap::create type={} num={}", ax_enum_int(desc.Type), desc.NumDescriptors);
 	
 	auto hr = dev->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_d3dHeap.ptrForInit()));
 	Dx12Util::throwIfError(hr);
@@ -20,7 +22,7 @@ void Dx12DescripterHeap::create(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DE
 	}
 }
 
-void Dx12DescripterHeap::destroy() {
+void Dx12DescriptorHeap::destroy() {
 	_d3dHeap.unref();
 	_startHandle = {};
 	_size        = 0;
@@ -28,19 +30,19 @@ void Dx12DescripterHeap::destroy() {
 	_used        = 0;
 }
 
-void Dx12DescripterHeapPool::destroy() {
+void Dx12DescriptorHeapPool::destroy() {
 	_chunks.clear();
 	_desc.NumDescriptors = 0;
 }
 
-void Dx12DescripterHeapPool::reset() {
+void Dx12DescriptorHeapPool::reset() {
 	for (auto& chunk : _chunks) {
 		chunk.reset();
 	}
 	_currentChunk = 0;
 }
 
-void Dx12DescripterHeapPool::_create(Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
+void Dx12DescriptorHeapPool::_create(Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
 	destroy();
 	_desc.NumDescriptors = ax_safe_cast_from(numDescriptorsPerChunk);
 	_desc.Type  = type;
