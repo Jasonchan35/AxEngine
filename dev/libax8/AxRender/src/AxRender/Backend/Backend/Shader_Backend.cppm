@@ -180,6 +180,10 @@ public:
 	i32 bindCount_storageBufferParams () const	{ return _bindCount_storageBufferParams ; }
 
 	BindSpace bindSpace() const { return _bindSpace; }
+
+	TempString debugName() const;
+
+	bool isGlobalCommonShader() const { return _isGlobalCommonShader; }
 	
 protected:
 	friend class ShaderPass_Backend;
@@ -194,6 +198,8 @@ protected:
 
 	ShaderPass_Backend* _shaderPass = nullptr;
 	BindSpace _bindSpace = BindSpace::Invalid;
+
+	bool _isGlobalCommonShader : 1 = false;
 	
 	i32 _bindCount_constBuffers        = 0;
 	i32 _bindCount_textureParams       = 0;
@@ -264,10 +270,10 @@ public:
 	const Shader_Backend* shader() const { return _shader; }
 
 	const ShaderPassInfo*	info() const	{ return _info; }
-	bool isGlobalCommonShaderPass() const	{ return _isGlobalCommonShaderPass; }
+	bool isGlobalCommonShader() const	{ return _isGlobalCommonShader; }
 
 	bool isOwnParamSpace(BindSpace s) const {
-		return _isGlobalCommonShaderPass || s == BindSpace::Default || s == BindSpace::Object;
+		return _isGlobalCommonShader || s == BindSpace::Default || s == BindSpace::Object;
 	}
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
@@ -291,7 +297,9 @@ public:
 	i32 allBindCount_textureParams      () const { return _allBindCount_textureParams      ; }
 	i32 allBindCount_samplerParams      () const { return _allBindCount_samplerParams      ; }
 	i32 allBindCount_storageBufferParams() const { return _allBindCount_storageBufferParams; }
-	
+
+	TempString debugName() const;
+
 private:
 	FixedArray<SPtr<const ShaderParamSpace_Backend>, BindSpace_COUNT>	_shaderParamSpaces;
 	
@@ -299,7 +307,7 @@ protected:
 	friend class Shader_Backend;
 	
 	Shader_Backend*		_shader = nullptr;
-	bool				_isGlobalCommonShaderPass : 1 = false;
+	bool				_isGlobalCommonShader : 1 = false;
 	i32					_passIndex = 0;
 	ShaderStageFlags	_stageFlags = ShaderStageFlags::None;
 	NameId				_name;
@@ -356,6 +364,8 @@ public:
 	AX_INLINE bool isGlobalCommonShader() const { return _isGlobalCommonShader; }
 
 	void hotReloadFile();
+
+	TempString debugName() const;
 
 protected:
 	Shader_Backend(const CreateDesc& desc);

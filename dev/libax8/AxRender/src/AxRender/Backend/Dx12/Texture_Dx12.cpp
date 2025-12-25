@@ -39,10 +39,11 @@ Dx12Resource_Texture2D& Texture2D_Dx12::_bindImage(RenderRequest_Dx12* req) {
 		fp.Footprint.Format   = desc.Format;
 		fp.Footprint.RowPitch = Dx12Util::castUINT(_info.strideInBytes);
 
-		if (fp.Footprint.RowPitch % D3D12_TEXTURE_DATA_PITCH_ALIGNMENT) {
-			throw Error_Undefined(Fmt("Error: Texture RowPitch must be align to {}",
-										D3D12_TEXTURE_DATA_PITCH_ALIGNMENT));
-		}
+		// TODO - 
+		// if (fp.Footprint.RowPitch % D3D12_TEXTURE_DATA_PITCH_ALIGNMENT) {
+		// 	throw Error_Undefined(Fmt("Error: Texture RowPitch must be align to {}",
+		// 								D3D12_TEXTURE_DATA_PITCH_ALIGNMENT));
+		// }
 		
 		D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
 		dstLoc.pResource = _texResource.d3dResource();

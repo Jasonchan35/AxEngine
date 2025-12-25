@@ -120,7 +120,7 @@
 
 	<!-- ax::SPtr<T> -->
 	<Type Name="ax::SPtr&lt;*&gt;">
-		<DisplayString Condition="_p != nullptr">SPtr refCount={_p->_refCount}</DisplayString>
+		<DisplayString Condition="_p != nullptr">SPtr refCount={_p->m_SPtrRefCount}</DisplayString>
 		<DisplayString>SPtr is NULL</DisplayString>
 		<Expand>
 			<Item Name="_p">_p</Item>
@@ -142,7 +142,7 @@
 	
 	<!-- ax::FixedArray<*,*> -->
 	<Type Name="ax::FixedArray&lt;*,*&gt;">
-		<DisplayString>size={_size}</DisplayString>
+		<DisplayString>size={kSize}</DisplayString>
 		<Expand>
 			<Item Name="_data">_data</Item>
 			<Item Name="_size">kSize</Item>

@@ -20,4 +20,17 @@
 		<DisplayString>{_assetPath}</DisplayString>
 	</Type>
 
+	<Type Name="ax::MaterialParamSpace_Backend">
+		<DisplayString>BindSpace::{_shaderParamSpace._p->_bindSpace}[{*_materialPass}]</DisplayString>
+	</Type>
+
+	<Type Name="ax::MaterialPass_Backend">
+		<DisplayString>MaterialPass-{*_shaderPass}</DisplayString>
+	</Type>
+
+	<Type Name="ax::Material_Backend">
+		<DisplayString>{*_shader_backend._p}</DisplayString>
+	</Type>
+
+
 </AutoVisualizer>

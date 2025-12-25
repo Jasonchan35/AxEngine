@@ -60,8 +60,10 @@ public:
 	using BindCount = ShaderParamBindCount;
 	using ParamIndex = ShaderParamSpace_Backend::ParamIndex;
 
+	bool isGlobalCommonShader() const { return _shaderParamSpace->isGlobalCommonShader(); }
+	
 	struct ParamBase {
-		void	  create(const ShaderParamSpace_Backend::ParamBase& shaderParam);
+		void create(const ShaderParamSpace_Backend::ParamBase& shaderParam) {}
 	};
 
 	struct ConstBufferParam : public ParamBase {
@@ -162,13 +164,17 @@ public:
 
 	BindSpace	bindSpace() const { return _shaderParamSpace->bindSpace(); }
 
+	TempString debugName() const { return _shaderParamSpace->debugName(); }
+	
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
 	Array<ConstBufferParam,   1>	_constBuffers;
 	Array<StorageBufferParam, 0>	_storageBufferParams;
 	Array<TextureParam,       2>	_textureParams;
 	Array<SamplerParam,       2>	_samplerParams;
-	
+
+	const MaterialPass_Backend* materialPass() const { return _materialPass; };
+
 protected:
 	friend class MaterialPass_Backend;
 	MaterialPass_Backend* _materialPass = nullptr;
@@ -214,9 +220,6 @@ bool MaterialParamSpace_Backend::TextureParam::setTexture(const TEX* texture) {
 	return true;
 }
 
-inline void MaterialParamSpace_Backend::ParamBase::create(const ShaderParamSpace_Backend::ParamBase& shaderParam) {
-}
-
 class MaterialPass_CreateDesc : public NonCopyable {
 public:
 	Material_Backend* material = nullptr;
@@ -245,7 +248,7 @@ public:
 
 	NameId getPropSamplerName(NameId name) const { auto* shd = shader(); return shd ? shd->getPropSamplerName(name) : NameId(); }
 
-	bool isGlobalCommonPass() const { return _shaderPass->isGlobalCommonShaderPass(); }
+	bool isGlobalCommonShader() const { return _shaderPass->isGlobalCommonShader(); }
 	
 	void logWarningOnce(StrView msg);
 
@@ -268,6 +271,10 @@ public:
 	virtual void onSetShader() {}
 	Int maxFrameDataCount() const;
 
+	TempString debugName() const { return _shaderPass->debugName(); }
+
+	      Material_Backend*   material()       { return _material; }
+	const Material_Backend*   material() const { return _material; }
 protected:
 	Material_Backend*   _material          = nullptr;
 	ShaderPass_Backend* _shaderPass        = nullptr;
@@ -312,8 +319,11 @@ public:
 	void logWarningOnce(StrView msg);
 	Int maxFrameDataCount() const { return _maxFrameDataCount; }
 
-friend class MaterialPass_Backend;
+	TempString debugName() const { return _shader_backend->debugName(); }
+	
 protected:
+	friend class MaterialPass_Backend;
+	
 	bool _bShowWarning = true;
 	Int _maxFrameDataCount = 0;
 	

@@ -72,10 +72,10 @@ public:
 	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
 
 protected:
-	RenderSystem*      _renderSystem              = nullptr;
-	RenderSeqId    _renderSeqId           = 0;
-	RenderContext* _renderContext         = nullptr;
-	RenderPass*    _currentRenderPass     = nullptr;
+	RenderSystem*  _renderSystem       = nullptr;
+	RenderSeqId    _renderSeqId        = 0;
+	RenderContext* _renderContext      = nullptr;
+	RenderPass*    _currentRenderPass  = nullptr;
 	Int            _renderRequestCount = 0;
 	Vec2i          _frameSize{0, 0};
 	Rect2f         _scissorRect{0, 0, 0, 0};

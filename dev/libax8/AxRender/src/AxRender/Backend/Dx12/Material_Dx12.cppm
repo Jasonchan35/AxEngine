@@ -25,7 +25,7 @@ public:
 		Dx12DescriptorHandle  handle;
 		Int bindCount = 0;
 
-		void update(Dx12DescripterHeapBlock& block) {
+		void update(Dx12DescripterHeapPool_Block& block) {
 			d3dHeap = block.d3dHeap();
 			handle = block.startHandle();
 			bindCount = 0;
@@ -33,17 +33,17 @@ public:
 	};
 
 	struct PerFrameData : public NonCopyable {
-		HeapStartHandle _CBV_SRV_UAV;
-		HeapStartHandle _sampler;
+		HeapStartHandle heapStart_CBV_SRV_UAV;
+		HeapStartHandle heapStart_Sampler;
 	};
 
 	const PerFrameData& getUpdatedPerFrameData(RenderRequest_Dx12*                    req,
-	                                           Dx12DescripterHeap_CBV_SRV_UAV::Block& cbvHeapBlock,
-	                                           Dx12DescripterHeap_Sampler::Block&     samplerHeapBlock
+	                                           Dx12DescripterHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
+	                                           Dx12DescripterHeapPool_Sampler::Block&     samplerHeapBlock
 	) const {
 		if (_lastRenderSeqId == req->renderSeqId()
-		 && cbvHeapBlock.d3dHeap() == _perFrameData._CBV_SRV_UAV.d3dHeap
-		 && samplerHeapBlock.d3dHeap() == _perFrameData._sampler.d3dHeap)
+		 && cbvHeapBlock.d3dHeap() == _perFrameData.heapStart_CBV_SRV_UAV.d3dHeap
+		 && samplerHeapBlock.d3dHeap() == _perFrameData.heapStart_Sampler.d3dHeap)
 		{
 			// using same heap, so no update needed
 			return _perFrameData;
@@ -52,8 +52,8 @@ public:
 	}
 private:
 	PerFrameData& _updatedPerFrameData(RenderRequest_Dx12*                    req,
-										 Dx12DescripterHeap_CBV_SRV_UAV::Block& cbvHeapBlock,
-										 Dx12DescripterHeap_Sampler::Block&     samplerHeapBlock);
+										 Dx12DescripterHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
+										 Dx12DescripterHeapPool_Sampler::Block&     samplerHeapBlock);
 	
 	RenderSeqId  _lastRenderSeqId = 0;
 	PerFrameData _perFrameData;
@@ -62,6 +62,8 @@ private:
 class MaterialPass_Dx12 : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Dx12, MaterialPass_Backend)
 public:
+	using HeapStartHandle = MaterialParamSpace_Dx12::HeapStartHandle;
+	
 	MaterialPass_Dx12(const CreateDesc& desc) : Base(desc) {}
 	
 	const ShaderPass_Dx12* shaderPass_dx12() const { return rttiCastCheck<ShaderPass_Dx12>(shaderPass()); }

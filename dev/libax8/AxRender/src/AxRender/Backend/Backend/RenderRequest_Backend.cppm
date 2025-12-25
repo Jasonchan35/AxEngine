@@ -12,7 +12,7 @@ export namespace ax /*::AxRender*/ {
 
 class RenderRequest_CreateDesc : public NonCopyable {
 public:
-	RenderSystem*	renderSystem = nullptr;
+	RenderSystem_Backend* renderSystem = nullptr;
 	Int index = 0;
 };
 
@@ -21,7 +21,7 @@ class RenderRequest_Backend : public RenderRequest {
 public:
 	using CreateDesc = RenderRequest_CreateDesc;
 
-	static UPtr<This> s_new(const MemAllocRequest& req, RenderSystem* renderSystem, Int index);
+	static UPtr<This> s_new(const MemAllocRequest& req, RenderSystem_Backend* renderSystem, Int index);
 
 	RenderRequest_Backend(const CreateDesc& desc);
 
@@ -109,9 +109,16 @@ public:
 	void drawCall_backend(Cmd_DrawCall& cmd);
 	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
 	void setScissorRect_backend(const Rect2f& rect);
+
+	Material_Backend*		commonMaterial()		{ return _commonMaterial; };
+	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
 	
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
+
+	RenderSystem_Backend* _renderSystem_backend = nullptr;
+	Material_Backend*     _commonMaterial       = nullptr;
+	MaterialPass_Backend* _commonMaterialPass   = nullptr;
 	
 private:
 	void _updateCommonMaterial();

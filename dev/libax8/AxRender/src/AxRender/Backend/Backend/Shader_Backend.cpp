@@ -15,9 +15,15 @@ SPtr<ShaderParamSpace_Backend> ShaderParamSpace_Backend::s_new(const MemAllocReq
 	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newShaderParamSpace(req, desc));
 }
 
+TempString ShaderParamSpace_Backend::debugName() const {
+	if (this == nullptr) return "null";
+	return Fmt("BindSpace.{:8} shaderPass={}", _bindSpace, _shaderPass->debugName());
+}
+
 ShaderParamSpace_Backend::ShaderParamSpace_Backend(const CreateDesc& desc)
 : _shaderPass(desc.shaderPass)
 , _bindSpace(desc.bindSpace)
+, _isGlobalCommonShader(desc.shaderPass->isGlobalCommonShader())
 {}
 
 void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
@@ -182,7 +188,7 @@ NameId ShaderParamSpace_Backend::getSamplerName(NameId name) const {
 
 ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 	: _shader(desc.shader)
-	, _isGlobalCommonShaderPass(_shader->isGlobalCommonShader())
+	, _isGlobalCommonShader(_shader->isGlobalCommonShader())
 	, _passIndex(desc.passIndex)
 	, _name(NameId::s_make(desc.info->name))
 	, _info(desc.info)
@@ -218,7 +224,12 @@ void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 	}
 }
 
-void ShaderPass_Backend::_createParamSpaces() {
+TempString ShaderPass_Backend::debugName() const {
+	if (this == nullptr) return "null";
+	return Fmt("{} shader={}", _name, _shader->debugName());
+}
+
+void      ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->constBuffers);
 	_addParamToSpace(_stageInfo->storageBuffers);
 	_addParamToSpace(_stageInfo->textures);
@@ -336,6 +347,11 @@ void Shader_Backend::hotReloadFile() {
 	onLoadFile();
 
 	// TODO: Reload Material
+}
+
+TempString Shader_Backend::debugName() const {
+	if (this == nullptr) return "null";
+	return Fmt("{}", _assetPath);
 }
 
 } // namespace

@@ -226,12 +226,26 @@ private:
 	Int _totalBindCount = 0; 
 };
 
+#define AX_Dx12RootParamType_ENUM_LIST(E) \
+	E(None                 ,) \
+	E(RootCBV              ,) \
+	E(RootSRV              ,) \
+	E(RootUAV              ,) \
+	E(RootUInt32           ,) \
+	E(RootStaticSampler    ,) \
+	E(DescTable_CBV_SRV_UAV,) \
+	E(DescTable_Sampler    ,) \
+	E(_COUNT,) \
+//-----
+AX_ENUM_CLASS(AX_Dx12RootParamType_ENUM_LIST, Dx12RootParamType, u8);
+constexpr auto Dx12RootParamType_COUNT = ax_enum_int(Dx12RootParamType::_COUNT);
+
 struct Dx12RootParameterList {
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
 	UINT addRootDescriptorTable(D3D12_SHADER_VISIBILITY shaderVisibility, const Dx12DescriptorTable& table) {
-		if (table.descriptorRanges.size() <= 0) return UINT_MAX;
+		if (table.descriptorRanges.size() <= 0) throw Error_Undefined();
 		UINT rootParamIndex = ax_safe_cast_from(parameters.size());
 		
 		auto& dst = parameters.emplaceBack();

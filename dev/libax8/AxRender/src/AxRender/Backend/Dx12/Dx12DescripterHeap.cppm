@@ -25,7 +25,33 @@ struct Dx12DescriptorHandle {
 	}
 };
 
-struct Dx12DescripterHeapBlock : public NonCopyable {
+struct Dx12DescripterHeap : public NonCopyable {
+	ID3D12DescriptorHeap* d3dHeap() { return _d3dHeap; }
+	
+	void create(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc);
+	void destroy();
+	
+	Dx12DescriptorHandle currentHandle() { return getHandle(_used); }
+	Dx12DescriptorHandle getHandle(Int index) { return _startHandle + _stride * index; }
+
+	Int size  () const { return _size; }
+	Int used  () const { return _used; }
+	Int stride() const { return _stride; }
+	Int remain() const { return _size - _used; }
+
+	void adjustUsed(Int v) { _used += v; }
+	void reset() { _used = 0;}
+private:
+	ComPtr<ID3D12DescriptorHeap> _d3dHeap;
+	Dx12DescriptorHandle         _startHandle;
+
+	Int _size   = 0;
+	Int _used   = 0;
+	Int _stride = 0;
+};
+
+
+struct Dx12DescripterHeapPool_Block : public NonCopyable {
 	template<class HANDLE>
 	HANDLE _allocHandle() {
 		if (_used >= _size) throw Error_Undefined();
@@ -43,7 +69,7 @@ struct Dx12DescripterHeapBlock : public NonCopyable {
 	Dx12DescriptorHandle  startHandle() const { return _startHandle; }
 
 protected:
-	friend class Dx12DescripterHeap_Base;
+	friend class Dx12DescripterHeapPool;
 		
 	Dx12DescriptorHandle  _startHandle;
 	Int                   _size    = 0;
@@ -52,12 +78,13 @@ protected:
 	ID3D12DescriptorHeap* _d3dHeap = nullptr;
 };
 
-class Dx12DescripterHeap_Base : public NonCopyable {
+class Dx12DescripterHeapPool : public NonCopyable {
 public:
 	using BindPoint = ShaderParamBindPoint;
 	using BindCount = ShaderParamBindCount;
 	using BindSpace = ShaderParamBindSpace;
-	using BlockBase = Dx12DescripterHeapBlock;
+	using BlockBase = Dx12DescripterHeapPool_Block;
+	using Chunk     = Dx12DescripterHeap;
 
 	void destroy();
 	void reset();
@@ -69,49 +96,41 @@ protected:
 		
 		block._startHandle = chunk.currentHandle();
 		block._size        = count;
-		block._d3dHeap     = chunk._d3dHeap;
-		block._stride      = chunk._stride;
+		block._d3dHeap     = chunk.d3dHeap();
+		block._stride      = chunk.stride();
 	}
 
 	void _returnBlockRemain(BlockBase& block) {
 		auto& chunk = _chunks[_currentChunk];
-		if (chunk._d3dHeap != block.d3dHeap()) throw Error_Undefined();
-		if (chunk._used < block.remain()) throw Error_Undefined();
+		if (chunk.d3dHeap() != block.d3dHeap()) throw Error_Undefined();
+		if (chunk.used() < block.remain()) throw Error_Undefined();
 		if (block.remain() < 0) throw Error_Undefined();
 		if (block.remain() == 0) return;
-		chunk._used += block.remain();
+		chunk.adjustUsed(-block.remain());
 		block._used = block._size;
 	}	
 	
 	void _create(Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 
-	struct Chunk : public NonCopyable {
-		ComPtr<ID3D12DescriptorHeap> _d3dHeap;
-		Dx12DescriptorHandle         _startHandle;
-		Int                          _size   = 0;
-		Int                          _used   = 0;
-		Int                          _stride = 0;
-		Int                          remain() const { return _size - _used; }
-
-		Dx12DescriptorHandle currentHandle() {
-			return _startHandle + _stride * _used;
-		}
-		
-		Chunk(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc);
-	};
-
 	Chunk& _getReserveChunk(Dx12_ID3D12Device* dev, Int count) {
+		Chunk* outChunk = nullptr;
 		for (Int i = _currentChunk; i < _chunks.size(); ++i) {
 			auto& chunk = _chunks[i]; 
 			if (chunk.remain() >= count) {
-				chunk._used += count;
 				_currentChunk = i;
-				return chunk;
+				outChunk = &chunk;
+				break;
 			}
 		}
 
-		_currentChunk = _chunks.size();
-		return _chunks.emplaceBack(dev, _desc);
+		if (!outChunk) {
+			_currentChunk = _chunks.size();
+			outChunk = &_chunks.emplaceBack();
+			outChunk->create(dev, _desc);
+		}
+		
+		outChunk->adjustUsed(count);
+		return *outChunk;
 	}
 	
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
@@ -121,7 +140,7 @@ protected:
 
 struct Dx12DescriptorHandle_ColorBuffer { Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeap_ColorBuffer : public Dx12DescripterHeap_Base {
+class Dx12DescripterHeapPool_ColorBuffer : public Dx12DescripterHeapPool {
 public:
 	void create(Int numDescriptors) {
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
@@ -141,7 +160,7 @@ public:
 
 struct Dx12DescriptorHandle_DepthBuffer { Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeap_DepthBuffer : public Dx12DescripterHeap_Base {
+class Dx12DescripterHeapPool_DepthBuffer : public Dx12DescripterHeapPool {
 public:
 	void create(Int numDescriptors) {
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
@@ -162,7 +181,7 @@ public:
 
 struct Dx12DescriptorHandle_Sampler	{ Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeap_Sampler : public Dx12DescripterHeap_Base {
+class Dx12DescripterHeapPool_Sampler : public Dx12DescripterHeapPool {
 public:
 	void create(Int numDescriptors) {
 		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
@@ -201,10 +220,10 @@ struct Dx12DescriptorHandle_RawUAV		 { Dx12DescriptorHandle handle; };
 struct Dx12DescriptorHandle_Texture		 { Dx12DescriptorHandle handle; };
 struct Dx12DescriptorHandle_Texture2D	 { Dx12DescriptorHandle handle; };
 
-class Dx12DescripterHeap_CBV_SRV_UAV : public Dx12DescripterHeap_Base {
+class Dx12DescripterHeapPool_CBV_SRV_UAV : public Dx12DescripterHeapPool {
 public:
-	void create(Int numDescriptors) {
-		_create(numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+	void create(Int numDescriptorsPerChunk) {
+		_create(numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	}
 
 	struct Block : public BlockBase {
@@ -249,7 +268,7 @@ public:
 			auto h = _allocHandle<Dx12DescriptorHandle_Texture2D>();
 			dev->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);
 			return h;
-		}		
+		}
 	};
 
 	void allocaBlock(Block& outBlock, Dx12_ID3D12Device* dev, Int size) { return _allocaBlock(outBlock, dev, size); }

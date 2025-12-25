@@ -4,6 +4,8 @@ import :RenderSystem_Dx12;
 import :RenderPass_Dx12;
 import :Material_Dx12;
 import :GpuBuffer_Dx12;
+import :RenderResourceManager_Dx12;
+import :Texture_Dx12;
 
 #if AX_RENDERER_DX12
 
@@ -23,22 +25,29 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_heap_ColorBuffer.create(256);
 	_heap_DepthBuffer.create(64);
 	_heap_CBV_SRV_UAV.create(4000);
-	_heap_sampler.create(4000);
+	_heap_Sampler.create(4000);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
+#if AX_RENDER_BINDLESS
+	auto* resMgr = RenderResourceManager_Dx12::s_instance();
+	_bindlessHeap_CBV_SRV_UAV = &resMgr->bindlessHeap_CBV_SRV_UAV;
+	_bindlessHeap_Sampler     = &resMgr->bindlessHeap_Sampler;
+#endif
+
 	_uploadCmdBuf_dx12.commandBegin();
 	_graphCmdBuf_dx12.commandBegin();
 	
 	_heap_ColorBuffer.reset();
 	_heap_DepthBuffer.reset();
 	_heap_CBV_SRV_UAV.reset();
-	_heap_sampler.reset();
+	_heap_Sampler.reset();
 
 	_currentDescHeaps.clear();
 }
 
 void RenderRequest_Dx12::onFrameEnd() {
+	_updatedBindlessResources();
 	_uploadCmdBuf_dx12.commandEnd();
 	_graphCmdBuf_dx12.commandEnd();
 }
@@ -52,6 +61,51 @@ void RenderRequest_Dx12::onWaitCompleted() {
 			throw Error_Undefined("Render - timeout");
 		}
 	}
+}
+
+void RenderRequest_Dx12::_updatedBindlessResources() {
+#if AX_RENDER_BINDLESS
+	auto* mgr = RenderResourceManager_Dx12::s_instance();
+
+	auto descHeaps = Span({_bindlessHeap_CBV_SRV_UAV->d3dHeap(), _bindlessHeap_Sampler->d3dHeap()});
+	setDescriptorHeaps(descHeaps);
+
+	for (auto& tex_ : updatedBindlessResources.texture2Ds) {
+		auto* tex = rttiCastCheck<Texture2D_Dx12>(tex_.ptr());
+		if (!tex) throw Error_Undefined();
+
+		Int index = ax_enum_int(tex->resourceHandle.slotId());
+		auto handle = mgr->bindlessHeap_CBV_SRV_UAV.getHandle(index);
+		auto& texResource = tex->_bindImage(this);
+		_d3dDevice->CreateShaderResourceView(texResource, nullptr, handle.cpu);
+	}
+
+	for (auto& sampler_ : updatedBindlessResources.samplers) {
+		auto* sampler = rttiCastCheck<Sampler_Dx12>(sampler_.ptr());
+		if (!sampler) throw Error_Undefined();
+
+		Int index = ax_enum_int(sampler->resourceHandle.slotId());
+		auto handle = mgr->bindlessHeap_Sampler.getHandle(index);
+
+		auto& ss = sampler->samplerState();
+		D3D12_SAMPLER_DESC desc;
+		desc.Filter           = Dx12Util::getDxSamplerFilter(ss.filter);
+		desc.AddressU         = Dx12Util::getDxSamplerWrap(ss.wrap.u);
+		desc.AddressV         = Dx12Util::getDxSamplerWrap(ss.wrap.v);
+		desc.AddressW         = Dx12Util::getDxSamplerWrap(ss.wrap.w);
+		desc.MipLODBias       = 0;
+		desc.MaxAnisotropy    = 0;
+		desc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
+		desc.BorderColor[0]   = 0;
+		desc.BorderColor[1]   = 0;
+		desc.BorderColor[2]   = 0;
+		desc.BorderColor[3]   = 0;
+		desc.MinLOD           = 0.0f;
+		desc.MaxLOD           = D3D12_FLOAT32_MAX;
+		
+		_d3dDevice->CreateSampler(&desc, handle.cpu);
+	}	
+#endif // #if AX_RENDER_BINDLESS	
 }
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
@@ -127,7 +181,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	Array<D3D12_CPU_DESCRIPTOR_HANDLE, 16> rtViews;
 	{
-		Dx12DescripterHeap_ColorBuffer::Block heapBlock;
+		Dx12DescripterHeapPool_ColorBuffer::Block heapBlock;
 		_heap_ColorBuffer.allocaBlock(heapBlock, _d3dDevice, pass->colorAttachments().size());
 		for (auto& colorAttachment : pass->colorAttachments()) {
 			auto* colorBuf = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
@@ -138,7 +192,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	D3D12_CPU_DESCRIPTOR_HANDLE depthView;
 	{
-		Dx12DescripterHeap_DepthBuffer::Block heapBlock;
+		Dx12DescripterHeapPool_DepthBuffer::Block heapBlock;
 		_heap_DepthBuffer.allocaBlock(heapBlock, _d3dDevice, pass->colorAttachments().size());
 		auto* depthBuf = rttiCastCheck<RenderPassDepthBuffer_Dx12>(pass->depthAttachment().buffer.ptr());
 		depthView = heapBlock.addDepthStencilView(_d3dDevice, depthBuf->_resource_dx12).handle.cpu;

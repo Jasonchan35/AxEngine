@@ -2,21 +2,22 @@ module AxRender;
 import :Material_Dx12;
 import :Texture_Dx12;
 import :GpuBuffer_Dx12;
+import :RenderResourceManager_Dx12;
 
 #if AX_RENDERER_DX12
 
 namespace ax {
 
 auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12*                    req,
-                                                   Dx12DescripterHeap_CBV_SRV_UAV::Block& cbvHeapBlock,
-                                                   Dx12DescripterHeap_Sampler::Block&     samplerHeapBlock
+                                                   Dx12DescripterHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
+                                                   Dx12DescripterHeapPool_Sampler::Block&     samplerHeapBlock
 ) -> PerFrameData& {
 //	AX_LOG("update {} {} {}", (void*)this, this->_materialPass->shader()->assetPath(), bindSpace());
 	_lastRenderSeqId = req->renderSeqId();
 	
 //--- update ----
-	_perFrameData._CBV_SRV_UAV.update(cbvHeapBlock);
-	_perFrameData._sampler.update(samplerHeapBlock);
+	_perFrameData.heapStart_CBV_SRV_UAV.update(cbvHeapBlock);
+	_perFrameData.heapStart_Sampler.update(samplerHeapBlock);
 	
 	auto* dev = req->_d3dDevice;
 	auto& cmdList = req->_graphCmdBuf_dx12;
@@ -27,17 +28,27 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12*          
 
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		cbvHeapBlock.addCBV(dev, gpuBuf->resource());
-		_perFrameData._CBV_SRV_UAV.bindCount++;
+		_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 	}
 
-#if !AX_RENDER_BINDLESS
+#if AX_RENDER_BINDLESS
+	
+	_perFrameData.heapStart_CBV_SRV_UAV.handle  = req->_bindlessHeap_CBV_SRV_UAV->getHandle(0);
+	_perFrameData.heapStart_CBV_SRV_UAV.d3dHeap = req->_bindlessHeap_CBV_SRV_UAV->d3dHeap();
+
+	_perFrameData.heapStart_Sampler.handle  = req->_bindlessHeap_Sampler->getHandle(0);
+	_perFrameData.heapStart_Sampler.d3dHeap = req->_bindlessHeap_Sampler->d3dHeap();
+	
+	return _perFrameData;
+	
+#else
 	for (auto& texParam : _textureParams) {
 		switch (texParam.dataType()) {
 			case RenderDataType::Texture2D: {
 				auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
 				if (!tex) throw Error_Undefined();
 				cbvHeapBlock.addTexture(dev, ax_const_cast(tex)->_bindImage(req));
-				_perFrameData._CBV_SRV_UAV.bindCount++;
+				_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 			} break;
 			default: throw Error_Undefined();
 		}
@@ -48,15 +59,15 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12*          
 		auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
 		auto& ss      = sampler->samplerState();
 		samplerHeapBlock.addSampler(dev, ss.filter, ss.wrap);
-		_perFrameData._sampler.bindCount++;
+		_perFrameData.heapStart_Sampler.bindCount++;
 	}
-#endif // #if !AX_RENDER_BINDLESS
 
 	auto* shd = shaderParamSpace_dx12();
-	if (shd->_CBV_SRV_UAV_DescTable.size() != _perFrameData._CBV_SRV_UAV.bindCount) throw Error_Undefined();
-	if (shd->_samplerDescTable.size()      != _perFrameData._sampler.bindCount    ) throw Error_Undefined();
+	if (shd->_CBV_SRV_UAV_DescTable.size() != _perFrameData.heapStart_CBV_SRV_UAV.bindCount) throw Error_Undefined();
+	if (shd->_samplerDescTable.size()      != _perFrameData.heapStart_Sampler.bindCount    ) throw Error_Undefined();
 	
 	return _perFrameData;
+#endif // #if !AX_RENDER_BINDLESS
 }
 
 bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
@@ -68,48 +79,65 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* shdPass = shaderPass_dx12();
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
-	// Bindless: SetGraphicsRootSignature:
-	// SetDescriptorHeaps must be called to bind a sampler descriptor before setting a root signature
-	// with D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED flag.
-	if (!shdPass->_bindPipeline(req, cmd)) return false;
-
 	// alloc block to ensure same heap can hold all descriptors
-	Dx12DescripterHeap_CBV_SRV_UAV::Block cbvHeapBlock;
+	Dx12DescripterHeapPool_CBV_SRV_UAV::Block cbvHeapBlock;
 	req->_heap_CBV_SRV_UAV.allocaBlock(cbvHeapBlock, dev,
 		  shdPass->allBindCount_constBuffers()
 		+ shdPass->allBindCount_textureParams()
 		+ shdPass->allBindCount_storageBufferParams());
 
-	Dx12DescripterHeap_Sampler::Block samplerHeapBlock;
-	req->_heap_sampler.allocaBlock(samplerHeapBlock, dev, shdPass->allBindCount_samplerParams());
+	Dx12DescripterHeapPool_Sampler::Block samplerHeapBlock;
+	req->_heap_Sampler.allocaBlock(samplerHeapBlock, dev, shdPass->allBindCount_samplerParams());
 	
 	//----- SetDescriptorHeaps ----
-	auto descHeaps = Span({cbvHeapBlock.d3dHeap(), samplerHeapBlock.d3dHeap()});
-	if (req->_currentDescHeaps != descHeaps) {
-		req->_currentDescHeaps = descHeaps;
-		cmdList->SetDescriptorHeaps(ax_safe_cast_from(descHeaps.size()), descHeaps.data());
-	}
+	auto descHeaps = Span({
+#if AX_RENDER_BINDLESS
+		req->_bindlessHeap_CBV_SRV_UAV->d3dHeap(),
+		req->_bindlessHeap_Sampler->d3dHeap(),
+#endif
+		cbvHeapBlock.d3dHeap(),
+		samplerHeapBlock.d3dHeap()
+	});
+	req->setDescriptorHeaps(descHeaps);
+
+	// SetDescriptorHeaps must be called to bind a sampler descriptor before setting a root signature
+	if (!shdPass->_bindPipeline(req, cmd)) return false;
 
 	//---- SetGraphicsRootDescriptorTable ----
-	UINT rootParamIndex = 0;
-	auto setRootDescTable = [&](const MaterialParamSpace_Dx12::HeapStartHandle& heapStartHandle) {
-		if (heapStartHandle.bindCount <= 0) return;
-		cmdList->SetGraphicsRootDescriptorTable(rootParamIndex, heapStartHandle.handle.gpu);
-		rootParamIndex++;
-	};
 
+	// AX_LOG("--- Material Pass [{}]-------", debugName());
+
+	FixedArray<const MaterialParamSpace_Dx12::PerFrameData*, BindSpace_COUNT> updatedParamSpaceData;
+	
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* paramSpace = getParamSpace_dx12(bindSpace);
 		if (!paramSpace) continue;
-
 		auto& data = paramSpace->getUpdatedPerFrameData(req, cbvHeapBlock, samplerHeapBlock);
-		setRootDescTable(data._CBV_SRV_UAV);
-		setRootDescTable(data._sampler);
+		updatedParamSpaceData[ax_enum_int(paramSpace->bindSpace())] = &data;
+	}
+	
+	UINT rootParamIndex = 0;
+	for (auto& rp : shdPass->_rootParamBindings) {
+		// AX_LOG("--- setRootDescriptor bindSpace={:8} rootParamType={}", rp.bindSpace, rp.rootParamType);
+		
+		switch (rp.rootParamType) {
+			case Dx12RootParamType::DescTable_CBV_SRV_UAV: {
+				auto* data = updatedParamSpaceData[ax_enum_int(rp.bindSpace)];
+				if (!data) throw Error_Undefined();
+				cmdList->SetGraphicsRootDescriptorTable(rootParamIndex, data->heapStart_CBV_SRV_UAV.handle.gpu);
+			} break;
+			case Dx12RootParamType::DescTable_Sampler: {
+				auto* data = updatedParamSpaceData[ax_enum_int(rp.bindSpace)];
+				if (!data) throw Error_Undefined();
+				cmdList->SetGraphicsRootDescriptorTable(rootParamIndex, data->heapStart_Sampler.handle.gpu);
+			} break;
+		}
+		rootParamIndex++;
 	}
 
 	//----- return Block remain ----
 	req->_heap_CBV_SRV_UAV.returnBlockRemain(cbvHeapBlock);
-	req->_heap_sampler.returnBlockRemain(samplerHeapBlock);
+	req->_heap_Sampler.returnBlockRemain(samplerHeapBlock);
 
 	if (rootParamIndex != shaderPass_dx12()->_pipelineRootParamList.parameters.size())
 		throw Error_Undefined();

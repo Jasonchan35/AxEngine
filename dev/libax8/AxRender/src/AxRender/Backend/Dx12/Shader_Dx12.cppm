@@ -83,8 +83,12 @@ public:
 	Stage _gsStage;
 	Stage _csStage;
 
-	using DescTableRootIndices = FixedArray<UINT, ax_enum_int(BindSpace::_COUNT)>;
-	
+	struct RootParamBinding {
+		Dx12RootParamType rootParamType = Dx12RootParamType::None;
+		BindSpace         bindSpace     = BindSpace::Invalid;
+	};
+
+	Array<RootParamBinding, 16> _rootParamBindings;
 	Dx12RootParameterList       _pipelineRootParamList;
 	Array<UPtr<Pipeline>, 4>    _pipelineTable;
 	ComPtr<ID3D12RootSignature> _rootSignature;

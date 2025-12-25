@@ -17,7 +17,8 @@ class RenderRequest_Dx12 : public RenderRequest_Backend {
 public:
 	
 	RenderRequest_Dx12(const CreateDesc& desc);
-	
+
+	RenderSystem_Dx12*  renderSystem_dx12()			{ return rttiCastCheck<RenderSystem_Dx12>(_renderSystem); }
 	RenderContext_Dx12*	renderContext_dx12()		{ return rttiCastCheck<RenderContext_Dx12>(_renderContext); }
 	RenderPass_Dx12*	currentRenderPass_dx12()	{ return rttiCastCheck<RenderPass_Dx12   >(_currentRenderPass); }
 	CommandBuffer_Dx12&	uploadCmdBuf_dx12()			{ return _uploadCmdBuf_dx12; }
@@ -30,7 +31,7 @@ public:
 	
 	AX_INLINE u64 fenceValue_dx12() const { return static_cast<u64>(_renderSeqId); }
 	void signalFence(Dx12CommandQueue& cmdQueue) { cmdQueue.signal(_fence, fenceValue_dx12()); }
-	
+
 	CommandBuffer_Dx12	_uploadCmdBuf_dx12; // submit earlier than graphCmdBuf
 	CommandBuffer_Dx12	_graphCmdBuf_dx12;
 	CommandBuffer_Dx12	_computeCmdList_dx12;
@@ -38,11 +39,21 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 
-	Dx12DescripterHeap_ColorBuffer		_heap_ColorBuffer;
-	Dx12DescripterHeap_DepthBuffer		_heap_DepthBuffer;
-	Dx12DescripterHeap_CBV_SRV_UAV		_heap_CBV_SRV_UAV;
-	Dx12DescripterHeap_Sampler			_heap_sampler;
+	Dx12DescripterHeapPool_ColorBuffer		_heap_ColorBuffer;
+	Dx12DescripterHeapPool_DepthBuffer		_heap_DepthBuffer;
+	Dx12DescripterHeapPool_CBV_SRV_UAV		_heap_CBV_SRV_UAV;
+	Dx12DescripterHeapPool_Sampler			_heap_Sampler;
 
+	Dx12DescripterHeap* _bindlessHeap_CBV_SRV_UAV = nullptr;
+	Dx12DescripterHeap* _bindlessHeap_Sampler     = nullptr;
+
+	void _updatedBindlessResources();
+
+	void setDescriptorHeaps(Span<ID3D12DescriptorHeap*> heaps) {
+		if (heaps == _currentDescHeaps) return;
+		_graphCmdBuf_dx12->SetDescriptorHeaps(ax_safe_cast_from(heaps.size()), heaps.data());
+	}
+	
 	Array<ID3D12DescriptorHeap*>		_currentDescHeaps;
 
 	Dx12_ID3D12Device* _d3dDevice = nullptr;

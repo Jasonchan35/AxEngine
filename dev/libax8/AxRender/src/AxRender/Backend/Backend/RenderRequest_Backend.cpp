@@ -10,7 +10,7 @@ import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
-UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& req, RenderSystem* renderSystem, Int index) {
+UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& req, RenderSystem_Backend* renderSystem, Int index) {
 	CreateDesc desc;
 	desc.renderSystem = renderSystem;
 	desc.index = index;
@@ -18,8 +18,9 @@ UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& 
 }
 
 RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
-	_renderSystem = desc.renderSystem;
-	_index = desc.index;
+	_renderSystem         = desc.renderSystem;
+	_renderSystem_backend = desc.renderSystem;
+	_index                = desc.index;
 	_inlineUpload.create(this);
 	_renderRequestCount = _renderSystem->renderRequestCount();
 }
@@ -42,25 +43,15 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 
 void RenderRequest_Backend::_updateCommonMaterial() {
 	using namespace Math;
-
-	auto* renderSystem_ = renderSystem_backend();
-	if (!renderSystem_) throw Error_Undefined();
-
-	
-	auto* commonMaterial = renderSystem_->commonMaterial();
-	if (!commonMaterial) throw Error_Undefined();
-
-	resourcesToKeep.add(commonMaterial);
-
-	_uptime = renderSystem_->getCurrentUptime().seconds_f64();
+	resourcesToKeep.add(_commonMaterial);
 	
 	f32 t = static_cast<f32>(_uptime);
 	Vec4f timeSin		(sin(t),   sin(t*4), sin(t*9), sin(t*16));
 	Vec4f timeSlowSin   (sin(t/2), sin(t/4), sin(t/9), sin(t/16));
 
 	auto setParam = [&](BindSpace space, NameId name, auto& value) {
-		if (!commonMaterial->setParam(space, name, value)) {
-			commonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
+		if (!_commonMaterial->setParam(space, name, value)) {
+			_commonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
 		}
 	};
 
@@ -70,16 +61,19 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 }
 
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
-//	AX_LOG("---- FrameBegin {} -----", _renderSeqId);
-	
-	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize()); // TODO: move to frame update, to enable draw ui in update loop as well
+	//	AX_LOG("---- FrameBegin {} -----", _renderSeqId);
+
+	// TODO: move to frame update, to enable draw ui in update loop as well
+	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
 	RenderResourceManager_Backend::s_instance()->onFrameBegin(this);
 
 	_renderContext        = renderContext;
 	_viewportIsBottomUp   = renderContext->viewportIsBottomUp();
 	_frameSize            = backBufferRenderPass->frameSize();
 	_backBufferRenderPass = backBufferRenderPass;
-
+	_uptime               = _renderSystem_backend->getCurrentUptime().seconds_f64();
+	_commonMaterialPass   = _renderSystem_backend->commonMaterialPass();
+	_commonMaterial       = _commonMaterialPass->material();
 	_updateCommonMaterial();
 	onFrameBegin();
 }
