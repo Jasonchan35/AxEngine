@@ -49,7 +49,7 @@ void Texture2D_Vk::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	handler.readPixelsTo(map.data());
 }
 
-void Texture2D_Vk::_bindImage(RenderRequest_Vk* req, VkDescriptorImageInfo& outInfo) {
+VkDescriptorImageInfo Texture2D_Vk::_bindImage(RenderRequest_Vk* req) {
 	req->resourcesToKeep.add(this);
 
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Vk>(_uploadBuffer.ptr())) {
@@ -86,9 +86,11 @@ void Texture2D_Vk::_bindImage(RenderRequest_Vk* req, VkDescriptorImageInfo& outI
 	}
 
 //----
+	VkDescriptorImageInfo outInfo;
 	outInfo.imageView	= _view;
 	outInfo.imageLayout	= _image.layout();
 	outInfo.sampler		= VK_NULL_HANDLE;
+	return outInfo;
 }
 
 } // namespace

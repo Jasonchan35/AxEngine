@@ -28,7 +28,7 @@ public:
 
 	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) override;
 
-	void _bindImage(class RenderRequest_Vk* req, VkDescriptorImageInfo& outInfo);
+	VkDescriptorImageInfo _bindImage(class RenderRequest_Vk* req);
 private:
 	AX_VkImage			_image;
 	AX_VkDeviceMemory	_devMem;

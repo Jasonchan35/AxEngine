@@ -57,9 +57,6 @@ void RenderRequest_Vk::onWaitCompleted() {
 	}
 	_uploadCmdBuf_vk.resetAndReleaseResource();
 	_graphCmdBuf_vk.resetAndReleaseResource();
-
-	_writeDescriptorSets.clear();
-	_writeDescLinearAllocator.reset();
 }
 
 void RenderRequest_Vk::_updatedBindlessResources() {
@@ -71,31 +68,20 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 	auto* commonPass = rttiCastCheck<MaterialPass_Vk>(commonMaterial->getPass(0));
 	if (!commonPass) return;
 
-	auto& curFrameData = commonPass->getUpdatedFrameData(this);
-	auto& curDescSet = curFrameData._descSets[ax_enum_int(BindSpace::Bindless)];
-
-	auto* mtlSpace = commonMaterial->getPassParamSpace_<MaterialParamSpace_Vk>(0, BindSpace::Bindless);
-	if (!mtlSpace) return;
-
-	auto* shdSpace = mtlSpace->shaderParamSpace();
-	if (!shdSpace) return;
+	auto* bindlessParamSpace = commonPass->getOwnParamSpace_vk(BindSpace::Bindless);
+	if (!bindlessParamSpace) throw Error_Undefined();
 	
-	auto* samplerParam   = shdSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
-	auto* texture2DParam = shdSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
+	auto* shdParamSpace = bindlessParamSpace->shaderParamSpace();
+	if (!shdParamSpace) return;
+	
+	auto* samplerParam   = shdParamSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
+	auto* texture2DParam = shdParamSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
 	
 	//----
-	_writeDescriptor_ImageInfos.clear();
-	_writeDescriptor_ImageInfos.ensureCapacity(
-		updatedBindlessResources.samplers.size() + updatedBindlessResources.texture2Ds.size());
-	auto imageInfos_capacityChecl = ScopedArrayCapacityCheck(_writeDescriptor_ImageInfos);
-	
-	_writeDescriptor_BufferInfos.clear();
-	_writeDescriptor_BufferInfos.ensureCapacity(updatedBindlessResources.storageBuffers.size());
-	auto bufferInfos_capacityChecl = ScopedArrayCapacityCheck(_writeDescriptor_BufferInfos);
+
 
 	_writeDescriptorSets.clear();
-	_writeDescriptorSets.ensureCapacity(
-		_writeDescriptor_ImageInfos.capacity() + _writeDescriptor_BufferInfos.capacity());
+	_writeDescLinearAllocator.reset();
 	
 	auto addWriteSet = [&](auto* param, VkDescriptorType _descriptorType, ResourceSlotId slotId) -> VkWriteDescriptorSet& {
 		auto& w =  _writeDescriptorSets.emplaceBack();

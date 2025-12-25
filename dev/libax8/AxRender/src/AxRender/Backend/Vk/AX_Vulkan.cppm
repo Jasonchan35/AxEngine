@@ -738,13 +738,6 @@ private:
 	AX_VkDevice* _dev = nullptr;
 };
 
-inline
-void AX_vkUpdateDescriptorSets(VkDevice dev, Span<VkWriteDescriptorSet> writeSpan, Span<VkCopyDescriptorSet> copySpan) {
-	vkUpdateDescriptorSets(dev, 
-		AX_VkUtil::castUInt32(writeSpan.size()), writeSpan.data(),
-		AX_VkUtil::castUInt32( copySpan.size()),  copySpan.data());
-}
-
 inline void AX_vkCmdBindDescriptorSets(
 	VkCommandBuffer			commandBuffer,
 	VkPipelineBindPoint		pipelineBindPoint,
