@@ -9,6 +9,7 @@ export import :RenderRequest_Backend;
 export import :CommandBuffer_Dx12;
 export import :RenderPass_Dx12;
 export import :RenderContext_Dx12;
+export import :RenderResourceManager_Dx12;
 
 namespace ax {
 
@@ -43,6 +44,8 @@ public:
 	Dx12DescriptorAllocator_DepthBuffer		_descAlloc_DepthBuffer;
 	Dx12DescriptorAllocator_CBV_SRV_UAV		_descAlloc_CBV_SRV_UAV;
 	Dx12DescriptorAllocator_Sampler			_descAlloc_Sampler;
+
+	RenderResourceManager_Dx12*				_resourceManger_dx12 = nullptr; 
 
 	void _updatedBindlessResources();
 

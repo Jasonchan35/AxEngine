@@ -88,9 +88,15 @@ public:
 	Int size() const { return _size; }
 	Int used() const { return _used; }
 	Int remain() const { return _size - _used; }
-	ID3D12DescriptorHeap* d3dHeap() const { return _d3dHeap; }
-	Dx12DescriptorHandle  startHandle() const { return _startHandle; }
-	Dx12DescriptorHandle  currentHandle() const { return _startHandle + _stride * _used; }
+	ID3D12DescriptorHeap* d3dHeap() const				{ return _d3dHeap; }
+	Dx12DescriptorHandle  startHandle() const			{ return _startHandle; }
+	Dx12DescriptorHandle  currentHandle() const			{ return _startHandle + _stride * _used; }
+	Dx12DescriptorHandle  getHandle(Int index) const	{
+		if (index < 0 || index >= _used) throw Error_IndexOutOfRange();
+		return _startHandle + _stride * index;
+	}
+
+	void adjustUsedToSize() { _used = _size; }
 	
 protected:
 	void _create(Dx12DescriptorHeapPool& heapPool, Int size) { return heapPool._onCreateAllocator(*this, size); }
@@ -102,9 +108,8 @@ protected:
 
 	template<class HANDLE>
 	HANDLE _getHandle(Int index) {
-		if (index < 0 || index >= _used) throw Error_IndexOutOfRange();
 		HANDLE h;
-		h.handle = _startHandle + _stride * index;
+		h.handle = getHandle(index);
 		return h; 
 	}
 
@@ -257,8 +262,15 @@ struct Dx12DescriptorAllocator_CBV_SRV_UAV : public Dx12DescriptorAllocator {
 		_dev->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);
 		return h;
 	}
-	Dx12Descriptor_Texture2D addTexture(const Dx12Resource_Texture2D& res) {
-		return setTexture(_addHandle(), res);
+	
+	Dx12Descriptor_Texture2D setTexture(Int index, Dx12DescriptorHandle srcHandle) {
+		auto dst = _getHandle<Dx12Descriptor_Texture2D>(index);
+		_dev->CopyDescriptorsSimple(1, dst.handle.cpu, srcHandle.cpu, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		return dst;
+	}
+
+	Dx12Descriptor_Texture2D addTexture(Dx12DescriptorHandle srcHandle) {
+		return setTexture(_addHandle(), srcHandle);
 	}
 };
 

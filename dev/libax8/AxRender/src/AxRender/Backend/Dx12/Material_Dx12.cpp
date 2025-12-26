@@ -43,8 +43,12 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 			case RenderDataType::Texture2D: {
 				auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
 				if (!tex) throw Error_Undefined();
-//				AX_LOG("-- addTexture");
-				req->_descAlloc_CBV_SRV_UAV.addTexture(ax_const_cast(tex)->_bindImage(req));
+				// req->_descAlloc_CBV_SRV_UAV.addTexture(ax_const_cast(tex)->_bindImage(req));
+
+				Int  srcIndex = ax_enum_int(tex->resourceHandle.slotId());
+				auto srcHandle = req->_resourceManger_dx12->descAlloc_Texture2D.getHandle(srcIndex);
+				req->_descAlloc_CBV_SRV_UAV.addTexture(srcHandle);
+
 				_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 			} break;
 			default: throw Error_Undefined();

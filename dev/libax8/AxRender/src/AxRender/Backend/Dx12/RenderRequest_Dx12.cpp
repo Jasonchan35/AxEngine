@@ -24,16 +24,18 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 
 	auto& info = _renderSystem->info();
 	auto* resMgr = RenderResourceManager_Dx12::s_instance();
+
+	_resourceManger_dx12 = resMgr;
 	
 	Int renderPassCount = info.renderPass.maxCount;
-	_descAlloc_ColorBuffer.create(resMgr->descHeap_ColorBuffer, info.renderPass.maxColorBufferCount * renderPassCount);
-	_descAlloc_DepthBuffer.create(resMgr->descHeap_DepthBuffer, info.renderPass.maxDepthBufferCount * renderPassCount);
+	_descAlloc_ColorBuffer.create(resMgr->descHeapPool_ColorBuffer, info.renderPass.maxColorBufferCount * renderPassCount);
+	_descAlloc_DepthBuffer.create(resMgr->descHeapPool_DepthBuffer, info.renderPass.maxDepthBufferCount * renderPassCount);
 
 	Int renderRequest_CBV_SRV_UAV_Count = info.renderRequest.maxConstBufferCount
 										+ info.renderRequest.maxTextureCount;
 	
-	_descAlloc_CBV_SRV_UAV.create(resMgr->descHeap_CBV_SRV_UAV, renderRequest_CBV_SRV_UAV_Count);
-	    _descAlloc_Sampler.create(resMgr->descHeap_Sampler,     info.renderRequest.maxSamplerCount);
+	_descAlloc_CBV_SRV_UAV.create(resMgr->descHeapPool_CBV_SRV_UAV, renderRequest_CBV_SRV_UAV_Count);
+	    _descAlloc_Sampler.create(resMgr->descHeapPool_Sampler,     info.renderRequest.maxSamplerCount);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
@@ -46,7 +48,7 @@ void RenderRequest_Dx12::onFrameBegin() {
 	_descAlloc_Sampler.reset();
 
 	auto* resMgr = RenderResourceManager_Dx12::s_instance();
-	auto descHeaps = Span({resMgr->descHeap_CBV_SRV_UAV.d3dHeap(), resMgr->descHeap_Sampler.d3dHeap()});
+	auto descHeaps = Span({resMgr->descHeapPool_CBV_SRV_UAV.d3dHeap(), resMgr->descHeapPool_Sampler.d3dHeap()});
 	setDescriptorHeaps(descHeaps);
 }
 
