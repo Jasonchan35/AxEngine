@@ -15,26 +15,48 @@ AX_ENUM_CLASS(AX_RenderAPI_ENUM_LIST, RenderAPI, u8);
 
 class GpuUploadManager;
 
-struct RendererInfo {
-	RendererInfo();
+struct RenderSystemInfo {
+	RenderSystemInfo();
 
 	RenderAPI	api = RenderAPI::None;
-	bool multithread		: 1;
-	bool enableDebugReport	: 1;
-	bool enableDebugUtils	: 1;
-	bool enableDebugMarker	: 1;
-	bool vsync              : 1;
-
-	Int  renderRequestCount = 0;
+	bool multithread		: 1 = false;
+	bool enableDebugReport	: 1 = false;
+	bool enableDebugUtils	: 1 = false;
+	bool enableDebugMarker	: 1 = false;
+	bool vsync              : 1 = false;
 
 	struct InlineUpload {
 		Int bufferSize   = 0;
 		Int limitPerEach = 0;
 	} inlineUpload;
+	
+	struct Resource {
+		Int maxTextureCount = 0;
+		Int maxSamplerCount = 0;
+	} resource;
+
+	struct Shader {
+		Int maxConstBufferCount = 0;
+		Int maxTextureCount     = 0;
+		Int maxSamplerCount     = 0;
+	} shader;
+	
+	struct RenderPass {
+		Int maxCount = 0;
+		Int maxColorBufferCount = 0;
+		Int maxDepthBufferCount = 0;
+	} renderPass;
+	
+	struct RenderRequest {
+		Int count = 0;
+		Int maxConstBufferCount = 0;
+		Int maxTextureCount     = 0;
+		Int maxSamplerCount     = 0;
+	} renderRequest;
 };
 
 struct RenderSystem_CreateDesc {
-	RendererInfo	info;
+	RenderSystemInfo	info;
 };
 
 class RenderSystem : public RenderObject {
@@ -74,14 +96,14 @@ public:
 	bool enableDebugReport() const { return _enableDebugReport; }
 
 //	AX_INLINE RenderSeqId	renderSeqId() const { return _renderSeqId; }
-	AX_INLINE const RendererInfo&	info() const { return _info; }
+	AX_INLINE const RenderSystemInfo&	info() const { return _info; }
 
-	AX_INLINE Int renderRequestCount() const { return _info.renderRequestCount; }
+	AX_INLINE Int renderRequestCount() const { return _info.renderRequest.count; }
 
 	const HiResTime&	startTime() const { return _startTime; }
 
-	HiResTime	getCurrentTime() const { return HiResTime::s_now(); }
-	HiResTime	getCurrentUptime() const { return HiResTime::s_now() - _startTime; }
+	HiResTime	getCurrentTime() const		{ return HiResTime::s_now(); }
+	HiResTime	getCurrentUptime() const	{ return HiResTime::s_now() - _startTime; }
 
 	virtual void onFileChanged(FileDirWatcher_Result& result) {}
 	
@@ -96,7 +118,7 @@ protected:
 	RenderSeqId			_renderSeqId = 0;
 	HiResTime			_startTime;
 
-	RendererInfo		_info;
+	RenderSystemInfo		_info;
 
 	bool _enableDebugReport : 1;
 	bool _enableDebugUtils  : 1;

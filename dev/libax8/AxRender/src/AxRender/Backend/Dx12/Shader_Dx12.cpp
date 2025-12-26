@@ -45,7 +45,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	auto addDescriptor = [&](const ShaderParamSpace_Dx12* paramSpace, Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
 		if (p.bindCount() <= 0) return;
 		// AX_LOG("--- addDescriptor bindPoint={} bindCount={} type = {}, [{}] ",
-		// 	   p.bindPoint(), p.bindCount(), static_cast<int>(type), paramSpace->debugName());
+		//  	   p.bindPoint(), p.bindCount(), static_cast<int>(type), paramSpace->debugName());
 		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), paramSpace->bindSpace());
 	};
 	

@@ -40,10 +40,10 @@ void RenderSystem_Backend::onCreate() {
 	}
 
 //----- render request
-	if (_info.renderRequestCount > AxRenderConfig::kMaxRenderRequestCount)
+	if (_info.renderRequest.count > AxRenderConfig::kMaxRenderRequestCount)
 		throw Error_Undefined();
 
-	for (Int i = 0; i < _info.renderRequestCount; i++) {
+	for (Int i = 0; i < _info.renderRequest.count; i++) {
 		auto req = RenderRequest_Backend::s_new(AX_ALLOC_REQ, this, i);
 		_privateData->renderRequests.emplaceBack(std::move(req));
 	}

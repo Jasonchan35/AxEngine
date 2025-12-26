@@ -56,7 +56,7 @@ void RenderSystem::destroy() {
 	onDestroy(); 
 }
 
-RendererInfo::RendererInfo() {
+RenderSystemInfo::RenderSystemInfo() {
 #if _DEBUG
 	constexpr bool isDebug = true;
 #else
@@ -78,9 +78,25 @@ RendererInfo::RendererInfo() {
 	enableDebugMarker	= isDebug;
 	vsync				= true;
 	//---
-	renderRequestCount = 4;
 	inlineUpload.bufferSize   =  16 * 1024 * 1024;
 	inlineUpload.limitPerEach = 128 * 1024;
+
+	resource.maxTextureCount = 32 * 1024;
+	resource.maxSamplerCount = 1024;
+
+	shader.maxConstBufferCount = 6;
+	shader.maxTextureCount     = 10;
+	shader.maxSamplerCount     = 10;
+	
+	renderPass.maxCount  = 64;
+	renderPass.maxColorBufferCount = 10;
+	renderPass.maxDepthBufferCount = 1;
+
+	renderRequest.count = 3;
+	Int maxMaterialCount              = 8 * 1024;
+	renderRequest.maxConstBufferCount = maxMaterialCount * shader.maxConstBufferCount;
+	renderRequest.maxTextureCount     = maxMaterialCount * shader.maxTextureCount;
+	renderRequest.maxSamplerCount     = 256;
 }
 
 } // namespace

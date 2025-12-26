@@ -39,20 +39,17 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 
-	Dx12DescriptorHeapPool_ColorBuffer		_heap_ColorBuffer;
-	Dx12DescriptorHeapPool_DepthBuffer		_heap_DepthBuffer;
-	Dx12DescriptorHeapPool_CBV_SRV_UAV		_heap_CBV_SRV_UAV;
-	Dx12DescriptorHeapPool_Sampler			_heap_Sampler;
-	
+	Dx12DescriptorAllocator_ColorBuffer		_descAlloc_ColorBuffer;
+	Dx12DescriptorAllocator_DepthBuffer		_descAlloc_DepthBuffer;
+	Dx12DescriptorAllocator_CBV_SRV_UAV		_descAlloc_CBV_SRV_UAV;
+	Dx12DescriptorAllocator_Sampler			_descAlloc_Sampler;
+
 	void _updatedBindlessResources();
 
 	void setDescriptorHeaps(Span<ID3D12DescriptorHeap*> heaps) {
-		if (heaps == _currentDescHeaps) return;
 		_graphCmdBuf_dx12->SetDescriptorHeaps(ax_safe_cast_from(heaps.size()), heaps.data());
 	}
 	
-	Array<ID3D12DescriptorHeap*>		_currentDescHeaps;
-
 	Dx12_ID3D12Device* _d3dDevice = nullptr;
 	
 	AX_RenderRequest_Backend_FunctionInterfaces(override)

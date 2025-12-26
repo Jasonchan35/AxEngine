@@ -22,22 +22,32 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_fence.create(dev, static_cast<u64>(_renderSeqId));
 	_cpuEvent.create();
 
-	_heap_ColorBuffer.create(256);
-	_heap_DepthBuffer.create(64);
-	_heap_CBV_SRV_UAV.create(4000);
-	_heap_Sampler.create(4000);
+	auto& info = _renderSystem->info();
+	auto* resMgr = RenderResourceManager_Dx12::s_instance();
+	
+	Int renderPassCount = info.renderPass.maxCount;
+	_descAlloc_ColorBuffer.create(resMgr->descHeap_ColorBuffer, info.renderPass.maxColorBufferCount * renderPassCount);
+	_descAlloc_DepthBuffer.create(resMgr->descHeap_DepthBuffer, info.renderPass.maxDepthBufferCount * renderPassCount);
+
+	Int renderRequest_CBV_SRV_UAV_Count = info.renderRequest.maxConstBufferCount
+										+ info.renderRequest.maxTextureCount;
+	
+	_descAlloc_CBV_SRV_UAV.create(resMgr->descHeap_CBV_SRV_UAV, renderRequest_CBV_SRV_UAV_Count);
+	    _descAlloc_Sampler.create(resMgr->descHeap_Sampler,     info.renderRequest.maxSamplerCount);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
 	_uploadCmdBuf_dx12.commandBegin();
 	_graphCmdBuf_dx12.commandBegin();
 	
-	_heap_ColorBuffer.reset();
-	_heap_DepthBuffer.reset();
-	_heap_CBV_SRV_UAV.reset();
-	_heap_Sampler.reset();
+	_descAlloc_ColorBuffer.reset();
+	_descAlloc_DepthBuffer.reset();
+	_descAlloc_CBV_SRV_UAV.reset();
+	_descAlloc_Sampler.reset();
 
-	_currentDescHeaps.clear();
+	auto* resMgr = RenderResourceManager_Dx12::s_instance();
+	auto descHeaps = Span({resMgr->descHeap_CBV_SRV_UAV.d3dHeap(), resMgr->descHeap_Sampler.d3dHeap()});
+	setDescriptorHeaps(descHeaps);
 }
 
 void RenderRequest_Dx12::onFrameEnd() {
@@ -177,21 +187,17 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	Array<D3D12_CPU_DESCRIPTOR_HANDLE, 16> rtViews;
 	{
-		Dx12DescriptorHeapPool_ColorBuffer::Block heapBlock;
-		_heap_ColorBuffer.allocaBlock(heapBlock, _d3dDevice, pass->colorAttachments().size());
 		for (auto& colorAttachment : pass->colorAttachments()) {
 			auto* colorBuf = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
-			auto h = heapBlock.addRenderTargetView(_d3dDevice, colorBuf->_resource_dx12);
+			auto h = _descAlloc_ColorBuffer.addRenderTargetView(colorBuf->_resource_dx12);
 			rtViews.emplaceBack(h.handle.cpu);
 		}
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE depthView;
 	{
-		Dx12DescriptorHeapPool_DepthBuffer::Block heapBlock;
-		_heap_DepthBuffer.allocaBlock(heapBlock, _d3dDevice, pass->colorAttachments().size());
 		auto* depthBuf = rttiCastCheck<RenderPassDepthBuffer_Dx12>(pass->depthAttachment().buffer.ptr());
-		depthView = heapBlock.addDepthStencilView(_d3dDevice, depthBuf->_resource_dx12).handle.cpu;
+		depthView = _descAlloc_DepthBuffer.addDepthStencilView(depthBuf->_resource_dx12).handle.cpu;
 	}
 
 	//------

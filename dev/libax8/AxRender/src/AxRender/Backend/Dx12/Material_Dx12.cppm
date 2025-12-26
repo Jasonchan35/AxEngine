@@ -25,9 +25,9 @@ public:
 		Dx12DescriptorHandle  handle;
 		Int bindCount = 0;
 
-		void update(Dx12DescriptorHeapPool_Block& block) {
-			d3dHeap = block.d3dHeap();
-			handle = block.startHandle();
+		void update(Dx12DescriptorAllocator& allocator) {
+			d3dHeap = allocator.d3dHeap();
+			handle  = allocator.currentHandle();
 			bindCount = 0;
 		}
 	};
@@ -37,23 +37,15 @@ public:
 		HeapStartHandle heapStart_Sampler;
 	};
 
-	const PerFrameData& getUpdatedPerFrameData(RenderRequest_Dx12*                    req,
-	                                           Dx12DescriptorHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
-	                                           Dx12DescriptorHeapPool_Sampler::Block&     samplerHeapBlock
-	) const {
-		if (_lastRenderSeqId == req->renderSeqId()
-		 && cbvHeapBlock.d3dHeap() == _perFrameData.heapStart_CBV_SRV_UAV.d3dHeap
-		 && samplerHeapBlock.d3dHeap() == _perFrameData.heapStart_Sampler.d3dHeap)
-		{
+	const PerFrameData& getUpdatedPerFrameData(RenderRequest_Dx12* req) const {
+		if (_lastRenderSeqId == req->renderSeqId()) {
 			// using same heap, so no update needed
 			return _perFrameData;
 		}
-		return ax_const_cast(this)->_updatedPerFrameData(req, cbvHeapBlock, samplerHeapBlock);
+		return ax_const_cast(this)->_updatedPerFrameData(req);
 	}
 private:
-	PerFrameData& _updatedPerFrameData(RenderRequest_Dx12*                    req,
-										 Dx12DescriptorHeapPool_CBV_SRV_UAV::Block& cbvHeapBlock,
-										 Dx12DescriptorHeapPool_Sampler::Block&     samplerHeapBlock);
+	PerFrameData& _updatedPerFrameData(RenderRequest_Dx12* req);
 	
 	RenderSeqId  _lastRenderSeqId = 0;
 	PerFrameData _perFrameData;
