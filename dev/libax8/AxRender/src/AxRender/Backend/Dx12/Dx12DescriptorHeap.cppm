@@ -72,16 +72,16 @@ public:
 	ID3D12DescriptorHeap* d3dHeap() { return _heap.d3dHeap(); }
 	
 protected:
-	friend class Dx12DescriptorAllocator;
-	void _onCreateAllocator(Dx12DescriptorAllocator & allocator, Int size);
-	void _create(Dx12_ID3D12Device* dev, Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+	friend class Dx12DescriptorHeapChunk;
+	void _onCreateChunk(Dx12DescriptorHeapChunk & allocator, Int size);
+	void _create(Dx12_ID3D12Device* dev, Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 	
 	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
 	Dx12_ID3D12Device*				_dev = nullptr;
 	Dx12DescriptorHeap				_heap;
 };
 
-class Dx12DescriptorAllocator : public NonCopyable {
+class Dx12DescriptorHeapChunk : public NonCopyable {
 public:
 	void reset() { _used = 0; }
 
@@ -99,7 +99,7 @@ public:
 	void adjustUsedToSize() { _used = _size; }
 	
 protected:
-	void _create(Dx12DescriptorHeapPool& heapPool, Int size) { return heapPool._onCreateAllocator(*this, size); }
+	void _create(Dx12DescriptorHeapPool& heapPool, Int size) { return heapPool._onCreateChunk(*this, size); }
 	
 	Int _addHandle() {
 		if (_used >= _size) throw Error_Undefined();
@@ -131,7 +131,7 @@ public:
 	}
 };
 
-struct Dx12DescriptorAllocator_ColorBuffer : public Dx12DescriptorAllocator {
+struct Dx12DescriptorHeapChunk_ColorBuffer : public Dx12DescriptorHeapChunk {
 	void create(Dx12DescriptorHeapPool_ColorBuffer& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_ColorBuffer setRenderTargetView(Int index, Dx12Resource_ColorBuffer& res) {
@@ -151,7 +151,7 @@ public:
 	}
 };
 
-struct Dx12DescriptorAllocator_DepthBuffer : public Dx12DescriptorAllocator {
+struct Dx12DescriptorHeapChunk_DepthBuffer : public Dx12DescriptorHeapChunk {
 	void create(Dx12DescriptorHeapPool_DepthBuffer& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_DepthBuffer setDepthStencilView(Int index, Dx12Resource_DepthBuffer& res) {
@@ -172,7 +172,7 @@ public:
 	}
 };
 
-struct Dx12DescriptorAllocator_Sampler : public Dx12DescriptorAllocator {
+struct Dx12DescriptorHeapChunk_Sampler : public Dx12DescriptorHeapChunk {
 	void create(Dx12DescriptorHeapPool_Sampler& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_Sampler setSampler(Int index, SamplerFilter filter, SamplerWrapUVW wrap) {
@@ -208,7 +208,7 @@ public:
 	}
 };
 
-struct Dx12DescriptorAllocator_CBV_SRV_UAV : public Dx12DescriptorAllocator {
+struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 	void create(Dx12DescriptorHeapPool_CBV_SRV_UAV& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_ConstBuffer setCBV(Int index, const Dx12Resource_GpuBuffer& res) {

@@ -40,10 +40,10 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 
-	Dx12DescriptorAllocator_ColorBuffer		_descAlloc_ColorBuffer;
-	Dx12DescriptorAllocator_DepthBuffer		_descAlloc_DepthBuffer;
-	Dx12DescriptorAllocator_CBV_SRV_UAV		_descAlloc_CBV_SRV_UAV;
-	Dx12DescriptorAllocator_Sampler			_descAlloc_Sampler;
+	Dx12DescriptorHeapChunk_ColorBuffer		_descChunk_ColorBuffer;
+	Dx12DescriptorHeapChunk_DepthBuffer		_descChunk_DepthBuffer;
+	Dx12DescriptorHeapChunk_CBV_SRV_UAV		_descChunk_CBV_SRV_UAV;
+	Dx12DescriptorHeapChunk_Sampler			_descChunk_Sampler;
 
 	RenderResourceManager_Dx12*				_resourceManger_dx12 = nullptr; 
 

@@ -39,7 +39,7 @@ void Dx12DescriptorHeapPool::reset() {
 	_heap.reset();
 }
 
-void Dx12DescriptorHeapPool::_onCreateAllocator(Dx12DescriptorAllocator& allocator, Int size) {
+void Dx12DescriptorHeapPool::_onCreateChunk(Dx12DescriptorHeapChunk& allocator, Int size) {
 	// AX_LOG("Dx12DescriptorHeapPool::_createAllocator type={} count={}", ax_enum_int(_desc.Type), count);
 	if (size > _desc.NumDescriptors) throw Error_Undefined();
 	allocator._startHandle = _heap.currentHandle();
@@ -51,10 +51,10 @@ void Dx12DescriptorHeapPool::_onCreateAllocator(Dx12DescriptorAllocator& allocat
 	_heap.adjustUsed(size);
 }
 
-void Dx12DescriptorHeapPool::_create(Dx12_ID3D12Device* dev, Int numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
+void Dx12DescriptorHeapPool::_create(Dx12_ID3D12Device* dev, Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
 	destroy();
 	_dev = dev;
-	_desc.NumDescriptors = ax_safe_cast_from(numDescriptorsPerChunk);
+	_desc.NumDescriptors = ax_safe_cast_from(numDescriptors);
 	_desc.Type  = type;
 	_desc.Flags = flags;
 	_heap.create(dev, _desc);
