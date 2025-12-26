@@ -33,7 +33,7 @@ void RenderResourceTable_Backend<T>::add(T* obj) {
 		return;
 	}
 
-	auto slotId = ResourceSlotId::None;
+	auto slotId = RenderResourceSlotId_None;
 	if (_freeSlots.size()) {
 		slotId = _freeSlots.popBack();
 	} else {
@@ -42,7 +42,7 @@ void RenderResourceTable_Backend<T>::add(T* obj) {
 	}
 
 	handle._slotId = slotId;
-	_slots[ax_enum_int(slotId)] = obj;
+	_slots[slotId] = obj;
 
 	markDirty(obj);
 }
@@ -54,7 +54,7 @@ void RenderResourceTable_Backend<T>::markDirty(T* obj) {
 	if (!handle) { AX_ASSERT(false); return; }
 
 	auto slotId = handle._slotId;
-	AX_ASSERT(_slots[ax_enum_int(slotId)] == obj);
+	AX_ASSERT(_slots[slotId] == obj);
 
 	if (handle._dirty) return;
 	handle._dirty = true;
@@ -76,7 +76,7 @@ void RenderResourceTable_Backend<T>::remove(T* obj) {
 		return;
 	}
 
-	auto& slot = _slots[ax_enum_int(handle._slotId)];
+	auto& slot = _slots[handle._slotId];
 	AX_ASSERT(slot == obj);
 	slot = nullptr;
 	handle._dirty = false;
@@ -84,7 +84,7 @@ void RenderResourceTable_Backend<T>::remove(T* obj) {
 	auto& frame = currentFrame();
 	frame.pendingFreeSlots.emplaceBack(handle._slotId);
 
-	handle._slotId = ResourceSlotId::None;
+	handle._slotId = RenderResourceSlotId_None;
 }
 
 template<class T>

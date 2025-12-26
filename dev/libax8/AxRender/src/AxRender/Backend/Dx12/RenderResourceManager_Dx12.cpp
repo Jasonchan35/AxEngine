@@ -38,7 +38,7 @@ void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend*     
 		auto* tex = rttiCastCheck<Texture2D_Dx12>(tex_.ptr());
 		if (!tex) throw Error_Undefined();
 
-		Int index = ax_enum_int(tex->resourceHandle.slotId());
+		Int index = tex->resourceHandle.slotId();
 		descChunk_Texture2D.setTexture(index, tex->_bindImage(req));
 	}
 

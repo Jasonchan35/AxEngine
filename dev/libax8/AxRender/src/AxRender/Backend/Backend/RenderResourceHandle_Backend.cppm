@@ -7,8 +7,8 @@ export namespace ax /*::AxRender*/ {
 
 template<class T> class RenderResourceTable_Backend;
 
-enum class ResourceSlotId : u32 { None };
-AX_ENUM_ALL_OPERATOR(ResourceSlotId)
+using RenderResourceSlotId = u32;
+RenderResourceSlotId RenderResourceSlotId_None = 0;
 
 template<class T>
 class RenderResourceHandle_Backend : public NonCopyable {
@@ -16,9 +16,9 @@ public:
 	using Table = RenderResourceTable_Backend<T>;
 	using ResourceKey = typename T::ResourceKey;
 
-	explicit operator bool() const { return _slotId != ResourceSlotId::None; }
+	explicit operator bool() const { return _slotId != RenderResourceSlotId_None; }
 
-	AX_INLINE ResourceSlotId slotId() const { return _slotId; }
+	AX_INLINE RenderResourceSlotId slotId() const { return _slotId; }
 	AX_INLINE T*	 owner() { return _owner; }
 
 	RenderResourceHandle_Backend(T* owner) : _owner(owner) {
@@ -35,7 +35,7 @@ public:
 
 friend class RenderResourceTable_Backend<T>;
 protected:
-	ResourceSlotId _slotId = ResourceSlotId::None;
+	RenderResourceSlotId _slotId = RenderResourceSlotId_None;
 	bool _dirty = false;
 private:
 	T*	_owner  = nullptr;
@@ -70,13 +70,13 @@ public:
 
 protected:
 	Array<T*>				_slots;
-	Array<ResourceSlotId>	_freeSlots;
+	Array<RenderResourceSlotId>	_freeSlots;
 	Array<SPtr<T>>			_dirtyObjects;
 
 	Dict<ResourceKey, T*>	_keyDict;
 
 	struct Frame : public NonCopyable {
-		Array<ResourceSlotId> pendingFreeSlots;
+		Array<RenderResourceSlotId> pendingFreeSlots;
 	};
 	Frame& currentFrame() { return _frames[_currentFrameIndex]; }
 
