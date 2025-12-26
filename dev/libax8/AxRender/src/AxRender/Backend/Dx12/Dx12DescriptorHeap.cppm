@@ -70,6 +70,10 @@ public:
 	void reset();
 
 	ID3D12DescriptorHeap* d3dHeap() { return _heap.d3dHeap(); }
+
+	D3D12_DESCRIPTOR_HEAP_DESC& desc()	{ return _desc; }
+
+	bool isShaderVisible() const { return _desc.Flags & D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; }
 	
 protected:
 	friend class Dx12DescriptorHeapChunk;
@@ -97,7 +101,7 @@ public:
 	}
 
 	void adjustUsedToSize() { _used = _size; }
-	
+
 protected:
 	void _create(Dx12DescriptorHeapPool& heapPool, Int size) { return heapPool._onCreateChunk(*this, size); }
 	
@@ -132,7 +136,8 @@ public:
 };
 
 struct Dx12DescriptorHeapChunk_ColorBuffer : public Dx12DescriptorHeapChunk {
-	void create(Dx12DescriptorHeapPool_ColorBuffer& heapPool, Int size) { return _create(heapPool, size); }
+	using HeapPool = Dx12DescriptorHeapPool_ColorBuffer;
+	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_ColorBuffer setRenderTargetView(Int index, Dx12Resource_ColorBuffer& res) {
 		auto h = _getHandle<Dx12Descriptor_ColorBuffer>(index);
@@ -152,7 +157,8 @@ public:
 };
 
 struct Dx12DescriptorHeapChunk_DepthBuffer : public Dx12DescriptorHeapChunk {
-	void create(Dx12DescriptorHeapPool_DepthBuffer& heapPool, Int size) { return _create(heapPool, size); }
+	using HeapPool = Dx12DescriptorHeapPool_DepthBuffer;
+	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_DepthBuffer setDepthStencilView(Int index, Dx12Resource_DepthBuffer& res) {
 		//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
@@ -167,13 +173,17 @@ struct Dx12DescriptorHeapChunk_DepthBuffer : public Dx12DescriptorHeapChunk {
 
 class Dx12DescriptorHeapPool_Sampler : public Dx12DescriptorHeapPool {
 public:
-	void create(Dx12_ID3D12Device* dev, Int numDescriptors) {
-		_create(dev, numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+	void create(Dx12_ID3D12Device* dev, Int numDescriptors, bool isShaderVisible = true) {
+		_create(dev,
+		        numDescriptors,
+		        D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
+		        isShaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 };
 
 struct Dx12DescriptorHeapChunk_Sampler : public Dx12DescriptorHeapChunk {
-	void create(Dx12DescriptorHeapPool_Sampler& heapPool, Int size) { return _create(heapPool, size); }
+	using HeapPool = Dx12DescriptorHeapPool_Sampler;
+	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_Sampler setSampler(Int index, SamplerFilter filter, SamplerWrapUVW wrap) {
 		D3D12_SAMPLER_DESC desc;
@@ -203,13 +213,19 @@ struct Dx12DescriptorHeapChunk_Sampler : public Dx12DescriptorHeapChunk {
 
 class Dx12DescriptorHeapPool_CBV_SRV_UAV : public Dx12DescriptorHeapPool {
 public:
-	void create(Dx12_ID3D12Device* dev, Int numDescriptorsPerChunk) {
-		_create(dev, numDescriptorsPerChunk, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+	void create(Dx12_ID3D12Device* dev, Int numDescriptors, bool isShaderVisible = true) {
+		_create(dev,
+		        numDescriptors,
+		        D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		        isShaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 };
 
 struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
-	void create(Dx12DescriptorHeapPool_CBV_SRV_UAV& heapPool, Int size) { return _create(heapPool, size); }
+	using HeapPool = Dx12DescriptorHeapPool_CBV_SRV_UAV;
+	using This = Dx12DescriptorHeapChunk_CBV_SRV_UAV;
+	
+	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
 	
 	Dx12Descriptor_ConstBuffer setCBV(Int index, const Dx12Resource_GpuBuffer& res) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
@@ -263,14 +279,14 @@ struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 		return h;
 	}
 	
-	Dx12Descriptor_Texture2D setTexture(Int index, Dx12DescriptorHandle srcHandle) {
+	Dx12Descriptor_Texture2D setTexture(Int index, Dx12Descriptor_Texture2D srcDesc) {
 		auto dst = _getHandle<Dx12Descriptor_Texture2D>(index);
-		_dev->CopyDescriptorsSimple(1, dst.handle.cpu, srcHandle.cpu, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		_dev->CopyDescriptorsSimple(1, dst.handle.cpu, srcDesc.handle.cpu, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		return dst;
 	}
 
-	Dx12Descriptor_Texture2D addTexture(Dx12DescriptorHandle srcHandle) {
-		return setTexture(_addHandle(), srcHandle);
+	Dx12Descriptor_Texture2D addTexture(Dx12Descriptor_Texture2D srcDesc) {
+		return setTexture(_addHandle(), srcDesc);
 	}
 };
 

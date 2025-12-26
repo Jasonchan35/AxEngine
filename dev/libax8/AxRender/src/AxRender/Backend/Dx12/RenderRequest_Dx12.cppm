@@ -16,6 +16,7 @@ namespace ax {
 class RenderRequest_Dx12 : public RenderRequest_Backend {
 	AX_RTTI_INFO(RenderRequest_Dx12, RenderRequest_Backend)
 public:
+	using ResourceDescriptor = RenderResourceManager_Dx12::ResourceDescriptor;
 	
 	RenderRequest_Dx12(const CreateDesc& desc);
 
@@ -40,12 +41,14 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 
-	Dx12DescriptorHeapChunk_ColorBuffer		_descChunk_ColorBuffer;
-	Dx12DescriptorHeapChunk_DepthBuffer		_descChunk_DepthBuffer;
-	Dx12DescriptorHeapChunk_CBV_SRV_UAV		_descChunk_CBV_SRV_UAV;
-	Dx12DescriptorHeapChunk_Sampler			_descChunk_Sampler;
-
-	RenderResourceManager_Dx12*				_resourceManger_dx12 = nullptr; 
+	struct DynamicDescriptors {
+		Dx12DescriptorHeapChunk_ColorBuffer ColorBuffer;
+		Dx12DescriptorHeapChunk_DepthBuffer DepthBuffer;
+		Dx12DescriptorHeapChunk_CBV_SRV_UAV CBV_SRV_UAV;
+		Dx12DescriptorHeapChunk_Sampler     Sampler;
+	} _dynamicDescriptors;
+	
+	ResourceDescriptor*                 _resourceDescriptor = nullptr;
 
 	void _updatedBindlessResources();
 

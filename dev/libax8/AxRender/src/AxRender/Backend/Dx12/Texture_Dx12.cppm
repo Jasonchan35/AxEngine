@@ -24,11 +24,12 @@ public:
 
 	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) override;
 
-	Dx12Resource_Texture2D& _bindImage(RenderRequest_Dx12* req);
+	Dx12Descriptor_Texture2D _bindImage(RenderRequest_Dx12* req);
 
 private:	
 	Dx12Resource_Texture2D		_texResource;
 	SPtr<GpuBuffer_Backend>		_uploadBuffer;
+	Dx12Descriptor_Texture2D	_descriptor;
 };
 
 } // namespace

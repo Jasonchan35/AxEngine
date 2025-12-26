@@ -13,8 +13,8 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	_lastRenderSeqId = req->renderSeqId();
 	
 //--- update ----
-	_perFrameData.heapStart_CBV_SRV_UAV.update(req->_descChunk_CBV_SRV_UAV);
-	    _perFrameData.heapStart_Sampler.update(req->_descChunk_Sampler);
+	_perFrameData.heapStart_CBV_SRV_UAV.update(req->_dynamicDescriptors.CBV_SRV_UAV);
+	    _perFrameData.heapStart_Sampler.update(req->_dynamicDescriptors.Sampler);
 	
 	auto& cmdList = req->_graphCmdBuf_dx12;
 
@@ -23,7 +23,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		if (!gpuBuf) throw Error_Undefined();
 //		AX_LOG("-- addCBV");
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-		req->_descChunk_CBV_SRV_UAV.addCBV(gpuBuf->resource());
+		req->_dynamicDescriptors.CBV_SRV_UAV.addCBV(gpuBuf->resource());
 		_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 	}
 
@@ -43,11 +43,8 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 			case RenderDataType::Texture2D: {
 				auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
 				if (!tex) throw Error_Undefined();
-				// req->_descChunk_CBV_SRV_UAV.addTexture(ax_const_cast(tex)->_bindImage(req));
-
-				Int  srcIndex = tex->resourceHandle.slotId();
-				auto srcHandle = req->_resourceManger_dx12->descChunk_Texture2D.getHandle(srcIndex);
-				req->_descChunk_CBV_SRV_UAV.addTexture(srcHandle);
+				auto srcDesc = ax_const_cast(tex)->_bindImage(req);
+				req->_dynamicDescriptors.CBV_SRV_UAV.addTexture(srcDesc);
 
 				_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 			} break;
@@ -60,7 +57,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
 		auto& ss      = sampler->samplerState();
 //		AX_LOG("-- addSampler");
-		req->_descChunk_Sampler.addSampler(ss.filter, ss.wrap);
+		req->_dynamicDescriptors.Sampler.addSampler(ss.filter, ss.wrap);
 		_perFrameData.heapStart_Sampler.bindCount++;
 	}
 

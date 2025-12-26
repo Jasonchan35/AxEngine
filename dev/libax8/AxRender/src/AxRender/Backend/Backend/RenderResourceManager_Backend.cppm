@@ -44,9 +44,6 @@ public:
 	auto& table_sampler()	{ return getTable<Sampler_Backend>(); }
 	auto& table_texture2D()	{ return getTable<Texture2D_Backend>(); }
 
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) {}
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {}
-	
 protected:
 	template<class FUNC>
 	void visit(FUNC func) {

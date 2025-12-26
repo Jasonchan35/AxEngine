@@ -13,36 +13,12 @@ RenderResourceManager_Dx12::RenderResourceManager_Dx12(const CreateDesc& desc): 
 
 	Int reqCount = info.renderRequest.count;
 	Int renderRequest_CBV_SRV_UAV_Count = info.renderRequest.maxConstBufferCount + info.renderRequest.maxTextureCount;
-	Int resource_CBV_SRV_UAV_Count = info.resource.maxTextureCount;
 	
-	descHeapPool_CBV_SRV_UAV.create(dev, resource_CBV_SRV_UAV_Count    + renderRequest_CBV_SRV_UAV_Count    * reqCount);
-	descHeapPool_Sampler.create(dev, info.resource.maxSamplerCount + info.renderRequest.maxSamplerCount * reqCount);
+	descHeapPool_CBV_SRV_UAV.create(dev,renderRequest_CBV_SRV_UAV_Count    * reqCount);
+	    descHeapPool_Sampler.create(dev,info.renderRequest.maxSamplerCount * reqCount);
 
-	descChunk_Texture2D.create(descHeapPool_CBV_SRV_UAV, info.resource.maxTextureCount);
-	descChunk_Sampler.create(descHeapPool_Sampler    , info.resource.maxSamplerCount);
-
-	descChunk_Texture2D.adjustUsedToSize();
-	descChunk_Sampler.adjustUsedToSize();
+	resourceDesc.Texture2D.create(dev, info.resource.maxTextureCount);
+	  resourceDesc.Sampler.create(dev, info.resource.maxSamplerCount);
 }
-
-void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req_, Array<SPtr<Sampler_Backend>>& list) {
-
-}
-
-void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend*          req_,
-                                                     Array<SPtr<Texture2D_Backend>>& list
-) {
-	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
-
-	for (auto& tex_ : list) {
-		auto* tex = rttiCastCheck<Texture2D_Dx12>(tex_.ptr());
-		if (!tex) throw Error_Undefined();
-
-		Int index = tex->resourceHandle.slotId();
-		descChunk_Texture2D.setTexture(index, tex->_bindImage(req));
-	}
-
-}
-
 
 } // namespace ax

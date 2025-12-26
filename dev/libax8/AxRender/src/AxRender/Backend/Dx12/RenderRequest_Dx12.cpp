@@ -25,27 +25,27 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	auto& info = _renderSystem->info();
 	auto* resMgr = RenderResourceManager_Dx12::s_instance();
 
-	_resourceManger_dx12 = resMgr;
+	_resourceDescriptor = &resMgr->resourceDesc;
 	
 	Int renderPassCount = info.renderPass.maxCount;
-	_descChunk_ColorBuffer.create(resMgr->descHeapPool_ColorBuffer, info.renderPass.maxColorBufferCount * renderPassCount);
-	_descChunk_DepthBuffer.create(resMgr->descHeapPool_DepthBuffer, info.renderPass.maxDepthBufferCount * renderPassCount);
+	_dynamicDescriptors.ColorBuffer.create(resMgr->descHeapPool_ColorBuffer, info.renderPass.maxColorBufferCount * renderPassCount);
+	_dynamicDescriptors.DepthBuffer.create(resMgr->descHeapPool_DepthBuffer, info.renderPass.maxDepthBufferCount * renderPassCount);
 
 	Int renderRequest_CBV_SRV_UAV_Count = info.renderRequest.maxConstBufferCount
 										+ info.renderRequest.maxTextureCount;
 	
-	_descChunk_CBV_SRV_UAV.create(resMgr->descHeapPool_CBV_SRV_UAV, renderRequest_CBV_SRV_UAV_Count);
-	    _descChunk_Sampler.create(resMgr->descHeapPool_Sampler,     info.renderRequest.maxSamplerCount);
+	_dynamicDescriptors.CBV_SRV_UAV.create(resMgr->descHeapPool_CBV_SRV_UAV, renderRequest_CBV_SRV_UAV_Count);
+	    _dynamicDescriptors.Sampler.create(resMgr->descHeapPool_Sampler,     info.renderRequest.maxSamplerCount);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
 	_uploadCmdBuf_dx12.commandBegin();
 	_graphCmdBuf_dx12.commandBegin();
 	
-	_descChunk_ColorBuffer.reset();
-	_descChunk_DepthBuffer.reset();
-	_descChunk_CBV_SRV_UAV.reset();
-	_descChunk_Sampler.reset();
+	_dynamicDescriptors.ColorBuffer.reset();
+	_dynamicDescriptors.DepthBuffer.reset();
+	_dynamicDescriptors.CBV_SRV_UAV.reset();
+	_dynamicDescriptors.Sampler.reset();
 
 	auto* resMgr = RenderResourceManager_Dx12::s_instance();
 	auto descHeaps = Span({resMgr->descHeapPool_CBV_SRV_UAV.d3dHeap(), resMgr->descHeapPool_Sampler.d3dHeap()});
@@ -191,7 +191,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	{
 		for (auto& colorAttachment : pass->colorAttachments()) {
 			auto* colorBuf = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
-			auto h = _descChunk_ColorBuffer.addRenderTargetView(colorBuf->_resource_dx12);
+			auto h = _dynamicDescriptors.ColorBuffer.addRenderTargetView(colorBuf->_resource_dx12);
 			rtViews.emplaceBack(h.handle.cpu);
 		}
 	}
@@ -199,7 +199,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	D3D12_CPU_DESCRIPTOR_HANDLE depthView;
 	{
 		auto* depthBuf = rttiCastCheck<RenderPassDepthBuffer_Dx12>(pass->depthAttachment().buffer.ptr());
-		depthView = _descChunk_DepthBuffer.addDepthStencilView(depthBuf->_resource_dx12).handle.cpu;
+		depthView = _dynamicDescriptors.DepthBuffer.addDepthStencilView(depthBuf->_resource_dx12).handle.cpu;
 	}
 
 	//------
