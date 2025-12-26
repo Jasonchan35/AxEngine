@@ -120,7 +120,7 @@ public:
 		}		
 
 	private:
-		auto _add(VkDescriptorType        descType,
+		void _add(VkDescriptorType        descType,
 		          BindPoint               bindPoint,
 		          VkDescriptorSet&        descSet,
 		          u32                     arrayElementIndex,
@@ -141,7 +141,7 @@ public:
 			if (!wds.dstSet) throw Error_Undefined();
 		};
 
-		WriteDescSetHelper* _helper = nullptr;;
+		WriteDescSetHelper* _helper = nullptr;
 	};
 	
 	struct WriteDescSetHelper {

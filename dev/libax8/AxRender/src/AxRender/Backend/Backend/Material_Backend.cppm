@@ -164,7 +164,7 @@ public:
 
 	BindSpace	bindSpace() const { return _shaderParamSpace->bindSpace(); }
 
-	TempString debugName() const { return _shaderParamSpace->debugName(); }
+	TempString debugName() const { return _shaderParamSpace ? _shaderParamSpace->debugName() : ""; }
 	
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
@@ -271,7 +271,7 @@ public:
 	virtual void onSetShader() {}
 	Int maxFrameDataCount() const;
 
-	TempString debugName() const { return _shaderPass->debugName(); }
+	TempString debugName() const { return _shaderPass ? _shaderPass->debugName() : ""; }
 
 	      Material_Backend*   material()       { return _material; }
 	const Material_Backend*   material() const { return _material; }
@@ -319,7 +319,7 @@ public:
 	void logWarningOnce(StrView msg);
 	Int maxFrameDataCount() const { return _maxFrameDataCount; }
 
-	TempString debugName() const { return _shader_backend->debugName(); }
+	TempString debugName() const { return _shader_backend ? _shader_backend->debugName() : ""; }
 	
 protected:
 	friend class MaterialPass_Backend;

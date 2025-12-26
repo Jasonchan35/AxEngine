@@ -16,8 +16,7 @@ SPtr<ShaderParamSpace_Backend> ShaderParamSpace_Backend::s_new(const MemAllocReq
 }
 
 TempString ShaderParamSpace_Backend::debugName() const {
-	if (this == nullptr) return "null";
-	return Fmt("BindSpace.{:8} shaderPass={}", _bindSpace, _shaderPass->debugName());
+	return Fmt("BindSpace.{:8} shaderPass={}", _bindSpace, _shaderPass ? _shaderPass->debugName() : "");
 }
 
 ShaderParamSpace_Backend::ShaderParamSpace_Backend(const CreateDesc& desc)
@@ -225,8 +224,7 @@ void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 }
 
 TempString ShaderPass_Backend::debugName() const {
-	if (this == nullptr) return "null";
-	return Fmt("{} shader={}", _name, _shader->debugName());
+	return Fmt("{} shader={}", _name, _shader ? _shader->debugName() : "");
 }
 
 void      ShaderPass_Backend::_createParamSpaces() {
@@ -350,7 +348,6 @@ void Shader_Backend::hotReloadFile() {
 }
 
 TempString Shader_Backend::debugName() const {
-	if (this == nullptr) return "null";
 	return Fmt("{}", _assetPath);
 }
 

@@ -110,6 +110,7 @@ bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 				if (!data) throw Error_Undefined();
 				cmdList->SetGraphicsRootDescriptorTable(rootParamIndex, data->heapStart_Sampler.handle.gpu);
 			} break;
+			default: throw Error_Undefined();
 		}
 		rootParamIndex++;
 	}
