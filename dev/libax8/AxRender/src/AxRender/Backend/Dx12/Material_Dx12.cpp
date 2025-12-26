@@ -5,25 +5,44 @@ import :GpuBuffer_Dx12;
 import :RenderResourceManager_Dx12;
 
 #if AX_RENDERER_DX12
-
+// Descriptors in System
+// - Resource Descriptors Per Resource Type (CPU Write / GPU Read)
+//      - access by resource slot Id
+//      - use for upload, since CPU writing to GPU visible heap, will make the heap slow on GPU side
+//
+// - RenderTime Descriptors (GPU Only)
+//      - One big Chunk per type in whole system, since changing DescriptorHeap is expensive
+//            and binding 2 DescriptorHeaps with same type is not allowed in DX12
+//            so far only 2 type in DX12 (CBV_SRV_UAV and Sampler)
+//      - Static Zone
+//            - alloc / free per MaterialParamSpace
+//            - allocator to avoid fragmentation  
+//      - Dynamic Zone - RenderRequest#0
+//            - linear allocator and reset when frame start
+//      - Dynamic Zone - RenderRequest#1
+//      - Dynamic Zone - RenderRequest#2
+//
+//======================================================================
+//
 //          new texture upload (texture::getUploaded())
 //                            | write (CPU -> GPU)
 // (CPU Write / GPU Read)     v
-// +---------------------------------------------------------------+
-// |        Resource Descriptors Per Texture                       |
-// +---------------------------------------------------------------+
-//             | copy once when create   | copy in every drawcall
-//             |   MaterialParamSpace    |  
-// (GPU Only)  V                         v
-// +---------------------------------------------------------------+
-// | Static descriptors               | Dynamic descriptors        |
-// |  Per MaterialParamSpace          |   Per MaterialParamSpace   |
-// +---------------------------------------------------------------+
-//                      | set to root table in drawcall
-//                      V
-// +--------------------------------+
-// | MaterialPass Root Param List   |
-// +--------------------------------+
+// +-----------------------------------------------------------------------------+
+// |                      Resource Descriptors (Texture)                         |
+// +-----------------------------------------------------------------------------+
+//                         | copy once when create     | copy in every drawcall
+// RenderTime              |   MaterialParamSpace      |  
+// Descriptors (GPU Only)  V                           v
+// +----------------------------------------------------------------------------------------+
+// |    Static Zone                    | Dynamic Zone - RenderRequest#0  | RenderRequest#1  |
+// |      alloc/free                   |   Linear allocate               |                  |
+// |      per MaterialParamSpace       |   per MaterialParamSpace        |                  |
+// +----------------------------------------------------------------------------------------+
+//                                       | set to root table in drawcall
+//                                       V
+//                        +--------------------------------+
+//                        | MaterialPass Root Param List   |
+//                        +--------------------------------+
 namespace ax {
 
 auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> PerFrameData& {
