@@ -43,25 +43,11 @@
           "dataType": "ConstBuffer", 
           "stageFlags": "Pixel", 
           "bindSpace": "Default", 
-          "bindPoint": 1, 
-          "bindCount": 1, 
-          "dataSize": 16, 
-          "variables": [{
-              "name": "foo", 
-              "offset": 0, 
-              "dataType": "f32", 
-              "rowMajor": true
-            }]
-        }, {
-          "name": "AX_ConstBuffer_Test", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
           "dataSize": 16, 
           "variables": [{
-              "name": "test", 
+              "name": "foo", 
               "offset": 0, 
               "dataType": "f32", 
               "rowMajor": true

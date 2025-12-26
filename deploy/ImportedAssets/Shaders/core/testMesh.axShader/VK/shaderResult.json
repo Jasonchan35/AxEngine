@@ -82,7 +82,7 @@
           "dataType": "ConstBuffer", 
           "stageFlags": "Pixel", 
           "bindSpace": "Default", 
-          "bindPoint": 1, 
+          "bindPoint": 0, 
           "bindCount": 1, 
           "dataSize": 16, 
           "variables": [{
