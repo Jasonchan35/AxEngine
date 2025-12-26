@@ -25,12 +25,10 @@ private:
 	Rect2f         _rect = TagZero;
 };
 
-class RenderRequest : public RenderObject {
-	AX_RTTI_INFO(RenderRequest, RenderObject)
+class RenderRequest : public RenderRequestBase {
+	AX_RTTI_INFO(RenderRequest, RenderRequestBase)
 public:
 	using BindSpace = ShaderParamBindSpace;
-	
-	RenderSeqId		renderSeqId() const		{ return _renderSeqId; }
 	
 	void drawMesh(   RenderMesh&    mesh,    Material*	material, Int materialPass);
 	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass);
@@ -41,7 +39,7 @@ public:
 
 	Vec2i			frameSize() const { return _frameSize; }
 
-	RenderSystem*		renderSystem() { return _renderSystem; }
+	RenderSystem*	renderSystem() { return _renderSystem; }
 	RenderContext*	renderContext() { return _renderContext; }
 	RenderPass*		currentRenderPass()	{ return _currentRenderPass; }
 
@@ -73,7 +71,6 @@ public:
 
 protected:
 	RenderSystem*  _renderSystem       = nullptr;
-	RenderSeqId    _renderSeqId        = 0;
 	RenderContext* _renderContext      = nullptr;
 	RenderPass*    _currentRenderPass  = nullptr;
 	Int            _renderRequestCount = 0;

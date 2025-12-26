@@ -16,7 +16,8 @@ import :RenderResourceManager_Dx12;
 //            so far only 2 type in DX12 (CBV_SRV_UAV and Sampler)
 //      - Static Zone
 //            - alloc / free per MaterialParamSpace
-//            - allocator to avoid fragmentation  
+//            - allocator to avoid fragmentation
+//            - Bindless Descriptors
 //      - Dynamic Zone - RenderRequest#0
 //            - linear allocator and reset when frame start
 //      - Dynamic Zone - RenderRequest#1
@@ -33,11 +34,11 @@ import :RenderResourceManager_Dx12;
 //                         | copy once when create     | copy in every drawcall
 // RenderTime              |   MaterialParamSpace      |  
 // Descriptors (GPU Only)  V                           v
-// +----------------------------------------------------------------------------------------+
-// |    Static Zone                    | Dynamic Zone - RenderRequest#0  | RenderRequest#1  |
-// |      alloc/free                   |   Linear allocate               |                  |
-// |      per MaterialParamSpace       |   per MaterialParamSpace        |                  |
-// +----------------------------------------------------------------------------------------+
+// +------------------------------------------------------------------------------------------+
+// |    Static Zone                      | Dynamic Zone - RenderRequest#0  | RenderRequest#1  |
+// |      alloc/free                     |   Linear allocate               |                  |
+// |      per MaterialParamSpace         |   per MaterialParamSpace        |                  |
+// +------------------------------------------------------------------------------------------+
 //                                       | set to root table in drawcall
 //                                       V
 //                        +--------------------------------+
@@ -47,7 +48,6 @@ namespace ax {
 
 auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> PerFrameData& {
 //	AX_LOG("MaterialParamSpace_Dx12::_updatedPerFrameData {} ", debugName());
-	_lastRenderSeqId = req->renderSeqId();
 	
 //--- update ----
 	_perFrameData.heapStart_CBV_SRV_UAV.update(req->_dynamicDescriptors.CBV_SRV_UAV);
@@ -66,21 +66,13 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 
 #if AX_RENDER_BINDLESS
 	
-	_perFrameData.heapStart_CBV_SRV_UAV.handle  = req->_bindlessHeap_CBV_SRV_UAV->getHandle(0);
-	_perFrameData.heapStart_CBV_SRV_UAV.d3dHeap = req->_bindlessHeap_CBV_SRV_UAV->d3dHeap();
-
-	_perFrameData.heapStart_Sampler.handle  = req->_bindlessHeap_Sampler->getHandle(0);
-	_perFrameData.heapStart_Sampler.d3dHeap = req->_bindlessHeap_Sampler->d3dHeap();
-	
-	return _perFrameData;
-	
 #else
 	for (auto& texParam : _textureParams) {
 		switch (texParam.dataType()) {
 			case RenderDataType::Texture2D: {
 				auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
 				if (!tex) throw Error_Undefined();
-				auto srcDesc = ax_const_cast(tex)->_bindImage(req);
+				auto srcDesc = ax_const_cast(tex)->_getUpdated(req);
 				req->_dynamicDescriptors.CBV_SRV_UAV.addTexture(srcDesc);
 
 				_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
@@ -102,8 +94,8 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	if (shd->_CBV_SRV_UAV_DescTable.size() != _perFrameData.heapStart_CBV_SRV_UAV.bindCount) throw Error_Undefined();
 	if (shd->_samplerDescTable.size()      != _perFrameData.heapStart_Sampler.bindCount    ) throw Error_Undefined();
 	
-	return _perFrameData;
 #endif // #if !AX_RENDER_BINDLESS
+	return _perFrameData;
 }
 
 bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {

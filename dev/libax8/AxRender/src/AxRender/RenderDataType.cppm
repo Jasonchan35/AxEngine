@@ -7,6 +7,42 @@ export namespace ax /*::AxRender*/ {
 
 using RenderSeqId = i64;
 
+class RenderObject : public RttiObject {
+	AX_RTTI_INFO(RenderObject, RttiObject)
+public:
+
+#if AX_RENDER_DEBUG_NAME
+	void setDebugName(InNameId name) { _name = name; onSetDebugName(_name); }
+#endif
+
+	NameId	name() const { return _name; }
+
+protected:
+	NameId	_name;
+#if AX_RENDER_DEBUG_NAME
+	virtual void onSetDebugName(NameId name) {}
+#endif
+};
+
+class RenderRequestBase : public RenderObject {
+	AX_RTTI_INFO(RenderRequestBase, RenderObject);
+public:
+	AX_INLINE 	RenderSeqId	renderSeqId() const { return _renderSeqId; }
+protected:
+	RenderSeqId	_renderSeqId = 0;
+};
+
+struct RenderSeqIdGraud {
+	RenderSeqId last = 0;
+	AX_NODISCARD AX_INLINE bool update(RenderRequestBase* req) {
+		auto cur = req->renderSeqId();
+		if (last == cur) return false;
+		last = cur;
+		return true;
+	}
+};
+
+
 struct RenderMemoryInfo {
 	Int used = 0;
 	Int budget = 0;

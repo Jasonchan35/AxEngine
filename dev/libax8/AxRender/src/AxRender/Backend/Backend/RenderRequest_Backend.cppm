@@ -159,18 +159,15 @@ private:
 
 	DATA& _current() { return _perFrameData[_currentIndex]; }
 	DATA& _getUpdated(RenderRequest_Backend* req, ARGS&&... ages) {
-		auto seqId = req->renderSeqId();
-		if (_lastUpdateRenderSeqId != seqId) {
-			_lastUpdateRenderSeqId = seqId;
-			
+		if (_renderSeqIdGraud.update(req)) {
 			_currentIndex = (_currentIndex + 1) % _perFrameData.size();
 			_owner->onUpdatePerFrameData(_currentIndex, req, _current(), AX_FORWARD(ages)...);
 		}
 		return _current();
 	}
 
-	OWNER*                   _owner                 = nullptr;
-	RenderSeqId              _lastUpdateRenderSeqId = 0;
+	OWNER*                   _owner = nullptr;
+	RenderSeqIdGraud         _renderSeqIdGraud;
 	Int                      _currentIndex = 0;
 	FixedArray<DATA, kCount> _perFrameData;
 };

@@ -38,17 +38,16 @@ public:
 	};
 
 	const PerFrameData& getUpdatedPerFrameData(RenderRequest_Dx12* req) const {
-		if (_lastRenderSeqId == req->renderSeqId()) {
-			// using same heap, so no update needed
+		auto* mut = ax_const_cast(this);
+		if (!mut->_renderSeqIdGraud.update(req)) {
 			return _perFrameData;
 		}
-		return ax_const_cast(this)->_updatedPerFrameData(req);
+		return mut->_updatedPerFrameData(req);
 	}
 private:
-	PerFrameData& _updatedPerFrameData(RenderRequest_Dx12* req);
-	
-	RenderSeqId  _lastRenderSeqId = 0;
-	PerFrameData _perFrameData;
+	PerFrameData&    _updatedPerFrameData(RenderRequest_Dx12* req);
+	RenderSeqIdGraud _renderSeqIdGraud;
+	PerFrameData     _perFrameData;
 };
 
 class MaterialPass_Dx12 : public MaterialPass_Backend {

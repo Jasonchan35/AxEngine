@@ -85,7 +85,7 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {
 	if (auto* tex_ = rttiCastCheck<Texture2D_Backend>(tex)) {
 		slot = tex_->resourceHandle.slotId();
 	}
-	return setParam(bindlessName, ax_enum_int(slot));
+	return setParam(bindlessName, slot);
 
 #else
 	auto f = _findParam(_textureParams, name);
@@ -105,7 +105,7 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 	if (auto* sampler_ = rttiCastCheck<Sampler_Backend>(sampler)) {
 		slot = sampler_->resourceHandle.slotId();
 	}
-	return setParam(bindlessName, ax_enum_int(slot));
+	return setParam(bindlessName, slot);
 
 #else
 	auto samplerName = _shaderParamSpace->getSamplerName(name);

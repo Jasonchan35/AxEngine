@@ -84,7 +84,7 @@ void RenderRequest_Dx12::_updatedBindlessResources() {
 
 		Int index = ax_enum_int(tex->resourceHandle.slotId());
 		auto handle =   mgr->bindlessHeap_CBV_SRV_UAV.getHandle(index);
-		auto& texResource = tex->_bindImage(this);
+		auto& texResource = tex->_getUpdated(this);
 		_d3dDevice->CreateShaderResourceView(texResource, nullptr, handle.cpu);
 	}
 

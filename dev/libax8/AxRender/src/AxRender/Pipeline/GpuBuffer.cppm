@@ -116,11 +116,11 @@ private:
 	String	_name;
 	GpuBufferType	_bufferType = GpuBufferType::None;
 
-	Array<Byte>		_data;
-	SPtr<GpuBuffer> _gpuBuffer;
+	Array<Byte>			_data;
+	SPtr<GpuBuffer>		_gpuBuffer;
 
-	RenderSeqId		_lastUpdateRenderSeqId = 0;
-	IntRange		_dirtyRange = {};
+	RenderSeqIdGraud	_lastUpdateRenderSeqId = 0;
+	IntRange			_dirtyRange = {};
 };
 
 inline

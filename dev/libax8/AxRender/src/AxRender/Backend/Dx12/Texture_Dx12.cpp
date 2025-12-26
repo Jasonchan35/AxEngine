@@ -18,7 +18,11 @@ void Texture2D_Dx12::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	handler.readPixelsTo(map.data());
 }
 
-Dx12Descriptor_Texture2D Texture2D_Dx12::_bindImage(RenderRequest_Dx12* req) {
+Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdated(RenderRequest_Dx12* req) {
+	if (!_renderSeqIdGraud.update(req))
+		return _descriptor;
+
+	// update
 	req->resourcesToKeep.add(this);
 
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Dx12>(_uploadBuffer.ptr())) {

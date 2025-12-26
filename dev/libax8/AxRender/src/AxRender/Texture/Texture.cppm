@@ -1,6 +1,6 @@
 module;
 export module AxRender:Texture;
-export import :RenderObject;
+export import :RenderDataType;
 export import :Image;
 
 export namespace ax /*::AxRender*/ {

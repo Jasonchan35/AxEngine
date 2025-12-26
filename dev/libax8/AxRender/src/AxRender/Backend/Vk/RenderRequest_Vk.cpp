@@ -81,7 +81,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 		for (auto& sampler_ : updatedBindlessResources.samplers) {
 			if (!sampler_) continue;
 			auto* sampler      = rttiCast<Sampler_Vk>(sampler_.ptr());
-			u32   arrayElement = ax_enum_int(sampler->resourceHandle.slotId());
+			u32   arrayElement = sampler->resourceHandle.slotId();
 			writeDescHelper.addSamplerInfo(samplerParam->bindPoint(), curDescSet, arrayElement, sampler->vkHandle());
 		}
 	}
@@ -91,7 +91,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 		for (auto& tex_ : updatedBindlessResources.texture2Ds) {
 			auto* tex = rttiCastCheck<Texture2D_Vk>(tex_.ptr());
 			if (!tex) continue;
-			u32   arrayElement = ax_enum_int(tex->resourceHandle.slotId());
+			u32   arrayElement = tex->resourceHandle.slotId();
 			auto info = tex->_bindImage(this);
 			writeDescHelper.addImageInfo(texture2DParam->bindPoint(), curDescSet, arrayElement, info.imageView, info.imageLayout);
 		}
