@@ -7,6 +7,16 @@
 	- move some CBV, Texture to root parameter
 
 
+- SortedArray
+	- mark sortNeeded;
+	
+- Memory Allocator, Arena
+	- allocate page and paritioning by Arena NameId
+	
+- Gpu descriptor allocator arena
+	- for material static descriptors
+	
+
 - GC
 - using Texture = SPtr<OBJ_Texture>
 - Type_EnumFlag<>

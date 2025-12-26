@@ -6,6 +6,24 @@ import :RenderResourceManager_Dx12;
 
 #if AX_RENDERER_DX12
 
+//          new texture upload (texture::getUploaded())
+//                            | write (CPU -> GPU)
+// (CPU Write / GPU Read)     v
+// +---------------------------------------------------------------+
+// |        Resource Descriptors Per Texture                       |
+// +---------------------------------------------------------------+
+//             | copy once when create   | copy in every drawcall
+//             |   MaterialParamSpace    |  
+// (GPU Only)  V                         v
+// +---------------------------------------------------------------+
+// | Static descriptors               | Dynamic descriptors        |
+// |  Per MaterialParamSpace          |   Per MaterialParamSpace   |
+// +---------------------------------------------------------------+
+//                      | set to root table in drawcall
+//                      V
+// +--------------------------------+
+// | MaterialPass Root Param List   |
+// +--------------------------------+
 namespace ax {
 
 auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> PerFrameData& {
