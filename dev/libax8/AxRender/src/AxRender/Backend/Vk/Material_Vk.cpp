@@ -31,13 +31,8 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 	for (auto& param : _constBuffers) {
 		auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
 		if (!gpuBuf) throw Error_Undefined("cannot get const buffer");
-
-		writeDescSetHelper.addConstBufferInfo(param.bindPoint(),
-		                                      frameData._descSet,
-		                                      0,
-		                                      gpuBuf->vkBufHandle(),
-		                                      0,
-		                                      param.dataSize());
+		auto info = gpuBuf->_getUpdatedDescriptorInfo(req);
+		writeDescSetHelper.addInfo(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), frameData._descSet, 0, info);
 	}
 
 #if !AX_RENDER_BINDLESS
@@ -50,10 +45,8 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 		auto* sampler_vk = rttiCastCheck<Sampler_Vk>(sampler);
 		if (!sampler_vk) throw Error_Undefined();
 
-		req->resourcesToKeep.add(sampler_vk);
-
-		auto samplerHandle = ax_const_cast(sampler_vk)->vkHandle();
-		writeDescSetHelper.addSamplerInfo(param.bindPoint(), frameData._descSet, 0, samplerHandle);
+		auto info = sampler_vk->_getUpdatedDescriptorInfo(req);
+		writeDescSetHelper.addInfo(VK_DESCRIPTOR_TYPE_SAMPLER, param.bindPoint(), frameData._descSet, 0, info);
 	}
 
 	for (auto& param : _textureParams) {
@@ -66,28 +59,18 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 			case RenderDataType::Texture2D: {
 				auto* tex2d = rttiCastCheck<Texture2D_Vk>(tex);
 				if (!tex2d) throw Error_Undefined();
-				auto info = ax_const_cast(tex2d)->_bindImage(req);
-				writeDescSetHelper.addImageInfo(param.bindPoint(), frameData._descSet, 0, info.imageView, info.imageLayout);
+				
+				auto info = ax_const_cast(tex2d)->_getUpdatedDescriptorInfo(req);
+				writeDescSetHelper.addInfo(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+				                           param.bindPoint(),
+				                           frameData._descSet,
+				                           0,
+				                           info);
+				break;
 			}
-			break;
 
 			default: throw Error_Undefined();
 		}
-	}
-
-	for (auto& param : _storageBufferParams) {
-		auto* storageBuffer = rttiCastCheck<StorageBuffer_Backend>(param.storageBuffer());
-		if (!storageBuffer) throw Error_Undefined("cannot get storage buffer");
-
-		auto* gpuBuffer = rttiCastCheck<GpuBuffer_Vk>(storageBuffer->gpuBuffer());
-		if (!gpuBuffer) throw Error_Undefined("cannot get storage gpu buffer");
-
-		writeDescSetHelper.addStorageBufferInfo(param.bindPoint(),
-		                                frameData._descSet,
-		                                0,
-		                                gpuBuffer->vkBufHandle(),
-		                                0,
-		                                param.dataSize());
 	}
 #endif // #if !AX_RENDER_BINDLESS
 

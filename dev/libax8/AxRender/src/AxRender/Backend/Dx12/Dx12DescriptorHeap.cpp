@@ -10,10 +10,10 @@ void Dx12DescriptorHeap::create(InNameId name, Dx12_ID3D12Device* dev, D3D12_DES
 	_name   = name;
 	_desc   = desc;
 	
-	AX_LOG("Dx12DescriptorHeap::create        name={:30} size={:8} type={:12}",
-	       name,
-	       desc.NumDescriptors,
-	       desc.Type);
+	// AX_LOG("Dx12DescriptorHeap::create        name={:30} size={:8} type={:12}",
+	//        name,
+	//        desc.NumDescriptors,
+	//        desc.Type);
 	
 	auto hr = dev->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_d3dHeap.ptrForInit()));
 	Dx12Util::throwIfError(hr);
@@ -45,12 +45,12 @@ void Dx12DescriptorHeapPool::reset() {
 }
 
 void Dx12DescriptorHeapPool::_onCreateChunk(Dx12DescriptorHeapChunk& outHeapChunk, InNameId name, Int size, bool fullyUsed) {
-	AX_LOG("  Dx12DescriptorHeapChunk::create name={:30} size={:8} type={:12} from Pool({})-remain={}",
-	       name,
-	       size,
-	       _heap.desc().Type,
-	       _heap.name(),                        
-	       _heap.remain() - size);
+	// AX_LOG("  Dx12DescriptorHeapChunk::create name={:30} size={:8} type={:12} from Pool({})-remain={}",
+	//        name,
+	//        size,
+	//        _heap.desc().Type,
+	//        _heap.name(),                        
+	//        _heap.remain() - size);
 	
 	auto h = _heap.addHandle(size);
 	outHeapChunk._name        = name;

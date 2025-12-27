@@ -49,7 +49,7 @@ void Texture2D_Vk::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	handler.readPixelsTo(map.data());
 }
 
-VkDescriptorImageInfo Texture2D_Vk::_bindImage(RenderRequest_Vk* req) {
+VkDescriptorImageInfo Texture2D_Vk::_getUpdatedDescriptorInfo(RenderRequest_Vk* req) {
 	req->resourcesToKeep.add(this);
 
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Vk>(_uploadBuffer.ptr())) {

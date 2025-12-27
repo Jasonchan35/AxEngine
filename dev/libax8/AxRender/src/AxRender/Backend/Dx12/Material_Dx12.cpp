@@ -91,7 +91,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
 		auto& ss      = sampler->samplerState();
 //		AX_LOG("-- addSampler");
-		req->_dynamicDescriptors.Sampler.addSampler(ss.filter, ss.wrap);
+		req->_dynamicDescriptors.Sampler.addSampler(ss);
 		_perFrameData.heapStart_Sampler.bindCount++;
 	}
 

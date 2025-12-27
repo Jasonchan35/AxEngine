@@ -42,7 +42,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	using ParamBase    = ShaderParamSpace_Backend::ParamBase;
 	using SamplerParam = ShaderParamSpace_Backend::SamplerParam; 
 	
-	AX_LOG("--- Shader Pass {} -------", debugName());
+//	AX_LOG("--- Shader Pass {} -------", debugName());
 
 	constexpr D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
@@ -64,8 +64,8 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	// };
 
 	auto addDescriptor = [](const ShaderParamSpace_Dx12* paramSpace, Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-		AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type = {:8}, [{}] ",
-		 	   p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
+		// AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type = {:8}, [{}] ",
+		//  	   p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
 		
 		if (p.bindCount() <= 0) throw Error_Undefined();
 		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), paramSpace->bindSpace());

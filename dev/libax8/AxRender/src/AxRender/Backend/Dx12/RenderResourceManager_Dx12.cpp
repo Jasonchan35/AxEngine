@@ -20,7 +20,6 @@ struct RenderResourceManager_Dx12_onUpdateDescriptors {
 	}
 };
 
-
 void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend>>& list) {
 	RenderResourceManager_Dx12_onUpdateDescriptors<Sampler_Dx12>::run(req, list);
 }
@@ -30,8 +29,6 @@ void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req,
 }
 
 void RenderResourceManager_Dx12::onPostCreate() {
-	Base::onPostCreate();
-	
 	auto& info = RenderSystem_Dx12::s_instance()->info();
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 

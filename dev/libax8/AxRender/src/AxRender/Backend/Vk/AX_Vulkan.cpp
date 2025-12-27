@@ -1740,6 +1740,72 @@ VkDescriptorSet AX_VkDescriptorPool::Chunk::allocDescriptorSet(VkDescriptorSetLa
 	return outSet;
 }
 
+void AX_VkDescriptor_UpdateScope::writeToDevice(VkDevice dev) {
+	auto                      writeSpan = _helper->_writeDescriptorSets.span();
+	Span<VkCopyDescriptorSet> copySpan;
+	vkUpdateDescriptorSets(dev, 
+	                       AX_VkUtil::castUInt32(writeSpan.size()), writeSpan.data(),
+	                       AX_VkUtil::castUInt32( copySpan.size()),  copySpan.data());
+}
+
+void AX_VkDescriptor_UpdateScope::addInfo(VkDescriptorType              descType,
+                                          BindPoint                     bindPoint,
+                                          VkDescriptorSet&              descSet,
+                                          u32                           arrayElementIndex,
+                                          const VkDescriptorBufferInfo& info
+) {
+	if (descType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+	 || descType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER) {
+		if (!info.buffer) throw Error_Undefined();
+	} else {
+		throw Error_Undefined();
+	}
+	auto* dst = _helper->_linearAllocator.newObject<VkDescriptorBufferInfo>();
+	*dst      = info;
+	_add(descType, bindPoint, descSet, arrayElementIndex, dst, nullptr);
+}
+
+void AX_VkDescriptor_UpdateScope::addInfo(VkDescriptorType             descType,
+                                          BindPoint                    bindPoint,
+                                          VkDescriptorSet&             descSet,
+                                          u32                          arrayElementIndex,
+                                          const VkDescriptorImageInfo& info
+) {
+	if (descType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE) {
+		if (!info.imageView) throw Error_Undefined();
+		if (!info.imageLayout) throw Error_Undefined();
+	} else if (descType == VK_DESCRIPTOR_TYPE_SAMPLER) {
+		if (!info.sampler) throw Error_Undefined();
+	} else {
+		throw Error_Undefined();
+	}
+	
+	auto* dst = _helper->_linearAllocator.newObject<VkDescriptorImageInfo>();
+	*dst      = info;
+	_add(descType, bindPoint, descSet, arrayElementIndex, nullptr, dst);
+}
+
+void AX_VkDescriptor_UpdateScope::_add(VkDescriptorType descType,
+                                       BindPoint bindPoint,
+                                       VkDescriptorSet& descSet,
+                                       u32 arrayElementIndex,
+                                       VkDescriptorBufferInfo* bufInfo,
+                                       VkDescriptorImageInfo* imageInfo
+) {
+	auto& wds           = _helper->_writeDescriptorSets.emplaceBack();
+	wds.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	wds.pNext           = nullptr;
+	wds.dstSet          = descSet;
+	wds.dstBinding      = AX_VkUtil::castUInt32(ax_enum_int(bindPoint));
+	wds.dstArrayElement = arrayElementIndex;
+	wds.descriptorType  = descType;
+	wds.descriptorCount = 1;
+	wds.pBufferInfo     = bufInfo;
+	wds.pImageInfo      = imageInfo;
+
+	if (!wds.dstSet) throw Error_Undefined();
+}
+
 void AX_VkSampler::destroy() {
 	if (_handle) {
 		vkDestroySampler(*_dev, _handle, AX_VkUtil::allocCallbacks());

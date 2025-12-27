@@ -275,7 +275,7 @@ public:
 	bool isGlobalCommonShader() const	{ return _isGlobalCommonShader; }
 
 	bool isOwnParamSpace(BindSpace s) const {
-		return _isGlobalCommonShader || s == BindSpace::Default || s == BindSpace::Object;
+		return _isGlobalCommonShader || s == BindSpace::Default;
 	}
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }

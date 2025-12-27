@@ -697,13 +697,12 @@ public:
 	                                         VkDescriptorBindingFlags flags
 	)
 	{
-		auto& dst = bindings.emplaceBack();
-		dst.binding = ax_enum_int(bindPoint);
-		dst.descriptorType = type;
-		dst.descriptorCount = AX_VkUtil::castUInt32(descriptorCount);
-		dst.stageFlags = AX_VkUtil::getVkShaderStageFlagBits(stageFlags);
+		auto& dst              = bindings.emplaceBack();
+		dst.binding            = ax_enum_int(bindPoint);
+		dst.descriptorType     = type;
+		dst.descriptorCount    = AX_VkUtil::castUInt32(descriptorCount);
+		dst.stageFlags         = AX_VkUtil::getVkShaderStageFlagBits(stageFlags);
 		dst.pImmutableSamplers = nullptr;
-
 		bindingFlags.emplaceBack(flags);
 		return dst;
 		
@@ -865,6 +864,61 @@ private:
 	Array<Chunk> _chunks;
 	Int          _currentChunk = 0;
 	Int _allocatedCount = 0;
+};
+
+
+class AX_VkDescriptor_UpdateHelper;
+
+class AX_VkDescriptor_UpdateScope {
+private:
+	AX_VkDescriptor_UpdateHelper* _helper = nullptr;
+public:
+	using BindPoint = ShaderParamBindPoint;
+
+	AX_VkDescriptor_UpdateScope(AX_VkDescriptor_UpdateHelper* helper) : _helper(helper) {}
+
+	void writeToDevice(VkDevice dev);
+
+	void addInfo(VkDescriptorType              descType,
+	             BindPoint                     bindPoint,
+	             VkDescriptorSet&              descSet,
+	             u32                           arrayElementIndex,
+	             const VkDescriptorBufferInfo& info
+	);
+
+	void addInfo(VkDescriptorType             descType,
+	             BindPoint                    bindPoint,
+	             VkDescriptorSet&             descSet,
+	             u32                          arrayElementIndex,
+	             const VkDescriptorImageInfo& info
+	);
+	
+private:
+	void _add(VkDescriptorType        descType,
+	          BindPoint               bindPoint,
+	          VkDescriptorSet&        descSet,
+	          u32                     arrayElementIndex,
+	          VkDescriptorBufferInfo* bufInfo,
+	          VkDescriptorImageInfo*  imageInfo
+	);
+};
+
+class AX_VkDescriptor_UpdateHelper {
+public:
+	AX_NODISCARD AX_VkDescriptor_UpdateScope scopeStart() {
+		_writeDescriptorSets.clear();
+		_linearAllocator.reset();
+		return this;
+	}
+
+	AX_VkDescriptor_UpdateHelper() {
+		_writeDescriptorSets.ensureCapacity(64);
+	}
+
+protected:
+	friend class AX_VkDescriptor_UpdateScope;
+	Array<VkWriteDescriptorSet> _writeDescriptorSets;
+	LinearAllocator             _linearAllocator;
 };
 
 } // namespace ax /*::AxRender*/

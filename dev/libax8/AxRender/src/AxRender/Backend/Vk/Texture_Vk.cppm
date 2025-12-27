@@ -6,6 +6,7 @@ export module AxRender:Texture_Vk;
 export import :AX_Vulkan;
 export import :Texture_Backend;
 export import :GpuBuffer_Backend;
+export import :RenderRequest_Vk;
 
 export namespace ax /*::AxRender*/ {
 
@@ -16,6 +17,11 @@ public:
 
 	VkSampler	vkHandle() { return _sampler.handle(); }
 
+	VkDescriptorImageInfo _getUpdatedDescriptorInfo(RenderRequest_Vk* req) const {
+		VkDescriptorImageInfo info = {};
+		info.sampler = _sampler.handle();
+		return info;
+	}
 protected:
 	virtual void onCreate(const CreateDesc& desc) override;
 	AX_VkSampler		_sampler;
@@ -28,7 +34,7 @@ public:
 
 	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) override;
 
-	VkDescriptorImageInfo _bindImage(class RenderRequest_Vk* req);
+	VkDescriptorImageInfo _getUpdatedDescriptorInfo(class RenderRequest_Vk* req);
 private:
 	AX_VkImage			_image;
 	AX_VkDeviceMemory	_devMem;

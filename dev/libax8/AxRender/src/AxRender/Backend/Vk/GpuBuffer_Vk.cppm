@@ -5,6 +5,7 @@ export module AxRender:GpuBuffer_Vk;
 #if AX_RENDERER_VK
 export import :AX_Vulkan;
 export import :GpuBuffer_Backend;
+export import :RenderRequest_Vk;
 
 export namespace ax /*::AxRender*/ {
 
@@ -29,6 +30,14 @@ public:
 
 	operator AX_VkDeviceMemory&()	{ return _vkDevMem; }
 	operator    VkDeviceMemory()	{ return _vkDevMem; }
+
+	VkDescriptorBufferInfo _getUpdatedDescriptorInfo(RenderRequest_Vk* req) const {
+		VkDescriptorBufferInfo info = {};
+		info.buffer = _vkBuf.handle();
+		info.offset = 0;
+		info.range  = ax_safe_cast_from(bufferSize());
+		return info;
+	}
 
 private:
 	AX_VkBuffer			_vkBuf;
