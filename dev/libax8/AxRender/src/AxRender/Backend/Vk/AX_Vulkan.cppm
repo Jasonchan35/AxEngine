@@ -690,11 +690,12 @@ public:
 	Array<VkDescriptorSetLayoutBinding, BUF_SIZE> bindings;
 	Array<VkDescriptorBindingFlags,     BUF_SIZE> bindingFlags;
 
-	VkDescriptorSetLayoutBinding& addBinding(VkDescriptorType		  type,
-											 ShaderParamBindPoint  bindPoint,
-											 Int					  descriptorCount,
-											 ShaderStageFlags		  stageFlags,
-											 VkDescriptorBindingFlags flags)
+	VkDescriptorSetLayoutBinding& addBinding(VkDescriptorType         type,
+	                                         ShaderParamBindPoint     bindPoint,
+	                                         Int                      descriptorCount,
+	                                         ShaderStageFlags         stageFlags,
+	                                         VkDescriptorBindingFlags flags
+	)
 	{
 		auto& dst = bindings.emplaceBack();
 		dst.binding = ax_enum_int(bindPoint);
