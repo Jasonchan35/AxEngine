@@ -106,13 +106,13 @@ void GenReflect_Dx12::writeDepFile(StrView filename) {
 	File::writeFile(outFilename, o, false, false);
 }
 
-void GenReflect_Dx12::compile(StrView	   outFilename,
-					  StrView	   filename,
-					  StrView	   profile,
-					  StrView	   entryFunc,
-					  Span<String> include_dirs,
-					  bool		   keepUnusedVariable)
-{
+void GenReflect_Dx12::compile(StrView      outFilename,
+                              StrView      filename,
+                              StrView      profile,
+                              StrView      entryFunc,
+                              Span<String> include_dirs,
+                              bool         keepUnusedVariable
+) {
 	_keepUnusedVariable = keepUnusedVariable;
 
 	String cur;
