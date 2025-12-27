@@ -29,6 +29,13 @@ class IString_ : public IArrayStorage<T>, public StrView_BaseFunc<IString_<T>, T
 	using Base = IArrayStorage<T>;
 	using Base::_storage;	
 protected:
+	// for .natvis
+	static constexpr bool kIsCharA  = Type_IsSame<T, CharA>;
+	static constexpr bool kIsCharW  = Type_IsSame<T, CharW>;
+	static constexpr bool kIsChar8  = Type_IsSame<T, Char8>;
+	static constexpr bool kIsChar16 = Type_IsSame<T, Char16>;
+	static constexpr bool kIsChar32 = Type_IsSame<T, Char32>;
+	
 	constexpr IString_(T* data, Int initCap) : Base(data, initCap) {}
 public:
 	using CharType        = T;
