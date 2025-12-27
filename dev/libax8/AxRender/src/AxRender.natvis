@@ -42,6 +42,7 @@
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
+			<Item Name="shaderParamSpaces">_shaderParamSpaces</Item>
 			<Item Name="shader">_shader</Item>
 			<Item Name="assetPath">_shader->_assetPath</Item>
 		</Expand>
@@ -62,7 +63,7 @@
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
 			<Item Name="bindSpace">_shaderParamSpace._p->_bindSpace</Item>
-			<Item Name="shaderParamSpace">_shaderParamSpace._p</Item>
+			<Item Name="paramSpace">_shaderParamSpace._p</Item>
 			<Item Name="materialPass">_materialPass</Item>
 		</Expand>
 	</Type>
@@ -72,6 +73,7 @@
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
+			<Item Name="paramSpaces">_materialParamSpaces</Item>
 			<Item Name="material">_material</Item>
 			<Item Name="shaderPass">_shaderPass</Item>
 		</Expand>

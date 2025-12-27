@@ -150,8 +150,7 @@
 	<Type Name="ax::FixedArray&lt;*,*&gt;">
 		<DisplayString>size={kSize}</DisplayString>
 		<Expand>
-			<Item Name="_data">_data</Item>
-			<Item Name="_size">kSize</Item>
+			<Item Name="kSize">kSize</Item>
 			<ArrayItems>
 				<Size>kSize</Size>
 				<ValuePointer>_data</ValuePointer>
