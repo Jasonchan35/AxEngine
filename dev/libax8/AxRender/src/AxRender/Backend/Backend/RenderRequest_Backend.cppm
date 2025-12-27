@@ -7,6 +7,7 @@ export import :GpuBuffer_Backend;
 export import :Texture_Backend;
 export import :Material_Backend;
 export import :RenderPass_Backend;
+export import :RenderResourceManager_Backend;
 
 export namespace ax /*::AxRender*/ {
 
@@ -41,26 +42,6 @@ public:
 	class RenderSystem_Backend* renderSystem_backend() { return rttiCastCheck<RenderSystem_Backend>(_renderSystem); }
 	class RenderContext_Backend* renderContext_backend() { return rttiCastCheck<RenderContext_Backend>(_renderContext); }
 
-#if AX_RENDER_BINDLESS
-	struct UpdatedBindlessResources {
-		Array<SPtr<Sampler_Backend  >>	samplers;
-		Array<SPtr<Texture2D_Backend>>	texture2Ds;
-		Array<SPtr<StorageBuffer_Backend>>	storageBuffers;
-
-		void swap(Array<SPtr<Sampler_Backend>> r) { std::swap(r, samplers); }
-		void swap(Array<SPtr<Texture2D_Backend>> r) { std::swap(r, texture2Ds); }
-		void swap(Array<SPtr<StorageBuffer_Backend>> r) { std::swap(r, storageBuffers); }
-
-		void clear() {
-			samplers.clear();
-			texture2Ds.clear();
-			storageBuffers.clear();
-		}
-	};
-
-	UpdatedBindlessResources updatedBindlessResources;
-#endif	
-	
 	struct ResourcesList {
 
 		void add(const  GpuBuffer_Backend* p) { _add(p); }
@@ -110,15 +91,16 @@ public:
 	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
 	void setScissorRect_backend(const Rect2f& rect);
 
-	Material_Backend*		commonMaterial()		{ return _commonMaterial; };
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
 
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
 
-	RenderSystem_Backend* _renderSystem_backend = nullptr;
-	Material_Backend*     _commonMaterial       = nullptr;
-	MaterialPass_Backend* _commonMaterialPass   = nullptr;
+	RenderSystem_Backend*          _renderSystem_backend  = nullptr;
+	RenderResourceManager_Backend* _renderResourceManager = nullptr;
+
+	Material_Backend*              _commonMaterial        = nullptr;
+	MaterialPass_Backend*          _commonMaterialPass    = nullptr;
 
 private:
 	void _updateCommonMaterial();

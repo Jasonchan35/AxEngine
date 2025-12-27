@@ -35,14 +35,14 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 	_renderSeqId = newRenderSeqId;
 	resourcesToKeep.clear();
 	_inlineUpload.reset();
-
-#if AX_RENDER_BINDLESS
-	updatedBindlessResources.clear();
-#endif
 }
 
 void RenderRequest_Backend::_updateCommonMaterial() {
 	using namespace Math;
+
+	_commonMaterial     = _renderResourceManager->commonMaterial();
+	_commonMaterialPass = _renderResourceManager->commonMaterialPass();
+	
 	resourcesToKeep.add(_commonMaterial);
 	
 	f32 t = static_cast<f32>(_uptime);
@@ -67,14 +67,14 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
 	RenderResourceManager_Backend::s_instance()->onFrameBegin(this);
 
-	_renderContext        = renderContext;
-	_viewportIsBottomUp   = renderContext->viewportIsBottomUp();
-	_frameSize            = backBufferRenderPass->frameSize();
-	_backBufferRenderPass = backBufferRenderPass;
-	_uptime               = _renderSystem_backend->getCurrentUptime().seconds_f64();
-	_commonMaterialPass   = _renderSystem_backend->commonMaterialPass();
-	_commonMaterial       = _commonMaterialPass->material();
+	_renderContext         = renderContext;
+	_viewportIsBottomUp    = renderContext->viewportIsBottomUp();
+	_frameSize             = backBufferRenderPass->frameSize();
+	_backBufferRenderPass  = backBufferRenderPass;
+	_uptime                = _renderSystem_backend->getCurrentUptime().seconds_f64();
+	_renderResourceManager = RenderResourceManager_Backend::s_instance();
 	_updateCommonMaterial();
+	
 	onFrameBegin();
 }
 

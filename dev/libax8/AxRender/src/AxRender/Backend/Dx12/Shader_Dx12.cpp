@@ -40,12 +40,13 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
 	using ParamBase = ShaderParamSpace_Backend::ParamBase;
-//	AX_LOG("--- Shader Pass {} -------", debugName());
+	AX_LOG("--- Shader Pass {} -------", debugName());
 
 	auto addDescriptor = [&](const ShaderParamSpace_Dx12* paramSpace, Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-		if (p.bindCount() <= 0) return;
-		// AX_LOG("--- addDescriptor bindPoint={} bindCount={} type = {}, [{}] ",
-		//  	   p.bindPoint(), p.bindCount(), static_cast<int>(type), paramSpace->debugName());
+		AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type = {:8}, [{}] ",
+		 	   p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
+		
+		if (p.bindCount() <= 0) throw Error_Undefined();
 		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), paramSpace->bindSpace());
 	};
 	
@@ -91,7 +92,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	};
 
 	_visitStages(loadStage);
-	_createRootSignature(_pipelineRootParamList);	
+	_createRootSignature(_pipelineRootParamList);
 }
 
 void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList) {

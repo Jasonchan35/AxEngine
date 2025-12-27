@@ -62,7 +62,7 @@ void RenderRequest_Vk::onWaitCompleted() {
 }
 
 void RenderRequest_Vk::_updatedBindlessResources() {
-#if AX_RENDER_BINDLESS
+#if 0 // AX_RENDER_BINDLESS
 	auto* commonPass = rttiCastCheck<MaterialPass_Vk>(_commonMaterialPass);
 	if (!commonPass) return;
 

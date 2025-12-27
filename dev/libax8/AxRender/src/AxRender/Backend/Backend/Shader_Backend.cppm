@@ -83,11 +83,11 @@ public:
 	protected:
 		void	create(const Info& info);
 
-		NameId               _name;
-		RenderDataType       _dataType   = RenderDataType::None;
-		ShaderParamBindPoint _bindPoint  = ShaderParamBindPoint::Invalid;
-		ShaderParamBindCount _bindCount  = 0;
-		ShaderStageFlags     _stageFlags = ShaderStageFlags::None;
+		NameId           _name;
+		RenderDataType   _dataType   = RenderDataType::None;
+		BindPoint        _bindPoint  = ShaderParamBindPoint::Invalid;
+		BindCount        _bindCount  = 0;
+		ShaderStageFlags _stageFlags = ShaderStageFlags::None;
 	};
 
 	struct ConstBuffer : public ParamBase {

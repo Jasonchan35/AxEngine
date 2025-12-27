@@ -159,6 +159,13 @@
           "bindSpace": "Default", 
           "bindPoint": 5, 
           "bindCount": 1
+        }, {
+          "name": "foo_tex3d", 
+          "dataType": "Texture3D", 
+          "stageFlags": "Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 7, 
+          "bindCount": 1
         }], 
       "samplers": [{
           "name": "AxSamplerState_foo_tex2d", 
@@ -166,6 +173,13 @@
           "stageFlags": "Pixel", 
           "bindSpace": "Default", 
           "bindPoint": 4, 
+          "bindCount": 1
+        }, {
+          "name": "AxSamplerState_foo_tex3d", 
+          "dataType": "SamplerState", 
+          "stageFlags": "Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 6, 
           "bindCount": 1
         }]
     }]

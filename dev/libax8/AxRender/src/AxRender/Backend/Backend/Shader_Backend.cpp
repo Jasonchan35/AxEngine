@@ -31,13 +31,18 @@ void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
 		auto propName = NameId::s_make(prop.name);
 		setPropDefaultValue(propName, prop);
 	}
-
+	
+	if (_bindSpace == BindSpace::Bindless) {
+		return;
+	}
+	
 	for (auto& param : _constBuffers) {
 		_bindCount_constBuffers += param.bindCount();
 	}
 	for (auto& param : _samplerParams) {
 		_bindCount_samplerParams += param.bindCount();
 	}
+	
 	for (auto& param : _textureParams) {
 		_bindCount_textureParams += param.bindCount();
 	}
@@ -233,7 +238,7 @@ void      ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 
-	auto* commonShaderPass = RenderSystem_Backend::s_instance()->commonShaderPass(); 
+	auto* commonShaderPass = RenderResourceManager_Backend::s_instance()->commonShaderPass(); 
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);

@@ -59,11 +59,6 @@ public:
 	RenderRequest_Null(const CreateDesc& desc) : Base(desc) {}
 
 	AX_RenderRequest_Backend_FunctionInterfaces(override {})
-
-#if AX_RENDER_BINDLESS
-	virtual void onBindlessResourceUpdates(Span<SPtr<Sampler_Backend  >>) {};
-	virtual void onBindlessResourceUpdates(Span<SPtr<Texture2D_Backend>>) {};
-#endif	
 };
 
 class Sampler_Null : public Sampler_Backend {

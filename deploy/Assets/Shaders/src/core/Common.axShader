@@ -33,12 +33,14 @@ struct PS_Input {
 float foo;
 
 Sampler_Texture2D(foo_tex2d);
+Sampler_Texture3D(foo_tex3d);
 
 float AX_ConstBuffer_dummy_func() {
 	// try to access one memeber per cbuffer
 
 	return foo
 		+ tex2D(foo_tex2d, float2(0,0)).x
+		+ tex3D(foo_tex3d, float3(0,0,0)).x
 		+ ax_g_test
 		+ ax_g_deltaTime.x 
 		+ ax_object_mvp[0][0];

@@ -24,7 +24,7 @@ public:
 
 	virtual void onImageIO_ReadHandler(ImageIO_ReadHandler& handler) override;
 
-	Dx12Descriptor_Texture2D _getUpdated(RenderRequest_Dx12* req);
+	Dx12Descriptor_Texture2D _getUpdatedDescriptor(RenderRequest_Dx12* req);
 
 private:	
 	Dx12Resource_Texture2D		_texResource;

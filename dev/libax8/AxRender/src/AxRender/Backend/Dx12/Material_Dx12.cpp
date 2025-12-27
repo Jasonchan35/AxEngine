@@ -50,31 +50,38 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 //	AX_LOG("MaterialParamSpace_Dx12::_updatedPerFrameData {} ", debugName());
 	
 //--- update ----
+	if (_shaderParamSpace->bindSpace() == BindSpace::Bindless) {
+#if AX_RENDER_BINDLESS
+		_perFrameData.heapStart_CBV_SRV_UAV.handle = req->_bindlessDescriptors->CBV_SRV_UAV;
+		    _perFrameData.heapStart_Sampler.handle = req->_bindlessDescriptors->Sampler;
+		return _perFrameData;
+#else
+		// throw Error_Undefined();
+#endif
+	}
+	
 	_perFrameData.heapStart_CBV_SRV_UAV.update(req->_dynamicDescriptors.CBV_SRV_UAV);
-	    _perFrameData.heapStart_Sampler.update(req->_dynamicDescriptors.Sampler);
+	_perFrameData.heapStart_Sampler.update(req->_dynamicDescriptors.Sampler);
 	
 	auto& cmdList = req->_graphCmdBuf_dx12;
-
+	
 	for (auto& cb : _constBuffers) {
 		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(cb.getUploadedGpuBuffer(req)));
 		if (!gpuBuf) throw Error_Undefined();
-//		AX_LOG("-- addCBV");
+		//		AX_LOG("-- addCBV");
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		req->_dynamicDescriptors.CBV_SRV_UAV.addCBV(gpuBuf->resource());
 		_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 	}
 
-#if AX_RENDER_BINDLESS
-	
-#else
+#if !AX_RENDER_BINDLESS	
 	for (auto& texParam : _textureParams) {
 		switch (texParam.dataType()) {
 			case RenderDataType::Texture2D: {
 				auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
 				if (!tex) throw Error_Undefined();
-				auto srcDesc = ax_const_cast(tex)->_getUpdated(req);
-				req->_dynamicDescriptors.CBV_SRV_UAV.addTexture(srcDesc);
-
+				auto srcDesc = ax_const_cast(tex)->_getUpdatedDescriptor(req);
+				req->_dynamicDescriptors.CBV_SRV_UAV.addDescriptor(srcDesc);
 				_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 			} break;
 			default: throw Error_Undefined();
@@ -93,8 +100,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	auto* shd = shaderParamSpace_dx12();
 	if (shd->_CBV_SRV_UAV_DescTable.size() != _perFrameData.heapStart_CBV_SRV_UAV.bindCount) throw Error_Undefined();
 	if (shd->_samplerDescTable.size()      != _perFrameData.heapStart_Sampler.bindCount    ) throw Error_Undefined();
-	
-#endif // #if !AX_RENDER_BINDLESS
+#endif
 	return _perFrameData;
 }
 

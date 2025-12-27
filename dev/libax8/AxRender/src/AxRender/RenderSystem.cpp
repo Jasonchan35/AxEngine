@@ -81,15 +81,12 @@ RenderSystemInfo::RenderSystemInfo() {
 	inlineUpload.bufferSize   =  16 * 1024 * 1024;
 	inlineUpload.limitPerEach = 128 * 1024;
 
-	resource.maxTextureCount = 32 * 1024;
-	resource.maxSamplerCount = 1024;
-
 	shader.maxConstBufferCount = 6;
 	shader.maxTextureCount     = 10;
 	shader.maxSamplerCount     = 10;
 	
 	renderPass.maxCount  = 64;
-	renderPass.maxColorBufferCount = 10;
+	renderPass.maxColorBufferCount = 8;
 	renderPass.maxDepthBufferCount = 1;
 
 	renderRequest.count = 3;

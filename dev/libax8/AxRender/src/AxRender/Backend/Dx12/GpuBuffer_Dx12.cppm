@@ -34,7 +34,7 @@ protected:
 	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _p._mapMemory(range); }
 	virtual void		onUnmapMemory() override				{ return _p._unmapMemory(); }
 
-	virtual void		onFlush(IntRange range) override { AX_ASSERT_TODO; }
+	virtual void		onFlush(IntRange range) override { AX_ASSERT_TODO(); }
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override;
 
 private:

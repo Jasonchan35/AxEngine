@@ -14,6 +14,7 @@ namespace ax {
 RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
+	AX_LOG("RenderRequest_Dx12 create#{}", desc.index);
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	_d3dDevice = dev;
 	_uploadCmdBuf_dx12.create(  dev, CommandBufferType::Direct,  "uploadCmdList"); // CommandBufferType::Copy
@@ -25,35 +26,40 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	auto& info = _renderSystem->info();
 	auto* resMgr = RenderResourceManager_Dx12::s_instance();
 
-	_resourceDescriptor = &resMgr->resourceDesc;
+	_descriptorHeapPools = &resMgr->descriptorHeapPools;
+	_resourceDescriptors = &resMgr->resourceDescriptors;
 	
-	Int renderPassCount = info.renderPass.maxCount;
-	_dynamicDescriptors.ColorBuffer.create(resMgr->descHeapPool_ColorBuffer, info.renderPass.maxColorBufferCount * renderPassCount);
-	_dynamicDescriptors.DepthBuffer.create(resMgr->descHeapPool_DepthBuffer, info.renderPass.maxDepthBufferCount * renderPassCount);
+#if AX_RENDER_BINDLESS
+	_bindlessDescriptors = &resMgr->bindlessDescriptors;
+#endif
 
-	Int renderRequest_CBV_SRV_UAV_Count = info.renderRequest.maxConstBufferCount
-										+ info.renderRequest.maxTextureCount;
-	
-	_dynamicDescriptors.CBV_SRV_UAV.create(resMgr->descHeapPool_CBV_SRV_UAV, renderRequest_CBV_SRV_UAV_Count);
-	    _dynamicDescriptors.Sampler.create(resMgr->descHeapPool_Sampler,     info.renderRequest.maxSamplerCount);
+	auto& pool = resMgr->descriptorHeapPools;
+	auto& info_pass = info.renderPass;
+	auto& info_req  = info.renderRequest;
+
+	_dynamicDescriptors.ColorBuffer.create(Fmt("dynamic#{}.ColorBuffer", desc.index), pool.ColorBuffer, info_pass.maxColorBufferCount * info_pass.maxCount, false);
+	_dynamicDescriptors.DepthBuffer.create(Fmt("dynamic#{}.DepthBuffer", desc.index), pool.DepthBuffer, info_pass.maxDepthBufferCount * info_pass.maxCount, false);
+
+	Int renderReq_CBV_SRV_UAV_Count = info_req.maxConstBufferCount + info_req.maxTextureCount;
+	_dynamicDescriptors.CBV_SRV_UAV.create(Fmt("dynamic#{}.CBV_SRV_UAV", desc.index), pool.CBV_SRV_UAV, renderReq_CBV_SRV_UAV_Count       , false);
+	    _dynamicDescriptors.Sampler.create(Fmt("dynamic#{}.Sampler"    , desc.index), pool.Sampler,     info.renderRequest.maxSamplerCount, false);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
 	_uploadCmdBuf_dx12.commandBegin();
 	_graphCmdBuf_dx12.commandBegin();
-	
+
 	_dynamicDescriptors.ColorBuffer.reset();
 	_dynamicDescriptors.DepthBuffer.reset();
 	_dynamicDescriptors.CBV_SRV_UAV.reset();
 	_dynamicDescriptors.Sampler.reset();
 
-	auto* resMgr = RenderResourceManager_Dx12::s_instance();
-	auto descHeaps = Span({resMgr->descHeapPool_CBV_SRV_UAV.d3dHeap(), resMgr->descHeapPool_Sampler.d3dHeap()});
+	auto& heapPool = RenderResourceManager_Dx12::s_instance()->descriptorHeapPools;
+	auto descHeaps = Span({heapPool.CBV_SRV_UAV.d3dHeap(), heapPool.Sampler.d3dHeap()});
 	setDescriptorHeaps(descHeaps);
 }
 
 void RenderRequest_Dx12::onFrameEnd() {
-	_updatedBindlessResources();
 	_uploadCmdBuf_dx12.commandEnd();
 	_graphCmdBuf_dx12.commandEnd();
 }
@@ -69,30 +75,20 @@ void RenderRequest_Dx12::onWaitCompleted() {
 	}
 }
 
-void RenderRequest_Dx12::_updatedBindlessResources() {
 #if 0
-	auto* mgr = RenderResourceManager_Dx12::s_instance();
+void RenderRequest_Dx12::_updatedBindlessResources() {
 
-	auto* commonMaterialPass = rttiCastCheck<MaterialPass_Dx12>(_commonMaterialPass);
-//	auto* bindlessParamSpace = commonMaterialPass->getParamSpace_dx12(BindSpace::Bindless);
-
-//	bindlessParamSpace->getUpdatedPerFrameData()
-	
 	for (auto& tex_ : updatedBindlessResources.texture2Ds) {
 		auto* tex = rttiCastCheck<Texture2D_Dx12>(tex_.ptr());
 		if (!tex) throw Error_Undefined();
-
-		Int index = ax_enum_int(tex->resourceHandle.slotId());
-		auto handle =   mgr->bindlessHeap_CBV_SRV_UAV.getHandle(index);
-		auto& texResource = tex->_getUpdated(this);
-		_d3dDevice->CreateShaderResourceView(texResource, nullptr, handle.cpu);
+		tex->_getUpdatedDescriptor(this);
 	}
 
 	for (auto& sampler_ : updatedBindlessResources.samplers) {
 		auto* sampler = rttiCastCheck<Sampler_Dx12>(sampler_.ptr());
 		if (!sampler) throw Error_Undefined();
-
-		Int index = ax_enum_int(sampler->resourceHandle.slotId());
+/*
+		Int index = sampler->resourceHandle.slotId();
 		auto handle = mgr->bindlessHeap_Sampler.getHandle(index);
 
 		auto& ss = sampler->samplerState();
@@ -112,9 +108,10 @@ void RenderRequest_Dx12::_updatedBindlessResources() {
 		desc.MaxLOD           = D3D12_FLOAT32_MAX;
 		
 		_d3dDevice->CreateSampler(&desc, handle.cpu);
+		*/
 	}
-#endif
 }
+#endif
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
 	D3D12_VIEWPORT tmp;

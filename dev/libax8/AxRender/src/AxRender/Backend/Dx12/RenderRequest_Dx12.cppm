@@ -16,8 +16,6 @@ namespace ax {
 class RenderRequest_Dx12 : public RenderRequest_Backend {
 	AX_RTTI_INFO(RenderRequest_Dx12, RenderRequest_Backend)
 public:
-	using ResourceDescriptor = RenderResourceManager_Dx12::ResourceDescriptor;
-	
 	RenderRequest_Dx12(const CreateDesc& desc);
 
 	RenderSystem_Dx12*  renderSystem_dx12()			{ return rttiCastCheck<RenderSystem_Dx12>(_renderSystem); }
@@ -26,11 +24,6 @@ public:
 	CommandBuffer_Dx12&	uploadCmdBuf_dx12()			{ return _uploadCmdBuf_dx12; }
 	CommandBuffer_Dx12&	graphCmdBuf_dx12()			{ return _graphCmdBuf_dx12; }
 
-#if AX_RENDER_BINDLESS
-	virtual void onBindlessResourceUpdates(Span<SPtr<Sampler_Backend  >>) {};
-	virtual void onBindlessResourceUpdates(Span<SPtr<Texture2D_Backend>>) {};
-#endif
-	
 	AX_INLINE u64 fenceValue_dx12() const { return static_cast<u64>(_renderSeqId); }
 	void signalFence(Dx12CommandQueue& cmdQueue) { cmdQueue.signal(_fence, fenceValue_dx12()); }
 
@@ -47,11 +40,18 @@ public:
 		Dx12DescriptorHeapChunk_CBV_SRV_UAV CBV_SRV_UAV;
 		Dx12DescriptorHeapChunk_Sampler     Sampler;
 	} _dynamicDescriptors;
+
+	using DescriptorHeapPools  = RenderResourceManager_Dx12::DescriptorHeapPools;
+	DescriptorHeapPools*		_descriptorHeapPools = nullptr;
+
+	using ResourceDescriptors = RenderResourceManager_Dx12::ResourceDescriptors;
+	ResourceDescriptors*		_resourceDescriptors = nullptr;
+
+#if AX_RENDER_BINDLESS
+	using BindlessDescriptors = RenderResourceManager_Dx12::BindlessDescriptors;
+	BindlessDescriptors*		_bindlessDescriptors = nullptr;
+#endif
 	
-	ResourceDescriptor*                 _resourceDescriptor = nullptr;
-
-	void _updatedBindlessResources();
-
 	void setDescriptorHeaps(Span<ID3D12DescriptorHeap*> heaps) {
 		_graphCmdBuf_dx12->SetDescriptorHeaps(ax_safe_cast_from(heaps.size()), heaps.data());
 	}

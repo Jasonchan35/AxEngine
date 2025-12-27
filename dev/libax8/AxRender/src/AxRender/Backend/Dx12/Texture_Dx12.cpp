@@ -18,7 +18,7 @@ void Texture2D_Dx12::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	handler.readPixelsTo(map.data());
 }
 
-Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdated(RenderRequest_Dx12* req) {
+Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx12* req) {
 	if (!_renderSeqIdGraud.update(req))
 		return _descriptor;
 
@@ -67,7 +67,7 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdated(RenderRequest_Dx12* req) {
 		cmdBuf->CopyTextureRegion(&dstLoc, box.left, box.top, box.front, &srcLoc, &box);
 		_texResource.resourceBarrier(cmdBuf, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		_descriptor = req->_resourceDescriptor->Texture2D->setTexture(resourceHandle.slotId(), _texResource);
+		_descriptor = req->_resourceDescriptors->Texture2D.setTexture(resourceHandle.slotId(), _texResource);
 		
 		_uploadBuffer = nullptr;
 	}

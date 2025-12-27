@@ -349,6 +349,29 @@ constexpr D3D12_COMPARISON_FUNC Dx12Util::getDxDepthTestOp(DepthTestOp v) {
 }
 
 template<>
+constexpr StrLit ax_enum_entry_strlit(const D3D12_DESCRIPTOR_HEAP_TYPE& v) {
+	switch (v) {
+		case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV  : return "CBV_SRV_UAV";
+		case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER      : return "SAMPLER"    ;
+		case D3D12_DESCRIPTOR_HEAP_TYPE_RTV          : return "RTV"        ;
+		case D3D12_DESCRIPTOR_HEAP_TYPE_DSV          : return "DSV"        ;
+		case D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES    : return "NUM_TYPES"  ;
+		default: return "";
+	}
+}
+
+template<>
+constexpr StrLit ax_enum_entry_strlit(const D3D12_DESCRIPTOR_RANGE_TYPE& v) {
+	switch (v) {
+		case D3D12_DESCRIPTOR_RANGE_TYPE_SRV        : return "SRV"    ;
+		case D3D12_DESCRIPTOR_RANGE_TYPE_UAV        : return "UAV"    ;
+		case D3D12_DESCRIPTOR_RANGE_TYPE_CBV        : return "CBV"    ;
+		case D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER    : return "SAMPLER";
+		default: return "";
+	}
+}
+
+template<>
 constexpr StrLit ax_enum_entry_strlit(const D3D12_RESOURCE_STATES& v) {
 	switch (v) {
 		case D3D12_RESOURCE_STATE_COMMON								: return "COMMON";

@@ -16,11 +16,15 @@ void RenderResourceManager_Backend::s_create(const MemAllocRequest& req) {
 	RenderResourceManager_CreateDesc desc;
 	auto p = RenderSystem_Backend::s_instance()->newRenderResourceManager(req, desc);
 	ResourceManager_Backend_instance = std::move(p);
+	ResourceManager_Backend_instance->_postCreate();
 }
 
 void RenderResourceManager_Backend::s_destroy() {
 	AX_ASSERT(ResourceManager_Backend_instance);
 	ResourceManager_Backend_instance.unref();
+}
+
+RenderResourceManager_Backend::RenderResourceManager_Backend(const CreateDesc& desc) {
 }
 
 void RenderResourceManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
@@ -61,6 +65,21 @@ void RenderResourceManager_Backend::hotReloadFile(StrView filename) {
 		}
 		return;
 	}
+}
+
+void RenderResourceManager_Backend::_postCreate() {
+	StockObjects::s_create();
+
+	//----- common material
+	auto commonShaderFilename = StrView("ImportedAssets/Shaders/core/Common.axShader");
+	auto commonParamShader = Shader::s_new(AX_ALLOC_REQ, commonShaderFilename);
+	_commonMaterial = rttiCastCheck<Material_Backend>(Material::s_new(AX_ALLOC_REQ).ptr());
+	_commonMaterial->setShader(commonParamShader);
+
+	_commonMaterialPass = _commonMaterial->getPass(0);
+	if (!_commonMaterialPass) throw Error_Undefined();
+
+	onPostCreate();
 }
 
 } // namespace

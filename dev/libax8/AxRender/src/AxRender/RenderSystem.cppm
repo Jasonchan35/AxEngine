@@ -28,11 +28,6 @@ struct RenderSystemInfo {
 		Int bufferSize   = 0;
 		Int limitPerEach = 0;
 	} inlineUpload;
-	
-	struct Resource {
-		Int maxTextureCount = 0;
-		Int maxSamplerCount = 0;
-	} resource;
 
 	struct Shader {
 		Int maxConstBufferCount = 0;

@@ -3,8 +3,9 @@ module AxRender;
 import :RenderContext;
 import :StockObjects;
 import :Texture_Backend;
-import :RenderSystem_Backend;
 import :Material_Backend;
+import :RenderSystem_Backend;
+import :RenderResourceManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -134,7 +135,7 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 	AX_ASSERT(_material);
 	AX_ASSERT(_shaderPass);
 
-	auto* commonMaterialPass = RenderSystem_Backend::s_instance()->commonMaterialPass();
+	auto* commonMaterialPass = RenderResourceManager_Backend::s_instance()->commonMaterialPass();
 		
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);

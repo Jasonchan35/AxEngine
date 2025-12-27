@@ -65,11 +65,11 @@ constexpr bool ShaderParamBindSpace_isCommon(ShaderParamBindSpace t) {
 }
 
 // HLSL: "shader register", DX Reflection: BindPoint, Vulkan: "binding"
-enum class ShaderParamBindPoint : u16 {
+enum class ShaderParamBindPoint : u32 {
 	GlobalConstBuffer = 0,
-	VertexBuffer	   = 30, // the max limit is 32 (0~31) on RTX 3080
+	VertexBuffer	  = 30, // the max limit is 32 (0~31) on RTX 3080
 //-----
-	Invalid			   = u16_max,
+	Invalid			  = u32_max,
 };
 AX_ENUM_STR_FROM_INT(ShaderParamBindPoint)
 

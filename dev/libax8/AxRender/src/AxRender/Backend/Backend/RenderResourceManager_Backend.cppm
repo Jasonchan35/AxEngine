@@ -1,7 +1,7 @@
 module;
 export module AxRender:RenderResourceManager_Backend;
 export import :Texture_Backend;
-export import :Shader_Backend;
+export import :Material_Backend;
 export import :RenderSystem_Backend;
 
 export namespace ax /*::AxRender*/ {
@@ -14,8 +14,8 @@ class RenderResourceManager_Backend : public RenderObject {
 	AX_RTTI_INFO(RenderResourceManager_Backend, RenderObject)
 public:
 	using CreateDesc = RenderResourceManager_CreateDesc;
-	RenderResourceManager_Backend(const CreateDesc& desc) {}
-	
+	RenderResourceManager_Backend(const CreateDesc& desc);
+
 	static RenderResourceManager_Backend* s_instance();
 	static void s_create(const MemAllocRequest& req);
 	static void s_destroy();
@@ -44,7 +44,20 @@ public:
 	auto& table_sampler()	{ return getTable<Sampler_Backend>(); }
 	auto& table_texture2D()	{ return getTable<Texture2D_Backend>(); }
 
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {}
+
+	Material_Backend*			commonMaterial()		{ return _commonMaterial; }
+	MaterialPass_Backend*		commonMaterialPass()	{ return _commonMaterialPass; }
+
+	const ShaderPass_Backend*	commonShaderPass() {
+		return _commonMaterialPass ? _commonMaterialPass->shaderPass() : nullptr;
+	}
+	
 protected:
+	void _postCreate();
+	virtual void onPostCreate() {}
+	
 	template<class FUNC>
 	void visit(FUNC func) {
 		_all_table.apply([&func](auto&... list) {
@@ -58,6 +71,9 @@ protected:
 		MutexProtected<Table<Texture2D_Backend>>
 	>;
 	All_Table _all_table;
+
+	SPtr<Material_Backend>		_commonMaterial;
+	MaterialPass_Backend*		_commonMaterialPass = nullptr;
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>

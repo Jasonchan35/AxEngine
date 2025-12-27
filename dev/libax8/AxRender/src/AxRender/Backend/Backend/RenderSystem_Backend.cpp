@@ -10,7 +10,6 @@ namespace ax /*::AxRender*/ {
 
 struct RenderSystem_Backend::PrivateData {
 	Array<UPtr<RenderRequest_Backend>>	renderRequests;
-	SPtr<Material_Backend>	commonMaterial;
 };
 
 RenderSystem_Backend::RenderSystem_Backend(const CreateDesc& desc) 
@@ -27,18 +26,6 @@ void RenderSystem_Backend::onCreate() {
 	Base::onCreate();
 
 	RenderResourceManager_Backend::s_create(AX_ALLOC_REQ);
-	StockObjects::s_create();
-
-//----- common material
-	{
-		auto& mtl = _privateData->commonMaterial;
-
-		auto commonShaderFilename = StrView("ImportedAssets/Shaders/core/Common.axShader");
-		auto commonParamShader = Shader::s_new(AX_ALLOC_REQ, commonShaderFilename);
-		mtl = rttiCastCheck<Material_Backend>(Material::s_new(AX_ALLOC_REQ).ptr());
-		mtl->setShader(commonParamShader);
-	}
-
 //----- render request
 	if (_info.renderRequest.count > AxRenderConfig::kMaxRenderRequestCount)
 		throw Error_Undefined();
@@ -67,27 +54,6 @@ RenderRequest_Backend* RenderSystem_Backend::nextRenderRequest() {
 	auto* req = reqs[_renderSeqId % reqs.size()].ptr();
 	req->waitCompletedAndReset(_renderSeqId);
 	return req;
-}
-
-Material_Backend* RenderSystem_Backend::commonMaterial() {
-	return _privateData->commonMaterial;
-}
-
-MaterialPass_Backend* RenderSystem_Backend::commonMaterialPass() {
-	auto* p = commonMaterial();
-	if (!p || p->passCount() <= 0) return nullptr;
-	return p->getPass(0);  
-}
-
-Shader_Backend* RenderSystem_Backend::commonShader() {
-	auto& m = _privateData->commonMaterial;
-	return m ? m->shader_backend() : nullptr;
-}
-
-ShaderPass_Backend* RenderSystem_Backend::commonShaderPass() {
-	auto* p = commonShader();
-	if (!p || p->passCount() <= 0) return nullptr;
-	return p->getPass(0);
 }
 
 void RenderSystem_Backend::waitAllRenderCompleted() {

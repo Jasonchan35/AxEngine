@@ -100,9 +100,9 @@ void RenderResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 		e->resourceHandle._dirty = false;
 	}
 
-	// if constexpr (kNeedDescriptorUpdate) {
-	// 	RenderResourceManager_Backend::s_instance()->onUpdateDescriptors(req, _dirtyObjects);
-	// }
+	if constexpr (kNeedDescriptorUpdate) {
+	 	RenderResourceManager_Backend::s_instance()->onUpdateDescriptors(req, _dirtyObjects);
+	}
 	_dirtyObjects.clear();
 }
 

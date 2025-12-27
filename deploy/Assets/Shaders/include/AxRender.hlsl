@@ -54,21 +54,31 @@ cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
 }
 
 #if AX_RENDER_BINDLESS
-	SamplerState AxBindless_SamplerState[1024]  : register(s1, AX_BindSpace_Bindless);
-	Texture2D    AxBindless_Texture2D[16*1024]  : register(t2, AX_BindSpace_Bindless);
-	Texture3D    AxBindless_Texture3D[   1024]  : register(t3, AX_BindSpace_Bindless);
-
+	SamplerState AxBindless_SamplerState[1000] : register(s0,      AX_BindSpace_Bindless);
+	Texture2D    AxBindless_Texture2D[100000]  : register(t0,      AX_BindSpace_Bindless);
+	Texture3D    AxBindless_Texture3D[1000]    : register(t100000, AX_BindSpace_Bindless);
+	
 	// $Global UniformBuffer should be register(x, space0)
 
 	#define Sampler_Texture2D(NAME)					u32 AxSamplerState_##NAME; u32 AxTexture2D_##NAME; 
+	#define Sampler_Texture3D(NAME)					u32 AxSamplerState_##NAME; u32 AxTexture3D_##NAME; 
+
 	#define Sampler_Texture2D_(NAME, REG, SPACE)	u32 AxSamplerState_##NAME; u32 AxTexture2D_##NAME; 
+	#define Sampler_Texture3D_(NAME, REG, SPACE)	u32 AxSamplerState_##NAME; u32 AxTexture3D_##NAME; 
+
 	#define tex2D(NAME, UV) AxBindless_Texture2D[AxTexture2D_##NAME].Sample(AxBindless_SamplerState[AxSamplerState_##NAME], UV)
+	#define tex3D(NAME, UV) AxBindless_Texture3D[AxTexture3D_##NAME].Sample(AxBindless_SamplerState[AxSamplerState_##NAME], UV)
 
 #else
 	// HLSL can auto pick register, and "spirv-cross -fauto-bind-uniforms" can auto gen for SPIR-V
 	#define Sampler_Texture2D(NAME) 				SamplerState AxSamplerState_##NAME; Texture2D NAME;
+	#define Sampler_Texture3D(NAME) 				SamplerState AxSamplerState_##NAME; Texture3D NAME;
+
 	#define Sampler_Texture2D_(NAME, REG, SPACE) 	SamplerState AxSamplerState_##NAME : register(s ## REG, SPACE); Texture2D NAME : register(t ## REG, SPACE);
+	#define Sampler_Texture3D_(NAME, REG, SPACE) 	SamplerState AxSamplerState_##NAME : register(s ## REG, SPACE); Texture3D NAME : register(t ## REG, SPACE);
+
 	#define tex2D(NAME, UV) NAME.Sample(AxSamplerState_##NAME, UV)
+	#define tex3D(NAME, UV) NAME.Sample(AxSamplerState_##NAME, UV)
 
 #endif // else AX_RENDER_BINDLESS
 

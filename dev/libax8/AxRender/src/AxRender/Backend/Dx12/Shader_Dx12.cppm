@@ -39,7 +39,7 @@ class ShaderParamSpace_Dx12 : public ShaderParamSpace_Backend {
 	AX_RTTI_INFO(ShaderParamSpace_Dx12, ShaderParamSpace_Backend)
 public:
 	ShaderParamSpace_Dx12(const CreateDesc& desc);
-
+	
 	Dx12DescriptorTable         _CBV_SRV_UAV_DescTable;
 	Dx12DescriptorTable         _samplerDescTable;
 };
@@ -64,7 +64,6 @@ public:
 	ShaderParamSpace_Dx12* getOwnParamSpace_dx12(BindSpace s) {
 		return rttiCastCheck<ShaderParamSpace_Dx12>(getOwnParamSpace(s));
 	}
-	
 	
 	template<class FUNC>
 	void _visitStages(FUNC func) {

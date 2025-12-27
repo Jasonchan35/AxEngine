@@ -25,9 +25,9 @@ public:
 		Dx12DescriptorHandle  handle;
 		Int bindCount = 0;
 
-		void update(Dx12DescriptorHeapChunk& allocator) {
-			d3dHeap = allocator.d3dHeap();
-			handle  = allocator.currentHandle();
+		void update(Dx12DescriptorHeapChunk& heapChunk) {
+			d3dHeap = heapChunk.d3dHeap();
+			handle  = heapChunk.currentHandle();
 			bindCount = 0;
 		}
 	};

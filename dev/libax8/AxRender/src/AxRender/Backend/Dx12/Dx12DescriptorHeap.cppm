@@ -38,26 +38,38 @@ struct Dx12Descriptor_Texture2D		{ Dx12DescriptorHandle handle; };
 struct Dx12DescriptorHeap : public NonCopyable {
 	ID3D12DescriptorHeap* d3dHeap() { return _d3dHeap; }
 	
-	void create(Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc);
+	void create(InNameId name, Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc);
 	void destroy();
 	
 	Dx12DescriptorHandle currentHandle() { return getHandle(_used); }
 	Dx12DescriptorHandle getHandle(Int index) { return _startHandle + _stride * index; }
+	Dx12DescriptorHandle addHandle(Int count) {
+		if (count > remain()) throw Error_Undefined();
+		auto h = _startHandle + _stride * _used;
+		_used += count;
+		return h;
+	}
 
-	Int size  () const { return _size; }
-	Int used  () const { return _used; }
-	Int stride() const { return _stride; }
-	Int remain() const { return _size - _used; }
+	NameId name() const { return _name; }
+	Int    size() const { return _size; }
+	Int    used() const { return _used; }
+	Int    stride() const { return _stride; }
+	Int    remain() const { return _size - _used; }
 
-	void adjustUsed(Int v) { _used += v; }
+//	void adjustUsed(Int v) { _used += v; }
 	void reset() { _used = 0;}
+
+	const D3D12_DESCRIPTOR_HEAP_DESC& desc() const { return _desc; }
+	bool isShaderVisible() const { return _desc.Flags & D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; }
+
 private:
 	ComPtr<ID3D12DescriptorHeap> _d3dHeap;
 	Dx12DescriptorHandle         _startHandle;
-
-	Int _size   = 0;
-	Int _used   = 0;
-	Int _stride = 0;
+	NameId                       _name;
+	D3D12_DESCRIPTOR_HEAP_DESC   _desc   = {};
+	Int                          _size   = 0;
+	Int                          _used   = 0;
+	Int                          _stride = 0;
 };
 
 class Dx12DescriptorHeapPool : public NonCopyable {
@@ -71,16 +83,26 @@ public:
 
 	ID3D12DescriptorHeap* d3dHeap() { return _heap.d3dHeap(); }
 
-	D3D12_DESCRIPTOR_HEAP_DESC& desc()	{ return _desc; }
+	const D3D12_DESCRIPTOR_HEAP_DESC& desc() const	{ return _heap.desc(); }
 
-	bool isShaderVisible() const { return _desc.Flags & D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; }
+	bool isShaderVisible() const { return _heap.isShaderVisible(); }
+
+	Dx12_ID3D12Device* d3dDevice() { return _dev; }
+
+	Dx12DescriptorHandle currentHandle() { return _heap.currentHandle(); }
+
+	AX_INLINE NameId name() const 		{ return _heap.name(); }
+	AX_INLINE Int    size() const 		{ return _heap.size(); }
+	AX_INLINE Int    used() const 		{ return _heap.used(); }
+	AX_INLINE Int    stride() const 	{ return _heap.stride(); }
+	AX_INLINE Int    remain() const 	{ return _heap.remain(); }
+	
 	
 protected:
 	friend class Dx12DescriptorHeapChunk;
-	void _onCreateChunk(Dx12DescriptorHeapChunk & allocator, Int size);
-	void _create(Dx12_ID3D12Device* dev, Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+	void _onCreateChunk(Dx12DescriptorHeapChunk & outHeapChunk, InNameId name, Int size, bool fullyUsed);
+	void _create(InNameId name, Dx12_ID3D12Device* dev, Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 	
-	D3D12_DESCRIPTOR_HEAP_DESC		_desc = {};
 	Dx12_ID3D12Device*				_dev = nullptr;
 	Dx12DescriptorHeap				_heap;
 };
@@ -100,10 +122,12 @@ public:
 		return _startHandle + _stride * index;
 	}
 
-	void adjustUsedToSize() { _used = _size; }
+	NameId name() const { return _name; }
 
 protected:
-	void _create(Dx12DescriptorHeapPool& heapPool, Int size) { return heapPool._onCreateChunk(*this, size); }
+	void _create(InNameId name, Dx12DescriptorHeapPool& heapPool, Int size, bool fullyUsed) {
+		return heapPool._onCreateChunk(*this, name, size, fullyUsed);
+	}
 	
 	Int _addHandle() {
 		if (_used >= _size) throw Error_Undefined();
@@ -121,6 +145,7 @@ protected:
 	friend class Dx12DescriptorHeapPool;
 		
 	Dx12DescriptorHandle  _startHandle;
+	NameId _name;
 	Int                   _size    = 0;
 	Int                   _used    = 0;
 	Int                   _stride  = 0;
@@ -130,14 +155,17 @@ protected:
 
 class Dx12DescriptorHeapPool_ColorBuffer : public Dx12DescriptorHeapPool {
 public:
-	void create(Dx12_ID3D12Device* dev, Int numDescriptors) {
-		_create(dev, numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+	void create(InNameId name, Dx12_ID3D12Device* dev, Int numDescriptors) {
+		_create(name, dev, numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 };
 
 struct Dx12DescriptorHeapChunk_ColorBuffer : public Dx12DescriptorHeapChunk {
 	using HeapPool = Dx12DescriptorHeapPool_ColorBuffer;
-	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
+
+	void create(InNameId name, HeapPool& heapPool, Int size, bool fullyUsed) {
+		return _create(name, heapPool, size, fullyUsed);
+	}
 	
 	Dx12Descriptor_ColorBuffer setRenderTargetView(Int index, Dx12Resource_ColorBuffer& res) {
 		auto h = _getHandle<Dx12Descriptor_ColorBuffer>(index);
@@ -151,14 +179,17 @@ struct Dx12DescriptorHeapChunk_ColorBuffer : public Dx12DescriptorHeapChunk {
 
 class Dx12DescriptorHeapPool_DepthBuffer : public Dx12DescriptorHeapPool {
 public:
-	void create(Dx12_ID3D12Device* dev, Int numDescriptors) {
-		_create(dev, numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+	void create(InNameId name, Dx12_ID3D12Device* dev, Int numDescriptors) {
+		_create(name, dev, numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	}
 };
 
 struct Dx12DescriptorHeapChunk_DepthBuffer : public Dx12DescriptorHeapChunk {
 	using HeapPool = Dx12DescriptorHeapPool_DepthBuffer;
-	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
+
+	void create(InNameId name, HeapPool& heapPool, Int size, bool fullyUsed) {
+		return _create(name, heapPool, size, fullyUsed);
+	}
 	
 	Dx12Descriptor_DepthBuffer setDepthStencilView(Int index, Dx12Resource_DepthBuffer& res) {
 		//	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
@@ -173,8 +204,8 @@ struct Dx12DescriptorHeapChunk_DepthBuffer : public Dx12DescriptorHeapChunk {
 
 class Dx12DescriptorHeapPool_Sampler : public Dx12DescriptorHeapPool {
 public:
-	void create(Dx12_ID3D12Device* dev, Int numDescriptors, bool isShaderVisible = true) {
-		_create(dev,
+	void create(InNameId name, Dx12_ID3D12Device* dev, Int numDescriptors, bool isShaderVisible = true) {
+		_create(name, dev,
 		        numDescriptors,
 		        D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
 		        isShaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
@@ -183,7 +214,10 @@ public:
 
 struct Dx12DescriptorHeapChunk_Sampler : public Dx12DescriptorHeapChunk {
 	using HeapPool = Dx12DescriptorHeapPool_Sampler;
-	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
+
+	void create(InNameId name, HeapPool& heapPool, Int size, bool fullyUsed) {
+		return _create(name, heapPool, size, fullyUsed);
+	}
 	
 	Dx12Descriptor_Sampler setSampler(Int index, SamplerFilter filter, SamplerWrapUVW wrap) {
 		D3D12_SAMPLER_DESC desc;
@@ -213,8 +247,8 @@ struct Dx12DescriptorHeapChunk_Sampler : public Dx12DescriptorHeapChunk {
 
 class Dx12DescriptorHeapPool_CBV_SRV_UAV : public Dx12DescriptorHeapPool {
 public:
-	void create(Dx12_ID3D12Device* dev, Int numDescriptors, bool isShaderVisible = true) {
-		_create(dev,
+	void create(InNameId name, Dx12_ID3D12Device* dev, Int numDescriptors, bool isShaderVisible = true) {
+		_create(name, dev,
 		        numDescriptors,
 		        D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		        isShaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
@@ -224,8 +258,10 @@ public:
 struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 	using HeapPool = Dx12DescriptorHeapPool_CBV_SRV_UAV;
 	using This = Dx12DescriptorHeapChunk_CBV_SRV_UAV;
-	
-	void create(HeapPool& heapPool, Int size) { return _create(heapPool, size); }
+
+	void create(InNameId name, HeapPool& heapPool, Int size, bool fullyUsed) {
+		return _create(name, heapPool, size, fullyUsed);
+	}
 	
 	Dx12Descriptor_ConstBuffer setCBV(Int index, const Dx12Resource_GpuBuffer& res) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
@@ -279,14 +315,14 @@ struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 		return h;
 	}
 	
-	Dx12Descriptor_Texture2D setTexture(Int index, Dx12Descriptor_Texture2D srcDesc) {
+	Dx12Descriptor_Texture2D setDescriptor(Int index, const Dx12Descriptor_Texture2D& srcDesc) {
 		auto dst = _getHandle<Dx12Descriptor_Texture2D>(index);
 		_dev->CopyDescriptorsSimple(1, dst.handle.cpu, srcDesc.handle.cpu, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		return dst;
 	}
 
-	Dx12Descriptor_Texture2D addTexture(Dx12Descriptor_Texture2D srcDesc) {
-		return setTexture(_addHandle(), srcDesc);
+	Dx12Descriptor_Texture2D addDescriptor(const Dx12Descriptor_Texture2D& srcDesc) {
+		return setDescriptor(_addHandle(), srcDesc);
 	}
 };
 
