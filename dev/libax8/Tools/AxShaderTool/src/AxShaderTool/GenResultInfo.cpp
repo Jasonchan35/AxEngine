@@ -43,35 +43,24 @@ void GenResultInfo::run(StrView outFilename, StrView filename, RenderAPI api) {
 }
 
 void GenResultInfo::mergeStageInfo(ShaderStageInfo& outStageInfo, const ShaderStageInfo& inStageInfo) {
-	_mergeParam(outStageInfo.constBuffers, inStageInfo.constBuffers.span(),
-		[&](auto& dst, auto& src){
-			dst.dataType = src.dataType;
-			dst.dataSize = src.dataSize;
-		});
-
-	_mergeParam(outStageInfo.textures, inStageInfo.textures.span(),
-		[&](auto& dst, auto& src){
-			dst.dataType = src.dataType;
-			dst.dataSize = src.dataSize;
-		});
-
-	_mergeParam(outStageInfo.samplers, inStageInfo.samplers.span(),
-		[&](auto& dst, auto& src){
-			dst.dataType = src.dataType;
-			dst.dataSize = src.dataSize;
-		});
-
-	_mergeParam(outStageInfo.storageBuffers, inStageInfo.storageBuffers.span(),
-		[&](auto& dst, auto& src){
-			dst.dataType = src.dataType;
-			dst.dataSize = src.dataSize;
-		});
+	_mergeParam(outStageInfo.constBuffers,   inStageInfo.constBuffers.span());
+	_mergeParam(outStageInfo.textures,       inStageInfo.textures.span());
+	_mergeParam(outStageInfo.samplers,       inStageInfo.samplers.span());
+	_mergeParam(outStageInfo.storageBuffers, inStageInfo.storageBuffers.span());
 
 	outStageInfo.stageFlags |= inStageInfo.stageFlags;
 }
 
-template<class T, class FUNC> inline
-void GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSpan, FUNC func) {
+void GenResultInfo::_mergeVariables(IArray<Variables>& dstArray, Span<Variables> srcSpan) {
+	for (auto& src : srcSpan) {
+		auto f = dstArray.find_([&](const auto& e){ return e.name == src.name; });
+		if (f) continue;
+		dstArray.emplaceBack(src);
+	}
+}
+
+template<class T> inline
+void GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSpan) {
 	for (auto& src : srcSpan) {
 
 		if (!_resultInfo.declare.isGlobalCommonShader) {
@@ -89,6 +78,10 @@ void GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSpan, FUNC func)
 		}
 
 		dst->stageFlags |= src.stageFlags;
+
+		if constexpr (Type_IsSame<T, ConstBuffer>) {
+			_mergeVariables(dst->variables, src.variables);
+		}
 	}
 }
 

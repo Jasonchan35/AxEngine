@@ -17,7 +17,7 @@ struct CmdOptions {
 	bool genReflect_Dx12 = false;
 #endif		
 	bool genResultInfo = false;
-	bool keepUnusedVariable = true;
+	bool keepUnusedVariable = false;
 	bool quiet = false;
 	StrView file;
 	String out;
