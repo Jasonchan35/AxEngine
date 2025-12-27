@@ -121,7 +121,7 @@
 	<!-- ax::SPtr<T> -->
 	<Type Name="ax::SPtr&lt;*&gt;">
 		<DisplayString Condition="_p != nullptr">SPtr refCount={_p->m_SPtrRefCount}</DisplayString>
-		<DisplayString>SPtr is NULL</DisplayString>
+		<DisplayString>SPtr(NULL)</DisplayString>
 		<Expand>
 			<Item Name="_p">_p</Item>
 		</Expand>
@@ -158,7 +158,7 @@
 		<DisplayString Condition=" _small.isSmall">size={_small.size }/s{_small.capacity}</DisplayString>
 		<DisplayString Condition="!_small.isSmall">size={_normal.size}/{_normal.capacity}</DisplayString>
 		<Expand>
-			<Item Name="data" Condition=" _small.isSmall">&amp;((SmallStorage_Dummy&amp;)_small).data[0]</Item>
+			<Item Name="data" Condition=" _small.isSmall">(ElementType*)&amp;((SmallStorage_Dummy&amp;)_small).data[0]</Item>
 			<Item Name="data" Condition="!_small.isSmall">_normal.data</Item>
 
 			<Item Name="size" Condition=" _small.capacity &amp; 0x80"> _small.size</Item>
@@ -182,7 +182,7 @@
 				<Expand>
 					<ArrayItems Condition="_storage._small.isSmall">
 						<Size>_storage._small.size</Size>
-						<ValuePointer>&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]</ValuePointer>
+						<ValuePointer>(ElementType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]</ValuePointer>
 					</ArrayItems>
 
 					<ArrayItems Condition="!_storage._small.isSmall">
@@ -229,7 +229,7 @@
 	<Type Name="ax::IString_&lt;*&gt;">
 		<DisplayString Condition="_storage._small.isSmall">
 			{
-				&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]
+				(CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]
 				, [_storage._small.size]na 
 			}
 		</DisplayString>
@@ -238,7 +238,7 @@
 		</DisplayString>
 
 		<StringView  Condition="_storage._small.isSmall">
-			&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]
+			(CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]
 		</StringView>
 		<StringView  Condition="!_storage._small.isSmall">
 			_storage._normal.data, [_storage._normal.size]na
