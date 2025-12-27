@@ -21,6 +21,8 @@ public:
 #if AX_RENDER_BINDLESS
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) override;
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) override;
+
+	VkDescriptorSet		_bindlessDescriptorSet;
 	AX_VkDescriptorPool	_bindlessDescriptorPool;
 #endif
 

@@ -79,6 +79,19 @@ void RenderResourceManager_Backend::_postCreate() {
 	_commonMaterialPass = _commonMaterial->getPass(0);
 	if (!_commonMaterialPass) throw Error_Undefined();
 
+#if AX_RENDER_BINDLESS	
+	auto* bindlessSpace = _commonMaterialPass->shaderPass()->getParamSpace(ShaderParamBindSpace::Bindless);
+
+	bindless.AxBindless_SamplerState = bindlessSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
+	if (!bindless.AxBindless_SamplerState) throw Error_Undefined();
+	
+	bindless.AxBindless_Texture2D = bindlessSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
+	if (!bindless.AxBindless_Texture2D) throw Error_Undefined();
+	
+	bindless.AxBindless_Texture3D = bindlessSpace->findTextureParam(AX_NAMEID("AxBindless_Texture3D"));
+	if (!bindless.AxBindless_Texture3D) throw Error_Undefined();
+#endif
+	
 	onPostCreate();
 }
 

@@ -10,35 +10,40 @@ namespace ax {
 
 template<class T>
 struct RenderResourceManager_Vk_onUpdateDescriptors {
-	using BindPoint = ShaderParamBindPoint;
-	
 	using T_Backend = typename T::_TYPE_INFO_Base;
 
-	static void run(RenderRequest_Backend*  req_,
-	                Array<SPtr<T_Backend>>& list
-	                // VkDescriptorType        descType,
-	                // BindPoint               bindPoint,
-	                // VkDescriptorSet&        descSet
+	using BindPoint = ShaderParamBindPoint;
+
+	static void run(RenderResourceManager_Vk* mgr,
+	                RenderRequest_Backend*    req_,
+	                Array<SPtr<T_Backend>>&   list,
+	                VkDescriptorType             descType,
+	                BindPoint                 bindPoint
 	) {
-		// auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
-		//
-		// auto writer = req->_writeDescSetHelper.scopeStart();
-		//
-		// for (auto& obj_ : list) {
-		// 	auto* obj = rttiCastCheck<T>(obj_.ptr());
-		// 	if (!obj) continue;
-		// 	auto info = obj->_getUpdatedDescriptor(req);
-		// 	writer.addInfo(info);
-		// }
+		auto* req       = rttiCastCheck<RenderRequest_Vk>(req_);
+		auto  writer    = req->_writeDescSetHelper.scopeStart();
+		auto  destSet   = mgr->_bindlessDescriptorSet;
+	
+		for (auto& obj_ : list) {
+			auto* obj = rttiCastCheck<T>(obj_.ptr());
+			if (!obj) continue;
+			auto slotId = obj->resourceHandle.slotId();
+			auto info   = obj->_getUpdatedDescriptorInfo(req);
+			writer.addInfo(descType, bindPoint, destSet, slotId, info);
+		}
 	}
 };
 
 void RenderResourceManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend>>& list) {
-	RenderResourceManager_Vk_onUpdateDescriptors<Sampler_Vk>::run(req, list);
+	auto  bindPoint = bindless.AxBindless_SamplerState->bindPoint();
+	auto  descType  = VK_DESCRIPTOR_TYPE_SAMPLER;
+	RenderResourceManager_Vk_onUpdateDescriptors<Sampler_Vk>::run(this, req, list, descType, bindPoint);
 }
 
 void RenderResourceManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {
-	RenderResourceManager_Vk_onUpdateDescriptors<Texture2D_Vk>::run(req, list);
+	auto  bindPoint = bindless.AxBindless_Texture2D->bindPoint();
+	auto  descType  = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+	RenderResourceManager_Vk_onUpdateDescriptors<Texture2D_Vk>::run(this, req, list, descType, bindPoint);
 }
 #endif
 

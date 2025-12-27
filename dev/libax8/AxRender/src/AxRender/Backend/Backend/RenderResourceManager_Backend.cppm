@@ -53,6 +53,14 @@ public:
 	const ShaderPass_Backend*	commonShaderPass() {
 		return _commonMaterialPass ? _commonMaterialPass->shaderPass() : nullptr;
 	}
+
+#if AX_RENDER_BINDLESS
+	struct Bindless {
+		const ShaderParamSpace_Backend::SamplerParam*	AxBindless_SamplerState = nullptr;
+		const ShaderParamSpace_Backend::TextureParam*	AxBindless_Texture3D = nullptr;
+		const ShaderParamSpace_Backend::TextureParam*	AxBindless_Texture2D = nullptr;
+	} bindless;
+#endif
 	
 protected:
 	void _postCreate();

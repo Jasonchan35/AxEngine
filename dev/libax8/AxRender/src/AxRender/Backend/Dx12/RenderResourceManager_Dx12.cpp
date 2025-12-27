@@ -4,8 +4,7 @@ import :Texture_Dx12;
 
 namespace ax {
 
-RenderResourceManager_Dx12::RenderResourceManager_Dx12(const CreateDesc& desc): Base(desc) {
-}
+#if AX_RENDER_BINDLESS
 
 template<class T>
 struct RenderResourceManager_Dx12_onUpdateDescriptors {
@@ -28,6 +27,8 @@ void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req,
 	RenderResourceManager_Dx12_onUpdateDescriptors<Texture2D_Dx12>::run(req, list);
 }
 
+#endif // #if AX_RENDER_BINDLESS
+
 void RenderResourceManager_Dx12::onPostCreate() {
 	auto& info = RenderSystem_Dx12::s_instance()->info();
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
@@ -40,25 +41,13 @@ void RenderResourceManager_Dx12::onPostCreate() {
 	pool.DepthBuffer.create("DepthBuffer-pool", dev, info_pass.maxDepthBufferCount * info_pass.maxCount * info_req.count);
 
 #if AX_RENDER_BINDLESS
-	auto* paramSpace = commonShaderPass()->getParamSpace(BindSpace::Bindless);
-	if (!paramSpace) throw Error_Undefined();
-
-	auto* AxBindless_SamplerState = paramSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
-	if (!AxBindless_SamplerState) throw Error_Undefined();
-	
-	auto* AxBindless_Texture2D = paramSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
-	if (!AxBindless_Texture2D) throw Error_Undefined();
-	
-	auto* AxBindless_Texture3D = paramSpace->findTextureParam(AX_NAMEID("AxBindless_Texture3D"));
-	if (!AxBindless_Texture3D) throw Error_Undefined();
-
 	Int renderReq_CBV_SRV_UAV_Count	= info_req.maxConstBufferCount
 									+ info_req.maxTextureCount;
 
-	Int resource_Texture2D_Count	= AxBindless_Texture2D->bindCount();
-	Int resource_Texture3D_Count	= AxBindless_Texture3D->bindCount();
+	Int resource_Texture2D_Count	= bindless.AxBindless_Texture2D->bindCount();
+	Int resource_Texture3D_Count	= bindless.AxBindless_Texture3D->bindCount();
 
-	Int resource_Sampler_Count      = AxBindless_SamplerState->bindCount();
+	Int resource_Sampler_Count      = bindless.AxBindless_SamplerState->bindCount();
 	
 #else
 	Int renderReq_CBV_SRV_UAV_Count	= info_req.maxConstBufferCount
