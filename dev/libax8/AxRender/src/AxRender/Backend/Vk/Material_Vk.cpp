@@ -12,8 +12,18 @@ import :RenderContext_Vk;
 
 namespace ax /*::AxRender*/ {
 
-void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest_Backend* req_, PerFrameData& frameData) {
+void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentIndex,
+                                                 RenderRequest_Backend* req_,
+                                                 PerFrameData&          frameData
+) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
+	
+#if AX_RENDER_BINDLESS
+	if (_shaderParamSpace->bindSpace() == BindSpace::Bindless) {
+		frameData._descSet = req->_bindlessDescriptorSet;
+		return;
+	}
+#endif
 
 	auto writeDescSetHelper = req->_writeDescSetHelper.scopeStart();
 
@@ -74,7 +84,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int currentIndex, RenderRequest
 	}
 #endif // #if !AX_RENDER_BINDLESS
 
-	writeDescSetHelper.writeToDevice(dev);
+	writeDescSetHelper.updateToDevice(dev);
 }
 
 bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {

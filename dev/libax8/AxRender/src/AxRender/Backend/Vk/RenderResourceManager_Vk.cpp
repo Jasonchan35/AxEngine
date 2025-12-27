@@ -3,6 +3,7 @@ import :RenderResourceManager_Vk;
 import :RenderSystem_Vk;
 import :RenderRequest_Vk;
 import :Texture_Vk;
+import :Material_Vk;
 
 namespace ax {
 
@@ -17,20 +18,26 @@ struct RenderResourceManager_Vk_onUpdateDescriptors {
 	static void run(RenderResourceManager_Vk* mgr,
 	                RenderRequest_Backend*    req_,
 	                Array<SPtr<T_Backend>>&   list,
-	                VkDescriptorType             descType,
+	                VkDescriptorType          descType,
 	                BindPoint                 bindPoint
 	) {
 		auto* req       = rttiCastCheck<RenderRequest_Vk>(req_);
-		auto  writer    = req->_writeDescSetHelper.scopeStart();
+		auto  helper    = req->_writeDescSetHelper.scopeStart();
 		auto  destSet   = mgr->_bindlessDescriptorSet;
-	
+
+//		AX_LOG("onUpdateDescriptors descType={} size={} -------", descType, list.size());
+		
 		for (auto& obj_ : list) {
 			auto* obj = rttiCastCheck<T>(obj_.ptr());
 			if (!obj) continue;
 			auto slotId = obj->resourceHandle.slotId();
 			auto info   = obj->_getUpdatedDescriptorInfo(req);
-			writer.addInfo(descType, bindPoint, destSet, slotId, info);
+			helper.addInfo(descType, bindPoint, destSet, slotId, info);
+			
+//			AX_LOG("- updateDescriptor descType={:25} slotId={:4} debugName=[{}]", descType, slotId, obj->debugName());
 		}
+
+		helper.updateToDevice(req->_device_vk->handle());
 	}
 };
 
@@ -53,30 +60,23 @@ void RenderResourceManager_Vk::onPostCreate() {
 	auto* sys  = RenderSystem_Vk::s_instance();
 	auto& dev  = sys->device();
 
-	auto* paramSpace = commonShaderPass()->getParamSpace(BindSpace::Bindless);
-	if (!paramSpace) throw Error_Undefined();
+	auto* bindlessParamSpace = rttiCastCheck<ShaderParamSpace_Vk>(commonShaderPass()->getParamSpace(BindSpace::Bindless));
+	if (!bindlessParamSpace) throw Error_Undefined();
 
-	auto* AxBindless_SamplerState = paramSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
-	if (!AxBindless_SamplerState) throw Error_Undefined();
-	
-	auto* AxBindless_Texture2D = paramSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
-	if (!AxBindless_Texture2D) throw Error_Undefined();
-	
-	auto* AxBindless_Texture3D = paramSpace->findTextureParam(AX_NAMEID("AxBindless_Texture3D"));
-	if (!AxBindless_Texture3D) throw Error_Undefined();
-
-	Int total_Texture_Count	= AxBindless_Texture2D->bindCount()
-							+ AxBindless_Texture3D->bindCount();
+	Int total_Texture_Count	= bindless.AxBindless_Texture2D->bindCount()
+							+ bindless.AxBindless_Texture3D->bindCount();
 
 	AX_VkDescriptorPool_CreateDesc bindlessPoolDesc;
 	bindlessPoolDesc.maxDestSetCount = 1;
-	bindlessPoolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_SAMPLER       , AxBindless_SamplerState->bindCount());
+	bindlessPoolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_SAMPLER       , bindless.AxBindless_SamplerState->bindCount());
 	bindlessPoolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE , total_Texture_Count);
 	// poolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, );
 	// poolDesc.addPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, );
 	bindlessPoolDesc.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 	_bindlessDescriptorPool.create(dev, bindlessPoolDesc);
-	
+	_bindlessDescriptorSet = _bindlessDescriptorPool.allocDescriptorSet(bindlessParamSpace->_descSetLayout_vk);
+
+	dev.setObjectDebugName(_bindlessDescriptorSet, "_bindlessDescriptorSet");
 #endif
 	
 }

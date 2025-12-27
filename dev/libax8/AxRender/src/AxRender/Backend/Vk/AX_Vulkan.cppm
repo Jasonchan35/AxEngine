@@ -877,7 +877,7 @@ public:
 
 	AX_VkDescriptor_UpdateScope(AX_VkDescriptor_UpdateHelper* helper) : _helper(helper) {}
 
-	void writeToDevice(VkDevice dev);
+	void updateToDevice(VkDevice dev);
 
 	void addInfo(VkDescriptorType              descType,
 	             BindPoint                     bindPoint,

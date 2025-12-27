@@ -1740,9 +1740,10 @@ VkDescriptorSet AX_VkDescriptorPool::Chunk::allocDescriptorSet(VkDescriptorSetLa
 	return outSet;
 }
 
-void AX_VkDescriptor_UpdateScope::writeToDevice(VkDevice dev) {
+void AX_VkDescriptor_UpdateScope::updateToDevice(VkDevice dev) {
 	auto                      writeSpan = _helper->_writeDescriptorSets.span();
 	Span<VkCopyDescriptorSet> copySpan;
+
 	vkUpdateDescriptorSets(dev, 
 	                       AX_VkUtil::castUInt32(writeSpan.size()), writeSpan.data(),
 	                       AX_VkUtil::castUInt32( copySpan.size()),  copySpan.data());

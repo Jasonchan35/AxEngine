@@ -4,6 +4,7 @@ module AxRender;
 
 import :RenderRequest_Vk;
 import :RenderSystem_Vk;
+import :RenderResourceManager_Vk;
 import :RenderContext_Vk;
 import :Material_Vk;
 import :GpuBuffer_Vk;
@@ -97,11 +98,16 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 		}
 	}
 
-	writeDescHelper.writeToDevice(_device_vk->handle());
+	writeDescHelper.updateToDevice(_device_vk->handle());
 #endif
 }
 
 void RenderRequest_Vk::onFrameBegin() {
+#if AX_RENDER_BINDLESS
+	auto* resMgr = rttiCastCheck<RenderResourceManager_Vk>(_renderResourceManager);
+	_bindlessDescriptorSet = resMgr->_bindlessDescriptorSet;
+#endif	
+	
 	_descriptorPool.reset();
 	_uploadCmdBuf_vk.commandBegin();
 	_graphCmdBuf_vk.commandBegin();

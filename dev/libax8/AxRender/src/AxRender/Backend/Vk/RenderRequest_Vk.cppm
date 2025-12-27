@@ -41,8 +41,12 @@ public:
 	AX_VkFence			_completedFence_vk;
 
 	AX_VkDescriptorPool	_descriptorPool;
-
 	AX_VkDescriptor_UpdateHelper _writeDescSetHelper;
+
+#if AX_RENDER_BINDLESS
+	VkDescriptorSet		_bindlessDescriptorSet = nullptr;
+#endif
+	
 };
 
 } // namespace

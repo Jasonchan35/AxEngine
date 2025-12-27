@@ -95,6 +95,8 @@ void RenderResourceTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 	_freeSlots.appendRange(curFrame.pendingFreeSlots);
 	curFrame.pendingFreeSlots.clear();
 
+	if (_dirtyObjects.size() <= 0) return;
+	
 	for (auto& e : _dirtyObjects) {
 		if (!e) { AX_ASSERT(false); continue; }
 		e->resourceHandle._dirty = false;
