@@ -32,7 +32,7 @@
       }]
   }, 
   "passStages": [{
-      "bindless": false, 
+      "bindless": true, 
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
@@ -45,11 +45,31 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 16, 
+          "dataSize": 32, 
           "variables": [{
               "name": "foo", 
               "offset": 0, 
               "dataType": "f32", 
+              "rowMajor": true
+            }, {
+              "name": "AxSamplerState_foo_tex2d", 
+              "offset": 4, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxTexture2D_foo_tex2d", 
+              "offset": 8, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxSamplerState_foo_tex3d", 
+              "offset": 12, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxTexture3D_foo_tex3d", 
+              "offset": 16, 
+              "dataType": "u32", 
               "rowMajor": true
             }]
         }, {
@@ -153,34 +173,28 @@
         }], 
       "storageBuffers": [], 
       "textures": [{
-          "name": "foo_tex2d", 
+          "name": "AxBindless_Texture2D", 
           "dataType": "Texture2D", 
           "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 5, 
-          "bindCount": 1
+          "bindSpace": "Bindless", 
+          "bindPoint": 10004, 
+          "bindCount": 10000
         }, {
-          "name": "foo_tex3d", 
+          "name": "AxBindless_Texture3D", 
           "dataType": "Texture3D", 
           "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 7, 
-          "bindCount": 1
+          "bindSpace": "Bindless", 
+          "bindPoint": 20004, 
+          "bindCount": 1000
         }], 
       "samplers": [{
-          "name": "AxSamplerState_foo_tex2d", 
+          "name": "AxBindless_SamplerState", 
           "dataType": "SamplerState", 
           "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
+          "bindSpace": "Bindless", 
           "bindPoint": 4, 
-          "bindCount": 1
-        }, {
-          "name": "AxSamplerState_foo_tex3d", 
-          "dataType": "SamplerState", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 6, 
-          "bindCount": 1
+          "bindCount": 1000, 
+          "dynamicSampler": true
         }]
     }]
 }

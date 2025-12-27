@@ -36,6 +36,7 @@ void Logger::write(Level lv, StrView msg) {
 void LogStdOutput::write(Level lv, ZStrViewW s) {
 	if (lv == Level::Error) {
 		StdError::write(s);
+		StdOutput::write(s);
 	} else {
 		StdOutput::write(s);
 	}

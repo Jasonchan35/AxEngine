@@ -37,8 +37,8 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
 		auto addBinding = [&](const ParamBase& p, VkDescriptorType type) {
-			// AX_LOG("-- addBinding name={:30} bindPoint={:8}, bindCount={:8} type={:20} this={}",
-			//         p.name(), p.bindPoint(), p.bindCount(), type, ownParamSpace->debugName());
+			// AX_LOG("-- addBinding name={:26} bindPoint={:6}, bindCount={:6} type={:16} this={}",
+			//          p.name(), p.bindPoint(), p.bindCount(), type, ownParamSpace->debugName());
 			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 		};
 

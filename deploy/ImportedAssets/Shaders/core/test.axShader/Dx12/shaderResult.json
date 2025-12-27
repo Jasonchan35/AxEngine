@@ -44,7 +44,7 @@
       }]
   }, 
   "passStages": [{
-      "bindless": false, 
+      "bindless": true, 
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "SV_VERTEXID", 

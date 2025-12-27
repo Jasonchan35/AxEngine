@@ -68,7 +68,7 @@
       }]
   }, 
   "passStages": [{
-      "bindless": false, 
+      "bindless": true, 
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
@@ -84,44 +84,36 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 16, 
+          "dataSize": 48, 
           "variables": [{
               "name": "color", 
               "offset": 0, 
               "dataType": "f32x4", 
               "rowMajor": true
+            }, {
+              "name": "AxSamplerState_tex0", 
+              "offset": 16, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxTexture2D_tex0", 
+              "offset": 20, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxSamplerState_tex1", 
+              "offset": 24, 
+              "dataType": "u32", 
+              "rowMajor": true
+            }, {
+              "name": "AxTexture2D_tex1", 
+              "offset": 28, 
+              "dataType": "u32", 
+              "rowMajor": true
             }]
         }], 
       "storageBuffers": [], 
-      "textures": [{
-          "name": "tex0", 
-          "dataType": "Texture2D", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 0, 
-          "bindCount": 1
-        }, {
-          "name": "tex1", 
-          "dataType": "Texture2D", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 1, 
-          "bindCount": 1
-        }], 
-      "samplers": [{
-          "name": "AxSamplerState_tex0", 
-          "dataType": "SamplerState", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 0, 
-          "bindCount": 1
-        }, {
-          "name": "AxSamplerState_tex1", 
-          "dataType": "SamplerState", 
-          "stageFlags": "Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 1, 
-          "bindCount": 1
-        }]
+      "textures": [], 
+      "samplers": []
     }]
 }

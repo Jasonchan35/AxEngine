@@ -44,7 +44,7 @@
       }]
   }, 
   "passStages": [{
-      "bindless": false, 
+      "bindless": true, 
       "stageFlags": "", 
       "inputs": [], 
       "constBuffers": [], 

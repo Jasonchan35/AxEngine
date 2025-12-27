@@ -19,14 +19,14 @@ set AxShaderTool=%AxEngine_bin%\AxShaderTool.exe
 
 %AxShaderTool% -genNinja -file=src -quiet=1 -out="%outputDir%"
 
-IF NOT %ERRORLEVEL% EQU 0 GOTO :error_handler
+@IF NOT %ERRORLEVEL% EQU 0 GOTO :error_handler
 
-set CLICOLOR_FORCE=1
+@set CLICOLOR_FORCE=1
 %ninja% --quiet -C "%outputDir%"
 
 
-REM --- If everything succeeded, exit gracefully ---
-GOTO :eof
+@REM --- If everything succeeded, exit gracefully ---
+@GOTO :eof
 
 :error_handler
 @ECHO ********************************************************
