@@ -30,9 +30,12 @@ public:
 	explicit operator bool() const { return _name || _id >= 0; }
 
 	template<class FMT_CH>
-	void onFormat(Format_<FMT_CH> & f) const {
-		f << _name;
-		if (_id >= 0) f << _id;
+	void onFormat(Format_<FMT_CH>& f) const {
+		if (_id >= 0) {
+			f << Fmt("{}{}", _name, _id);
+		} else {
+			f << _name;
+		}
 	}
 
 	TempString_<CH> toString() { return Fmt("{}", *this); }
