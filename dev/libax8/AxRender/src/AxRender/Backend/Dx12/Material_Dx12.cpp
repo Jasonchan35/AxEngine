@@ -50,15 +50,13 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 //	AX_LOG("MaterialParamSpace_Dx12::_updatedPerFrameData {} ", debugName());
 	
 //--- update ----
-	if (_shaderParamSpace->bindSpace() == BindSpace::Bindless) {
 #if AX_RENDER_BINDLESS
+	if (_shaderParamSpace->bindSpace() == BindSpace::Bindless) {
 		_perFrameData.heapStart_CBV_SRV_UAV.handle = req->_bindlessDescriptors->CBV_SRV_UAV;
 		    _perFrameData.heapStart_Sampler.handle = req->_bindlessDescriptors->Sampler;
 		return _perFrameData;
-#else
-		// throw Error_Undefined();
-#endif
 	}
+#endif
 	
 	_perFrameData.heapStart_CBV_SRV_UAV.update(req->_dynamicDescriptors.CBV_SRV_UAV);
 	_perFrameData.heapStart_Sampler.update(req->_dynamicDescriptors.Sampler);
@@ -74,7 +72,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 	}
 
-#if !AX_RENDER_BINDLESS	
+#if !AX_RENDER_BINDLESS
 	for (auto& texParam : _textureParams) {
 		switch (texParam.dataType()) {
 			case RenderDataType::Texture2D: {

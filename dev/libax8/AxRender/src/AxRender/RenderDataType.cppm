@@ -12,13 +12,15 @@ class RenderObject : public RttiObject {
 public:
 
 #if AX_RENDER_DEBUG_NAME
-	void setDebugName(InNameId name) { _name = name; onSetDebugName(_name); }
+	void setDebugName(InNameId name) { _debugName = name; onSetDebugName(_debugName); }
 #endif
 
-	NameId	name() const { return _name; }
+	NameId  name() const		{ return _name; }
+	NameId	debugName() const	{ return _debugName; }
 
 protected:
 	NameId	_name;
+	NameId	_debugName;
 #if AX_RENDER_DEBUG_NAME
 	virtual void onSetDebugName(NameId name) {}
 #endif

@@ -50,7 +50,7 @@ void Dx12DescriptorHeapPool::_onCreateChunk(Dx12DescriptorHeapChunk& outHeapChun
 	       size,
 	       _heap.desc().Type,
 	       _heap.name(),                        
-	       _heap.remain());
+	       _heap.remain() - size);
 	
 	auto h = _heap.addHandle(size);
 	outHeapChunk._name        = name;

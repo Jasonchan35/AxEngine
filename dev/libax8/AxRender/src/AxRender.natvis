@@ -8,28 +8,79 @@
 	Expression[,<FormatSpecifier> ]
 	https://msdn.microsoft.com/en-us/library/windows/hardware/dn936815(v=vs.85).aspx
 -->
+	<Type Name="ax::RenderObject">
+		<DisplayString>debugName={_debugName} name={_name}</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="ax::Texture2D_Backend">
+		<DisplayString>debugName={_debugName} name={_name} assetPath={_assetPath}</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+			<Item Name="assetPath">_assetPath</Item>
+			<Item Name="slotId">resourceHandle._slotId</Item>
+		</Expand>
+	</Type>
+
 	<Type Name="ax::ShaderParamSpace_Backend">
-		<DisplayString>BindSpace::{_bindSpace}[{*_shaderPass}]</DisplayString>
+		<DisplayString>[{_bindSpace}] {*_shaderPass}</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+			<Item Name="BindSpace">_bindSpace</Item>
+			<Item Name="ShaderPass">_shaderPass</Item>
+		</Expand>
 	</Type>
 
 	<Type Name="ax::ShaderPass_Backend">
-		<DisplayString>{_name}[{_shader->_assetPath}]</DisplayString>
+		<DisplayString>{_name} {_shader->_assetPath}</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+			<Item Name="Shader">_shader</Item>
+		</Expand>
 	</Type>
 
 	<Type Name="ax::Shader">
 		<DisplayString>{_assetPath}</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+			<Item Name="assetPath">_assetPath</Item>
+		</Expand>
 	</Type>
 
 	<Type Name="ax::MaterialParamSpace_Backend">
 		<DisplayString>BindSpace::{_shaderParamSpace._p->_bindSpace}[{*_materialPass}]</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+			<Item Name="BindSpace">_shaderParamSpace._p->_bindSpace</Item>
+			<Item Name="MaterialPass">_materialPass</Item>
+		</Expand>
 	</Type>
 
 	<Type Name="ax::MaterialPass_Backend">
 		<DisplayString>MaterialPass-{*_shaderPass}</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+			<Item Name="Material">_material</Item>
+			<Item Name="ShaderPass">_shaderPass</Item>
+		</Expand>
 	</Type>
 
 	<Type Name="ax::Material_Backend">
 		<DisplayString>{*_shader_backend._p}</DisplayString>
+		<Expand>
+			<Item Name="name">_name</Item>
+			<Item Name="debugName">_debugName</Item>
+			<Item Name="Shader">_shader_backend</Item>
+		</Expand>
 	</Type>
 
 

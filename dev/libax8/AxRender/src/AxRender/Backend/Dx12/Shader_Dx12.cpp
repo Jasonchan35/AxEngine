@@ -57,7 +57,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		for (auto& param : ownParamSpace->_constBuffers) {
 			addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 		}
-		
+
 		for (auto& param : ownParamSpace->_textureParams) {
 			addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}

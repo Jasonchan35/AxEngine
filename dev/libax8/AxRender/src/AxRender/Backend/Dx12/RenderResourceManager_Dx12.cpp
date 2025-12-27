@@ -50,8 +50,8 @@ void RenderResourceManager_Dx12::onPostCreate() {
 	Int renderReq_CBV_SRV_UAV_Count	= info_req.maxConstBufferCount
 									+ info_req.maxTextureCount;
 
-	Int resource_Texture2D_Count	= AxBindless_Texture2D->bindCount()
-	Int resource_Texture3D_Count	= AxBindless_Texture3D->bindCount()
+	Int resource_Texture2D_Count	= AxBindless_Texture2D->bindCount();
+	Int resource_Texture3D_Count	= AxBindless_Texture3D->bindCount();
 
 	Int resource_Sampler_Count      = AxBindless_SamplerState->bindCount();
 	

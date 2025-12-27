@@ -120,11 +120,17 @@
 
 	<!-- ax::SPtr<T> -->
 	<Type Name="ax::SPtr&lt;*&gt;">
-		<DisplayString Condition="_p != nullptr">SPtr refCount={_p->m_SPtrRefCount}</DisplayString>
+		<DisplayString Condition="_p != nullptr">SPtr(ref={_p->m_SPtrRefCount}) {*_p}</DisplayString>
 		<DisplayString>SPtr(NULL)</DisplayString>
 		<Expand>
 			<Item Name="_p">_p</Item>
+			<Item Name="refCount">_p->m_SPtrRefCount</Item>
 		</Expand>
+	</Type>
+
+	<!-- ax::AtomicInt_<*> -->
+	<Type Name="ax::AtomicInt_&lt;*&gt;">
+		<DisplayString>{_v}</DisplayString>
 	</Type>
 
 	<!-- ax::MutSpan<*> -->
@@ -250,13 +256,14 @@
 
 	<!-- ax::PersistString_<*> -->
 	<Type Name="ax::PersistString_&lt; * &gt;">
-		<DisplayString>{_data->str}</DisplayString>
+		<DisplayString Condition="_data != nullptr">{_data->str}</DisplayString>
+		<DisplayString></DisplayString>
 	</Type>
 
 	<!-- ax::NameId_<*,*> -->
 	<Type Name="ax::NameId_&lt; *, * &gt;">
 		<DisplayString  Condition="_id &lt; 0">[{_name}]</DisplayString>
-		<DisplayString                        >[{_name}#{_id}]</DisplayString>
+		<DisplayString                        >[{_name}{_id}]</DisplayString>
 	</Type>
 
 </AutoVisualizer>

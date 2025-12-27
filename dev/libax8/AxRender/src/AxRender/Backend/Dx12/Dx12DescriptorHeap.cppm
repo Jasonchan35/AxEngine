@@ -23,6 +23,11 @@ struct Dx12DescriptorHandle {
 		h.gpu.ptr = gpu.ptr ? gpu.ptr + offset : 0;
 		return h;
 	}
+
+	template<class CH>
+	void onFormat(Format_<CH> & fmt) const {
+		fmt << Fmt("Descriptor(cpu={:8x} gpu={:8x})", cpu.ptr, gpu.ptr);
+	}
 };
 
 struct Dx12Descriptor_ColorBuffer	{ Dx12DescriptorHandle handle; };

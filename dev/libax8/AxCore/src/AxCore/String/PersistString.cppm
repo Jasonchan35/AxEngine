@@ -13,6 +13,7 @@ export namespace ax {
 template<class T>
 class PersistString_Data : public NonCopyable {
 public:
+	using StrLitType = StrLit_<T>;
 	StrLit_<T>	str;
 	HashInt		hash;
 };

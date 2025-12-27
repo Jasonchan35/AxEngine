@@ -44,13 +44,14 @@ void StockObjects::s_destroy() {
 StockObjects::Texture2Ds::Texture2Ds() {
 	{
 		Image image;
-		auto createTex = [&](SPtr<Texture2D> & outTex, const Color4b& color) {
+		auto createTex = [&](SPtr<Texture2D> & outTex, const Color4b& color, StrView name) {
 			image.create(ColorType::RGBAb, Vec2i(4,4));
 			image.fill(color);
 			outTex = Texture2D::s_new(AX_ALLOC_REQ, image);
+			outTex->setDebugName(name);
 		};
 
-		#define E(T,...) createTex(k##T, Color4b::k##T());
+		#define E(T,...) createTex(k##T, Color4b::k##T(), "SolidColor-"#T);
 			AX_RENDER_StockTextureId_SolidColor_ENUM_LIST(E)
 		#undef E
 	}
