@@ -224,12 +224,12 @@ struct Dx12DescriptorHeapChunk_Sampler : public Dx12DescriptorHeapChunk {
 		return _create(name, heapPool, size, fullyUsed);
 	}
 	
-	Dx12Descriptor_Sampler setSampler(Int index, SamplerFilter filter, SamplerWrapUVW wrap) {
+	Dx12Descriptor_Sampler setSampler(Int index, const SamplerState& ss) {
 		D3D12_SAMPLER_DESC desc;
-		desc.Filter           = Dx12Util::getDxSamplerFilter(filter);
-		desc.AddressU         = Dx12Util::getDxSamplerWrap(wrap.u);
-		desc.AddressV         = Dx12Util::getDxSamplerWrap(wrap.v);
-		desc.AddressW         = Dx12Util::getDxSamplerWrap(wrap.w);
+		desc.Filter           = Dx12Util::getDxSamplerFilter(ss.filter);
+		desc.AddressU         = Dx12Util::getDxSamplerWrap(ss.wrap.u);
+		desc.AddressV         = Dx12Util::getDxSamplerWrap(ss.wrap.v);
+		desc.AddressW         = Dx12Util::getDxSamplerWrap(ss.wrap.w);
 		desc.MipLODBias       = 0;
 		desc.MaxAnisotropy    = 0;
 		desc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
@@ -237,17 +237,27 @@ struct Dx12DescriptorHeapChunk_Sampler : public Dx12DescriptorHeapChunk {
 		desc.BorderColor[1]   = 0;
 		desc.BorderColor[2]   = 0;
 		desc.BorderColor[3]   = 0;
-		desc.MinLOD           = 0.0f;
-		desc.MaxLOD           = D3D12_FLOAT32_MAX;
+		desc.MinLOD           = ss.minLOD;
+		desc.MaxLOD           = ss.maxLOD;
 
 		auto h = _getHandle<Dx12Descriptor_Sampler>(index);
 		_dev->CreateSampler(&desc, h.handle.cpu);
 		return h;
 	}
 
-	Dx12Descriptor_Sampler addSampler(SamplerFilter filter, SamplerWrapUVW wrap) {
-		return setSampler(_addHandle(), filter, wrap);
+	Dx12Descriptor_Sampler addSampler(const SamplerState& ss) {
+		return setSampler(_addHandle(), ss);
 	}
+
+	Dx12Descriptor_Sampler setDescriptor(Int index, const Dx12Descriptor_Sampler& srcDesc) {
+		auto dst = _getHandle<Dx12Descriptor_Sampler>(index);
+		_dev->CopyDescriptorsSimple(1, dst.handle.cpu, srcDesc.handle.cpu, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+		return dst;
+	}
+
+	Dx12Descriptor_Sampler addDescriptor(const Dx12Descriptor_Sampler& srcDesc) {
+		return setDescriptor(_addHandle(), srcDesc);
+	}	
 };
 
 class Dx12DescriptorHeapPool_CBV_SRV_UAV : public Dx12DescriptorHeapPool {
@@ -313,7 +323,7 @@ struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 		return setTypelessUAV(_addHandle(), buf);
 	}
 
-	Dx12Descriptor_Texture2D setTexture(Int index, const Dx12Resource_Texture2D& res) {
+	Dx12Descriptor_Texture2D setTexture2D(Int index, const Dx12Resource_Texture2D& res) {
 		//	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 		auto h = _getHandle<Dx12Descriptor_Texture2D>(index);
 		_dev->CreateShaderResourceView(ax_const_cast(res).d3dResource(), nullptr, h.handle.cpu);

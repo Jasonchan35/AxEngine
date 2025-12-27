@@ -6,6 +6,19 @@ import :GpuBuffer_Dx12;
 
 namespace ax {
 
+Dx12Descriptor_Sampler Sampler_Dx12::_getUpdatedDescriptor(RenderRequest_Dx12* req) {
+	if (!_renderSeqIdGraud.update(req))
+		return _descriptor;
+
+	// update
+	req->resourcesToKeep.add(this);
+
+	_descriptor = req->_resourceDescriptors->Sampler.setSampler(resourceHandle.slotId(), _samplerState);
+//	AX_LOG("Sampler#{} debugName=[{}] - setDescriptor({})", resourceHandle.slotId(), debugName(), _descriptor.handle);
+
+	return _descriptor;
+}
+
 Texture2D_Dx12::Texture2D_Dx12(const CreateDesc& desc): Base(desc) {
 }
 
@@ -67,8 +80,8 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 		cmdBuf->CopyTextureRegion(&dstLoc, box.left, box.top, box.front, &srcLoc, &box);
 		_texResource.resourceBarrier(cmdBuf, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		_descriptor = req->_resourceDescriptors->Texture2D.setTexture(resourceHandle.slotId(), _texResource);
-		AX_LOG("Texture2D#{} debugName=[{}] - set descriptor {}", resourceHandle.slotId(), debugName(), _descriptor.handle);
+		_descriptor = req->_resourceDescriptors->Texture2D.setTexture2D(resourceHandle.slotId(), _texResource);
+//		AX_LOG("Texture2D#{} debugName=[{}] - setDescriptor({})", resourceHandle.slotId(), debugName(), _descriptor.handle);
 		
 		_uploadBuffer = nullptr;
 	}

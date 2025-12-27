@@ -15,6 +15,11 @@ class Sampler_Dx12 : public Sampler_Backend {
 	AX_RTTI_INFO(Sampler_Dx12, Sampler_Backend)
 public:
 	Sampler_Dx12(const CreateDesc& desc) : Base(desc) {}
+
+	Dx12Descriptor_Sampler _getUpdatedDescriptor(RenderRequest_Dx12* req);
+	
+	Dx12Descriptor_Sampler		_descriptor;
+	RenderSeqIdGraud			_renderSeqIdGraud;
 };
 
 class Texture2D_Dx12 : public Texture2D_Backend {

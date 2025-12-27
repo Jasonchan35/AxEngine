@@ -83,6 +83,9 @@ public:
 	Stage _csStage;
 
 	struct RootParamBinding {
+		RootParamBinding(Dx12RootParamType rootParamType_, BindSpace bindSpace_)
+			: rootParamType(rootParamType_), bindSpace(bindSpace_) {}
+		
 		Dx12RootParamType rootParamType = Dx12RootParamType::None;
 		BindSpace         bindSpace     = BindSpace::Invalid;
 	};

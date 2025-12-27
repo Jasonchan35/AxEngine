@@ -137,7 +137,9 @@ public:
 		void setDefaultSampler(Sampler* sampler) {
 			_defaultSampler = sampler;
 		}
+		bool dynamicSampler() const { return _dynamicSampler; }
 	private:
+		bool _dynamicSampler : 1 = true;
 		SPtr<Sampler>	_defaultSampler;
 	};
 

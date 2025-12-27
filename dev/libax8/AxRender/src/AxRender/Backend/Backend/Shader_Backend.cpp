@@ -95,6 +95,7 @@ void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StorageBuffer& pa
 
 inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
 	ParamBase::create(info);
+	_dynamicSampler = info.dynamicSampler; 
 	_defaultSampler = StockObjects::s_instance()->samplers.defaultValue;
 }
 
@@ -215,16 +216,16 @@ void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 		auto s = param.bindSpace;
 		if (!isOwnParamSpace(s)) continue;
 
-		auto& space = _shaderParamSpaces[ax_enum_int(s)];
-		if (!space) {
+		auto& paramSpace = _shaderParamSpaces[ax_enum_int(s)];
+		if (!paramSpace) {
 			ShaderParamSpace_CreateDesc spaceDesc;
 			spaceDesc.bindSpace = s;
 			spaceDesc.shaderPass = this;
 			auto newSpace = ShaderParamSpace_Backend::s_new(AX_ALLOC_REQ, spaceDesc);
-			space.ref(newSpace.ptr());
+			paramSpace.ref(newSpace.ptr());
 		}
 
-		ax_const_cast(space.ptr())->addParam(param);
+		ax_const_cast(paramSpace.ptr())->addParam(param);
 	}
 }
 

@@ -39,10 +39,31 @@ ShaderParamSpace_Dx12::ShaderParamSpace_Dx12(const CreateDesc& desc): Base(desc)
 ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
-	using ParamBase = ShaderParamSpace_Backend::ParamBase;
+	using ParamBase    = ShaderParamSpace_Backend::ParamBase;
+	using SamplerParam = ShaderParamSpace_Backend::SamplerParam; 
+	
 	AX_LOG("--- Shader Pass {} -------", debugName());
 
-	auto addDescriptor = [&](const ShaderParamSpace_Dx12* paramSpace, Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
+	constexpr D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	auto addRootDescTable = [this, shaderVisibility](const ShaderParamSpace_Dx12* paramSpace,
+	                                                 const Dx12DescriptorTable&   tbl,
+	                                                 Dx12RootParamType            rootParamType
+	) {
+		if (tbl.size() <= 0) return;
+		
+		//		AX_LOG("--- add RootParam tableSize={} type={}  [{}]", tbl.size(), rootParamType, paramSpace->debugName());
+		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, tbl);
+		_rootParamBindings.emplaceBack(rootParamType, paramSpace->bindSpace());
+	};
+
+	// auto addRootStaticSampler = [&](SamplerParam& samplerParam) {
+	// 	auto& ss = samplerParam.
+	// 	_pipelineRootParamList.addRootStaticSampler(shaderVisibility, samplerParam.bindPoint(), samplerParam.bindCount() );
+	// 	_rootParamBindings.emplaceBack(RootStaticSampler, paramSpace->bindSpace());
+	// };
+
+	auto addDescriptor = [](const ShaderParamSpace_Dx12* paramSpace, Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
 		AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type = {:8}, [{}] ",
 		 	   p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
 		
@@ -63,26 +84,20 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		}
 
 		for (auto& param : ownParamSpace->_samplerParams) {
-			addDescriptor(ownParamSpace, ownParamSpace->_samplerDescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+			if (param.dynamicSampler()) {
+				addDescriptor(ownParamSpace, ownParamSpace->_samplerDescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+			} else {
+				//addRootStaticSampler();
+				AX_ASSERT_TODO();
+			}
 		}
 	}
 
-	auto addRootParam = [this](const ShaderParamSpace_Dx12* paramSpace, const Dx12DescriptorTable& tbl, Dx12RootParamType rootParamType) {
-		if (tbl.size() <= 0) return;
-		constexpr D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-		
-//		AX_LOG("--- add RootParam tableSize={} type={}  [{}]", tbl.size(), rootParamType, paramSpace->debugName());
-		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, tbl);
-		auto& binding = _rootParamBindings.emplaceBack();
-		binding.rootParamType = rootParamType;
-		binding.bindSpace     = paramSpace->bindSpace();
-	};
-	
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* paramSpace = getParamSpace_dx12(bindSpace);
 		if (!paramSpace) continue;
-		addRootParam(paramSpace, paramSpace->_CBV_SRV_UAV_DescTable, Dx12RootParamType::DescTable_CBV_SRV_UAV);
-		addRootParam(paramSpace, paramSpace->_samplerDescTable     , Dx12RootParamType::DescTable_Sampler);
+		addRootDescTable(paramSpace, paramSpace->_CBV_SRV_UAV_DescTable, Dx12RootParamType::DescTable_CBV_SRV_UAV);
+		addRootDescTable(paramSpace, paramSpace->_samplerDescTable     , Dx12RootParamType::DescTable_Sampler);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {

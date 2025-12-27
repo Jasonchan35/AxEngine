@@ -109,7 +109,15 @@ public:
 	Array<Texture>		textures;
 
 //----------
-	struct Sampler : public ParamBase {};
+	struct Sampler : public ParamBase {
+		bool dynamicSampler = true;
+
+		template<class SE>
+		void onJsonIO(SE & se) {
+			ParamBase::onJsonIO(se);
+			AX_JSON_IO(se, dynamicSampler);
+		}		
+	};
 	Array<Sampler>		samplers;
 
 //----------

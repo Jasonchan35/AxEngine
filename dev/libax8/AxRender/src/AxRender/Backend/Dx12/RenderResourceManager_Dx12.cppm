@@ -38,18 +38,26 @@ protected:
 };
 
 struct ResourceDescriptorHeap_CBV_SRV_UAV : public ResourceDescriptorHeap<Dx12DescriptorHeapChunk_CBV_SRV_UAV> {
-	Dx12Descriptor_Texture2D setTexture(Int index, const Dx12Resource_Texture2D& res) {
+	Dx12Descriptor_Texture2D setTexture2D(Int index, const Dx12Resource_Texture2D& res) {
 #if AX_RENDER_BINDLESS
-		auto dp = _chunk.setTexture(index, res);
+		auto dp = _chunk.setTexture2D(index, res);
 		return _bindless.setDescriptor(index, dp);
 #else
-		return _chunk.setTexture(index, res);
+		return _chunk.setTexture2D(index, res);
 #endif
 	}
 };
 
-
-using ResourceDescriptorHeap_Sampler     = ResourceDescriptorHeap<Dx12DescriptorHeapChunk_Sampler    >;
+struct ResourceDescriptorHeap_Sampler : public ResourceDescriptorHeap<Dx12DescriptorHeapChunk_Sampler> {
+	Dx12Descriptor_Sampler setSampler(Int index, const SamplerState& ss) {
+#if AX_RENDER_BINDLESS
+		auto dp = _chunk.setSampler(index, ss);
+		return _bindless.setDescriptor(index, dp);
+#else
+		return _chunk.setSampler(index, ss);
+#endif
+	}
+};
 
 class RenderResourceManager_Dx12 : public RenderResourceManager_Backend {
 	AX_RTTI_INFO(RenderResourceManager_Dx12, RenderResourceManager_Backend)
