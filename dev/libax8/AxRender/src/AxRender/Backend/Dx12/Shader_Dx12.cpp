@@ -46,9 +46,9 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 
 	constexpr D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	auto addRootDescTable = [this, shaderVisibility](const ShaderParamSpace_Dx12* paramSpace,
-	                                                 const Dx12DescriptorTable&   tbl,
-	                                                 Dx12RootParamType            rootParamType
+	auto addRootDescTable = [this](const ShaderParamSpace_Dx12* paramSpace,
+	                               const Dx12DescriptorTable&   tbl,
+	                               Dx12RootParamType            rootParamType
 	) {
 		if (tbl.size() <= 0) return;
 		

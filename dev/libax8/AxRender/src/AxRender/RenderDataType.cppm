@@ -27,7 +27,7 @@ protected:
 };
 
 class RenderRequestBase : public RenderObject {
-	AX_RTTI_INFO(RenderRequestBase, RenderObject);
+	AX_RTTI_INFO(RenderRequestBase, RenderObject)
 public:
 	AX_INLINE 	RenderSeqId	renderSeqId() const { return _renderSeqId; }
 protected:

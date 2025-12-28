@@ -119,7 +119,6 @@ private:
 	Array<Byte>			_data;
 	SPtr<GpuBuffer>		_gpuBuffer;
 
-	RenderSeqIdGraud	_lastUpdateRenderSeqId = 0;
 	IntRange			_dirtyRange = {};
 };
 
