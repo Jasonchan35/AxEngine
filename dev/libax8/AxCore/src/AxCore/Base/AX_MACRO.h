@@ -241,7 +241,7 @@
 
 #define AX_ENUM_ENTRY_STRLIT(LIST, T) \
 	template<> \
-	constexpr StrLit ax_enum_entry_strlit(const T& v) { \
+	constexpr ax::StrLit ax::ax_enum_entry_strlit(const T& v) { \
 		using CURRENT_ENUM_T = T; \
 		switch (v) { \
 			LIST(AX_ENUM_ENTRY_STRLIT__SWITCH_CASE) \
@@ -254,7 +254,7 @@
 
 #define AX_ENUM_ENTRY_TRY_PARSE(LIST, T) \
 	template<> \
-	constexpr bool ax_enum_entry_try_parse(StrView str, T& outValue) { \
+	constexpr bool ax::ax_enum_entry_try_parse(ax::StrView str, T& outValue) { \
 		using CURRENT_ENUM_T = T; \
 		LIST(AX_ENUM_TRY_PARSE__SWITCH_CASE) \
 		return false; \
@@ -285,6 +285,14 @@
 	AX_ENUM_DECLARE(LIST, T, BASE_TYPE) \
 	AX_ENUM_STR_UTIL(LIST, T) \
 	AX_ENUM_ALL_OPERATOR(T) \
+//----
+
+#define AX_ENUM_CLASS_EX(LIST, NAMESPACE, T, BASE_TYPE) \
+	AX_ENUM_DECLARE(LIST, T, BASE_TYPE) \
+	AX_ENUM_ALL_OPERATOR(T) \
+	} /* namespace */ \
+	AX_ENUM_STR_UTIL(LIST, NAMESPACE::T) \
+	namespace NAMESPACE { \
 //----
 
 #define AX_ENUM_FLAGS_CLASS(LIST,T, BASE_TYPE) \

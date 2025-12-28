@@ -1,5 +1,14 @@
 import AxCore_Test.PCH;
 
+namespace TestNamespace {
+	using namespace ax;
+
+	#define AX_TestNamespace_ENUM_LIST(E) \
+		E(A,) \
+	//----
+	AX_ENUM_CLASS_EX(AX_TestNamespace_ENUM_LIST, TestNamespace, FooEnum, u32)
+} // namespace TestNamespace
+
 namespace ax {
 
 #define AX_Example_ENUM_LIST(E) \
@@ -35,6 +44,12 @@ public:
 		int b;
 	};
 
+	void test_EnumNamespace() {
+		TestNamespace::FooEnum t = TestNamespace::FooEnum::A;
+		auto str = Fmt("{}", t);
+		AX_TEST_EQ(str, "A");
+	}
+	
 	void test_EnumFlags() {
 		ExampleFlags t = ExampleFlags::A | ExampleFlags::C;
 		auto str = Fmt("{}", t);
@@ -81,6 +96,7 @@ public:
 void Test_Enum() {
 	using namespace ax;
 	AX_TEST_RUN_CASE(Test_Enum::test_Enum)
+	AX_TEST_RUN_CASE(Test_Enum::test_EnumNamespace)
 	AX_TEST_RUN_CASE(Test_Enum::test_EnumFlags)
 }
 
