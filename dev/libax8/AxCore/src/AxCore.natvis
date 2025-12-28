@@ -269,7 +269,7 @@
 		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsCharA">
 			((char*    )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
 		</StringView>
-		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsChar@">
+		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsCharW">
 			((wchar_t* )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
 		</StringView>
 		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsChar8">
