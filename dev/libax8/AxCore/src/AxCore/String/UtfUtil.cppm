@@ -9,6 +9,8 @@ namespace ax {
 export struct UtfUtil {
 	UtfUtil() = delete;
 
+	static constexpr StrLitA kBOM = "\xEF\xBB\xBF"; 
+	
 	template<class DST, class SRC>
 	AX_INLINE static void	append(IString_<DST>& dst, StrView_<SRC>  src);
 	

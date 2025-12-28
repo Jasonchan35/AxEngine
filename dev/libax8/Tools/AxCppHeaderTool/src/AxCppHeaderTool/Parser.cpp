@@ -5,12 +5,19 @@ module AxHeaderTool.Parser;
 namespace ax::AxHeaderTool {
 
 void Parser::readFile(StrView filename, TypeDB& typeDB) {
+	AX_LOG("Parser::readFile {}", filename);
+	
 	_filename = filename;
 	_typeDB = &typeDB;
 
 	File::readUtf8(filename, _source);
 	_cur = _source.data();
-
+	
+	auto& BOM = UtfUtil::kBOM;
+	if (_source.startsWith(BOM)) {
+		_cur += BOM.size();
+	}
+	
 	nextChar();
 	nextToken();
 	
@@ -355,7 +362,7 @@ void Parser::readDefaultValue(IString & s, StrView msg) {
 
 bool Parser::nextToken() {
 	if (!_nextToken()) return false;
-	//AX_DUMP_VAR(_token.str);
+	AX_DUMP(_token.str);
 	return true;
 }
 
