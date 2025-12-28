@@ -41,7 +41,7 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Dx12>(_uploadBuffer.ptr())) {
 		auto& desc = _texResource.desc();
 		
-		auto& cmdBuf = req->_uploadCmdBuf_dx12;
+		auto& cmdList = req->_uploadCmdList_dx12;
 		req->resourcesToKeep.add(uploadBuf);
 
 		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
@@ -67,7 +67,7 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 		dstLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
 		dstLoc.SubresourceIndex = 0;
 
-		_texResource.resourceBarrier(cmdBuf, D3D12_RESOURCE_STATE_COPY_DEST);
+		_texResource.resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COPY_DEST);
 
 		D3D12_BOX box;
 		box.left   = 0;
@@ -77,8 +77,8 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 		box.front  = 0;
 		box.back   = 1;
 		
-		cmdBuf->CopyTextureRegion(&dstLoc, box.left, box.top, box.front, &srcLoc, &box);
-		_texResource.resourceBarrier(cmdBuf, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		cmdList->CopyTextureRegion(&dstLoc, box.left, box.top, box.front, &srcLoc, &box);
+		_texResource.resourceBarrier(cmdList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 		_descriptor = req->_resourceDescriptors->Texture2D.setTexture2D(resourceHandle.slotId(), _texResource);
 //		AX_LOG("Texture2D#{} debugName=[{}] - setDescriptor({})", resourceHandle.slotId(), debugName(), _descriptor.handle);

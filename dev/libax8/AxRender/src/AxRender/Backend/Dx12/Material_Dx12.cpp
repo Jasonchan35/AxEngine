@@ -61,7 +61,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	_perFrameData.heapStart_CBV_SRV_UAV.update(req->_dynamicDescriptors.CBV_SRV_UAV);
 	_perFrameData.heapStart_Sampler.update(req->_dynamicDescriptors.Sampler);
 	
-	auto& cmdList = req->_graphCmdBuf_dx12;
+	auto& cmdList = req->_graphCmdList_dx12;
 	
 	for (auto& cb : _constBuffers) {
 		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(cb.getUploadedGpuBuffer(req)));
@@ -104,7 +104,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 
 bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
-	auto& cmdList = req->_graphCmdBuf_dx12;
+	auto& cmdList = req->_graphCmdList_dx12;
 
 	auto* shdPass = shaderPass_dx12();
 	if (!shdPass) { AX_ASSERT(false); return false; }

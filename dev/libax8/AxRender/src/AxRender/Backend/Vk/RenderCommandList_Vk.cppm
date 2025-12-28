@@ -1,17 +1,17 @@
 ﻿module;
 
-export module AxRender:CommandBuffer_Vk;
+export module AxRender:RenderCommandList_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;
-export import :CommandBuffer_Backend;
+export import :RenderCommandList_Backend;
 export import :RenderSystem_Backend;
 export import :RenderRequest_Backend;
 
 namespace ax /*::AxRender*/ {
 
-class CommandBuffer_Vk : public CommandBuffer_Backend {
-	AX_RTTI_INFO(CommandBuffer_Vk, CommandBuffer_Backend)
+class RenderCommandList_Vk : public RenderCommandList_Backend {
+	AX_RTTI_INFO(RenderCommandList_Vk, RenderCommandList_Backend)
 public:
 	void create(AX_VkDevice& dev, AX_VkQueueFamilyIndex queue);
 

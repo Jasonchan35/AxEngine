@@ -136,22 +136,22 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 
 	auto& backBufferRef    = colorBuffer_vk->backBufferRef();
 	auto* backBuffer       = _getBackBuffer(backBufferRef.index);
-	auto& presentCmdBuf    = backBuffer->_presentCmdBuf_vk;
+	auto& presentCmdList    = backBuffer->_presentCmdList_vk;
 	auto& presentSemaphore = backBuffer->_presentSemaphore_vk;
 
 	// Array<VkCommandBuffer, 2>	cmdBuffers;
-	// cmdBuffers.append(req->_uploadCmdBuf_vk);
-	// cmdBuffers.append(req->_graphCmdBuf_vk);
+	// cmdBuffers.append(req->_uploadCmdList_vk);
+	// cmdBuffers.append(req->_graphCmdList_vk);
 
 	req->_completedFence_vk.reset();
 
 	_graphQueue_vk.submit(	AX_VkWaitSemaphores(req->_imageAcquiredSemaphore_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
-							req->_uploadCmdBuf_vk.handle(),
+							req->_uploadCmdList_vk.handle(),
 							req->_uploadCmdSem_vk.handle(),
 							nullptr);
 	
 	_graphQueue_vk.submit(	AX_VkWaitSemaphores(req->_uploadCmdSem_vk.handle(), VK_PIPELINE_STAGE_TRANSFER_BIT),
-							req->_graphCmdBuf_vk.handle(),
+							req->_graphCmdList_vk.handle(),
 							presentQueueIsSeparated ? req->_graphCmdSem_vk.handle() : presentSemaphore.handle(),
 							req->_completedFence_vk.handle());
 
@@ -160,14 +160,14 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 		// present queue before presenting, waiting for the draw complete
 		// semaphore and signaling the ownership released semaphore when finished
 
-		presentCmdBuf->beginCommand();
-		presentCmdBuf->pipelineBarrier(	_surface_vk.graphQueueFamilyIndex(), 
+		presentCmdList->beginCommand();
+		presentCmdList->pipelineBarrier(	_surface_vk.graphQueueFamilyIndex(), 
 										_surface_vk.presentQueueFamilyIndex(),
 										colorBuffer_vk->_image);
-		presentCmdBuf->endCommand();
+		presentCmdList->endCommand();
 
 		_presentQueue_vk.submit(AX_VkWaitSemaphores(req->_graphCmdSem_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT),
-								presentCmdBuf.handle(),
+								presentCmdList.handle(),
 								presentSemaphore.handle());
 	}
 
@@ -204,12 +204,12 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 		_presentSemaphore_vk.create(dev);
 	}
 	
-	if (!_presentCmdBuf_vk) {
-		_presentCmdBuf_vk.create(dev, surface.presentQueueFamilyIndex());
+	if (!_presentCmdList_vk) {
+		_presentCmdList_vk.create(dev, surface.presentQueueFamilyIndex());
 
 #if AX_RENDER_DEBUG_NAME
 		_presentSemaphore_vk.setDebugName(Fmt("RenderReq_{}-presentSemaphore", index));
-			_presentCmdBuf_vk.setDebugName(Fmt("RenderReq_{}-presentCmdBuf",   index));
+			_presentCmdList_vk.setDebugName(Fmt("RenderReq_{}-presentCmdList",   index));
 #endif
 	}
 

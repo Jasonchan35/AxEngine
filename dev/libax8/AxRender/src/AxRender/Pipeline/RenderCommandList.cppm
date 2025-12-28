@@ -1,5 +1,5 @@
 module;
-export module AxRender:CommandBuffer;
+export module AxRender:RenderCommandList;
 export import :RenderDataType;
 export import :VertexLayout;
 export import :GpuBuffer;
@@ -53,7 +53,7 @@ public:
 	}
 };
 
-enum class CommandBufferType {
+enum class RenderCommandListType {
 	None,
 	Direct,
 	Bundle,
@@ -64,12 +64,12 @@ enum class CommandBufferType {
 	VideoEncode,
 };
 
-struct CommandBuffer_CreateDesc {
-	CommandBufferType type = CommandBufferType::None;
+struct RenderCommandList_CreateDesc {
+	RenderCommandListType type = RenderCommandListType::None;
 };
 
-class CommandBuffer : public RenderObject {
-	AX_RTTI_INFO(CommandBuffer, RenderObject)
+class RenderCommandList : public RenderObject {
+	AX_RTTI_INFO(RenderCommandList, RenderObject)
 public:
 };
 

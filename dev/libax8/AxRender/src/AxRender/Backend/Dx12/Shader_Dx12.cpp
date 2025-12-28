@@ -264,7 +264,7 @@ bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) 
 	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(req, key);
 	if (!pipeline) { AX_ASSERT(false); return false; }
 
-	auto& cmdList = req->graphCmdBuf_dx12();
+	auto& cmdList = req->graphCmdList_dx12();
 	cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
 	cmdList->SetPipelineState(pipeline->pipelineState);
 	

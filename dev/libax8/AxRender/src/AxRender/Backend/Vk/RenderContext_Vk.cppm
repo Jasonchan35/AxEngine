@@ -4,7 +4,7 @@ export module AxRender:RenderContext_Vk;
 
 #if AX_RENDERER_VK
 export import :RenderContext_Backend;
-export import :CommandBuffer_Vk;
+export import :RenderCommandList_Vk;
 export import :RenderPass_Vk;
 
 export namespace ax /*::AxRender*/ {
@@ -29,7 +29,7 @@ public:
 		SPtr<RenderPassColorBuffer_Vk>	_colorBuf_vk;
 		SPtr<RenderPass_Vk>					_renderPass_vk;
 		
-		CommandBuffer_Vk	_presentCmdBuf_vk;
+		RenderCommandList_Vk	_presentCmdList_vk;
 		AX_VkSemaphore		_presentSemaphore_vk;
 		VkImage				_vkImage;
 	};

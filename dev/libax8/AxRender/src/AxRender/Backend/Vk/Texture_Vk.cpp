@@ -55,7 +55,7 @@ VkDescriptorImageInfo Texture2D_Vk::_getUpdatedDescriptorInfo(RenderRequest_Vk* 
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Vk>(_uploadBuffer.ptr())) {
 		req->resourcesToKeep.add(uploadBuf);
 
-		auto& cmdBuf = req->uploadCmdBuf_vk();
+		auto& cmdList = req->uploadCmdList_vk();
 		u32 width  = AX_VkUtil::castUInt32(_info.size.x);
 		u32 height = AX_VkUtil::castUInt32(_info.size.y);
 
@@ -74,11 +74,11 @@ VkDescriptorImageInfo Texture2D_Vk::_getUpdatedDescriptorInfo(RenderRequest_Vk* 
 		region.imageExtent.height				= height;
 		region.imageExtent.depth				= 1;
 
-		_image.setLayout(cmdBuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT);
+		_image.setLayout(cmdList, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT);
 
-		vkCmdCopyBufferToImage(cmdBuf, uploadBuf->vkBufHandle(), _image, _image.layout(), 1, &region);
+		vkCmdCopyBufferToImage(cmdList, uploadBuf->vkBufHandle(), _image, _image.layout(), 1, &region);
 
-		_image.setLayout(	cmdBuf,
+		_image.setLayout(	cmdList,
 							VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 							VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 

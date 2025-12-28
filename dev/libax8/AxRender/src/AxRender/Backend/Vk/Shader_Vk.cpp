@@ -6,7 +6,7 @@ import :Shader_Vk;
 import :RenderSystem_Vk;
 import :RenderPass_Vk;
 import :Vertex;
-import :CommandBuffer_Vk;
+import :RenderCommandList_Vk;
 import :RenderRequest_Vk;
 import :RenderContext_Vk;
 import :Material_Vk;
@@ -276,9 +276,9 @@ bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req, Cmd_DrawCall& cmd) cons
 	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(psoKey);
 	if (!pipeline) { AX_ASSERT(false); return false; }
 
-	auto& graphCmdBuf = req->graphCmdBuf_vk();
+	auto& graphCmdList = req->graphCmdList_vk();
 	
-	vkCmdBindPipeline(graphCmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline);
+	vkCmdBindPipeline(graphCmdList, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline);
 	return true;
 }
 

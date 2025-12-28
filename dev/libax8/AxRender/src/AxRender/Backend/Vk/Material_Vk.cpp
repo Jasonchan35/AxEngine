@@ -106,7 +106,7 @@ bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		allDescSets.emplaceBack(data._descSet);
 	}
 
-	AX_vkCmdBindDescriptorSets(req->graphCmdBuf_vk(),
+	AX_vkCmdBindDescriptorSets(req->graphCmdList_vk(),
 	                           shdPass->isCompute() ? VK_PIPELINE_BIND_POINT_COMPUTE : VK_PIPELINE_BIND_POINT_GRAPHICS,
 	                           shdPass->pipelineLayout(),
 	                           0,

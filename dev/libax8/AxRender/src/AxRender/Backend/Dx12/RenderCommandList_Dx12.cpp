@@ -2,14 +2,14 @@
 
 #if AX_RENDERER_DX12
 
-import :CommandBuffer_Dx12;
+import :RenderCommandList_Dx12;
 import :RenderPass_Dx12;
 
 namespace ax /*::AxRender*/ {
 
-void CommandBuffer_Dx12::create(ID3D12Device* dev, CommandBufferType type, StrView name) {
+void RenderCommandList_Dx12::create(ID3D12Device* dev, RenderCommandListType type, StrView name) {
 
-	D3D12_COMMAND_LIST_TYPE type_dx12 = Dx12Util::getDxCommandBufferType(type);
+	D3D12_COMMAND_LIST_TYPE type_dx12 = Dx12Util::getDxCommandListType(type);
 	
 	auto hr = dev->CreateCommandAllocator(type_dx12, IID_PPV_ARGS(_cmdAllocator_dx12.ptrForInit()));
 	Dx12Util::throwIfError(hr);

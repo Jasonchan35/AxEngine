@@ -11,7 +11,7 @@ import :RenderSystem_Backend;
 namespace ax {
 
 struct Dx12DescriptorHandle {
-	D3D12_CPU_DESCRIPTOR_HANDLE cpu = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE cpu = {}; 
 	D3D12_GPU_DESCRIPTOR_HANDLE gpu = {};
 
 	// operator D3D12_CPU_DESCRIPTOR_HANDLE () const { return cpu; }

@@ -15,7 +15,7 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	if (!dst_dx12 || !src_dx12) throw Error_Undefined();
 
 	auto* req_dx12   = rttiCastCheck<RenderRequest_Dx12>(req);
-	auto& cmdList_dx = req_dx12->_uploadCmdBuf_dx12._cmdList_dx12;
+	auto& cmdList_dx = req_dx12->_uploadCmdList_dx12._cmdList_dx12;
 
 	auto& srcRes = src_dx12->resource();
 	auto& dstRes = dst_dx12->resource();

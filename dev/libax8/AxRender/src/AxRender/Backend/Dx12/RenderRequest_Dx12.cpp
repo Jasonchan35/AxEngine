@@ -17,9 +17,9 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	AX_LOG("RenderRequest_Dx12 create#{}", desc.index);
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	_d3dDevice = dev;
-	_uploadCmdBuf_dx12.create(  dev, CommandBufferType::Direct,  "uploadCmdList"); // CommandBufferType::Copy
-	_graphCmdBuf_dx12.create(   dev, CommandBufferType::Direct,  "graphCmdList");
-	_computeCmdList_dx12.create(dev, CommandBufferType::Compute, "computeCmdList");
+	_uploadCmdList_dx12.create(  dev, RenderCommandListType::Direct,  "uploadCmdList"); // RenderCommandListType::Copy
+	_graphCmdList_dx12.create(   dev, RenderCommandListType::Direct,  "graphCmdList");
+	_computeCmdList_dx12.create(dev, RenderCommandListType::Compute, "computeCmdList");
 	_fence.create(dev, static_cast<u64>(_renderSeqId));
 	_cpuEvent.create();
 
@@ -46,8 +46,8 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
-	_uploadCmdBuf_dx12.commandBegin();
-	_graphCmdBuf_dx12.commandBegin();
+	_uploadCmdList_dx12.commandBegin();
+	_graphCmdList_dx12.commandBegin();
 
 	_dynamicDescriptors.ColorBuffer.reset();
 	_dynamicDescriptors.DepthBuffer.reset();
@@ -60,8 +60,8 @@ void RenderRequest_Dx12::onFrameBegin() {
 }
 
 void RenderRequest_Dx12::onFrameEnd() {
-	_uploadCmdBuf_dx12.commandEnd();
-	_graphCmdBuf_dx12.commandEnd();
+	_uploadCmdList_dx12.commandEnd();
+	_graphCmdList_dx12.commandEnd();
 }
 
 void RenderRequest_Dx12::onWaitCompleted() {
@@ -121,7 +121,7 @@ void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float
 	tmp.Height   = rect.h;
 	tmp.MinDepth = minDepth;
 	tmp.MaxDepth = maxDepth;
-	_graphCmdBuf_dx12->RSSetViewports(1, &tmp);
+	_graphCmdList_dx12->RSSetViewports(1, &tmp);
 }
 
 void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
@@ -130,11 +130,11 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 	tmp.top    = static_cast<LONG>(rect.yMin());
 	tmp.right  = static_cast<LONG>(rect.xMax());
 	tmp.bottom = static_cast<LONG>(rect.yMax());
-	_graphCmdBuf_dx12->RSSetScissorRects(1, &tmp);
+	_graphCmdList_dx12->RSSetScissorRects(1, &tmp);
 }
 
 void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
-	auto& cmdList = _graphCmdBuf_dx12;
+	auto& cmdList = _graphCmdList_dx12;
 	
 	D3D12_PRIMITIVE_TOPOLOGY topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
 	cmdList->IASetPrimitiveTopology(topology); // already in pso
@@ -200,9 +200,9 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	}
 
 	//------
-	auto& cmdBuf         = _graphCmdBuf_dx12;
+	auto& cmdList         = _graphCmdList_dx12;
 	BOOL  rtSingleHandle = FALSE;
-	cmdBuf->OMSetRenderTargets(ax_safe_cast_from(rtViews.size()), rtViews.data(), rtSingleHandle, &depthView);
+	cmdList->OMSetRenderTargets(ax_safe_cast_from(rtViews.size()), rtViews.data(), rtSingleHandle, &depthView);
 
 	Int rtIndex = 0;
 	for (auto& colorAttachment : pass->colorAttachments()) {
@@ -210,7 +210,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 		auto* colorBuffer = rttiCastCheck<RenderPassColorBuffer_Dx12>(colorAttachment.buffer.ptr());
 		if (colorBuffer) {
 			if (desc.loadOp == RenderBufferLoadOp::Clear) {
-				cmdBuf->ClearRenderTargetView(	rtViews[rtIndex],
+				cmdList->ClearRenderTargetView(	rtViews[rtIndex],
 												desc.clearColor.data(),
 												0,
 												nullptr);
@@ -221,7 +221,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 
 	if (auto& desc = pass->depthAttachment().desc) {
 		if (desc.loadOp == RenderBufferLoadOp::Clear) {
-			cmdBuf->ClearDepthStencilView(depthView,
+			cmdList->ClearDepthStencilView(depthView,
 			                              D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
 			                              desc.clearDepth,
 			                              ax_safe_cast_to<u8>(desc.clearStencil),

@@ -23,19 +23,19 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 	_completedFence_vk.create(dev, true);
 	_imageAcquiredSemaphore_vk.create(dev);
 
-	_uploadCmdBuf_vk.create(dev, dev.graphQueueFamilyIndex());
+	_uploadCmdList_vk.create(dev, dev.graphQueueFamilyIndex());
 	_uploadCmdSem_vk.create(dev);
 	
-	_graphCmdBuf_vk.create(dev, dev.graphQueueFamilyIndex());
+	_graphCmdList_vk.create(dev, dev.graphQueueFamilyIndex());
 	_graphCmdSem_vk.create(dev);
 
 #if AX_RENDER_DEBUG_NAME
 	auto debugIndex = desc.index;
 	        _completedFence_vk.setDebugName(Fmt("RenderReq_{}-completedFence",			debugIndex));
 	_imageAcquiredSemaphore_vk.setDebugName(Fmt("RenderReq_{}-imageAcquiredSemaphore",	debugIndex));
-	          _uploadCmdBuf_vk.setDebugName(Fmt("RenderReq_{}-uploadCmdBuf",			debugIndex));
+	          _uploadCmdList_vk.setDebugName(Fmt("RenderReq_{}-uploadCmdList",			debugIndex));
 	          _uploadCmdSem_vk.setDebugName(Fmt("RenderReq_{}-uploadCmdSem",			debugIndex));
-	           _graphCmdBuf_vk.setDebugName(Fmt("RenderReq_{}-graphCmdBuf",				debugIndex));
+	           _graphCmdList_vk.setDebugName(Fmt("RenderReq_{}-graphCmdList",				debugIndex));
 	           _graphCmdSem_vk.setDebugName(Fmt("RenderReq_{}-graphCmdSem",				debugIndex));
 #endif
 
@@ -58,8 +58,8 @@ void RenderRequest_Vk::onWaitCompleted() {
 	if (!_completedFence_vk.wait(AxRenderConfig::kMaxRenderWaitTime())) {
 		throw Error_Undefined("Render - timeout");
 	}
-	_uploadCmdBuf_vk.resetAndReleaseResource();
-	_graphCmdBuf_vk.resetAndReleaseResource();
+	_uploadCmdList_vk.resetAndReleaseResource();
+	_graphCmdList_vk.resetAndReleaseResource();
 }
 
 void RenderRequest_Vk::_updatedBindlessResources() {
@@ -109,14 +109,14 @@ void RenderRequest_Vk::onFrameBegin() {
 #endif	
 	
 	_descriptorPool.reset();
-	_uploadCmdBuf_vk.commandBegin();
-	_graphCmdBuf_vk.commandBegin();
+	_uploadCmdList_vk.commandBegin();
+	_graphCmdList_vk.commandBegin();
 }
 
 void RenderRequest_Vk::onFrameEnd() {
 	_updatedBindlessResources();
-	_graphCmdBuf_vk.commandEnd();
-	_uploadCmdBuf_vk.commandEnd();
+	_graphCmdList_vk.commandEnd();
+	_uploadCmdList_vk.commandEnd();
 }
 
 void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
@@ -148,13 +148,13 @@ void RenderRequest_Vk::onRenderPassBegin(RenderPass* pass_) {
 	info.clearValueCount		= AX_VkUtil::castUInt32(clearValues.size());
 	info.pClearValues			= clearValues.data();
 
-	_graphCmdBuf_vk->debugLabelBegin(pass->name().toString(), Color4f(0, 0, 0.25f,1));
-	vkCmdBeginRenderPass(_graphCmdBuf_vk, &info, VK_SUBPASS_CONTENTS_INLINE);
+	_graphCmdList_vk->debugLabelBegin(pass->name().toString(), Color4f(0, 0, 0.25f,1));
+	vkCmdBeginRenderPass(_graphCmdList_vk, &info, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void RenderRequest_Vk::onRenderPassEnd(RenderPass* pass_) {
-	vkCmdEndRenderPass(_graphCmdBuf_vk);
-	_graphCmdBuf_vk->debugLabelEnd();
+	vkCmdEndRenderPass(_graphCmdList_vk);
+	_graphCmdList_vk->debugLabelEnd();
 }
 
 void RenderRequest_Vk::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
@@ -165,12 +165,12 @@ void RenderRequest_Vk::onSetViewport(const Rect2f& rect, float minDepth, float m
 	tmp.height   = rect.h;
 	tmp.minDepth = minDepth;
 	tmp.maxDepth = maxDepth;
-	vkCmdSetViewport(_graphCmdBuf_vk, 0, 1, &tmp);
+	vkCmdSetViewport(_graphCmdList_vk, 0, 1, &tmp);
 }
 
 void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 	VkRect2D rc = AX_VkUtil::castVkRect2D(rect);
-	vkCmdSetScissor(_graphCmdBuf_vk, 0, 1, &rc);
+	vkCmdSetScissor(_graphCmdList_vk, 0, 1, &rc);
 }
 
 void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
@@ -180,11 +180,11 @@ void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
 		constexpr u32 bindingCount = 1 ;
 		// auto vertexLayout = drawcall.vertexLayout;
 		VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers(_graphCmdBuf_vk, firstBinding, bindingCount, &vb->vkBufHandle(), &offset);
+		vkCmdBindVertexBuffers(_graphCmdList_vk, firstBinding, bindingCount, &vb->vkBufHandle(), &offset);
 	}
 
 	if (drawcall.indexType == IndexType::None) {
-		vkCmdDraw(_graphCmdBuf_vk,
+		vkCmdDraw(_graphCmdList_vk,
 		          ax_safe_cast_from(drawcall.vertexCount),
 		          ax_safe_cast_from(drawcall.instanceCount),
 		          ax_safe_cast_from(drawcall.vertexStart),
@@ -194,8 +194,8 @@ void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
 		auto* ib = rttiCastCheck<GpuBuffer_Vk>(drawcall.indexBuffer);
 		if (!ib) throw Error_Undefined();
 
-		vkCmdBindIndexBuffer(_graphCmdBuf_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(drawcall.indexType));
-		vkCmdDrawIndexed(_graphCmdBuf_vk,
+		vkCmdBindIndexBuffer(_graphCmdList_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(drawcall.indexType));
+		vkCmdDrawIndexed(_graphCmdList_vk,
 		                 ax_safe_cast_from(drawcall.indexCount),
 		                 ax_safe_cast_from(drawcall.instanceCount),
 		                 ax_safe_cast_from(drawcall.indexStart),

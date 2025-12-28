@@ -5,7 +5,7 @@ export module AxRender:Dx12Util;
 #if AX_RENDERER_DX12
 export import :Shader;
 export import :Texture;
-export import :CommandBuffer;
+export import :RenderCommandList;
 
 namespace ax /*::AxRender*/ {
 
@@ -51,7 +51,7 @@ struct Dx12Util {
 	static constexpr D3D12_BLEND		getDxBlendFactor	(BlendFactor	v);
 	static constexpr D3D12_CULL_MODE	getDxCullMode		(CullMode		v);
 
-	static constexpr D3D12_COMMAND_LIST_TYPE getDxCommandBufferType(CommandBufferType type);
+	static constexpr D3D12_COMMAND_LIST_TYPE getDxCommandListType(RenderCommandListType type);
 
 	static D3D12_SHADER_BYTECODE getDxBytecode(ByteSpan span) {
 		return {.pShaderBytecode = span.data(), .BytecodeLength = ax_safe_cast_from(span.sizeInBytes())};
@@ -318,8 +318,8 @@ constexpr D3D12_CULL_MODE Dx12Util::getDxCullMode(CullMode v) {
 	}
 }
 
-constexpr D3D12_COMMAND_LIST_TYPE Dx12Util::getDxCommandBufferType(CommandBufferType type) {
-	using SRC = CommandBufferType;
+constexpr D3D12_COMMAND_LIST_TYPE Dx12Util::getDxCommandListType(RenderCommandListType type) {
+	using SRC = RenderCommandListType;
 	switch (type) {
 		case SRC::None:			return D3D12_COMMAND_LIST_TYPE_NONE;
 		case SRC::Direct:		return D3D12_COMMAND_LIST_TYPE_DIRECT;

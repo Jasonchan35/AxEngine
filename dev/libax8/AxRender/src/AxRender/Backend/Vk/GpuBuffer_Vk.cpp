@@ -94,7 +94,7 @@ void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, Int
 	region.srcOffset = AX_VkUtil::castUInt32(srcOffset);
 	region.size      = AX_VkUtil::castUInt32(sizeToCopy);
 	
-	vkCmdCopyBuffer(req->_uploadCmdBuf_vk, *src, _vkBuf, 1, &region);
+	vkCmdCopyBuffer(req->_uploadCmdList_vk, *src, _vkBuf, 1, &region);
 }
 
 } // namespace

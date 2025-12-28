@@ -1,19 +1,19 @@
 ﻿module;
 
-export module AxRender:CommandBuffer_Dx12;
+export module AxRender:RenderCommandList_Dx12;
 
 #if AX_RENDERER_DX12
 
 export import :Dx12Util;
-export import :CommandBuffer_Backend;
+export import :RenderCommandList_Backend;
 export import :RenderSystem_Backend;
 export import :RenderRequest_Backend;
 
 namespace ax /*::AxRender*/ {
-class CommandBuffer_Dx12 : public CommandBuffer_Backend {
-	AX_RTTI_INFO(CommandBuffer_Dx12, CommandBuffer_Backend)
+class RenderCommandList_Dx12 : public RenderCommandList_Backend {
+	AX_RTTI_INFO(RenderCommandList_Dx12, RenderCommandList_Backend)
 public:
-	void create(ID3D12Device* dev, CommandBufferType type, StrView name);
+	void create(ID3D12Device* dev, RenderCommandListType type, StrView name);
 
 	void commandBegin() {
 		auto hr = _cmdAllocator_dx12->Reset();
