@@ -8,6 +8,12 @@ export namespace ax::AxHeaderTool {
 class App : public ConsoleApp {
 public:
 	virtual int onRun() override;
+	
+	struct CmdOptions {
+		String outPath;
+	};	
+	
+	CmdOptions opt {};
 };
 
 } //namespace

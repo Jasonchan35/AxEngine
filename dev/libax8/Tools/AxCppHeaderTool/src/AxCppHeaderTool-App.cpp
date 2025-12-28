@@ -18,25 +18,38 @@ int App::onRun() {
 
 	for (Int i = 1; i < args.size(); i++) {
 		auto& a = args[i];
-		if (a.startsWith("-")) {
+		if (auto v = a.extractFromPrefix("-outPath=")) {
+			opt.outPath = FilePath::absPath(v);
+		} else if (a.startsWith("-")) {
 			AX_LOG("unknown option {}", a);
 			return -1;
 		} else {
-			inputPath = a;
+			inputPath = FilePath::absPath(a);
 		}
 	}
 
-	Array<String> inputFiles;
-	TempString tmp;
+	if (!inputPath) {
+		AX_LOG_ERROR("missing inputPath");
+	}	
+	
+	if (!opt.outPath) {
+		AX_LOG_ERROR("missing -outPath=<path>");
+		return -1;
+	}
+	
+	AX_LOG("outPath={}", opt.outPath);
 
-	tmp.set(inputPath, "/**/*.h");
-	AX_DUMP(tmp);
+	// TempString searchFile;
+	// searchFile.set(inputPath, "/**/*.h");
+	auto searchFile = Fmt("{}/**/*.cppm", inputPath);
+	AX_LOG("searchFile={}", searchFile);
 
 	String	_outGenTypeHeaders("#pragma once\n\n");
 	String	_outGenTypes("template<class HANDLER> inline\n"
 							 "static void generated_node_types(HANDLER& handler) {\n");
 
-	File::glob(tmp, [&inputFiles](FileEntry & entry) {
+	Array<String> inputFiles;
+	File::glob(searchFile, [&inputFiles](FileEntry & entry) {
 		inputFiles.append(entry.fullpath);
 	});
 	
@@ -49,8 +62,8 @@ int App::onRun() {
 		if (!g._typeDB.types.size())
 			continue;
 
-		FilePath::getRelPath(tmp, f, inputPath);
-		_outGenTypeHeaders.appendFormat("#include \"{}\"\n", tmp);
+		FilePath::getRelPath(searchFile, f, inputPath);
+		_outGenTypeHeaders.appendFormat("#include \"{}\"\n", searchFile);
 
 		for (auto& t : g._typeDB.types.values()) {
 			_outGenTypes.appendFormat("\t""handler.template addType< {:40} >();\n", t.fullname);
@@ -61,7 +74,7 @@ int App::onRun() {
 
 	{
 		TempString txt(_outGenTypeHeaders, "\n\n", _outGenTypes);
-		TempString outFilename(inputPath, "/NodeGenTypes._impl.h");
+		TempString outFilename(opt.outPath, "/NodeGenTypes._impl.h");
 		File::writeFileIfChanged(outFilename, txt, true, false);
 	}
 
