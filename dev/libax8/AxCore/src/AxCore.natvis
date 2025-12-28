@@ -233,19 +233,19 @@
 	<Type Name="ax::IString_&lt;*&gt;">
 		<!-- small DisplayString -->
 		<DisplayString Condition="_storage._small.isSmall &amp;&amp; kIsCharA">
-			{((CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]s8 }
+			{((char*    )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]),[_storage._small.size]na}
 		</DisplayString>
 		<DisplayString Condition="_storage._small.isSmall &amp;&amp; kIsCharW">
-			{((CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]su }
+			{((wchar_t* )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na}
 		</DisplayString>
 		<DisplayString Condition="_storage._small.isSmall &amp;&amp; kIsChar8">
-			{((CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]s8 }
+			{((char8_t* )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na}
 		</DisplayString>
 		<DisplayString Condition="_storage._small.isSmall &amp;&amp; kIsChar16">
-			{((CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]su }
+			{((char16_t*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na}
 		</DisplayString>
 		<DisplayString Condition="_storage._small.isSmall &amp;&amp; kIsChar32">
-			{((CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]s32 }
+			{((char32_t*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na}
 		</DisplayString>
 		
 		<!-- normal DisplayString -->
@@ -266,8 +266,20 @@
 		</DisplayString>
 		
 		<!-- small StringView -->
-		<StringView Condition="_storage._small.isSmall">
-			((CharType*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
+		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsCharA">
+			((char*    )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
+		</StringView>
+		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsChar@">
+			((wchar_t* )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
+		</StringView>
+		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsChar8">
+			((char8_t* )&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
+		</StringView>
+		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsChar16">
+			((char16_t*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
+		</StringView>
+		<StringView Condition="_storage._small.isSmall &amp;&amp; kIsChar32">
+			((char32_t*)&amp;((SmallStorage_Dummy&amp;)_storage._small).data[0]), [_storage._small.size]na
 		</StringView>
 		
 		<!-- normal StringView -->
