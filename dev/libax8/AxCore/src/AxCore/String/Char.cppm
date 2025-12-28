@@ -21,12 +21,17 @@ AX_INLINE	const	CharW_Native**	CharW_toNative(const CharW** v) { return reinterp
 
 struct CharUtil {
 	CharUtil() = delete;
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha	(CH ch) { return std::isalpha(ch); } 
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isDigit	(CH ch) { return std::isdigit(ch); }
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isUpper	(CH ch) { return std::isupper(ch); }
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isLower	(CH ch) { return std::islower(ch); }
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr CH   toUpper	(CH ch) { return static_cast<CH>(std::toupper(ch)); }
-	template<class CH> AX_NODISCARD AX_INLINE static constexpr CH   toLower	(CH ch) { return static_cast<CH>(std::tolower(ch)); }
+
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isAlpha(CH ch) { return isUpper(ch) || isLower(ch); }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isDigit(CH ch) { return ch >= '0' && ch <= '9'; }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isUpper(CH ch) { return ch >= 'A' && ch <= 'Z'; }
+	template<class CH> AX_NODISCARD AX_INLINE static constexpr bool isLower(CH ch) { return ch >= 'a' && ch <= 'z'; }
+
+	template<class CH>
+	AX_NODISCARD AX_INLINE static constexpr CH toUpper(CH ch) { return isLower(ch) ? (ch - 'a' + 'A') : ch; }
+
+	template<class CH>
+	AX_NODISCARD AX_INLINE static constexpr CH toLower(CH ch) { return isLower(ch) ? (ch - 'A' + 'a') : ch; }
 
 	template <class CH>
 	AX_NODISCARD AX_INLINE static constexpr bool equals(CH a, CH b, StrCase sc) { return compare(a, b, sc) == CmpResult::Equal; }
