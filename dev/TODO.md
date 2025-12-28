@@ -1,11 +1,10 @@
-- Vulkan - Bindless
-	- use only one destSet for bindless
-	
 - Dx12
-	- RenderRequest - linear allocate CRV_Heap, Sampler_Heap
 	- Material update 
 	- move some CBV, Texture to root parameter
-
+	- static sampler
+	
+- Vk
+	- immutable sampler
 
 - SortedArray
 	- mark sortNeeded;
@@ -15,15 +14,10 @@
 	
 - Gpu descriptor allocator arena
 	- for material static descriptors
-	
 
 - GC
-- using Texture = SPtr<OBJ_Texture>
-- Type_EnumFlag<>
-- rename AxTag::Zero_ -> AxZero ?
 
 - IArrayStorage - init capacity = BUF_SIZE  - SmallExtra
-- rename CommandBuffer -> RenderCommandList
 
 - Runtime select bindless
 - AxShaderTool - output bindless shader to separate file
@@ -32,10 +26,6 @@
 
 - func(SPtr<T> & obj) <-- should always use & for SPtr<T> ?
 
-- using Ref<T> = SPtr<T, NonNullable>
-- using WeakRef<T> = WPtr<T>
-- using Ref<T> = GCPtr<T>
-
 - InlineBuffer memory overrun detect signture
 - Allocator
 
@@ -43,6 +33,14 @@
 
 - Nanite + Subdiv
 
+==== 2025-12-28 =====
+- [done] Type_EnumFlag<>
+- [done] rename CommandBuffer -> RenderCommandList
+- [done] Dx12
+- [done] Dx12 RenderRequest - linear allocate CRV_Heap, Sampler_Heap
+- [done] Dx12 One big chunk of Descriptor
+- [done] Dx12 bindless
+- [done] Vk bindless
 
 ==== 2025-12-13 =====
 - [done] AX_LOG

@@ -328,7 +328,7 @@ public:
 	// constexpr is ok for PersistString, because it's lifespan is guaranteed until the end of the program.
 	static constexpr MutStrLit_ s_from_PersistString(T* sz, Int size) noexcept { return MutStrLit_(sz, size); }
 
-	// only use for static string liternal, because it's lifespan is guaranteed until the end of the program.
+	// only use for static string literal, because it's lifespan is guaranteed until the end of the program.
 	static constexpr StrLit_<T> s_from_static_c_str(const T* sz) noexcept {
 		return StrLit_<T>(sz, ax_strlen(sz));
 	}
