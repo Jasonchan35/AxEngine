@@ -15,7 +15,7 @@ public:
 	static VkPrimitiveTopology		getVkPrimitiveTopology	(RenderPrimitiveType t);
 
 	static VkIndexType				getVkIndexType			(IndexType t);
-	static VkCompareOp				getVkDepthTestOp		(DepthTestOp v);
+	static VkCompareOp				getVkDepthTestOp		(RenderDepthTestOp v);
 
 	static VkAttachmentLoadOp		getVkLoadOp				(RenderBufferLoadOp v);
 
@@ -27,9 +27,9 @@ public:
 	static VkSamplerAddressMode		getVkSamplerWrap		(SamplerWrap   v);
 	static VkSamplerMipmapMode		getVkSamplerMipmapMode	(SamplerFilter v);
 
-	static VkBlendOp				getVkBlendOp			(BlendOp		v);
-	static VkBlendFactor			getVkBlendFactor		(BlendFactor	v);
-	static VkCullModeFlagBits		getVkCullMode			(CullMode		v);
+	static VkBlendOp				getVkBlendOp			(RenderBlendOp		v);
+	static VkBlendFactor			getVkBlendFactor		(RenderBlendFactor	v);
+	static VkCullModeFlagBits		getVkCullMode			(RenderCullMode		v);
 
 	static bool formatHasDepth	(VkFormat f);
 	static bool formatHasStencil(VkFormat f);
@@ -320,8 +320,8 @@ inline VkSamplerAddressMode AX_VkUtil::getVkSamplerWrap(SamplerWrap v) {
 	}
 }
 
-inline VkBlendOp AX_VkUtil::getVkBlendOp(BlendOp v) {
-	using SRC = BlendOp;
+inline VkBlendOp AX_VkUtil::getVkBlendOp(RenderBlendOp v) {
+	using SRC = RenderBlendOp;
 	switch (v) {
 		case SRC::Add:		return VK_BLEND_OP_ADD;
 		case SRC::Sub:		return VK_BLEND_OP_SUBTRACT;
@@ -332,8 +332,8 @@ inline VkBlendOp AX_VkUtil::getVkBlendOp(BlendOp v) {
 	}
 }
 
-inline VkBlendFactor AX_VkUtil::getVkBlendFactor(BlendFactor v) {
-	using SRC = BlendFactor;
+inline VkBlendFactor AX_VkUtil::getVkBlendFactor(RenderBlendFactor v) {
+	using SRC = RenderBlendFactor;
 	switch (v) {
 		case SRC::Zero:						return VK_BLEND_FACTOR_ZERO;
 		case SRC::One:						return VK_BLEND_FACTOR_ONE;
@@ -354,8 +354,8 @@ inline VkBlendFactor AX_VkUtil::getVkBlendFactor(BlendFactor v) {
 	}
 }
 
-inline VkCullModeFlagBits AX_VkUtil::getVkCullMode(CullMode v) {
-	using SRC = CullMode;
+inline VkCullModeFlagBits AX_VkUtil::getVkCullMode(RenderCullMode v) {
+	using SRC = RenderCullMode;
 	switch (v) {
 		case SRC::None:		return VK_CULL_MODE_NONE;
 		case SRC::Back:		return VK_CULL_MODE_BACK_BIT;
@@ -375,8 +375,8 @@ VkIndexType AX_VkUtil::getVkIndexType(IndexType t) {
 }
 
 inline
-VkCompareOp AX_VkUtil::getVkDepthTestOp(DepthTestOp v) {
-	using SRC = DepthTestOp;
+VkCompareOp AX_VkUtil::getVkDepthTestOp(RenderDepthTestOp v) {
+	using SRC = RenderDepthTestOp;
 	switch (v) {
 		case SRC::Always:		return  VK_COMPARE_OP_ALWAYS;
 		case SRC::Less:			return  VK_COMPARE_OP_LESS;

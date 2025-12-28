@@ -118,14 +118,14 @@ Vec2i AutoFrameSize_Compute(AutoFrameSize mode, Vec2i v) {
 	}
 }
 
-#define AX_RENDER_GeoComponentFlags_ENUM_LIST(E) \
+#define AX_RenderGeoComponentFlags_ENUM_LIST(E) \
 	E(None,) \
 	E(Point,	 = 1 << 0) \
 	E(Vertex,	 = 1 << 1) \
 	E(Edge,		 = 1 << 2) \
 	E(Primitive, = 1 << 3) \
 //----
-AX_ENUM_FLAGS_CLASS(AX_RENDER_GeoComponentFlags_ENUM_LIST, RenderGeoComponentFlags, u8)
+AX_ENUM_FLAGS_CLASS(AX_RenderGeoComponentFlags_ENUM_LIST, RenderGeoComponentFlags, u8)
 
 #define AX_RenderPrimitiveType_ENUM_LIST(E) \
 	E(None,) \

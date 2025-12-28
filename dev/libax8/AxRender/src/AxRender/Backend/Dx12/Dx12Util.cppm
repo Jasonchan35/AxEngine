@@ -42,14 +42,14 @@ struct Dx12Util {
 	static constexpr D3D12_TEXTURE_ADDRESS_MODE		getDxSamplerWrap			(SamplerWrap v);
 	static constexpr DXGI_FORMAT					getDxIndexType				(IndexType t);
 	static constexpr Int							getDxIndexStrideInBytes		(IndexType t);
-	static constexpr D3D12_COMPARISON_FUNC			getDxDepthTestOp			(DepthTestOp v);
+	static constexpr D3D12_COMPARISON_FUNC			getDxDepthTestOp			(RenderDepthTestOp v);
 
 	static constexpr DXGI_FORMAT		getDxColorType		(ColorType type);
 	static constexpr DXGI_FORMAT		getDxDepthType		(RenderDepthType type);
-	static constexpr DXGI_FORMAT		getDxDataType		(RenderDataType v);
-	static constexpr D3D12_BLEND_OP		getDxBlendOp		(BlendOp		v);
-	static constexpr D3D12_BLEND		getDxBlendFactor	(BlendFactor	v);
-	static constexpr D3D12_CULL_MODE	getDxCullMode		(CullMode		v);
+	static constexpr DXGI_FORMAT		getDxDataType		(RenderDataType     v);
+	static constexpr D3D12_BLEND_OP		getDxBlendOp		(RenderBlendOp		v);
+	static constexpr D3D12_BLEND		getDxBlendFactor	(RenderBlendFactor	v);
+	static constexpr D3D12_CULL_MODE	getDxCullMode		(RenderCullMode		v);
 
 	static constexpr D3D12_COMMAND_LIST_TYPE getDxCommandListType(RenderCommandListType type);
 
@@ -274,8 +274,8 @@ constexpr DXGI_FORMAT Dx12Util::getDxDataType(RenderDataType v) {
 	}
 }
 
-constexpr D3D12_BLEND_OP Dx12Util::getDxBlendOp(BlendOp v) {
-	using SRC = BlendOp;
+constexpr D3D12_BLEND_OP Dx12Util::getDxBlendOp(RenderBlendOp v) {
+	using SRC = RenderBlendOp;
 	switch (v) {
 		case SRC::Add:		return D3D12_BLEND_OP_ADD;
 		case SRC::Sub:		return D3D12_BLEND_OP_SUBTRACT;
@@ -286,8 +286,8 @@ constexpr D3D12_BLEND_OP Dx12Util::getDxBlendOp(BlendOp v) {
 	}
 }
 
-constexpr D3D12_BLEND Dx12Util::getDxBlendFactor(BlendFactor v) {
-	using SRC = BlendFactor;
+constexpr D3D12_BLEND Dx12Util::getDxBlendFactor(RenderBlendFactor v) {
+	using SRC = RenderBlendFactor;
 	switch (v) {
 		case SRC::Zero:						return D3D12_BLEND_ZERO;
 		case SRC::One:						return D3D12_BLEND_ONE;
@@ -308,8 +308,8 @@ constexpr D3D12_BLEND Dx12Util::getDxBlendFactor(BlendFactor v) {
 	}
 }
 
-constexpr D3D12_CULL_MODE Dx12Util::getDxCullMode(CullMode v) {
-	using SRC = CullMode;
+constexpr D3D12_CULL_MODE Dx12Util::getDxCullMode(RenderCullMode v) {
+	using SRC = RenderCullMode;
 	switch (v) {
 		case SRC::None:	return D3D12_CULL_MODE_NONE;
 		case SRC::Back:	return D3D12_CULL_MODE_BACK;
@@ -333,8 +333,8 @@ constexpr D3D12_COMMAND_LIST_TYPE Dx12Util::getDxCommandListType(RenderCommandLi
 	}
 }
 
-constexpr D3D12_COMPARISON_FUNC Dx12Util::getDxDepthTestOp(DepthTestOp v) {
-	using SRC = DepthTestOp;
+constexpr D3D12_COMPARISON_FUNC Dx12Util::getDxDepthTestOp(RenderDepthTestOp v) {
+	using SRC = RenderDepthTestOp;
 	switch (v) {
 		case SRC::Always:		return  D3D12_COMPARISON_FUNC_ALWAYS;
 		case SRC::Less:			return  D3D12_COMPARISON_FUNC_LESS;
