@@ -268,7 +268,7 @@
 
 #define AX_ENUM_STR_FROM_INT(T) \
 	template<> \
-	AX_NODISCARD constexpr TempString ax_enum_str(const ShaderParamBindPoint & v) { \
+	AX_NODISCARD constexpr TempString ax_enum_str(const T& v) { \
 		return Fmt("{}", ax_enum_int(v)); \
 	} \
 //--------
