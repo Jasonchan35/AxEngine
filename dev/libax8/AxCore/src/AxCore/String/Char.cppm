@@ -31,7 +31,7 @@ struct CharUtil {
 	AX_NODISCARD AX_INLINE static constexpr CH toUpper(CH ch) { return isLower(ch) ? (ch - 'a' + 'A') : ch; }
 
 	template<class CH>
-	AX_NODISCARD AX_INLINE static constexpr CH toLower(CH ch) { return isLower(ch) ? (ch - 'A' + 'a') : ch; }
+	AX_NODISCARD AX_INLINE static constexpr CH toLower(CH ch) { return isUpper(ch) ? (ch - 'A' + 'a') : ch; }
 
 	template <class CH>
 	AX_NODISCARD AX_INLINE static constexpr bool equals(CH a, CH b, StrCase sc) { return compare(a, b, sc) == CmpResult::Equal; }
