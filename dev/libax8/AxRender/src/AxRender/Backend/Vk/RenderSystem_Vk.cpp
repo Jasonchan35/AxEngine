@@ -7,7 +7,7 @@ import :RenderSystem_Vk;
 import :GpuBuffer_Vk;
 import :Material_Vk;
 import :RenderContext_Vk;
-import :RenderResourceManager_Vk;
+import :RenderObjectManager_Vk;
 import :RenderPass_Vk;
 import :RenderRequest_Vk;
 import :Shader_Vk;

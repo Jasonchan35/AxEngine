@@ -2,7 +2,7 @@ module AxRender;
 import :Material_Dx12;
 import :Texture_Dx12;
 import :GpuBuffer_Dx12;
-import :RenderResourceManager_Dx12;
+import :RenderObjectManager_Dx12;
 
 #if AX_RENDERER_DX12
 // Descriptors in System

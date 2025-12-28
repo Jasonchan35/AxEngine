@@ -3,7 +3,7 @@ export module AxRender:RenderSystem_Null;
 export import :RenderSystem_Backend;
 export import :GpuBuffer_Backend;
 export import :RenderContext_Backend;
-export import :RenderResourceManager_Backend;
+export import :RenderObjectManager_Backend;
 export import :RenderPass_Backend;
 export import :RenderRequest_Backend;
 export import :Texture_Backend;
@@ -135,10 +135,10 @@ protected:
 	virtual void	onPresentSurface(RenderRequest* req) override {}
 };
 
-class RenderResourceManager_Null : public RenderResourceManager_Backend {
-	AX_RTTI_INFO(RenderResourceManager_Null, RenderResourceManager_Backend)
+class RenderObjectManager_Null : public RenderObjectManager_Backend {
+	AX_RTTI_INFO(RenderObjectManager_Null, RenderObjectManager_Backend)
 public:
-	RenderResourceManager_Null(const CreateDesc& desc) : Base(desc) {}
+	RenderObjectManager_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
 } // namespace

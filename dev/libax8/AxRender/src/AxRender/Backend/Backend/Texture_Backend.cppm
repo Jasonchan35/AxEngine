@@ -2,7 +2,7 @@ module;
 export module AxRender:Texture_Backend;
 export import :ImageIO;
 export import :Texture;
-export import :RenderResourceHandle_Backend;
+export import :RenderObjectSlot_Backend;
 
 export namespace ax /*::AxRender*/ {
 
@@ -11,10 +11,10 @@ class Sampler_Backend : public  Sampler {
 public:
 	static SPtr<Sampler> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 
-	RenderResourceHandle_Backend<This>	resourceHandle;
+	RenderObjectSlot_Backend<This>	objectSlot;
 
 protected:
-	Sampler_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
+	Sampler_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this) {}
 
 	void _create(const CreateDesc& desc) { onCreate(desc); }
 	virtual void onCreate(const CreateDesc& desc) {}
@@ -31,10 +31,10 @@ public:
 	void hotReloadFile();
 	void hotCreateFromImage(const ImageInfo& info, ByteSpan pixelData);
 
-	RenderResourceHandle_Backend<This>	resourceHandle;
+	RenderObjectSlot_Backend<This>	objectSlot;
 
 protected:
-	Texture2D_Backend(const CreateDesc& desc) : Base(desc), resourceHandle(this) {}
+	Texture2D_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this) {}
 
 	void _loadFile();
 	void _loadImage(const Image& image) { _loadImage(image.info(), image.pixelData()); }
@@ -44,7 +44,7 @@ protected:
 	virtual void onCreate(const CreateDesc& desc);
 
 	void _onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
-		resourceHandle.markDirty();
+		objectSlot.markDirty();
 		_info = handler.desc.info;
 		onImageIO_ReadHandler(handler);
 	}

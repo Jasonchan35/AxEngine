@@ -6,7 +6,7 @@ import :Material_Backend;
 import :RenderPass;
 import :GpuBuffer;
 import :RenderContext_Backend;
-import :RenderResourceManager_Backend;
+import :RenderObjectManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -40,8 +40,8 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 void RenderRequest_Backend::_updateCommonMaterial() {
 	using namespace Math;
 
-	_commonMaterial     = _renderResourceManager->commonMaterial();
-	_commonMaterialPass = _renderResourceManager->commonMaterialPass();
+	_commonMaterial     = _objectManager->commonMaterial();
+	_commonMaterialPass = _objectManager->commonMaterialPass();
 	
 	resourcesToKeep.add(_commonMaterial);
 	
@@ -65,14 +65,14 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 
 	// TODO: move to frame update, to enable draw ui in update loop as well
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
-	RenderResourceManager_Backend::s_instance()->onFrameBegin(this);
+	RenderObjectManager_Backend::s_instance()->onFrameBegin(this);
 
 	_renderContext         = renderContext;
 	_viewportIsBottomUp    = renderContext->viewportIsBottomUp();
 	_frameSize             = backBufferRenderPass->frameSize();
 	_backBufferRenderPass  = backBufferRenderPass;
 	_uptime                = _renderSystem_backend->getCurrentUptime().seconds_f64();
-	_renderResourceManager = RenderResourceManager_Backend::s_instance();
+	_objectManager = RenderObjectManager_Backend::s_instance();
 	_updateCommonMaterial();
 	
 	onFrameBegin();
@@ -80,7 +80,7 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 
 void RenderRequest_Backend::frameEnd() {
 	renderContext_backend()->imgui.onEndRender();
-	RenderResourceManager_Backend::s_instance()->onFrameEnd(this);
+	RenderObjectManager_Backend::s_instance()->onFrameEnd(this);
 	onFrameEnd();
 //	AX_LOG("---- FrameEnd {} -----", _renderSeqId);
 }

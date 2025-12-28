@@ -13,8 +13,8 @@ Dx12Descriptor_Sampler Sampler_Dx12::_getUpdatedDescriptor(RenderRequest_Dx12* r
 	// update
 	req->resourcesToKeep.add(this);
 
-	_descriptor = req->_resourceDescriptors->Sampler.setSampler(resourceHandle.slotId(), _samplerState);
-//	AX_LOG("Sampler#{} debugName=[{}] - setDescriptor({})", resourceHandle.slotId(), debugName(), _descriptor.handle);
+	_descriptor = req->_resourceDescriptors->Sampler.setSampler(objectSlot.slotId(), _samplerState);
+//	AX_LOG("Sampler#{} debugName=[{}] - setDescriptor({})", objectSlot.slotId(), debugName(), _descriptor.handle);
 
 	return _descriptor;
 }
@@ -80,8 +80,8 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 		cmdList->CopyTextureRegion(&dstLoc, box.left, box.top, box.front, &srcLoc, &box);
 		_texResource.resourceBarrier(cmdList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		_descriptor = req->_resourceDescriptors->Texture2D.setTexture2D(resourceHandle.slotId(), _texResource);
-//		AX_LOG("Texture2D#{} debugName=[{}] - setDescriptor({})", resourceHandle.slotId(), debugName(), _descriptor.handle);
+		_descriptor = req->_resourceDescriptors->Texture2D.setTexture2D(objectSlot.slotId(), _texResource);
+//		AX_LOG("Texture2D#{} debugName=[{}] - setDescriptor({})", objectSlot.slotId(), debugName(), _descriptor.handle);
 		
 		_uploadBuffer = nullptr;
 	}

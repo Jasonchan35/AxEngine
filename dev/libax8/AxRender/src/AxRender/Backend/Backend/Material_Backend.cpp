@@ -5,7 +5,7 @@ import :StockObjects;
 import :Texture_Backend;
 import :Material_Backend;
 import :RenderSystem_Backend;
-import :RenderResourceManager_Backend;
+import :RenderObjectManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -82,9 +82,9 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {
 	auto bindlessName = _shaderParamSpace->getTexture2DName(name);
 	if (!bindlessName) return false;
 
-	auto slot = RenderResourceSlotId_None;
+	auto slot = RenderObjectSlotId_None;
 	if (auto* tex_ = rttiCastCheck<Texture2D_Backend>(tex)) {
-		slot = tex_->resourceHandle.slotId();
+		slot = tex_->objectSlot.slotId();
 	}
 	return setParam(bindlessName, slot);
 
@@ -102,9 +102,9 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
 	auto bindlessName = _shaderParamSpace->getSamplerName(name);
 	if (!bindlessName) return false;
 
-	auto slot = RenderResourceSlotId_None;
+	auto slot = RenderObjectSlotId_None;
 	if (auto* sampler_ = rttiCastCheck<Sampler_Backend>(sampler)) {
-		slot = sampler_->resourceHandle.slotId();
+		slot = sampler_->objectSlot.slotId();
 	}
 	return setParam(bindlessName, slot);
 
@@ -135,7 +135,7 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 	AX_ASSERT(_material);
 	AX_ASSERT(_shaderPass);
 
-	auto* commonMaterialPass = RenderResourceManager_Backend::s_instance()->commonMaterialPass();
+	auto* commonMaterialPass = RenderObjectManager_Backend::s_instance()->commonMaterialPass();
 		
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);

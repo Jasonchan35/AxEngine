@@ -2,7 +2,7 @@ module;
 export module AxRender:GpuBuffer_Backend;
 export import :RenderSystem_Backend;
 export import :GpuBuffer;
-export import :RenderResourceHandle_Backend;
+export import :RenderObjectSlot_Backend;
 
 export namespace ax /*::AxRender*/ {
 

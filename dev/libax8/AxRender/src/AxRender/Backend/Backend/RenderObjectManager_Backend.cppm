@@ -1,22 +1,22 @@
 module;
-export module AxRender:RenderResourceManager_Backend;
+export module AxRender:RenderObjectManager_Backend;
 export import :Texture_Backend;
 export import :Material_Backend;
 export import :RenderSystem_Backend;
 
 export namespace ax /*::AxRender*/ {
 
-class RenderResourceManager_CreateDesc {
+class RenderObjectManager_CreateDesc {
 public:
 };
 
-class RenderResourceManager_Backend : public RenderObject {
-	AX_RTTI_INFO(RenderResourceManager_Backend, RenderObject)
+class RenderObjectManager_Backend : public RenderObject {
+	AX_RTTI_INFO(RenderObjectManager_Backend, RenderObject)
 public:
-	using CreateDesc = RenderResourceManager_CreateDesc;
-	RenderResourceManager_Backend(const CreateDesc& desc);
+	using CreateDesc = RenderObjectManager_CreateDesc;
+	RenderObjectManager_Backend(const CreateDesc& desc);
 
-	static RenderResourceManager_Backend* s_instance();
+	static RenderObjectManager_Backend* s_instance();
 	static void s_create(const MemAllocRequest& req);
 	static void s_destroy();
 
@@ -32,7 +32,7 @@ public:
 	void hotReloadFile(StrView filename);
 
 	template<class T>
-	using Table = RenderResourceTable_Backend<T>;
+	using Table = RenderObjectTable_Backend<T>;
 
 	template<class T>
 	AX_NODISCARD MutexProtected<Table<T>>& getTable() {
@@ -85,7 +85,7 @@ protected:
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>
-bool RenderResourceManager_Backend::getOrNewResource(SPtr<T>&               sp,
+bool RenderObjectManager_Backend::getOrNewResource(SPtr<T>&               sp,
                                                      const MemAllocRequest& req,
                                                      const CREATE_DESC&     desc,
                                                      const RESOURCE_KEY&    key

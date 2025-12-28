@@ -22,7 +22,7 @@
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
 			<Item Name="assetPath">_assetPath</Item>
-			<Item Name="slotId">resourceHandle._slotId</Item>
+			<Item Name="slotId">objectSlot._slotId</Item>
 		</Expand>
 	</Type>
 

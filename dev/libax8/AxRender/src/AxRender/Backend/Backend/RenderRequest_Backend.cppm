@@ -7,7 +7,7 @@ export import :GpuBuffer_Backend;
 export import :Texture_Backend;
 export import :Material_Backend;
 export import :RenderPass_Backend;
-export import :RenderResourceManager_Backend;
+export import :RenderObjectManager_Backend;
 
 export namespace ax /*::AxRender*/ {
 
@@ -96,11 +96,10 @@ public:
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
 
-	RenderSystem_Backend*          _renderSystem_backend  = nullptr;
-	RenderResourceManager_Backend* _renderResourceManager = nullptr;
-
-	Material_Backend*              _commonMaterial        = nullptr;
-	MaterialPass_Backend*          _commonMaterialPass    = nullptr;
+	RenderSystem_Backend*        _renderSystem_backend = nullptr;
+	RenderObjectManager_Backend* _objectManager        = nullptr;
+	Material_Backend*            _commonMaterial       = nullptr;
+	MaterialPass_Backend*        _commonMaterialPass   = nullptr;
 
 private:
 	void _updateCommonMaterial();

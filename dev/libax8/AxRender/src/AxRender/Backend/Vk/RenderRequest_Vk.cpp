@@ -4,7 +4,7 @@ module AxRender;
 
 import :RenderRequest_Vk;
 import :RenderSystem_Vk;
-import :RenderResourceManager_Vk;
+import :RenderObjectManager_Vk;
 import :RenderContext_Vk;
 import :Material_Vk;
 import :GpuBuffer_Vk;
@@ -82,7 +82,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 		for (auto& sampler_ : updatedBindlessResources.samplers) {
 			if (!sampler_) continue;
 			auto* sampler      = rttiCast<Sampler_Vk>(sampler_.ptr());
-			u32   arrayElement = sampler->resourceHandle.slotId();
+			u32   arrayElement = sampler->objectSlot.slotId();
 			writeDescHelper.addSamplerInfo(samplerParam->bindPoint(), curDescSet, arrayElement, sampler->vkHandle());
 		}
 	}
@@ -92,7 +92,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 		for (auto& tex_ : updatedBindlessResources.texture2Ds) {
 			auto* tex = rttiCastCheck<Texture2D_Vk>(tex_.ptr());
 			if (!tex) continue;
-			u32   arrayElement = tex->resourceHandle.slotId();
+			u32   arrayElement = tex->objectSlot.slotId();
 			auto info = tex->_bindImage(this);
 			writeDescHelper.addImageInfo(texture2DParam->bindPoint(), curDescSet, arrayElement, info.imageView, info.imageLayout);
 		}
@@ -104,7 +104,7 @@ void RenderRequest_Vk::_updatedBindlessResources() {
 
 void RenderRequest_Vk::onFrameBegin() {
 #if AX_RENDER_BINDLESS
-	auto* resMgr = rttiCastCheck<RenderResourceManager_Vk>(_renderResourceManager);
+	auto* resMgr = rttiCastCheck<RenderObjectManager_Vk>(_objectManager);
 	_bindlessDescriptorSet = resMgr->_bindlessDescriptorSet;
 #endif	
 	

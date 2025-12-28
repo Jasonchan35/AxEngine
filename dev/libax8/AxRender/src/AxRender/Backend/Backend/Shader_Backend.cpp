@@ -3,7 +3,7 @@ module AxRender;
 import :StockObjects;
 import :Material_Backend;
 import :RenderSystem_Backend;
-import :RenderResourceManager_Backend;
+import :RenderObjectManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -239,7 +239,7 @@ void      ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 
-	auto* commonShaderPass = RenderResourceManager_Backend::s_instance()->commonShaderPass(); 
+	auto* commonShaderPass = RenderObjectManager_Backend::s_instance()->commonShaderPass(); 
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);
@@ -282,7 +282,7 @@ void      ShaderPass_Backend::_createParamSpaces() {
 
 SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<Shader_Backend> o;
-	if (RenderResourceManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
+	if (RenderObjectManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
 		o->_create(desc);
 	return o;
 }
@@ -295,7 +295,7 @@ SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, StrView a
 
 Shader_Backend::Shader_Backend(const CreateDesc& desc)
 : Base(desc)
-, resourceHandle(this)
+, objectSlot(this)
 {}
 
 void Shader_Backend::onLoadFile() {

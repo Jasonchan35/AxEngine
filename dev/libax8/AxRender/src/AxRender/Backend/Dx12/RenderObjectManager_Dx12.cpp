@@ -1,5 +1,5 @@
 ﻿module AxRender;
-import :RenderResourceManager_Dx12;
+import :RenderObjectManager_Dx12;
 import :Texture_Dx12;
 
 namespace ax {
@@ -7,7 +7,7 @@ namespace ax {
 #if AX_RENDER_BINDLESS
 
 template<class T>
-struct RenderResourceManager_Dx12_onUpdateDescriptors {
+struct RenderObjectManager_Dx12_onUpdateDescriptors {
 	using T_Backend = typename T::_TYPE_INFO_Base;
 	static void run(RenderRequest_Backend* req_, Array<SPtr<T_Backend>>& list) {
 		auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
@@ -19,17 +19,17 @@ struct RenderResourceManager_Dx12_onUpdateDescriptors {
 	}
 };
 
-void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend>>& list) {
-	RenderResourceManager_Dx12_onUpdateDescriptors<Sampler_Dx12>::run(req, list);
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend>>& list) {
+	RenderObjectManager_Dx12_onUpdateDescriptors<Sampler_Dx12>::run(req, list);
 }
 
-void RenderResourceManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {
-	RenderResourceManager_Dx12_onUpdateDescriptors<Texture2D_Dx12>::run(req, list);
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {
+	RenderObjectManager_Dx12_onUpdateDescriptors<Texture2D_Dx12>::run(req, list);
 }
 
 #endif // #if AX_RENDER_BINDLESS
 
-void RenderResourceManager_Dx12::onPostCreate() {
+void RenderObjectManager_Dx12::onPostCreate() {
 	auto& info = RenderSystem_Dx12::s_instance()->info();
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 

@@ -1,31 +1,31 @@
 module;
-export module AxRender:RenderResourceHandle_Backend;
+export module AxRender:RenderObjectSlot_Backend;
 export import :Texture;
 export import :GpuBuffer;
 
 export namespace ax /*::AxRender*/ {
 
-template<class T> class RenderResourceTable_Backend;
+template<class T> class RenderObjectTable_Backend;
 
-using RenderResourceSlotId = u32;
-RenderResourceSlotId RenderResourceSlotId_None = 0;
+using RenderObjectSlotId = u32;
+RenderObjectSlotId RenderObjectSlotId_None = 0;
 
 template<class T>
-class RenderResourceHandle_Backend : public NonCopyable {
+class RenderObjectSlot_Backend : public NonCopyable {
 public:
-	using Table = RenderResourceTable_Backend<T>;
+	using Table = RenderObjectTable_Backend<T>;
 	using ResourceKey = typename T::ResourceKey;
 
-	explicit operator bool() const { return _slotId != RenderResourceSlotId_None; }
+	explicit operator bool() const { return _slotId != RenderObjectSlotId_None; }
 
-	AX_INLINE RenderResourceSlotId slotId() const { return _slotId; }
+	AX_INLINE RenderObjectSlotId slotId() const { return _slotId; }
 	AX_INLINE T*	 owner() { return _owner; }
 
-	RenderResourceHandle_Backend(T* owner) : _owner(owner) {
+	RenderObjectSlot_Backend(T* owner) : _owner(owner) {
 		Table::s_get().scopedLock()->add(_owner);
 	}
 
-	~RenderResourceHandle_Backend() {
+	~RenderObjectSlot_Backend() {
 		Table::s_get().scopedLock()->remove(_owner); 
 	}
 
@@ -33,19 +33,19 @@ public:
 		Table::s_get().scopedLock()->markDirty(_owner);
 	}
 
-friend class RenderResourceTable_Backend<T>;
+friend class RenderObjectTable_Backend<T>;
 protected:
-	RenderResourceSlotId _slotId = RenderResourceSlotId_None;
+	RenderObjectSlotId _slotId = RenderObjectSlotId_None;
 	bool _dirty = false;
 private:
 	T*	_owner  = nullptr;
 };
 
 template<class T>
-class RenderResourceTable_Backend : public NonCopyable {
-	using This = RenderResourceTable_Backend;
+class RenderObjectTable_Backend : public NonCopyable {
+	using This = RenderObjectTable_Backend;
 public:
-	using Handle = RenderResourceHandle_Backend<T>;
+	using Handle = RenderObjectSlot_Backend<T>;
 	using ResourceKey = typename T::ResourceKey;
 
 	static constexpr bool kNeedDescriptorUpdate = std::is_base_of_v<Sampler    , T>
@@ -62,21 +62,20 @@ public:
 
 	Int count() const { return _slots.size() - _freeSlots.size(); }
 
-	RenderResourceTable_Backend();
+	RenderObjectTable_Backend();
 
 	void onFrameEnd(class RenderRequest_Backend* req);
 
 	static MutexProtected<This>&	s_get();
 
 protected:
-	Array<T*>				_slots;
-	Array<RenderResourceSlotId>	_freeSlots;
-	Array<SPtr<T>>			_dirtyObjects;
-
-	Dict<ResourceKey, T*>	_keyDict;
+	Array<T*>                 _slots;
+	Array<RenderObjectSlotId> _freeSlots;
+	Array<SPtr<T>>            _dirtyObjects;
+	Dict<ResourceKey, T*>     _keyDict;
 
 	struct Frame : public NonCopyable {
-		Array<RenderResourceSlotId> pendingFreeSlots;
+		Array<RenderObjectSlotId> pendingFreeSlots;
 	};
 	Frame& currentFrame() { return _frames[_currentFrameIndex]; }
 

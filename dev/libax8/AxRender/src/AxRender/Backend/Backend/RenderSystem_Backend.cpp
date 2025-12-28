@@ -4,7 +4,7 @@ import :Material_Backend;
 import :StockObjects;
 import :RenderRequest_Backend;
 import :RenderContext_Backend;
-import :RenderResourceManager_Backend;
+import :RenderObjectManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -25,7 +25,7 @@ RenderSystem_Backend::~RenderSystem_Backend() {
 void RenderSystem_Backend::onCreate() {
 	Base::onCreate();
 
-	RenderResourceManager_Backend::s_create(AX_ALLOC_REQ);
+	RenderObjectManager_Backend::s_create(AX_ALLOC_REQ);
 //----- render request
 	if (_info.renderRequest.count > AxRenderConfig::kMaxRenderRequestCount)
 		throw Error_Undefined();
@@ -39,7 +39,7 @@ void RenderSystem_Backend::onCreate() {
 void RenderSystem_Backend::onDestroy() {
 	StockObjects::s_destroy();
 	_privateData.unref();
-	RenderResourceManager_Backend::s_destroy();
+	RenderObjectManager_Backend::s_destroy();
 	Base::onDestroy();
 }
 
@@ -66,7 +66,7 @@ void RenderSystem_Backend::waitAllRenderCompleted() {
 void RenderSystem_Backend::onFileChanged(FileDirWatcher_Result& result) {
 	waitAllRenderCompleted();
 
-	if (auto* mgr = RenderResourceManager_Backend::s_instance()) {
+	if (auto* mgr = RenderObjectManager_Backend::s_instance()) {
 		mgr->onFileChanged(result);
 	}
 }

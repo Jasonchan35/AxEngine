@@ -1,10 +1,10 @@
 ﻿module;
 
-export module AxRender:RenderResourceManager_Dx12;
+export module AxRender:RenderObjectManager_Dx12;
 #if AX_RENDERER_DX12
 
 export import :Dx12DescriptorHeap;
-export import :RenderResourceManager_Backend;
+export import :RenderObjectManager_Backend;
 export import :RenderSystem_Backend;
 
 namespace ax {
@@ -59,14 +59,14 @@ struct ResourceDescriptorHeap_Sampler : public ResourceDescriptorHeap<Dx12Descri
 	}
 };
 
-class RenderResourceManager_Dx12 : public RenderResourceManager_Backend {
-	AX_RTTI_INFO(RenderResourceManager_Dx12, RenderResourceManager_Backend)
+class RenderObjectManager_Dx12 : public RenderObjectManager_Backend {
+	AX_RTTI_INFO(RenderObjectManager_Dx12, RenderObjectManager_Backend)
 public:
 	AX_DOWNCAST_GET_INSTANCE();
 
 	using BindSpace = ShaderParamBindSpace;
 	
-	RenderResourceManager_Dx12(const CreateDesc& desc) : Base(desc) {}
+	RenderObjectManager_Dx12(const CreateDesc& desc) : Base(desc) {}
 
 	struct DescriptorHeapPools : public NonCopyable {
 		Dx12DescriptorHeapPool_ColorBuffer	ColorBuffer;

@@ -9,7 +9,7 @@ export import :RenderRequest_Backend;
 export import :RenderCommandList_Dx12;
 export import :RenderPass_Dx12;
 export import :RenderContext_Dx12;
-export import :RenderResourceManager_Dx12;
+export import :RenderObjectManager_Dx12;
 
 namespace ax {
 
@@ -41,14 +41,14 @@ public:
 		Dx12DescriptorHeapChunk_Sampler     Sampler;
 	} _dynamicDescriptors;
 
-	using DescriptorHeapPools  = RenderResourceManager_Dx12::DescriptorHeapPools;
+	using DescriptorHeapPools  = RenderObjectManager_Dx12::DescriptorHeapPools;
 	DescriptorHeapPools*		_descriptorHeapPools = nullptr;
 
-	using ResourceDescriptors = RenderResourceManager_Dx12::ResourceDescriptors;
+	using ResourceDescriptors = RenderObjectManager_Dx12::ResourceDescriptors;
 	ResourceDescriptors*		_resourceDescriptors = nullptr;
 
 #if AX_RENDER_BINDLESS
-	using BindlessDescriptors = RenderResourceManager_Dx12::BindlessDescriptors;
+	using BindlessDescriptors = RenderObjectManager_Dx12::BindlessDescriptors;
 	BindlessDescriptors*		_bindlessDescriptors = nullptr;
 #endif
 	

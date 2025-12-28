@@ -4,7 +4,7 @@ import :RenderSystem_Dx12;
 import :RenderPass_Dx12;
 import :Material_Dx12;
 import :GpuBuffer_Dx12;
-import :RenderResourceManager_Dx12;
+import :RenderObjectManager_Dx12;
 import :Texture_Dx12;
 
 #if AX_RENDERER_DX12
@@ -24,7 +24,7 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_cpuEvent.create();
 
 	auto& info = _renderSystem->info();
-	auto* resMgr = RenderResourceManager_Dx12::s_instance();
+	auto* resMgr = RenderObjectManager_Dx12::s_instance();
 
 	_descriptorHeapPools = &resMgr->descriptorHeapPools;
 	_resourceDescriptors = &resMgr->resourceDescriptors;
@@ -54,7 +54,7 @@ void RenderRequest_Dx12::onFrameBegin() {
 	_dynamicDescriptors.CBV_SRV_UAV.reset();
 	_dynamicDescriptors.Sampler.reset();
 
-	auto& heapPool = RenderResourceManager_Dx12::s_instance()->descriptorHeapPools;
+	auto& heapPool = RenderObjectManager_Dx12::s_instance()->descriptorHeapPools;
 	auto descHeaps = Span({heapPool.CBV_SRV_UAV.d3dHeap(), heapPool.Sampler.d3dHeap()});
 	setDescriptorHeaps(descHeaps);
 }
@@ -88,7 +88,7 @@ void RenderRequest_Dx12::_updatedBindlessResources() {
 		auto* sampler = rttiCastCheck<Sampler_Dx12>(sampler_.ptr());
 		if (!sampler) throw Error_Undefined();
 /*
-		Int index = sampler->resourceHandle.slotId();
+		Int index = sampler->objectSlot.slotId();
 		auto handle = mgr->bindlessHeap_Sampler.getHandle(index);
 
 		auto& ss = sampler->samplerState();

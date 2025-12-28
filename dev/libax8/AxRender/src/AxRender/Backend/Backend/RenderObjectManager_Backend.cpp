@@ -1,40 +1,40 @@
 module AxRender;
-import :RenderResourceManager_Backend;
+import :RenderObjectManager_Backend;
 import :RenderRequest_Backend;
 import :RenderSystem_Backend;
 
 namespace ax /*::AxRender*/ {
 
-static UPtr<RenderResourceManager_Backend> ResourceManager_Backend_instance;
+static UPtr<RenderObjectManager_Backend> RenderObjectManager_Backend_instance;
 
-RenderResourceManager_Backend* RenderResourceManager_Backend::s_instance() {
-	return ResourceManager_Backend_instance;
+RenderObjectManager_Backend* RenderObjectManager_Backend::s_instance() {
+	return RenderObjectManager_Backend_instance;
 }
 
-void RenderResourceManager_Backend::s_create(const MemAllocRequest& req) {
-	AX_ASSERT(ResourceManager_Backend_instance == nullptr);
-	RenderResourceManager_CreateDesc desc;
-	auto p = RenderSystem_Backend::s_instance()->newRenderResourceManager(req, desc);
-	ResourceManager_Backend_instance = std::move(p);
-	ResourceManager_Backend_instance->_postCreate();
+void RenderObjectManager_Backend::s_create(const MemAllocRequest& req) {
+	AX_ASSERT(RenderObjectManager_Backend_instance == nullptr);
+	RenderObjectManager_CreateDesc desc;
+	auto p = RenderSystem_Backend::s_instance()->newRenderObjectManager(req, desc);
+	RenderObjectManager_Backend_instance = std::move(p);
+	RenderObjectManager_Backend_instance->_postCreate();
 }
 
-void RenderResourceManager_Backend::s_destroy() {
-	AX_ASSERT(ResourceManager_Backend_instance);
-	ResourceManager_Backend_instance.unref();
+void RenderObjectManager_Backend::s_destroy() {
+	AX_ASSERT(RenderObjectManager_Backend_instance);
+	RenderObjectManager_Backend_instance.unref();
 }
 
-RenderResourceManager_Backend::RenderResourceManager_Backend(const CreateDesc& desc) {
+RenderObjectManager_Backend::RenderObjectManager_Backend(const CreateDesc& desc) {
 }
 
-void RenderResourceManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
+void RenderObjectManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
 }
 
-void RenderResourceManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
+void RenderObjectManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
 	visit([&](auto& table){ table.scopedLock()->onFrameEnd(req); });
 }
 
-void RenderResourceManager_Backend::onFileChanged(FileDirWatcher_Result& result) {
+void RenderObjectManager_Backend::onFileChanged(FileDirWatcher_Result& result) {
 	for (auto& e : result.list) {
 		if (e.action == FileDirWatcher_Action::Modified) {
 			hotReloadFile(e.filename);
@@ -42,7 +42,7 @@ void RenderResourceManager_Backend::onFileChanged(FileDirWatcher_Result& result)
 	}
 }
 
-void RenderResourceManager_Backend::hotReloadFile(StrView filename) {
+void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 	auto ext = FilePath::extension(filename);
 	auto basenameWithExt = FilePath::basename(filename, true);
 
@@ -67,7 +67,7 @@ void RenderResourceManager_Backend::hotReloadFile(StrView filename) {
 	}
 }
 
-void RenderResourceManager_Backend::_postCreate() {
+void RenderObjectManager_Backend::_postCreate() {
 	StockObjects::s_create();
 
 	//----- common material

@@ -1,20 +1,20 @@
 ﻿module;
 
-export module AxRender:RenderResourceManager_Vk;
+export module AxRender:RenderObjectManager_Vk;
 #if AX_RENDERER_VK
 
-export import :RenderResourceManager_Backend;
+export import :RenderObjectManager_Backend;
 export import :RenderSystem_Backend;
 export import :AX_Vulkan;
 
 namespace ax {
 
-class RenderResourceManager_Vk : public RenderResourceManager_Backend {
-	AX_RTTI_INFO(RenderResourceManager_Vk, RenderResourceManager_Backend)
+class RenderObjectManager_Vk : public RenderObjectManager_Backend {
+	AX_RTTI_INFO(RenderObjectManager_Vk, RenderObjectManager_Backend)
 public:
 	using BindSpace = ShaderParamBindSpace;
 
-	RenderResourceManager_Vk(const CreateDesc& desc) : Base(desc) {}
+	RenderObjectManager_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	virtual void onPostCreate() override;
 	
