@@ -8,9 +8,8 @@ void ShaderInfoParser::readFile(StrView outDir, StrView filename) {
 	_fileMap.openFile(filename);
 
 	_source.init(_fileMap.strViewA(), filename);
-	_nextChar();
+	_source.trim(UtfUtil::kBOM);
 	nextToken();
-
 	if (!expectOp("#")) return;
 	if (!expectIdentifier("if")) return;
 	if (!expectIdentifier("ShaderInfo")) return;
@@ -35,6 +34,7 @@ String ShaderInfoParser::_logString(StrView msg) {
 	tmp << msg;
 	tmp << "\n------------\n";
 	_source.appendSourceLocation(tmp, 8);
+	tmp << "\n";
 	Logger::s_get()->write(LogLevel::Error, msg);
 
 	return tmp;
@@ -44,7 +44,7 @@ String ShaderInfoParser::_logString(StrView msg) {
 
 bool ShaderInfoParser::nextToken() {
 	if (!_nextToken()) return false;
-//	AX_DUMP_VAR(_token.str);
+	AX_DUMP(_token);
 	return true;
 }
 
@@ -68,28 +68,39 @@ bool ShaderInfoParser::_nextToken() {
 
 		if (_ch == '\n') {
 			_token.type = TokenType::Newline;
-			_token.str << "<newline>";
+			_token.str = "<newline>";
 			_nextChar();
 			return true;
 		}
-
-		if (_ch == '/') {
-			_nextChar();
-			if (_ch == '*') { 
-				_parseCommentBlock();
+		
+		auto _multiCharOp = [this]()-> bool {
+			static constexpr StrLit opList[] {
+				"//",
+				"/*",
+				"::",
+			};
+		
+			for (auto& op : opList) {
+				if (!_source.trim(op)) continue;
+				_token.setOp(op);
+				return true;
+			}
+			
+			return false;
+		};
+		
+		if (_multiCharOp()) {
+			if (_token.str == "//") {
+				_source.skipUntil("\n", true);
 				continue;
 			}
-
-			if (_ch == '/') { 
-				_parseCommentInline();
+			if (_token.str == "/*") {
+				_source.skipUntil("*/", false);
 				continue;
 			}
-
-			_token.type = TokenType::Op;
-			_token.str << _ch;
+			
 			return true;
 		}
-
 
 		_token.type = TokenType::Op;
 		_token.str << _ch;
@@ -103,13 +114,12 @@ Error_Runtime ShaderInfoParser::_makeErrorUnexpectedChar() {
 }
 
 Error_Runtime ShaderInfoParser::_makeErrorUnexpectedToken() {
-	return _makeError("Unexpected token [{}]", _token.str);
+	return _makeError("Unexpected token={}", _token);
 }
 
 bool ShaderInfoParser::_parseIdentifier() {
 	_token.type = TokenType::Identifier;
-
-	_token.str += _ch;
+	_token.str = _ch;
 	_nextChar();
 
 	while (_ch) {
@@ -158,61 +168,8 @@ bool ShaderInfoParser::_parseNumber() {
 
 bool ShaderInfoParser::_parseString() {
 	_token.type = TokenType::String;
-
-	for (;;) {
-		_nextChar();
-		if (_ch == '\\') {
-			_nextChar();
-			switch (_ch) {
-				case '\\':
-				case '/':
-				case '"':
-					_token.str += _ch;
-					break;
-				case 'b': _token.str += '\b'; break;
-				case 'f': _token.str += '\f'; break;
-				case 'n': _token.str += '\n'; break;
-				case 'r': _token.str += '\r'; break;
-				case 't': _token.str += '\t'; break;
-				default:
-					throw Error_Undefined();
-			}
-		}else if (_ch == '\"') {
-			_nextChar();
-			break;
-		}else{
-			_token.str += _ch;
-		}
-	}
+	_source.read_c_string_literal(_token.str);
 	return true;
-}
-
-void ShaderInfoParser::_parseCommentBlock() {
-	_nextChar();			
-	for(;;) {
-		if (!_ch) return;
-		if (_ch == '*') {
-			_nextChar();
-			if (_ch == '/') {
-				_nextChar();
-				return;
-			}
-		}else{
-			_nextChar();
-		}
-	}
-}
-
-void ShaderInfoParser::_parseCommentInline() {
-	_nextChar();			
-	for(;;) {
-		if (!_ch) return;
-		if (_ch == '\n') {
-			return;
-		}else{
-			_nextChar();
-		}
-	}
 }
 
 #if 0

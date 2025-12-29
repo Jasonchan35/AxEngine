@@ -67,6 +67,12 @@ struct CharUtil {
 	}
 
 	template<class CH>
+	AX_NODISCARD AX_INLINE static constexpr Opt<u8> octalToByte(CH ch) {
+		if( ch >= '0' && ch <= '7' ) return static_cast<u8>(ch - '0');
+		return std::nullopt;
+	}
+	
+	template<class CH>
 	AX_NODISCARD AX_INLINE static constexpr Opt<u8> hexToByte(CH ch) {
 		if( ch >= '0' && ch <= '9' ) return static_cast<u8>(ch - '0');
 		if( ch >= 'a' && ch <= 'f' ) return static_cast<u8>(ch - 'a' + 10);

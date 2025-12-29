@@ -155,7 +155,7 @@ private:
 	void _parseStringToken();
 
 	LexerSource<char>	_source;
-	char _ch = 0;
+	char& _ch = _source.chRef();
 
 	struct Token {
 		TokenType	type = TokenType::Invalid;

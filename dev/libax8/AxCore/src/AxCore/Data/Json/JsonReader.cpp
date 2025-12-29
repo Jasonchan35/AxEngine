@@ -16,7 +16,6 @@ void JsonReader::reset() {
 void JsonReader::readJson(StrView json, StrView filenameForErrorMessage) {
 	reset();
 	_source.init(json, filenameForErrorMessage);
-	_nextChar();
 	next();
 }
 
@@ -309,14 +308,14 @@ bool JsonReader::next() {
 			_levels.emplaceBack(Level::Type::Object, _source.pos());
 			_valueType = ValueType::BeginObject;
 			return true;
-		}break;
+		}
 
 		case TokenType::BeginArray:
 		{
 			_levels.emplaceBack(Level::Type::Array, _source.pos());
 			_valueType = ValueType::BeginArray;
 			return true;
-		}break;
+		}
 
 		case TokenType::Null:	 _valueType = ValueType::Null;		break;
 		case TokenType::Bool:	 _valueType = ValueType::Bool;		break;
@@ -427,21 +426,17 @@ bool JsonReader::_nextToken() {
 		case ']': _token.type = TokenType::EndArray;	_nextChar(); return true;
 		case ',': _token.type = TokenType::Comma;		_nextChar(); return true;
 		case ':': _token.type = TokenType::Colon;		_nextChar(); return true;
-		case '"':
-		{
+		case '"': {
 			_token.type = TokenType::String;
 			_parseStringToken();
 			return true;
-		};
+		}
+		default: break;
 	}
 
-	for (;;) {
-		if (isdigit(_ch) || isalpha(_ch) || _ch == '+' || _ch == '-' || _ch == '.') {
-			_token.str << _ch;
-			_nextChar();
-		} else {
-			break;
-		}
+	while (isdigit(_ch) || isalpha(_ch) || _ch == '+' || _ch == '-' || _ch == '.') {
+		_token.str << _ch;
+		_nextChar();
 	}
 
 	if (_token.str == "null") {
@@ -486,8 +481,9 @@ bool JsonReader::_nextToken() {
 }
 
 void JsonReader::_parseStringToken() {
+	_nextChar();
+	
 	for (;;) {
-		_nextChar();
 		if (_ch == 0) {
 			error("unexpected end of Json file");
 		}
@@ -499,16 +495,15 @@ void JsonReader::_parseStringToken() {
 			{
 				_nextChar();
 				switch (_ch) {
-					case '\\':
-					case '/':
-					case '"':
-						_token.str << _ch;
-						break;
-					case 'b': _token.str << '\b'; break;
-					case 'f': _token.str << '\f'; break;
-					case 'n': _token.str << '\n'; break;
-					case 'r': _token.str << '\r'; break;
-					case 't': _token.str << '\t'; break;
+					case '\\': _token.str << _ch;  _nextChar();  continue;
+					case  '/': _token.str << _ch;  _nextChar();  continue;
+					case  '"': _token.str << _ch;  _nextChar();  continue;
+					case  'b': _token.str << '\b'; _nextChar();  continue;
+					case  'f': _token.str << '\f'; _nextChar();  continue;
+					case  'n': _token.str << '\n'; _nextChar();  continue;
+					case  'r': _token.str << '\r'; _nextChar();  continue;
+					case  't': _token.str << '\t'; _nextChar();  continue;
+					case  'u': _token.str << _source.readHex(4); continue;
 					default:
 						error("unexpected escape char '{}'", _ch);
 						break;
@@ -517,6 +512,7 @@ void JsonReader::_parseStringToken() {
 
 			default: {
 				_token.str << _ch;
+				_nextChar();
 			}break;
 		}
 	}

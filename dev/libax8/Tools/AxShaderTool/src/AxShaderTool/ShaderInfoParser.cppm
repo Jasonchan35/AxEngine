@@ -5,22 +5,24 @@ export import AxRender;
 
 export namespace ax /*::AxRender*/ {
 
+#define AX_ShaderInfoParser_TokenType_ENUM_LIST(E) \
+	E(Unknown,) \
+	E(Identifier,) \
+	E(Number,) \
+	E(String,) \
+	E(Op,) \
+	E(Newline,) \
+//----
+AX_ENUM_CLASS(AX_ShaderInfoParser_TokenType_ENUM_LIST, ShaderInfoParser_TokenType, u32)
+
 class ShaderInfoParser : public NonCopyable {
 public:
+	using TokenType = ShaderInfoParser_TokenType;
 	using BlendFunc = RenderState::BlendFunc;
 
 	void readFile(StrView outDir, StrView filename);
 
 	bool nextToken();
-
-	enum class TokenType {
-		Unknown,
-		Identifier,
-		Number,
-		String,
-		Op,
-		Newline,
-	};
 
 	struct Token {
 		TokenType	type = TokenType::Unknown;
@@ -35,6 +37,15 @@ public:
 		bool isString() const				{ return type == TokenType::String; }
 		bool isString(StrView s) const		{ return type == TokenType::String && str == s; }
 		bool isNewline() const				{ return type == TokenType::Newline; }
+		
+		void setOp			(StrView s)		{ type = TokenType::Op; str = s; }
+		void setString		(StrView s)		{ type = TokenType::String; str = s; }
+		void setIdentifier	(StrView s)		{ type = TokenType::Identifier; str = s; }
+		
+		template<class CH>
+		void onFormat(Format_<CH> & fmt) const {
+			fmt << Fmt("{}:\"{}\"", type, str);
+		}
 	};
 
 	ShaderDeclareInfo	info;
@@ -109,7 +120,7 @@ private:
 	FileMemMap	_fileMap;
 
 	Source		_source;
-	Char		_ch = 0;
+	Char&		_ch {_source.chRef()};
 	Token		_token;
 };
 

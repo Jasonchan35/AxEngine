@@ -83,12 +83,8 @@ public:
 
 private:
 	bool _nextToken();
-	void _trimSpaces();
 	bool _parseIdentifier();
 	bool _parseNumber();
-	bool _parseString();
-	void _parseMultiLineComment();
-	void _parseSingleLineComment();
 	void appendQuotedString(IString& outStr, StrView inStr);
 
 	void getNamespaceString(IString& outStr, IArray<String>& ns);
@@ -98,11 +94,11 @@ private:
 
 	Array<String> _namespaces;
 
-	Token       _token;
-	String      _data;
-	Source      _source;
-	Char		_ch = 0;
-	TypeDB*     _typeDB     = nullptr;
+	Token   _token;
+	String  _data;
+	Source  _source;
+	Char&   _ch {_source.chRef()};
+	TypeDB* _typeDB     = nullptr;
 };
 
 

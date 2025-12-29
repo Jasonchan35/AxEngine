@@ -376,47 +376,42 @@ bool Parser::_nextToken() {
 	_token.str.clear();
 
 	for (;;) {
-		_trimSpaces();
-		if (!_ch) return false;
+		_source.trimSpaceAndTab();
+		Char ch = _source.ch();
+		if (!ch) return false;
 
-		if (_ch == '_' || CharUtil::isAlpha(_ch)) {
+		if (ch == '_' || CharUtil::isAlpha(ch)) {
 			return _parseIdentifier();
 		}
 
-		if (_ch == '+' || _ch == '-' || CharUtil::isDigit(_ch)) {
+		if (ch == '+' || ch == '-' || CharUtil::isDigit(ch)) {
 			return _parseNumber();
 		}
 
-		if (_ch == '\"') return _parseString();
-		if (_ch == '/') {
-			nextChar();			
-			if (_ch == '*') { 
-				_parseMultiLineComment();
-				continue;
-			}
-
-			if (_ch == '/') { 
-				_parseSingleLineComment();
-				continue;
-			}
-			
-			_token.setOp(_ch);
-			return true;
-		}
+		auto _multiCharOp = [this]()-> bool {
+			static constexpr StrLit opList[] {
+				"//",
+				"/*",
+				"::",
+			};
 		
-		if (_ch == ':') {
-			nextChar();
-			if (_ch == ':') {
-				_token.setOp("::");
+			for (auto& op : opList) {
+				if (!_source.trim(op)) continue;
+				_token.setOp(op);
 				return true;
 			}
 			
-			_token.setOp(_ch);
+			return false;
+		};
+		
+		if (_multiCharOp()) {
+			if (_token.str == "//") { _source.skipUntil("\n", false); continue; }
+			if (_token.str == "/*") { _source.skipUntil("*/", false); continue; }
 			return true;
 		}
 
 		_token.type = TokenType::Op;
-		_token.str << _ch;
+		_token.str = ch;
 		nextChar();
 		return true;
 	}
@@ -473,37 +468,6 @@ bool Parser::_parseNumber() {
 	return true;
 }
 
-bool Parser::_parseString() {
-	_token.type = TokenType::String;
-
-	for (;;) {
-		nextChar();
-		if (_ch == '\\') {
-			nextChar();
-			switch (_ch) {
-				case '\\':
-				case '/':
-				case '"':
-					_token.str << _ch;
-					break;
-				case 'b': _token.str << '\b'; break;
-				case 'f': _token.str << '\f'; break;
-				case 'n': _token.str << '\n'; break;
-				case 'r': _token.str << '\r'; break;
-				case 't': _token.str << '\t'; break;
-				default:
-					throw Error_Undefined();
-			}
-		}else if (_ch == '\"') {
-			nextChar();
-			break;
-		}else{
-			_token.str << _ch;
-		}
-	}
-	return true;
-}
-
 void Parser::appendQuotedString(IString& outStr, StrView inStr) {
 	outStr.append('"');
 	for (auto& ch : inStr) {
@@ -552,35 +516,6 @@ void Parser::getNamespaceString(IString& outStr, IArray<String>& ns) {
 	}
 }
 
-void Parser::_parseMultiLineComment() {
-	nextChar();			
-	for(;;) {
-		if (!_ch) return;
-		if (_ch == '*') {
-			nextChar();
-			if (_ch == '/') {
-				nextChar();
-				return;
-			}
-		}else{
-			nextChar();
-		}
-	}
-}
-
-void Parser::_parseSingleLineComment() {
-	nextChar();			
-	for(;;) {
-		if (!_ch) return;
-		if (_ch == '\n') {
-			nextChar();
-			return;
-		}else{
-			nextChar();
-		}
-	}
-}
-
 bool Parser::nextChar() {
 	_ch = _source.nextChar();
 	return _ch != 0;
@@ -588,16 +523,6 @@ bool Parser::nextChar() {
 
 void Parser::errorUnexpectedEndOfFile(StrView from) {
 	error("unexpected end of file for {}", from);
-}
-
-void Parser::_trimSpaces() {
-	for (;;) {
-		if (_ch == ' '	|| _ch == '\t' || _ch == '\r' || _ch == '\n') {
-			nextChar();
-		}else{
-			break;
-		}
-	}
 }
 
 } //namespace
