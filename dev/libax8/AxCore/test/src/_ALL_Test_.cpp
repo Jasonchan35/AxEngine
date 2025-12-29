@@ -46,7 +46,7 @@ void AxCore_Test_Pointer() {
     AX_TEST_FUNC(Test_SPtr)
 }
 
-void AxCore_Test_Rtti() {
+void AxCore_Test_Reflection() {
     AX_TEST_FUNC(Test_Rtti)
 }
 
@@ -67,7 +67,7 @@ void AxCore_Test() {
     AX_TEST_GROUP(AxCore_Test_Math)
     AX_TEST_GROUP(AxCore_Test_Other)
     AX_TEST_GROUP(AxCore_Test_Pointer)
-    AX_TEST_GROUP(AxCore_Test_Rtti)
+    AX_TEST_GROUP(AxCore_Test_Reflection)
     AX_TEST_GROUP(AxCore_Test_String)
     AX_TEST_GROUP(AxCore_Test_Time)
 }

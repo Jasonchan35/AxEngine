@@ -3,7 +3,7 @@ module;
 module AxEngine;
 import :Engine;
 
-namespace ax::AxEngine{
+namespace AxEngine{
 
 static Engine* Engine_instance;
 

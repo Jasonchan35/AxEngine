@@ -3,7 +3,7 @@ module;
 export module AxEngine:Engine;
 export import :Common;
 
-export namespace ax::AxEngine {
+export namespace AxEngine {
 
 AX_CLASS()
 class Engine : public RttiObject {

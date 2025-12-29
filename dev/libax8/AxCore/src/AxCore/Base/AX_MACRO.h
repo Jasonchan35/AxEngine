@@ -322,15 +322,3 @@
 	constexpr T(const T& s) = delete; \
 	constexpr void operator=(const T& s) = delete; \
 //------
-
-#if 0
-#pragma mark -------- AxCppHeaderTool ------------
-#endif
-
-#define AX_CLASS(...)
-#define AX_PROP(...)
-#define AX_ENUM(...)
-
-#if 0
-#pragma mark ------------
-#endif
