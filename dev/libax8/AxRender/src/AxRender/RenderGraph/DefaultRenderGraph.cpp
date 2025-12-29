@@ -80,7 +80,7 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	}
 
 	{
-		UI::Window	win("Testing");
+		UI::Window	win("UI Testing");
 		static float f = 10;
 		UI::DragFloat("float", &f);
 	}

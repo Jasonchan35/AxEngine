@@ -18,7 +18,7 @@ public:
 		bool inEditor = false;
 	};
 
-	void create(CreateDesc& desc);
+	void create(const CreateDesc& desc);
 
 	bool inEditor() const { return _inEditor; }
 

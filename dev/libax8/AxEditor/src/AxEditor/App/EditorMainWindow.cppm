@@ -16,6 +16,8 @@ protected:
 
 	struct MyRenderGraph : public DefaultRenderGraph {
 		class EditorMainWindow* win = nullptr;
+		
+		virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) override;
 	};
 
 	SPtr<MyRenderGraph>	_renderGraph;

@@ -19,7 +19,7 @@ export namespace ax /*::AxRender*/::UI {
 
 	class Window : public NonCopyable {
 	public:
-		Window(StrView name, bool* pOpen = nullptr);
+		AX_NODISCARD Window(StrView name, bool* pOpen = nullptr);
 		~Window();
 	};
 

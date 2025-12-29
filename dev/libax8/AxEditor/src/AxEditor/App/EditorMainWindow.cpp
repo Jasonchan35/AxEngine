@@ -31,4 +31,14 @@ void EditorMainWindow::onWindowCloseButton() {
 	EditorApp::s_instance()->quit(0);
 }
 
+void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
+	{
+		UI::Window	outliner("Outliner");
+		static float f = 10;
+		UI::DragFloat("float", &f);
+	}
+	
+	DefaultRenderGraph::onBackBufferPass(req, inputs);
+}
+
 } //namespace

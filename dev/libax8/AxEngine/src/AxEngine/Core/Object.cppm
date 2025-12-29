@@ -24,6 +24,8 @@ protected:
 
 class ObjectManager : public NonCopyable {
 public:
+	static ObjectManager* s_instance(); 
+	
 private:
 	Array<Object*>	_objects;
 	Array<Object*>	_rootObjects;

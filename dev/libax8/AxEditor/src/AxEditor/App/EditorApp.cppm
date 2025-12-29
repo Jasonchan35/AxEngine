@@ -20,6 +20,7 @@ private:
 	virtual void onPeekMessage() override;
 
 	void _onFileChanged(FileDirWatcher_Result& result);
+	void _createDemoScene();
 
 	AxEngine::Engine		_engine;
 	UPtr<EditorMainWindow>	_mainWin;

@@ -4,7 +4,6 @@ module AxEditor;
 
 import :EditorApp;
 import :EditorMainWindow;
-#include "AxEditor-Common.h"
 
 namespace AxEditor {
 
@@ -53,7 +52,11 @@ void EditorApp::onCreate() {
 
 	_mainWin = UPtr_new<EditorMainWindow>(AX_ALLOC_REQ);
 	
+	Engine::CreateDesc engineDesc;
+	engineDesc.inEditor = true;
+	_engine.create(engineDesc);
 	
+	_createDemoScene();
 }
 
 void EditorApp::onPeekMessage() {
@@ -64,6 +67,11 @@ void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
 	if (auto* renderSystem = RenderSystem::s_instance()) {
 		renderSystem->onFileChanged(result);
 	}
+}
+
+void EditorApp::_createDemoScene() {
+	auto* entity = SceneEntity::s_new(AX_ALLOC_REQ, "test");
+	entity->addComponent<RenderMeshComponent>(AX_ALLOC_REQ);
 }
 
 } //namespace

@@ -21,7 +21,7 @@ Engine::~Engine() {
 	Engine_instance = nullptr;
 }
 
-void Engine::create(CreateDesc& desc) {
+void Engine::create(const CreateDesc& desc) {
 	_inEditor = desc.inEditor;
 }
 
