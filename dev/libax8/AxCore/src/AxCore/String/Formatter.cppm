@@ -143,10 +143,11 @@ public:
 	}
 };
 
-template <class T, class FMT_CH> requires Type_IsConvertibleToStrViewX<T>
-class FormatHandler<T, FMT_CH> {
+template <class T, class FMT_CH> // requires Type_IsConvertibleToStrViewX<T>
+class FormatHandler<MutStrView_<T>, FMT_CH> {
 public:
-	void onFormat(const T & obj, Format_<FMT_CH> & fmt) {
+	using Obj = MutStrView_<T>;
+	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
 		
 		if constexpr (std::is_same_v<T, FMT_CH>) {
 			auto sv = StrView_<FMT_CH>(obj); 
@@ -157,6 +158,21 @@ public:
 		}
 	}
 };
+
+template <class T, class FMT_CH>
+class FormatHandler<MutStrLit_<T>, FMT_CH> : public FormatHandler<StrView_<T>, FMT_CH> {}; 
+
+template <class T, class FMT_CH>
+class FormatHandler<MutZStrView_<T>, FMT_CH> : public FormatHandler<StrView_<T>, FMT_CH> {}; 
+
+template <class T, class FMT_CH>
+class FormatHandler<IString_<T>, FMT_CH> : public FormatHandler<StrView_<T>, FMT_CH> {}; 
+
+template <class T, Int N, class FMT_CH>
+class FormatHandler<String_<T,N>, FMT_CH> : public FormatHandler<StrView_<T>, FMT_CH> {}; 
+
+template <class T, Int N, class FMT_CH>
+class FormatHandler<T[N], FMT_CH> : public FormatHandler<StrView_<T>, FMT_CH> {}; 
 
 template <class T, class FMT_CH>
 class FormatHandler<MutSpan<T>, FMT_CH> {
@@ -183,13 +199,17 @@ public:
 	}
 };
 
-template <CON_IsIArray OBJ, class FMT_CH> 
-class FormatHandler<OBJ, FMT_CH> {
-public:
-	void onFormat(const OBJ & obj, Format_<FMT_CH> & fmt) {
-		fmt << obj.span();
-	}
-};
+// template <CON_IsIArray OBJ, class FMT_CH> 
+// class FormatHandler<OBJ, FMT_CH> : public FormatHandler<typename OBJ::ElementType, FMT_CH> {}; 
+
+template <class T, class FMT_CH> 
+class FormatHandler<IArray<T>, FMT_CH> : public FormatHandler<Span<T>, FMT_CH> {}; 
+
+template <class T, Int N, class FMT_CH> 
+class FormatHandler<Array<T,N>, FMT_CH> : public FormatHandler<Span<T>, FMT_CH> {}; 
+
+template <class T, Int N, class FMT_CH> 
+class FormatHandler<FixedArray<T,N>, FMT_CH> : public FormatHandler<Span<T>, FMT_CH> {}; 
 
 template <class A, class B, class FMT_CH>
 class FormatHandler<Pair<A,B>, FMT_CH> {

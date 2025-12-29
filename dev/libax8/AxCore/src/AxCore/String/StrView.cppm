@@ -100,7 +100,7 @@ public:
 	constexpr MutStrView_(const This&) noexcept = default;
 	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
 	constexpr MutStrView_(MutZStrView_<T> r) noexcept : _data(r.data()), _size(r.size()) {}
-//	constexpr MutStrView_(T& ch) noexcept : _data(&ch), _size(1) {}
+	constexpr MutStrView_(T& ch) noexcept : _data(&ch), _size(1) {}
 	
 	template <Int N>
 	constexpr MutStrView_(T (&sz)[N]) noexcept : _data(sz), _size( N > 0 ? N - 1 : 0) {}

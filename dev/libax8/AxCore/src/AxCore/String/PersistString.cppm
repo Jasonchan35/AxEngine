@@ -51,6 +51,9 @@ protected:
 	const Data*	_data = nullptr;
 };
 
+template <class T, class FMT_CH>
+class FormatHandler<PersistString_<T>, FMT_CH> : public FormatHandler<StrView_<T>, FMT_CH> {}; 
+
 using PersistString   = PersistString_<Char>;
 using PersistStringA  = PersistString_<CharA>;
 using PersistStringW  = PersistString_<CharW>;

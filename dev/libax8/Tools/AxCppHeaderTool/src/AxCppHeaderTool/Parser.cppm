@@ -5,6 +5,19 @@ export import AxHeaderTool.TypeInfo;
 
 export namespace ax::AxHeaderTool {
 
+using Source = LexerSource<Char>;
+
+#define AX_HEADERTOOL_TokenType_ENUM_LIST(E) \
+	E(Unknown,) \
+	E(Identifier,) \
+	E(Number,) \
+	E(String,) \
+	E(Op,) \
+	E(Newline,) \
+//-----
+
+AX_ENUM_CLASS_EX(AX_HEADERTOOL_TokenType_ENUM_LIST, export namespace, ax::AxHeaderTool, TokenType, u32)
+
 class Parser : public NonCopyable {
 public:
 	void readFile(StrView filename, TypeDB& typeDB);
@@ -33,7 +46,8 @@ public:
 	void log(const FormatString<ARGS...>& fmt, const ARGS&... args) {
 		TempString tmp;
 		tmp.appendFormat(fmt, args...);
-		AX_LOG("{}\n{}:{}\n_token=[{}]", tmp, _filename, _lineNumber, _token.str);
+		_source.appendSourceLocation(tmp, 5);
+		AX_LOG("{}\n token=[{}]\n{}", tmp, _token.str, _source.location());
 	}
 
 	template<class... ARGS>
@@ -41,28 +55,28 @@ public:
 		log(fmt, args...);
 		throw Error_Undefined();
 	}
-
-	enum class TokenType {
-		Unknown,
-		Identifier,
-		Number,
-		String,
-		Op,
-		Newline,
-	};
-
+	
 	struct Token {
 		TokenType	type;
 		String		str;
 
-		explicit operator bool() const			{ return type != TokenType::Unknown; }
-		bool isIdentifier() const				{ return type == TokenType::Identifier; }
+		explicit operator bool() const		{ return type != TokenType::Unknown; }
+		bool isIdentifier() const			{ return type == TokenType::Identifier; }
 		bool isIdentifier(StrView s) const	{ return type == TokenType::Identifier && str == s; }
-		bool isOp() const						{ return type == TokenType::Op; }
+		bool isOp() const					{ return type == TokenType::Op; }
 		bool isOp(StrView s) const			{ return type == TokenType::Op && str == s; }
-		bool isString() const					{ return type == TokenType::String; }
+		bool isString() const				{ return type == TokenType::String; }
 		bool isString(StrView s) const		{ return type == TokenType::String && str == s; }
-		bool isNewline() const					{ return type == TokenType::Newline; }
+		bool isNewline() const				{ return type == TokenType::Newline; }
+		
+		void setOp			(StrView s)		{ type = TokenType::Op; str = s; }
+		void setString		(StrView s)		{ type = TokenType::String; str = s; }
+		void setIdentifier	(StrView s)		{ type = TokenType::Identifier; str = s; }
+		
+		template<class CH>
+		void onFormat(Format_<CH> & fmt) const {
+			fmt << Fmt("{},[{}]", type, str);
+		}
 	};
 
 	Token& token() { return _token; }
@@ -84,14 +98,11 @@ private:
 
 	Array<String> _namespaces;
 
-	Token		_token;
-	String		_source;
-	String		_filename;
-	Int			_lineNumber = 1;
+	Token       _token;
+	String      _data;
+	Source      _source;
 	Char		_ch = 0;
-	const Char*	_cur = nullptr;
-
-	TypeDB*		_typeDB = nullptr;
+	TypeDB*     _typeDB     = nullptr;
 };
 
 

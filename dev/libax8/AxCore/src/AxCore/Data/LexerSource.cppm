@@ -3,6 +3,7 @@ module;
 
 export module AxCore.LexerSource;
 export import AxCore.Logger;
+export import AxCore.UtfUtil;
 
 export namespace ax {
 
@@ -16,6 +17,13 @@ public:
 
 	CH ch() const { return _ch; }
 	CH nextChar();
+	
+	CH advancePos(Int n);
+
+	StrView_<CH> str() const { return _source.sliceFrom(_pos); }
+	
+	bool trim(StrView_<CH> s);
+	void trimSpaceAndTab();
 
 	void setFilename(StrView filename) { _filename = filename; }
 	StrView filename() const	{ return _filename; }
@@ -23,7 +31,9 @@ public:
 	Int		lineNumber() const	{ return _lineNumber; }
 	Int		column() const		{ return _column; }
 	Int		pos() const			{ return _pos; }
+	Int		remain() const		{ return _source.size() - _pos; }
 
+	TempString location() const	{ return Fmt("file:{}:{}", _filename, _lineNumber); }
 	void appendSourceLocation(IString_<CH>& outStr, Int dumpLineCount);
 
 	StrView_<CH> getLastFewLines(Int n, Int* outCount);
@@ -56,6 +66,20 @@ CH LexerSource<CH>::nextChar() {
 	}
 
 	return _ch;
+}
+
+template<class CH> inline
+CH LexerSource<CH>::advancePos(Int n) {
+	for (Int i = 0; i < n; i++) 
+		nextChar();
+	return _ch;
+}
+
+template<class CH> inline
+void LexerSource<CH>::trimSpaceAndTab() {
+	if (_ch == ' ' or _ch == '\t') {
+		nextChar();
+	}
 }
 
 

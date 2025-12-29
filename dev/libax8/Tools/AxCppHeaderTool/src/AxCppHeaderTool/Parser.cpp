@@ -7,16 +7,11 @@ namespace ax::AxHeaderTool {
 void Parser::readFile(StrView filename, TypeDB& typeDB) {
 	AX_LOG("Parser::readFile {}", filename);
 	
-	_filename = filename;
 	_typeDB = &typeDB;
 
-	File::readUtf8(filename, _source);
-	_cur = _source.data();
-	
-	auto& BOM = UtfUtil::kBOM;
-	if (_source.startsWith(BOM)) {
-		_cur += BOM.size();
-	}
+	File::readUtf8(filename, _data);
+	_source.init(_data, filename);
+	_source.trim(UtfUtil::kBOM);
 	
 	nextChar();
 	nextToken();
@@ -37,13 +32,23 @@ void Parser::parseNamespace() {
 		if (_token.isIdentifier("namespace")) {
 			nextToken();
 
-			TempString tmp;
-			readIdentifer(tmp, "namespace name");
-
-			_namespaces.emplaceBack(tmp);
-
+			for (;;) {
+				
+				
+				TempString tmp;
+				readIdentifer(tmp, "namespace name");
+				_namespaces.emplaceBack(tmp);
+			
+				if (_token.isOp("::")) {
+					if (nextToken())
+						errorUnexpectedEndOfFile("namespace");
+					continue;
+				}
+				
+				break;
+			}
+			
 			readExpectOp("{");
-
 			parseNamespace();
 			continue;
 		}
@@ -283,7 +288,7 @@ void Parser::readExpectIdentifer(StrView s) {
 
 void Parser::readExpectOp(StrView s) {
 	if (!_token.isOp(s)) {
-		error("token [{}] expected", s);
+		error("token [{}] expected, current token=[{}]", s, _token);
 	}
 	nextToken();
 }
@@ -362,7 +367,7 @@ void Parser::readDefaultValue(IString & s, StrView msg) {
 
 bool Parser::nextToken() {
 	if (!_nextToken()) return false;
-	AX_DUMP(_token.str);
+//	AX_DUMP(_token.str);
 	return true;
 }
 
@@ -394,12 +399,21 @@ bool Parser::_nextToken() {
 				_parseSingleLineComment();
 				continue;
 			}
-
-			_token.type = TokenType::Op;
-			_token.str << _ch;
+			
+			_token.setOp(_ch);
 			return true;
 		}
-
+		
+		if (_ch == ':') {
+			nextChar();
+			if (_ch == ':') {
+				_token.setOp("::");
+				return true;
+			}
+			
+			_token.setOp(_ch);
+			return true;
+		}
 
 		_token.type = TokenType::Op;
 		_token.str << _ch;
@@ -568,17 +582,8 @@ void Parser::_parseSingleLineComment() {
 }
 
 bool Parser::nextChar() {
-	_ch = 0;
-	if (!_cur) return false;
-	if (_cur >= _source.end()) return false;
-	_ch = *_cur;
-	_cur++;
-
-	if (_ch == '\n') {
-		_lineNumber++;
-	}
-
-	return true;
+	_ch = _source.nextChar();
+	return _ch != 0;
 }
 
 void Parser::errorUnexpectedEndOfFile(StrView from) {

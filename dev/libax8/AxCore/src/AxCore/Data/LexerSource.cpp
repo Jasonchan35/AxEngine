@@ -22,6 +22,15 @@ void LexerSource<CH>::init(StrView_<CH> source, StrView filename) {
 }
 
 template<class CH>
+bool LexerSource<CH>::trim(StrView_<CH> s) {
+	if (str().startsWith(s)) {
+		advancePos(s.size());
+		return true;
+	}
+	return false;
+}
+
+template<class CH>
 StrView_<CH> LexerSource<CH>::getLastFewLines(Int n, Int* outCount) {
 	if (!_source.inBound(_pos)) return StrView_<CH>();
 

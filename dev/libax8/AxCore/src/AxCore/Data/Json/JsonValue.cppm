@@ -329,6 +329,9 @@ protected:
 	JsonArray() = default;
 };
 
+template <class FMT_CH> 
+class FormatHandler<JsonArray, FMT_CH> : public FormatHandler<Span<JsonValue>, FMT_CH> {}; 
+
 //--------- inline -----------------------
 
 template<class VALUE> inline
