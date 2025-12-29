@@ -489,21 +489,28 @@ void Parser::appendQuotedString(IString& outStr, StrView inStr) {
 void Parser::getOpenNamespaceScope(IString& outStr, IArray<String>& ns) {
 	outStr.clear();
 	if (ns.size()) {
+		outStr << "namespace ";
+		Int i = 0;
 		for (auto& e : ns) {
-			outStr.append("namespace ", e, "{ ");
+			if (i > 0) outStr << "::";
+			outStr << e;
+			++i;
 		}
-		outStr.append("\n\n");
+		outStr << " {\n";
 	}
 }
 
 void Parser::getCloseNamespaceScope(IString& outStr, IArray<String>& ns) {
 	outStr.clear();
 	if (ns.size()) {
+		outStr << "} // namespace ";
+		Int i = 0;
 		for (auto& e : ns) {
-			AX_UNUSED(e);
-			outStr.append("}");
+			if (i > 0) outStr << "::";
+			outStr << e;
+			++i;
 		}
-		outStr.append(" // namespace \n");
+		outStr.append("\n");
 	}
 }
 
