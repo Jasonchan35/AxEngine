@@ -3,7 +3,7 @@ module;
 export module AxEditor:EditorApp;
 export import :Common;
 
-export namespace ax::AxEditor {
+export namespace AxEditor {
 
 class EditorMainWindow;
 class EditorApp : public AxUI::UIApp {

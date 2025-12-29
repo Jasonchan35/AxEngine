@@ -6,7 +6,7 @@ import :EditorApp;
 import :EditorMainWindow;
 #include "AxEditor-Common.h"
 
-namespace ax::AxEditor {
+namespace AxEditor {
 
 class EditorApp_CreateDesc : public EditorApp::CreateDesc {
 public:
@@ -52,6 +52,8 @@ void EditorApp::onCreate() {
 	_watcher.create(curDir);
 
 	_mainWin = UPtr_new<EditorMainWindow>(AX_ALLOC_REQ);
+	
+	
 }
 
 void EditorApp::onPeekMessage() {

@@ -2,7 +2,7 @@ module;
 export module AxUI:UIWindow;
 export import :UIRenderView;
 
-export namespace ax::AxUI {
+export namespace AxUI {
 
 class UIWindow : public UIView {
 	AX_RTTI_INFO(UIWindow, UIView)

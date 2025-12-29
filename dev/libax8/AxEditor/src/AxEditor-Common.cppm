@@ -2,9 +2,9 @@
 
 export module AxEditor:Common;
 export import AxEngine;
+export import AxUI;
 
-export namespace ax::AxEditor {
-
-using AxEngine::Engine;
-
+export namespace AxEditor {
+	using namespace AxEngine;
+	using namespace AxUI;
 } // namespace

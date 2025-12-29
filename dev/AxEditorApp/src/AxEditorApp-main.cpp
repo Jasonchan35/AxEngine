@@ -3,5 +3,5 @@
 #include "AX_APP_MAIN.h"
 
 import AxEditor;
-AX_APP_MAIN(ax::AxEditor::EditorApp);
+AX_APP_MAIN(AxEditor::EditorApp);
 

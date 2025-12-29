@@ -3,7 +3,7 @@ module;
 export module AxEditor:EditorMainWindow;
 export import :EditorWindow;
 
-export namespace ax::AxEditor {
+export namespace AxEditor {
 
 class EditorMainWindow : public EditorWindow {
 	AX_RTTI_INFO(EditorMainWindow, EditorWindow)

@@ -1,7 +1,7 @@
 module AxUI;
 import :UIRenderView;
 
-namespace ax::AxUI {
+namespace AxUI {
 
 void UIRenderView::createRenderContext(RenderContext::CreateDesc& desc) {
 	_renderContext = RenderContext::s_new(AX_ALLOC_REQ, desc);

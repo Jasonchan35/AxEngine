@@ -1,7 +1,7 @@
 module AxUI;
 import :UIWindow;
 
-namespace ax::AxUI {
+namespace AxUI {
 
 class UIWindow::NativeWin : public NativeUIWindow {
 	AX_RTTI_INFO(NativeWin, NativeUIWindow)

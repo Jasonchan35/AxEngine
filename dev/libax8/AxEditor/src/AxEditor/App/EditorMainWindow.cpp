@@ -4,7 +4,7 @@ module AxEditor;
 import :EditorMainWindow;
 import :EditorApp;
 
-namespace ax::AxEditor {
+namespace AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
 	auto* renderSystem = RenderSystem::s_instance();

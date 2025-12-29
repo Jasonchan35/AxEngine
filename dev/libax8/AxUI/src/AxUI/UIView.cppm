@@ -2,7 +2,7 @@ module;
 export module AxUI:UIView;
 export import :Common;
 
-export namespace ax::AxUI {
+export namespace AxUI {
 
 class UIView : public RttiObject {
 	AX_TYPE_INFO(UIView, RttiObject)
