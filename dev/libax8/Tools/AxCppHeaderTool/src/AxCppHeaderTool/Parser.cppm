@@ -1,9 +1,9 @@
 module;
 
-export module AxHeaderTool.Parser;
-export import AxHeaderTool.TypeInfo;
+export module AxCppHeaderTool:Parser;
+export import :TypeInfo;
 
-export namespace ax::AxHeaderTool {
+export namespace ax::AxCppHeaderTool {
 
 using Source = LexerSource<Char>;
 
@@ -16,7 +16,7 @@ using Source = LexerSource<Char>;
 	E(Newline,) \
 //-----
 
-AX_ENUM_CLASS_EX(AX_HEADERTOOL_TokenType_ENUM_LIST, export namespace, ax::AxHeaderTool, TokenType, u32)
+AX_ENUM_CLASS_EX(AX_HEADERTOOL_TokenType_ENUM_LIST, export namespace, ax::AxCppHeaderTool, TokenType, u32)
 
 class Parser : public NonCopyable {
 public:

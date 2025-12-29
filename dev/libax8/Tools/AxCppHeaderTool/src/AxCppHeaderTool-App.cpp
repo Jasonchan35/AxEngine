@@ -1,11 +1,15 @@
 module;
 
+module AxCppHeaderTool;
+import :App;
+import :Generator;
 
-module AxHeaderTool.App;
-import AxHeaderTool.PCH;
-import AxHeaderTool.Generator;
+namespace ax::AxCppHeaderTool {
 
-namespace ax::AxHeaderTool {
+CmdOptions::CmdOptions() {
+	writeFileOpt.logResult   = true;
+	writeFileOpt.logNoChange = true;
+}
 
 int App::onRun() {
 	String currentDir;
@@ -57,7 +61,7 @@ int App::onRun() {
 
 	for (auto& f : inputFiles) {
 		Generator g;
-		g.gen(f);
+		g.gen(opt, f);
 
 		if (!g._typeDB.types.size())
 			continue;
@@ -75,7 +79,7 @@ int App::onRun() {
 	{
 		TempString txt(_outGenTypeHeaders, "\n\n", _outGenTypes);
 		TempString outFilename(opt.outPath, "/NodeGenTypes._impl.h");
-		File::writeFileIfChanged(outFilename, txt, true, false);
+		File::writeFileIfChanged(outFilename, txt, opt.writeFileOpt);
 	}
 
 	return 0;

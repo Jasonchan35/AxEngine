@@ -24,7 +24,7 @@ void LexerSource<CH>::init(StrView_<CH> source, StrView filename) {
 }
 
 template<class CH>
-bool LexerSource<CH>::trim(StrView_<CH> s) {
+bool LexerSource<CH>::match(StrView_<CH> s) {
 	if (startsWith(s)) {
 		advancePos(s.size());
 		return true;
@@ -33,10 +33,10 @@ bool LexerSource<CH>::trim(StrView_<CH> s) {
 }
 
 template<class CH>
-void LexerSource<CH>::skipUntil(StrView_<CH> delimiter, bool keepDelimiter) {
+void LexerSource<CH>::skipUntil(StrView_<CH> delimiter, bool bAdvancePos) {
 	while (_ch) {
 		if (startsWith(delimiter)) {
-			if (!keepDelimiter) {
+			if (bAdvancePos) {
 				advancePos(delimiter.size());
 			}
 			return;

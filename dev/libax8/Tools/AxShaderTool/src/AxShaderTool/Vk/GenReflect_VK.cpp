@@ -176,7 +176,8 @@ void GenReflect_Vk::generate(StrView outFilename, StrView filename, RenderAPI ap
 	_genVertexInputs	(outInfo, spirvReflect);
 	_genBindings		(outInfo, spirvReflect);
 
-	JsonIO::writeFile(outFilename, outInfo, false, false);
+	auto& opt = CmdOptions::s_instance();
+	JsonIO::writeFile(outFilename, outInfo, opt.writeFileOpt);
 }
 
 void GenReflect_Vk::_genVertexInputs(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {

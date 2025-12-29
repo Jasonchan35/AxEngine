@@ -8,7 +8,7 @@ void ShaderInfoParser::readFile(StrView outDir, StrView filename) {
 	_fileMap.openFile(filename);
 
 	_source.init(_fileMap.strViewA(), filename);
-	_source.trim(UtfUtil::kBOM);
+	_source.match(UtfUtil::kBOM);
 	nextToken();
 	if (!expectOp("#")) return;
 	if (!expectIdentifier("if")) return;
@@ -23,8 +23,8 @@ void ShaderInfoParser::readFile(StrView outDir, StrView filename) {
 	{
 		String outFilename = outDir;
 		outFilename.append("/info.json");
-
-		JsonIO::writeFileIfChanged(outFilename, info, true);
+		auto& opt = CmdOptions::s_instance();
+		JsonIO::writeFileIfChanged(outFilename, info, opt.writeFileOpt);
 	}
 }
 
@@ -44,7 +44,7 @@ String ShaderInfoParser::_logString(StrView msg) {
 
 bool ShaderInfoParser::nextToken() {
 	if (!_nextToken()) return false;
-	AX_DUMP(_token);
+//	AX_DUMP(_token);
 	return true;
 }
 
@@ -81,7 +81,7 @@ bool ShaderInfoParser::_nextToken() {
 			};
 		
 			for (auto& op : opList) {
-				if (!_source.trim(op)) continue;
+				if (!_source.match(op)) continue;
 				_token.setOp(op);
 				return true;
 			}
@@ -91,11 +91,11 @@ bool ShaderInfoParser::_nextToken() {
 		
 		if (_multiCharOp()) {
 			if (_token.str == "//") {
-				_source.skipUntil("\n", true);
+				_source.skipUntil("\n", false);
 				continue;
 			}
 			if (_token.str == "/*") {
-				_source.skipUntil("*/", false);
+				_source.skipUntil("*/", true);
 				continue;
 			}
 			

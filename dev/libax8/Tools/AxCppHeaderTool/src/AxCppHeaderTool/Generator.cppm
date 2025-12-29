@@ -1,14 +1,15 @@
 module;
-export module AxHeaderTool.Generator;
-export import AxHeaderTool.PCH;
-export import AxHeaderTool.Parser;
+export module AxCppHeaderTool:Generator;
+export import :PCH;
+export import :Parser;
+export import :App;
 
-export namespace ax::AxHeaderTool {
+export namespace ax::AxCppHeaderTool {
 
 class Generator : public NonCopyable {
 public:
 	Generator();
-	void gen(StrView filename);
+	void gen(CmdOptions& opt, StrView filename);
 	void gen_type(TypeInfo& type);
 
 	Parser	_parser;

@@ -1,13 +1,14 @@
 module;
 
-module AxHeaderTool.Generator;
+module AxCppHeaderTool;
+import :Generator;
 
-namespace ax::AxHeaderTool {
+namespace ax::AxCppHeaderTool {
 
 Generator::Generator() {
 }
 
-void Generator::gen(StrView filename) {
+void Generator::gen(CmdOptions& opt, StrView filename) {
 	_parser.readFile(filename, _typeDB);
 
 	if (!_typeDB.types.size()) {
@@ -22,17 +23,11 @@ void Generator::gen(StrView filename) {
 
 	for (auto& type : _typeDB.types.values()) {
 		_outImpl = headerMessage;
-
 		gen_type(type);
-
-		auto dir = FilePath::dirname(filename);
-
-		String typeFilename(type.name);
-		typeFilename.replaceChars(':', '_');
-
+		auto basename = FilePath::basename(filename, true);
 		if (_outImpl) {
-			TempString outFilename(dir, "/", typeFilename, "._gen.cpp");
-			File::writeFileIfChanged(outFilename, _outImpl, true, false);
+			TempString outFilename(opt.outPath, "/", basename, ".gen.h");
+			File::writeFileIfChanged(outFilename, _outImpl, opt.writeFileOpt);
 		}
 	}
 }

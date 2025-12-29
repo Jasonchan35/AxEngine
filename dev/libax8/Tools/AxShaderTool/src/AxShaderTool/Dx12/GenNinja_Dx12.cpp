@@ -5,7 +5,7 @@ import :GenNinja_Dx12;
 
 namespace ax {
 void GenNinja_Dx12::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename) {
-	auto& opt = AxShaderTool_App::s_instance()->opt; 
+	auto& opt = CmdOptions::s_instance(); 
 	
 	outStr.append(	"rule build_Shader_Dx12_json\n"
 					"  depfile = $out.d\n"

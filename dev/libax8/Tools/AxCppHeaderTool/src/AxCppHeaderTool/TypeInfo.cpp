@@ -1,7 +1,8 @@
 module;
-module AxHeaderTool.TypeInfo;
+module AxCppHeaderTool;
+import :TypeInfo;
 
-namespace ax::AxHeaderTool {
+namespace ax::AxCppHeaderTool {
 
 TypeDB::TypeDB() {
 }

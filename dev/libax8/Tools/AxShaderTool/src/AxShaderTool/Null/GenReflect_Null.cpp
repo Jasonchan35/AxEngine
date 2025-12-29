@@ -11,7 +11,9 @@ namespace ax /*::AxRender*/ {
 
 void GenReflect_Null::generate(StrView outFilename, StrView filename, RenderAPI api) {
 	ShaderStageInfo outInfo;
-	JsonIO::writeFile(outFilename, outInfo, false, false);
+
+	auto& opt = CmdOptions::s_instance();
+	JsonIO::writeFile(outFilename, outInfo, opt.writeFileOpt);
 }
 
 } // namespace

@@ -8,6 +8,16 @@ import :GenResultInfo;
 
 namespace ax /*::AxRender*/ {
 
+CmdOptions::CmdOptions() {
+	writeFileOpt.createDir = true;
+	writeFileOpt.logResult = true;
+}
+
+CmdOptions& CmdOptions::s_instance() {
+	static CmdOptions s;
+	return s;
+}
+
 AxShaderTool_App::AxShaderTool_App() {
 //	Error::s_setEnableAssertion(true);
 }
@@ -50,7 +60,7 @@ void AxShaderTool_App::genNinja_Shaders(StrView outDir, const Array<String>& fil
 		outStr.append(Fmt("build {}/shaderResult.json: build_shader {} | ${{AxShaderTool}} \n", f, f));
 	}
 
-	File::writeFileIfChanged(Fmt("{}/build.ninja", outDir), outStr, true);
+	File::writeFileIfChanged(Fmt("{}/build.ninja", outDir), outStr, opt.writeFileOpt);
 }
 
 void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
@@ -99,7 +109,7 @@ void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
 #endif
 
 	auto outFilename = Fmt("{}/build.ninja", outDir);
-	File::writeFileIfChanged(outFilename, outStr, true);
+	File::writeFileIfChanged(outFilename, outStr, opt.writeFileOpt);
 }
 
 void AxShaderTool_App::writeNinja_Header(IString& outStr) {
@@ -174,7 +184,7 @@ void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& inf
 	outStr.append("\n\n");
 
 	auto outFilename = Fmt("{}/build.ninja", apiOutDir);
-	File::writeFileIfChanged(outFilename, outStr, true);
+	File::writeFileIfChanged(outFilename, outStr, opt.writeFileOpt);
 }
 
 void AxShaderTool_App::showHelp() {

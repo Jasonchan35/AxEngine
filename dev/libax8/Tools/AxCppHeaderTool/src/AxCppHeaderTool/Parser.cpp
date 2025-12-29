@@ -1,8 +1,9 @@
 module;
 
-module AxHeaderTool.Parser;
+module AxCppHeaderTool;
+import :Parser;
 
-namespace ax::AxHeaderTool {
+namespace ax::AxCppHeaderTool {
 
 void Parser::readFile(StrView filename, TypeDB& typeDB) {
 	AX_LOG("Parser::readFile {}", filename);
@@ -11,7 +12,7 @@ void Parser::readFile(StrView filename, TypeDB& typeDB) {
 
 	File::readUtf8(filename, _data);
 	_source.init(_data, filename);
-	_source.trim(UtfUtil::kBOM);
+	_source.match(UtfUtil::kBOM);
 	
 	nextChar();
 	nextToken();
@@ -40,7 +41,7 @@ void Parser::parseNamespace() {
 				_namespaces.emplaceBack(tmp);
 			
 				if (_token.isOp("::")) {
-					if (nextToken())
+					if (!nextToken())
 						errorUnexpectedEndOfFile("namespace");
 					continue;
 				}
@@ -367,7 +368,7 @@ void Parser::readDefaultValue(IString & s, StrView msg) {
 
 bool Parser::nextToken() {
 	if (!_nextToken()) return false;
-//	AX_DUMP(_token.str);
+//	AX_DUMP(_token);
 	return true;
 }
 
@@ -376,7 +377,7 @@ bool Parser::_nextToken() {
 	_token.str.clear();
 
 	for (;;) {
-		_source.trimSpaceAndTab();
+		_source.trimSpaceTab_Newline();
 		Char ch = _source.ch();
 		if (!ch) return false;
 
@@ -396,7 +397,7 @@ bool Parser::_nextToken() {
 			};
 		
 			for (auto& op : opList) {
-				if (!_source.trim(op)) continue;
+				if (!_source.match(op)) continue;
 				_token.setOp(op);
 				return true;
 			}
@@ -405,8 +406,8 @@ bool Parser::_nextToken() {
 		};
 		
 		if (_multiCharOp()) {
-			if (_token.str == "//") { _source.skipUntil("\n", false); continue; }
-			if (_token.str == "/*") { _source.skipUntil("*/", false); continue; }
+			if (_token.str == "//") { _source.skipUntil("\n", true); continue; }
+			if (_token.str == "/*") { _source.skipUntil("*/", true); continue; }
 			return true;
 		}
 

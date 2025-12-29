@@ -57,12 +57,18 @@ struct File {
 		NewFile,
 		Updated,
 	};
+	
+	struct WriteFileOpt {
+		bool createDir   : 1 = false;
+		bool logResult   : 1 = false;
+		bool logNoChange : 1 = false;
+	};
 
-	static WriteFileResult	writeFile			( StrView filename, ByteSpan buf,  bool createDir, bool logResult = true);
-	static WriteFileResult	writeFile			( StrView filename, StrViewA text, bool createDir, bool logResult = true);
+	static WriteFileResult	writeFile			( StrView filename, ByteSpan buf,  const WriteFileOpt& opt = {});
+	static WriteFileResult	writeFile			( StrView filename, StrViewA text, const WriteFileOpt& opt = {});
 
-	static WriteFileResult	writeFileIfChanged	( StrView filename, ByteSpan buf,  bool createDir, bool logResult = true, bool logNoChange = false);
-	static WriteFileResult	writeFileIfChanged	( StrView filename, StrViewA text, bool createDir, bool logResult = true, bool logNoChange = false);
+	static WriteFileResult	writeFileIfChanged	( StrView filename, ByteSpan buf,  const WriteFileOpt& opt = {});
+	static WriteFileResult	writeFileIfChanged	( StrView filename, StrViewA text, const WriteFileOpt& opt = {});
 
 	static void	touch(StrView filename);
 

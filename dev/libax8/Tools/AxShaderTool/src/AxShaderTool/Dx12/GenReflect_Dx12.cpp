@@ -103,7 +103,8 @@ void GenReflect_Dx12::writeDepFile(StrView filename) {
 	}
 	o.append("\n");
 
-	File::writeFile(outFilename, o, false, false);
+	auto& opt = CmdOptions::s_instance();
+	File::writeFile(outFilename, o, opt.writeFileOpt);
 }
 
 void GenReflect_Dx12::compile(StrView      outFilename,
@@ -329,7 +330,8 @@ AX_GCC_WARNING_POP()
 		{
 			String jsonFilename = outFilename;
 			// jsonFilename.append(".json");
-			JsonIO::writeFile(jsonFilename, outInfo, false, false);
+			auto& opt = CmdOptions::s_instance();
+			JsonIO::writeFile(jsonFilename, outInfo, opt.writeFileOpt);
 		}
 	}
 }

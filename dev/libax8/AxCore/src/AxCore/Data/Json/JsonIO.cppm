@@ -15,10 +15,10 @@ struct JsonIO  {
 	template<class T> static void readFile			(StrView filename, T& obj);
 	template<class T> static void readJson			(StrView  json, T& obj, StrView filenameForErrorMessage = StrView());
 
-	template<class T> static void writeFile			(StrView filename, T& obj, bool createDir = true, bool logResult = true);
+	template<class T> static void writeFile			(StrView filename, T& obj, const File::WriteFileOpt& opt = {});
 	template<class T> static void writeJson			(IString& json, T& obj);
 
-	template<class T> static void writeFileIfChanged(StrView filename, T& obj, bool createDir = true, bool logResult = true);
+	template<class T> static void writeFileIfChanged(StrView filename, T& obj, const File::WriteFileOpt& opt = {});
 };
 
 template<class T> inline
@@ -30,19 +30,19 @@ void JsonIO::readFile(StrView filename, T& obj) {
 }
 
 template<class T> inline
-void JsonIO::writeFile(StrView filename, T& obj, bool createDir, bool logResult) {
+void JsonIO::writeFile(StrView filename, T& obj, const File::WriteFileOpt& opt) {
 	TempString json;
 	JsonIO_Writer wr(json);
 	wr.io(obj);
-	File::writeFile(filename, json, createDir, logResult);
+	File::writeFile(filename, json, opt);
 }
 
 template<class T> inline
-void JsonIO::writeFileIfChanged(StrView filename, T& obj, bool createDir, bool logResult) {
+void JsonIO::writeFileIfChanged(StrView filename, T& obj, const File::WriteFileOpt& opt) {
 	TempString json;
 	JsonIO_Writer wr(json);
 	wr.io(obj);
-	File::writeFileIfChanged(filename, json, createDir, logResult);
+	File::writeFileIfChanged(filename, json, opt);
 }
 
 template<class T> inline

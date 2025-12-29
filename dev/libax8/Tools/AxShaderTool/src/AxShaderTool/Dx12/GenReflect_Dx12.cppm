@@ -54,7 +54,7 @@ private:
 	void _compileReflect_storageBuffers	(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
 
 	class IncludeHandler;
-
+	
 	bool checkError(HRESULT hr) {
 		if (FAILED(hr))
 			return false;

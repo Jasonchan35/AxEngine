@@ -360,7 +360,7 @@ void File::writeUtf8		( StrView filename, StrViewA text ) {
 	s.writeUtf8( text );
 }
 
-File::WriteFileResult File::writeFile(StrView filename, ByteSpan buf, bool createDir, bool logResult) {
+File::WriteFileResult File::writeFile(StrView filename, ByteSpan buf, const WriteFileOpt& opt) {
 	Char op = '+';
 	auto res = WriteFileResult::NewFile;
 
@@ -371,11 +371,11 @@ File::WriteFileResult File::writeFile(StrView filename, ByteSpan buf, bool creat
 		res = WriteFileResult::Updated;
 	}
 
-	if (logResult) {
+	if (opt.logResult) {
 		AX_LOG("[{}] {}, size={}", op, absPath, buf.sizeInBytes());
 	}
 
-	if (createDir) {
+	if (opt.createDir) {
 		if (auto dir = FilePath::dirname(absPath)) {
 			FileDir::create(dir, true);
 		}
@@ -385,11 +385,11 @@ File::WriteFileResult File::writeFile(StrView filename, ByteSpan buf, bool creat
 	return res;
 }
 
-File::WriteFileResult File::writeFile(StrView filename, StrViewA text, bool createDir, bool logResult) {
-	return writeFile(filename, text.toByteSpan(), createDir, logResult);
+File::WriteFileResult File::writeFile(StrView filename, StrViewA text, const WriteFileOpt& opt) {
+	return writeFile(filename, text.toByteSpan(), opt);
 }
 
-File::WriteFileResult File::writeFileIfChanged(StrView filename, ByteSpan buf, bool createDir, bool logResult, bool logNoChange) {
+File::WriteFileResult File::writeFileIfChanged(StrView filename, ByteSpan buf, const WriteFileOpt& opt) {
 	Char op = '+';
 	AX_UNUSED(op);
 
@@ -408,19 +408,21 @@ File::WriteFileResult File::writeFileIfChanged(StrView filename, ByteSpan buf, b
 		}
 	}
 
-	if (logResult) {
-		if (res != WriteFileResult::NoChange || logNoChange) {
+	if (opt.logResult) {
+		if (res != WriteFileResult::NoChange || opt.logNoChange) {
 			AX_LOG("[{}] {}, size={}", op, absPath, buf.sizeInBytes());
 		}
 	}
 
 	if (res == WriteFileResult::NoChange) return res;
-	File::writeFile(absPath, buf, createDir, false);
+	auto nextOpt = opt;
+	nextOpt.logResult = false;
+	File::writeFile(absPath, buf, nextOpt);
 	return res;
 }
 
-File::WriteFileResult File::writeFileIfChanged(StrView filename, StrViewA text, bool createDir, bool logResult, bool logNoChange) {
-	return writeFileIfChanged(filename, text.toByteSpan(), createDir, logResult, logNoChange);
+File::WriteFileResult File::writeFileIfChanged(StrView filename, StrViewA text, const WriteFileOpt& opt) {
+	return writeFileIfChanged(filename, text.toByteSpan(), opt);
 }
 
 void File::touch(StrView filename) {
@@ -434,7 +436,7 @@ void File::touch(StrView filename) {
 
 void File::copy(StrView dstFilename, StrView srcFilename) {
 	FileMemMap	mm(srcFilename);
-	writeFile(dstFilename, mm.span(), true, true);
+	writeFile(dstFilename, mm.span(), {.createDir = true, .logResult = true});
 }
 
 

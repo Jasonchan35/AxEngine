@@ -24,10 +24,11 @@ public:
 	
 	bool startsWith(StrView_<CH> s) const { return remain().startsWith(s); }
 	
-	bool trim(StrView_<CH> s);
-	void trimSpaceAndTab();
+	bool match(StrView_<CH> s);
+	void trimSpaceTab();
+	void trimSpaceTab_Newline();
 	
-	void skipUntil(StrView_<CH> delimiter, bool keepDelimiter);
+	void skipUntil(StrView_<CH> delimiter, bool bAdvancePos);
 	
 	void read_c_string_literal(IString_<CH>& outStr);
 	
@@ -85,11 +86,17 @@ CH LexerSource<CH>::advancePos(Int n) {
 }
 
 template<class CH> inline
-void LexerSource<CH>::trimSpaceAndTab() {
-	if (_ch == ' ' or _ch == '\t') {
+void LexerSource<CH>::trimSpaceTab() {
+	while (_ch == ' ' || _ch == '\t') {
 		nextChar();
 	}
 }
 
+template<class CH>
+void LexerSource<CH>::trimSpaceTab_Newline() {
+	while (_ch == ' ' || _ch == '\t' || _ch == '\r' || _ch == '\n') {
+		nextChar();
+	}	
+}
 
 } // namespace

@@ -1,8 +1,8 @@
 module;
-export module AxHeaderTool.TypeInfo;
-export import AxHeaderTool.PCH;
+export module AxCppHeaderTool:TypeInfo;
+export import :PCH;
 
-export namespace ax::AxHeaderTool {
+export namespace ax::AxCppHeaderTool {
 
 inline
 void convertToDisplayName(IString& outStr, StrView s) {

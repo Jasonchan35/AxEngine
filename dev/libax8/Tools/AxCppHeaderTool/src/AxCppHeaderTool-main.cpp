@@ -2,5 +2,5 @@
 
 #include "AX_APP_MAIN.h"
 
-import AxHeaderTool.App;
-AX_APP_MAIN(ax::AxHeaderTool::App);
+import AxCppHeaderTool;
+AX_APP_MAIN(ax::AxCppHeaderTool::App);

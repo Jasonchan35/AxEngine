@@ -1,18 +1,20 @@
 module;
 
-export module AxHeaderTool.App;
-export import AxHeaderTool.PCH;
+export module AxCppHeaderTool:App;
+export import :PCH;
 
-export namespace ax::AxHeaderTool {
+export namespace ax::AxCppHeaderTool {
+
+struct CmdOptions {
+	String outPath;
+	File::WriteFileOpt writeFileOpt;
+	
+	CmdOptions();
+};	
 
 class App : public ConsoleApp {
 public:
 	virtual int onRun() override;
-	
-	struct CmdOptions {
-		String outPath;
-	};	
-	
 	CmdOptions opt {};
 };
 
