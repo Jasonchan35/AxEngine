@@ -40,8 +40,9 @@ public:
 	
 	class MyObject : public RttiObject {
 		AX_RTTI_INFO(MyObject, RttiObject)
+		
 	};
-
+	
 	void test_case1();
 };
 
@@ -81,6 +82,11 @@ void Test_Rtti::test_case1() {
 		AX_TEST_EQ(ti->allFields().size(), 2);
 		AX_TEST_EQ(ti->allFields()[0]->name(), AX_NAMEID("x"));
 		AX_TEST_EQ(ti->allFields()[1]->name(), AX_NAMEID("y"));
+	}
+	
+	{
+		Rtti* ti = rttiOf<MyObject>();
+		AX_TEST_EQ(ti->name(), AX_NAMEID("class ax::Test_Rtti::MyObject"));
 	}
 	
 }

@@ -107,6 +107,11 @@ template<class T> using MetaTypeOf			= FinalMetaTypeOf_Handler_<T>::FinalMetaTyp
 // template<class T> using MetaType_OfBase_	= FinalMetaTypeOf_Handler_< BaseClassOf<T> >;
 
 template<class T>
+concept  CON_HasMetaTypeInit = requires {
+	typename MetaTypeInit_Handler_<T>::MetaTypeInit;
+};
+
+template<class T>
 struct MetaTypeInit_Helper_ : public MetaTypeOf< BaseClassOf<T> > {
 	using ObjThis = T;
 	using ObjBase = typename T::_TYPE_INFO_Base;

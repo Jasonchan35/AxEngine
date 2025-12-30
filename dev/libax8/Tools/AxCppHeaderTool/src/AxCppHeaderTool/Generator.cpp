@@ -45,6 +45,13 @@ void Generator::gen_type(StrView srcFilename, TypeInfo& type) {
 	_outStr.appendFormat("\n//--- Type {} ----------\n", type.fullname);
 	_outStr.appendFormat("#define AX_GENERATED_BODY_LINE{}() \\\n", type.lineNumber_AX_GENERATED_BODY);
 	_outStr.appendFormat("  AX_RTTI_INFO({}, {}) \\\n", type.name, type.baseName);
+	_outStr.appendFormat("  struct MutRttiInit : public MutRtti {{ \\\n");
+	
+	// for (auto &prop : type.props) {
+	// 	_outStr.appendFormat("    AX_META_FIELD({}) {{}};\n", prop.key());
+	// }
+	
+	_outStr.appendFormat("  }};\n\n");
 	_outStr.appendFormat("//------\n\n");
 	_outStr << "\n";
 }

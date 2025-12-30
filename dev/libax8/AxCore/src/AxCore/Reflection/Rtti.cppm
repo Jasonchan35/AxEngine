@@ -7,11 +7,12 @@ export import AxCore.NameId;
 export import AxCore.WPtr;
 export import AxCore.MetaType;
 export import AxCore.Dict;
+export import AxCore.Logger;
 
 export namespace ax {
 
-struct Rtti;
-template<class T> struct Rtti_;
+struct MutRtti;
+using Rtti = const MutRtti;
 
 #if 0
 #pragma mark ---------------- RttiAttr -------------------
@@ -57,8 +58,8 @@ struct MutRttiField : public NonCopyable {
 	Rtti*	fieldType() const { return _fieldType; }
 	Rtti*	fieldOwner() const { return _fieldOwner; }
 
-	template<class R> friend struct Rtti_;
-	friend struct Rtti;
+	template<class R> friend struct MutRtti_FromMetaType_;
+	friend struct MutRtti;
 protected:
 	NameId	_name;
 	Rtti*	_fieldType = nullptr;
@@ -71,13 +72,27 @@ using RttiField = const MutRttiField;
 #pragma mark ---------------- Rtti -------------------
 #endif
 
-template<class T> struct Rtti_Handler_ {
+template<class T> concept  CON_HasRttiInfo = requires { { T::s_rtti() } -> std::same_as<Rtti*>; };
+template<class T> concept  CON_HasRttiInit = requires { typename T::RttiInit; };
+
+template<class T> struct MutRttiInit_;
+
+template<class T>
+struct Rtti_Handler_ {
 	static Rtti* s_rtti() {
 		static_assert(!std::is_const_v<T>);
 		static_assert(!std::is_reference_v<T>);
 		static_assert(!std::is_pointer_v<T>);
-		static Rtti_<T> s;
-		return &s;
+		if constexpr(CON_HasRttiInit<T>) {
+			static typename T::MutRttiInit s;
+			return &s;
+		} else if constexpr (CON_HasRttiInfo<T>) {
+			static MutRttiInit_<T> s;
+			return &s;
+		} else {
+			static MutRtti_FromMetaType_<T> s;
+			return &s;
+		}
 	}
 };
 
@@ -87,7 +102,7 @@ template<> struct Rtti_Handler_<NoBaseClass> {
 
 template<class T> Rtti* rttiOf() { return Rtti_Handler_<std::remove_cv_t<T>>::s_rtti(); }
 
-struct Rtti : public NonCopyable {
+struct MutRtti : public NonCopyable {
 	template<class R>
 	constexpr bool isKindOf() const { return isKindOf(rttiOf<R>()); }
 	constexpr bool isKindOf(Rtti* r) const;
@@ -106,7 +121,7 @@ struct Rtti : public NonCopyable {
 	
 	void debugDump();
 
-	template<class R> friend struct Rtti_; 
+	template<class R> friend struct MutRtti_FromMetaType_; 
 protected:
 	Rtti*	_base = nullptr;
 	NameId	_name;
@@ -122,13 +137,20 @@ protected:
 	Array<RttiAttr*>					_ownAttrs;
 };
 
+template<class T>
+struct MutRttiInit_ : public MutRtti {
+	MutRttiInit_() {
+		this->_name = NameId::s_make(ax_metatype_get_class_name<T>());
+//		AX_LOG("Rtti_{}", this->_name);
+	}
+};
 
-template<>
-struct Rtti_<NoBaseClass> {}; 
+template<class T> struct MutRtti_FromMetaType_;
+template<> struct MutRtti_FromMetaType_<NoBaseClass> {}; 
 
 template<class T>
-struct Rtti_ : public Rtti {
-	Rtti_() { _ctor(); }
+struct MutRtti_FromMetaType_ : public MutRtti {
+	MutRtti_FromMetaType_() { _ctor(); }
 public:
 	using ObjThis      = T;
 	using ObjBase      = BaseClassOf<T>;
@@ -140,7 +162,7 @@ public:
 	
 	struct OwnField_Handler {
 		template<Int Index, class Field>
-		static void onEach(Rtti_* rtti) {
+		static void onEach(MutRtti_FromMetaType_* rtti) {
 			static MutRttiField field;
 			field._name = Field::s_name();
 			using FieldType = typename Field::FieldType;
@@ -184,6 +206,10 @@ bool Rtti::isKindOf(Rtti* r) const {
 	}
 	return false;
 }
+
+#if 0
+#pragma mark ---------------- RttiManager -------------------
+#endif
 
 #if 0
 #pragma mark ---------------- RttiObject -------------------

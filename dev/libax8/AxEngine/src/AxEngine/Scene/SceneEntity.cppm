@@ -37,9 +37,17 @@ private:
 };
 
 AX_CLASS()
+class TransformComponent : public SceneComponent {
+	AX_GENERATED_BODY()
+	
+	AX_PROP() Vec3f position;
+	AX_PROP() Vec3f rotation;
+	AX_PROP() Vec3f scale;
+};
+
+AX_CLASS()
 class RenderMeshComponent : public SceneComponent {
 	AX_GENERATED_BODY()
-public:
 	
 };
 

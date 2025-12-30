@@ -43,7 +43,7 @@ bool UnitTest_Validate(bool success, const char* expr_str, const std::source_loc
 
 	constexpr int kBufSize = 4096;
 	char buf[kBufSize + 1];
-	snprintf(buf, kBufSize, "%s %s", (success ? "[ OK ]" : "[FAIL]"), expr_str);
+	snprintf(buf, kBufSize, "%s %s\n  file:%s:%d", (success ? "[ OK ]" : "[FAIL]"), expr_str, loc.file_name(), loc.line());
 	ax_internal_log(buf);
 	if (!success) {
 		__ax_internal_assert("", expr_str, buf, loc);

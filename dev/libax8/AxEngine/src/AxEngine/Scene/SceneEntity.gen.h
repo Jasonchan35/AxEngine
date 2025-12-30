@@ -20,8 +20,15 @@
 
 
 
-//--- Type AxEngine::RenderMeshComponent ----------
+//--- Type AxEngine::TransformComponent ----------
 #define AX_GENERATED_BODY_LINE41() \
+  AX_RTTI_INFO(TransformComponent, SceneComponent) \
+//------
+
+
+
+//--- Type AxEngine::RenderMeshComponent ----------
+#define AX_GENERATED_BODY_LINE50() \
   AX_RTTI_INFO(RenderMeshComponent, SceneComponent) \
 //------
 
