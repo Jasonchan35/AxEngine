@@ -63,6 +63,7 @@ public:
 	String openNamespaceScope;
 	String closeNamespaceScope;
 	Dict<String, PropInfo>	props;
+	Int lineNumber_AX_GENERATED_BODY = 0;
 };
 
 class TypeDB : public NonCopyable {

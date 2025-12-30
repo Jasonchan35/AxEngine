@@ -23,9 +23,14 @@ void Parser::readFile(StrView filename, TypeDB& typeDB) {
 void Parser::parseNamespace() {
 	do {
 		if (_token.isOp("}")) break;
-
 		if (_token.isNewline()) return;
-
+		
+		
+		if (_token.isIdentifier("using")) {
+			parseUsing();
+			continue;
+		}
+		
 		if (_token.isIdentifier("AX_CLASS")) {
 			parseClass();
 			continue;
@@ -34,8 +39,6 @@ void Parser::parseNamespace() {
 			nextToken();
 
 			for (;;) {
-				
-				
 				TempString tmp;
 				readIdentifer(tmp, "namespace name");
 				_namespaces.emplaceBack(tmp);
@@ -58,6 +61,17 @@ void Parser::parseNamespace() {
 	if (_namespaces.size()) {
 		_namespaces.decSize(1);
 	}
+}
+
+void Parser::parseUsing() {
+	nextToken();
+	while (!_token.isOp(";")) {
+		
+		if (!nextToken()) {
+			errorUnexpectedEndOfFile("using");
+		}
+	}
+	
 }
 
 void Parser::parseClass() {
@@ -94,7 +108,7 @@ void Parser::parseClass() {
 
 	if (_token.isOp(":")) {
 		nextToken();
-		readExpectIdentifer("public");	
+		readExpectIdentifer("public");
 		readIdentifer(tmp, "base class");
 		outType.baseName = tmp;		
 	}
@@ -115,6 +129,11 @@ void Parser::parseClass() {
 // class Body
 	readExpectOp("{");
 	while (!_token.isOp("}")) {
+		if (_token.isIdentifier("AX_GENERATED_BODY")) {
+			parseGeneratedBody(outType);
+			continue;
+		}
+		
 		if (_token.isIdentifier("AX_PROP")) {
 			parseProp(outType);
 			continue;
@@ -127,6 +146,17 @@ void Parser::parseClass() {
 
 		if (!nextToken()) {
 			errorUnexpectedEndOfFile("CLASS body");
+		}
+	}
+}
+
+void Parser::parseGeneratedBody(TypeInfo& outType) {
+	nextToken();
+	outType.lineNumber_AX_GENERATED_BODY = _source.lineNumber();
+	readExpectOp("(");
+	while (!_token.isOp(")")) {
+		if (!nextToken()) {
+			errorUnexpectedEndOfFile("AX_GENERATED_BODY");
 		}
 	}
 }

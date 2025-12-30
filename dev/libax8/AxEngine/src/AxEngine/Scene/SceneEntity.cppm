@@ -1,5 +1,7 @@
 ﻿module;
 
+#include "SceneEntity.gen.h"
+
 export module AxEngine:SceneEntity;
 export import :Object;
 
@@ -7,12 +9,12 @@ export namespace AxEngine {
 
 AX_CLASS()
 class SceneComponent : public Object {
-	
+	AX_GENERATED_BODY()
 };
 
 AX_CLASS()
 class SceneEntity : public Object {
-	AX_RTTI_INFO(SceneEntity, Object)
+	AX_GENERATED_BODY()
 public:
 	struct CreateDesc {
 		CreateDesc(StrView name_) : name(name_) {};
@@ -36,6 +38,7 @@ private:
 
 AX_CLASS()
 class RenderMeshComponent : public SceneComponent {
+	AX_GENERATED_BODY()
 public:
 	
 };

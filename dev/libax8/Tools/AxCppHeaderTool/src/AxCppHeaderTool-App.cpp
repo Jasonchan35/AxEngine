@@ -8,7 +8,7 @@ namespace ax::AxCppHeaderTool {
 
 CmdOptions::CmdOptions() {
 	writeFileOpt.logResult   = true;
-	writeFileOpt.logNoChange = true;
+	writeFileOpt.logNoChange = false;
 }
 
 int App::onRun() {

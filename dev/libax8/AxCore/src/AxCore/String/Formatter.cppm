@@ -243,7 +243,7 @@ class FormatHandler<SrcLoc, FMT_CH> {
 public:
 	using Obj = SrcLoc;
 	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << Fmt("(SrcLoc:{}:{})", obj.file(), obj.line());
+		fmt << Fmt("{}:{}", obj.file(), obj.line());
 	}
 };
 

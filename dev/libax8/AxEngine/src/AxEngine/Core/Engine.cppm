@@ -5,7 +5,6 @@ export import :Common;
 
 export namespace AxEngine {
 
-AX_CLASS()
 class Engine : public RttiObject {
 	AX_RTTI_INFO(Engine, RttiObject)
 public:

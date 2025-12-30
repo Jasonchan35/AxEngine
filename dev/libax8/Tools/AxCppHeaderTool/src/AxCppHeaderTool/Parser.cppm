@@ -23,8 +23,10 @@ public:
 	void readFile(StrView filename, TypeDB& typeDB);
 
 	void parseNamespace();
+	void parseUsing();
 	void parseClass();
 	void parseProp(TypeInfo& outType);
+	void parseGeneratedBody(TypeInfo& outType);
 	
 	void skipBlock(IString* appendToStr = nullptr);
 
@@ -102,4 +104,5 @@ private:
 };
 
 
-} //namespace
+
+                                                                                                          } //namespace

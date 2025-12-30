@@ -9,13 +9,13 @@ export namespace ax::AxCppHeaderTool {
 class Generator : public NonCopyable {
 public:
 	Generator();
-	void gen(CmdOptions& opt, StrView filename);
-	void gen_type(TypeInfo& type);
+	void gen(CmdOptions& opt, StrView srcFilename);
+	void gen_type(StrView srcFilename, TypeInfo& type);
 
 	Parser	_parser;
 	TypeDB	_typeDB;
 
-	String	_outImpl;
+	String	_outStr;
 };
 
 } //namespace
