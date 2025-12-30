@@ -59,7 +59,7 @@ private:
 			return;
 		}
 
-		_block.ref(new(AX_ALLOC_REQ) WPtrBlock());
+		_block.ref(new(AX_NEW) WPtrBlock());
 		p->_weakPtrBlock.ref(_block.ptr());
 		auto data = _block->data.scopedLock();
 		data->obj = p;

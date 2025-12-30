@@ -46,7 +46,7 @@ void RenderContext_Dx12::_createSwapChain() {
 		depthBuf_createDesc.name      = Fmt("BackBuffer-depth");
 		depthBuf_createDesc.frameSize = frameSize;
 		depthBuf_createDesc.depthType = _swapChainDesc.depthAttachmentDesc.depthType;
-		_depthBuffer_dx12             = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc);
+		_depthBuffer_dx12             = RenderPassDepthBuffer_Backend::s_new(AX_NEW, depthBuf_createDesc);
 	}
 	
 	_createBackBuffers();
@@ -63,7 +63,7 @@ void RenderContext_Dx12::_createBackBuffers() {
 	depthBuf_createDesc.frameSize = frameSize;
 	depthBuf_createDesc.depthType = _swapChainDesc.depthAttachmentDesc.depthType;
 	
-	_depthBuffer_dx12 = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc); 
+	_depthBuffer_dx12 = RenderPassDepthBuffer_Backend::s_new(AX_NEW, depthBuf_createDesc); 
 
 	Int bufferCount = ax_safe_cast_from(swapChainDesc.BufferCount);
 	_backBuffers_dx12.resize(bufferCount);
@@ -71,7 +71,7 @@ void RenderContext_Dx12::_createBackBuffers() {
 	for (Int i = 0; i < bufferCount; ++i) {
 		auto& dst = _backBuffers_dx12[i];
 		if (!dst) {
-			dst.newObject(AX_ALLOC_REQ);
+			dst.newObject(AX_NEW);
 		}
 		dst->createOrUpdate(this, i, frameSize);
 	}
@@ -88,7 +88,7 @@ void RenderContext_Dx12::BackBuffer_Dx12::createOrUpdate(RenderContext_Dx12* ren
 	colorBuf_createDesc.fromBackBuffer.set(renderContext, index);
 	colorBuf_createDesc.colorType = colorBufferAttachment.colorType;
 	
-	_colorBuf_dx12 = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+	_colorBuf_dx12 = RenderPassColorBuffer_Backend::s_new(AX_NEW, colorBuf_createDesc);
 
 	RenderPass_CreateDesc renderPass_createDesc;
 	renderPass_createDesc.name = FmtName("BackBuffer_{}", index);
@@ -97,7 +97,7 @@ void RenderContext_Dx12::BackBuffer_Dx12::createOrUpdate(RenderContext_Dx12* ren
 	renderPass_createDesc.depthAttachmentDesc = depthBufferAttachment;
 	renderPass_createDesc.frameSize   = frameSize;
 
-	_renderPass_dx12 = RenderPass_Backend::s_new(AX_ALLOC_REQ, renderPass_createDesc);
+	_renderPass_dx12 = RenderPass_Backend::s_new(AX_NEW, renderPass_createDesc);
 }
 
 void RenderContext_Dx12::BackBuffer_Dx12::releaseResources() {

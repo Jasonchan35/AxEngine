@@ -36,11 +36,11 @@ ImUIWindow::ImUIWindow() {
 		desc.isMainWindow = true;
 		desc.rect = Rect2f(100, 100, 1920, 1080) / 2;
 	//	desc.visible = false;
-		_nativeWin = UPtr_new<NativeWin>(AX_ALLOC_REQ, this, desc);
+		_nativeWin = UPtr_new<NativeWin>(AX_NEW, this, desc);
 	}
 	
 	{
-		_contentView = SPtr_new<ImUIRenderView>(AX_ALLOC_REQ);
+		_contentView = SPtr_new<ImUIRenderView>(AX_NEW);
 		addChild(_contentView);
 
 		RenderContext::CreateDesc desc;

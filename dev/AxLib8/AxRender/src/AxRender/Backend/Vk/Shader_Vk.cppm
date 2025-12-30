@@ -95,7 +95,7 @@ public:
 	Shader_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	virtual UPtr<ShaderPass_Backend> onNewPass(const ShaderPass_CreateDesc& desc) override {
-		return UPtr_new<ShaderPass_Vk>(AX_ALLOC_REQ, desc);
+		return UPtr_new<ShaderPass_Vk>(AX_NEW, desc);
 	}
 };
 

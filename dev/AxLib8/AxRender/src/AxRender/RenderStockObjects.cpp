@@ -16,21 +16,21 @@ RenderStockObjects::Samplers::Samplers()
 
 {
 	Sampler_CreateDesc desc;
-	defaultValue = Sampler::s_new(AX_ALLOC_REQ, desc);
+	defaultValue = Sampler::s_new(AX_NEW, desc);
 }
 
 RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
-	Clamp      = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Clamp     ));
-	Repeat     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Repeat    ));
-	Mirror     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Mirror    ));
-	MirrorOnce = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::MirrorOnce));
+	Clamp      = Sampler::s_new(AX_NEW, filter, SamplerWrapUVW(TagAll, SamplerWrap::Clamp     ));
+	Repeat     = Sampler::s_new(AX_NEW, filter, SamplerWrapUVW(TagAll, SamplerWrap::Repeat    ));
+	Mirror     = Sampler::s_new(AX_NEW, filter, SamplerWrapUVW(TagAll, SamplerWrap::Mirror    ));
+	MirrorOnce = Sampler::s_new(AX_NEW, filter, SamplerWrapUVW(TagAll, SamplerWrap::MirrorOnce));
 }
 
 RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }
 
 void RenderStockObjects::s_create() {
 	AX_ASSERT(StockObjects_instance == nullptr);
-	StockObjects_instance = new(AX_ALLOC_REQ) RenderStockObjects();
+	StockObjects_instance = new(AX_NEW) RenderStockObjects();
 }
 
 void RenderStockObjects::s_destroy() {
@@ -47,7 +47,7 @@ RenderStockObjects::Texture2Ds::Texture2Ds() {
 		auto createTex = [&](SPtr<Texture2D> & outTex, const Color4b& color, StrView name) {
 			image.create(ColorType::RGBAb, Vec2i(4,4));
 			image.fill(color);
-			outTex = Texture2D::s_new(AX_ALLOC_REQ, image);
+			outTex = Texture2D::s_new(AX_NEW, image);
 			outTex->setDebugName(name);
 		};
 
@@ -66,7 +66,7 @@ RenderStockObjects::Texture2Ds::Texture2Ds() {
 				row[x] = ColorRGBAb(v, 0, v, 255);
 			}
 		}
-		kError = Texture2D::s_new(AX_ALLOC_REQ, image);
+		kError = Texture2D::s_new(AX_NEW, image);
 	}
 }
 

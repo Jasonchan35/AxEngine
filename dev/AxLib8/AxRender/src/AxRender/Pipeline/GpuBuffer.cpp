@@ -20,7 +20,7 @@ StorageBuffer::StorageBuffer(const CreateDesc& desc) {
 	gpuBufDesc.bufferType = GpuBufferType::Storage;
 	gpuBufDesc.bufferSize = desc.bufferSize;
 
-	_gpuBuffer = GpuBuffer::s_new(AX_ALLOC_REQ, gpuBufDesc);
+	_gpuBuffer = GpuBuffer::s_new(AX_NEW, gpuBufDesc);
 }
 
 void DynamicGpuBuffer::create(const CreateDesc& desc) {
@@ -45,7 +45,7 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 	_dirtyRange.reset();
 	
 	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataSize) {
-		_gpuBuffer = GpuBuffer::s_new(AX_ALLOC_REQ, _name, _bufferType, dataSize);
+		_gpuBuffer = GpuBuffer::s_new(AX_NEW, _name, _bufferType, dataSize);
 		uploadRange = IntRange(dataSize); // upload all for new buffer
 	}
 

@@ -221,7 +221,7 @@ void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 			ShaderParamSpace_CreateDesc spaceDesc;
 			spaceDesc.bindSpace = s;
 			spaceDesc.shaderPass = this;
-			auto newSpace = ShaderParamSpace_Backend::s_new(AX_ALLOC_REQ, spaceDesc);
+			auto newSpace = ShaderParamSpace_Backend::s_new(AX_NEW, spaceDesc);
 			paramSpace.ref(newSpace.ptr());
 		}
 

@@ -27,7 +27,7 @@ struct Test_LinkedList : public UnitTestClass {
 			Int N = 5;
 		
 			for (Int i = 0; i < N; i++) {
-				auto uptr = UPtr_new<TestData>(AX_ALLOC_REQ, i);
+				auto uptr = UPtr_new<TestData>(AX_NEW, i);
 				auto* p = list.append(std::move(uptr));
 				arr << p;
 			}
@@ -40,11 +40,11 @@ struct Test_LinkedList : public UnitTestClass {
 		}
 
 		{			
-			list.insertAfter(	UPtr_new<TestData>(AX_ALLOC_REQ, 100), arr[3]);
-			list.insert(		UPtr_new<TestData>(AX_ALLOC_REQ, 101));
-			list.insertBefore(	UPtr_new<TestData>(AX_ALLOC_REQ, 102), nullptr);
-			list.insertAfter(	UPtr_new<TestData>(AX_ALLOC_REQ, 103), nullptr);
-			list.insertAfter(	UPtr_new<TestData>(AX_ALLOC_REQ, 104), arr[4]);
+			list.insertAfter(	UPtr_new<TestData>(AX_NEW, 100), arr[3]);
+			list.insert(		UPtr_new<TestData>(AX_NEW, 101));
+			list.insertBefore(	UPtr_new<TestData>(AX_NEW, 102), nullptr);
+			list.insertAfter(	UPtr_new<TestData>(AX_NEW, 103), nullptr);
+			list.insertAfter(	UPtr_new<TestData>(AX_NEW, 104), arr[4]);
 			list.remove(arr[2]);
 		}
 

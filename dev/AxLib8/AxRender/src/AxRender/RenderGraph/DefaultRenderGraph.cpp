@@ -9,27 +9,27 @@ DefaultRenderGraph::DefaultRenderGraph() {
 	backBufferPass().color0.setClearColor(Color4f(0,0,0.2f));
 
 	if constexpr (false) {
-		auto shader = Shader::s_new(AX_ALLOC_REQ, "ImportedAssets/Shaders/core/test.axShader");
-		_testMaterial = Material::s_new(AX_ALLOC_REQ);
+		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/test.axShader");
+		_testMaterial = Material::s_new(AX_NEW);
 		_testMaterial->setShader(shader);
 	}
 
 	if constexpr (true) {
 //		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvCheckerPalette.png");
 //		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvChecker_BC7.dds");
-		_testTex0 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/uvChecker.jpg");
-		_testTex1 = Texture2D::s_new(AX_ALLOC_REQ, "Assets/Images/test/radial_gradient.png");
+		_testTex0 = Texture2D::s_new(AX_NEW, "Assets/Images/test/uvChecker.jpg");
+		_testTex1 = Texture2D::s_new(AX_NEW, "Assets/Images/test/radial_gradient.png");
 
 		Sampler_CreateDesc samplerDesc;
-		_testSampler = Sampler::s_new(AX_ALLOC_REQ, samplerDesc);
+		_testSampler = Sampler::s_new(AX_NEW, samplerDesc);
 
-		SPtr<Sampler> testSampler2 = Sampler::s_new(AX_ALLOC_REQ, samplerDesc);
+		SPtr<Sampler> testSampler2 = Sampler::s_new(AX_NEW, samplerDesc);
 
 	}
 
 	if constexpr (true) {
-		auto shader = Shader::s_new(AX_ALLOC_REQ, "ImportedAssets/Shaders/core/testMesh.axShader");
-		_testMeshMaterial = Material::s_new(AX_ALLOC_REQ);
+		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/testMesh.axShader");
+		_testMeshMaterial = Material::s_new(AX_NEW);
 		_testMeshMaterial->setShader(shader);
 		
 //		_testMeshMaterial->setParam(NameId("color"), Color4f::kRed());

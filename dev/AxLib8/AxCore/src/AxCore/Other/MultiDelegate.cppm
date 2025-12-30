@@ -43,16 +43,16 @@ private:
 		_nodes.clear();
 	}
 
-	void _bindStatic(StaticFunc func)	{ _nodes.append(UPtr_new<Node>(AX_ALLOC_REQ))->dg.bindStatic(func); }
+	void _bindStatic(StaticFunc func)	{ _nodes.append(UPtr_new<Node>(AX_NEW))->dg.bindStatic(func); }
 
 	template<class LAMBDA>
-	void _bindLambda(LAMBDA func)		{ _nodes.append(UPtr_new<Node>(AX_ALLOC_REQ))->dg.bindLambda(func); }
+	void _bindLambda(LAMBDA func)		{ _nodes.append(UPtr_new<Node>(AX_NEW))->dg.bindLambda(func); }
 
 	template<class OBJ, class FUNC>
-	void _bindWPtr(SPtr<OBJ>& obj, FUNC func) { if (!obj) return; _nodes.append(UPtr_new<Node>(AX_ALLOC_REQ))->dg.bindWPtr(obj, func); }
+	void _bindWPtr(SPtr<OBJ>& obj, FUNC func) { if (!obj) return; _nodes.append(UPtr_new<Node>(AX_NEW))->dg.bindWPtr(obj, func); }
 
 	template<class OBJ, class FUNC>
-	void _bindUnowned(OBJ* obj, FUNC func) { if (!obj) return; _nodes.append(UPtr_new<Node>(AX_ALLOC_REQ))->dg.bindUnowned(obj, func); }
+	void _bindUnowned(OBJ* obj, FUNC func) { if (!obj) return; _nodes.append(UPtr_new<Node>(AX_NEW))->dg.bindUnowned(obj, func); }
 
 #if AX_HAS_AWX_WIDGETS
 	template<class OBJ, class FUNC>

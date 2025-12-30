@@ -48,7 +48,7 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 			RenderPassColorBuffer_CreateDesc colorBuf_createDesc;
 			colorBuf_createDesc.name      = FmtName("{}-color", desc.name);
 			colorBuf_createDesc.colorType = newColorAttachment.desc.colorType;
-			newColorAttachment.buffer     = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+			newColorAttachment.buffer     = RenderPassColorBuffer_Backend::s_new(AX_NEW, colorBuf_createDesc);
 		}
 	}
 
@@ -64,7 +64,7 @@ RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)
 			depthBufDesc.frameSize = desc.frameSize;
 			depthBufDesc.depthType = desc.depthAttachmentDesc.depthType;
 
-			_depthAttachment.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+			_depthAttachment.buffer = RenderPassDepthBuffer_Backend::s_new(AX_NEW, depthBufDesc);
 		}
 	}	
 	

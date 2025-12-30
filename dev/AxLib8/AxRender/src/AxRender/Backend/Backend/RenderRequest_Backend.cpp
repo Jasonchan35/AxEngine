@@ -121,7 +121,7 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
-	auto uploadBuf = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
+	auto uploadBuf = GpuBuffer_Backend::s_new(AX_NEW,
 											  Fmt("{}-upload", _name),
 											  GpuBufferType::StagingToGpu,
 											  data.size());
@@ -185,7 +185,7 @@ void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {
 	limitPerEach = info.limitPerEach;
 	if (info.bufferSize <= 0) return;
 
-	stagingToGpuBuffer = GpuBuffer_Backend::s_new(AX_ALLOC_REQ,
+	stagingToGpuBuffer = GpuBuffer_Backend::s_new(AX_NEW,
 	                                               Fmt("{}-InlineUpload", req->name()),
 	                                               GpuBufferType::StagingToGpu,
 	                                               info.bufferSize);

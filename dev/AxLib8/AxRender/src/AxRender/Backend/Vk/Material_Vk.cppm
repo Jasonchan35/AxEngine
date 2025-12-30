@@ -62,7 +62,7 @@ private:
 	Shader_Vk* shader_vk() { return static_cast<Shader_Vk*>(_shader_backend.ptr()); }
 
 	virtual UPtr<MaterialPass_Backend> onNewPass(const MaterialPass_CreateDesc& desc) override {
-		return UPtr_new<MaterialPass_Vk>(AX_ALLOC_REQ, desc);
+		return UPtr_new<MaterialPass_Vk>(AX_NEW, desc);
 	}
 };
 

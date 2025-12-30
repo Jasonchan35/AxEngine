@@ -269,7 +269,7 @@ private:
 	Node& _addNode(const InKey & key, ARGS&&... args) {
 		auto hash = HashInt::s_make(key);
 		HashList& hashList = _getListForAdd(hash);
-		SPtr<Node> node = SPtr_new<Node>(AX_ALLOC_REQ, key, hash, AX_FORWARD(args)...);
+		SPtr<Node> node = SPtr_new<Node>(AX_NEW, key, hash, AX_FORWARD(args)...);
 		hashList.append(node);
 		return *_orderedList.append(node);
 	}

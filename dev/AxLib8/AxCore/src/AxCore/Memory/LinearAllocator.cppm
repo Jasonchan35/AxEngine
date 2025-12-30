@@ -46,7 +46,7 @@ inline void* LinearAllocator::allocBytes(Int reqSize, Int align) {
 
 	auto chunkSize = reqSize > _chunkSize ? reqSize : _chunkSize;
 
-	auto newChunk = UPtr_new<Chunk>(AX_ALLOC_REQ, chunkSize);
+	auto newChunk = UPtr_new<Chunk>(AX_NEW, chunkSize);
 	_chunks.append(std::move(newChunk));
 
 	auto* p = _chunks.back()->allocate(reqSize, align);

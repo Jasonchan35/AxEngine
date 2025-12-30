@@ -72,8 +72,8 @@ void RenderObjectManager_Backend::_postCreate() {
 
 	//----- common material
 	auto commonShaderFilename = StrView("ImportedAssets/Shaders/core/Common.axShader");
-	auto commonParamShader = Shader::s_new(AX_ALLOC_REQ, commonShaderFilename);
-	_commonMaterial = rttiCastCheck<Material_Backend>(Material::s_new(AX_ALLOC_REQ).ptr());
+	auto commonParamShader = Shader::s_new(AX_NEW, commonShaderFilename);
+	_commonMaterial = rttiCastCheck<Material_Backend>(Material::s_new(AX_NEW).ptr());
 	_commonMaterial->setShader(commonParamShader);
 
 	_commonMaterialPass = _commonMaterial->getPass(0);

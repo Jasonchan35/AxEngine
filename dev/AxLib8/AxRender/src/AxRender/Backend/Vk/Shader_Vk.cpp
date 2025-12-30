@@ -86,7 +86,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 		}
 	}
 
-	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_ALLOC_REQ);
+	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
 	outPipeline->key = key;
 
 	auto& dev = RenderSystem_Vk::s_instance()->device();

@@ -44,7 +44,7 @@ void Texture2D_Vk::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
 	_view.create(_image);
 
 	auto dataSize = handler.desc.dataSize;
-	_uploadBuffer = GpuBuffer_Backend::s_new(AX_ALLOC_REQ, "Texture2D_VK-upload", GpuBufferType::StagingToGpu, dataSize);
+	_uploadBuffer = GpuBuffer_Backend::s_new(AX_NEW, "Texture2D_VK-upload", GpuBufferType::StagingToGpu, dataSize);
 	auto map = _uploadBuffer->mapMemory(IntRange(dataSize));
 	handler.readPixelsTo(map.data());
 }

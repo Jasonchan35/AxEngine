@@ -54,10 +54,10 @@ public:
 		WPtr<TestObject>	w;
 		
 		{
-			auto obj1 = SPtr_new<TestObject>(AX_ALLOC_REQ, 1,2);
+			auto obj1 = SPtr_new<TestObject>(AX_NEW, 1,2);
 			w.ref(obj1);
 
-			auto obj2 = SPtr_new<TestObject>(AX_ALLOC_REQ, 3,2);
+			auto obj2 = SPtr_new<TestObject>(AX_NEW, 3,2);
 			w.ref(obj2);
 
 			auto r = w.getSPtr();
@@ -71,7 +71,7 @@ public:
 	}
 
 	void test_upcast() {
-		auto obj1 = SPtr_new<TestObject>(AX_ALLOC_REQ, 4,2);
+		auto obj1 = SPtr_new<TestObject>(AX_NEW, 4,2);
 
 		SPtr<TestObjectBase> b(obj1);
 		SPtr<TestObjectBase> c;

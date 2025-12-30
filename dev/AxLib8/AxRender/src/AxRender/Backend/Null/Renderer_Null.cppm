@@ -103,7 +103,7 @@ class Shader_Null : public Shader_Backend {
 public:
 	Shader_Null(const CreateDesc& desc) : Base(desc) {}
 	virtual UPtr<ShaderPass_Backend > onNewPass (const ShaderPass_CreateDesc& desc) override {
-		return UPtr_new<ShaderPass_Null>(AX_ALLOC_REQ, desc);
+		return UPtr_new<ShaderPass_Null>(AX_NEW, desc);
 	}
 };
 
@@ -119,7 +119,7 @@ class Material_Null : public Material_Backend {
 public:
 	Material_Null(const CreateDesc& desc) : Base(desc) {}
 	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_CreateDesc& desc) override {
-		return UPtr_new<MaterialPass_Null>(AX_ALLOC_REQ, desc);
+		return UPtr_new<MaterialPass_Null>(AX_NEW, desc);
 	}
 };
 

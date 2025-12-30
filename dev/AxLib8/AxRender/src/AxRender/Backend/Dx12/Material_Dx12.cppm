@@ -79,7 +79,7 @@ public:
 	Shader_Dx12*	shader_dx12() { return rttiCastCheck<Shader_Dx12>(Base::shader()); }
 
 	virtual UPtr<MaterialPass_Backend> onNewPass(const MaterialPass_CreateDesc& desc) override {
-		return UPtr_new<MaterialPass_Dx12>(AX_ALLOC_REQ, desc);
+		return UPtr_new<MaterialPass_Dx12>(AX_NEW, desc);
 	}
 };
 

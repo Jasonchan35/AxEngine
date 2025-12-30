@@ -16,7 +16,7 @@ RenderSystem_Backend::RenderSystem_Backend(const CreateDesc& desc)
 : Base(desc)
 {
 	_imguiFontAtlas.AddFontDefault();
-	_privateData.newObject(AX_ALLOC_REQ);
+	_privateData.newObject(AX_NEW);
 }
 
 RenderSystem_Backend::~RenderSystem_Backend() {
@@ -25,13 +25,13 @@ RenderSystem_Backend::~RenderSystem_Backend() {
 void RenderSystem_Backend::onCreate() {
 	Base::onCreate();
 
-	RenderObjectManager_Backend::s_create(AX_ALLOC_REQ);
+	RenderObjectManager_Backend::s_create(AX_NEW);
 //----- render request
 	if (_info.renderRequest.count > AxRenderConfig::kMaxRenderRequestCount)
 		throw Error_Undefined();
 
 	for (Int i = 0; i < _info.renderRequest.count; i++) {
-		auto req = RenderRequest_Backend::s_new(AX_ALLOC_REQ, this, i);
+		auto req = RenderRequest_Backend::s_new(AX_NEW, this, i);
 		_privateData->renderRequests.emplaceBack(std::move(req));
 	}
 }

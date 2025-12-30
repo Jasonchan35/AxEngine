@@ -43,7 +43,7 @@ void RenderGraph_Pass::_createRenderPass() {
 
 	desc.name = _name;
 
-	_renderPass = RenderPass_Backend::s_new(AX_ALLOC_REQ, desc);
+	_renderPass = RenderPass_Backend::s_new(AX_NEW, desc);
 }
 
 void RenderGraph_Pass::_render(RenderRequest_Backend* req) {

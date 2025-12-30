@@ -242,7 +242,7 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 		psoDesc.DSVFormat = Dx12Util::getDxDepthType(pass->depthAttachment().desc.depthType);
 	}
 	
-	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_ALLOC_REQ);
+	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
 	outPipeline->key = key;
 
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();

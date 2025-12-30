@@ -99,7 +99,7 @@ struct JsonIO_Handler< UPtr<T, DEL> > {
 	template<class SE>
 	static void onJsonIO(SE& se, UPtr<T, DEL>& value) {
 		if constexpr (se.isReader()) {
-			auto p = UPtr_new<T, DEL>(AX_ALLOC_REQ);
+			auto p = UPtr_new<T, DEL>(AX_NEW);
 			if (p) {
 				se.io(*p);
 			}

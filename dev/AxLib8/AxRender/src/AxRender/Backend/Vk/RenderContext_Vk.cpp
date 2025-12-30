@@ -59,7 +59,7 @@ void RenderContext_Vk_Base::_createSwapChain() {
 		depthBuf_createDesc.name = Fmt("BackBuffer-depth");
 		depthBuf_createDesc.frameSize = frameSize;
 		depthBuf_createDesc.depthType = depthType;
-		_depthBuf_vk = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBuf_createDesc);
+		_depthBuf_vk = RenderPassDepthBuffer_Backend::s_new(AX_NEW, depthBuf_createDesc);
 	}
 
 	_createBackBuffers(dev, frameSize);
@@ -75,7 +75,7 @@ void RenderContext_Vk_Base::_createBackBuffers(AX_VkDevice& dev, Vec2i frameSize
 	for (Int i = 0; i < imageCount; i++) {
 		auto& dst = _backBuffers_vk[i];
 		if (!dst) {
-			dst.newObject(AX_ALLOC_REQ);
+			dst.newObject(AX_NEW);
 		}
 		dst->createOrUpdate(this, dev, i, images[i], frameSize);
 	}
@@ -196,7 +196,7 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 	colorBuf_createDesc.colorType = colorBufferAttachment.colorType;
 	colorBuf_createDesc.fromBackBuffer.set(renderContext, index);
 
-	_colorBuf_vk = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+	_colorBuf_vk = RenderPassColorBuffer_Backend::s_new(AX_NEW, colorBuf_createDesc);
 
 	auto& surface = renderContext->_surface_vk;
 
@@ -220,7 +220,7 @@ void RenderContext_Vk_Base::BackBuffer_Vk::createOrUpdate(
 	renderPass_createDesc.depthAttachmentDesc = depthBufferAttachment;
 	renderPass_createDesc.frameSize   = frameSize;
 
-	_renderPass_vk = RenderPass_Backend::s_new(AX_ALLOC_REQ, renderPass_createDesc);
+	_renderPass_vk = RenderPass_Backend::s_new(AX_NEW, renderPass_createDesc);
 }
 
 #if AX_NATIVE_UI_WIN32

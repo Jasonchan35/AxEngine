@@ -22,7 +22,7 @@ EditorMainWindow::EditorMainWindow() {
 	}
 
 
-	_renderGraph.newObject(AX_ALLOC_REQ);
+	_renderGraph.newObject(AX_NEW);
 	_renderGraph->win = this;
 	setRenderGraph(_renderGraph);
 }

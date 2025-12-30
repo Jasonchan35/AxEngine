@@ -28,7 +28,7 @@ SPtr<MaterialParamSpace_Backend> MaterialParamSpace_Backend::s_new(MaterialPass_
 	MaterialParamSpace_CreateDesc desc;
 	desc.materialPass = pass;
 	desc.shaderParamSpace = shaderParamSpace;
-	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newMaterialParamSpace(AX_ALLOC_REQ, desc));
+	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newMaterialParamSpace(AX_NEW, desc));
 }
 
 MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)

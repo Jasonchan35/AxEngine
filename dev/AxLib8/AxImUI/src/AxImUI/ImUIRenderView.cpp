@@ -4,7 +4,7 @@ import :ImUIRenderView;
 namespace AxUI {
 
 void ImUIRenderView::createRenderContext(RenderContext::CreateDesc& desc) {
-	_renderContext = RenderContext::s_new(AX_ALLOC_REQ, desc);
+	_renderContext = RenderContext::s_new(AX_NEW, desc);
 }
 
 void ImUIRenderView::onSizeChanged(const Vec2f& size) {

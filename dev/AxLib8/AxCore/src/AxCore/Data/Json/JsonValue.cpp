@@ -51,7 +51,7 @@ JsonObject* JsonValue::setToObject() {
 	if (!isObject()) {
 		_reset();
 		_type = Type::Object;
-		_value.v_object = new (AX_ALLOC_REQ) JsonObject;
+		_value.v_object = new (AX_NEW) JsonObject;
 	}
 	return _value.v_object;
 }
@@ -60,7 +60,7 @@ JsonArray* JsonValue::setToArray(Int size) {
 	if (!isArray()) {
 		_reset();
 		_type = Type::Array;
-		_value.v_array = new (AX_ALLOC_REQ) JsonArray;
+		_value.v_array = new (AX_NEW) JsonArray;
 	}
 	auto& arr = *_value.v_array;
 	arr.resize(size);
@@ -71,7 +71,7 @@ IString* JsonValue::setToString() {
 	if (!isString()) {
 		_reset();
 		_type = Type::String;
-		_value.v_string = new (AX_ALLOC_REQ) String;
+		_value.v_string = new (AX_NEW) String;
 	}
 	return _value.v_string;
 }

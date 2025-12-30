@@ -21,12 +21,12 @@ RenderSystem* RenderSystem::s_instance() {
 UPtr<RenderSystem> RenderSystem::s_create(const CreateDesc& desc) {
 	UPtr<RenderSystem> o;
 	switch (desc.info.api) {
-		case RenderAPI::Null:	o = UPtr_new<RenderSystem_Null>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Null:	o = UPtr_new<RenderSystem_Null>(AX_NEW, desc); break;
 #if AX_RENDERER_VK
-		case RenderAPI::Vk:		o = UPtr_new<RenderSystem_Vk>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Vk:		o = UPtr_new<RenderSystem_Vk>(AX_NEW, desc); break;
 #endif
 #if AX_RENDERER_DX12
-		case RenderAPI::Dx12:	o = UPtr_new<RenderSystem_Dx12>(AX_ALLOC_REQ, desc); break;
+		case RenderAPI::Dx12:	o = UPtr_new<RenderSystem_Dx12>(AX_NEW, desc); break;
 #endif
 		default:	throw Error_Undefined(); break;
 	}

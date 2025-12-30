@@ -95,7 +95,7 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 			colorBuf_createDesc.name      = FmtName("{}-color", desc.name);
 			colorBuf_createDesc.colorType = colorAttach.desc.colorType;
 
-			colorAttach.buffer = RenderPassColorBuffer_Backend::s_new(AX_ALLOC_REQ, colorBuf_createDesc);
+			colorAttach.buffer = RenderPassColorBuffer_Backend::s_new(AX_NEW, colorBuf_createDesc);
 		}
 
 		auto* newColorBuf_vk = rttiCastCheck<RenderPassColorBuffer_Vk>(colorAttach.buffer.ptr());
@@ -141,7 +141,7 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 			depthBufDesc.frameSize = desc.frameSize;
 			depthBufDesc.depthType = desc.depthAttachmentDesc.depthType;
 
-			_depthAttachment.buffer = RenderPassDepthBuffer_Backend::s_new(AX_ALLOC_REQ, depthBufDesc);
+			_depthAttachment.buffer = RenderPassDepthBuffer_Backend::s_new(AX_NEW, depthBufDesc);
 		}
 
 		auto* depthBuffer_vk = rttiCastCheck<RenderPassDepthBuffer_Vk>(_depthAttachment.buffer.ptr()); 

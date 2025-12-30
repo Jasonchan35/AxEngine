@@ -45,12 +45,12 @@ void EditorApp::onCreate() {
 //	AX_LOG("CurrentDir = {}",FilePath::currentDir());
 
 	auto curDir = FilePath::currentDir();
-	AX_LOG("Set CurrentDir to '{}'", curDir);
+	AX_LOG("CurrentDir = \"{}\"", curDir);
 
 	_watcher.dgResults.bindUnowned(this, &This::_onFileChanged);
 	_watcher.create(curDir);
 
-	_mainWin = UPtr_new<EditorMainWindow>(AX_ALLOC_REQ);
+	_mainWin = UPtr_new<EditorMainWindow>(AX_NEW);
 	
 	Engine::CreateDesc engineDesc;
 	engineDesc.inEditor = true;
@@ -70,8 +70,8 @@ void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
 }
 
 void EditorApp::_createDemoScene() {
-	auto* entity = SceneEntity::s_new(AX_ALLOC_REQ, "test");
-	entity->addComponent<RenderMeshComponent>(AX_ALLOC_REQ);
+	auto* entity = SceneEntity::s_new(AX_NEW, "test");
+	entity->addComponent<RenderMeshComponent>(AX_NEW);
 }
 
 } //namespace

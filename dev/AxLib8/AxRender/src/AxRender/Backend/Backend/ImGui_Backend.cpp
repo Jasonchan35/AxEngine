@@ -29,8 +29,8 @@ void ImGui_Backend::create(ImFontAtlas* sharedFontAtlas) {
 	io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 	io.ConfigFlags  |= ImGuiConfigFlags_NavEnableKeyboard;
 
-	_shader   = Shader::s_new(AX_ALLOC_REQ, "ImportedAssets/Shaders/core/AxImGui.axShader");
-	_material = Material::s_new(AX_ALLOC_REQ);
+	_shader   = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/AxImGui.axShader");
+	_material = Material::s_new(AX_NEW);
 	_material->setShader(_shader);
 }
 
@@ -213,7 +213,7 @@ void ImGui_Backend::_createFontTexture() {
 
 	ImageInfo	info(Color::kColorType, Vec2i(width, height));
 	auto pixelData = ByteSpan(pixels, width * height);
-	_fontTex = Texture2D::s_new(AX_ALLOC_REQ, info, pixelData);
+	_fontTex = Texture2D::s_new(AX_NEW, info, pixelData);
 }
 
 int ImGui_Backend::_mouseButton(NativeUIMouseEventButton v) {
