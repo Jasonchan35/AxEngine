@@ -67,14 +67,12 @@ public:
 		Int sum_i = 0;
 		for (auto e : Range_(ax_enum_int(Example::_COUNT))) {
 			sum_i += (e);
-			AX_DUMP(e);
 		}
 		AX_TEST_EQ(sum_i, 55);
 		
 		Int sum = 0;
 		for (auto e : Range_(Example::_COUNT)) {
 			sum += ax_enum_int(e);
-			AX_DUMP(e);
 		}
 
 		AX_TEST_EQ(sum, 55);

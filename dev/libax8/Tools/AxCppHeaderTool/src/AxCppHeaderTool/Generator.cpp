@@ -42,17 +42,21 @@ void Generator::gen_type(StrView srcFilename, TypeInfo& type) {
 									type.fullname, srcFilename));
 	}
 	
-	_outStr.appendFormat("\n//--- Type {} ----------\n", type.fullname);
-	_outStr.appendFormat("#define AX_GENERATED_BODY_LINE{}() \\\n", type.lineNumber_AX_GENERATED_BODY);
-	_outStr.appendFormat("  AX_RTTI_INFO({}, {}) \\\n", type.name, type.baseName);
-	_outStr.appendFormat("  struct MutRttiInit : public MutRtti {{ \\\n");
-	
-	// for (auto &prop : type.props) {
-	// 	_outStr.appendFormat("    AX_META_FIELD({}) {{}};\n", prop.key());
-	// }
-	
-	_outStr.appendFormat("  }};\n\n");
-	_outStr.appendFormat("//------\n\n");
+	_outStr.appendFormat(    "\n//--- Type {} ----------\n", type.fullname);
+	_outStr.appendFormat(    "#define AX_GENERATED_BODY_LINE{}() \\\n", type.lineNumber_AX_GENERATED_BODY);
+	_outStr.appendFormat(    "\t""AX_RTTI_INFO({}, {}) \\\n", type.name, type.baseName);
+	_outStr.appendFormat(    "\t""struct MutRttiInit : public MutRtti {{ \\\n");
+	_outStr.appendFormat(    "\t\t""MutRttiInit() {{ \\\n");
+	_outStr.appendFormat(    "\t\t\t""ownFields.ensureCapacity({}); \\\n", type.props.size());
+	for (auto &prop : type.props.values()) {
+		_outStr.appendFormat("\t\t\t""addField(\"{}\", &_TYPE_INFO_This::{}); \\\n",
+		                     prop.typeName,
+		                     prop.name,
+		                     prop.name);
+	}
+	_outStr.appendFormat(    "\t\t""}}; \\\n");
+	_outStr.appendFormat(    "\t""}}; \\\n");
+	_outStr.appendFormat(    "//------\n\n");
 	_outStr << "\n";
 }
 

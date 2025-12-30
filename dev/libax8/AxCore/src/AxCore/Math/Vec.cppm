@@ -2,6 +2,7 @@
 export module AxCore.Vec;
 export import AxCore.VecSimd;
 export import AxCore.Random;
+export import AxCore.MetaType;
 
 export namespace  ax {
 
@@ -274,6 +275,7 @@ template<class T, VecSimd SIMD>
 class Vec_<3, T, SIMD> {
 	static constexpr Int N = 3;
 	using This = Vec_;
+	AX_TYPE_INFO(Vec_, NoBaseClass)
 public:
 	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
@@ -289,6 +291,13 @@ public:
 	union {
 		SimdData	_simd;
 		struct { T x, y, z; };
+	};
+	
+	struct MetaTypeInit : AX_META_TYPE() {
+		AX_META_FIELD(x) {};
+		AX_META_FIELD(y) {};
+		AX_META_FIELD(z) {};
+		using OwnFields = Tuple<x,y,z>;
 	};
 	
 	AX_INLINE constexpr Vec_() = default;

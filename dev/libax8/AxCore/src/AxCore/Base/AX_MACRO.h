@@ -304,9 +304,9 @@
 #define AX_NAMEID(STR) AX_NAMEID_FUNC(STR)()
 
 //----- Logger
-#define AX_LOG(fmt, ...)			do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Info,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
-#define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Warning,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
-#define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Error,	AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG(fmt, ...)			do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Info,    AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG_WARNING(fmt, ...)	do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Warning, AX_STR(fmt), ##__VA_ARGS__); }while(false)
+#define AX_LOG_ERROR(fmt, ...)		do{ ::ax::Logger::s_get()->log(::ax::SrcLoc::s_current(), ::ax::LogLevel::Error,   AX_STR(fmt), ##__VA_ARGS__); }while(false)
 #define AX_LOG_FLUSH()				do{ ::ax::Logger::s_get()->flush(); } while(false)
 
 #define AX_LOG_WIN32_LAST_ERROR(msg)	do{ AX_LOG("Win32 Error {} {}", AX_Win32_Error::s_lastError(), StrView(msg)); }while(false)

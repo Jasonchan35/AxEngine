@@ -6,10 +6,10 @@ import AxCore.Logger;
 
 namespace ax {
 
-void Rtti::debugDump() {
-	AX_LOG("DebugDump Rtti name = {}", _name);
-	for (auto& field : _allFields) {
-		AX_LOG("  field {} owner=[{}]", field->_name, field->_fieldOwner->_name);
+void Rtti::debugDump() const {
+	AX_LOG("DebugDump Rtti name = {}", name);
+	for (auto& field : allFields) {
+		AX_LOG("  field {} offset={} owner=[{}] ", field->name, field->offset, field->fieldOwner->name);
 	}
 }
 

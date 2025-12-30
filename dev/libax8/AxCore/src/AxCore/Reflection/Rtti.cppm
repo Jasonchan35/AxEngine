@@ -1,7 +1,5 @@
 ﻿module;
 
-#include "Rtti_MACRO.h"
-
 export module AxCore.Rtti;
 export import AxCore.NameId;
 export import AxCore.WPtr;
@@ -13,6 +11,7 @@ export namespace ax {
 
 struct MutRtti;
 using Rtti = const MutRtti;
+template<class T> Rtti* rttiOf();
 
 #if 0
 #pragma mark ---------------- RttiAttr -------------------
@@ -54,16 +53,10 @@ using RttiAttr = const MutRttiAttr;
 #endif
 
 struct MutRttiField : public NonCopyable {
-	NameId	name() const { return _name; }
-	Rtti*	fieldType() const { return _fieldType; }
-	Rtti*	fieldOwner() const { return _fieldOwner; }
-
-	template<class R> friend struct MutRtti_FromMetaType_;
-	friend struct MutRtti;
-protected:
-	NameId	_name;
-	Rtti*	_fieldType = nullptr;
-	Rtti*	_fieldOwner = nullptr;
+	Rtti*	fieldOwner = nullptr;
+	Rtti*	fieldType = nullptr;
+	Int		offset = INT_MAX;
+	NameId	name;
 };
 
 using RttiField = const MutRttiField;
@@ -72,10 +65,25 @@ using RttiField = const MutRttiField;
 #pragma mark ---------------- Rtti -------------------
 #endif
 
-template<class T> concept  CON_HasRttiInfo = requires { { T::s_rtti() } -> std::same_as<Rtti*>; };
-template<class T> concept  CON_HasRttiInit = requires { typename T::RttiInit; };
+template<class T> struct MutRttiInit_OutOfClass_;
+template<class T> struct MutRttiInit_FromMetaType_;
 
-template<class T> struct MutRttiInit_;
+// template<class T> concept CON_HasRttiInfo = requires { { T::s_rtti() } -> std::same_as<Rtti*>; };
+template<class T> concept CON_HasRttiInit = requires { typename T::RttiInit; };
+template<class T> concept CON_HasMutRttiInit_OutOfClass = requires { MutRttiInit_OutOfClass_<T>(); };
+
+template<class RTTI_INIT> struct RttiInit_Make : public RTTI_INIT {
+	RttiInit_Make() {
+		auto* base = RTTI_INIT::base;
+		if (base) {
+			this->allFields.ensureCapacity(base->allFields.size() + this->ownFields.size());
+			this->allFields = base->allFields;
+		}
+		for (auto* field : this->ownFields) {
+			this->allFields.emplaceBack(field);
+		}
+	}
+};
 
 template<class T>
 struct Rtti_Handler_ {
@@ -84,13 +92,13 @@ struct Rtti_Handler_ {
 		static_assert(!std::is_reference_v<T>);
 		static_assert(!std::is_pointer_v<T>);
 		if constexpr(CON_HasRttiInit<T>) {
-			static typename T::MutRttiInit s;
+			static RttiInit_Make<typename T::MutRttiInit> s;
 			return &s;
-		} else if constexpr (CON_HasRttiInfo<T>) {
-			static MutRttiInit_<T> s;
+		} else if constexpr (CON_HasMutRttiInit_OutOfClass<T>) {
+			static RttiInit_Make<MutRttiInit_OutOfClass_<T>> s;
 			return &s;
 		} else {
-			static MutRtti_FromMetaType_<T> s;
+			static RttiInit_Make<MutRttiInit_FromMetaType_<T>> s;
 			return &s;
 		}
 	}
@@ -107,51 +115,44 @@ struct MutRtti : public NonCopyable {
 	constexpr bool isKindOf() const { return isKindOf(rttiOf<R>()); }
 	constexpr bool isKindOf(Rtti* r) const;
 
-	Rtti*		base() const		{ return _base; }
-	NameId		name() const		{ return _name; }
-	NameId		displayName() const	{ return _displayName; }
+	RttiField*	findField(NameId fieldName) const { return ownFieldsDict.find(fieldName); }
 	
-	RttiField*	getOwnField(Int index) const;
-	RttiField*	getField(Int index) const;
+	void debugDump() const;
 
-	Span<RttiField*>	ownFields() const { return _ownFields; }
-	Span<RttiField*>	allFields() const { return _allFields; }
-
-	RttiField*	findField(NameId name) const { return _ownFieldsDict.find(name); }	
+	Rtti*	base = nullptr;
+	NameId	name;
+	NameId	displayName;
 	
-	void debugDump();
-
-	template<class R> friend struct MutRtti_FromMetaType_; 
-protected:
-	Rtti*	_base = nullptr;
-	NameId	_name;
-	NameId	_displayName;
-
-	Dict<NameId, MutRttiField>			_ownFieldsDict;
-	Array<RttiField*>					_ownFields;
-
-	Dict<NameId, MutRttiField>			_allFieldsDict;
-	Array<RttiField*>					_allFields;
-
-	Dict<RttiAttrClassId, MutRttiAttr>	_ownAttrDict;
-	Array<RttiAttr*>					_ownAttrs;
-};
-
-template<class T>
-struct MutRttiInit_ : public MutRtti {
-	MutRttiInit_() {
-		this->_name = NameId::s_make(ax_metatype_get_class_name<T>());
-//		AX_LOG("Rtti_{}", this->_name);
+	void addField(InNameId name_, Rtti* fieldType_, Int offset_) {
+		auto& field      = ownFieldsDict.add(name_);
+		field.fieldOwner = this;
+		field.fieldType  = fieldType_;
+		field.offset     = offset_;
+		ownFields.emplaceBack(&field);
 	}
+
+	template<class OBJ, class FIELD>
+	void addField(InNameId name_, FIELD OBJ::*ptrToField) {
+		addField(name_, rttiOf<FIELD>(), MemUtil::memberOffset(ptrToField));
+	}
+
+	Dict<NameId, MutRttiField>			ownFieldsDict;
+	Array<RttiField*>					ownFields;
+
+	Dict<NameId, MutRttiField>			allFieldsDict;
+	Array<RttiField*>					allFields;
+
+	Dict<RttiAttrClassId, MutRttiAttr>	ownAttrDict;
+	Array<RttiAttr*>					ownAttrs;
 };
 
-template<class T> struct MutRtti_FromMetaType_;
-template<> struct MutRtti_FromMetaType_<NoBaseClass> {}; 
+// use for declare out of class
+template<class T> struct MutRttiInit_;
+
+template<> struct MutRttiInit_FromMetaType_<NoBaseClass> {}; 
 
 template<class T>
-struct MutRtti_FromMetaType_ : public MutRtti {
-	MutRtti_FromMetaType_() { _ctor(); }
-public:
+struct MutRttiInit_FromMetaType_ : public MutRtti {
 	using ObjThis      = T;
 	using ObjBase      = BaseClassOf<T>;
 
@@ -162,36 +163,18 @@ public:
 	
 	struct OwnField_Handler {
 		template<Int Index, class Field>
-		static void onEach(MutRtti_FromMetaType_* rtti) {
-			static MutRttiField field;
-			field._name = Field::s_name();
-			using FieldType = typename Field::FieldType;
-			field._fieldOwner = rtti;
-			field._fieldType = rttiOf<FieldType>();
-			rtti->_ownFields.emplaceBack(&field);
+		static void onEach(MutRttiInit_FromMetaType_* rtti) {
+			rtti->addField(Field::s_name(), rttiOf<typename Field::FieldType>(), Field::s_offset());
 		}
 	};
-	
-private:
-	void _ctor() {
-//		static_assert(Type_IsBaseOf<IMetaType, MetaType>, "MetaType must based on IMetaType");
 
-		_base = rttiOf<ObjBase>();
-		
-		this->_name = MetaType::s_name();
+	MutRttiInit_FromMetaType_() {
+//		static_assert(Type_IsBaseOf<IMetaType, MetaType>, "MetaType must based on IMetaType");
+		this->base = rttiOf<ObjBase>();
+		this->name = NameId::s_make(ax_metatype_get_class_name<T>());
 		using OwnFields = typename MetaType::OwnFields;
-		
-		this->_ownFields.ensureCapacity(OwnFields::kSize);
+		this->ownFields.ensureCapacity(OwnFields::kSize);
 		OwnFields::template ForEachType<OwnField_Handler>(this);
-		
-		//---- All Fields -----
-		if (_base) {
-			this->_allFields.ensureCapacity(_base->_allFields.size() + OwnFields::kSize);
-			this->_allFields = _base->_allFields;
-		}
-		for (auto* field : this->_ownFields) {
-			this->_allFields.emplaceBack(field);
-		}
 	}
 };
 
@@ -202,7 +185,7 @@ bool Rtti::isKindOf(Rtti* r) const {
 	const auto* p = this;
 	while (p) {
 		if (p == r) return true;
-		p = p->_base;
+		p = p->base;
 	}
 	return false;
 }

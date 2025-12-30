@@ -130,14 +130,6 @@ struct MetaFieldBase : public NonCopyable {
 	using OwnFields = Tuple<>;
 };
 
-template<class OBJ, class FIELD, FIELD OBJ::*PTR, NameId (*NAME_FUNC)() >
-struct MetaFieldInit_Helper_ : public MetaFieldBase {
-	static NameId s_name() { static auto s(NAME_FUNC()); return s; }
-	static Int s_offset() { return offsetof(OBJ, PTR); }
-
-	using FieldType = FIELD;
-};
-
 template<class T, NameId (*NAME_FUNC)()>
 struct MetaTypeInit_Simple_ : public IMetaTypeInit {
 	using This = T;

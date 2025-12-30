@@ -17,11 +17,12 @@ private: \
 #define AX_META_TYPE()		public MetaTypeInit_Helper_<_TYPE_INFO_This>
 
 #define AX_META_FIELD(V) \
-	static NameId _make_field_name_##V() { return NameId::s_make(#V); } \
-	struct V :	public MetaFieldInit_Helper_<_TYPE_INFO_This \
-											, decltype(_TYPE_INFO_This::V) \
-											, &_TYPE_INFO_This::V \
-											, _make_field_name_##V > \
+	struct _INIT_##V : public MetaFieldBase { \
+		using FieldType = decltype(_TYPE_INFO_This::V); \
+		static NameId s_name() { return NameId::s_make(#V); } \
+		static Int s_offset() { return MemUtil::memberOffset(&_TYPE_INFO_This::V); } \
+	}; \
+	struct V :	public _INIT_##V
 //------
 
 #define AX_META_TYPE_INIT_SIMPLE(T) \
