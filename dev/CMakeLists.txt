@@ -49,27 +49,23 @@ ax_copy_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.sln.DotSettings" "${CM
 #    +- AxRender
 #       +- AxShaderTool
 #       +- AxImUI
-#
+
+add_subdirectory(AxLib8/AxCore)
+add_subdirectory(AxLib8/AxCore/test)
+add_subdirectory(AxLib8/AxNativeUI)
+add_subdirectory(AxLib8/AxRender)
+add_subdirectory(AxLib8/AxImUI)
+
+add_subdirectory(AxLib8/Tools/AxFileTool)
+add_subdirectory(AxLib8/Tools/AxCppHeaderTool)
+add_subdirectory(AxLib8/Tools/AxShaderTool)
+
 # AxEngine
 # +- AxEditor
 #    +- AxEditorApp
-
-
-add_subdirectory(libax8/AxCore)
-add_subdirectory(libax8/AxCore/test)
-
-add_subdirectory(libax8/AxNativeUI)
-add_subdirectory(libax8/AxRender)
-add_subdirectory(libax8/AxImUI)
-
-add_subdirectory(libax8/Tools/AxFileTool)
-add_subdirectory(libax8/Tools/AxCppHeaderTool)
-add_subdirectory(libax8/Tools/AxShaderTool)
-
-add_subdirectory(libax8/AxEngine)
-add_subdirectory(libax8/AxEditor)
-
-add_subdirectory(AxEditorApp)
+add_subdirectory(AxEngine/AxEngine)
+add_subdirectory(AxEngine/AxEditor)
+add_subdirectory(AxEngine/AxEditorApp)
 
 # target_sources(${PROJECT_NAME} PRIVATE ax_common.cmake)
 
