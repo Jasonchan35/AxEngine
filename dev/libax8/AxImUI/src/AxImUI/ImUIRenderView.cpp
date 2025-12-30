@@ -1,17 +1,17 @@
-module AxUI;
-import :UIRenderView;
+module AxImUI;
+import :ImUIRenderView;
 
 namespace AxUI {
 
-void UIRenderView::createRenderContext(RenderContext::CreateDesc& desc) {
+void ImUIRenderView::createRenderContext(RenderContext::CreateDesc& desc) {
 	_renderContext = RenderContext::s_new(AX_ALLOC_REQ, desc);
 }
 
-void UIRenderView::onSizeChanged(const Vec2f& size) {
+void ImUIRenderView::onSizeChanged(const Vec2f& size) {
 	_renderContext->setFrameSize(Vec2i::s_cast(size));
 }
 
-void UIRenderView::render() {
+void ImUIRenderView::render() {
 	if (_renderContext) {
 		_renderContext->render();
 	}

@@ -1,20 +1,20 @@
 module;
-export module AxUI:UIApp;
+export module AxImUI:ImUIApp;
 export import :Common;
 
 export namespace AxUI {
 
-struct UIApp_CreateDesc : public NativeUIApp_CreateDesc {
+struct ImuiApp_CreateDesc : public NativeUIApp_CreateDesc {
 	RenderSystem::CreateDesc	renderSystemDesc;
 };
 
-class UIApp : public NativeUIApp {
-	AX_RTTI_INFO(UIApp, NativeUIApp)
+class ImUIApp : public NativeUIApp {
+	AX_RTTI_INFO(ImUIApp, NativeUIApp)
 public:
 	AX_DOWNCAST_GET_INSTANCE()
 
-	using CreateDesc = UIApp_CreateDesc;
-	UIApp(const CreateDesc& desc = CreateDesc()) : Base(desc) {
+	using CreateDesc = ImuiApp_CreateDesc;
+	ImUIApp(const CreateDesc& desc = CreateDesc()) : Base(desc) {
 		_renderSystemDesc = desc.renderSystemDesc;
 	}
 

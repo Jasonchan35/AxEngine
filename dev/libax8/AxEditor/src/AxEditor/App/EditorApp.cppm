@@ -6,8 +6,8 @@ export import :Common;
 export namespace AxEditor {
 
 class EditorMainWindow;
-class EditorApp : public AxUI::UIApp {
-	AX_RTTI_INFO(EditorApp, AxUI::UIApp)
+class EditorApp : public AxUI::ImUIApp {
+	AX_RTTI_INFO(EditorApp, AxUI::ImUIApp)
 public:
 	AX_DOWNCAST_GET_INSTANCE()
 

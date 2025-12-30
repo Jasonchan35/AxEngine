@@ -1,12 +1,12 @@
-module AxUI;
-import :UIWindow;
+module AxImUI;
+import :ImUIWindow;
 
 namespace AxUI {
 
-class UIWindow::NativeWin : public NativeUIWindow {
+class ImUIWindow::NativeWin : public NativeUIWindow {
 	AX_RTTI_INFO(NativeWin, NativeUIWindow)
 public:
-	NativeWin(UIWindow* owner, CreateDesc& desc) 
+	NativeWin(ImUIWindow* owner, CreateDesc& desc) 
 	: Base(desc)
 	, _owner(owner)
 	{
@@ -27,10 +27,10 @@ public:
 	}
 
 private:
-	UIWindow* _owner = nullptr;
+	ImUIWindow* _owner = nullptr;
 };
 
-UIWindow::UIWindow() {
+ImUIWindow::ImUIWindow() {
 	{
 		NativeUIWindow_CreateDesc desc;
 		desc.isMainWindow = true;
@@ -40,7 +40,7 @@ UIWindow::UIWindow() {
 	}
 	
 	{
-		_contentView = SPtr_new<UIRenderView>(AX_ALLOC_REQ);
+		_contentView = SPtr_new<ImUIRenderView>(AX_ALLOC_REQ);
 		addChild(_contentView);
 
 		RenderContext::CreateDesc desc;
@@ -56,7 +56,7 @@ UIWindow::UIWindow() {
 	setSize({1280, 768});
 }
 
-void UIWindow::onSetSize(const Vec2f& s) {
+void ImUIWindow::onSetSize(const Vec2f& s) {
 	Base::onSetSize(s);
 
 	if (_nativeWin) {
@@ -64,11 +64,11 @@ void UIWindow::onSetSize(const Vec2f& s) {
 	}
 }
 
-void UIWindow::onNativeWorldPosChanged(const Vec2f& s) {
+void ImUIWindow::onNativeWorldPosChanged(const Vec2f& s) {
 	Base::onWorldPosChanged(s);
 }
 
-void UIWindow::onNativeSizeChanged(const Vec2f& s) {
+void ImUIWindow::onNativeSizeChanged(const Vec2f& s) {
 	Base::onSizeChanged(s);
 
 	if (_nativeWin) {
@@ -79,17 +79,17 @@ void UIWindow::onNativeSizeChanged(const Vec2f& s) {
 	}
 }
 
-UIWindow::~UIWindow() {
+ImUIWindow::~ImUIWindow() {
 }
 
-void UIWindow::setWindowTitle(StrView title) { _nativeWin->setWindowTitle(title); }
+void ImUIWindow::setWindowTitle(StrView title) { _nativeWin->setWindowTitle(title); }
 
-void UIWindow::setRenderGraph(RenderGraph* graph) {
+void ImUIWindow::setRenderGraph(RenderGraph* graph) {
 	if (auto* ctx = renderContext())
 		ctx->setRenderGraph(graph);
 }
 
-void UIWindow::render() {
+void ImUIWindow::render() {
 	if (_contentView) {
 		_contentView->render();
 	}

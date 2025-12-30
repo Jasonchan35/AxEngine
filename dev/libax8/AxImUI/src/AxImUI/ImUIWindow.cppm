@@ -1,18 +1,18 @@
 module;
-export module AxUI:UIWindow;
-export import :UIRenderView;
+export module AxImUI:ImUIWindow;
+export import :ImUIRenderView;
 
 export namespace AxUI {
 
-class UIWindow : public UIView {
-	AX_RTTI_INFO(UIWindow, UIView)
+class ImUIWindow : public ImUIView {
+	AX_RTTI_INFO(ImUIWindow, ImUIView)
 public:
 
-	UIWindow();
-	virtual ~UIWindow() override;
+	ImUIWindow();
+	virtual ~ImUIWindow() override;
 
-	UIView*	contentView() { return _contentView.ptr(); }
-
+	ImUIView*	contentView() { return _contentView.ptr(); }
+	
 	void setWindowTitle(StrView title);
 
 	void setRenderGraph(RenderGraph* graph);
@@ -33,7 +33,7 @@ protected:
 private:
 	class NativeWin;
 	UPtr<NativeWin>			_nativeWin;
-	SPtr<UIRenderView>		_contentView;
+	SPtr<ImUIRenderView>	_contentView;
 };
 
 } // namespace

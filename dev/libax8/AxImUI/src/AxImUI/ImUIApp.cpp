@@ -1,9 +1,9 @@
-module AxUI;
-import :UIApp;
+module AxImUI;
+import :ImUIApp;
 
 namespace AxUI {
 
-void UIApp::onCreate() {
+void ImUIApp::onCreate() {
 	Base::onCreate();
 
 	_renderSystem = RenderSystem::s_create(_renderSystemDesc);

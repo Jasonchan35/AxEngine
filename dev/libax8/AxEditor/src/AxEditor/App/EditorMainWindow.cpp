@@ -33,9 +33,9 @@ void EditorMainWindow::onWindowCloseButton() {
 
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	{
-		UI::Window	outliner("Outliner");
+		ImUIPanel	outliner("Outliner");
 		static float f = 10;
-		UI::DragFloat("float", &f);
+		ImUIDragFloat("float", &f);
 	}
 	
 	DefaultRenderGraph::onBackBufferPass(req, inputs);

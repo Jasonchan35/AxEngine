@@ -43,12 +43,24 @@ project(${PROJECT_NAME} VERSION 0.1.0)
 
 ax_copy_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.sln.DotSettings" "${CMAKE_CURRENT_BINARY_DIR}")
 
+# AxCore
+# +- AxFileTool, AxCppHeaderTool
+# +- AxNativeUI
+#    +- AxRender
+#       +- AxShaderTool
+#       +- AxImUI
+#
+# AxEngine
+# +- AxEditor
+#    +- AxEditorApp
+
+
 add_subdirectory(libax8/AxCore)
 add_subdirectory(libax8/AxCore/test)
 
 add_subdirectory(libax8/AxNativeUI)
 add_subdirectory(libax8/AxRender)
-add_subdirectory(libax8/AxUI)
+add_subdirectory(libax8/AxImUI)
 
 add_subdirectory(libax8/Tools/AxFileTool)
 add_subdirectory(libax8/Tools/AxCppHeaderTool)

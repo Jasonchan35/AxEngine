@@ -1,5 +1,5 @@
 ﻿module;
-export module AxUI:Common;
+export module AxImUI:Common;
 export import AxRender;
 
 export namespace AxUI {

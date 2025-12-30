@@ -5,8 +5,8 @@ export import :Common;
 
 namespace AxEditor {
 
-class EditorWindow : public AxUI::UIWindow {
-	AX_RTTI_INFO(EditorWindow, AxUI::UIWindow)
+class EditorWindow : public AxUI::ImUIWindow {
+	AX_RTTI_INFO(EditorWindow, AxUI::ImUIWindow)
 
 public:
 };

@@ -2,7 +2,7 @@
 
 export module AxEditor:Common;
 export import AxEngine;
-export import AxUI;
+export import AxImUI;
 
 export namespace AxEditor {
 	using namespace AxEngine;

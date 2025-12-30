@@ -1,13 +1,13 @@
 module;
-export module AxUI:UIView;
+export module AxImUI:ImUIView;
 export import :Common;
 
 export namespace AxUI {
 
-class UIView : public RttiObject {
-	AX_RTTI_INFO(UIView, RttiObject)
+class ImUIView : public RttiObject {
+	AX_RTTI_INFO(ImUIView, RttiObject)
 public:
-	UIView() : _worldPosDirty(true) {}
+	ImUIView() : _worldPosDirty(true) {}
 
 	void setSize(const Vec2f& s);
 	void setWorldPos(const Vec2f& pos);
@@ -17,7 +17,7 @@ public:
 	const	Vec2f&	worldPos() const;
 			Rect2f	worldRect() const { return Rect2f(worldPos(), _rect.size); }
 
-	void addChild(UIView* p);
+	void addChild(ImUIView* p);
 
 protected:
 	virtual void onSetWorldPos(const Vec2f& pos);
@@ -30,9 +30,9 @@ private:
 	void _computeWorldPos();
 	void _setWorldPosDirty();
 
-	Array<SPtr<UIView>, 4>	_children;
+	Array<SPtr<ImUIView>, 4>	_children;
 
-	UIView*	_parent = nullptr;
+	ImUIView*	_parent = nullptr;
 	Vec2f	_worldPos = TagZero;
 	Rect2f	_rect = TagZero;
 

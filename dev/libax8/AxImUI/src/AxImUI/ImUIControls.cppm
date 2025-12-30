@@ -1,32 +1,32 @@
 module;
 
-export module AxUI:UIControls;
+export module AxImUI:ImUIControls;
 export import :Common; 
 
-export namespace ax /*::AxRender*/::UI {
+export namespace AxUI {
 	constexpr const char* mixedValueFormat = "--";
 	constexpr const char* floatFormat = "%0.3f";
 	constexpr bool showMixedValue = false;
 
-	bool DragFloat(
+	bool ImUIDragFloat(
 			StrView label, 
 			float* v, 
 			float v_speed = 0.1f, 
 			float v_min = f32_min,
 			float v_max = f32_max);
 
-	float InputFloat(StrView label, float* v);
+	float ImuiInputFloat(StrView label, float* v);
 
-	class Window : public NonCopyable {
+	class ImUIPanel : public NonCopyable {
 	public:
-		AX_NODISCARD Window(StrView name, bool* pOpen = nullptr);
-		~Window();
+		AX_NODISCARD ImUIPanel(StrView name, bool* pOpen = nullptr);
+		~ImUIPanel();
 	};
 
-	class TreeNode : public NonCopyable {
+	class ImUITreeNode : public NonCopyable {
 	public:
-		TreeNode(StrView label);
-		~TreeNode();
+		ImUITreeNode(StrView label);
+		~ImUITreeNode();
 
 		bool isOpen() const { return _isOpen; }
 
@@ -34,19 +34,19 @@ export namespace ax /*::AxRender*/::UI {
 		bool  _isOpen = true;
 	};
 
-	class CollapsingHeader : public NonCopyable {
+	class ImUICollapsingHeader : public NonCopyable {
 	public:
-		CollapsingHeader(StrView label);
+		ImUICollapsingHeader(StrView label);
 
 	private:
 		bool _visiable = true;
 	};
 
-	class PushID : public NonCopyable {
+	class ImUIPushID : public NonCopyable {
 	public:
-		PushID(const void* id);
-		PushID(int id);
-		~PushID();
+		ImUIPushID(const void* id);
+		ImUIPushID(int id);
+		~ImUIPushID();
 	};
 
 	bool IsItemClicked();
