@@ -14,7 +14,19 @@ public: \
 private: \
 //------
 
-#define AX_META_TYPE()		public MetaTypeInit_Helper_<_TYPE_INFO_This>
+#define AX_META_TYPE(T, BASE) \
+private: \
+	AX_TYPE_INFO(T, BASE) \
+public: \
+	struct MetaTypeInit : public MetaTypeInit_Helper_<_TYPE_INFO_This> \
+//----
+
+#define AX_META_TYPE_EX(T, BASE) \
+private: \
+	AX_TYPE_INFO(T, BASE) \
+public: \
+	struct MetaTypeInit; \
+//-------
 
 #define AX_META_FIELD(V) \
 	struct _INIT_##V : public MetaFieldBase { \

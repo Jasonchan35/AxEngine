@@ -7,13 +7,16 @@ export namespace ax {
 
 template<class T, VecSimd SIMD>
 class Color_<ColorModel::R, T, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 1;
 public:
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T r; };
+	};
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(r) {};
+		using OwnFields = Tuple<r>;
 	};
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
@@ -36,11 +39,6 @@ public:
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
-
-	struct MetaTypeInit : AX_META_TYPE() {
-		AX_META_FIELD(r) {};
-		using OwnFields = Tuple<r>;
-	};
 
 	AX_INLINE Color_() = default;
 	AX_INLINE explicit Color_(T r_) : _simd(r) {}
@@ -74,13 +72,17 @@ public:
 
 template<class T, VecSimd SIMD>
 class Color_<ColorModel::RG, T, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 2;
 public:
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T r, g; };
+	};
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(r) {};
+		AX_META_FIELD(g) {};
+		using OwnFields = Tuple<r,g>;
 	};
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
@@ -104,13 +106,6 @@ public:
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	struct MetaTypeInit : AX_META_TYPE() {
-		AX_META_FIELD(r) {};
-		AX_META_FIELD(g) {};
-		using OwnFields = Tuple<r,g>;
-	};
-
-//---
 	AX_INLINE Color_() = default;
 	AX_INLINE explicit constexpr Color_(T r_, T g_) { set(r_,g_); }
 
@@ -148,7 +143,6 @@ public:
 
 template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGB, T, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 3;
 public:
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
@@ -156,6 +150,12 @@ public:
 		SimdData	_simd;
 		struct { T r, g, b; };
 	};
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(r) {};
+		AX_META_FIELD(g) {};
+		AX_META_FIELD(b) {};
+		using OwnFields = Tuple<r,g,b>;
+	};	
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
@@ -177,13 +177,6 @@ public:
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
-
-	struct MetaTypeInit : AX_META_TYPE() {
-		AX_META_FIELD(r) {};
-		AX_META_FIELD(g) {};
-		AX_META_FIELD(b) {};
-		using OwnFields = Tuple<r,g,b>;
-	};
 
 	AX_INLINE Color_() = default;
 	AX_INLINE explicit constexpr Color_(T r_, T g_, T b_) : r(r_), g(g_), b(b_) {}
@@ -235,13 +228,19 @@ public:
 
 template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGBA, T, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T r, g, b, a; };
+	};
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(r) {};
+		AX_META_FIELD(g) {};
+		AX_META_FIELD(b) {};
+		AX_META_FIELD(a) {};
+		using OwnFields = Tuple<r,g,b,a>;
 	};
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
@@ -264,14 +263,6 @@ public:
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
-
-	struct MetaTypeInit : AX_META_TYPE() {
-		AX_META_FIELD(r) {};
-		AX_META_FIELD(g) {};
-		AX_META_FIELD(b) {};
-		AX_META_FIELD(a) {};
-		using OwnFields = Tuple<r,g,b,a>;
-	};
 
 //---
 	AX_INLINE Color_() = default;

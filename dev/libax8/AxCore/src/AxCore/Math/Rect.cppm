@@ -13,10 +13,8 @@ using Rect2s = Rect2_<i16>;
 
 template<class T, VecSimd SIMD>
 class Rect2_ {
-	AX_TYPE_INFO(Rect2_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
-	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
@@ -32,13 +30,14 @@ public:
 		struct { T x, y, w, h; };
 	};	
 
-	struct MetaTypeInit : AX_META_TYPE() {
+	AX_META_TYPE(Rect2_, NoBaseClass) {
 		AX_META_FIELD(x) {};
 		AX_META_FIELD(y) {};
 		AX_META_FIELD(w) {};
 		AX_META_FIELD(h) {};
 		using OwnFields = Tuple<x, y, w, h>;
 	};
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 
 	template<class CH>
 	void onFormat(Format_<CH>& ctx) const { _simd.onFormat(ctx); }

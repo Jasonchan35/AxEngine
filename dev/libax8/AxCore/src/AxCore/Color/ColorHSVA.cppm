@@ -7,13 +7,19 @@ export namespace ax {
 
 template<class T, VecSimd SIMD>
 class Color_<ColorModel::HSVA, T, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T h, s, v, a; };
+	};
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(h) {};
+		AX_META_FIELD(s) {};
+		AX_META_FIELD(v) {};
+		AX_META_FIELD(a) {};
+		using OwnFields = Tuple<h,s,v,a>;
 	};
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
@@ -37,14 +43,6 @@ public:
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
 
-	struct MetaTypeInit : AX_META_TYPE() {
-		AX_META_FIELD(h) {};
-		AX_META_FIELD(s) {};
-		AX_META_FIELD(v) {};
-		AX_META_FIELD(a) {};
-		using OwnFields = Tuple<h,s,v,a>;
-	};	
-	
 	AX_INLINE explicit Color_() = default;
 	AX_INLINE          Color_(T h_, T s_, T v_, T a_ = kElemOne) : _simd(h_,s_,v_,a_) {}
 

@@ -7,11 +7,16 @@ export namespace ax {
 
 template<class T>
 class Color_<ColorModel::BGRA, T> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 4;
 public:
 	using Element = T;
 	T b,g,r,a;
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(b) {};
+		AX_META_FIELD(g) {};
+		AX_META_FIELD(r) {};
+		AX_META_FIELD(a) {};
+	};
 
 	static constexpr ColorModel	kColorModel		= ColorModel::BGRA;
 	static constexpr ColorType	kColorType		= ColorType_make<T>(kColorModel);
@@ -22,18 +27,6 @@ public:
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }
 	AX_INLINE static constexpr T kElemOne  () { return ElemLimit::kOne();  }
 	AX_INLINE static constexpr T kElemHalf () { return ElemLimit::kHalf(); }
-
-	// AX_TYPE_INFO(Color_, NoBaseClass) {
-	// 	static StrView s_name() {
-	// 		static auto s = Fmt("ColorBGRA_<{}>", ax_typeof<T>::s_name());
-	// 		return s;
-	// 	}
-	//
-	// 	AX_FIELD_INFO(b) {};
-	// 	AX_FIELD_INFO(g) {};
-	// 	AX_FIELD_INFO(r) {};
-	// 	AX_FIELD_INFO(a) {};
-	// };
 
 	AX_INLINE explicit Color_() = default;
 	AX_INLINE          Color_(T b_, T g_, T r_, T a_ = kElemOne) { set(b_,g_,r_,a_); }

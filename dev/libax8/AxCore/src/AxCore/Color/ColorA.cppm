@@ -7,7 +7,6 @@ export namespace ax {
 
 template<class T, VecSimd SIMD>
 class Color_<ColorModel::A, T, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 	static constexpr Int N = 1;	
 public:
 	using Num4 = Num4_<T>;
@@ -16,6 +15,10 @@ public:
 		SimdData	_simd;
 		struct { T a; };
 	};	
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(a) {};
+		using OwnFields = Tuple<a>;
+	};
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
@@ -38,10 +41,6 @@ public:
 	inline static const T& kElemOne  () { return ElemLimit::kOne();  }
 	inline static const T& kElemHalf () { return ElemLimit::kHalf(); }
 
-	struct MetaTypeInit : AX_META_TYPE() {
-		AX_META_FIELD(a) {};
-		using OwnFields = Tuple<a>;
-	};
 //---
 
 	AX_INLINE constexpr explicit Color_() = default;

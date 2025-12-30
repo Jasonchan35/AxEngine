@@ -5,7 +5,7 @@ export import :Common;
 export namespace AxUI {
 
 class UIView : public RttiObject {
-	AX_TYPE_INFO(UIView, RttiObject)
+	AX_RTTI_INFO(UIView, RttiObject)
 public:
 	UIView() : _worldPosDirty(true) {}
 

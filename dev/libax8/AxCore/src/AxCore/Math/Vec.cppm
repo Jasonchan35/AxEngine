@@ -275,8 +275,20 @@ template<class T, VecSimd SIMD>
 class Vec_<3, T, SIMD> {
 	static constexpr Int N = 3;
 	using This = Vec_;
-	AX_TYPE_INFO(Vec_, NoBaseClass)
 public:
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
+	union {
+		SimdData	_simd;
+		struct { T x, y, z; };
+	};
+	
+	AX_META_TYPE(Vec_, NoBaseClass) {
+		AX_META_FIELD(x) {};
+		AX_META_FIELD(y) {};
+		AX_META_FIELD(z) {};
+		using OwnFields = Tuple<x,y,z>;
+	};
+	
 	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr Int kElementCount = N;
@@ -286,19 +298,7 @@ public:
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
-		
-	using SimdData = VecSimd_Data_<N,T,SIMD>; 
-	union {
-		SimdData	_simd;
-		struct { T x, y, z; };
-	};
-	
-	struct MetaTypeInit : AX_META_TYPE() {
-		AX_META_FIELD(x) {};
-		AX_META_FIELD(y) {};
-		AX_META_FIELD(z) {};
-		using OwnFields = Tuple<x,y,z>;
-	};
+
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}

@@ -125,6 +125,7 @@ struct MutRtti : public NonCopyable {
 	
 	void addField(InNameId name_, Rtti* fieldType_, Int offset_) {
 		auto& field      = ownFieldsDict.add(name_);
+		field.name       = name_;
 		field.fieldOwner = this;
 		field.fieldType  = fieldType_;
 		field.offset     = offset_;
@@ -200,13 +201,11 @@ bool Rtti::isKindOf(Rtti* r) const {
 
 class RttiObject : public WPtr_Referenceable {
 	AX_NON_COPYABLE(RttiObject)
-	AX_TYPE_INFO(RttiObject, NoBaseClass)
 public:
 	RttiObject() = default;
 	virtual ~RttiObject() = default;
 	
-	using _TYPE_INFO_Base = NoBaseClass;
-	struct MetaTypeInit : AX_META_TYPE() {};
+	AX_META_TYPE(RttiObject, NoBaseClass) {};
 	
 	static  Rtti* s_rtti ()		{ return rttiOf<This>(); }
 	virtual Rtti* rtti() const 	{ return rttiOf<This>(); }

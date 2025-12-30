@@ -13,10 +13,9 @@ class Test_Rtti : public UnitTestClass {
 public:
 	template<class T>
 	class Foo {
-		AX_TYPE_INFO(Foo, NoBaseClass)
 	public:
 		int x, y;
-		struct MetaTypeInit : AX_META_TYPE() {
+		AX_META_TYPE(Foo, NoBaseClass) {
 			AX_META_FIELD(x) {};
 			AX_META_FIELD(y) {};
 			using OwnFields = Tuple<x,y>;
@@ -25,15 +24,14 @@ public:
 
 	template<class T, Int N>
 	class Bar : public Foo<T> {
-		AX_TYPE_INFO(Bar, Foo<T>)
+		AX_META_TYPE_EX(Bar, Foo<T>)
 	public:
-		struct MetaTypeInit;
 		int bar;
 	}; 
 
 	template<class T, f32 N>
 	class Bar2_NoInitMetaType : public Foo<T> {
-		AX_TYPE_INFO(Bar2_NoInitMetaType, Foo<T>)
+		AX_META_TYPE(Bar2_NoInitMetaType, Foo<T>) {};
 	public:
 		int bar2;
 	}; 
@@ -50,7 +48,7 @@ public:
 //struct Test_Rtti::Bar<T, N>::MetaTypeInit : AX_META_TYPE_INIT(AX_WRAP(Bar<T,N>)) {
 
 template<class T, Int N>
-struct Test_Rtti::Bar<T, N>::MetaTypeInit : AX_META_TYPE() {
+struct Test_Rtti::Bar<T, N>::MetaTypeInit : public MetaTypeInit_Helper_<_TYPE_INFO_This> {
 //	static NameId s_name() { return NameId("Bar"); }
 	AX_META_FIELD(bar) {};
 	using OwnFields = Tuple<bar>;

@@ -36,9 +36,9 @@
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit() { \
 			ownFields.ensureCapacity(3); \
-			addField("Vec3f", &_TYPE_INFO_This::position); \
-			addField("Vec3f", &_TYPE_INFO_This::rotation); \
-			addField("Vec3f", &_TYPE_INFO_This::scale); \
+			addField("position", &This::position); \
+			addField("rotation", &This::rotation); \
+			addField("scale", &This::scale); \
 		}; \
 	}; \
 //------

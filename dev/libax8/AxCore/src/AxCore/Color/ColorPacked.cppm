@@ -7,7 +7,6 @@ export namespace ax {
 
 template<>
 class Color_<ColorModel::Packed, ColorElem_R5G6B5> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
 public:
 	union {
 		struct {
@@ -17,6 +16,7 @@ public:
 		};
 		u16 value;
 	};
+	AX_META_TYPE(Color_, NoBaseClass) {};
 	
 	static constexpr Int		kElementCount	= 3;
 	static constexpr ColorModel kColorModel 	= ColorModel::Packed;
@@ -27,7 +27,7 @@ public:
 
 template<>
 class Color_<ColorModel::Packed, ColorElem_R5G5B5A1> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	union {
 		struct {
@@ -48,7 +48,7 @@ public:
 
 template<>
 class Color_<ColorModel::Packed, ColorElem_R11G11B10> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	union {
 		struct {
@@ -68,7 +68,7 @@ public:
 
 template<>
 class Color_<ColorModel::Packed, ColorElem_R10G10B10A2> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	union {
 		struct {

@@ -7,7 +7,7 @@ export namespace ax {
 
 template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC1, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	using Element = void;
 
@@ -23,7 +23,7 @@ public:
 
 template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC2, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	using Element = void;
 
@@ -39,7 +39,7 @@ public:
 
 template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC3, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	using Element = void;
 
@@ -55,7 +55,7 @@ public:
 
 template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC4, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	using Element = void;
 
@@ -71,7 +71,7 @@ public:
 
 template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC5, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	using Element = void;
 
@@ -87,7 +87,7 @@ public:
 
 template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC6h, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	using Element = void;
 
@@ -104,7 +104,7 @@ public:
 
 template<VecSimd SIMD>
 class Color_<ColorModel::DXT, ColorElem_DXT_BC7, SIMD> {
-	AX_TYPE_INFO(Color_, NoBaseClass)
+	AX_META_TYPE(Color_, NoBaseClass) {};
 public:
 	using Element = void;
 
