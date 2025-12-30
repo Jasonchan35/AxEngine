@@ -2,7 +2,6 @@ module AxRender;
 
 import :RenderCommandList;
 import :RenderRequest;
-import :UI;
 
 namespace ax /*::AxRender*/ {
 
@@ -77,12 +76,6 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 
 	if (_testMeshMaterial) {
 		req->drawMesh(_testMesh, _testMeshMaterial, 0);
-	}
-
-	{
-		UI::Window	win("UI Testing");
-		static float f = 10;
-		UI::DragFloat("float", &f);
 	}
 
 	req->drawUI();

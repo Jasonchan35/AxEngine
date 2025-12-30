@@ -1,8 +1,7 @@
 module;
 #include <imgui.h>
-module AxRender;
-import :UI;
-import :AxImGui;
+module AxUI;
+import :UIControls;
 
 namespace ax /*::AxRender*/::UI {
 

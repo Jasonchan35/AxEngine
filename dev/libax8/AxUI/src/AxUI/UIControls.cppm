@@ -1,6 +1,6 @@
 module;
 
-export module AxRender:UI;
+export module AxUI:UIControls;
 export import :Common; 
 
 export namespace ax /*::AxRender*/::UI {
