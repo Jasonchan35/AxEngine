@@ -16,7 +16,10 @@ using Source = LexerSource<Char>;
 	E(Newline,) \
 //-----
 
-AX_ENUM_CLASS_EX(AX_HEADERTOOL_TokenType_ENUM_LIST, export namespace, ax::AxCppHeaderTool, TokenType, u32)
+AX_ENUM_CLASS_NO_STR(AX_HEADERTOOL_TokenType_ENUM_LIST, TokenType, u32)
+} export namespace ax {
+	AX_ENUM_STR_UTIL(AX_HEADERTOOL_TokenType_ENUM_LIST, ax::AxCppHeaderTool::TokenType);
+} export namespace ax::AxCppHeaderTool {
 
 class Parser : public NonCopyable {
 public:

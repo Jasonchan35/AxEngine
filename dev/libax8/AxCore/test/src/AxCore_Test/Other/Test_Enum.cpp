@@ -6,8 +6,10 @@ namespace TestNamespace {
 	#define AX_TestNamespace_ENUM_LIST(E) \
 		E(A,) \
 	//----
-	AX_ENUM_CLASS_EX(AX_TestNamespace_ENUM_LIST, namespace, TestNamespace, FooEnum, u32)
-} // namespace TestNamespace
+	AX_ENUM_CLASS_NO_STR(AX_TestNamespace_ENUM_LIST, FooEnum, u32)
+} namespace ax {
+	AX_ENUM_STR_UTIL(AX_TestNamespace_ENUM_LIST, TestNamespace::FooEnum)
+}
 
 namespace ax {
 

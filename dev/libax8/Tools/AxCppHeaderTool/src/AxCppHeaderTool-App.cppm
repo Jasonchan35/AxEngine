@@ -7,7 +7,7 @@ export namespace ax::AxCppHeaderTool {
 
 struct CmdOptions {
 	String outPath;
-	File::WriteFileOpt writeFileOpt;
+	File_WriteOpt writeFileOpt;
 	
 	CmdOptions();
 };	

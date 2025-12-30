@@ -23,6 +23,19 @@ struct FileEntry {
 
 using FileEntryDelegate = Delegate_<void (FileEntry& entry)>;
 
+struct File_WriteOpt {
+	bool createDir   : 1 = false;
+	bool logResult   : 1 = false;
+	bool logNoChange : 1 = false;
+};
+
+enum File_WriteResult {
+	None,
+	NoChange,
+	NewFile,
+	Updated,
+};
+
 struct File {
 	File() = delete;
 
@@ -51,24 +64,11 @@ struct File {
 
 	static void		revealInExplorer		(StrView path,  bool insideFolder = false);
 
-	enum WriteFileResult {
-		None,
-		NoChange,
-		NewFile,
-		Updated,
-	};
-	
-	struct WriteFileOpt {
-		bool createDir   : 1 = false;
-		bool logResult   : 1 = false;
-		bool logNoChange : 1 = false;
-	};
+	static File_WriteResult	writeFile			( StrView filename, ByteSpan buf,  const File_WriteOpt& opt = {});
+	static File_WriteResult	writeFile			( StrView filename, StrViewA text, const File_WriteOpt& opt = {});
 
-	static WriteFileResult	writeFile			( StrView filename, ByteSpan buf,  const WriteFileOpt& opt = {});
-	static WriteFileResult	writeFile			( StrView filename, StrViewA text, const WriteFileOpt& opt = {});
-
-	static WriteFileResult	writeFileIfChanged	( StrView filename, ByteSpan buf,  const WriteFileOpt& opt = {});
-	static WriteFileResult	writeFileIfChanged	( StrView filename, StrViewA text, const WriteFileOpt& opt = {});
+	static File_WriteResult	writeFileIfChanged	( StrView filename, ByteSpan buf,  const File_WriteOpt& opt = {});
+	static File_WriteResult	writeFileIfChanged	( StrView filename, StrViewA text, const File_WriteOpt& opt = {});
 
 	static void	touch(StrView filename);
 

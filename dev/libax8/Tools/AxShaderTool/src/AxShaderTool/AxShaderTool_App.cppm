@@ -30,7 +30,7 @@ struct CmdOptions : public NonCopyable {
 	RenderAPI api;
 	Array<String>	include_dirs;
 	
-	File::WriteFileOpt	writeFileOpt;
+	File_WriteOpt	writeFileOpt;
 };
 
 class AxShaderTool_App : public ConsoleApp {

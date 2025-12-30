@@ -360,15 +360,15 @@ void File::writeUtf8		( StrView filename, StrViewA text ) {
 	s.writeUtf8( text );
 }
 
-File::WriteFileResult File::writeFile(StrView filename, ByteSpan buf, const WriteFileOpt& opt) {
+File_WriteResult File::writeFile(StrView filename, ByteSpan buf, const File_WriteOpt& opt) {
 	Char op = '+';
-	auto res = WriteFileResult::NewFile;
+	auto res = File_WriteResult::NewFile;
 
 	auto absPath = FilePath::absPath(filename);
 
 	if (File::exists(absPath)) {
 		op = 'U';
-		res = WriteFileResult::Updated;
+		res = File_WriteResult::Updated;
 	}
 
 	if (opt.logResult) {
@@ -385,15 +385,15 @@ File::WriteFileResult File::writeFile(StrView filename, ByteSpan buf, const Writ
 	return res;
 }
 
-File::WriteFileResult File::writeFile(StrView filename, StrViewA text, const WriteFileOpt& opt) {
+File_WriteResult File::writeFile(StrView filename, StrViewA text, const File_WriteOpt& opt) {
 	return writeFile(filename, text.toByteSpan(), opt);
 }
 
-File::WriteFileResult File::writeFileIfChanged(StrView filename, ByteSpan buf, const WriteFileOpt& opt) {
+File_WriteResult File::writeFileIfChanged(StrView filename, ByteSpan buf, const File_WriteOpt& opt) {
 	Char op = '+';
 	AX_UNUSED(op);
 
-	auto res = WriteFileResult::NewFile;
+	auto res = File_WriteResult::NewFile;
 
 	auto absPath = FilePath::absPath(filename);
 
@@ -401,27 +401,27 @@ File::WriteFileResult File::writeFileIfChanged(StrView filename, ByteSpan buf, c
 		FileMemMap map(absPath);
 		if (map.span() == buf) {
 			op = '=';
-			res = WriteFileResult::NoChange;
+			res = File_WriteResult::NoChange;
 		}else{
 			op = 'U';
-			res = WriteFileResult::Updated;
+			res = File_WriteResult::Updated;
 		}
 	}
 
 	if (opt.logResult) {
-		if (res != WriteFileResult::NoChange || opt.logNoChange) {
+		if (res != File_WriteResult::NoChange || opt.logNoChange) {
 			AX_LOG("[{}] {}, size={}", op, absPath, buf.sizeInBytes());
 		}
 	}
 
-	if (res == WriteFileResult::NoChange) return res;
+	if (res == File_WriteResult::NoChange) return res;
 	auto nextOpt = opt;
 	nextOpt.logResult = false;
 	File::writeFile(absPath, buf, nextOpt);
 	return res;
 }
 
-File::WriteFileResult File::writeFileIfChanged(StrView filename, StrViewA text, const WriteFileOpt& opt) {
+File_WriteResult File::writeFileIfChanged(StrView filename, StrViewA text, const File_WriteOpt& opt) {
 	return writeFileIfChanged(filename, text.toByteSpan(), opt);
 }
 
