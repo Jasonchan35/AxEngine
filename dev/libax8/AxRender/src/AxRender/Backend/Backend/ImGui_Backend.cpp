@@ -7,11 +7,11 @@ import :RenderContext;
 
 namespace ax /*::AxRender*/ {
 
-AxImGui::~AxImGui() {
+ImGui_Backend::~ImGui_Backend() {
 	destroy();
 }
 
-void AxImGui::create(ImFontAtlas* sharedFontAtlas) {
+void ImGui_Backend::create(ImFontAtlas* sharedFontAtlas) {
 	destroy();
 
 	if (!IMGUI_CHECKVERSION()) throw Error_Undefined("ImGui version error");
@@ -34,7 +34,7 @@ void AxImGui::create(ImFontAtlas* sharedFontAtlas) {
 	_material->setShader(_shader);
 }
 
-void AxImGui::destroy() {
+void ImGui_Backend::destroy() {
 	if (!_ctx) return;
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -45,7 +45,7 @@ void AxImGui::destroy() {
 	_ctx = nullptr;
 }
 
-void AxImGui::onBeginRender(Vec2i frameSize) {
+void ImGui_Backend::onBeginRender(Vec2i frameSize) {
 	ImGuiIO& io = ImGui::GetIO();
 
 	io.DisplaySize = ImVec2_make(frameSize);
@@ -58,10 +58,10 @@ void AxImGui::onBeginRender(Vec2i frameSize) {
 	ImGui::NewFrame();
 }
 
-void AxImGui::onEndRender() {
+void ImGui_Backend::onEndRender() {
 }
 
-void AxImGui::onDrawUI(RenderRequest* req) {
+void ImGui_Backend::onDrawUI(RenderRequest* req) {
 	ImGui::Render();
 
 	if (!_material) return;
@@ -174,7 +174,7 @@ void AxImGui::onDrawUI(RenderRequest* req) {
 	}
 }
 
-bool AxImGui::onUIMouseEvent(NativeUIMouseEvent& ev) {
+bool ImGui_Backend::onUIMouseEvent(NativeUIMouseEvent& ev) {
 	ImGuiIO& io = ImGui::GetIO();
 
 	using Type = NativeUIMouseEventType;
@@ -201,7 +201,7 @@ bool AxImGui::onUIMouseEvent(NativeUIMouseEvent& ev) {
 	return io.WantCaptureMouse;
 }
 
-void AxImGui::_createFontTexture() {
+void ImGui_Backend::_createFontTexture() {
 	ImGuiIO& io = ImGui::GetIO();
 
 	unsigned char* pixels = nullptr;
@@ -216,7 +216,7 @@ void AxImGui::_createFontTexture() {
 	_fontTex = Texture2D::s_new(AX_ALLOC_REQ, info, pixelData);
 }
 
-int AxImGui::_mouseButton(NativeUIMouseEventButton v) {
+int ImGui_Backend::_mouseButton(NativeUIMouseEventButton v) {
 	using Button = NativeUIMouseEventButton;
 	switch (v) {
 		case Button::Left:    return 0;
@@ -228,22 +228,22 @@ int AxImGui::_mouseButton(NativeUIMouseEventButton v) {
 	}
 }
 
-void AxImGui::onUIKeyEvent(NativeUIKeyEvent& ev) {
+void ImGui_Backend::onUIKeyEvent(NativeUIKeyEvent& ev) {
 	
 }
 
-void AxImGui::setIniFilename(StrView name) {
+void ImGui_Backend::setIniFilename(StrView name) {
 	_iniFilename = name;
 }
 
-void AxImGui::loadIniFile() {
+void ImGui_Backend::loadIniFile() {
 	if (_iniFilename) {
 		ImGui::LoadIniSettingsFromDisk(_iniFilename.c_str());
 	}
 
 }
 
-void AxImGui::saveIniFile() {
+void ImGui_Backend::saveIniFile() {
 	if (_iniFilename) {
 		ImGui::SaveIniSettingsToDisk(_iniFilename.c_str());
 	}

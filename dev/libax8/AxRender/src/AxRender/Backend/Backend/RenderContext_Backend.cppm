@@ -26,7 +26,7 @@ public:
 	virtual void onLoadImGuiIniFile() override;
 	virtual void onSaveImGuiIniFile() override;
 
-	AxImGui	imgui;
+	ImGui_Backend	imgui;
 };
 
 } // namespace

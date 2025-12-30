@@ -11,9 +11,9 @@ export namespace ax /*::AxRender*/ {
 class RenderContext;
 class RenderRequest;
 
-class AxImGui : public NonCopyable {
+class ImGui_Backend : public NonCopyable {
 public:
-	~AxImGui();
+	~ImGui_Backend();
 
 	void create(ImFontAtlas* sharedFontAtlas);
 	void destroy();
