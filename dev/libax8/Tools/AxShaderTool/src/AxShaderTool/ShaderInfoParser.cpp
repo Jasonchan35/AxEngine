@@ -320,9 +320,9 @@ void ShaderInfoParser::readProperty_DefaultValue(ShaderPropInfo& prop) {
 		#undef E
 			case ShaderPropType::Color3f:		prop.defaultValue.v_Color3f = Color3f::kWhite();	break;
 			case ShaderPropType::Color4f:		prop.defaultValue.v_Color4f = Color4f::kWhite();	break;
-			case ShaderPropType::Texture2D:		prop.defaultValue.v_stockTextureId = StockTextureId::White;	break;
-			case ShaderPropType::Texture3D:		prop.defaultValue.v_stockTextureId = StockTextureId::White;	break;
-			case ShaderPropType::TextureCube:	prop.defaultValue.v_stockTextureId = StockTextureId::White;	break;
+			case ShaderPropType::Texture2D:		prop.defaultValue.v_stockTextureId = RenderStockTextureId::White;	break;
+			case ShaderPropType::Texture3D:		prop.defaultValue.v_stockTextureId = RenderStockTextureId::White;	break;
+			case ShaderPropType::TextureCube:	prop.defaultValue.v_stockTextureId = RenderStockTextureId::White;	break;
 			default: throw _makeError("unhandled propType {}", prop.propType);
 		}
 	}

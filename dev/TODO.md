@@ -3,6 +3,9 @@
 	- move some CBV, Texture to root parameter
 	- static sampler
 	
+- DirectStorage texture loading
+	- vkCmdCopyMemoryIndirectKHR
+	
 - Vk
 	- immutable sampler
 

@@ -205,7 +205,7 @@ struct ShaderPropInfo : public NonCopyable {
 	#undef E
 		Color3f	v_Color3f;
 		Color4f	v_Color4f;
-		StockTextureId	v_stockTextureId;
+		RenderStockTextureId	v_stockTextureId;
 	} defaultValue;
 
 	String			asset;

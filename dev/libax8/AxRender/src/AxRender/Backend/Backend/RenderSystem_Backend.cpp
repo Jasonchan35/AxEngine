@@ -37,7 +37,7 @@ void RenderSystem_Backend::onCreate() {
 }
 
 void RenderSystem_Backend::onDestroy() {
-	StockObjects::s_destroy();
+	RenderStockObjects::s_destroy();
 	_privateData.unref();
 	RenderObjectManager_Backend::s_destroy();
 	Base::onDestroy();

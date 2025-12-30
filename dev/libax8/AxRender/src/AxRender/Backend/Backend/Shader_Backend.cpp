@@ -96,13 +96,13 @@ void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StorageBuffer& pa
 inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
 	ParamBase::create(info);
 	_dynamicSampler = info.dynamicSampler; 
-	_defaultSampler = StockObjects::s_instance()->samplers.defaultValue;
+	_defaultSampler = RenderStockObjects::s_instance()->samplers.defaultValue;
 }
 
 inline void ShaderParamSpace_Backend::TextureParam::create(const Info& info) {
 	ParamBase::create(info);
 	_dataType = info.dataType;
-	_defaultTexture = StockObjects::s_instance()->texture2Ds.kNone;
+	_defaultTexture = RenderStockObjects::s_instance()->texture2Ds.kNone;
 }
 
 inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
@@ -149,7 +149,7 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 	#undef E
 		case ShaderPropType::Texture2D: {
 			if (auto* param = findTextureParam(propName)) {
-				auto* tex= StockObjects::s_instance()->texture2Ds.get(propInfo.defaultValue.v_stockTextureId);
+				auto* tex= RenderStockObjects::s_instance()->texture2Ds.get(propInfo.defaultValue.v_stockTextureId);
 				param->setDefaultTexture(tex);
 			}
 		} break;
@@ -157,7 +157,7 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 		case ShaderPropType::Sampler: {
 			if (auto* param = findSamplerParam(propName)) {
 				// TODO - pick the sampler base on propInfo.default
-				auto* sampler = StockObjects::s_instance()->samplers.defaultValue.ptr();
+				auto* sampler = RenderStockObjects::s_instance()->samplers.defaultValue.ptr();
 				param->setDefaultSampler(sampler);
 			}
 		} break;

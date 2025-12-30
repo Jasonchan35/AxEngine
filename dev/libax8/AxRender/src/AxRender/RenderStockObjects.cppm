@@ -4,25 +4,25 @@ export import :Texture;
 
 export namespace ax /*::AxRender*/ {
 
-#define AX_RENDER_StockTextureId_ENUM_LIST(E) \
+#define AX_RenderStockTextureId_ENUM_LIST(E) \
 	E(None,) \
 	E(Error,) \
-	AX_RENDER_StockTextureId_SolidColor_ENUM_LIST(E) \
+	AX_RenderStockTextureId_SolidColor_ENUM_LIST(E) \
 //----
 
-AX_ENUM_CLASS(AX_RENDER_StockTextureId_ENUM_LIST, StockTextureId, u8)
+AX_ENUM_CLASS(AX_RenderStockTextureId_ENUM_LIST, RenderStockTextureId, u8)
 
-class StockObjects : public NonCopyable {
+class RenderStockObjects : public NonCopyable {
 public:
 	struct Texture2Ds : public NonCopyable {
 		Texture2Ds();
 
 	#define E(T,...) SPtr<Texture2D> k##T;
-		AX_RENDER_StockTextureId_ENUM_LIST(E)
+		AX_RenderStockTextureId_ENUM_LIST(E)
 	#undef E
 
 
-		Texture2D*	get(StockTextureId texId);
+		Texture2D*	get(RenderStockTextureId texId);
 	};
 
 	Texture2Ds	texture2Ds;
@@ -48,13 +48,13 @@ public:
 	};
 	Samplers	samplers;
 
-	static StockObjects* s_instance();
+	static RenderStockObjects* s_instance();
 
 	static void s_create();
 	static void s_destroy();
 
 protected:
-	StockObjects();
+	RenderStockObjects();
 };
 
 } // namespace

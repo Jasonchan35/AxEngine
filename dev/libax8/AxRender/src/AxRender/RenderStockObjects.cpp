@@ -2,12 +2,12 @@ module AxRender;
 
 namespace ax /*::AxRender*/ {
 
-static StockObjects* StockObjects_instance = nullptr;
+static RenderStockObjects* StockObjects_instance = nullptr;
 
-StockObjects::StockObjects() {
+RenderStockObjects::RenderStockObjects() {
 }
 
-StockObjects::Samplers::Samplers() 
+RenderStockObjects::Samplers::Samplers() 
 : Point		  (SamplerFilter:: Point		 )
 , Linear	  (SamplerFilter:: Linear	 	 )
 , Bilinear	  (SamplerFilter:: Bilinear	 	 )
@@ -19,21 +19,21 @@ StockObjects::Samplers::Samplers()
 	defaultValue = Sampler::s_new(AX_ALLOC_REQ, desc);
 }
 
-StockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
+RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
 	Clamp      = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Clamp     ));
 	Repeat     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Repeat    ));
 	Mirror     = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::Mirror    ));
 	MirrorOnce = Sampler::s_new(AX_ALLOC_REQ, filter, SamplerWrapUVW(TagAll, SamplerWrap::MirrorOnce));
 }
 
-StockObjects* StockObjects::s_instance() { return StockObjects_instance; }
+RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }
 
-void StockObjects::s_create() {
+void RenderStockObjects::s_create() {
 	AX_ASSERT(StockObjects_instance == nullptr);
-	StockObjects_instance = new(AX_ALLOC_REQ) StockObjects();
+	StockObjects_instance = new(AX_ALLOC_REQ) RenderStockObjects();
 }
 
-void StockObjects::s_destroy() {
+void RenderStockObjects::s_destroy() {
 //	AX_ASSERT(StockObjects_instance);
 	if (StockObjects_instance) {
 		AxDelete::deleteObject(StockObjects_instance);
@@ -41,7 +41,7 @@ void StockObjects::s_destroy() {
 	}
 }
 
-StockObjects::Texture2Ds::Texture2Ds() {
+RenderStockObjects::Texture2Ds::Texture2Ds() {
 	{
 		Image image;
 		auto createTex = [&](SPtr<Texture2D> & outTex, const Color4b& color, StrView name) {
@@ -52,7 +52,7 @@ StockObjects::Texture2Ds::Texture2Ds() {
 		};
 
 		#define E(T,...) createTex(k##T, Color4b::k##T(), "SolidColor-"#T);
-			AX_RENDER_StockTextureId_SolidColor_ENUM_LIST(E)
+			AX_RenderStockTextureId_SolidColor_ENUM_LIST(E)
 		#undef E
 	}
 
@@ -70,10 +70,10 @@ StockObjects::Texture2Ds::Texture2Ds() {
 	}
 }
 
-Texture2D* StockObjects::Texture2Ds::get(StockTextureId texId) {
+Texture2D* RenderStockObjects::Texture2Ds::get(RenderStockTextureId texId) {
 	switch (texId) {
-	#define E(T, ...) case StockTextureId::T: return k##T;
-		AX_RENDER_StockTextureId_SolidColor_ENUM_LIST(E)
+	#define E(T, ...) case RenderStockTextureId::T: return k##T;
+		AX_RenderStockTextureId_SolidColor_ENUM_LIST(E)
 	#undef E
 
 		default: AX_ASSERT(false); return nullptr;

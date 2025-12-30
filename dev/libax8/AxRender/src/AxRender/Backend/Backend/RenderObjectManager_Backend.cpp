@@ -68,7 +68,7 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 }
 
 void RenderObjectManager_Backend::_postCreate() {
-	StockObjects::s_create();
+	RenderStockObjects::s_create();
 
 	//----- common material
 	auto commonShaderFilename = StrView("ImportedAssets/Shaders/core/Common.axShader");

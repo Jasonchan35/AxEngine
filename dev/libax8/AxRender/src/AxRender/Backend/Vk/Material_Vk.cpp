@@ -49,7 +49,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 	for (auto& param : _samplerParams) {
 		auto* sampler = param.sampler();
 		if (!sampler) {
-			sampler = StockObjects::s_instance()->samplers.defaultValue.ptr();
+			sampler = RenderStockObjects::s_instance()->samplers.defaultValue.ptr();
 		}
 
 		auto* sampler_vk = rttiCastCheck<Sampler_Vk>(sampler);
@@ -62,7 +62,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 	for (auto& param : _textureParams) {
 		auto* tex = param.texture();
 		if (!tex) {
-			tex = StockObjects::s_instance()->texture2Ds.kError.ptr();
+			tex = RenderStockObjects::s_instance()->texture2Ds.kError.ptr();
 		}
 
 		switch (tex->type()) {

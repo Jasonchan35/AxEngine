@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 
-#define AX_RENDER_StockTextureId_SolidColor_ENUM_LIST(E) \
+#define AX_RenderStockTextureId_SolidColor_ENUM_LIST(E) \
 	E(Zero			,) \
 	E(Black			,) \
 	E(White			,) \
