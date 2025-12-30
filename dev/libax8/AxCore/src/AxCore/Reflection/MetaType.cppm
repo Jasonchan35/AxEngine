@@ -130,14 +130,6 @@ struct MetaFieldBase : public NonCopyable {
 	using OwnFields = Tuple<>;
 };
 
-template<class T, NameId (*NAME_FUNC)()>
-struct MetaTypeInit_Simple_ : public IMetaTypeInit {
-	using This = T;
-	using Base = NoBaseClass;
-
-	static NameId s_name() { static auto s = NAME_FUNC(); return s; }
-};
-
 AX_META_TYPE_INIT_SIMPLE(i8)
 AX_META_TYPE_INIT_SIMPLE(i16)
 AX_META_TYPE_INIT_SIMPLE(i32)

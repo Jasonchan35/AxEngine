@@ -26,8 +26,11 @@ private: \
 //------
 
 #define AX_META_TYPE_INIT_SIMPLE(T) \
-		template<> struct MetaTypeInit_Handler_<T> { \
-			static NameId _type_name() { return NameId::s_make(#T); } \
-			using MetaTypeInit = MetaTypeInit_Simple_<T, _type_name>; \
+	template<> struct MetaTypeInit_Handler_<T> { \
+		struct MetaTypeInit : public IMetaTypeInit { \
+			using This = T; \
+			using Base = NoBaseClass; \
+			static NameId s_name() { static auto s = NameId::s_make(#T); return s; } \
 		}; \
+	}; \
 //------
