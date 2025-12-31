@@ -53,9 +53,9 @@ void RenderRequest_Dx12::onFrameBegin() {
 	_dynamicDescriptors.DepthBuffer.reset();
 	_dynamicDescriptors.CBV_SRV_UAV.reset();
 	_dynamicDescriptors.Sampler.reset();
-
+	
 	auto& heapPool = RenderObjectManager_Dx12::s_instance()->descriptorHeapPools;
-	auto descHeaps = Span({heapPool.CBV_SRV_UAV.d3dHeap(), heapPool.Sampler.d3dHeap()});
+	ID3D12DescriptorHeap* descHeaps[] = {heapPool.CBV_SRV_UAV.d3dHeap(), heapPool.Sampler.d3dHeap()};
 	setDescriptorHeaps(descHeaps);
 }
 
