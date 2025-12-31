@@ -151,6 +151,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 		if (!entryFunc) return;
 
 		auto& dst	= stageCreateInfos.emplaceBack();
+		dst = {};
 		dst.sType	= VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		dst.stage	= AX_VkUtil::getVkShaderStageFlagBits(stageFlags);
 	//	dst.flags	= VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT;
@@ -219,6 +220,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 
 	{
 		auto& cb = colorBlendAttachmentStates.emplaceBack();
+		cb = {};
 		if (rs.blend.isEnable()) {
 			cb.blendEnable			= rs.blend.isEnable();
 			cb.colorBlendOp			= AX_VkUtil::getVkBlendOp(rs.blend.rgb.op);
@@ -297,7 +299,7 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 		}
 
 		auto& dst = attrDesc.emplaceBack();
-
+		dst = {};
 		dst.binding = ax_enum_int(ShaderParamBindPoint::VertexBuffer);
 		dst.format	= AX_VkUtil::getVkDataType(src->dataType);
 		dst.offset  = AX_VkUtil::castUInt32(src->offset);
@@ -309,6 +311,7 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 	if (attrDesc.size() > 0) {
 		// bind vertex buffer
 		auto& dst = bindingDesc.emplaceBack();
+		dst = {};
 		dst.binding		= ax_enum_int(ShaderParamBindPoint::VertexBuffer);
 		dst.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
 		dst.stride		= AX_VkUtil::castUInt32(vertexLayout->strideInBytes);

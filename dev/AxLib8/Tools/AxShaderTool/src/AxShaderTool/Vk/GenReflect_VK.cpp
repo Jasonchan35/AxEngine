@@ -94,8 +94,8 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 			if (mat.row_count == 4 && mat.column_count == 4) {
 				switch (scalar.width) {
-					case 32: return RenderDataType::Mat4f;
-					case 64: return RenderDataType::Mat4d;
+					case 32: return RenderDataType::f32x4x4;
+					case 64: return RenderDataType::f64x4x4;
 				}
 			}
 		}

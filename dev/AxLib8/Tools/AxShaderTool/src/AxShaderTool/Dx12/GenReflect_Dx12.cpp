@@ -457,9 +457,9 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 					dataType.clear();
 					if (varType.Rows == 4 && varType.Columns == 4) {
 						if (varType.Type == D3D_SVT_FLOAT) {
-							dataType = "Mat4f";
+							dataType = "f32x4x4";
 						} else if (varType.Type == D3D_SVT_DOUBLE) {
-							dataType = "Mat4d";
+							dataType = "f64x4x4";
 						}
 					}
 
