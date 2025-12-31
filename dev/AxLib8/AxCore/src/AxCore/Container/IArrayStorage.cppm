@@ -1,6 +1,5 @@
 module;
 
-
 export module AxCore.IArrayStorage;
 
 export import AxCore.BasicType;
@@ -59,7 +58,7 @@ protected:
 
 	AX_VC_WARNING_PUSH_AND_DISABLE(4324) // structure was padded due to alignment specifier
 	struct SmallStorage_Dummy {
-		SmallStorage small_storagea;
+		SmallStorage smallStorage;
 		alignas(T) u8 data[1];
 	};
 	AX_VC_WARNING_POP()
@@ -159,7 +158,7 @@ constexpr void IArrayStorage<T>::_storageEnsureCapacity_Impl(Int reqCapacity) {
 	if (newData != oldData) {
 		if (oldData) {
 			MemUtil::moveConstructorAndDestructor(newData, oldData, oldSize);
-			if (!_storage.isSmall()) {
+			if (_storage.isAllocatedData()) {
 				onStorageFree(oldData);
 			}
 		}

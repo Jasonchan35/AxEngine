@@ -4,6 +4,7 @@ import AxCore_Test.PCH;
 import AxCore.Vec;
 import AxCore.VecSimd;
 import AxCore.Random;
+import AxCore.Color;
 
 namespace ax {
 

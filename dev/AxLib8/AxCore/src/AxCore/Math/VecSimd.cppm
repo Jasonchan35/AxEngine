@@ -14,11 +14,13 @@ AX_ENUM_CLASS(AX_NumSIMD_ENUM_LIST, VecSimd, u8)
 inline constexpr VecSimd VecSimd_Default = VecSimd::SSE;
 
 class VecSimd_NullReg {};
-template<Int N, class T, VecSimd SIMD>	struct VecSimdInfo_							{ using Register = VecSimd_NullReg; static constexpr Int padding = 0; };
-template<> 								struct VecSimdInfo_<3, f32, VecSimd::SSE>	{ using Register = __m128;          static constexpr Int padding = 1; }; 
-template<> 								struct VecSimdInfo_<3, f64, VecSimd::SSE>	{ using Register = __m256d;         static constexpr Int padding = 1; };
-template<> 								struct VecSimdInfo_<4, f32, VecSimd::SSE>	{ using Register = __m128;          static constexpr Int padding = 0; }; 
-template<> 								struct VecSimdInfo_<4, f64, VecSimd::SSE>	{ using Register = __m256d;         static constexpr Int padding = 0; };
+template<Int N, class T, VecSimd SIMD>
+struct VecSimdInfo_ { using Register = VecSimd_NullReg; static constexpr Int padding = 0; static constexpr Int alignment = alignof(T); };
+
+template<> struct VecSimdInfo_<3, f32, VecSimd::SSE>	{ using Register = __m128;   static constexpr Int padding = 1; static constexpr Int alignment = 16; }; 
+template<> struct VecSimdInfo_<3, f64, VecSimd::SSE>	{ using Register = __m256d;  static constexpr Int padding = 1; static constexpr Int alignment = 16; };
+template<> struct VecSimdInfo_<4, f32, VecSimd::SSE>	{ using Register = __m128;   static constexpr Int padding = 0; static constexpr Int alignment = 16; }; 
+template<> struct VecSimdInfo_<4, f64, VecSimd::SSE>	{ using Register = __m256d;  static constexpr Int padding = 0; static constexpr Int alignment = 16; };
 
 template<class VEC, class T>
 struct VecSimd_NumLimit {
@@ -43,7 +45,7 @@ class VecSimd_Data_ {
 public:
 	using Vec = VecSimd_Data_;
 	union {
-		Register	mm;	
+		alignas(Info::alignment) Register	mm;	
 		T			e[N + padding];
 	};
 	

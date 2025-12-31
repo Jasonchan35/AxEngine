@@ -125,8 +125,9 @@ template <class T>
 template<class A,   class  B> inline constexpr bool Type_IsSame   = std::is_same_v<A, B>;
 template<class BASE, class T> inline constexpr bool Type_IsBaseOf = std::is_base_of_v<BASE, T>;
 
-template<class T> constexpr bool Type_IsTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<T>;
-template<class T> constexpr bool Type_IsTriviallyDestructible   = std::is_trivially_destructible_v<T>;
+template<class T> constexpr bool Type_IsTriviallyCopyAssignable       = std::is_trivially_copy_assignable_v<T>;
+template<class T> constexpr bool Type_IsTriviallyDefaultConstructible = std::is_trivially_default_constructible_v<T>;
+template<class T> constexpr bool Type_IsTriviallyDestructible         = std::is_trivially_destructible_v<T>;
 
 template<class T> constexpr bool Type_IsFundamental =  std::is_fundamental_v<T>;
 template<class T> constexpr bool Type_IsIntType     =  std::is_integral_v<T>;
