@@ -10,7 +10,7 @@ public:
 	void clear() { _vertexCount = 0; _buffer.reset(); }
 
 	AX_INLINE Int			vertexCount() const		{ return _vertexCount; }
-	AX_INLINE VertexLayout	vertexLayout() const { return _vertexLayout; }
+	AX_INLINE VertexLayout	vertexLayout() const	{ return _vertexLayout; }
 
 							void create(VertexLayout vertexLayout);
 	template<class VERTEX>	void create() { create(VERTEX::s_layout()); }

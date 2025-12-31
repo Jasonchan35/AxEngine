@@ -1,5 +1,5 @@
 module;
-#include <imgui-docking/imgui.h>
+
 module AxRender;
 import :ImGui_Backend;
 import :Renderer;
@@ -42,7 +42,7 @@ void ImGui_Backend::create() {
 	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsLight();
 	
-	constexpr float uiScale  = 1.0f;
+	constexpr float uiScale  = 2.0f;
 	
 	// Setup scaling
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -136,73 +136,74 @@ void ImGui_Backend::onDrawUI(RenderRequest* req) {
 	AX_ASSERT(vertexStride == AX_SIZEOF(ImDrawVert));
 	AX_ASSERT( indexStride == sizeof(u16));
 
+	// static constexpr auto kVertexSize = AX_SIZEOF(ImDrawVert);
+	// static constexpr auto kIndexSize  = AX_SIZEOF(ImDrawIdx);
+	
 	_vertexBuffer.ensureBufferCapacity(data->TotalVtxCount);
-	 _indexBuffer.ensureBufferCapacity(data->TotalIdxCount);
+	_indexBuffer.ensureBufferCapacity(data->TotalIdxCount);
 
 	auto scissorRectScope = req->scissorRectScope();
 
-	{
-		_vertexBuffer.clear();
-		_indexBuffer.clear();
+	_vertexBuffer.clear();
+	_indexBuffer.clear();
 
-		for (int i = 0; i < data->CmdListsCount; i++) {
-			auto* srcCmd = data->CmdLists[i];
-
-			for (int j = 0; j < srcCmd->CmdBuffer.Size; j++) {
-				_vertexBuffer.addVertices(Span<Vertex>(reinterpret_cast<const Vertex*>(srcCmd->VtxBuffer.Data), srcCmd->VtxBuffer.Size));
-				 _indexBuffer.addIndices( Span<Index >(reinterpret_cast<const Index* >(srcCmd->IdxBuffer.Data), srcCmd->IdxBuffer.Size));
-			}
-		}
-
-		auto* vertexGpuBuffer = _vertexBuffer.getUploadedGpuBuffer(req);
-		auto*  indexGpuBuffer =  _indexBuffer.getUploadedGpuBuffer(req);
-
-		Int vertexStart = 0;
-		Int indexStart  = 0;
-
-		for (int i = 0; i < data->CmdListsCount; i++) {
-			auto* srcCmd = data->CmdLists[i];
-
-			for (int j = 0; j < srcCmd->CmdBuffer.Size; j++) {
-				auto& srcBuf = srcCmd->CmdBuffer[j];
-
-				// Project scissor/clipping rectangles into frame buffer space
-
-				ImVec2 clip_off = data->DisplayPos;
-				ImVec2 clip_min(srcBuf.ClipRect.x - clip_off.x, srcBuf.ClipRect.y - clip_off.y);
-				ImVec2 clip_max(srcBuf.ClipRect.z - clip_off.x, srcBuf.ClipRect.w - clip_off.y);
-
-				if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
-					continue;
-
-				// Apply scissor/clipping rectangle
-				auto a = Vec2f_make(clip_min);
-				auto b = Vec2f_make(clip_max);
-
-				req->setScissorRect({a, b - a});
-
-				Cmd_DrawCall drawcall;
-
-				drawcall.material		   = _material;
-				drawcall.materialPassIndex = 0;
-				drawcall.primitiveType	   = RenderPrimitiveType::Triangles;
-				drawcall.vertexLayout	   = vertexLayout;
-				drawcall.vertexBuffer	   = vertexGpuBuffer;
-				drawcall.vertexStart	   = vertexStart + srcBuf.VtxOffset;
-				drawcall.vertexCount	   = 0;
-				drawcall.indexType		   = IndexType_get<Index>;
-				drawcall.indexBuffer	   = indexGpuBuffer;
-				drawcall.indexCount		   = srcBuf.ElemCount;
-				drawcall.indexStart		   = indexStart + srcBuf.IdxOffset;
-
-				req->drawCall(drawcall);
-
-			}
-
-			vertexStart += srcCmd->VtxBuffer.Size;
-			indexStart  += srcCmd->IdxBuffer.Size;
-		}
+	for (int i = 0; i < data->CmdListsCount; i++) {
+		auto* srcCmd = data->CmdLists[i];
+		auto* pVtx = reinterpret_cast<const Vertex*>(srcCmd->VtxBuffer.Data);
+		_vertexBuffer.addVertices(Span<Vertex>(pVtx, srcCmd->VtxBuffer.Size));
+		
+		auto* pIdx = reinterpret_cast<const Index* >(srcCmd->IdxBuffer.Data);
+		_indexBuffer.addIndices(  Span<Index >(pIdx, srcCmd->IdxBuffer.Size));
 	}
+
+	auto* vertexGpuBuffer = _vertexBuffer.getUploadedGpuBuffer(req);
+	auto*  indexGpuBuffer =  _indexBuffer.getUploadedGpuBuffer(req);
+
+	Int vertexStart = 0;
+	Int indexStart  = 0;
+
+	for (int i = 0; i < data->CmdListsCount; i++) {
+		auto* srcCmd = data->CmdLists[i];
+
+		for (int j = 0; j < srcCmd->CmdBuffer.Size; j++) {
+			auto& srcCmdBuf = srcCmd->CmdBuffer[j];
+
+			// Project scissor/clipping rectangles into frame buffer space
+
+			ImVec2 clip_off = data->DisplayPos;
+			ImVec2 clip_min(srcCmdBuf.ClipRect.x - clip_off.x, srcCmdBuf.ClipRect.y - clip_off.y);
+			ImVec2 clip_max(srcCmdBuf.ClipRect.z - clip_off.x, srcCmdBuf.ClipRect.w - clip_off.y);
+
+			if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
+				continue;
+
+			// Apply to scissor/clipping rectangle
+			auto a = Vec2f_make(clip_min);
+			auto b = Vec2f_make(clip_max);
+
+			req->setScissorRect({a, b - a});
+
+			Cmd_DrawCall drawcall;
+
+			drawcall.material		   = _material;
+			drawcall.materialPassIndex = 0;
+			drawcall.primitiveType	   = RenderPrimitiveType::Triangles;
+			drawcall.vertexLayout	   = vertexLayout;
+			drawcall.vertexBuffer	   = vertexGpuBuffer;
+			drawcall.vertexStart	   = vertexStart + srcCmdBuf.VtxOffset;
+			drawcall.vertexCount	   = 0;
+			drawcall.indexType		   = IndexType_get<Index>;
+			drawcall.indexBuffer	   = indexGpuBuffer;
+			drawcall.indexCount		   = srcCmdBuf.ElemCount;
+			drawcall.indexStart		   = indexStart + srcCmdBuf.IdxOffset;
+
+			req->drawCall(drawcall);
+		}
+
+		vertexStart += srcCmd->VtxBuffer.Size;
+		indexStart  += srcCmd->IdxBuffer.Size;
+	}
+
 }
 
 bool ImGui_Backend::onUIMouseEvent(NativeUIMouseEvent& ev) {
