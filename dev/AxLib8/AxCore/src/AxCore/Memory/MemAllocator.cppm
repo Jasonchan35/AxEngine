@@ -23,7 +23,7 @@ public:
 	MemAllocRequest(MemAllocator* allocator_, const SrcLoc& srcLoc_ = SrcLoc::s_current()) : allocator(allocator_), srcLoc(srcLoc_) {}
 	MemAllocator*	allocator = nullptr;
 	Int				dataSize = 0;
-	Int				alignment = AX_SIZEOF(void*);
+	Int				alignment = 16;
 	const SrcLoc&	srcLoc;
 };
 
