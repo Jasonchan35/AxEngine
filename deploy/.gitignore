@@ -3,3 +3,5 @@
 /**/.ninja_log
 /**/*.d
 /**/*.tmp
+
+/.imgui_*
