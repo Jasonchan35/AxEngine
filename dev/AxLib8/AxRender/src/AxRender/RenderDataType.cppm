@@ -178,6 +178,8 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 	E(f32x1		,) E(f32x2		,) E(f32x3		,) E(f32x4		,) \
 	E(f64x1		,) E(f64x2		,) E(f64x3		,) E(f64x4		,) \
 	\
+	E(f32x4x4	,) \
+	E(f64x4x4	,) \
 //---
 
 #define AX_RenderDataType_Vec_ENUM_LIST(E) \

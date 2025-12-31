@@ -153,11 +153,14 @@ public:
 	bool setParam(NameId name, const f64x3&		v) { return _setVariable(name, v); }
 	bool setParam(NameId name, const f64x4&		v) { return _setVariable(name, v); }
 
-	bool setParam(NameId name, const Mat4f&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const Mat4d&		v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const f32x4x4&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const f64x4x4&	v) { return _setVariable(name, v); }
+	
+	bool setParam(NameId name, const Mat4f&		v) { return setParam(name, f32x4x4(v)); }
+	bool setParam(NameId name, const Mat4d&		v) { return setParam(name, f64x4x4(v)); }
 
-	bool setParam(NameId name, const Color3f&	v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const Color4f&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Color3f&	v) { return setParam(name, f32x3(v)); }
+	bool setParam(NameId name, const Color4f&	v) { return setParam(name, f32x4(v)); }
 
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);

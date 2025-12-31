@@ -60,6 +60,7 @@ function(ax_set_warning_level target_name)
 #		target_compile_options(${target_name} PRIVATE /Wall)   	#warning level all
 		target_compile_options(${target_name} PRIVATE /we6244)  #warning C6244: local declaration of <variable> hides previous declaration
 		target_compile_options(${target_name} PRIVATE /we6246)  #warning C6246: Local declaration of <variable> hides declaration of same name in outer scope
+#		target_compile_options(${target_name} PRIVATE /Zp16)    # struct alignment
 
 		# re-enable warning disabled by default to level 4
 		# VS2017 or later
