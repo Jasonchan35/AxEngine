@@ -95,7 +95,7 @@ protected:
 		constexpr void setAllocDataPtr(T* data, Int cap) noexcept;
 	};
 
-	Storage _storage;
+	alignas(T) Storage _storage;
 
 private:
 	constexpr void _storageEnsureCapacity_Impl(Int reqCapacity);
