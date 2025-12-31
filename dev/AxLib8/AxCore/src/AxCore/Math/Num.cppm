@@ -64,6 +64,18 @@ struct Num_ : public Num_Data<COL, ROW, T> {
 	AX_INLINE constexpr Num_(const T& e0, const T& e1)								{ set(e0,e1); }
 	AX_INLINE constexpr Num_(const T& e0, const T& e1, const T& e2)					{ set(e0,e1,e2); }
 	AX_INLINE constexpr Num_(const T& e0, const T& e1, const T& e2, const T& e3)	{ set(e0,e1,e2,e3); }
+
+	AX_INLINE constexpr Num_(
+		const T& e00, const T& e01, const T& e02, const T& e03,
+		const T& e10, const T& e11, const T& e12, const T& e13,
+		const T& e20, const T& e21, const T& e22, const T& e23,
+		const T& e30, const T& e31, const T& e32, const T& e33)
+	{
+		set(e00,e01,e02,e03,
+			e10,e11,e12,e13,
+			e20,e21,e22,e23,
+			e30,e31,e32,e33);
+	}
 	
 	AX_INLINE constexpr void set(const T& e0) {
 		static_assert(kElementCount == 1);
@@ -89,6 +101,19 @@ struct Num_ : public Num_Data<COL, ROW, T> {
 		_data[0][1] = e1;
 		_data[0][2] = e2;
 		_data[0][3] = e3;
+	}
+
+	AX_INLINE constexpr void set(
+		const T& e00, const T& e01, const T& e02, const T& e03,
+		const T& e10, const T& e11, const T& e12, const T& e13,
+		const T& e20, const T& e21, const T& e22, const T& e23,
+		const T& e30, const T& e31, const T& e32, const T& e33) 
+	{
+		static_assert(kElementCount == 16);
+		_data[0][0] = e00;	_data[0][1] = e01;	_data[0][2] = e02;	_data[0][3] = e03;
+		_data[1][0] = e10;	_data[1][1] = e11;	_data[1][2] = e12;	_data[1][3] = e13;
+		_data[2][0] = e20;	_data[2][1] = e21;	_data[2][2] = e22;	_data[2][3] = e23;
+		_data[3][0] = e30;	_data[3][1] = e31;	_data[3][2] = e32;	_data[3][3] = e33;
 	}
 	
 	AX_NODISCARD AX_INLINE constexpr       T* data()			{ return _data; }
@@ -202,6 +227,10 @@ using f64x1	= Num1_<f64>;
 using f64x2	= Num2_<f64>;
 using f64x3	= Num3_<f64>;
 using f64x4	= Num4_<f64>;
+
+using f16x4x4	= Num_<4,4, f16>;
+using f32x4x4	= Num_<4,4, f32>;
+using f64x4x4	= Num_<4,4, f64>;
 
 using UNorm8x1	= Num1_<UNorm8>;
 using UNorm8x2	= Num2_<UNorm8>;

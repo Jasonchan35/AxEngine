@@ -229,7 +229,8 @@ IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf,
 
 	if (Math::exactlyEqual(*dst, value)) return IntRange();
 
-	*dst = value;
+	MemUtil::rawCopy(dst, &value, AX_SIZEOF(value));
+//	*dst = value;
 	return range;
 }
 
