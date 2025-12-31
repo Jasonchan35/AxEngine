@@ -1,7 +1,7 @@
 module;
 export module AxRender:RenderContext_Backend;
 export import :RenderContext;
-export import :AxImGui;
+export import :ImGui_Backend;
 
 export namespace ax /*::AxRender*/ {
 

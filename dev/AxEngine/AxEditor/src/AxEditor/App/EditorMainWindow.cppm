@@ -2,6 +2,7 @@ module;
 
 export module AxEditor:EditorMainWindow;
 export import :EditorWindow;
+export import :SceneOutlinerUIPanel;
 
 export namespace AxEditor {
 
@@ -20,6 +21,8 @@ protected:
 		virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) override;
 	};
 
+	SceneOutlinerUIPanel _sceneOutlinerUIPanel;
+	
 	SPtr<MyRenderGraph>	_renderGraph;
 };
 

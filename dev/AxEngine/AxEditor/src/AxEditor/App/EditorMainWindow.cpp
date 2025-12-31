@@ -32,12 +32,7 @@ void EditorMainWindow::onWindowCloseButton() {
 }
 
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
-	{
-		ImUIPanel	outliner("Outliner");
-		static float f = 10;
-		ImUIDragFloat("float", &f);
-	}
-	
+	win->_sceneOutlinerUIPanel.render(req);
 	DefaultRenderGraph::onBackBufferPass(req, inputs);
 }
 

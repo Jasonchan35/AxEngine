@@ -12,8 +12,7 @@ RenderContext_Backend::RenderContext_Backend(const CreateDesc& desc)
 }
 
 void RenderContext_Backend::onPostCreate(const CreateDesc& desc) {
-	auto* r = RenderSystem_Backend::s_instance();
-	imgui.create(r->imguiFontAtlas());
+	imgui.create();
 	Base::onPostCreate(desc);
 }
 

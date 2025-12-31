@@ -15,7 +15,6 @@ struct RenderSystem_Backend::PrivateData {
 RenderSystem_Backend::RenderSystem_Backend(const CreateDesc& desc) 
 : Base(desc)
 {
-	_imguiFontAtlas.AddFontDefault();
 	_privateData.newObject(AX_NEW);
 }
 

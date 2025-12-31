@@ -50,6 +50,8 @@ ax_copy_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.sln.DotSettings" "${CM
 #       +- AxShaderTool
 #       +- AxImUI
 
+add_subdirectory(external/imgui)
+
 add_subdirectory(AxLib8/AxCore)
 add_subdirectory(AxLib8/AxCore/test)
 add_subdirectory(AxLib8/AxNativeUI)

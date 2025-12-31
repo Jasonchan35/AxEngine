@@ -1,6 +1,6 @@
 module;
 #include <imgui.h>
-export module AxRender:AxImGui;
+export module AxRender:ImGui_Backend;
 export import :Vertex;
 export import :VertexBuffer;
 export import :GpuBuffer;
@@ -13,9 +13,10 @@ class RenderRequest;
 
 class ImGui_Backend : public NonCopyable {
 public:
+	ImGui_Backend();
 	~ImGui_Backend();
 
-	void create(ImFontAtlas* sharedFontAtlas);
+	void create();
 	void destroy();
 
 	void onBeginRender(Vec2i frameSize);
@@ -35,6 +36,9 @@ public:
 private:
 	void _createFontTexture();
 	int _mouseButton(NativeUIMouseEventButton v);
+	
+	static void* memAlloc(size_t size, void* user_data);
+	static void  memFree(void* ptr, void* user_data);
 
 	SPtr<Shader>	_shader;
 	SPtr<Material>	_material;

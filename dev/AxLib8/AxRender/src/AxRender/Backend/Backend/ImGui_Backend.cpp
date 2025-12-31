@@ -1,21 +1,28 @@
 module;
-#include <imgui.h>
+#include <imgui-docking/imgui.h>
 module AxRender;
-import :AxImGui;
+import :ImGui_Backend;
 import :Renderer;
 import :RenderContext;
 
 namespace ax /*::AxRender*/ {
 
+ImGui_Backend::ImGui_Backend() {
+
+}
+
 ImGui_Backend::~ImGui_Backend() {
 	destroy();
 }
 
-void ImGui_Backend::create(ImFontAtlas* sharedFontAtlas) {
+void ImGui_Backend::create() {
 	destroy();
 
+	ImGui::SetAllocatorFunctions(memAlloc, memFree, this);
+	
 	if (!IMGUI_CHECKVERSION()) throw Error_Undefined("ImGui version error");
-	_ctx = ImGui::CreateContext(sharedFontAtlas);
+	
+	_ctx = ImGui::CreateContext();
 	if (!_ctx) throw Error_Undefined("ImGui error create context");
 
 	_vertexBuffer.create<Vertex>();
@@ -28,6 +35,27 @@ void ImGui_Backend::create(ImFontAtlas* sharedFontAtlas) {
 	io.BackendRendererName = "AxImGui";
 	io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 	io.ConfigFlags  |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags  |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags  |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
+	
+	constexpr float uiScale  = 1.0f;
+	
+	// Setup scaling
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.ScaleAllSizes(uiScale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+	style.FontScaleDpi = uiScale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+	io.ConfigDpiScaleFonts = true;       // [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
+	io.ConfigDpiScaleViewports = true;   // [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
+	
+	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
 
 	_shader   = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/AxImGui.axShader");
 	_material = Material::s_new(AX_NEW);
@@ -62,6 +90,9 @@ void ImGui_Backend::onEndRender() {
 }
 
 void ImGui_Backend::onDrawUI(RenderRequest* req) {
+	static bool show_demo_window;
+	ImGui::ShowDemoWindow(&show_demo_window);
+	
 	ImGui::Render();
 
 	if (!_material) return;
@@ -220,12 +251,23 @@ int ImGui_Backend::_mouseButton(NativeUIMouseEventButton v) {
 	using Button = NativeUIMouseEventButton;
 	switch (v) {
 		case Button::Left:    return 0;
-		case Button::Right:     return 1;
-		case Button::Middle:    return 2;
-		case Button::Button4:    return 3;
-		case Button::Button5:    return 4;
+		case Button::Right:   return 1;
+		case Button::Middle:  return 2;
+		case Button::Button4: return 3;
+		case Button::Button5: return 4;
 		default: throw Error_Undefined();
 	}
+}
+
+void* ImGui_Backend::memAlloc(size_t size, void* user_data) {
+	MemAllocRequest req(ax_current_allocator());
+	req.dataSize = size;
+	auto result = ax_current_allocator()->allocBytes(req);
+	return result.takeOwnership();
+}
+
+void ImGui_Backend::memFree(void* ptr, void* user_data) {
+	ax_current_allocator()->dealloc(ptr);
 }
 
 void ImGui_Backend::onUIKeyEvent(NativeUIKeyEvent& ev) {

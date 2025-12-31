@@ -1,5 +1,5 @@
 module;
-#include <imgui.h>
+
 export module AxRender:RenderSystem_Backend;
 export import :Renderer;
 
@@ -20,9 +20,7 @@ public:
 	AX_RenderSystem_FunctionInterfaces(AX_EMPTY, =0)
 
 	RenderRequest_Backend*		nextRenderRequest();
-
-	ImFontAtlas* imguiFontAtlas() { return &_imguiFontAtlas; }
-
+	
 	void waitAllRenderCompleted();
 
 	RenderRequest_Backend* getRenderRequest(Int i);
@@ -32,7 +30,6 @@ protected:
 	virtual void onDestroy() override;
 	virtual void onFileChanged(FileDirWatcher_Result& result) override;
 
-	ImFontAtlas _imguiFontAtlas;
 private:
 	struct PrivateData;
 	UPtr<PrivateData>	_privateData;
