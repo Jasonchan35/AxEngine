@@ -139,8 +139,6 @@ struct MutRtti : public NonCopyable {
 
 	Dict<NameId, MutRttiField>			ownFieldsDict;
 	Array<RttiField*>					ownFields;
-
-	Dict<NameId, MutRttiField>			allFieldsDict;
 	Array<RttiField*>					allFields;
 
 	Dict<RttiAttrClassId, MutRttiAttr>	ownAttrDict;

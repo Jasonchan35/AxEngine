@@ -117,7 +117,7 @@ bool MemUtil::isOverlapped(const A* a, Int a_size, const B* b, Int b_size) {
 
 template <class T, class ... ARGS> AX_INLINE constexpr
 void MemUtil::constructor(T* p, Int n, ARGS&&... args) {
-	if constexpr (Type_IsTriviallyDefaultConstructible<T>) return;
+	if constexpr (sizeof...(args) == 0 && Type_IsTriviallyDefaultConstructible<T>) return;
 	
 	if (!std::is_constant_evaluated()) { AX_ASSERT(n >= 0); }
 	if (n <= 0) return;
