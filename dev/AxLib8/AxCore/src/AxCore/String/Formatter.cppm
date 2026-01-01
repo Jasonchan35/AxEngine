@@ -190,15 +190,6 @@ public:
 	}
 };
 
-template <class T, class FMT_CH>
-class FormatHandler<Span_FindResult<T>, FMT_CH> {
-public:
-	using Obj = Span_FindResult<T>;
-	void onFormat(const Obj & obj, Format_<FMT_CH> & fmt) {
-		fmt << "([" << obj.index << "], " << obj.value << ")";
-	}
-};
-
 // template <CON_IsIArray OBJ, class FMT_CH> 
 // class FormatHandler<OBJ, FMT_CH> : public FormatHandler<typename OBJ::ElementType, FMT_CH> {}; 
 

@@ -40,6 +40,11 @@ public:
 	AX_INLINE constexpr bool operator==(const This& r) const { return _data == r._data; }
 	AX_INLINE constexpr bool operator==(const StrView_<T>& r) const { return view() == r; }
 	
+	AX_INLINE constexpr bool operator< (const This& r) const { return view() <  r.view(); }
+	AX_INLINE constexpr bool operator> (const This& r) const { return view() >  r.view(); }
+	AX_INLINE constexpr bool operator<=(const This& r) const { return view() <= r.view(); }
+	AX_INLINE constexpr bool operator>=(const This& r) const { return view() >= r.view(); }
+	
 	AX_INLINE constexpr explicit operator bool() const { return size() > 0; }
 
 	AX_INLINE constexpr HashInt	onHashInt() const { return _data->hash; }

@@ -15,10 +15,13 @@ public:
 
 		const auto& const_arr = arr;
 		
-		auto result = const_arr.find(30);
-		if (AX_TEST_IF(result)) {
-			AX_TEST_EQ(result->index, 3);
-			AX_TEST_EQ(result->value, 30);
+		auto* p = const_arr.find(30);
+		if (AX_TEST_IF(p != nullptr)) {
+			auto index = const_arr.getIndexFromElementPtr(p);
+			if (AX_TEST_IF(index)) {
+				AX_TEST_EQ(index.value(), 3);
+			}
+			AX_TEST_EQ(*p, 30);
 		}
 	}
 };

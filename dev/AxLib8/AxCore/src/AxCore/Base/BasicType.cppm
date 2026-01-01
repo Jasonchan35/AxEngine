@@ -468,6 +468,11 @@ template<class A, class B> constexpr bool ax_op_less_equal		(const A& a, const B
 template<class A, class B> constexpr bool ax_op_greater			(const A& a, const B& b) { return a >  b; }
 template<class A, class B> constexpr bool ax_op_greater_equal	(const A& a, const B& b) { return a >= b; }
 
+template<class A, class B> constexpr CmpResult ax_op_cmp		(const A& a, const B& b) {
+	if (a == b) return CmpResult::Equal;
+	return a < b ? CmpResult::Lesser : CmpResult::Greater; 
+}
+
 template<class CH> struct CharHexPair {
 	CH c0, c1;
 	constexpr CharHexPair() = default;

@@ -26,6 +26,11 @@ public:
 
 	AX_NODISCARD constexpr bool operator==(const This& r) const { return _name == r._name && _id == r._id; }
 	AX_NODISCARD constexpr bool operator!=(const This& r) const { return !operator==(); }
+	
+	constexpr bool operator< (const This& r) const { return _name == r._name ? _id <  r._id : _name <  r._name; }
+	constexpr bool operator> (const This& r) const { return _name == r._name ? _id >  r._id : _name >  r._name; }
+	constexpr bool operator<=(const This& r) const { return _name == r._name ? _id <= r._id : _name <= r._name; }
+	constexpr bool operator>=(const This& r) const { return _name == r._name ? _id >= r._id : _name >= r._name; }
 
 	explicit operator bool() const { return _name || _id >= 0; }
 

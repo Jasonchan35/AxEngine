@@ -129,19 +129,23 @@ private:
 	T*		_end;
 	Int		_stride; // in bytes
 };
-
+/*
 template<class T>
-struct Span_FindResult {
+struct MutSpan_FindResult {
 	Int	index;
 	T&	value;
 
-	using CResult = Span_FindResult<const T>;
+	using CResult = MutSpan_FindResult<const T>;
 	
-	constexpr Span_FindResult(Int index_, T& value_) : index(index_), value(value_) {}
+	constexpr MutSpan_FindResult(Int index_, T& value_) : index(index_), value(value_) {}
 	
 	constexpr CResult constResult() const { return CResult(index, value); }
 	constexpr operator CResult() const { return constResult(); }
 };
+
+template<class T>
+using Span_FindResult = MutSpan_FindResult<const T>;
+*/
 
 template<class T>
 class MutSpan { // copyable
@@ -235,29 +239,29 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return slice(0, _size - offset); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return slice(0, _size - offset); }
 
-	using MFindResult = Span_FindResult<T>;
-	using CFindResult = Span_FindResult<const T>;
+	// using MFindResult = Span_FindResult<T>;
+	// using CFindResult = Span_FindResult<const T>;
 
 	template<class R>
-	constexpr Opt<MFindResult> find(const R& r) {
+	constexpr T* find(const R& r) {
 		return find_([&r](const T& e){ return e == r; });
 	}
 	
 	template<class FUNC> requires Type_IsFunc<FUNC, bool (const T&)>
-	constexpr Opt<MFindResult> find_(FUNC func) {
+	constexpr T* find_(FUNC func) {
 		auto* p = _data;
 		auto* e = _data + _size;
 		for (; p < e; ++p) {
-			if (func(*p)) return MFindResult(p - _data, *p);
+			if (func(*p)) return p;
 		}
-		return std::nullopt;
+		return nullptr;
 	}
 
-	template<class R>    constexpr Opt<CFindResult> find(const R& r) const { return ax_const_cast(this)->find(r); }
-	template<class FUNC> constexpr Opt<CFindResult> find_(FUNC func) const { return ax_const_cast(this)->find_(func); }
+	template<class R>    constexpr const T* find(const R& r) const { return ax_const_cast(this)->find(r); }
+	template<class FUNC> constexpr const T* find_(FUNC func) const { return ax_const_cast(this)->find_(func); }
 
 	template<class FUNC> requires Type_IsFunc<FUNC, bool (const T&, const T&)>
-	constexpr MFindResult findMin_(FUNC func) {
+	constexpr T* findMin_(FUNC func) {
 		if (_size <= 0) throw Error_InvalidSize();
 
 		auto* pMinValue = _data;
@@ -268,12 +272,42 @@ public:
 				pMinValue = p;
 			}
 		}
-		return MFindResult(pMinValue - _data, *p);
+		return pMinValue;
 	}
 
-	template<class FUNC> constexpr CFindResult findMin_(FUNC func) const { return ax_const_cast(this)->findMin_(func); }
-	constexpr MFindResult findMin()			{ return findMin_(ax_op_less<T>); }
-	constexpr CFindResult findMin() const	{ return ax_const_cast(this)->findMin_(); }
+	template<class FUNC> constexpr const T* findMin_(FUNC func) const { return ax_const_cast(this)->findMin_(func); }
+	constexpr       T* findMin()		{ return findMin_(ax_op_less<T>); }
+	constexpr const T* findMin() const	{ return ax_const_cast(this)->findMin_(); }
+	
+	template<class FUNC>
+	constexpr T* binarySearch_(FUNC func) {
+		Int s = 0;
+		Int e = _size;
+		
+		while (s < e) {
+			auto mid = (s + e) / 2;
+			auto& v = at_noBoundCheck(mid);
+			CmpResult cmp = func(v);
+			switch (cmp) {
+				case CmpResult::Equal:   return &v;
+				case CmpResult::Lesser:  s = mid + 1; continue;
+				case CmpResult::Greater: e = mid;     continue;
+				default: AX_ASSERT(false); break;
+			}
+		}
+		return nullptr;	
+	}
+	
+	template<class FUNC> 
+	constexpr const T* binarySearch_(FUNC func) const { return ax_const_cast(this)->binarySearch_(func); }
+
+	template<class R>
+	constexpr T* binarySearch(const R& r) {
+		return binarySearch_([&r](const T& t)-> CmpResult { return ax_op_cmp(t, r); });
+	}
+	
+	template<class R> 
+	constexpr const T* binarySearch(const R& r) const { return ax_const_cast(this)->binarySearch(r); }
 	
 	constexpr void sort() { sort(ax_op_less<T,T>); }
 	
@@ -281,7 +315,8 @@ public:
 	constexpr void sort(FUNC func) {
 		// simple sorting, prevent move data if possible
 		for (Int i = 0; i < _size; i++) {
-			Int minIndex = i + sliceFrom(i).findMin_(func).index;
+			auto* p = sliceFrom(i).findMin_(func);
+			Int minIndex = getIndexFromElementPtr(p);
 			if (minIndex == i) continue;
 
 			std::swap(at(minIndex), at(i));
@@ -292,8 +327,13 @@ public:
 	constexpr void copyValues(CSpan v, Int offset = 0);
 	constexpr void fillValues(const T& v);
 
-	constexpr Opt<Int> getIndexFromElementPtr(const T* element) const;
-
+	constexpr Opt<Int>	tryGetIndexFromElementPtr(const T* element) const;
+	constexpr Int		getIndexFromElementPtr(const T* element) const {
+		auto r = tryGetIndexFromElementPtr(element);
+		if (!r) throw Error_IndexOutOfRange();
+		return r.value();
+	}
+	
 	template<class TT> using Iter = TT*; 
 	constexpr Iter<T>		begin	()		 noexcept	{ return _data; }
 	constexpr Iter<const T>	begin	() const noexcept	{ return _data; }
@@ -359,24 +399,31 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return _obj_span().slice(offset); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return _obj_span().slice(offset); }
 
-	using MFindResult = Span_FindResult<T>;
-	using CFindResult = Span_FindResult<const T>;
+	template<class FUNC>
+	constexpr const T* find_(FUNC func) { return _obj_span().template find_<FUNC>(func); }
 
 	template<class FUNC>
-	constexpr Opt<MFindResult> find_(FUNC func) { return _obj_span().template find_<FUNC>(func); }
+	constexpr const T* find_(FUNC func) const { return _obj_span().template find_<FUNC>(func); }
 
-	template<class FUNC>
-	constexpr Opt<CFindResult> find_(FUNC func) const { return _obj_span().template find_<FUNC>(func); }
-
-	template<class R>
-	constexpr Opt<MFindResult> find(const R& r) { return _obj_span().template find<R>(r); }
-
-	template<class R>
-	constexpr Opt<CFindResult> find(const R& r) const { return _obj_span().template find<R>(r); }
+	template<class R> constexpr       T* find(const R& r)       { return _obj_span().template find<R>(r); }
+	template<class R> constexpr const T* find(const R& r) const { return _obj_span().template find<R>(r); }
 	
 	template<class FUNC>
-	constexpr CFindResult findMin_(FUNC func) const	{ return _obj_span().template findMin_<FUNC>(func); }
-	constexpr CFindResult findMin() const			{ return _obj_span().findMin(); }
+	constexpr const T*  findMin_(FUNC func) const	{ return _obj_span().template findMin_<FUNC>(func); }
+	constexpr const T*  findMin() const				{ return _obj_span().findMin(); }
+
+	template<class FUNC> 
+	constexpr T* binarySearch_(FUNC func) { return _obj_span().binarySearch_(func); }
+
+	template<class FUNC> 
+	constexpr const T* binarySearch_(FUNC func) const { return _obj_span().binarySearch_(func); }
+
+	template<class R>
+	constexpr T* binarySearch(const R& r) { return _obj_span().binarySearch(r); }
+	
+	template<class R>
+	constexpr const T* binarySearch(const R& r) const { return _obj_span().binarySearch(r); }
+	
 	
 	template<class FUNC>
 	constexpr void	sort(FUNC func)	{ _obj_span().template sort<FUNC>(func); }
@@ -415,7 +462,7 @@ void MutSpan<T>::fillValues(const T& v) {
 }
 
 template<class T> constexpr
-Opt<Int> MutSpan<T>::getIndexFromElementPtr(const T* element) const {
+Opt<Int> MutSpan<T>::tryGetIndexFromElementPtr(const T* element) const {
 	const T* s = _data;
 	const T* e = _data + _size;
 	if (element < s || element >= e) return std::nullopt;
