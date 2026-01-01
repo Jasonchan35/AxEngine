@@ -183,7 +183,7 @@ protected:
 	MaterialPass_Backend* _materialPass = nullptr;
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 
-	template<class T> Opt<Span_FindResult<T>> _findParam(IArray<T>& arr, NameId name) {
+	template<class T> T* _findParam(IArray<T>& arr, NameId name) {
 		return arr.find_([&name](const T& e) { return e.name() == name; });
 	}
 	template<class V> bool	_setVariable(NameId name, const V& v);
@@ -192,11 +192,19 @@ protected:
 
 template<class V> AX_INLINE
 bool MaterialParamSpace_Backend::_setVariable(NameId name, const V& v) {
+#if 1
+	auto r = _shaderParamSpace->findVarInfo(name);
+	if (!r) return false;
+	return _constBuffers[r->constBufferIndex].setVariable(r->varInfo, v);
+	
+#else
 	bool b = false;
 	for (auto& cb : _constBuffers) {
 		b = b || cb.setVariable(name, v);
 	}
 	return b;
+
+#endif
 }
 
 template<class V> inline

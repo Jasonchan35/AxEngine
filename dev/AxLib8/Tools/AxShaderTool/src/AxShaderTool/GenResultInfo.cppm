@@ -22,8 +22,7 @@ private:
 
 	template<class T>
 	T* _findParam(MutSpan<T> span, StrView name) {
-		auto result = span.find_([&](auto& e){ return e.name == name; });
-		return result ? &result->value : nullptr;
+		return span.find_([&](auto& e){ return e.name == name; });
 	}
 
 	ShaderResultInfo _resultInfo;

@@ -165,6 +165,18 @@ public:
 	SamplerParam*		findSamplerParam(NameId name) { return _findParam(_samplerParams      , name); }
 	StorageBufferParam*	findStorageParam(NameId name) { return _findParam(_storageBufferParams, name); }
 
+	struct NameToVarInfo {
+		NameId			name;
+		Int				constBufferIndex = 0;
+		const VarInfo*	varInfo = nullptr;
+		
+		bool operator<(const NameToVarInfo& r) const { return name < r.name; }
+	};
+
+	const NameToVarInfo* findVarInfo(NameId name) const {
+//		return _nameToVarInfo.find_([&](const auto& e)-> bool { return e.name == name; });
+		return _nameToVarInfo.binarySearch_([&](const auto& e)-> CmpResult { return ax_op_cmp(e.name, name); });
+	}
 	const ConstBuffer*			findConstBuffer (NameId name) const { return ax_const_cast(this)->findConstBuffer(name);  }
 	const TextureParam*			findTextureParam(NameId name) const { return ax_const_cast(this)->findTextureParam(name); }
 	const SamplerParam*			findSamplerParam(NameId name) const { return ax_const_cast(this)->findSamplerParam(name); }
@@ -208,6 +220,7 @@ protected:
 	i32 _bindCount_samplerParams       = 0;
 	i32 _bindCount_storageBufferParams = 0;
 	
+	Array<NameToVarInfo, 32>		_nameToVarInfo;
 	Array<Pair<NameId, NameId>>		_nameToTexture2D;
 	Array<Pair<NameId, NameId>>		_nameToTexture3D;
 	Array<Pair<NameId, NameId>>		_nameToSampler;

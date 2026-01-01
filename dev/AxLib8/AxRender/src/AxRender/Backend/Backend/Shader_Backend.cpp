@@ -36,9 +36,22 @@ void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
 		return;
 	}
 	
+	Int constBufferIndex = 0;
 	for (auto& param : _constBuffers) {
 		_bindCount_constBuffers += param.bindCount();
+		
+		for (auto& varInfo : param.varInfos()) {
+			auto& dst       = _nameToVarInfo.emplaceBack();
+			dst.name        = varInfo.name();
+			dst.constBufferIndex = constBufferIndex; 
+			dst.varInfo     = &varInfo;
+		}
+		
+		++constBufferIndex;
 	}
+	
+	_nameToVarInfo.sort();
+	
 	for (auto& param : _samplerParams) {
 		_bindCount_samplerParams += param.bindCount();
 	}

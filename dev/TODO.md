@@ -10,7 +10,9 @@
 	- immutable sampler
 
 - SortedArray
-	- mark sortNeeded;
+	- add binary search
+	- mark sortNeeded
+	- replace ShaderParamDict
 	
 - Memory Allocator, Arena
 	- allocate page and paritioning by Arena NameId
