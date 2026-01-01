@@ -5,9 +5,9 @@ export import AxCore.Quat;
 
 export namespace ax::Math {
 #define AX_MathAxisDir_ENUM_LIST(E) \
-E(X,) \
-E(Y,) \
-E(Z,) \
+	E(X,) \
+	E(Y,) \
+	E(Z,) \
 //---
 AX_ENUM_CLASS_NO_STR(AX_MathAxisDir_ENUM_LIST, AxisDir, u8)
 } export namespace ax {
