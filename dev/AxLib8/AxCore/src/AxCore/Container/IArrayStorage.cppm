@@ -56,12 +56,12 @@ protected:
 		constexpr void       setCapacity(Int v);
 	};
 
-	AX_VC_WARNING_PUSH_AND_DISABLE(4324) // structure was padded due to alignment specifier
 	struct SmallStorage_Dummy {
 		SmallStorage smallStorage;
-		alignas(T) u8 data[1];
+		AX_VC_WARNING_PUSH_AND_DISABLE(4324) // structure was padded due to alignment specifier
+		AX_ALIGNAS(T) u8 data[1];
+		AX_VC_WARNING_POP()
 	};
-	AX_VC_WARNING_POP()
 	
 	union Storage {
 	public:
@@ -95,7 +95,7 @@ protected:
 		constexpr void setAllocDataPtr(T* data, Int cap) noexcept;
 	};
 
-	alignas(T) Storage _storage;
+	AX_ALIGNAS(T) Storage _storage;
 
 private:
 	constexpr void _storageEnsureCapacity_Impl(Int reqCapacity);

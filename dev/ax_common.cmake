@@ -305,12 +305,12 @@ function(ax_target_set_common_properties target_name)
 							UNITY_BUILD_BATCH_SIZE 8)
 
 	target_compile_definitions(${target_name} PUBLIC -DAX_BUILD_${target_name})
-	# target_compile_definitions(${target_name} PUBLIC 
-	# 	$<$<CONFIG:Debug>:AX_BUILD_CONFIG_Debug>
-	# 	$<$<CONFIG:MinSizeRel>:AX_BUILD_CONFIG_MinSizeRel>	
-	# 	$<$<CONFIG:Release>:AX_BUILD_CONFIG_Release>
-	# 	$<$<CONFIG:RelWithDebInfo>:AX_BUILD_CONFIG_RelWithDebInfo>
-	# )
+	target_compile_definitions(${target_name} PUBLIC 
+		$<$<CONFIG:Debug>:AX_BUILD_CONFIG_Debug>
+		$<$<CONFIG:MinSizeRel>:AX_BUILD_CONFIG_MinSizeRel>	
+		$<$<CONFIG:Release>:AX_BUILD_CONFIG_Release>
+		$<$<CONFIG:RelWithDebInfo>:AX_BUILD_CONFIG_RelWithDebInfo>
+	)
 
 	target_precompile_headers(${target_name} PRIVATE src/${target_name}-pch.h)
 

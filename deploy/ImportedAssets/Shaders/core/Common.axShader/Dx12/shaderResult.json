@@ -113,12 +113,12 @@
             }, {
               "name": "ax_g_cameraProjection", 
               "offset": 80, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_g_cameraInvProjection", 
               "offset": 144, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }]
         }, {
@@ -132,42 +132,42 @@
           "variables": [{
               "name": "ax_object_mvp", 
               "offset": 0, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_object_mv", 
               "offset": 64, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_object_mv_t", 
               "offset": 128, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_object_mv_it", 
               "offset": 192, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_object_v", 
               "offset": 256, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_object_vp", 
               "offset": 320, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_object_m", 
               "offset": 384, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }, {
               "name": "ax_object_m_i", 
               "offset": 448, 
-              "dataType": "Mat4f", 
+              "dataType": "f32x4x4", 
               "rowMajor": true
             }]
         }], 

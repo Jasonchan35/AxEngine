@@ -61,8 +61,8 @@
 #if AX_BUILD_CONFIG_Debug
 	#define	AX_INLINE		inline
 #else
-//	#define	AX_INLINE		inline __attribute__( (always_inline) )
-	#define	AX_INLINE		[[alway]]
+	#define	AX_INLINE		inline __attribute__( (always_inline) )
+//	#define	AX_INLINE		[[always]]
 #endif
 
 //#define AX_THREAD_LOCAL	__thread
