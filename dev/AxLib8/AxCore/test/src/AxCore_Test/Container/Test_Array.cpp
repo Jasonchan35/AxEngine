@@ -24,6 +24,25 @@ public:
 			AX_TEST_EQ(*p, 30);
 		}
 	}
+	
+	void test_binarySearch() {
+		Array<Int> arr;
+		for (Int i = 0; i < 16; ++i) {
+			if (i % 3 == 0)
+				arr.append(i * 10);
+			else 
+				arr.append(8 - i);
+		}
+		
+		AX_LOG("arr ={}", arr);
+		arr.sort();
+		AX_LOG("arr ={}", arr);
+		auto* p = arr.binarySearch(7);
+		if (AX_TEST_IF(p != nullptr)) {	
+			auto index = arr.getIndexFromElementPtr(p);
+			AX_TEST_EQ(index, 10);
+		}
+	}
 };
 
 } // namespace
@@ -31,5 +50,6 @@ public:
 void Test_Array() {
 	using namespace ax;
 	AX_TEST_RUN_CASE(Test_Array::test_case1)
+	AX_TEST_RUN_CASE(Test_Array::test_binarySearch)
 }
 
