@@ -133,6 +133,8 @@ void RenderContext_Dx12::onSetFrameSize(const Vec2i& s) {
 	if (!_hwnd) return;
 	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast_from(s.x), ax_safe_cast_from(s.y), 0);
 
+	RenderSystem_Backend::s_instance()->waitAllRenderCompleted();
+	
 	// release resource before resize swap chain
 	for (auto& backBuffer : _backBuffers_dx12) {
 		backBuffer->releaseResources();
