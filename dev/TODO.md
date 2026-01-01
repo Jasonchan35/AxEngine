@@ -9,11 +9,6 @@
 - Vk
 	- immutable sampler
 
-- SortedArray
-	- add binary search
-	- mark sortNeeded
-	- replace ShaderParamDict
-	
 - Memory Allocator, Arena
 	- allocate page and paritioning by Arena NameId
 	
@@ -46,6 +41,8 @@
 - [done] Dx12 One big chunk of Descriptor
 - [done] Dx12 bindless
 - [done] Vk bindless
+- [done] IArray - binary search
+- [done] ShaderPass_Backend -  replace ShaderParamDict
 
 ==== 2025-12-13 =====
 - [done] AX_LOG

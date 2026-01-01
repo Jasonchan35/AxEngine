@@ -38,7 +38,7 @@ public:
 		arr.sort();
 		AX_LOG("arr ={}", arr);
 		auto* p = arr.binarySearch(7);
-		if (AX_TEST_IF(p != nullptr)) {	
+		if (AX_TEST_IF(p != nullptr)) {
 			auto index = arr.getIndexFromElementPtr(p);
 			AX_TEST_EQ(index, 10);
 		}
