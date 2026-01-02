@@ -13,17 +13,17 @@ public:
 
 	// exclude max
 	template<class T = Int> requires Type_IsIntType<T>
-	T getInt(T max) { return max <= 0 ? 0 : getRange(0, max - 1); }
+	T getInt(T max) { return max <= 0 ? 0 : fromRange(0, max - 1); }
 	
 	template<class T = Int> requires Type_IsIntType<T>
-	T getRange(const T& min, const T& max) {
+	T fromRange(const T& min, const T& max) {
 		auto n = max - min;
 		if (n <= 0) return min;
 		return static_cast<T>(_gen_u64() % static_cast<u64>(n)) + min;
 	}
 
 	template<class T = Int> requires Type_IsFloatType<T>
-	T getRange(const T& min, const T& max) {
+	T fromRange(const T& min, const T& max) {
 		std::uniform_real_distribution<T> dis(min, max);
 		return dis(_generator);
 	}
@@ -37,13 +37,13 @@ private:
 	AX_INLINE u64 _gen_u64() { return _generator(); }
 };
 
-struct Random {
+namespace Random {
 	// exclude max
 	template <class T = Int> requires Type_IsIntType<T>
-	static T getInt(T max, RandomDevice& dev = RandomDevice::s_default()) { return dev.getInt(max); }
+	T getInt(T max, RandomDevice& dev = RandomDevice::s_default()) { return dev.getInt(max); }
 
 	template <class T = Int>
-	static T getRange(const T& min, const T& max, RandomDevice& dev = RandomDevice::s_default()) { return dev.getRange(min, max); }
+	T fromRange(const T& min, const T& max, RandomDevice& dev = RandomDevice::s_default()) { return dev.fromRange(min, max); }
 };
 
 }; // namespace ax::Random

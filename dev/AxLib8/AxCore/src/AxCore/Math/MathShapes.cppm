@@ -21,8 +21,8 @@ template<class T>
 class Sphere3_ {
 	using Vec3 = Vec3_<T>;
 public:
-	Sphere3_() = default;
-	Sphere3_(const Vec3& center_, const T& radius_) : center(center_), radius(radius_) {}
+	constexpr Sphere3_() = default;
+	constexpr Sphere3_(const Vec3& center_, const T& radius_) : center(center_), radius(radius_) {}
 	
 	template<class CH>
 	void onFormat(Format_<CH>& f) const;
@@ -35,8 +35,8 @@ template<class T>
 class Triangle3_ {
 	using Vec3 = Vec3_<T>;
 public:
-	Triangle3_() = default;
-	Triangle3_(const Vec3& v0_, const Vec3& v1_, const Vec3& v2_) : v0(v0_), v1(v1_), v2(v2_) {}
+	constexpr Triangle3_() = default;
+	constexpr Triangle3_(const Vec3& v0_, const Vec3& v1_, const Vec3& v2_) : v0(v0_), v1(v1_), v2(v2_) {}
 
 	Vec3 v0, v1, v2;
 };
@@ -45,18 +45,18 @@ template<class T>
 class Plane3_ {
 	using Vec3 = Vec3_<T>;
 public:
-	Plane3_() = default;
-	Plane3_(const Vec3& normal_, T distance_)
+	constexpr Plane3_() = default;
+	constexpr Plane3_(const Vec3& normal_, T distance_)
 		: normal(normal_)
 		, distance(distance_) 
 	{}
 
-	Plane3_(const Vec3& normal_, const Vec3& point_)
+	constexpr Plane3_(const Vec3& normal_, const Vec3& point_)
 		: normal(normal_)
 		, distance(normal_.dot(point_))
 	{}
 
-	Plane3_(const Triangle3_<T>&  tri) {
+	constexpr Plane3_(const Triangle3_<T>&  tri) {
 		normal = (tri.v1 - tri.v0).cross(tri.v2 - tri.v0).normal();
 		distance = normal.dot(tri.v0);
 	}
@@ -72,8 +72,8 @@ template<class T>
 class Cylinder3_ {
 	using Vec3 = Vec3_<T>;
 public:
-	Cylinder3_() = default;
-	Cylinder3_(const Vec3& start_, const Vec3& end_, const T& radius_)
+	constexpr Cylinder3_() = default;
+	constexpr Cylinder3_(const Vec3& start_, const Vec3& end_, const T& radius_)
 		: start(start_)
 		, end(end_)
 		, radius(radius_)
@@ -88,8 +88,8 @@ template<class T>
 class Capsule3_ {
 	using Vec3 = Vec3_<T>;
 public:
-	Capsule3_() = default;
-	Capsule3_(const Vec3& start_, const Vec3& end_, const T& radius_)
+	constexpr Capsule3_() = default;
+	constexpr Capsule3_(const Vec3& start_, const Vec3& end_, const T& radius_)
 		: start(start_)
 		, end(end_)
 		, radius(radius_)
@@ -106,14 +106,14 @@ class Line2_ {
 	using Vec2 = Vec2_<T>;
 	using Vec3 = Vec3_<T>;
 public:
-	Line2_() = default;
-	Line2_(const Vec2& start_, const Vec2& end_)
+	constexpr Line2_() = default;
+	constexpr Line2_(const Vec2& start_, const Vec2& end_)
 		: start(start_)
 		, end(end_)
 	{}
 
-	bool getClosestPoint(Vec2& outPoint, const Vec2& inPoint) const;
-	T	distanceToPoint(const Vec2& pt) const;
+	constexpr bool getClosestPoint(Vec2& outPoint, const Vec2& inPoint) const;
+	constexpr T	distanceToPoint(const Vec2& pt) const;
 
 	Vec2	start;
 	Vec2	end;
@@ -124,16 +124,16 @@ class Line3_ {
 	using Vec3 = Vec3_<T>;
 	using Ray3 = Ray3_<T>;
 public:
-	Line3_() = default;
-	Line3_(const Vec3& start_, const Vec3& end_)
+	constexpr Line3_() = default;
+	constexpr Line3_(const Vec3& start_, const Vec3& end_)
 		: start(start_)
 		, end(end_)
 	{}
 
-	bool getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const;
-	bool getClosestPoint(Vec3& outPoint, const Ray3& ray    ) const;
+	constexpr bool getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const;
+	constexpr bool getClosestPoint(Vec3& outPoint, const Ray3& ray    ) const;
 
-	T	distanceToPoint(const Vec3& pt) const;
+	constexpr T	distanceToPoint(const Vec3& pt) const;
 
 	Vec3	start;
 	Vec3	end;
@@ -158,12 +158,12 @@ public:
 		AX_META_FIELD(dir) {};
 	};
 	
-	Ray3_() = default;
-	Ray3_(const Vec3& origin_, const Vec3& dir_) : origin(origin_), dir(dir_) {}
+	constexpr Ray3_() = default;
+	constexpr Ray3_(const Vec3& origin_, const Vec3& dir_) : origin(origin_), dir(dir_) {}
 
 	constexpr static Ray3_ s_zero() { return Ray3_(Vec3(0), Vec3(0)); }
 
-	static Ray3_ s_unProjectFromInvMatrix(const Vec2& screenPos, const Mat4& invMat, const Rect2& viewport);
+	constexpr static Ray3_ s_unProjectFromInvMatrix(const Vec2& screenPos, const Mat4& invMat, const Rect2& viewport);
 
 	struct HitTestResult {
 		T		distance = infinity();
@@ -173,8 +173,8 @@ public:
 		bool	hasResult() const { return distance != infinity_<T>(); }
 	};
 
-	bool getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const;
-	bool getClosestPoint(Vec3& outPoint, const Line3& line, T minOnLine = 0, T maxOnLine = 1) const;
+	constexpr bool getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const;
+	constexpr bool getClosestPoint(Vec3& outPoint, const Line3& line, T minOnLine = 0, T maxOnLine = 1) const;
 };
 
 using Ray3f = Ray3_<f32>;
@@ -198,7 +198,7 @@ using Line2d = Line2_<f64>;
 using Line3f = Line3_<f32>;
 using Line3d = Line3_<f64>;
 
-template<class T>
+template<class T> constexpr
 Ray3_<T> Ray3_<T>::s_unProjectFromInvMatrix(const Vec2& screenPos, const Mat4& mat, const Rect2& viewport) {
 	auto pt = screenPos;
 
@@ -214,7 +214,7 @@ Ray3_<T> Ray3_<T>::s_unProjectFromInvMatrix(const Vec2& screenPos, const Mat4& m
 	return o;
 }
 
-template<class T>
+template<class T> constexpr
 bool Ray3_<T>::getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const {
 	auto v = inPoint - origin;
 	auto t = v.dot(dir);
@@ -222,7 +222,7 @@ bool Ray3_<T>::getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const {
 	return true;
 }
 
-template<class T>
+template<class T> constexpr
 bool Ray3_<T>::getClosestPoint(Vec3& outPoint, const Line3_<T>& line, T minOnLine, T maxOnLine) const {
 	auto da = line.end - line.start;
 	auto db = dir;
@@ -240,18 +240,18 @@ bool Ray3_<T>::getClosestPoint(Vec3& outPoint, const Line3_<T>& line, T minOnLin
 
 
 template<class T>
-template<class CH>
+template<class CH> inline
 void Sphere3_<T>::onFormat(Format_<CH>& f) const {
 	f << Fmt("Sphere[center={}, radius={}", center, radius);
 }
 
 template<class T>
-template<class CH>
+template<class CH> inline
 void Plane3_<T>::onFormat(Format_<CH>& f) const {
 	f << Fmt("Plane[normal={}, distance={}]", normal, distance);
 }
 
-template<class T>
+template<class T> constexpr
 bool Line2_<T>::getClosestPoint(Vec2& outPoint, const Vec2& inPoint) const {
 	Line3_<T> line3(start.xy0(), end.xy0());
 	Vec3 closestPt;
@@ -262,7 +262,7 @@ bool Line2_<T>::getClosestPoint(Vec2& outPoint, const Vec2& inPoint) const {
 	return true;
 }
 
-template<class T>
+template<class T> constexpr
 T Line2_<T>::distanceToPoint(const Vec2& pt) const {
 	Vec2 closestPt;
 	if (getClosestPoint(closestPt, pt)) {
@@ -271,12 +271,12 @@ T Line2_<T>::distanceToPoint(const Vec2& pt) const {
 	return infinity_<T>();
 }
 
-template<class T>
+template<class T> constexpr
 bool Line3_<T>::getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const {
 	auto line = end - start;
 	auto len = line.length();
 
-	if (ax_math_equals0(len))
+	if (almostZero(len))
 		return false;
 
 	auto u = line / len; //normalized line
@@ -289,7 +289,7 @@ bool Line3_<T>::getClosestPoint(Vec3& outPoint, const Vec3& inPoint) const {
 	return true;
 }
 
-template<class T>
+template<class T> constexpr
 bool Line3_<T>::getClosestPoint(Vec3& outPoint, const Ray3& ray) const {
 	auto da = end - start;
 	auto db = ray.dir;
@@ -305,7 +305,7 @@ bool Line3_<T>::getClosestPoint(Vec3& outPoint, const Ray3& ray) const {
 	return true;
 }
 
-template<class T>
+template<class T> constexpr 
 T Line3_<T>::distanceToPoint(const Vec3& pt) const {
 	Vec3 closestPt;
 	if (getClosestPoint(closestPt, pt)) {

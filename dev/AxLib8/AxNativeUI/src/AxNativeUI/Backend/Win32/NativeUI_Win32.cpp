@@ -142,28 +142,28 @@ NativeUIEventModifier NativeUI_Win32::s_eventModifier() {
 Vec2f NativeUI_Win32::s_localToWorldPos(HWND hwnd, const Vec2f& pt) {
 	HWND desktop = nullptr;
 	if (::GetParent(hwnd)) {
-		POINT tmp = pt.to_POINT();
+		POINT tmp = NativeUI_Win32::to_POINT(pt);
 		MapWindowPoints(hwnd, desktop, &tmp, 1);
-		return Vec2f::s_from(tmp);
+		return NativeUI_Win32::to_Vec2f(tmp);
 	}
 
 	RECT rc;
 	::GetWindowRect(hwnd, &rc);
-	auto o = Rect2f::s_from(rc);
+	auto o = NativeUI_Win32::to_Rect2f(rc);
 	return pt + o.pos;
 }
 
 Vec2f NativeUI_Win32::s_worldToLocalPos(HWND hwnd, const Vec2f& pt) {
 	HWND desktop = nullptr;
 	if (::GetParent(hwnd)) {
-		POINT tmp = pt.to_POINT();
+		POINT tmp = to_POINT(pt);
 		MapWindowPoints(desktop, hwnd, &tmp, 1);
-		return Vec2f::s_from(tmp);
+		return to_Vec2f(tmp);
 	}
 
 	RECT rc;
 	::GetWindowRect(hwnd, &rc);
-	auto o = Rect2f::s_from(rc);
+	auto o = NativeUI_Win32::to_Rect2f(rc);
 	return pt - o.pos;
 }
 
@@ -176,7 +176,7 @@ Rect2f NativeUI_Win32::s_getWorldRect(HWND hwnd) {
 Rect2f NativeUI_Win32::s_getLocalRect(HWND hwnd) {
 	RECT rc;
 	::GetWindowRect(hwnd, &rc);
-	return Rect2f::s_from(rc);
+	return NativeUI_Win32::to_Rect2f(rc);
 }
 
 

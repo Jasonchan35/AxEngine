@@ -228,6 +228,32 @@ public:
 	AX_INLINE constexpr void operator*=(const T& t) { _simd *= t; }
 	AX_INLINE constexpr void operator/=(const T& t) { _simd /= t; }
 	
+	AX_INLINE constexpr T dot(const This& r) const { return x * r.x + y * r.y; }
+	
+	AX_INLINE constexpr This rotateLeft90() const  { return This( y,-x); }
+	AX_INLINE constexpr This rotateRight90()const  { return This(-y, x); }
+
+	AX_NODISCARD AX_INLINE constexpr T    lengthSq() const { return (*this) * (*this); }
+	AX_NODISCARD AX_INLINE constexpr T    length() const { return Math::sqrt(lengthSq()); }
+	AX_NODISCARD AX_INLINE constexpr This normal() const {
+		auto d = length();
+		if (Math::almostZero(d)) return s_zero();
+		return *this / d;
+	}
+	
+	static This s_randomUnitVector(RandomDevice& dev = RandomDevice::s_default()) {
+		auto theta = dev.fromRange<T>(0, 1) * 2 * Math::PI_<T>;
+		This v;
+		Math::sincos(theta, v.x, v.y);
+		return v;
+	}
+
+	static Vec2_<T, SIMD> s_randomInCircle(RandomDevice& dev = RandomDevice::s_default()) {
+		auto v = s_randomUnitVector(dev);
+		auto r = dev.fromRange<T>(0, 1);
+		return v * Math::sqrt(r); // distribution in square root along radius
+	}
+	
 	template <class R, VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SimdData::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
@@ -242,33 +268,6 @@ public:
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
-	
-	static This s_randomOnCircle(RandomDevice& dev = RandomDevice::s_default()) {
-		auto theta = dev.getRange<T>(0, 1) * 2 * Math::PI_<T>;
-		This v;
-		Math::sincos(theta, v.x, v.y);
-		return v;
-	}
-
-	static Vec2_<T, SIMD> s_randomInsideCircle(RandomDevice& dev = RandomDevice::s_default()) {
-		auto v = s_randomOnCircle(dev);
-		auto r = dev.getRange<T>(0, 1);
-		return v * Math::sqrt(r); // distribution in square root along radius
-	}
-
-#if AX_OS_WINDOWS
-	AX_NODISCARD AX_INLINE static constexpr This s_from(const ::POINT& r) {
-		return This(static_cast<T>(r.x), static_cast<T>(r.y));
-	}
-
-	AX_NODISCARD AX_INLINE constexpr POINT to_POINT() const {
-		POINT o;
-		o.x = static_cast<LONG>(x);
-		o.y = static_cast<LONG>(y);
-		return o;
-	}
-#endif
-	
 };
 
 template<class T, VecSimd SIMD>
@@ -356,6 +355,34 @@ public:
 	AX_INLINE constexpr void operator-=(const T& t) { _simd -= t; }
 	AX_INLINE constexpr void operator*=(const T& t) { _simd *= t; }
 	AX_INLINE constexpr void operator/=(const T& t) { _simd /= t; }
+
+	AX_NODISCARD AX_INLINE constexpr T    lengthSq() const { return (*this) * (*this); }
+	AX_NODISCARD AX_INLINE constexpr T    length() const { return Math::sqrt(lengthSq()); }
+	AX_NODISCARD AX_INLINE constexpr This normal() const {
+		auto d = length();
+		if (Math::almostZero(d)) return s_zero();
+		return *this / d;
+	}
+
+	static This s_randomUnitVector(RandomDevice& dev = RandomDevice::s_default()) {
+		auto longitude = dev.fromRange<T>(0, 1) * 2 * Math::PI_<T>;
+		auto latitude  = acos(dev.fromRange<T>(0, 1) * 2 - 1);
+
+		T sinLongitude, cosLongitude;
+		T sinLatitude,  cosLatitude;
+
+		Math::sincos(longitude, sinLongitude, cosLongitude);
+		Math::sincos(latitude, sinLatitude, cosLatitude);
+
+		Vec3_<T, SIMD> v(sinLatitude * cosLongitude, sinLatitude * sinLongitude, cosLatitude);
+		return v;
+	}
+
+	static This s_randomInSphere(RandomDevice& dev = RandomDevice::s_default()) {
+		auto v = s_randomUnitVector(dev);
+		auto r = dev.fromRange<T>(0, 1);
+		return v * cbrt(r);
+	}	
 	
 	template <class R, VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SimdData::s_cast(vec._simd); }
@@ -371,26 +398,6 @@ public:
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
-
-	static This s_randomOnSphere(RandomDevice& dev = RandomDevice::s_default()) {
-		auto longitude = dev.getRange<T>(0, 1) * 2 * Math::PI_<T>;
-		auto latitude  = acos(dev.getRange<T>(0, 1) * 2 - 1);
-
-		T sinLongitude, cosLongitude;
-		T sinLatitude,  cosLatitude;
-
-		Math::sincos(longitude, sinLongitude, cosLongitude);
-		Math::sincos(latitude, sinLatitude, cosLatitude);
-
-		Vec3_<T, SIMD> v(sinLatitude * cosLongitude, sinLatitude * sinLongitude, cosLatitude);
-		return v;
-	}
-
-	static This s_randomInsideSphere(RandomDevice& dev = RandomDevice::s_default()) {
-		auto v = s_randomOnSphere(dev);
-		auto r = dev.getRange<T>(0, 1);
-		return v * cbrt(r);
-	}
 };
 
 template<class T, VecSimd SIMD>

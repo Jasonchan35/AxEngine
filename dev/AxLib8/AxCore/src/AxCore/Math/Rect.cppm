@@ -153,23 +153,6 @@ public:
 
 	template<class R, VecSimd R_SIMD> AX_NODISCARD AX_INLINE constexpr 
 	static Rect2_ s_cast(const Rect2_<R, R_SIMD>& rhs) { return SimdData::s_cast(rhs._simd); }
-
-#if AX_OS_WINDOWS
-	AX_NODISCARD AX_INLINE static constexpr This s_from(const ::RECT& r) {
-		return This(static_cast<T>(r.left),
-					static_cast<T>(r.top),
-					static_cast<T>(r.right  - r.left),
-					static_cast<T>(r.bottom - r.top));
-	}
-
-	AX_NODISCARD AX_INLINE constexpr RECT to_RECT() const {
-		RECT o;
-		o.left = static_cast<LONG>(xMin());	o.right  = static_cast<LONG>(xMax());
-		o.top  = static_cast<LONG>(yMin());	o.bottom = static_cast<LONG>(yMax());
-		return o;
-	}
-#endif
-
 };
 
 template<class T, VecSimd SIMD> constexpr 

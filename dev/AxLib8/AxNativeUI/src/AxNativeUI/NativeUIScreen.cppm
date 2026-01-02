@@ -2,6 +2,7 @@
 
 export module AxNativeUI:NativeUIScreen;
 export import :NativeUITimer;
+export import :NativeUI_Win32;
 
 export namespace ax {
 
@@ -45,7 +46,7 @@ Rect2f	NativeUIScreen::worldRect() {
 	info.cbSize = sizeof(info);
 	if (_h) {
 		if (GetMonitorInfoA(_h, &info)) {
-			return Rect2f::s_from(info.rcWork);
+			return NativeUI_Win32::to_Rect2f(info.rcWork);
 		}
 	}
 	return Rect2f(0,0,0,0);

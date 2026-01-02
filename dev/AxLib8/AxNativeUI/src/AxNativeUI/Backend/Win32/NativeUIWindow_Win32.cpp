@@ -68,7 +68,7 @@ LRESULT WINAPI NativeUIWindow_Win32::s_wndProc(HWND hwnd, UINT msg, WPARAM wPara
 			if (auto* thisObj = s_getThis(hwnd)) {
 				RECT rc;
 				::GetWindowRect(hwnd, &rc);
-				thisObj->onSizeChanged(Rect2f::s_from(rc).size);
+				thisObj->onSizeChanged(NativeUI_Win32::to_Rect2f(rc).size);
 			}
 		}break;
 
@@ -201,12 +201,12 @@ void NativeUIWindow_Win32::onNativeSetSize(const Vec2f& v) {
 	::GetWindowRect(_hwnd, &rc_);
 	::GetClientRect(_hwnd, &clientRc_);
 	
-	auto rc = Rect2f::s_from(rc_);
-	auto clientRc = Rect2f::s_from(clientRc_);
+	auto rc = NativeUI_Win32::to_Rect2f(rc_);
+	auto clientRc = NativeUI_Win32::to_Rect2f(clientRc_);
 
 	POINT pt_{0,0};
 	::ClientToScreen(_hwnd, &pt_);
-	auto pt = Vec2f::s_from(pt_);
+	auto pt = NativeUI_Win32::to_Vec2f(pt_);
 
 	clientRc.pos += pt;
 

@@ -37,7 +37,7 @@ bool NativeUIEventHandler_Win32::_handleMouseEvent(HWND hwnd, UINT msg, WPARAM w
 	POINT curPos;
 	::GetCursorPos(&curPos);
 
-	auto pos = Vec2f::s_from(curPos);
+	auto pos = NativeUI_Win32::to_Vec2f(curPos);
 
 	ev.worldPos = pos;
 #endif

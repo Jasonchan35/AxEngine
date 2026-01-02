@@ -14,7 +14,7 @@ public:
 	template<class T>
 	void test_VecSimd() {
 		using Vec = VecSimd_Data_<4, T, VecSimd::None>;
-		T x = Random::getRange<T>(1, 100);
+		T x = Random::fromRange<T>(1, 100);
 		constexpr Int N = 10;
 		Vec a[N]; 
 		Vec b[N];
