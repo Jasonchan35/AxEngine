@@ -233,7 +233,7 @@ public:
 	AX_INLINE constexpr This rotateLeft90() const  { return This( y,-x); }
 	AX_INLINE constexpr This rotateRight90()const  { return This(-y, x); }
 
-	AX_NODISCARD AX_INLINE constexpr T    lengthSq() const { return (*this) * (*this); }
+	AX_NODISCARD AX_INLINE constexpr T    lengthSq() const { return dot(*this); }
 	AX_NODISCARD AX_INLINE constexpr T    length() const { return Math::sqrt(lengthSq()); }
 	AX_NODISCARD AX_INLINE constexpr T    invLength() const { return Math::rsqrt(lengthSq()); }
 	AX_NODISCARD AX_INLINE constexpr T    distance(const This& r) const { return (*this - r).length(); }
@@ -243,6 +243,8 @@ public:
 		if (Math::almostZero(d)) return s_zero();
 		return *this / d;
 	}
+
+	AX_INLINE constexpr void normalize() { *this = normal(); };	
 
 	static This s_randomUnitVector(RandomDevice& dev = RandomDevice::s_default()) {
 		auto theta = dev.fromRange<T>(0, 1) * 2 * Math::PI_<T>;
@@ -360,11 +362,11 @@ public:
 	AX_INLINE constexpr void operator/=(const T& t) { _simd /= t; }
 
 	AX_INLINE constexpr T dot(const This& v) const { return _simd.dot(v._simd); }
-	AX_INLINE constexpr T cross(const This& v) const { return This(y*v.z - z*v.y, z*v.x - x*v.z,x*v.y - y*v.x); }
+	AX_INLINE constexpr This cross(const This& v) const { return This(y*v.z - z*v.y, z*v.x - x*v.z,x*v.y - y*v.x); }
 
 	AX_NODISCARD AX_INLINE	constexpr bool isParallel(const This& r) const { return cross(r).almostZero(); }
 
-	AX_NODISCARD AX_INLINE constexpr T    lengthSq() const { return (*this) * (*this); }
+	AX_NODISCARD AX_INLINE constexpr T    lengthSq() const { return dot(*this); }
 	AX_NODISCARD AX_INLINE constexpr T    length() const { return Math::sqrt(lengthSq()); }
 	AX_NODISCARD AX_INLINE constexpr T    invLength() const { return Math::rsqrt(lengthSq()); }
 	AX_NODISCARD AX_INLINE constexpr T    distance(const This& r) const { return (*this - r).length(); }
@@ -375,6 +377,7 @@ public:
 		return *this / d;
 	}
 
+	AX_INLINE constexpr void normalize() { *this = normal(); };	
 	
 	static This s_randomUnitVector(RandomDevice& dev = RandomDevice::s_default()) {
 		auto longitude = dev.fromRange<T>(0, 1) * 2 * Math::PI_<T>;

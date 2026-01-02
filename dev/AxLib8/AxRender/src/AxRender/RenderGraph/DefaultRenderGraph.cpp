@@ -58,6 +58,10 @@ DefaultRenderGraph::DefaultRenderGraph() {
 	}
 
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
+	
+	
+//	_testCube.create()
+	
 }
 
 void DefaultRenderGraph::onUpdate(RenderRequest* req) {

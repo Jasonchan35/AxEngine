@@ -39,6 +39,8 @@ private:
 	SPtr<Texture2D>	_testTex0;
 	SPtr<Texture2D> _testTex1;
 	SPtr<Sampler>	_testSampler;
+	
+	RenderMesh		_testCube;
 	Math::Camera3f	_camera;
 };
 
