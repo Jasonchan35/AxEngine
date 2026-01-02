@@ -192,7 +192,7 @@ void ImGui_Backend::onDrawUI(RenderRequest* req) {
 			drawcall.vertexBuffer	   = vertexGpuBuffer;
 			drawcall.vertexStart	   = vertexStart + srcCmdBuf.VtxOffset;
 			drawcall.vertexCount	   = 0;
-			drawcall.indexType		   = IndexType_get<Index>;
+			drawcall.indexType		   = VertexIndexType_get<Index>;
 			drawcall.indexBuffer	   = indexGpuBuffer;
 			drawcall.indexCount		   = srcCmdBuf.ElemCount;
 			drawcall.indexStart		   = indexStart + srcCmdBuf.IdxOffset;

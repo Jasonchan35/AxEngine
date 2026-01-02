@@ -20,17 +20,17 @@ public:
 		err_ = err;		if( err ) err->clear();
 	}
 
-	virtual bool on_stdin ( axIByteArray &buf ) {
+	virtual bool on_stdin ( IByteArray &buf ) {
 		if( ! in_ ) return false;
 		axStatus st = buf.setValues( (uint8_t*)in_, ax_strlen(in_) );
 		in_ = nullptr;
 		if( !st ) return false;
 		return true;
 	}
-	virtual void on_stdout( const axIByteArray &buf ) {
+	virtual void on_stdout( const IByteArray &buf ) {
 		if( out_ ) out_->appendWithLength( (const char*)buf.ptr(), buf.size() );
 	}
-	virtual void on_stderr( const axIByteArray &buf ) {
+	virtual void on_stderr( const IByteArray &buf ) {
 		if( err_ ) err_->appendWithLength( (const char*)buf.ptr(), buf.size() );
 	}
 	
@@ -47,32 +47,32 @@ axStatus ax_exec( const char* cmd, int& cmd_ret, const char*   std_in, IString* 
 
 class axExecuteBinary : public axExecute {
 public:
-	axExecuteBinary( const axIByteArray* in, axIByteArray* out, axIByteArray* err ) {
+	axExecuteBinary( const IByteArray* in, IByteArray* out, IByteArray* err ) {
 		in_  = in;
 		out_ = out;		if( out ) out->clear();
 		err_ = err;		if( err ) err->clear();
 	}
 
-	virtual bool on_stdin ( axIByteArray &buf ) {
+	virtual bool on_stdin ( IByteArray &buf ) {
 		if( ! in_ ) return false;
 		axStatus st = buf.copy( *in_ );	
 		in_ = nullptr;
 		if( !st ) return false;
 		return true;
 	}
-	virtual void on_stdout( const axIByteArray &buf ) {
+	virtual void on_stdout( const IByteArray &buf ) {
 		if( out_ ) out_->appendN( buf );
 	}
-	virtual void on_stderr( const axIByteArray &buf ) {
+	virtual void on_stderr( const IByteArray &buf ) {
 		if( err_ ) err_->appendN( buf );
 	}
 	
-	const axIByteArray* in_;
-	axIByteArray* out_;
-	axIByteArray* err_;
+	const IByteArray* in_;
+	IByteArray* out_;
+	IByteArray* err_;
 };
 
-axStatus ax_exec_bin( const char* cmd, int& cmd_ret, const axIByteArray* std_in, axIByteArray* std_out, axIByteArray* std_err ) {
+axStatus ax_exec_bin( const char* cmd, int& cmd_ret, const IByteArray* std_in, IByteArray* std_out, IByteArray* std_err ) {
 	axExecuteBinary	p( std_in, std_out, std_err );
 	return p.exec( cmd, cmd_ret );
 }

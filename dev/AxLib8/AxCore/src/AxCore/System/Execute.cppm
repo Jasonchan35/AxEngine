@@ -7,7 +7,7 @@ export module AxCore.Execute;
 export namespace ax {
 
 axStatus ax_exec		( const char* cmd, int& cmd_ret, const char*         std_in=nullptr, axIStringA*   std_out=nullptr, axIStringA*   std_err=nullptr );
-axStatus ax_exec_bin	( const char* cmd, int& cmd_ret, const axIByteArray* std_in=nullptr, axIByteArray* std_out=nullptr, axIByteArray* std_err=nullptr );
+axStatus ax_exec_bin	( const char* cmd, int& cmd_ret, const IByteArray* std_in=nullptr, IByteArray* std_out=nullptr, IByteArray* std_err=nullptr );
 
 class Execute : public NonCopyable {
 public:
@@ -15,8 +15,8 @@ public:
 	virtual ~Execute();
 
 	virtual	bool on_stdin	( IByteArray &buf ) { return false; }
-	virtual	void on_stdout	( const axIByteArray &buf ) = 0;
-	virtual	void on_stderr	( const axIByteArray &buf ) = 0;
+	virtual	void on_stdout	( const IByteArray &buf ) = 0;
+	virtual	void on_stderr	( const IByteArray &buf ) = 0;
 
 	axStatus	exec( const char* cmd, int& cmd_ret );
 

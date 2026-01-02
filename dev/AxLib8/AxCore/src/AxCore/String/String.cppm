@@ -36,9 +36,10 @@ using TempString_  = String_<T, 220>;
 using TempString   = TempString_<Char>;
 using TempStringA  = TempString_<CharA>;
 using TempStringW  = TempString_<CharW>;
-using TempString8 = TempString_<Char8>;
+using TempString8  = TempString_<Char8>;
 using TempString16 = TempString_<Char16>;
 using TempString32 = TempString_<Char32>;
+using TempStringU  = TempString_<CharU>;
 
 template<class T, Int BUF_SIZE> 
 class String_ : public IString_<T>, Array_InlineBuffer<T, BUF_SIZE + 1> // +1 for null terminator

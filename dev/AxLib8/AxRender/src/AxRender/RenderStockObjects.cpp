@@ -41,6 +41,10 @@ void RenderStockObjects::s_destroy() {
 	}
 }
 
+RenderStockObjects::Font::Font() {
+	defaultFontStyle = SPtr_new<FontStyle>(AX_NEW);
+}
+
 RenderStockObjects::Texture2Ds::Texture2Ds() {
 	{
 		Image image;

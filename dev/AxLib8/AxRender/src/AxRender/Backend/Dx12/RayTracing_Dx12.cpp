@@ -219,7 +219,7 @@ void axDX12RayTracing::_createPipelineStateObject() {
 	_pipelineStateObject.create(this);
 }
 
-void axDX12RayTracing::ShaderTable::create(axDX12RayTracing* rayTracing, axSpan<axStrLiteralW> functions, const RayGenParamData* paramData) {
+void axDX12RayTracing::ShaderTable::create(axDX12RayTracing* rayTracing, Span<axStrLiteralW> functions, const RayGenParamData* paramData) {
 	Int shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
 	auto* stateObjProps = rayTracing->_pipelineStateObject.stateObjectProperties();
 

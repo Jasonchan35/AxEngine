@@ -154,7 +154,7 @@ void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
 		cmdList->IASetVertexBuffers(0, 1, &vbView);
 	}
 	
-	if (drawcall.indexType == IndexType::None) {
+	if (drawcall.indexType == VertexIndexType::None) {
 		cmdList->DrawInstanced(Dx12Util::castUINT(drawcall.vertexCount),
 		                       ax_safe_cast_from(drawcall.instanceCount),
 		                       ax_safe_cast_from(drawcall.vertexStart),

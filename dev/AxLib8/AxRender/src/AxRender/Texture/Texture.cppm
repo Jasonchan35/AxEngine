@@ -156,7 +156,7 @@ protected:
 class Texture2D_CreateDesc : NonCopyable {
 public:
 	StrView			assetPath;
-	ImageInfo		info;
+	ImageInfo		imageInfo;
 	ByteSpan		pixelData;
 	bool			isBackBuffer = false;
 };
@@ -173,14 +173,14 @@ public:
 
 	ColorType	colorType	() const	{ return _info.colorType; }
 	Int			mipLevels	() const	{ return _info.mipLevels; }
-	Vec2i		size		() const	{ return _info.size.xy(); }
+	Vec2i		size		() const	{ return _info.size; }
 
 	const ImageInfo& info() const { return _info; }
 
 friend class Texture2D_ImageIO_Reader;
 protected:
 
-	Texture2D(const CreateDesc& desc): Base(RenderDataType::Texture2D), _info(desc.info) {
+	Texture2D(const CreateDesc& desc): Base(RenderDataType::Texture2D), _info(desc.imageInfo) {
 		_assetPath = desc.assetPath;
 	}
 

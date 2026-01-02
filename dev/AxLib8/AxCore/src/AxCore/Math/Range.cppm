@@ -35,12 +35,12 @@ class Range_ {
 	using This = Range_;
 	T	_start = T(0);
 	T	_stop  = T(0);
-
+	AX_INLINE constexpr Range_(const T& start_, const T& stop_) noexcept : _start(start_), _stop(stop_) {}
 public:
 	AX_INLINE constexpr Range_() = default;
 	AX_INLINE constexpr Range_(const T& stop_) noexcept { set(T(0), stop_); }
-	AX_INLINE constexpr Range_(const T& start_, const T& stop_) noexcept : _start(start_), _stop(stop_) {}
 
+	static AX_INLINE constexpr This s_startAndStop(const T& start_, const T& stop_) noexcept { return Range_(start_, stop_); }
 	static AX_INLINE constexpr This s_startAndSize(const T& start_, const T& size_) noexcept { return Range_(start_, start_ + size_); }
 
 	operator Range_<const T>() const { return Range_<const T>(_start, _stop); }

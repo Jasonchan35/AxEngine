@@ -28,7 +28,7 @@ SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, Str
 
 SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, const ImageInfo& info, ByteSpan pixelData) {
 	Texture2D_CreateDesc desc;
-	desc.info = info;
+	desc.imageInfo = info;
 	desc.pixelData = pixelData;
 	auto tex = s_new(req, desc);
 	return tex;
@@ -65,7 +65,7 @@ void Texture2D_Backend::_loadImage(const ImageInfo& info, ByteSpan pixelData) {
 
 void Texture2D_Backend::onCreate(const CreateDesc& desc) {
 	if (desc.pixelData.size()) {
-		_loadImage(desc.info, desc.pixelData);
+		_loadImage(desc.imageInfo, desc.pixelData);
 		return;
 	}
 

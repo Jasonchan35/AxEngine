@@ -101,6 +101,8 @@ public:
 
 	void setData(ByteSpan src, Int offset = 0);
 	void appendData(ByteSpan src);
+	
+	MutByteSpan extendSize(Int sizeInBytes);
 
 	// remember to markDirty after write
 	MutByteSpan mutSpan() { return _data; }
@@ -143,11 +145,16 @@ void DynamicGpuBuffer::setData(ByteSpan src, Int offset) {
 inline
 void DynamicGpuBuffer::appendData(ByteSpan src) {
 	if (src.size() <= 0) return;
+	auto span = extendSize(src.size());
+	span.copyValues(src);
+}
 
-	auto range = Range_StartAndSize(_data.size(), src.size());
-	_data.resize(range.stop());
+inline
+MutByteSpan DynamicGpuBuffer::extendSize(Int sizeInBytes) {
+	auto range = IntRange_StartAndSize(_data.size(), sizeInBytes);
 	markDirty(range);
-	setData(src, range.start());
+	_data.resize(_data.size() + sizeInBytes);
+	return _data.slice(range);
 }
 
 } // namespace

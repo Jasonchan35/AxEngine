@@ -119,7 +119,7 @@ void ImageIO_Reader_JPEG::load(const ImageIO::Callback& callback, ByteSpan inDat
 	ImageIO_ReadHandler handler;
 
 	handler.desc.info.colorType		= out_color_type;
-	handler.desc.info.size			= Vec3i(width, height, 0);
+	handler.desc.info.size			= Vec2i(width, height);
 	handler.desc.info.mipLevels		= 1;
 	handler.desc.info.strideInBytes = dstStrideInBytes;
 	handler.desc.dataSize			= handler.desc.info.computeDataSize();

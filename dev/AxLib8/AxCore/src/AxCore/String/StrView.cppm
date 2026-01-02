@@ -23,6 +23,7 @@ using StrViewW  = StrView_<CharW >;
 using StrView8  = StrView_<Char8 >;
 using StrView16 = StrView_<Char16>;
 using StrView32 = StrView_<Char32>;
+using StrViewU  = StrView_<CharU>;
 
 template<class T> requires Type_IsEnum<T>
 constexpr StrLit ax_enum_entry_strlit(const T& v);

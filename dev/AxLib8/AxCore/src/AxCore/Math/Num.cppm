@@ -116,7 +116,16 @@ struct Num_ : public Num_Data<COL, ROW, T> {
 		_data[3][0] = e30;	_data[3][1] = e31;	_data[3][2] = e32;	_data[3][3] = e33;
 	}
 	
-	AX_NODISCARD AX_INLINE constexpr       T* data()			{ return _data; }
+	template<class R>
+	void setByCast(const Num_<COL, ROW, R> & src) {
+		for (Int r = 0; r < ROW; ++r) {
+			for (Int c = 0; c < COL; ++c) {
+				_data[r][c] = static_Cast<T>(src._data[r][c]);
+			}
+		}
+	}
+	
+	AX_NODISCARD AX_INLINE constexpr       T* data()		{ return _data; }
 	AX_NODISCARD AX_INLINE constexpr const T* data() const	{ return _data; }
 	
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(&_data[0][0]); }

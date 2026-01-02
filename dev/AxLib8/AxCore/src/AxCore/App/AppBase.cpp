@@ -112,7 +112,7 @@ AppArguments::AppArguments(int argc, const char* argv[]) {
 	#elif AX_OS_MACOSX
 		NSProcessInfo* info = [NSProcessInfo processInfo];
 		NSArray* a = [info arguments];
-		_argsStr.resize((axInt)a.count);
+		_argsStr.resize((Int)a.count);
 		for (size_t i=0; i<a.count; i++) {
 			auto s = [[a objectAtIndex : i] UTF8String];
 			_argsStr[Int(i)].setUtf(StrView_c_str(s));

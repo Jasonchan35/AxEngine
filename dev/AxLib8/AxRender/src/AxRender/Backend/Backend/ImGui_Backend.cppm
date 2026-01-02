@@ -45,7 +45,7 @@ private:
 	SPtr<Texture2D> _fontTex;
 
 	VertexBuffer	_vertexBuffer;
-	IndexBuffer		_indexBuffer;
+	VertexIndexBuffer		_indexBuffer;
 
 	String	_iniFilename;
 

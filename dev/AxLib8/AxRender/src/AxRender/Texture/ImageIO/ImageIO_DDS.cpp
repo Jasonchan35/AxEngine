@@ -261,7 +261,7 @@ void ImageIO_Reader_DDS::load(const ImageIO::Callback& callback, ByteSpan inData
 	ImageIO_ReadHandler handler;
 
 	handler.desc.info.colorType     = colorType;
-	handler.desc.info.size          = Vec3i(hdr.dwWidth, hdr.dwHeight, 0);
+	handler.desc.info.size          = Vec2i(hdr.dwWidth, hdr.dwHeight);
 	handler.desc.info.mipLevels     = mipLevels;
 	handler.desc.info.strideInBytes = strideInBytes;
 	handler.desc.dataSize           = de.remain();

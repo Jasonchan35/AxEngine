@@ -20,7 +20,7 @@ void Image::clear() {
 void Image::create(ColorType colorType, Vec2i size) {
 	CreateDesc desc;
 	desc.info.colorType = colorType;
-	desc.info.size.set(size, 0);
+	desc.info.size = size;
 	create(desc);
 }
 
@@ -30,6 +30,57 @@ void Image::create(const CreateDesc& desc) {
 
 	Int dataSize = desc.dataSize <= 0 ? _info.computeDataSize() : desc.dataSize;
 	_pixelData.resize(dataSize);
+}
+
+void Image::subImage(Vec2i pos, const ImageInfo& srcInfo, ByteSpan srcPixelData) {
+	if (srcInfo.colorType != _info.colorType) {
+		throw Error_Undefined();
+	}
+
+	auto pixelSizeInBytes = _info.pixelSizeInBytes();
+
+	if (srcInfo.pixelSizeInBytes() != pixelSizeInBytes) {
+		throw Error_Undefined();
+	}
+
+	auto start = pos;
+	auto end   = pos + srcInfo.size;
+
+	auto zero  = Vec2i(0,0);
+
+	Math::clamp_itself(start, zero, size());
+	Math::clamp_itself(end,   zero, size());
+	if (end.x <= start.x || end.y <= start.y) return;
+
+	Byte* dst = &rowBytes(start.y)[start.x];
+	const Byte* src    = srcPixelData.data();
+	const Byte* srcEnd = srcPixelData.end();
+
+	Int dstStride = strideInBytes();
+	Int srcStride = srcInfo.strideInBytes;
+
+	if (pos.x == 0 && _info.size.x == srcInfo.size.x && _info.strideInBytes == srcInfo.strideInBytes) {
+		//direct copy all rows
+		auto n = pixelSizeInBytes * _info.size.x * srcInfo.size.y;
+		if (src + n > srcEnd) {
+			throw Error_Undefined();
+		}
+		
+		MemUtil::rawCopy(dst, src, n);
+		return;
+	}
+
+	auto rows = end.y - start.y;
+	Int rowSizeInBytes = pixelSizeInBytes * (end.x - start.x);
+
+	for (auto y = 0; y < rows; y++) {
+		if (src + rowSizeInBytes > srcEnd) {
+			throw Error_Undefined();
+		}
+		MemUtil::rawCopy(dst, src, rowSizeInBytes);
+		dst += dstStride;
+		src += srcStride;
+	}	
 }
 
 void Image::copy(const Image& src) {

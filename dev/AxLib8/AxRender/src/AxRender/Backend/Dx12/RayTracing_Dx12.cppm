@@ -106,8 +106,8 @@ public:
 			return index;
 		}
 
-		axArray<D3D12_EXPORT_DESC, 32 >			_exportDescList;
-		axArray<LPCWSTR, 32>					_exportsAssociationList;
+		Array<D3D12_EXPORT_DESC, 32 >			_exportDescList;
+		Array<LPCWSTR, 32>					_exportsAssociationList;
 
 	//----- sub objects -------
 		D3D12_STATE_OBJECT_CONFIG				_stateObjectConfig = {};
@@ -119,7 +119,7 @@ public:
 		D3D12_RAYTRACING_PIPELINE_CONFIG		_pipelineConfig = {};
 		D3D12_HIT_GROUP_DESC					_hitGroupDesc = {};
 	//-----
-		axArray<D3D12_STATE_SUBOBJECT, 32>		_subObjects;
+		Array<D3D12_STATE_SUBOBJECT, 32>		_subObjects;
 		ComPtr<ID3D12StateObject>				_stateObject;
 		ComPtr<ID3D12StateObjectProperties>	_stateObjectProperties;
 	};
@@ -131,7 +131,7 @@ public:
 
 	class ShaderTable {
 	public:
-		void create(axDX12RayTracing* rayTracing, axSpan<axStrLiteralW> functions, const RayGenParamData* paramData);
+		void create(axDX12RayTracing* rayTracing, Span<axStrLiteralW> functions, const RayGenParamData* paramData);
 
 		Dx12Resource_Buffer	_buf;
 	};

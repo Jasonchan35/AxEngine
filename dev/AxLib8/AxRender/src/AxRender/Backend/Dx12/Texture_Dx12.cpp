@@ -23,7 +23,7 @@ Texture2D_Dx12::Texture2D_Dx12(const CreateDesc& desc): Base(desc) {
 }
 
 void Texture2D_Dx12::onImageIO_ReadHandler(ImageIO_ReadHandler& handler) {
-	_texResource.create(_info.size.xy(), _info.mipLevels, _info.colorType);
+	_texResource.create(_info.size, _info.mipLevels, _info.colorType);
 	
 	auto dataSize = handler.desc.dataSize;
 	_uploadBuffer = GpuBuffer_Backend::s_new(AX_NEW, "Texture2D_VK-upload", GpuBufferType::StagingToGpu, dataSize);

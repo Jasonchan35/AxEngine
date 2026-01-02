@@ -68,18 +68,18 @@ template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexp
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	max_1	( const T& a )	{ return max(a, one_<T>()); }
 
 //! x clamped to the range [a,b]
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp	( const T& x, const T& a, const T & b )	{ return max(a, min(b,x)); }
+template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp	( const T& x, const T& a, const T& b )	{ return min(max(x, a), b); }
 template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp_01( const T& x )							{ return clamp(x, zero_<T>(), one_<T>()); }
 
 //--------------
-template<class T> AX_INLINE constexpr void min_itself		(T& x, const T& a ) { x = min(x, a); }
-template<class T> AX_INLINE constexpr void max_itself		(T& x, const T& a ) { x = max(x, a); }
-template<class T> AX_INLINE constexpr void min_0_itself		(T& x, const T& a ) { x = min_0(x, a); }
-template<class T> AX_INLINE constexpr void max_0_itself		(T& x, const T& a ) { x = max_0(x, a); }
-template<class T> AX_INLINE constexpr void min_1_itself		(T& x, const T& a ) { x = min_1(x, a); }
-template<class T> AX_INLINE constexpr void max_1_itself		(T& x, const T& a ) { x = max_1(x, a); }
-template<class T> AX_INLINE constexpr void clamp_itself		(T& x, const T& a, const T & b ) { x = clamp(x, a, b); }
-template<class T> AX_INLINE constexpr void clamp_01_itself	(T& x, const T& a, const T & b ) { x = clamp_01(x, a, b); }
+template<class T> AX_INLINE constexpr void min_itself		(T& x, const T& a ) { x = min<T>(x, a); }
+template<class T> AX_INLINE constexpr void max_itself		(T& x, const T& a ) { x = max<T>(x, a); }
+template<class T> AX_INLINE constexpr void min_0_itself		(T& x, const T& a ) { x = min_0<T>(x, a); }
+template<class T> AX_INLINE constexpr void max_0_itself		(T& x, const T& a ) { x = max_0<T>(x, a); }
+template<class T> AX_INLINE constexpr void min_1_itself		(T& x, const T& a ) { x = min_1<T>(x, a); }
+template<class T> AX_INLINE constexpr void max_1_itself		(T& x, const T& a ) { x = max_1<T>(x, a); }
+template<class T> AX_INLINE constexpr void clamp_itself		(T& x, const T& a, const T & b ) { x = clamp<T>(x, a, b); }
+template<class T> AX_INLINE constexpr void clamp_01_itself	(T& x, const T& a, const T & b ) { x = clamp_01<T>(x, a, b); }
 
 //----- float ----
 

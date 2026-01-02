@@ -324,8 +324,24 @@ public:
 	static const This& kDarkCyan	() { static This s(kElemZero(), kElemHalf(), kElemHalf()); return s; }
 	static const This& kDarkMagenta	() { static This s(kElemHalf(), kElemZero(), kElemHalf()); return s; }
 
+	This toPremultipliedAlpha	() const {
+		auto scalar = ColorElemUtil::to_f32(a);
+		return This(ColorElemUtil::mul_f32(r, scalar),
+					ColorElemUtil::mul_f32(g, scalar),
+					ColorElemUtil::mul_f32(b, scalar),
+					a);
+	}
+	This toNonPremultipliedAlpha() const {
+		auto scalar = ax_div(1.0, ColorElemUtil::toDouble(a));
+		return This(ColorElemUtil::mulDouble(r, scalar),
+					ColorElemUtil::mulDouble(g, scalar),
+					ColorElemUtil::mulDouble(b, scalar),
+					a);
+	}
+	
+	
 	void toHexString(IString& s) const;
-
+	
 	template<class R, VecSimd R_SIMD> static constexpr This s_cast(const ColorRGBA_<R, R_SIMD>& rhs) {
 		return SimdData::s_cast(rhs._simd);
 	}

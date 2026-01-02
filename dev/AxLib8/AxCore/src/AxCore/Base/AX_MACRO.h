@@ -132,7 +132,7 @@
 #define AX_TYPE_CHAR_DEFINE_16  1016
 #define AX_TYPE_CHAR_DEFINE_32  1032
 
-//define axChar type
+//define Char type
 #define AX_TYPE_CHAR_DEFINE AX_TYPE_CHAR_DEFINE_A
 
 #if AX_TYPE_CHAR_DEFINE == AX_TYPE_CHAR_DEFINE_A

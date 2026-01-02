@@ -2,7 +2,9 @@ module;
 export module AxRender:Image;
 export import :RenderDataType;
 
-export namespace ax /*::AxRender*/ {
+export namespace ax {
+
+template<class COLOR> class ImagePainter_;
 
 #define AX_RENDER_ImageFileType_ENUM_LIST(E) \
 	E(None,	) \
@@ -17,14 +19,14 @@ ImageFileType ImageFileType_fromFileExt(StrView ext);
 class ImageInfo {
 public:
 	ColorType	colorType = ColorType::None;
-	Vec3i		size = TagZero;
+	Vec2i		size = TagZero;
 	Int			strideInBytes = 0;
 	Int			mipLevels = 1;
 
 	ImageInfo() =default;
 
 	ImageInfo(ColorType colorType_, const Vec2i& size_, Int mipLevels_ = 1)
-		: colorType(colorType_), size(size_, 0), mipLevels(mipLevels_)
+		: colorType(colorType_), size(size_), mipLevels(mipLevels_)
 	{
 		computeDataSize();
 	}
@@ -52,7 +54,7 @@ public:
 			void	loadMem(ByteSpan inData,   ImageFileType fileType);
 
 	AX_INLINE	ColorType		colorType		() const { return _info.colorType; }
-	AX_INLINE	Vec2i			size			() const { return _info.size.xy(); }
+	AX_INLINE	Vec2i			size			() const { return _info.size; }
 	AX_INLINE	Int				width			() const { return _info.size.x; }
 	AX_INLINE	Int				height			() const { return _info.size.y; }
 	AX_INLINE	Int				mipLevels		() const { return _info.mipLevels; }
@@ -70,6 +72,8 @@ public:
 	template<class COLOR> AX_INLINE		  COLOR&	pixel(Int x, Int y)			{ return row<COLOR>(y)[x]; }
 	template<class COLOR> AX_INLINE	const COLOR&	pixel(Int x, Int y) const	{ return row<COLOR>(y)[x]; }
 
+	void subImage(Vec2i pos, const ImageInfo& srcInfo, ByteSpan srcPixelData);
+	
 
 	template<class COLOR> void fill(const COLOR& color);
 
@@ -80,6 +84,8 @@ public:
 	   ByteSpan	pixelData() const	{ return _pixelData; }
 
 	void copy(const Image& src);
+	
+	template<class COLOR> ImagePainter_<COLOR> painter();
 
 protected:
 	void _typeCheck(ColorType colorType) const { if (colorType != _info.colorType) throw Error_Undefined(); }
@@ -88,15 +94,38 @@ protected:
 	Array<Byte>		_pixelData;
 };
 
+//! Image for specific color type
+template<class COLOR>
+class Image_ : public Image {
+	using Base = Image;
+public:
+	using Color = COLOR;
+
+	void create(Int width, Int height, Int strideInBytes)	{ Base::create(Color::kColorType, width, height, strideInBytes); }
+	void create(Int width, Int height)						{ Base::create(Color::kColorType, width, height); }
+
+	MutSpan<COLOR>	row(Int y)				{ return Base::row<COLOR>(y); }
+	Span<COLOR>	row(Int y) const			{ return Base::row<COLOR>(y); }
+
+	const COLOR&		pixel(Int x, Int y) const	{ return Base::pixel<COLOR>(y)[x]; }
+	COLOR&		pixel(Int x, Int y)			{ return Base::pixel<COLOR>(y)[x]; }
+
+	void			fill(const Color& color)	{ Base::fill<COLOR>(color);	}
+
+	ImagePainter_<COLOR> painter() { return Base::painter<COLOR>(); }
+};
+
 template<class COLOR> inline
 void Image::fill(const COLOR& color) {
 	_typeCheck(COLOR::kColorType);
-	Int ny = _info.size.y;
-	for (Int y = 0; y < ny; y++) {
-		for (auto& p : row_noTypeCheck<COLOR>(y)) {
-			p = color;
-		}
+	for (Int y=0; y<_info.size.y; y++) {
+		row_noTypeCheck<COLOR>(y).fillValues(color);
 	}
 }
+
+using ImageRb		= Image_<ColorRb>;
+using ImageRf		= Image_<ColorRf>;
+using ImageRGBAb	= Image_<ColorRGBAb>;
+using ImageRGBAf	= Image_<ColorRGBAf>;
 
 } // namespace

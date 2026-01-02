@@ -1,6 +1,7 @@
 module;
 export module AxRender:StockObjects;
 export import :Texture;
+export import :Font;
 
 export namespace ax /*::AxRender*/ {
 
@@ -14,6 +15,12 @@ AX_ENUM_CLASS(AX_RenderStockTextureId_ENUM_LIST, RenderStockTextureId, u8)
 
 class RenderStockObjects : public NonCopyable {
 public:
+	struct Font : public NonCopyable {
+		Font();
+		SPtr<FontStyle>		defaultFontStyle;
+	};
+	Font font;
+	
 	struct Texture2Ds : public NonCopyable {
 		Texture2Ds();
 

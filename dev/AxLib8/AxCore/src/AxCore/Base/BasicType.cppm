@@ -510,19 +510,12 @@ public:
 
 	//	AX_INLINE 		T* ptr() && = delete;
 
-	AX_INLINE 		T* ptr()				{ return  _p; }
-	AX_INLINE const	T* ptr() const			{ return  _p; }
+	AX_INLINE T* ptr() const		noexcept { return  _p; }
+	AX_INLINE T* get() const		noexcept { return  _p; }
+	AX_INLINE T* operator->() const	noexcept { return  _p; }
+	AX_INLINE T& operator* () const	noexcept { return *_p; }
 
-	AX_INLINE 		T* get()				{ return  _p; }
-	AX_INLINE const	T* get() const			{ return  _p; }
-
-	AX_INLINE 		T* operator->()			{ return  _p; }
-	AX_INLINE const	T* operator->() const	{ return  _p; }
-
-	AX_INLINE 		T& operator* ()			{ return *_p; }
-	AX_INLINE const	T& operator* () const	{ return *_p; }
-
-	AX_INLINE explicit operator bool() const	{ return _p != nullptr; }
+	AX_INLINE explicit operator bool() const noexcept	{ return _p != nullptr; }
 
 protected:
 	T* _p;

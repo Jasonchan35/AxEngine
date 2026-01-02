@@ -162,23 +162,24 @@ public:
 	AX_INLINE	SPtr(SPtr<R> && r) noexcept { _move(std::move(r)); }
 
 	template<class R>
-	AX_INLINE	SPtr(SPtr<R> &r) noexcept { ref(r.ptr()); }
+	AX_INLINE	SPtr(const SPtr<R> &r) noexcept { ref(r.ptr()); }
 
 	AX_INLINE	~SPtr() { unref(); }
 
 	AX_INLINE T*	 ref	(T* p) noexcept;
 	AX_INLINE void unref	() noexcept;
 
-	AX_INLINE operator       T* () &       { return _p; }
-	AX_INLINE operator const T* () const & { return _p; }
+	AX_INLINE operator T* () const & { return _p; }
 
 //	operator T* () && = delete;
 
 	AX_INLINE	void operator=(std::nullptr_t) noexcept	{ unref(); }
 
 	AX_INLINE	void operator=(T* p) noexcept { ref(p); }
-	template<class R> AX_INLINE	void operator=(SPtr<R> &  r) { ref(r.ptr()); }
-	template<class R> AX_INLINE	void operator=(SPtr<R> && r) noexcept { _move(std::move(r)); }
+	AX_INLINE	void operator=(const SPtr &  r) { ref(r._p); }
+	
+	template<class R> AX_INLINE	void operator=(const SPtr<R> &  r) { ref(r._p); }
+	template<class R> AX_INLINE	void operator=(      SPtr<R> && r) noexcept { _move(std::move(r)); }
 
 	template<class... ARGS> AX_INLINE
 	T*	newObject(const MemAllocRequest& req, ARGS&&...args) { return ref(new (req) T(AX_FORWARD(args)...)); }

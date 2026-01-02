@@ -15,8 +15,8 @@ void VertexBuffer::create(VertexLayout vertexLayout) {
 	_buffer.create(desc);
 }
 
-void IndexBuffer::create(IndexType indexType) {
-	if (indexType == IndexType::None)
+void VertexIndexBuffer::create(VertexIndexType indexType) {
+	if (indexType == VertexIndexType::None)
 		throw Error_Undefined();
 
 	_indexType = indexType;

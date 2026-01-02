@@ -12,7 +12,7 @@ export namespace ax /*::AxRender*/ {
 class Cmd_DrawCall : public NonCopyable {
 public:
 	RenderPrimitiveType primitiveType     = RenderPrimitiveType::Triangles;
-	IndexType           indexType         = IndexType::None;
+	VertexIndexType     indexType         = VertexIndexType::None;
 	
 	VertexLayout        vertexLayout      = nullptr;
 	const GpuBuffer*    vertexBuffer      = nullptr;
@@ -41,7 +41,7 @@ public:
 		vertexBuffer = vb.getUploadedGpuBuffer(req);
 	}
 
-	void setIndexBuffer(RenderRequest* req, IndexBuffer& ib) {
+	void setIndexBuffer(RenderRequest* req, VertexIndexBuffer& ib) {
 		indexType    = ib.indexType();
 		indexCount   = ib.indexCount();
 		indexBuffer  = ib.getUploadedGpuBuffer(req);

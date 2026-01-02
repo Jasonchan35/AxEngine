@@ -40,8 +40,8 @@ struct Dx12Util {
 	static constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE	getDxPrimitiveTopologyType	(RenderPrimitiveType t);
 	static constexpr D3D12_FILTER					getDxSamplerFilter			(SamplerFilter v);
 	static constexpr D3D12_TEXTURE_ADDRESS_MODE		getDxSamplerWrap			(SamplerWrap v);
-	static constexpr DXGI_FORMAT					getDxIndexType				(IndexType t);
-	static constexpr Int							getDxIndexStrideInBytes		(IndexType t);
+	static constexpr DXGI_FORMAT					getDxIndexType				(VertexIndexType t);
+	static constexpr Int							getDxIndexStrideInBytes		(VertexIndexType t);
 	static constexpr D3D12_COMPARISON_FUNC			getDxDepthTestOp			(RenderDepthTestOp v);
 
 	static constexpr DXGI_FORMAT		getDxColorType		(ColorType type);
@@ -121,20 +121,20 @@ constexpr D3D12_TEXTURE_ADDRESS_MODE Dx12Util::getDxSamplerWrap(SamplerWrap v) {
 	}
 }
 
-constexpr DXGI_FORMAT Dx12Util::getDxIndexType(IndexType t) {
-	using SRC = IndexType;
+constexpr DXGI_FORMAT Dx12Util::getDxIndexType(VertexIndexType t) {
+	using SRC = VertexIndexType;
 	switch (t) {
-		case SRC::UInt16:	return DXGI_FORMAT_R16_UINT;
-		case SRC::UInt32:	return DXGI_FORMAT_R32_UINT;
+		case SRC::u16:	return DXGI_FORMAT_R16_UINT;
+		case SRC::u32:	return DXGI_FORMAT_R32_UINT;
 		default: throw Error_Undefined();
 	}
 }
 
-constexpr Int Dx12Util::getDxIndexStrideInBytes(IndexType t) {
-	using SRC = IndexType;
+constexpr Int Dx12Util::getDxIndexStrideInBytes(VertexIndexType t) {
+	using SRC = VertexIndexType;
 	switch (t) {
-		case SRC::UInt16:	return AX_SIZEOF(u16);
-		case SRC::UInt32:	return AX_SIZEOF(u32);
+		case SRC::u16:	return AX_SIZEOF(u16);
+		case SRC::u32:	return AX_SIZEOF(u32);
 		default: throw Error_Undefined();
 	}
 }

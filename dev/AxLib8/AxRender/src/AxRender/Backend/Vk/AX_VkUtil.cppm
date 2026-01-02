@@ -10,11 +10,11 @@ namespace ax /*::AxRender*/ {
 
 class AX_VkUtil {
 public:
-	static VkShaderStageFlagBits	getVkShaderStageFlagBits	(ShaderStageFlags f);
+	static VkShaderStageFlagBits	getVkShaderStageFlagBits(ShaderStageFlags f);
 
 	static VkPrimitiveTopology		getVkPrimitiveTopology	(RenderPrimitiveType t);
 
-	static VkIndexType				getVkIndexType			(IndexType t);
+	static VkIndexType				getVkIndexType			(VertexIndexType t);
 	static VkCompareOp				getVkDepthTestOp		(RenderDepthTestOp v);
 
 	static VkAttachmentLoadOp		getVkLoadOp				(RenderBufferLoadOp v);
@@ -365,11 +365,11 @@ inline VkCullModeFlagBits AX_VkUtil::getVkCullMode(RenderCullMode v) {
 }
 
 inline
-VkIndexType AX_VkUtil::getVkIndexType(IndexType t) {
-	using SRC = IndexType;
+VkIndexType AX_VkUtil::getVkIndexType(VertexIndexType t) {
+	using SRC = VertexIndexType;
 	switch (t) {
-		case SRC::UInt16:	return VK_INDEX_TYPE_UINT16;
-		case SRC::UInt32:	return VK_INDEX_TYPE_UINT32;
+		case SRC::u16:	return VK_INDEX_TYPE_UINT16;
+		case SRC::u32:	return VK_INDEX_TYPE_UINT32;
 		default: throw Error_Undefined();
 	}
 }

@@ -6,26 +6,46 @@ export namespace ax /*::AxRender*/ {
 
 enum class VertexSemantic : u16;
 
-#define AX_RENDER_IndexType_ENUM_LIST(E) \
+#define AX_VertexIndexType_ENUM_LIST(E) \
 	E(None,) \
-	E(UInt16,) \
-	E(UInt32,) \
+	E(u16,) \
+	E(u32,) \
 //----
-AX_ENUM_CLASS(AX_RENDER_IndexType_ENUM_LIST, IndexType, u8)
+AX_ENUM_CLASS(AX_VertexIndexType_ENUM_LIST, VertexIndexType, u8)
 
-template<class T> struct IndexType_get_Impl;
-template<> struct IndexType_get_Impl<u16> { static constexpr IndexType value = IndexType::UInt16; };
-template<> struct IndexType_get_Impl<u32> { static constexpr IndexType value = IndexType::UInt32; };
-template<class T> constexpr IndexType IndexType_get = IndexType_get_Impl<T>::value;
+template<class T> struct VertexIndexType_get_Struct;
+template<> struct VertexIndexType_get_Struct<u16> { static constexpr VertexIndexType value = VertexIndexType::u16; };
+template<> struct VertexIndexType_get_Struct<u32> { static constexpr VertexIndexType value = VertexIndexType::u32; };
+template<class T> constexpr VertexIndexType VertexIndexType_get = VertexIndexType_get_Struct<T>::value;
 
-inline constexpr Int IndexType_stride(IndexType t) {
+
+inline constexpr Int VertexIndexType_stride(VertexIndexType t) {
 	switch (t) {
-		case IndexType::UInt16: return AX_SIZEOF(u16);
-		case IndexType::UInt32: return AX_SIZEOF(u32);
+		case VertexIndexType::u16: return AX_SIZEOF(u16);
+		case VertexIndexType::u32: return AX_SIZEOF(u32);
 		default: return 0;
 	}
 }
 
+inline
+Int VertexIndexType_sizeInBytes(VertexIndexType t) {
+	switch (t) {
+		case VertexIndexType::None:	return 0;
+		case VertexIndexType::u16:	return AX_SIZEOF(u16);
+		case VertexIndexType::u32:	return AX_SIZEOF(u32);
+		default: AX_ASSERT(false);	return 0;
+	}
+}
+
+inline
+Int VertexIndexType_limit(VertexIndexType t) {
+	switch (t) {
+		case VertexIndexType::None:	return NumLimit<Int>::max();
+		case VertexIndexType::u16:	return NumLimit<u16>::max();
+		case VertexIndexType::u32:	return NumLimit<u32>::max();
+		default: AX_ASSERT(false);	return 0;
+	}
+}
 
 using VertexSemanticIndex = u8;
 
@@ -140,20 +160,18 @@ struct VertexSemanticUtil {
 //-----
 AX_ENUM_CLASS(VertexSemantic_ENUM_LIST, VertexSemantic, u16)
 
+struct VertexLayoutElement {
+	VertexSemantic semantic = VertexSemantic::None;
+	u16            offset   = 0;
+	RenderDataType dataType = RenderDataType::None;
+
+	VertexSemanticType SemanticType() const { return VertexSemanticUtil::getType(semantic); }
+		
+	bool operator==(const VertexLayoutElement& r) const = default; 
+};
+
 struct VertexLayoutDesc {
-	using Semantic = VertexSemantic;
-
-	struct Element {
-		Semantic       semantic = Semantic::None;
-		u16            offset   = 0;
-		RenderDataType dataType = RenderDataType::None;
-
-		bool operator==(const Element& r) const {
-			return semantic == r.semantic
-				&& offset   == r.offset
-				&& dataType == r.dataType;
-		}
-	};
+	using Element = VertexLayoutElement;
 
 	Int	strideInBytes = 0;
 	Array<Element, 16>	elements;
@@ -162,40 +180,53 @@ struct VertexLayoutDesc {
 		return strideInBytes == r.strideInBytes && elements == r.elements;
 	}
 
-	HashInt onHashInt() const {
-		HashInt v = HashInt::s_make(strideInBytes);
-		v ^= HashInt::s_make(elements.toByteSpan());
-		return v;
-	}
+	HashInt onHashInt() const { return HashInt::s_make(elements.toByteSpan()); }
 
 	template<class VERTEX, class ATTR>
-	void addElement(Semantic semantic, ATTR VERTEX::*attr) {
+	void addElement(VertexSemantic semantic, ATTR VERTEX::*attr) {
 		if constexpr (Type_IsFixedArray<ATTR>)  {
 			u16 n = static_cast<u16>(ATTR::kSize);
 			for (u16 i = 0; i < n; i++) {
-				_addElement(semantic + static_cast<Semantic>(i), attr, i);
+				_addElement(semantic + static_cast<VertexSemantic>(i), attr, i);
 			}
 
 		} else if constexpr (std::is_array_v<ATTR>) { // C Array
 			u16 n = static_cast<u16>(std::extent_v<ATTR>);
 			for (u16 i = 0; i < n; i++) {
-				_addElement(semantic + static_cast<Semantic>(i), attr, i);
+				_addElement(semantic + static_cast<VertexSemantic>(i), attr, i);
 			}
 		} else {
 			_addElement(semantic, attr, 0);
 		}
 	}
 
-	const Element* find(Semantic semantic) const {
+	const Element* find(VertexSemantic semantic) const {
 		for (auto& e : elements) {
 			if (e.semantic == semantic) return &e;
 		}
 		return nullptr;
 	}
 
+	bool hasSemantic(VertexSemantic t) const {
+		for (auto& e : elements) {
+			if (e.semantic == t) return true;
+		}
+		return false;
+	}
+	
+	bool hasSemanticType(VertexSemanticType t) const {
+		for (auto& e : elements) {
+			if (e.SemanticType() == t) return true;
+		}
+		return false;
+	}
+	
+	bool hasPosition() const { return hasSemantic(VertexSemantic::POSITION); }
+	bool hasNormal0	() const { return hasSemantic(VertexSemantic::NORMAL0 ); }
+	
 private:
 	template<class VERTEX, class ATTR>
-	void _addElement(Semantic semantic, ATTR VERTEX::*attr, u16 index) {
+	void _addElement(VertexSemantic semantic, ATTR VERTEX::*attr, u16 index) {
 		if constexpr (Type_IsFixedArray<ATTR>) {
 			using A = typename ATTR::Element;
 			auto& dst = elements.emplaceBack();

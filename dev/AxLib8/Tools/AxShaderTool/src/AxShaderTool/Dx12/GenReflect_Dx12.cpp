@@ -266,7 +266,7 @@ void GenReflect_Dx12::compile(StrView      outFilename,
 	writeDepFile(outFilename);
 
 	// have to use dxc.exe from MS, because that add hash in the bin file
-	//axByteSpan byteCodeView(reinterpret_cast<const Byte*>(byteCode->GetBufferPointer()),
+	//ByteSpan byteCodeView(reinterpret_cast<const Byte*>(byteCode->GetBufferPointer()),
 	// 							 SafeCast(byteCode->GetBufferSize()));
 
 	//auto u = File::writeFile(outFilename, byteCodeView, false, false);

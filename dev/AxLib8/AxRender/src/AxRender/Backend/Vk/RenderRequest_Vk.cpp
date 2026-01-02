@@ -183,7 +183,7 @@ void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
 		vkCmdBindVertexBuffers(_graphCmdList_vk, firstBinding, bindingCount, &vb->vkBufHandle(), &offset);
 	}
 
-	if (drawcall.indexType == IndexType::None) {
+	if (drawcall.indexType == VertexIndexType::None) {
 		vkCmdDraw(_graphCmdList_vk,
 		          ax_safe_cast_from(drawcall.vertexCount),
 		          ax_safe_cast_from(drawcall.instanceCount),
