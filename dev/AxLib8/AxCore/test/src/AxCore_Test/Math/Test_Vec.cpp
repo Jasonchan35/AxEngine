@@ -86,6 +86,8 @@ public:
 		Vec2 add_scalar2;  Vec2 sub_scalar2;	Vec2 mul_scalar2;	Vec2 div_scalar2;
 		Vec3 add_scalar3;  Vec3 sub_scalar3;	Vec3 mul_scalar3;	Vec3 div_scalar3;
 		Vec4 add_scalar4;  Vec4 sub_scalar4;	Vec4 mul_scalar4;	Vec4 div_scalar4;
+
+		T dot3;
 		
 		SIMD_Test() {
 			{
@@ -120,6 +122,13 @@ public:
 				mul4 = a * b;	mul_scalar4 = a * 1;	scalar_mul4 = T(2) * b;
 				div4 = a / b;	div_scalar4 = a / 1;	scalar_div4 = T(2) / b;
 			}
+			
+			{
+				auto a = Vec3(2, 3, 4);
+				auto b = Vec3(1, 2, 3);
+				dot3 = a.dot(b);
+			}
+			
 		}
 	};
 	
@@ -146,6 +155,8 @@ public:
 		AX_TEST_ALMOST_EQ(basic.div2, sse.div2);
 		AX_TEST_ALMOST_EQ(basic.div3, sse.div3);
 		AX_TEST_ALMOST_EQ(basic.div4, sse.div4);
+		
+		AX_TEST_ALMOST_EQ(basic.dot3, sse.dot3);
 	}
 };
 

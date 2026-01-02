@@ -177,7 +177,28 @@ public:
 	AX_INLINE constexpr auto operator-=(T t) -> void { *this = *this - t; }
 	AX_INLINE constexpr auto operator*=(T t) -> void { *this = *this * t; }
 	AX_INLINE constexpr auto operator/=(T t) -> void { *this = *this / t; }
+
+	AX_NODISCARD AX_INLINE constexpr T horizontalAdd() const {
+		T sum = e[0];
+		if constexpr (N > 1) sum += e[1];
+		if constexpr (N > 2) sum += e[2];
+		if constexpr (N > 3) sum += e[3];
+		return sum;
+	}
 	
+	AX_NODISCARD AX_INLINE constexpr T dot(Vec vec) const {
+		if constexpr (N == 3 && _use_SSE_m128_ps) {
+			// Mask 0x71:
+			// 0x7 (High nibble): 0111 -> Multiply elements 0, 1, and 2 (ignore 3)
+			// 0x1 (Low nibble):  0001 -> Store the result in element 0 of the output
+			__m128 res = _mm_dp_ps(mm, vec.mm, 0x71);
+			return _mm_cvtss_f32(res);
+		} else {
+			auto tmp = *this * vec;
+			return tmp.horizontalAdd();
+		}
+	}
+
 //------------
 	AX_NODISCARD AX_INLINE static constexpr Vec s_unroll(T t, T (*func)(T a)) {
 		Vec ret;
