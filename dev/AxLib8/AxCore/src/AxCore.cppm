@@ -19,6 +19,8 @@ export import AxCore.JsonIO;
 export import AxCore.LinearAllocator;
 export import AxCore.Logger;
 export import AxCore.LockProtected;
+export import AxCore.MathCamera;
+export import AxCore.MathShapes;
 export import AxCore.Mat;
 export import AxCore.Mutex;
 export import AxCore.NormInt;
@@ -26,7 +28,6 @@ export import AxCore.Uuid;
 export import AxCore.System;
 export import AxCore.Rtti;
 export import AxCore.WPtr;
-
 export import AxCore.ZStrUtil;
 
 

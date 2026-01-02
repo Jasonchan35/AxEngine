@@ -1,9 +1,9 @@
 ﻿module;
 
-export module AxCore.Camera;
+export module AxCore.MathCamera;
 export import AxCore.MathShapes;
 
-namespace ax::Math {
+export namespace ax::Math {
 
 template<class T>
 class Camera3_ {
@@ -45,14 +45,17 @@ public:
 	Mat4	viewProjMatrix() const { return projMatrix() * viewMatrix(); }
 
 private:
-	float _fov = 50.0;
-	float _nearClip = 0.1;
-	float _farClip = 10000.0;
+	T     _fov      = T(50.0);
+	T     _nearClip = T(0.1);
+	T     _farClip  = T(10000.0);
 	Rect2 _viewport;
-	Vec3 _pos {150, 150, 200};
-	Vec3 _aim {0,0,0};
-	Vec3 _up  {0,1,0};
+	Vec3  _pos{150, 150, 200};
+	Vec3  _aim{0, 0, 0};
+	Vec3  _up{0, 1, 0};
 };
+
+using Camera3f = Camera3_<f32>;
+using Camera3d = Camera3_<f64>;
 
 template<class T>
 void Camera3_<T>::pan(T x, T y) {
