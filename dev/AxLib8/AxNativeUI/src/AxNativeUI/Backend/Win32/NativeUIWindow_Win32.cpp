@@ -54,7 +54,7 @@ LRESULT WINAPI NativeUIWindow_Win32::s_wndProc(HWND hwnd, UINT msg, WPARAM wPara
 			if (auto* thisObj = s_getThis(hwnd)) {
 				RECT rc;
 				::GetWindowRect(hwnd, &rc);
-				thisObj->onWorldPosChanged(NativeUI_Win32::s_getWorldRect(hwnd).pos);
+				thisObj->onWorldPosChanged(NativeUI_Win32::window_worldRect(hwnd).pos);
 			}
 		}break;
 
@@ -166,7 +166,7 @@ NativeUIWindow_Win32::NativeUIWindow_Win32(CreateDesc& desc)
 		throw Error_Undefined();
 	}
 
-	setWorldRect(NativeUI_Win32::s_getWorldRect(_hwnd));
+	setWorldRect(NativeUI_Win32::window_worldRect(_hwnd));
 
 	setVisible(desc.visible);
 }

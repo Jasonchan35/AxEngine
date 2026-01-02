@@ -207,7 +207,7 @@ AX_ENUM_CLASS(AX_NativeUIKeyEventType_ENUM_LIST, NativeUIKeyEventType, u8)
 //----
 AX_ENUM_CLASS(AX_NativeUIKeyCode_ENUM_LIST, NativeUIKeyCode, u16)
 
-#define AX_NativeUIEventModifier_ENUM_LIST(E) \
+#define AX_NativeUIEventModifierKey_ENUM_LIST(E) \
 	E(None,		= 0     ) \
 	E(Shift,	= 1 << 0) \
 	E(Ctrl,		= 1 << 1) \
@@ -215,16 +215,16 @@ AX_ENUM_CLASS(AX_NativeUIKeyCode_ENUM_LIST, NativeUIKeyCode, u16)
 	E(Cmd,		= 1 << 3) \
 	E(Fn,		= 2 << 4) \
 //----
-AX_ENUM_FLAGS_CLASS(AX_NativeUIEventModifier_ENUM_LIST, NativeUIEventModifier, u8);
+AX_ENUM_FLAGS_CLASS(AX_NativeUIEventModifierKey_ENUM_LIST, NativeUIEventModifierKey, u8);
 
 using NativeUIEventTime = HiResTime;
 
 class NativeUIMouseEvent {
 public:
-	using Type		= NativeUIMouseEventType;
-	using Button	= NativeUIMouseEventButton;
-	using Modifier	= NativeUIEventModifier;
-	using Time		= NativeUIEventTime;
+	using Type        = NativeUIMouseEventType;
+	using Button      = NativeUIMouseEventButton;
+	using ModifierKey = NativeUIEventModifierKey;
+	using Time        = NativeUIEventTime;
 
 	template<class CH>
 	void onFormat(Format_<CH>& ctx) const {
@@ -233,7 +233,7 @@ public:
 
 	Type			type = Type::None;
 	Button			button = Button::None;
-	Modifier		modifier = Modifier::None;
+	ModifierKey		modifier = ModifierKey::None;
 	Vec2f			worldPos{0,0};
 	Vec2f			pos{0,0};
 	Vec2f			wheelDelta{0,0};
@@ -244,7 +244,7 @@ class NativeUIKeyEvent {
 public:
 	using Type		= NativeUIKeyEventType;
 	using KeyCode	= NativeUIKeyCode;
-	using Modifier	= NativeUIEventModifier;
+	using Modifier	= NativeUIEventModifierKey;
 	using Time		= NativeUIEventTime;
 
 	template<class CH>

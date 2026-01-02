@@ -72,7 +72,7 @@ Rect2f NativeUIApp_Win32::s_getVirtualDesktopRect() {
 }
 
 bool NativeUIApp_Win32::s_getAsyncKeyState(NativeUIKeyCode key) {
-	int w = NativeUI_Win32::s_toWin32Key(key);
+	int w = NativeUI_Win32::to_Win32KeyCode(key);
 	return ::GetAsyncKeyState(w) != 0;
 }
 

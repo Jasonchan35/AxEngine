@@ -12,16 +12,16 @@ constexpr UINT AX_WM_USER_HasCustomAppEvent = WM_USER + 1;
 class NativeUI_Win32 {
 public:
 
-	static NativeUIKeyCode	 s_toNativeKey(int key);
-	static int				 s_toWin32Key(NativeUIKeyCode key);
+	static NativeUIKeyCode	 to_NativeKeyCode(int key);
+	static int				 to_Win32KeyCode(NativeUIKeyCode key);
 	
-	static NativeUIEventModifier s_eventModifier();
+	static NativeUIEventModifierKey getModifierKey();
 
-	static Vec2f  s_worldToLocalPos(HWND hwnd, const Vec2f& pt);
-	static Vec2f  s_localToWorldPos(HWND hwnd, const Vec2f& pt);
+	static Vec2f  window_worldToLocalPos(HWND hwnd, const Vec2f& pt);
+	static Vec2f  window_localToWorldPos(HWND hwnd, const Vec2f& pt);
 
-	static Rect2f s_getWorldRect(HWND hwnd);
-	static Rect2f s_getLocalRect(HWND hwnd);
+	static Rect2f window_worldRect(HWND hwnd);
+	static Rect2f wWindow_localRect(HWND hwnd);
 
 	template<class T>
 	AX_NODISCARD AX_INLINE static constexpr Vec2_<T> to_Vec2_(const ::POINT& r) {

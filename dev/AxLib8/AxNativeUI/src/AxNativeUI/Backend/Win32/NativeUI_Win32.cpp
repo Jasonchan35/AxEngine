@@ -118,28 +118,28 @@ struct NativeUI_Win32_KeyMap {
 	}
 };
 
-NativeUIKeyCode NativeUI_Win32::s_toNativeKey(int key) {
+NativeUIKeyCode NativeUI_Win32::to_NativeKeyCode(int key) {
 	auto& map = NativeUI_Win32_KeyMap::s_instance()->_win32ToNative;
 	return ax_ptr_value_or(map.find(key), NativeUIKeyCode::None);
 }
 
-int NativeUI_Win32::s_toWin32Key(NativeUIKeyCode key) {
+int NativeUI_Win32::to_Win32KeyCode(NativeUIKeyCode key) {
 	auto& map = NativeUI_Win32_KeyMap::s_instance()->_nativeToWin32;
 	return ax_ptr_value_or(map.find(key), 0);
 }
 
-NativeUIEventModifier NativeUI_Win32::s_eventModifier() {
-	auto o = static_cast<NativeUIEventModifier>(0);
-	if (::GetAsyncKeyState(VK_CONTROL)) o |= NativeUIEventModifier::Ctrl;
-	if (::GetAsyncKeyState(VK_SHIFT  )) o |= NativeUIEventModifier::Shift;
-	if (::GetAsyncKeyState(VK_MENU   )) o |= NativeUIEventModifier::Atl;
+NativeUIEventModifierKey NativeUI_Win32::getModifierKey() {
+	auto o = static_cast<NativeUIEventModifierKey>(0);
+	if (::GetAsyncKeyState(VK_CONTROL)) o |= NativeUIEventModifierKey::Ctrl;
+	if (::GetAsyncKeyState(VK_SHIFT  )) o |= NativeUIEventModifierKey::Shift;
+	if (::GetAsyncKeyState(VK_MENU   )) o |= NativeUIEventModifierKey::Atl;
 	if (::GetAsyncKeyState(VK_LWIN) || ::GetAsyncKeyState(VK_RWIN)) {
-		o |= NativeUIEventModifier::Cmd;
+		o |= NativeUIEventModifierKey::Cmd;
 	}
 	return o;
 }
 
-Vec2f NativeUI_Win32::s_localToWorldPos(HWND hwnd, const Vec2f& pt) {
+Vec2f NativeUI_Win32::window_localToWorldPos(HWND hwnd, const Vec2f& pt) {
 	HWND desktop = nullptr;
 	if (::GetParent(hwnd)) {
 		POINT tmp = NativeUI_Win32::to_POINT(pt);
@@ -153,7 +153,7 @@ Vec2f NativeUI_Win32::s_localToWorldPos(HWND hwnd, const Vec2f& pt) {
 	return pt + o.pos;
 }
 
-Vec2f NativeUI_Win32::s_worldToLocalPos(HWND hwnd, const Vec2f& pt) {
+Vec2f NativeUI_Win32::window_worldToLocalPos(HWND hwnd, const Vec2f& pt) {
 	HWND desktop = nullptr;
 	if (::GetParent(hwnd)) {
 		POINT tmp = to_POINT(pt);
@@ -167,13 +167,13 @@ Vec2f NativeUI_Win32::s_worldToLocalPos(HWND hwnd, const Vec2f& pt) {
 	return pt - o.pos;
 }
 
-Rect2f NativeUI_Win32::s_getWorldRect(HWND hwnd) {
-	auto rc = s_getLocalRect(hwnd);
-	rc.pos = s_localToWorldPos(hwnd, rc.pos);
+Rect2f NativeUI_Win32::window_worldRect(HWND hwnd) {
+	auto rc = wWindow_localRect(hwnd);
+	rc.pos = window_localToWorldPos(hwnd, rc.pos);
 	return rc;
 }
 
-Rect2f NativeUI_Win32::s_getLocalRect(HWND hwnd) {
+Rect2f NativeUI_Win32::wWindow_localRect(HWND hwnd) {
 	RECT rc;
 	::GetWindowRect(hwnd, &rc);
 	return NativeUI_Win32::to_Rect2f(rc);

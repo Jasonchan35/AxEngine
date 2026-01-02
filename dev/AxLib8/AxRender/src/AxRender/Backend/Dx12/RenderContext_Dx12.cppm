@@ -15,8 +15,8 @@ class RenderContext_Dx12 : public RenderContext_Backend {
 public:
 	RenderContext_Dx12(const CreateDesc& desc);
 
-	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt); }
-	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt); }
+	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return NativeUI_Win32::window_worldToLocalPos(_hwnd, pt); }
+	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return NativeUI_Win32::window_worldToLocalPos(_hwnd, pt); }
 
 	struct BackBuffer_Dx12 {
 		Int	_index = -1;

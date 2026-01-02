@@ -59,8 +59,8 @@ public:
 	RenderContext_Vk_Win32(const CreateDesc& desc);
 	virtual ~RenderContext_Vk_Win32() override;
 
-	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt); }
-	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return NativeUI_Win32::s_worldToLocalPos(_hwnd, pt); }
+	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return NativeUI_Win32::window_worldToLocalPos(_hwnd, pt); }
+	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return NativeUI_Win32::window_worldToLocalPos(_hwnd, pt); }
 
 private:
 	AX_INLINE static This* s_getThis(HWND hwnd) {

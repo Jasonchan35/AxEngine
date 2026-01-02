@@ -20,11 +20,11 @@ bool NativeUIEventHandler_Win32::_handleMouseEvent(HWND hwnd, UINT msg, WPARAM w
 
 	using Type = NativeUIMouseEvent::Type;
 	using Button = NativeUIMouseEvent::Button;
-	using Modifier = NativeUIMouseEvent::Modifier;
+	using Modifier = NativeUIMouseEvent::ModifierKey;
 
 	NativeUIMouseEvent ev;
 	ev.time = Milliseconds(app->_win32_msg.time);
-	ev.modifier = NativeUI_Win32::s_eventModifier();
+	ev.modifier = NativeUI_Win32::getModifierKey();
 
 #if 0
 	// !! From Windows Document:
@@ -114,8 +114,8 @@ bool NativeUIEventHandler_Win32::_handleKeyEvent(HWND hwnd, UINT msg, WPARAM wPa
 	using Type = NativeUIKeyEventType;
 
 	ev.time		= Milliseconds(app->_win32_msg.time);
-	ev.modifier = NativeUI_Win32::s_eventModifier();
-	ev.key		= NativeUI_Win32::s_toNativeKey(int(wParam));
+	ev.modifier = NativeUI_Win32::getModifierKey();
+	ev.key		= NativeUI_Win32::to_NativeKeyCode(int(wParam));
 
 	if (msg == WM_CHAR) {
 		ev.type = Type::Char;
