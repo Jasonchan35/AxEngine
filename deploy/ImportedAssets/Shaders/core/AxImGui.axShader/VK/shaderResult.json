@@ -36,13 +36,13 @@
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
-          "dataType": "f32x2"
+          "dataType": "Vec2f_Basic"
         }, {
           "semantic": "COLOR0", 
-          "dataType": "f32x4"
+          "dataType": "Vec4f_Basic"
         }, {
           "semantic": "TEXCOORD0", 
-          "dataType": "f32x2"
+          "dataType": "Vec2f_Basic"
         }], 
       "constBuffers": [{
           "name": "$Global", 
@@ -55,7 +55,7 @@
           "variables": [{
               "name": "imguiProjectionMatrix", 
               "offset": 0, 
-              "dataType": "f32x4x4", 
+              "dataType": "Mat4f_Basic", 
               "rowMajor": true
             }, {
               "name": "AxSamplerState_fontTexture", 

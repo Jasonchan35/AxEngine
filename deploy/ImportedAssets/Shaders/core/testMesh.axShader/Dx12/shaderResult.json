@@ -72,10 +72,10 @@
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
-          "dataType": "f32x4"
+          "dataType": "Vec4f_Basic"
         }, {
           "semantic": "TEXCOORD0", 
-          "dataType": "f32x2"
+          "dataType": "Vec2f_Basic"
         }], 
       "constBuffers": [{
           "name": "$Globals", 
@@ -88,7 +88,7 @@
           "variables": [{
               "name": "color", 
               "offset": 0, 
-              "dataType": "f32x4", 
+              "dataType": "Vec4f_Basic", 
               "rowMajor": true
             }, {
               "name": "AxSamplerState_tex0", 

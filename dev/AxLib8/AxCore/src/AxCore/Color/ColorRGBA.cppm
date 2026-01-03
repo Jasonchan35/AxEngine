@@ -46,7 +46,7 @@ public:
 	template<VecSimd R_SIMD>
 	AX_INLINE Color_(const Color_<ColorModel::R, T, R_SIMD>& v) : Color_(v.r) {} 
 	
-	constexpr Color_<kColorModel,T,VecSimd::Basic> to_Basic() const { return Color_<kColorModel,T,VecSimd::Basic>(r); }
+	constexpr Vec_<N,T,VecSimd::Basic> to_VecBasic() const { return Vec_<N,T,VecSimd::Basic>(r); }
 	
 	AX_INLINE constexpr 	  T* data()			{ return &r; }
 	AX_INLINE constexpr const T* data() const	{ return &r; }
@@ -117,7 +117,7 @@ public:
 	template<VecSimd R_SIMD>
 	AX_INLINE Color_(const Color_<ColorModel::RG, T, R_SIMD>& v) : Color_(v.r, v.g) {} 
 
-	constexpr Color_<kColorModel,T,VecSimd::Basic> to_Basic() const { return Color_<kColorModel,T,VecSimd::Basic>(r,g); }
+	constexpr Vec_<N,T,VecSimd::Basic> to_VecBasic() const { return Vec_<N,T,VecSimd::Basic>(r,g); }
 	
 	AX_INLINE constexpr 	  T* data()			{ return _simd.data(); }
 	AX_INLINE constexpr const T* data() const	{ return _simd.data(); }
@@ -195,7 +195,7 @@ public:
 	template<VecSimd R_SIMD>
 	AX_INLINE Color_(const Color_<ColorModel::RGB, T, R_SIMD>& v) : Color_(v.r, v.g, v.b) {} 
 
-	constexpr Color_<kColorModel,T,VecSimd::Basic> to_Basic() const { return Color_<kColorModel,T,VecSimd::Basic>(r,g,b); }
+	constexpr Vec_<N,T,VecSimd::Basic> to_VecBasic() const { return Vec_<N,T,VecSimd::Basic>(r,g,b); }
 	
 	AX_INLINE constexpr void set(T r_, T g_, T b_) { r = r_; g = g_; b = b_; }
 	AX_INLINE constexpr void set(const ColorRGB& v) { set(v.r, v.g, v.b); }
@@ -294,7 +294,7 @@ public:
 	template<VecSimd R_SIMD>
 	AX_INLINE Color_(const Color_<ColorModel::RGBA, T, R_SIMD>& v) : Color_(v.r, v.g, v.b, v.a) {} 
 
-	constexpr Color_<kColorModel,T,VecSimd::Basic> to_Basic() const { return Color_<kColorModel,T,VecSimd::Basic>(r,g,b,a); }
+	constexpr Vec_<N,T,VecSimd::Basic> to_VecBasic() const { return Vec_<N,T,VecSimd::Basic>(r,g,b,a); }
 	
 	AX_INLINE constexpr void set(const T& r_, const T& g_, const T& b_, const T& a_ = kElemOne())
 		{ _simd = SimdData(r_, g_, b_, a_); }

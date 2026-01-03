@@ -248,8 +248,10 @@ IntRange ShaderParamSpace_Backend::VarInfo::_assignValueToBuffer(MutByteSpan buf
 
 template<class V> inline
 IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf, const V& value) const {
-	if constexpr (Type_IsColor<V> || Type_IsVec<V>) {
+	if constexpr (Type_IsVec<V>) {
 		return _assignValueToBuffer(buf, value.to_Basic());
+	} else if constexpr (Type_IsColor<V>) {
+		return _assignValueToBuffer(buf, value.to_VecBasic());
 	} else {
 		return _assignValueToBuffer(buf, value);
 	}
