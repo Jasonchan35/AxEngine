@@ -85,17 +85,17 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_BOOL) {
 			AX_ASSERT(false);
-			throw Error_Undefined("unsupport bool-matrix");
+			throw Error_Undefined("unsupported bool-matrix");
 		}
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_INT) {
 			AX_ASSERT(false);
-			throw Error_Undefined("unsupport int-matrix");
+			throw Error_Undefined("unsupported int-matrix");
 		}
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 			if (mat.row_count == 4 && mat.column_count == 4) {
 				switch (scalar.width) {
-					case 32: return RenderDataType::f32x4x4;
-					case 64: return RenderDataType::f64x4x4;
+					case 32: return RenderDataType::Mat4f_Basic;
+					case 64: return RenderDataType::Mat4d_Basic;
 				}
 			}
 		}
@@ -106,56 +106,56 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 	if (src.type_flags & SPV_REFLECT_TYPE_FLAG_INT) {
 		switch (scalar.width) {
 			case 8: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i8   :  RenderDataType::u8;
-				case 1: return scalar.signedness ? RenderDataType::i8x1 :  RenderDataType::u8x1;
-				case 2: return scalar.signedness ? RenderDataType::i8x2 :  RenderDataType::u8x2;
-				case 3: return scalar.signedness ? RenderDataType::i8x3 :  RenderDataType::u8x3;
-				case 4: return scalar.signedness ? RenderDataType::i8x4 :  RenderDataType::u8x4;
+				case 0: return scalar.signedness ? RenderDataType::i8           : RenderDataType::u8;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i8_Basic : RenderDataType::Vec1u8_Basic;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i8_Basic : RenderDataType::Vec2u8_Basic;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i8_Basic : RenderDataType::Vec3u8_Basic;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i8_Basic : RenderDataType::Vec4u8_Basic;
 			} break;
 			case 16: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i16   :  RenderDataType::u16;
-				case 1: return scalar.signedness ? RenderDataType::i16x1 :  RenderDataType::u16x1;
-				case 2: return scalar.signedness ? RenderDataType::i16x2 :  RenderDataType::u16x2;
-				case 3: return scalar.signedness ? RenderDataType::i16x3 :  RenderDataType::u16x3;
-				case 4: return scalar.signedness ? RenderDataType::i16x4 :  RenderDataType::u16x4;
+				case 0: return scalar.signedness ? RenderDataType::i16           : RenderDataType::u16;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i16_Basic : RenderDataType::Vec1u16_Basic;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i16_Basic : RenderDataType::Vec2u16_Basic;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i16_Basic : RenderDataType::Vec3u16_Basic;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i16_Basic : RenderDataType::Vec4u16_Basic;
 			} break;
 			case 32: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i32   :  RenderDataType::u32;
-				case 1: return scalar.signedness ? RenderDataType::i32x1 :  RenderDataType::u32x1;
-				case 2: return scalar.signedness ? RenderDataType::i32x2 :  RenderDataType::u32x2;
-				case 3: return scalar.signedness ? RenderDataType::i32x3 :  RenderDataType::u32x3;
-				case 4: return scalar.signedness ? RenderDataType::i32x4 :  RenderDataType::u32x4;
+				case 0: return scalar.signedness ? RenderDataType::i32           : RenderDataType::u32;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i32_Basic : RenderDataType::Vec1u32_Basic;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i32_Basic : RenderDataType::Vec2u32_Basic;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i32_Basic : RenderDataType::Vec3u32_Basic;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i32_Basic : RenderDataType::Vec4u32_Basic;
 			} break;
 			case 64: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i64   :  RenderDataType::u64;
-				case 1: return scalar.signedness ? RenderDataType::i64x1 :  RenderDataType::u64x1;
-				case 2: return scalar.signedness ? RenderDataType::i64x2 :  RenderDataType::u64x2;
-				case 3: return scalar.signedness ? RenderDataType::i64x3 :  RenderDataType::u64x3;
-				case 4: return scalar.signedness ? RenderDataType::i64x4 :  RenderDataType::u64x4;
+				case 0: return scalar.signedness ? RenderDataType::i64           : RenderDataType::u64;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i64_Basic : RenderDataType::Vec1u64_Basic;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i64_Basic : RenderDataType::Vec2u64_Basic;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i64_Basic : RenderDataType::Vec3u64_Basic;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i64_Basic : RenderDataType::Vec4u64_Basic;
 			} break;
 		}
 	} else if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 		switch (scalar.width) {
 			case 16: switch (vec.component_count) {
 				case 0: return RenderDataType::f16;
-				case 1: return RenderDataType::f16x1;
-				case 2: return RenderDataType::f16x2;
-				case 3: return RenderDataType::f16x3;
-				case 4: return RenderDataType::f16x4;
+				case 1: return RenderDataType::Vec1h_Basic;
+				case 2: return RenderDataType::Vec1h_Basic;
+				case 3: return RenderDataType::Vec1h_Basic;
+				case 4: return RenderDataType::Vec1h_Basic;
 			} break;
 			case 32: switch (vec.component_count) {
 				case 0: return RenderDataType::f32;
-				case 1: return RenderDataType::f32x1;
-				case 2: return RenderDataType::f32x2;
-				case 3: return RenderDataType::f32x3;
-				case 4: return RenderDataType::f32x4;
+				case 1: return RenderDataType::Vec1f_Basic;
+				case 2: return RenderDataType::Vec2f_Basic;
+				case 3: return RenderDataType::Vec3f_Basic;
+				case 4: return RenderDataType::Vec4f_Basic;
 			} break;
 			case 64: switch (vec.component_count) {
 				case 0: return RenderDataType::f64;
-				case 1: return RenderDataType::f64x1;
-				case 2: return RenderDataType::f64x2;
-				case 3: return RenderDataType::f64x3;
-				case 4: return RenderDataType::f64x4;
+				case 1: return RenderDataType::Vec1d_Basic;
+				case 2: return RenderDataType::Vec2d_Basic;
+				case 3: return RenderDataType::Vec3d_Basic;
+				case 4: return RenderDataType::Vec4d_Basic;
 			} break;
 		}
 	}

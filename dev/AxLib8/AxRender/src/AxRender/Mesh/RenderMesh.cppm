@@ -101,16 +101,16 @@ public:
 			return subMesh.vertexBuffer.tryEditElements<ELEM>(semantic, range);
 		}
 
-		template<class ELEM = f32x3> Opt<ElemEnumerator<ELEM>> tryEditPosition () { return tryEditElements<ELEM>(VertexSemantic::POSITION ); }
-		template<class ELEM = f32x3> Opt<ElemEnumerator<ELEM>> tryEditNormal0  () { return tryEditElements<ELEM>(VertexSemantic::NORMAL0  ); }
+		template<class ELEM = Vec3f_Basic> Opt<ElemEnumerator<ELEM>> tryEditPosition () { return tryEditElements<ELEM>(VertexSemantic::POSITION ); }
+		template<class ELEM = Vec3f_Basic> Opt<ElemEnumerator<ELEM>> tryEditNormal0  () { return tryEditElements<ELEM>(VertexSemantic::NORMAL0  ); }
 
-		template<class ELEM = f32x4> Opt<ElemEnumerator<ELEM>> tryEditColor(Int i) { return tryEditElements<ELEM>(VertexSemantic::COLOR0 + static_cast<u16>(i)); }
-		template<class ELEM = f32x4> Opt<ElemEnumerator<ELEM>> tryEditColor0   ()  { return tryEditElements<ELEM>(VertexSemantic::COLOR0   ); }
+		template<class ELEM = Color4f_Basic> Opt<ElemEnumerator<ELEM>> tryEditColor(Int i) { return tryEditElements<ELEM>(VertexSemantic::COLOR0 + static_cast<u16>(i)); }
+		template<class ELEM = Color4f_Basic> Opt<ElemEnumerator<ELEM>> tryEditColor0   ()  { return tryEditElements<ELEM>(VertexSemantic::COLOR0   ); }
 
-		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord(Int i) { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0 + static_cast<u16>(i)); }
-		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord0()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0); }
-		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord1()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD1); }
-		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord2()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD2); }
+		template<class ELEM = Vec2f_Basic> Opt<ElemEnumerator<ELEM>> tryEditTexCoord(Int i) { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0 + static_cast<u16>(i)); }
+		template<class ELEM = Vec2f_Basic> Opt<ElemEnumerator<ELEM>> tryEditTexCoord0()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0); }
+		template<class ELEM = Vec2f_Basic> Opt<ElemEnumerator<ELEM>> tryEditTexCoord1()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD1); }
+		template<class ELEM = Vec2f_Basic> Opt<ElemEnumerator<ELEM>> tryEditTexCoord2()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD2); }
 		
 		template<class INDEX>
 		void addIndices(Span<INDEX> data) { addIndices(data.toByteSpan(), VertexIndexType_get<INDEX>); }

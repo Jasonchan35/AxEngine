@@ -15,10 +15,10 @@ template <class T, VecSimd SIMD = VecSimd_Default> using Mat4x3_	= Mat_<4, 3, T,
 
 using Mat4f			= Mat4_<f32>;
 using Mat4f_SSE		= Mat4_<f32, VecSimd::SSE>;
-using Mat4f_Basic	= Mat4_<f32, VecSimd::None>;
+using Mat4f_Basic	= Mat4_<f32, VecSimd::Basic>;
 using Mat4d			= Mat4_<f64>;
 using Mat4d_SSE		= Mat4_<f64, VecSimd::SSE>;
-using Mat4d_Basic	= Mat4_<f64, VecSimd::None>;
+using Mat4d_Basic	= Mat4_<f64, VecSimd::Basic>;
 
 // column major matrix
 template<class T, VecSimd SIMD>
@@ -53,6 +53,9 @@ public:
 		, cz(xx, zy, zz, zw)
 		, cw(xx, wy, wz, ww)
 	{}
+	
+	template<VecSimd R_SIMD>
+	AX_NODISCARD constexpr Mat_(const Mat_<4,4,T,R_SIMD>& r) : Mat_(r.cx, r.cy, r.cz, r.cw) {}
 
 	constexpr Num4x4 toNum() const {
 		return Num4x4(

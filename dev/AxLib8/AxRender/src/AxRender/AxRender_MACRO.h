@@ -21,11 +21,11 @@
 //-----
 
 #define AX_ShaderPropType_Numbers_EnumList(E) \
-	E(i32,	)	E(i32x2,	)	E(i32x3,	)	E(i32x4,	)	\
-	E(u32,	)	E(u32x2,	)	E(u32x3,	)	E(u32x4,	)	\
-	E(f16,	)	E(f16x2,	)	E(f16x3,	)	E(f16x4,	)	\
-	E(f32,	)	E(f32x2,	)	E(f32x3,	)	E(f32x4,	)	\
-	E(f64,	)	E(f64x2,	)	E(f64x3,	)	E(f64x4,	)	\
+	E(i32,) E(Vec2i32,) E(Vec3i32,) E(Vec4i32,) \
+	E(u32,) E(Vec2u32,) E(Vec3u32,) E(Vec4u32,) \
+	E(f16,) E(Vec2h,  ) E(Vec3h,  ) E(Vec4h,  ) \
+	E(f32,) E(Vec2f,  ) E(Vec3f,  ) E(Vec4f,  ) \
+	E(f64,) E(Vec2d,  ) E(Vec3d,  ) E(Vec4d,  ) \
 //---
 
 #define AX_ShaderPropType_EnumList_WITHOUT_NONE(E) \

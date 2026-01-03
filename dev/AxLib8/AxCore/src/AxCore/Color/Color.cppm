@@ -18,10 +18,23 @@ using Color3h = ColorRGBh;
 using Color3f = ColorRGBf;
 using Color3d = ColorRGBd;
 
+using Color3b_Basic = ColorRGBb_Basic;
+using Color3s_Basic = ColorRGBs_Basic;
+using Color3h_Basic = ColorRGBh_Basic;
+using Color3f_Basic = ColorRGBf_Basic;
+using Color3d_Basic = ColorRGBd_Basic;
+
 using Color4b = ColorRGBAb;
 using Color4s = ColorRGBAs;
 using Color4h = ColorRGBAh;
 using Color4f = ColorRGBAf;
 using Color4d = ColorRGBAd;
-	
+
+using Color4b_Basic = ColorRGBAb_Basic;
+using Color4s_Basic = ColorRGBAs_Basic;
+using Color4h_Basic = ColorRGBAh_Basic;
+using Color4f_Basic = ColorRGBAf_Basic;
+using Color4d_Basic = ColorRGBAd_Basic;
+
+
 } // namespace

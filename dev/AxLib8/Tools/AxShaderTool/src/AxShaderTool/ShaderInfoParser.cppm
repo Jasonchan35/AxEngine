@@ -102,9 +102,9 @@ private:
 	template<class T> void readEnum(T& v);
 	template<class V> void readNumber(V& v);
 
-	template<class V> void readNumber(Num2_<V>& v);
-	template<class V> void readNumber(Num3_<V>& v);
-	template<class V> void readNumber(Num4_<V>& v);
+	template<class V> void readNumber(Vec2_<V>& v);
+	template<class V> void readNumber(Vec3_<V>& v);
+	template<class V> void readNumber(Vec4_<V>& v);
 
 	template<class V> void readColor(ColorRGB_<V>& v);
 	template<class V> void readColor(ColorRGBA_<V>& v);
@@ -149,14 +149,14 @@ void ShaderInfoParser::readNumber(V& v) {
 }
 
 template<class V> inline
-void ShaderInfoParser::readNumber(Num2_<V>& v) {
+void ShaderInfoParser::readNumber(Vec2_<V>& v) {
 	expectOp("[");	readNumber(v.x);
 	expectOp(",");	readNumber(v.y);
 	expectOp("]");
 }
 
 template<class V> inline
-void ShaderInfoParser::readNumber(Num3_<V>& v) {
+void ShaderInfoParser::readNumber(Vec3_<V>& v) {
 	expectOp("[");	readNumber(v.x);
 	expectOp(",");	readNumber(v.y);
 	expectOp(",");	readNumber(v.z);
@@ -164,7 +164,7 @@ void ShaderInfoParser::readNumber(Num3_<V>& v) {
 }
 
 template<class V> inline
-void ShaderInfoParser::readNumber(Num4_<V>& v) {
+void ShaderInfoParser::readNumber(Vec4_<V>& v) {
 	expectOp("[");	readNumber(v.x);
 	expectOp(",");	readNumber(v.y);
 	expectOp(",");	readNumber(v.z);

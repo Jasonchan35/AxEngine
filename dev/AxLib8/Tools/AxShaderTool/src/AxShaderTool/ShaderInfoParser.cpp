@@ -257,19 +257,19 @@ void ShaderInfoParser::readProperties() {
 void ShaderInfoParser::readPropType(ShaderPropType& t) {
 // mapping HLSL type
 	if (matchIdentifier("half"		))	{ t = ShaderPropType::f16;		return; }
-	if (matchIdentifier("half2"		))	{ t = ShaderPropType::f16x2;	return; }
-	if (matchIdentifier("half3"		))	{ t = ShaderPropType::f16x3;	return; }
-	if (matchIdentifier("half4"		))	{ t = ShaderPropType::f16x4;	return; }
+	if (matchIdentifier("half2"		))	{ t = ShaderPropType::Vec2h;	return; }
+	if (matchIdentifier("half3"		))	{ t = ShaderPropType::Vec2h;	return; }
+	if (matchIdentifier("half4"		))	{ t = ShaderPropType::Vec2h;	return; }
 
 	if (matchIdentifier("float"		))	{ t = ShaderPropType::f32;		return; }
-	if (matchIdentifier("float2"	))	{ t = ShaderPropType::f32x2;	return; }
-	if (matchIdentifier("float3"	))	{ t = ShaderPropType::f32x3;	return; }
-	if (matchIdentifier("float4"	))	{ t = ShaderPropType::f32x4;	return; }
+	if (matchIdentifier("float2"	))	{ t = ShaderPropType::Vec2f;	return; }
+	if (matchIdentifier("float3"	))	{ t = ShaderPropType::Vec2f;	return; }
+	if (matchIdentifier("float4"	))	{ t = ShaderPropType::Vec2f;	return; }
 
 	if (matchIdentifier("double"	))	{ t = ShaderPropType::f64;		return; }
-	if (matchIdentifier("double2"	))	{ t = ShaderPropType::f64x2;	return; }
-	if (matchIdentifier("double3"	))	{ t = ShaderPropType::f64x3;	return; }
-	if (matchIdentifier("double4"	))	{ t = ShaderPropType::f64x4;	return; }
+	if (matchIdentifier("double2"	))	{ t = ShaderPropType::Vec2d;	return; }
+	if (matchIdentifier("double3"	))	{ t = ShaderPropType::Vec2d;	return; }
+	if (matchIdentifier("double4"	))	{ t = ShaderPropType::Vec2d;	return; }
 
 	readEnum(t);
 }

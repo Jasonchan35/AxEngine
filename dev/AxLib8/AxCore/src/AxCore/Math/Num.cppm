@@ -148,6 +148,8 @@ template<class T> using Num2x2_ = Num_<2,2,T>;
 template<class T> using Num3x3_ = Num_<3,3,T>;
 template<class T> using Num4x4_ = Num_<4,4,T>;
 
+#if 0
+
 using Num1h = Num1_<f16>;
 using Num2h = Num2_<f16>;
 using Num3h = Num3_<f16>;
@@ -261,7 +263,7 @@ using SNorm32x1	= Num1_<SNorm32>;
 using SNorm32x2	= Num2_<SNorm32>;
 using SNorm32x3	= Num3_<SNorm32>;
 using SNorm32x4	= Num4_<SNorm32>;
-
+#endif
 
 template <typename OBJ>
 concept CON_IsNum = requires (const OBJ& obj) {

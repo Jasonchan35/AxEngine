@@ -365,22 +365,33 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 
 		TempString dataType;
 
-		switch (paramDesc.ComponentType) {
-			case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("u32"); break;
-			case D3D_REGISTER_COMPONENT_SINT32:		dataType.append("i32");	break;
-			case D3D_REGISTER_COMPONENT_FLOAT32:	dataType.append("f32"); break;
-			default: throw Error_Undefined();
-		}
-
 		auto componentCount = ax_bit_count1(paramDesc.Mask);
 		if (componentCount < 1 || componentCount > 4) {
 			throw Error_Undefined();
 		}
 
 		if (componentCount > 1) {
-			dataType.append(Fmt("x{}", componentCount));
+			dataType.append(Fmt("Vec{}", componentCount));
+			switch (paramDesc.ComponentType) {
+				case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("u32"); break;
+				case D3D_REGISTER_COMPONENT_SINT32:		dataType.append("i32");	break;
+				case D3D_REGISTER_COMPONENT_FLOAT16:	dataType.append("h");   break;
+				case D3D_REGISTER_COMPONENT_FLOAT32:	dataType.append("f");   break;
+				case D3D_REGISTER_COMPONENT_FLOAT64:	dataType.append("d");   break;
+				default: throw Error_Undefined();
+			}
+			dataType.append("_Basic");
+		} else {
+			switch (paramDesc.ComponentType) {
+				case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("u32"); break;
+				case D3D_REGISTER_COMPONENT_SINT32:		dataType.append("i32");	break;
+				case D3D_REGISTER_COMPONENT_FLOAT16:	dataType.append("f16"); break;
+				case D3D_REGISTER_COMPONENT_FLOAT32:	dataType.append("f32"); break;
+				case D3D_REGISTER_COMPONENT_FLOAT64:	dataType.append("f64"); break;
+				default: throw Error_Undefined();
+			}
 		}
-
+		
 		if (!dataType.tryParse(dst.dataType)) {
 			AX_LOG("Error: parse enum {}", dataType);
 			throw Error_Undefined();
@@ -438,28 +449,40 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 					
 			//------------------------------
 			TempString dataType;
-			switch (varType.Type) {
-				case D3D_SVT_BOOL:				dataType.append("Bool");	break;
-				case D3D_SVT_INT:				dataType.append("i32");		break;
-				case D3D_SVT_UINT:				dataType.append("u32");		break;
-				case D3D_SVT_UINT8:				dataType.append("u8");		break;
-				case D3D_SVT_FLOAT:				dataType.append("f32");		break;
-				case D3D_SVT_DOUBLE:			dataType.append("f64");		break;
-				default: throw Error_Undefined();
-			}
-
 			switch (varType.Class) {
-				case D3D_SVC_SCALAR: break;
-				case D3D_SVC_VECTOR:			dataType.append(Fmt("x{}",	  varType.Columns)); break;
+				case D3D_SVC_SCALAR: {
+					switch (varType.Type) {
+						case D3D_SVT_BOOL:				dataType.append("Bool");	break;
+						case D3D_SVT_INT:				dataType.append("i32");		break;
+						case D3D_SVT_UINT:				dataType.append("u32");		break;
+						case D3D_SVT_UINT8:				dataType.append("u8");		break;
+						case D3D_SVT_FLOAT:				dataType.append("f32");		break;
+						case D3D_SVT_DOUBLE:			dataType.append("f64");		break;
+						default: throw Error_Undefined();
+					}
+				} break;
+				case D3D_SVC_VECTOR: {
+					dataType.append(Fmt("Vec{}", varType.Columns));
+					switch (varType.Type) {
+						case D3D_SVT_BOOL:				dataType.append("bool");	break;
+						case D3D_SVT_INT:				dataType.append("i32");		break;
+						case D3D_SVT_UINT:				dataType.append("u32");		break;
+						case D3D_SVT_UINT8:				dataType.append("u8");		break;
+						case D3D_SVT_FLOAT:				dataType.append("f");		break;
+						case D3D_SVT_DOUBLE:			dataType.append("d");		break;
+						default: throw Error_Undefined();
+					}
+					dataType.append("_Basic");
+				} break;
 
 				case D3D_SVC_MATRIX_ROWS:
 				case D3D_SVC_MATRIX_COLUMNS:	{
 					dataType.clear();
 					if (varType.Rows == 4 && varType.Columns == 4) {
 						if (varType.Type == D3D_SVT_FLOAT) {
-							dataType = "f32x4x4";
+							dataType = "Mat4f_Basic";
 						} else if (varType.Type == D3D_SVT_DOUBLE) {
-							dataType = "f64x4x4";
+							dataType = "Mat4d_Basic";
 						}
 					}
 

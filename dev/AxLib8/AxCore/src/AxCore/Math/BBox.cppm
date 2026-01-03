@@ -13,23 +13,23 @@ template<class T, VecSimd SIMD = VecSimd_Default> using BBox3_ = BBox_<3, T, SIM
 
 using BBox2h		= BBox2_<f16>;
 using BBox2h_SSE	= BBox2_<f16, VecSimd::SSE>;
-using BBox2h_Basic	= BBox2_<f16, VecSimd::None>;
+using BBox2h_Basic	= BBox2_<f16, VecSimd::Basic>;
 using BBox2f		= BBox2_<f32>;
 using BBox2f_SSE	= BBox2_<f32, VecSimd::SSE>;
-using BBox2f_Basic	= BBox2_<f32, VecSimd::None>;
+using BBox2f_Basic	= BBox2_<f32, VecSimd::Basic>;
 using BBox2d		= BBox2_<f64>;
 using BBox2d_SSE	= BBox2_<f64, VecSimd::SSE>;
-using BBox2d_Basic	= BBox2_<f64, VecSimd::None>;
+using BBox2d_Basic	= BBox2_<f64, VecSimd::Basic>;
 
 using BBox3h		= BBox3_<f16>;
 using BBox3h_SSE	= BBox3_<f16, VecSimd::SSE>;
-using BBox3h_Basic	= BBox3_<f16, VecSimd::None>;
+using BBox3h_Basic	= BBox3_<f16, VecSimd::Basic>;
 using BBox3f		= BBox3_<f32>;
 using BBox3f_SSE	= BBox3_<f32, VecSimd::SSE>;
-using BBox3f_Basic	= BBox3_<f32, VecSimd::None>;
+using BBox3f_Basic	= BBox3_<f32, VecSimd::Basic>;
 using BBox3d		= BBox3_<f64>;
 using BBox3d_SSE	= BBox3_<f64, VecSimd::SSE>;
-using BBox3d_Basic	= BBox3_<f64, VecSimd::None>;
+using BBox3d_Basic	= BBox3_<f64, VecSimd::Basic>;
 
 template<Int N, class T, VecSimd SIMD>
 class BBox_ {

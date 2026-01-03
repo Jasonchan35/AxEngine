@@ -181,6 +181,9 @@ AX_ENUM_CLASS(AX_ColorType_ENUM_LIST, ColorType, ColorType_IntType);
 
 template<ColorModel MODEL, class ELEM, VecSimd SIMD = VecSimd_Default> class Color_;
 
+template<class T> constexpr bool Type_IsColor = false;
+template<ColorModel MODEL, class ELEM, VecSimd SIMD> constexpr bool Type_IsColor<Color_<MODEL,ELEM,SIMD>> = true;
+
 //e.g. ColorRGBAf = Color_<ColorModel::RGBA, f32>;
 #define E(MODEL,...) \
 	template<class T, VecSimd SIMD = VecSimd_Default> using Color## MODEL ##_ = Color_<ColorModel::MODEL, T, SIMD>; \
@@ -190,11 +193,11 @@ template<ColorModel MODEL, class ELEM, VecSimd SIMD = VecSimd_Default> class Col
 	using Color## MODEL ##f = Color_<ColorModel::MODEL, f32    >; \
 	using Color## MODEL ##d = Color_<ColorModel::MODEL, f64    >; \
 	\
-	using Color## MODEL ##b_Basic = Color_<ColorModel::MODEL, UNorm8 , VecSimd::None>; \
-	using Color## MODEL ##s_Basic = Color_<ColorModel::MODEL, UNorm16, VecSimd::None>; \
-	using Color## MODEL ##h_Basic = Color_<ColorModel::MODEL, f16    , VecSimd::None>; \
-	using Color## MODEL ##f_Basic = Color_<ColorModel::MODEL, f32    , VecSimd::None>; \
-	using Color## MODEL ##d_Basic = Color_<ColorModel::MODEL, f64    , VecSimd::None>; \
+	using Color## MODEL ##b_Basic = Color_<ColorModel::MODEL, UNorm8 , VecSimd::Basic>; \
+	using Color## MODEL ##s_Basic = Color_<ColorModel::MODEL, UNorm16, VecSimd::Basic>; \
+	using Color## MODEL ##h_Basic = Color_<ColorModel::MODEL, f16    , VecSimd::Basic>; \
+	using Color## MODEL ##f_Basic = Color_<ColorModel::MODEL, f32    , VecSimd::Basic>; \
+	using Color## MODEL ##d_Basic = Color_<ColorModel::MODEL, f64    , VecSimd::Basic>; \
 	\
 	using Color## MODEL ##b_SSE = Color_<ColorModel::MODEL, UNorm8 , VecSimd::SSE>; \
 	using Color## MODEL ##s_SSE = Color_<ColorModel::MODEL, UNorm16, VecSimd::SSE>; \

@@ -10,13 +10,13 @@ template<class T, VecSimd SIMD = VecSimd_Default> using Quat4_ = Quat_<4, T, SIM
 
 using Quat4h		= Quat4_<f16>;
 using Quat4h_SSE	= Quat4_<f16, VecSimd::SSE>;
-using Quat4h_Basic	= Quat4_<f16, VecSimd::None>;
+using Quat4h_Basic	= Quat4_<f16, VecSimd::Basic>;
 using Quat4f		= Quat4_<f32>;
 using Quat4f_SSE	= Quat4_<f32, VecSimd::SSE>;
-using Quat4f_Basic	= Quat4_<f32, VecSimd::None>;
+using Quat4f_Basic	= Quat4_<f32, VecSimd::Basic>;
 using Quat4d		= Quat4_<f64>;
 using Quat4d_SSE	= Quat4_<f64, VecSimd::SSE>;
-using Quat4d_Basic	= Quat4_<f64, VecSimd::None>;
+using Quat4d_Basic	= Quat4_<f64, VecSimd::Basic>;
 
 template<class T, VecSimd SIMD>
 class Quat_<4, T, SIMD> {

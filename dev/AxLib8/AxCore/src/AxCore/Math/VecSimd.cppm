@@ -6,7 +6,8 @@ export import AxCore.Num;
 export namespace ax {
 
 #define AX_NumSIMD_ENUM_LIST(E) \
-	E(None,) \
+	E(Default,) \
+	E(Basic,) \
 	E(SSE,)  \
 //---
 AX_ENUM_CLASS(AX_NumSIMD_ENUM_LIST, VecSimd, u8)
@@ -67,10 +68,10 @@ public:
 		if constexpr (N > 3) e[3] = 0;
 	}
 
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num1_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0,0)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num2_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0,0), v.at_noBoundCheck(0,1)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num3_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0,0), v.at_noBoundCheck(0,1), v.at_noBoundCheck(0,2)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num4_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0,0), v.at_noBoundCheck(0,1), v.at_noBoundCheck(0,2), v.at_noBoundCheck(0,3)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num1_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num2_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0), v.at_noBoundCheck(1)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num3_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0), v.at_noBoundCheck(1), v.at_noBoundCheck(2)) {}
+	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num4_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0), v.at_noBoundCheck(1), v.at_noBoundCheck(2), v.at_noBoundCheck(3)) {}
 	
 	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(T t0) : e{t0} {
 		static_assert(N == 1);

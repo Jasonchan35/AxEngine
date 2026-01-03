@@ -51,11 +51,10 @@ public:
 			, _dataType(r.dataType)
 			, _rowMajor(r.rowMajor) {}
 
-		template<ColorModel M, class E>
-		IntRange assignValueToBuffer(MutByteSpan buf, const Color_<M,E>& value) const;
-
 		template<class V>
 		IntRange assignValueToBuffer(MutByteSpan buf, const V& value) const;
+		template<class V>
+		IntRange _assignValueToBuffer(MutByteSpan buf, const V& value) const;
 
 		NameId	 name() const { return _name; }
 		u32		 offset() const { return _offset; }
@@ -227,7 +226,7 @@ protected:
 };
 
 template<class V> inline
-IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf, const V& value) const {
+IntRange ShaderParamSpace_Backend::VarInfo::_assignValueToBuffer(MutByteSpan buf, const V& value) const {
 	auto srcDataType = RenderDataType_get<V>;
 	if (_dataType != srcDataType)
 		throw Error_Undefined(Fmt("Shader: assign variable type mismatch, from '{}' to '{}'", srcDataType, _dataType));
@@ -243,13 +242,17 @@ IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf,
 	if (Math::exactlyEqual(*dst, value)) return IntRange();
 
 	MemUtil::rawCopy(dst, &value, AX_SIZEOF(value));
-//	*dst = value;
+	//	*dst = value;
 	return range;
 }
 
-template<ColorModel M, class E> AX_INLINE
-IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf, const Color_<M, E>& value) const {
-	return assignValueToBuffer(buf, value.toNum());
+template<class V> inline
+IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf, const V& value) const {
+	if constexpr (Type_IsColor<V> || Type_IsVec<V>) {
+		return _assignValueToBuffer(buf, value.to_Basic());
+	} else {
+		return _assignValueToBuffer(buf, value);
+	}
 }
 
 template<class T> AX_INLINE

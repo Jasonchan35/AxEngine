@@ -3,6 +3,7 @@ export module AxCore.Vec;
 export import AxCore.VecSimd;
 export import AxCore.Random;
 export import AxCore.MetaType;
+export import AxCore.NormInt;
 
 export namespace  ax {
 
@@ -12,57 +13,46 @@ template<class T, VecSimd SIMD = VecSimd_Default> using Vec2_ = Vec_<2, T, SIMD>
 template<class T, VecSimd SIMD = VecSimd_Default> using Vec3_ = Vec_<3, T, SIMD>;
 template<class T, VecSimd SIMD = VecSimd_Default> using Vec4_ = Vec_<4, T, SIMD>;
 
-using Vec1h			= Vec1_<f16>;
-using Vec1h_SSE		= Vec1_<f16, VecSimd::SSE>;
-using Vec1h_Basic	= Vec1_<f16, VecSimd::None>;
-using Vec2h			= Vec2_<f16>;
-using Vec2h_SSE		= Vec2_<f16, VecSimd::SSE>;
-using Vec2h_Basic	= Vec2_<f16, VecSimd::None>;
-using Vec3h			= Vec3_<f16>;
-using Vec3h_SSE		= Vec3_<f16, VecSimd::SSE>;
-using Vec3h_Basic	= Vec3_<f16, VecSimd::None>;
-using Vec4h			= Vec4_<f16>;
-using Vec4h_SSE		= Vec4_<f16, VecSimd::SSE>;
-using Vec4h_Basic	= Vec4_<f16, VecSimd::None>;
+template<class T> constexpr bool Type_IsVec = false;
+template<Int N, class T, VecSimd SIMD> constexpr bool Type_IsVec<Vec_<N,T,SIMD>> = true;
 
-using Vec1f			= Vec1_<f32>;
-using Vec1f_SSE		= Vec1_<f32, VecSimd::SSE>;
-using Vec1f_Basic	= Vec1_<f32, VecSimd::None>;
-using Vec2f			= Vec2_<f32>;
-using Vec2f_SSE		= Vec2_<f32, VecSimd::SSE>;
-using Vec2f_Basic	= Vec2_<f32, VecSimd::None>;
-using Vec3f			= Vec3_<f32>;
-using Vec3f_SSE		= Vec3_<f32, VecSimd::SSE>;
-using Vec3f_Basic	= Vec3_<f32, VecSimd::None>;
-using Vec4f			= Vec4_<f32>;
-using Vec4f_SSE		= Vec4_<f32, VecSimd::SSE>;
-using Vec4f_Basic	= Vec4_<f32, VecSimd::None>;
+#define AX_Vec_USING(T, SUFFIX) \
+	using Vec1##SUFFIX			= Vec1_<T>;                   \
+	using Vec1##SUFFIX##_SSE	= Vec1_<T, VecSimd::SSE>;     \
+	using Vec1##SUFFIX##_Basic	= Vec1_<T, VecSimd::Basic>;   \
+	using Vec2##SUFFIX			= Vec2_<T>;                   \
+	using Vec2##SUFFIX##_SSE	= Vec2_<T, VecSimd::SSE>;     \
+	using Vec2##SUFFIX##_Basic	= Vec2_<T, VecSimd::Basic>;   \
+	using Vec3##SUFFIX			= Vec3_<T>;                   \
+	using Vec3##SUFFIX##_SSE	= Vec3_<T, VecSimd::SSE>;     \
+	using Vec3##SUFFIX##_Basic	= Vec3_<T, VecSimd::Basic>;   \
+	using Vec4##SUFFIX			= Vec4_<T>;                   \
+	using Vec4##SUFFIX##_SSE	= Vec4_<T, VecSimd::SSE>;     \
+	using Vec4##SUFFIX##_Basic	= Vec4_<T, VecSimd::Basic>;   \
+//----
+AX_Vec_USING(Int, i);
+AX_Vec_USING(f16, h);
+AX_Vec_USING(f32, f);
+AX_Vec_USING(f64, d);
 
-using Vec1d			= Vec1_<f64>;
-using Vec1d_SSE		= Vec1_<f64, VecSimd::SSE>;
-using Vec1d_Basic	= Vec1_<f64, VecSimd::None>;
-using Vec2d			= Vec2_<f64>;
-using Vec2d_SSE		= Vec2_<f64, VecSimd::SSE>;
-using Vec2d_Basic	= Vec2_<f64, VecSimd::None>;
-using Vec3d			= Vec3_<f64>;
-using Vec3d_SSE		= Vec3_<f64, VecSimd::SSE>;
-using Vec3d_Basic	= Vec3_<f64, VecSimd::None>;
-using Vec4d			= Vec4_<f64>;
-using Vec4d_SSE		= Vec4_<f64, VecSimd::SSE>;
-using Vec4d_Basic	= Vec4_<f64, VecSimd::None>;
+AX_Vec_USING(i8,  i8);
+AX_Vec_USING(i16, i16);
+AX_Vec_USING(i32, i32);
+AX_Vec_USING(i64, i64);
 
-using Vec1i			= Vec1_<Int>;
-using Vec1i_SSE		= Vec1_<Int, VecSimd::SSE>;
-using Vec1i_Basic	= Vec1_<Int, VecSimd::None>;
-using Vec2i			= Vec2_<Int>;
-using Vec2i_SSE		= Vec2_<Int, VecSimd::SSE>;
-using Vec2i_Basic	= Vec2_<Int, VecSimd::None>;
-using Vec3i			= Vec3_<Int>;
-using Vec3i_SSE		= Vec3_<Int, VecSimd::SSE>;
-using Vec3i_Basic	= Vec3_<Int, VecSimd::None>;
-using Vec4i			= Vec4_<Int>;
-using Vec4i_SSE		= Vec4_<Int, VecSimd::SSE>;
-using Vec4i_Basic	= Vec4_<Int, VecSimd::None>;
+AX_Vec_USING(u8,  u8);
+AX_Vec_USING(u16, u16);
+AX_Vec_USING(u32, u32);
+AX_Vec_USING(u64, u64);
+
+AX_Vec_USING(UNorm8,  unorm8);
+AX_Vec_USING(UNorm16, unorm16);
+AX_Vec_USING(UNorm32, unorm32);
+
+AX_Vec_USING(SNorm8,  snorm8);
+AX_Vec_USING(SNorm16, snorm16);
+AX_Vec_USING(SNorm32, snorm32);
+
 
 template <Int N, class T, VecSimd SIMD>
 AX_NODISCARD AX_INLINE constexpr Vec_<N, T, SIMD> operator+(const T& t, const Vec_<N, T, SIMD>& vec) {
@@ -105,12 +95,18 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
 //	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
-	AX_INLINE constexpr Vec_(const Num1& v) : _simd(v.e00) {}
+//	AX_INLINE constexpr Vec_(const Num1& v) : _simd(v.e00) {}
 	AX_INLINE constexpr Vec_(const T& x_) : _simd(x_) {}
 	AX_INLINE constexpr Vec_(TagZero_T) : _simd(TagZero) {}
 
+	template<VecSimd R_SIMD>
+	AX_INLINE Vec_(const Vec_<1,T,R_SIMD>& v) : Vec_(v.x) {} 
+	
+	
 	AX_INLINE constexpr void set(const T& x_) { *this = This(x_); }
 
+	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x); }
+	
 	constexpr Num1 toNum() const { return Num2(x); }
 	constexpr operator Num1() const { return toNum(); }
 	
@@ -185,11 +181,16 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
 //	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
-	AX_INLINE constexpr Vec_(const Num2& v) : _simd(v.e00, v.e01) {}
+//	AX_INLINE constexpr Vec_(const Num2& v) : _simd(v.e00, v.e01) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_) : _simd(x_, y_) {}
 	AX_INLINE constexpr Vec_(TagZero_T) : _simd(TagZero) {}
 
+	template<VecSimd R_SIMD>
+	AX_INLINE Vec_(const Vec_<2,T,R_SIMD>& v) : Vec_(v.x, v.y) {} 
+
 	AX_INLINE constexpr void set(const T& x_, const T& y_) { *this = This(x_,y_); }
+
+	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x,y); }
 
 	constexpr Num2 toNum() const { return Num2(x,y); }
 	constexpr operator Num2() const { return toNum(); }
@@ -306,14 +307,18 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
 //	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
-	AX_INLINE constexpr Vec_(const Num3& v) : _simd(v.e00, v.e01, v.e02) {}
+//	AX_INLINE constexpr Vec_(const Num3& v) : _simd(v.e00, v.e01, v.e02) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_) : _simd(x_, y_, z_) {}
 	AX_INLINE constexpr Vec_(const Vec2& v_, const T& z_) : _simd(v_.x, v_.y, z_) {}
 	AX_INLINE constexpr Vec_(TagZero_T) : _simd(TagZero) {}
 
+	template<VecSimd R_SIMD>
+	AX_INLINE Vec_(const Vec_<3,T,R_SIMD>& v) : Vec_(v.x, v.y, v.z) {} 
+
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_) { *this = This(x_,y_,z_); }
 	AX_INLINE constexpr void set(const Vec2& v_, const T& z_) { *this = This(v_.x,v_.y,z_); }
 
+	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x,y,z); }
 	constexpr Num3 toNum() const { return Num3(x,y,z); }
 	constexpr operator Num3() const { return toNum(); }
 	
@@ -438,14 +443,18 @@ public:
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
 //	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}
-	AX_INLINE constexpr Vec_(const Num4_<T>& v) : _simd(v) {}
+//	AX_INLINE constexpr Vec_(const Num4_<T>& v) : _simd(v) {}
 	AX_INLINE constexpr Vec_(const T& x_, const T& y_, const T& z_, const T& w_) : _simd(x_, y_, z_, w_) {}
 	AX_INLINE constexpr Vec_(const Vec3& v_, const T& w_) : _simd(v_.x,v_.y,v_.z,w_) {}
 	AX_INLINE constexpr Vec_(TagZero_T) : _simd(TagZero) {}
 
+	template<VecSimd R_SIMD>
+	AX_INLINE Vec_(const Vec_<4,T,R_SIMD>& v) : Vec_(v.x, v.y, v.z, v.w) {} 
+	
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { *this = This(x_,y_,z_,w_); }
 	AX_INLINE constexpr void set(const Vec3& v_, const T& w_) { *this = This(v_.x,v_.y,v_.z,w_); }
 
+	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x,y,z,w); }
 	constexpr Num4 toNum() const { return Num4(x,y,z,w); }
 	constexpr operator Num4() const { return toNum(); }
 	
@@ -498,5 +507,6 @@ public:
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 };
+
 
 } // namespace 

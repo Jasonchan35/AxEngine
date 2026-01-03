@@ -631,7 +631,7 @@ void RenderMeshEdit::createLinesFromVertexNormals(VertexLayout vertexLayout, Edi
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
-		f32x4 c[] = { color.c0, color.c1 };
+		Color4f_Basic c[] = { color.c0, color.c1 };
 		enumerator->fillRotateValues(c);
 	}
 }
@@ -658,7 +658,7 @@ void RenderMeshEdit::createLinesFromEdgeNormals(VertexLayout vertexLayout, Edita
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
-		f32x4 c[] = { color.c0, color.c1 };
+		Color4f_Basic c[] = { color.c0, color.c1 };
 		enumerator->fillRotateValues(c);
 	}
 }
@@ -679,7 +679,7 @@ void RenderMeshEdit::createLinesFromFaceNormals(VertexLayout vertexLayout, Edita
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
-		f32x4 c[] = { color.c0, color.c1 };
+		Color4f_Basic c[] = { color.c0, color.c1 };
 		enumerator->fillRotateValues(c);
 	}
 }
@@ -702,7 +702,7 @@ void RenderMeshEdit::createLinesFromFaceVertexNormals(VertexLayout vertexLayout,
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
-		f32x4 c[] = { color.c0, color.c1 };
+		Color4f_Basic c[] = { color.c0, color.c1 };
 		enumerator->fillRotateValues(c);
 	}
 }
@@ -815,7 +815,7 @@ void RenderMeshEdit::createTextFromFaceEdgeIds(VertexLayout vertexLayout, Editab
 void RenderMeshEdit::setColor(const Color4f color, Int colorSet) {
 	for (auto& sm : _mesh.subMeshes()) {
 		auto sem = VertexSemantic::COLOR0 + static_cast<u16>(colorSet);
-		if (auto enumerator = sm.vertexBuffer.tryEditElements<f32x4>(sem)) {
+		if (auto enumerator = sm.vertexBuffer.tryEditElements<Color4f_Basic>(sem)) {
 			enumerator->fillValues(color);
 		}
 	}

@@ -133,34 +133,35 @@ public:
 		SPtr<const StorageBuffer>	_storageBuffer;
 	};
 
-	bool setParam(NameId name, const i32&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const i32x2&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const i32x3&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const i32x4&		v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const i32&			v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec1i32_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec2i32_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec3i32_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec4i32_Basic&	v) { return _setVariable(name, v); }
 
-	bool setParam(NameId name, const u32&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const u32x2&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const u32x3&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const u32x4&		v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const u32&		    v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec1u32_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec2u32_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec3u32_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec4u32_Basic&	v) { return _setVariable(name, v); }
 
-	bool setParam(NameId name, const f32&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const f32x2&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const f32x3&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const f32x4&		v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const f32&			v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec1f_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec2f_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec3f_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec4f_Basic&	v) { return _setVariable(name, v); }
 
-	bool setParam(NameId name, const f64&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const f64x2&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const f64x3&		v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const f64x4&		v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const f64&			v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec1d_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec2d_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec3d_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Vec4d_Basic&	v) { return _setVariable(name, v); }
 
-	bool setParam(NameId name, const f32x4x4&	v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const f64x4x4&	v) { return _setVariable(name, v); }
-	
-	bool setParam(NameId name, const Mat4f&		v) { return setParam(name, f32x4x4(v)); }
-	bool setParam(NameId name, const Mat4d&		v) { return setParam(name, f64x4x4(v)); }
+	bool setParam(NameId name, const Mat4f_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Mat4d_Basic&	v) { return _setVariable(name, v); }
 
-	bool setParam(NameId name, const Color3f&	v) { return setParam(name, f32x3(v)); }
-	bool setParam(NameId name, const Color4f&	v) { return setParam(name, f32x4(v)); }
+	bool setParam(NameId name, const Color3f_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Color4f_Basic&	v) { return _setVariable(name, v); }
 
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);

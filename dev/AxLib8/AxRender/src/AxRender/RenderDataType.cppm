@@ -163,48 +163,46 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 	E(f16,) E(f32,) E(f64,) \
 //---
 
-#define AX_RenderDataType_Num_ENUM_LIST(E) \
-	E(i8x1		,) E(i8x2		,) E(i8x3		,) E(i8x4		,) \
-	E(i16x1		,) E(i16x2		,) E(i16x3		,) E(i16x4		,) \
-	E(i32x1		,) E(i32x2		,) E(i32x3		,) E(i32x4		,) \
-	E(i64x1		,) E(i64x2		,) E(i64x3		,) E(i64x4		,) \
+#define AX_RenderDataType_Vec_ENUM_LIST(E) \
+	E(Vec1i8_Basic,) E(Vec2i8_Basic,) E(Vec3i8_Basic,) E(Vec4i8_Basic,) \
+	E(Vec1u8_Basic,) E(Vec2u8_Basic,) E(Vec3u8_Basic,) E(Vec4u8_Basic,) \
 	\
-	E(u8x1		,) E(u8x2		,) E(u8x3		,) E(u8x4		,) \
-	E(u16x1		,) E(u16x2		,) E(u16x3		,) E(u16x4		,) \
-	E(u32x1		,) E(u32x2		,) E(u32x3		,) E(u32x4		,) \
-	E(u64x1		,) E(u64x2		,) E(u64x3		,) E(u64x4		,) \
+	E(Vec1i16_Basic,) E(Vec2i16_Basic,) E(Vec3i16_Basic,) E(Vec4i16_Basic,) \
+	E(Vec1i32_Basic,) E(Vec2i32_Basic,) E(Vec3i32_Basic,) E(Vec4i32_Basic,) \
+	E(Vec1i64_Basic,) E(Vec2i64_Basic,) E(Vec3i64_Basic,) E(Vec4i64_Basic,) \
 	\
-	E(f16x1		,) E(f16x2		,) E(f16x3		,) E(f16x4		,) \
-	E(f32x1		,) E(f32x2		,) E(f32x3		,) E(f32x4		,) \
-	E(f64x1		,) E(f64x2		,) E(f64x3		,) E(f64x4		,) \
+	E(Vec1u16_Basic,) E(Vec2u16_Basic,) E(Vec3u16_Basic,) E(Vec4u16_Basic,) \
+	E(Vec1u32_Basic,) E(Vec2u32_Basic,) E(Vec3u32_Basic,) E(Vec4u32_Basic,) \
+	E(Vec1u64_Basic,) E(Vec2u64_Basic,) E(Vec3u64_Basic,) E(Vec4u64_Basic,) \
 	\
-	E(f32x4x4	,) \
-	E(f64x4x4	,) \
+	E(Vec1h_Basic,) E(Vec2h_Basic,) E(Vec3h_Basic,) E(Vec4h_Basic,) \
+	E(Vec1f_Basic,) E(Vec2f_Basic,) E(Vec3f_Basic,) E(Vec4f_Basic,) \
+	E(Vec1d_Basic,) E(Vec2d_Basic,) E(Vec3d_Basic,) E(Vec4d_Basic,) \
+	\
+	E(Vec1snorm8_Basic ,) E(Vec2snorm8_Basic ,) E(Vec3snorm8_Basic  ,) E(Vec4snorm8_Basic ,) \
+	E(Vec1snorm16_Basic,) E(Vec2snorm16_Basic,) E(Vec3snorm16_Basic ,) E(Vec4snorm16_Basic,) \
+	E(Vec1snorm32_Basic,) E(Vec2snorm32_Basic,) E(Vec3snorm32_Basic ,) E(Vec4snorm32_Basic,) \
+	\
+	E(Vec1unorm8_Basic ,) E(Vec2unorm8_Basic ,) E(Vec3unorm8_Basic ,) E(Vec4unorm8_Basic ,) \
+	E(Vec1unorm16_Basic,) E(Vec2unorm16_Basic,) E(Vec3unorm16_Basic,) E(Vec4unorm16_Basic,) \
+	E(Vec1unorm32_Basic,) E(Vec2unorm32_Basic,) E(Vec3unorm32_Basic,) E(Vec4unorm32_Basic,) \
 //---
 
-#define AX_RenderDataType_Vec_ENUM_LIST(E) \
-	E(Vec1i		,) E(Vec2i		,) E(Vec3i		,) E(Vec4i		,) \
-	E(Vec1h		,) E(Vec2h		,) E(Vec3h		,) E(Vec4h		,) \
-	E(Vec1f		,) E(Vec2f		,) E(Vec3f		,) E(Vec4f		,) \
-	E(Vec1d		,) E(Vec2d		,) E(Vec3d		,) E(Vec4d		,) \
-//---
 #define AX_RenderDataType_Mat_ENUM_LIST(E) \
-	E(Mat4f		,) E(Mat4d		,) \
+	E(Mat4f_Basic,) E(Mat4d_Basic,) \
 //---
 
 #define AX_RenderDataType_Norm_ENUM_LIST(E) \
-	E(SNorm8	,) E(SNorm8x2	,) E(SNorm8x3	,) E(SNorm8x4	,) \
-	E(SNorm16	,) E(SNorm16x2	,) E(SNorm16x3	,) E(SNorm16x4	,) \
-	E(SNorm32	,) E(SNorm32x2	,) E(SNorm32x3	,) E(SNorm32x4	,) \
-	\
-	E(UNorm8	,) E(UNorm8x2	,) E(UNorm8x3	,) E(UNorm8x4	,) \
-	E(UNorm16	,) E(UNorm16x2	,) E(UNorm16x3	,) E(UNorm16x4	,) \
-	E(UNorm32	,) E(UNorm32x2	,) E(UNorm32x3	,) E(UNorm32x4	,) \
+	E(SNorm8 ,) E(SNorm16,) E(SNorm32,) \
+	E(UNorm8 ,) E(UNorm16,) E(UNorm32,) \
 //---
 
 #define AX_RenderDataType_Color_ENUM_LIST(E) \
-	E(Color3b	,) E(Color3s	,) E(Color3h	,) E(Color3f	,)	E(Color3d	,)\
-	E(Color4b	,) E(Color4s	,) E(Color4h	,) E(Color4f	,)	E(Color4d	,)\
+	E(Color3b_Basic,) E(Color4b_Basic,) \
+	E(Color3s_Basic,) E(Color4s_Basic,) \
+	E(Color3h_Basic,) E(Color4h_Basic,) \
+	E(Color3f_Basic,) E(Color4f_Basic,) \
+	E(Color3d_Basic,) E(Color4d_Basic,) \
 //---
 
 #define AX_RenderDataType_Char_ENUM_LIST(E) \
@@ -220,7 +218,6 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 	/* E(bool,) */ \
 	AX_RenderDataType_Int_ENUM_LIST(E) \
 	AX_RenderDataType_Float_ENUM_LIST(E) \
-	AX_RenderDataType_Num_ENUM_LIST(E) \
 	AX_RenderDataType_Vec_ENUM_LIST(E) \
 	AX_RenderDataType_Mat_ENUM_LIST(E) \
 	AX_RenderDataType_Norm_ENUM_LIST(E) \
