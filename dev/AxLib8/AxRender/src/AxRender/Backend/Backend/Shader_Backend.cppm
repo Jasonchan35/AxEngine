@@ -51,17 +51,16 @@ public:
 			, _dataType(r.dataType)
 			, _rowMajor(r.rowMajor) {}
 
-		template<class V>
-		IntRange assignValueToBuffer(MutByteSpan buf, const V& value) const;
-		template<class V>
-		IntRange _assignValueToBuffer(MutByteSpan buf, const V& value) const;
-
-		NameId	 name() const { return _name; }
-		u32		 offset() const { return _offset; }
+		NameId         name() const { return _name; }
+		u32            offset() const { return _offset; }
 		RenderDataType dataType() const { return _dataType; }
-		bool	 rowMajor() const { return _rowMajor; }
+		bool           rowMajor() const { return _rowMajor; }
+
+		template<class V> IntRange assignValueToBuffer(MutByteSpan buf, const V& value) const;
 
 	private:
+		template<class V> IntRange _assignValueToBuffer(MutByteSpan buf, const V& value) const;
+		
 		NameId         _name;
 		u32            _offset   = 0;
 		RenderDataType _dataType = RenderDataType::None;

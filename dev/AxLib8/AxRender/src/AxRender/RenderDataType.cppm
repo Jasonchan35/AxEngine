@@ -179,9 +179,9 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 	E(Vec1f_Basic,) E(Vec2f_Basic,) E(Vec3f_Basic,) E(Vec4f_Basic,) \
 	E(Vec1d_Basic,) E(Vec2d_Basic,) E(Vec3d_Basic,) E(Vec4d_Basic,) \
 	\
-	E(Vec1snorm8_Basic ,) E(Vec2snorm8_Basic ,) E(Vec3snorm8_Basic  ,) E(Vec4snorm8_Basic ,) \
-	E(Vec1snorm16_Basic,) E(Vec2snorm16_Basic,) E(Vec3snorm16_Basic ,) E(Vec4snorm16_Basic,) \
-	E(Vec1snorm32_Basic,) E(Vec2snorm32_Basic,) E(Vec3snorm32_Basic ,) E(Vec4snorm32_Basic,) \
+	E(Vec1snorm8_Basic ,) E(Vec2snorm8_Basic ,) E(Vec3snorm8_Basic ,) E(Vec4snorm8_Basic ,) \
+	E(Vec1snorm16_Basic,) E(Vec2snorm16_Basic,) E(Vec3snorm16_Basic,) E(Vec4snorm16_Basic,) \
+	E(Vec1snorm32_Basic,) E(Vec2snorm32_Basic,) E(Vec3snorm32_Basic,) E(Vec4snorm32_Basic,) \
 	\
 	E(Vec1unorm8_Basic ,) E(Vec2unorm8_Basic ,) E(Vec3unorm8_Basic ,) E(Vec4unorm8_Basic ,) \
 	E(Vec1unorm16_Basic,) E(Vec2unorm16_Basic,) E(Vec3unorm16_Basic,) E(Vec4unorm16_Basic,) \
@@ -193,8 +193,8 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 //---
 
 #define AX_RenderDataType_Norm_ENUM_LIST(E) \
-	E(SNorm8 ,) E(SNorm16,) E(SNorm32,) \
-	E(UNorm8 ,) E(UNorm16,) E(UNorm32,) \
+	E(SNorm8,) E(SNorm16,) E(SNorm32,) \
+	E(UNorm8,) E(UNorm16,) E(UNorm32,) \
 //---
 
 #define AX_RenderDataType_Color_ENUM_LIST(E) \
@@ -206,11 +206,11 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 //---
 
 #define AX_RenderDataType_Char_ENUM_LIST(E) \
-	E(CharA		,) E(Char16		,) E(Char32		,) E(CharW		,) \
+	E(CharA,) E(Char16,) E(Char32,) E(CharW,) \
 //---
 
 #define AX_RenderDataType_String_ENUM_LIST(E) \
-	E(StringA	,) E(String16	,) E(String32	,) E(StringW	,) \
+	E(StringA,) E(String16,) E(String32,) E(StringW,) \
 //---
 
 
@@ -297,8 +297,8 @@ template<class T> struct RenderDataType_get_Struct;
 template<class T> constexpr RenderDataType RenderDataType_get = RenderDataType_get_Struct<T>::value;
 
 // RenderDataType -> C++ Type
-template<RenderDataType dt> struct RenderDataType_Type_;
-template<RenderDataType dt> using  RenderDataType_Type = typename RenderDataType_Type_<dt>::Type;
+template<RenderDataType T> struct RenderDataType_Type_;
+template<RenderDataType T> using  RenderDataType_Type = typename RenderDataType_Type_<T>::Type;
 
 #define E(T, ...)\
 	template<> struct RenderDataType_Type_<RenderDataType::T> { using Type = T; }; \

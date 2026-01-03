@@ -160,8 +160,8 @@ public:
 	bool setParam(NameId name, const Mat4f_Basic&	v) { return _setVariable(name, v); }
 	bool setParam(NameId name, const Mat4d_Basic&	v) { return _setVariable(name, v); }
 
-	bool setParam(NameId name, const Color3f_Basic&	v) { return _setVariable(name, v); }
-	bool setParam(NameId name, const Color4f_Basic&	v) { return _setVariable(name, v); }
+	bool setParam(NameId name, const Color3f_Basic&	v) { return _setVariable(name, v.to_VecBasic()); }
+	bool setParam(NameId name, const Color4f_Basic&	v) { return _setVariable(name, v.to_VecBasic()); }
 
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
