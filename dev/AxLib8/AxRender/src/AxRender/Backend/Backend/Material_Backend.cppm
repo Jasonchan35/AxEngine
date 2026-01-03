@@ -216,7 +216,7 @@ bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(NameId name, cons
 template<class V> inline
 bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(const VarInfo* varInfo, const V& value) {
 	if (!varInfo) return false;
-	if (varInfo->dataType() != DataType_get<V>) throw Error_Undefined();
+	if (varInfo->dataType() != RenderDataType_get<V>) throw Error_Undefined();
 	auto range = varInfo->assignValueToBuffer(_dynamicGpuBuffer.mutSpan(), value);
 	_dynamicGpuBuffer.markDirty(range);
 	return true;
@@ -224,7 +224,7 @@ bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(const VarInfo* va
 
 template<class TEX> inline
 bool MaterialParamSpace_Backend::TextureParam::setTexture(const TEX* texture) {
-	if (dataType() != DataType_get<TEX>) {
+	if (dataType() != RenderDataType_get<TEX>) {
 		return false;
 	}
 	_texture.ref(texture);

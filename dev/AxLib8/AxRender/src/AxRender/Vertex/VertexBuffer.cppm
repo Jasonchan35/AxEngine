@@ -25,11 +25,11 @@ public:
 	void addVertices(ByteSpan data, VertexLayout vertexLayout);
 	
 	template<class VERTEX>
-	MutSpan<VERTEX> addVertices(Int vertexCount) {
+	MutSpan<VERTEX> editNewVertices(Int vertexCount) {
 		if (VERTEX::s_layout() != _vertexLayout) throw Error_Undefined();
 		return MutSpan<VERTEX>::s_fromByteSpan(addVertices(vertexCount));
 	}
-	MutByteSpan addVertices(Int n);
+	MutByteSpan editNewVertices(Int n, VertexLayout vertexLayout);
 
 	template<class T> using ElemEnumerator_ = Span_InterleaveForEach_<T>;
 	
@@ -41,9 +41,13 @@ public:
 	template<class E> Opt<ElemEnumerator_<E>> tryEditElements(VertexSemantic semantic, IntRange vertexRange) {
 		auto* elem = _vertexLayout->find(semantic);
 		if (!elem) return std::nullopt;
-		if (elem->dataType != RenderDataType_get_<E>()) return std::nullopt;
+		if (elem->dataType != RenderDataType_get<E>) return std::nullopt;
 		return editElements<E>(semantic, vertexRange);
 	}
+	template<class E> Opt<ElemEnumerator_<E>> tryEditElements(VertexSemantic semantic) {
+		return tryEditElements<E>(semantic, IntRange(_vertexCount));
+	}
+	
 	
 	void markDirty(IntRange vertexRange);
 
@@ -69,13 +73,13 @@ VertexBuffer::ElemEnumerator_<E> VertexBuffer::editElements(VertexSemantic sem, 
 template<class E> inline
 VertexBuffer::ElemEnumerator_<E> VertexBuffer::editElements(const VertexLayoutElement* elem,
 	IntRange vertexRange) {
-	if (elem->dataType != RenderDataType_get_<E>()) throw Error_Undefined();
+	if (elem->dataType != RenderDataType_get<E>) throw Error_Undefined();
 	if (!IntRange(_vertexCount).contains(vertexRange))  throw Error_Undefined();
 
 	auto rangeInBytes = vertexRange * _vertexLayout->strideInBytes;
 	_buffer.markDirty(rangeInBytes);
 	auto mutData = _buffer.mutSpan().slice(rangeInBytes);
-	return Enumerator<E>(reinterpret_cast<E*>(mutData.begin()), reinterpret_cast<E*>(mutData.end()), strideInBytes());
+	return ElemEnumerator_<E>(reinterpret_cast<E*>(mutData.begin()), reinterpret_cast<E*>(mutData.end()), strideInBytes());
 }
 
 class VertexIndexBuffer : public NonCopyable {
@@ -94,16 +98,16 @@ public:
 	void addIndices(ByteSpan data, VertexIndexType indexType);
 
 	template<class INDEX>
-	MutSpan<INDEX> addIndices(Int indexCount) {
+	MutSpan<INDEX> editNewIndices(Int indexCount) {
 		if (VertexIndexType_get<INDEX> != _indexType) throw Error_Undefined();
-		return MutSpan<INDEX>::s_fromByteSpan(addIndices(indexCount));
+		return MutSpan<INDEX>::s_fromMutByteSpan(_editNewIndices(indexCount));
 	}
-	MutByteSpan addIndices(Int n) {
+	
+	MutByteSpan _editNewIndices(Int n) {
 		auto mutSpan = _buffer.extendSize(n * sizeofIndex());
 		_indexCount += n;
 		return mutSpan;
 	}
-	
 	
 	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * VertexIndexType_stride(_indexType)); }
 
@@ -126,12 +130,16 @@ private:
 AX_INLINE
 void VertexBuffer::addVertices(ByteSpan data, VertexLayout vertexLayout) {
 	auto newVertexCount = data.sizeInBytes() / vertexLayout->strideInBytes;
-	auto mutSpan = addVertices(newVertexCount);
+	auto mutSpan = editNewVertices(newVertexCount, vertexLayout);
 	mutSpan.copyValues(data);
 }
 
-MutByteSpan VertexBuffer::addVertices(Int n) {
-	if (!_vertexLayout) throw Error_Undefined();
+MutByteSpan VertexBuffer::editNewVertices(Int n, VertexLayout vertexLayout) {
+	if (!_vertexLayout) {
+		create(vertexLayout);
+	} else if (_vertexLayout != vertexLayout) {
+		throw Error_Undefined();
+	}
 	auto mutSpan = _buffer.extendSize(n * _vertexLayout->strideInBytes);
 	_vertexCount += n;
 	return mutSpan;

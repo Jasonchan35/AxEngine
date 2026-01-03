@@ -24,7 +24,7 @@ protected:
 class RectBinPacker_Skyline : public RectBinPacker {
 public:
 	RectBinPacker_Skyline();
-	void create(Int width, Int height);
+	void create(Vec2i size);
 
 	virtual Result onAddRect(const Vec2i& reqSize) override;
 
@@ -34,9 +34,7 @@ private:
 	void _updateSkyline(Int idx, const Rect2i& rect);
 	void _addPointToNewSkyline(const Vec2i& pt);
 
-	Int	_width;
-	Int	_height;
-
+	Vec2i _size {0,0};
 	Array<Vec2i>*	_skyline     = nullptr;
 	Array<Vec2i>*	_skylineBack = nullptr;
 	Array<Vec2i>	_skylineBuf[2];

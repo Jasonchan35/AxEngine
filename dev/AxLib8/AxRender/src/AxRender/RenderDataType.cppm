@@ -294,10 +294,10 @@ public:
 	}
 };
 
-template<class T> struct RenderDataType_get_;
+template<class T> struct RenderDataType_get_Struct;
 
 // C++ Type -> RenderDataType
-template<class T> constexpr RenderDataType DataType_get = RenderDataType_get_<T>::value;
+template<class T> constexpr RenderDataType RenderDataType_get = RenderDataType_get_Struct<T>::value;
 
 // RenderDataType -> C++ Type
 template<RenderDataType dt> struct RenderDataType_Type_;
@@ -305,7 +305,7 @@ template<RenderDataType dt> using  RenderDataType_Type = typename RenderDataType
 
 #define E(T, ...)\
 	template<> struct RenderDataType_Type_<RenderDataType::T> { using Type = T; }; \
-	template<> struct RenderDataType_get_<T> { static constexpr RenderDataType value = RenderDataType::T; }; \
+	template<> struct RenderDataType_get_Struct<T> { static constexpr RenderDataType value = RenderDataType::T; }; \
 //----
 	AX_RenderDataType_Basic_ENUM_LIST(E)
 #undef E

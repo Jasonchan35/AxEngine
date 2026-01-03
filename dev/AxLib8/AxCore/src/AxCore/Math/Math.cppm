@@ -9,14 +9,13 @@ export namespace ax::Math {
 template <class T> requires Type_IsIntType<T>
 AX_NODISCARD AX_INLINE constexpr Type_FloatTypeFrom<T> to_floating_point(const T& i) { return static_cast<Type_FloatTypeFrom<T>>(i); }
 
-template<class T> AX_INLINE constexpr T	PI_() { return T(3.14159265358979323846); }
+template<class T> struct PI_Struct;
+template<> struct PI_Struct<f32> { static constexpr f32 value = 3.14159265358979323846f; };
+template<> struct PI_Struct<f64> { static constexpr f64 value = 3.14159265358979323846; };
+template<class T> constexpr T	PI_ = PI_Struct<T>::value;
 
-struct PI {
-	template<class T> AX_INLINE constexpr operator T() const { return PI_<T>(); } 
-};
-
-template<class T> AX_NODISCARD AX_INLINE constexpr T radians	(T deg) { return deg * (PI_<T>() / T(180.0)); }
-template<class T> AX_NODISCARD AX_INLINE constexpr T degrees	(T rad) { return rad * (T(180.0) / PI_<T>()); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T radians	(T deg) { return deg * (PI_<T> / T(180.0)); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T degrees	(T rad) { return rad * (T(180.0) / PI_<T>); }
 
 template< class T > constexpr T	reciprocal( const T& a ) { return safeDiv(T(1), a); }
 

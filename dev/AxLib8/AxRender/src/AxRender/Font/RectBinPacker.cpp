@@ -23,15 +23,12 @@ RectBinPacker_Skyline::RectBinPacker_Skyline() {
 	_skylineBack = &_skylineBuf[1];
 }
 
-void RectBinPacker_Skyline::create(Int width, Int height) {
-	_width  = width;
-	_height = height;
-
+void RectBinPacker_Skyline::create(Vec2i size) {
+	_size = size;
 	auto& skyline = *_skyline;
-
 	skyline.resize(2);
-	skyline.at(0) = Vec2i(0,	 0);
-	skyline.at(1) = Vec2i(width, 0);
+	skyline.at(0) = Vec2i(0,	  0);
+	skyline.at(1) = Vec2i(size.x, 0);
 }
 
 RectBinPacker::Result RectBinPacker_Skyline::onAddRect(const Vec2i& reqSize) {
@@ -43,13 +40,13 @@ RectBinPacker::Result RectBinPacker_Skyline::onAddRect(const Vec2i& reqSize) {
 	}
 
 	Int n = skyline.size();
-	Int minY = _height;
+	Int minY = _size.y;
 	Int idx = -1;
 	for (Int i = 0; i < n-1; i++) {
 		auto s = skyline[i];
 
 		auto tmpX = s.x + reqSize.x;
-		if (tmpX > _width) break;
+		if (tmpX > _size.x) break;
 
 		//find max y in overlapped skyline segments in x axis
 		auto tmpY = s.y;
@@ -61,7 +58,7 @@ RectBinPacker::Result RectBinPacker_Skyline::onAddRect(const Vec2i& reqSize) {
 			}
 		}
 
-		if (tmpY + reqSize.y > _height) break;
+		if (tmpY + reqSize.y > _size.y) break;
 
 		if (tmpY < minY) {
 			idx = i;

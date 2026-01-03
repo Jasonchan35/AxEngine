@@ -1,5 +1,6 @@
 ﻿module AxRender;
 import :RenderMeshEdit;
+import :EditableMeshEdit;
 
 namespace ax {
 
@@ -11,7 +12,7 @@ void RenderMeshEdit::addRect(VertexLayout vertexLayout, const Rect2f& rect, cons
 	auto indexType = VertexIndexType_get<Index>;
 	auto primType  =  PrimType::Triangles;
 
-	auto edit = _mesh.addVertices(primType, vertexLayout, indexType, 4);
+	auto edit = _mesh.editNewVertices(primType, vertexLayout, indexType, 4);
 
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dst = enumerator->begin();
@@ -78,7 +79,7 @@ void RenderMeshEdit::addBorderRect(VertexLayout    vertexLayout,
 	auto indexType = VertexIndexType_get<Index>;
 	auto primType  =  PrimType::Triangles;
 
-	auto  edit = _mesh.addVertices(primType, vertexLayout, indexType, 16);
+	auto  edit = _mesh.editNewVertices(primType, vertexLayout, indexType, 16);
 
 	auto outerRect	= rect;
 	auto innerRect	= rect - border;
@@ -188,7 +189,7 @@ void RenderMeshEdit::createCube(VertexLayout vertexLayout, const Vec3f& pos, con
 	_mesh.clear();
 
 	using Index = u16;
-	auto edit = _mesh.addVertices(PrimType::Triangles, vertexLayout, VertexIndexType_get<Index>, 8);
+	auto edit = _mesh.editNewVertices(PrimType::Triangles, vertexLayout, VertexIndexType_get<Index>, 8);
 
 	auto s = size * 0.5f;
 
@@ -272,7 +273,7 @@ void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, c
 	using Index = u16;
 	auto primType  =  PrimType::Triangles;
 
-	auto edit = _mesh.addVertices(primType, vertexLayout, VertexIndexType_get<Index>, vertexCount);
+	auto edit = _mesh.editNewVertices(primType, vertexLayout, VertexIndexType_get<Index>, vertexCount);
 	auto baseIdx = static_cast<Index>(edit.range.start());
 
 	auto textColor = style->color;
@@ -282,7 +283,7 @@ void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, c
 // 2 ----- 3
 
 	auto posEnumerator = edit.tryEditPosition();
-	auto dstIndices = edit.addIndices<Index>(indexCount);
+	auto dstIndices = edit.editNewIndices<Index>(indexCount);
 	auto dstIndex = dstIndices.begin();
 
 	struct Pen {
@@ -378,7 +379,7 @@ void RenderMeshEdit::createGrid(VertexLayout   vertexLayout,
 		_mesh.clear();
 		_mesh.setSubMeshCount(1);
 
-		auto edit = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, vertexCount);
+		auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, vertexCount);
 
 		auto posEnumerator = edit.tryEditPosition();
 		auto colEnumerator = edit.tryEditColor0();
@@ -395,22 +396,22 @@ void RenderMeshEdit::createGrid(VertexLayout   vertexLayout,
 			*dstPos = Vec3f( 1, 0, 0) * scale; dstPos++;	*dstCol = centerLineColor; dstCol++;
 
 			for (Int x = 1; x < dx1; x++) {
-				float px = (float)x / dx;
+				float px = static_cast<f32>(x) / static_cast<f32>(dx);
 				auto color = (gridLine2_Interval != 0 && x % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
 
-				*dstPos = Vec3f( px, -1, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
-				*dstPos = Vec3f( px,  1, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
-				*dstPos = Vec3f(-px, -1, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
-				*dstPos = Vec3f(-px,  1, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
+				*dstPos = Vec3f( px, -1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
+				*dstPos = Vec3f( px,  1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
+				*dstPos = Vec3f(-px, -1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
+				*dstPos = Vec3f(-px,  1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
 			}
 
 			for (Int y = 1; y < dy1; y++) {
-				float py = (float)y / dy;
+				float py = static_cast<f32>(y) / static_cast<f32>(dy);
 				auto color = (gridLine2_Interval != 0 && y % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
-				*dstPos = Vec3f(-1,  py, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
-				*dstPos = Vec3f( 1,  py, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
-				*dstPos = Vec3f(-1, -py, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
-				*dstPos = Vec3f( 1, -py, 0) * scale; dstPos++;	*dstCol = color; dstCol++;
+				*dstPos = Vec3f(-1,  py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
+				*dstPos = Vec3f( 1,  py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
+				*dstPos = Vec3f(-1, -py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
+				*dstPos = Vec3f( 1, -py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
 			}
 			
 			if (dstPos != posEnumerator->end()) throw Error_Undefined();
@@ -426,7 +427,7 @@ void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec3f> position
 
 	AX_ASSERT(n % 2 == 0);
 
-	auto edit = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n);
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n);
 
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dst = enumerator->begin();
@@ -449,7 +450,7 @@ void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec2f> position
 	if (n < 2) return;
 
 	AX_ASSERT(n % 2 == 0);
-	auto edit = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n);
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n);
 
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dst = enumerator->begin();
@@ -472,7 +473,7 @@ void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec3f> posi
 	if (n < 2) return;
 
 	const Int segmentCount = n - 1;
-	auto edit = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, segmentCount * 2);
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, segmentCount * 2);
 
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dst = enumerator->begin();
@@ -500,7 +501,7 @@ void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec2f> posi
 	if (n < 2) return;
 
 	Int segmentCount = n - 1;
-	auto edit = _mesh.addVertices(RenderPrimitiveType::Lines, vertexLayout, VertexIndexType::None, segmentCount * 2);
+	auto edit = _mesh.editNewVertices(RenderPrimitiveType::Lines, vertexLayout, VertexIndexType::None, segmentCount * 2);
 
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dst = enumerator->begin();
@@ -534,15 +535,15 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 	//TODO polygon triangulate
 	for (auto& face : srcMesh.faces()) {
 		const auto fvCount = face.pointCount();
-		auto edit = _mesh.addVertices(primType, vertexLayout, indexType, fvCount);
+		auto edit = _mesh.editNewVertices(primType, vertexLayout, indexType, fvCount);
 
 		if (auto enumerator = edit.tryEditPosition()) {
 			face.getPoints(srcMesh, faceVertices);
 
 			auto dst = enumerator->begin();
 			for (auto& fv : faceVertices) {
-				dst->setByCast(fv->pos.toNum());
-				dst++;
+				*dst = Vec3f::s_cast(fv->pos);
+				++dst;
 			}
 			if (dst != enumerator->end()) throw Error_Undefined();
 		}
@@ -551,8 +552,8 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 			auto dst = enumerator->begin();
 			auto src = face.getNormals(srcMesh);
 			for (auto& p : src) {
-				dst->setByCast(p);
-				dst++;
+				*dst = Vec3f::s_cast(p);
+				++dst;
 			}
 			if (dst != enumerator->end()) throw Error_Undefined();
 		}
@@ -576,8 +577,8 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 				auto dst = enumerator->begin();
 				auto src = face.getUvs(srcMesh, i);
 				for (auto& p : src) {
-					dst->setByCast(p);
-					dst++;
+					*dst = Vec2f::s_cast(p);
+					++dst;
 				}
 				if (dst != enumerator->end()) throw Error_Undefined();
 			}
@@ -587,7 +588,7 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 		if (fvCount >= 3) {
 			auto triCount = fvCount - 2;
 			auto startVi = static_cast<Index>(edit.range.start());
-			auto indices = edit.addIndices<Index>(triCount * 3);
+			auto indices = edit.editNewIndices<Index>(triCount * 3);
 			auto vi = indices.begin();
 			for (Int tri = 0; tri < triCount; tri++) {
 				*vi = static_cast<Index>(startVi          ); vi++;
@@ -606,7 +607,7 @@ void RenderMeshEdit::addLinesFromVertexNormals(VertexLayout vertexLayout, const 
 }
 
 void RenderMeshEdit::addLinesFromVertexNormals(VertexLayout vertexLayout, const RenderSubMesh& src, float normalLength, const Color4fPair& color) {
-	addLinesFromVertexNormals(vertexLayout, src.vertices, normalLength, color);
+	addLinesFromVertexNormals(vertexLayout, src.vertexBuffer, normalLength, color);
 }
 
 void RenderMeshEdit::createLinesFromVertexNormals(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color) {
@@ -615,23 +616,23 @@ void RenderMeshEdit::createLinesFromVertexNormals(VertexLayout vertexLayout, Edi
 	auto n = srcMesh.points().size();
 	if (n <= 0) return;
 
-	auto edit = _mesh.addVertices(RenderPrimitiveType::Lines, vertexLayout, VertexIndexType::None, n * 2);
+	auto edit = _mesh.editNewVertices(RenderPrimitiveType::Lines, vertexLayout, VertexIndexType::None, n * 2);
 
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dst = enumerator->begin();
 		for (auto& pt : srcMesh.points()) {
-			dst->setByCast(pt.pos);
+			*dst = Vec3f::s_cast(pt.pos);
 			++dst;
 
-			dst->setByCast(pt.pos + pt.normal * normalLength);
+			*dst = Vec3f::s_cast(pt.pos + pt.normal * normalLength);
 			++dst;
 		}
 		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
-		ColorRGBAh c[] = { color.c0, color.c1 };
-		edit.colorSet(0).fillRotateValues(c);
+		f32x4 c[] = { color.c0, color.c1 };
+		enumerator->fillRotateValues(c);
 	}
 }
 
@@ -641,48 +642,45 @@ void RenderMeshEdit::createLinesFromEdgeNormals(VertexLayout vertexLayout, Edita
 	auto n = srcMesh.edges().size();
 	if (n <= 0) return;
 
-	auto added = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
 
-	if (added.hasPositions()) {
-		auto dst = ax_foreach_begin(added.positions());
+	if (auto enumerator = edit.tryEditPosition()) {
+		auto dst = enumerator->begin();
 		for (auto& e : srcMesh.edges()) {
 			auto center = e.center(srcMesh);
-			dst->setByCast(center);
-			dst++;
+			*dst = Vec3f::s_cast(center);
+			++dst;
 
-			dst->setByCast(center + e.normal * normalLength);
-			dst++;
+			*dst = Vec3f::s_cast(center + e.normal * normalLength);
+			++dst;
 		}
+		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
-	if (added.hasColorSet(0)) {
-		ColorRGBAh c[] = { ColorRGBAh_make(color.c0), ColorRGBAh_make(color.c1)};
-		added.colorSet(0).fillRotateValues(c);
+	if (auto enumerator = edit.tryEditColor0()) {
+		f32x4 c[] = { color.c0, color.c1 };
+		enumerator->fillRotateValues(c);
 	}
-
 }
 
 void RenderMeshEdit::createLinesFromFaceNormals(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color) {
 	auto n = srcMesh.faces().size();
 	if (n <= 0) return;
 
-	auto added = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-
-	if (added.hasPositions()) {
-		auto dst = ax_foreach_begin(added.positions());
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
+	if (auto enumerator = edit.tryEditPosition()) {
+		auto dst = enumerator->begin();
 		for (auto& face : srcMesh.faces()) {
 			auto center = face.center;
-			dst->setByCast(center);
-			dst++;
-
-			dst->setByCast(center + face.normal * normalLength);
-			dst++;
+			*dst = Vec3f::s_cast(center); ++dst;
+			*dst = Vec3f::s_cast(center + face.normal * normalLength); ++dst;
 		}
+		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
-	if (added.hasColorSet(0)) {
-		ColorRGBAh c[] = { ColorRGBAh_make(color.c0), ColorRGBAh_make(color.c1)};
-		added.colorSet(0).fillRotateValues(c);
+	if (auto enumerator = edit.tryEditColor0()) {
+		f32x4 c[] = { color.c0, color.c1 };
+		enumerator->fillRotateValues(c);
 	}
 }
 
@@ -692,23 +690,20 @@ void RenderMeshEdit::createLinesFromFaceVertexNormals(VertexLayout vertexLayout,
 
 	if (srcMesh.fvNormals().size() < n) return;
 
-	auto added = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-
-	if (added.hasPositions()) {
-		auto dst = ax_foreach_begin(added.positions());
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
+	if (auto enumerator = edit.tryEditPosition()) {
+		auto dst = enumerator->begin();
 		for (auto& fe : srcMesh.faceEdges()) {
 			auto pos = fe.point(srcMesh).pos;
-			dst->setByCast(pos);
-			dst++;
-
-			dst->setByCast(pos + fe.normal(srcMesh) * normalLength);
-			dst++;
+			*dst = Vec3f::s_cast(pos); ++dst;
+			*dst = Vec3f::s_cast(pos + fe.normal(srcMesh) * normalLength); ++dst;
 		}
+		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
-	if (added.hasColorSet(0)) {
-		ColorRGBAh c[] = { ColorRGBAh_make(color.c0), ColorRGBAh_make(color.c1)};
-		added.colorSet(0).fillRotateValues(c);
+	if (auto enumerator = edit.tryEditColor0()) {
+		f32x4 c[] = { color.c0, color.c1 };
+		enumerator->fillRotateValues(c);
 	}
 }
 
@@ -733,85 +728,77 @@ void RenderMeshEdit::createCone(VertexLayout vertexLayout, float height, float r
 	createFromEditableMesh(vertexLayout, tmp);
 }
 
-void RenderMeshEdit::createLinesFromEdges(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color_) {
+void RenderMeshEdit::createLinesFromEdges(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color) {
 	_mesh.clear();
-	auto color = ColorRGBAh_make(color_);
 
 	auto n = srcMesh.edges().size();
 	if (n <= 0) return;
 
-	auto added = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
 
-	if (added.hasPositions()) {
-		auto dst = ax_foreach_begin(added.positions());
+	if (auto enumerator = edit.tryEditPosition()) {
+		auto dst = enumerator->begin();
 		for (auto& e : srcMesh.edges()) {
-			dst->setByCast(e.point0(srcMesh).pos);
-			dst++;
-
-			dst->setByCast(e.point1(srcMesh).pos);
-			dst++;
+			*dst = Vec3f::s_cast(e.point0(srcMesh).pos); ++dst;
+			*dst = Vec3f::s_cast(e.point1(srcMesh).pos); ++dst;
 		}
+		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
-	if (added.hasColorSet(0)) {
-		added.colorSet(0).fillValues(color);
+	if (auto enumerator = edit.tryEditColor0()) {
+		enumerator->fillValues(color);
 	}
 }
 
-void RenderMeshEdit::createLinesFromFaceEdges(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color_) {
+void RenderMeshEdit::createLinesFromFaceEdges(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color) {
 	_mesh.clear();
-	auto color = ColorRGBAh_make(color_);
-
 	auto n = srcMesh.faceEdges().size();
 	if (n <= 0) return;
 
-	auto added = _mesh.addVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
 
 	for (auto& f : srcMesh.faces()) {
 		auto faceEdges = f.getFaceEdges(srcMesh);
 
-		if (added.hasPositions()) {
-			auto dst = ax_foreach_begin(added.positions());
+		if (auto enumerator = edit.tryEditPosition()) {
+			auto dst = enumerator->begin();
 			for (auto& fe : faceEdges) {
 				auto& e = fe.edge(srcMesh);
-
-				dst->setByCast(e.point0(srcMesh).pos);
-				dst++;
-
-				dst->setByCast(e.point1(srcMesh).pos);
-				dst++;
+				*dst = Vec3f::s_cast(e.point0(srcMesh).pos); ++dst;
+				*dst = Vec3f::s_cast(e.point1(srcMesh).pos); ++dst;
 			}
+			if (dst != enumerator->end()) throw Error_Undefined();
 		}
 
-		if (added.hasColorSet(0)) {
-			added.colorSet(0).fillValues(color);
+		if (auto enumerator = edit.tryEditColor0()) {
+			enumerator->fillValues(color);
 		}
 	}
 }
 
 void RenderMeshEdit::createTextFromPointIds(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle) {
 	_mesh.clear();
-	axTempString text;
+	TempString text;
 	for (auto& v : srcMesh.points()) {
-		text.format("{?}", ax_enum_int(v.id()));
+		text.format("{}", ax_enum_int(v.id()));
 		addTextBillboard(vertexLayout, text, Vec3f::s_cast(v.pos), fontStyle);
 	}
 }
 
 void RenderMeshEdit::createTextFromFaceIds(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle) {
 	_mesh.clear();
-	axTempString text;
+	TempString text;
 	for (auto& f : srcMesh.faces()) {
-		text.format("{?}", ax_enum_int(f.id()));
+		text.format("{}", ax_enum_int(f.id()));
 		addTextBillboard(vertexLayout, text, Vec3f::s_cast(f.center), fontStyle);
 	}
 }
 
 void RenderMeshEdit::createTextFromEdgeIds(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle) {
 	_mesh.clear();
-	axTempString text;
+	TempString text;
 	for (auto& e : srcMesh.edges()) {
-		text.format("{?}", ax_enum_int(e.id()));
+		text.format("{}", ax_enum_int(e.id()));
 		addTextBillboard(vertexLayout, text, Vec3f::s_cast(e.center(srcMesh)), fontStyle);
 	}
 }
@@ -827,7 +814,8 @@ void RenderMeshEdit::createTextFromFaceEdgeIds(VertexLayout vertexLayout, Editab
 
 void RenderMeshEdit::setColor(const Color4f color, Int colorSet) {
 	for (auto& sm : _mesh.subMeshes()) {
-		if (auto enumerator = sm.vertexBuffer.tryEditElements<f32x4>(VertexSemantic::COLOR0 + colorSet)) {
+		auto sem = VertexSemantic::COLOR0 + static_cast<u16>(colorSet);
+		if (auto enumerator = sm.vertexBuffer.tryEditElements<f32x4>(sem)) {
 			enumerator->fillValues(color);
 		}
 	}

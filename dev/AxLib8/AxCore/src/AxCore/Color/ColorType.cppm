@@ -189,6 +189,19 @@ template<ColorModel MODEL, class ELEM, VecSimd SIMD = VecSimd_Default> class Col
 	using Color## MODEL ##h = Color_<ColorModel::MODEL, f16    >; \
 	using Color## MODEL ##f = Color_<ColorModel::MODEL, f32    >; \
 	using Color## MODEL ##d = Color_<ColorModel::MODEL, f64    >; \
+	\
+	using Color## MODEL ##b_Basic = Color_<ColorModel::MODEL, UNorm8 , VecSimd::None>; \
+	using Color## MODEL ##s_Basic = Color_<ColorModel::MODEL, UNorm16, VecSimd::None>; \
+	using Color## MODEL ##h_Basic = Color_<ColorModel::MODEL, f16    , VecSimd::None>; \
+	using Color## MODEL ##f_Basic = Color_<ColorModel::MODEL, f32    , VecSimd::None>; \
+	using Color## MODEL ##d_Basic = Color_<ColorModel::MODEL, f64    , VecSimd::None>; \
+	\
+	using Color## MODEL ##b_SSE = Color_<ColorModel::MODEL, UNorm8 , VecSimd::SSE>; \
+	using Color## MODEL ##s_SSE = Color_<ColorModel::MODEL, UNorm16, VecSimd::SSE>; \
+	using Color## MODEL ##h_SSE = Color_<ColorModel::MODEL, f16    , VecSimd::SSE>; \
+	using Color## MODEL ##f_SSE = Color_<ColorModel::MODEL, f32    , VecSimd::SSE>; \
+	using Color## MODEL ##d_SSE = Color_<ColorModel::MODEL, f64    , VecSimd::SSE>; \
+	\
 //---
 	AX_ColorModel_Basic_ENUM_LIST(E)
 #undef E

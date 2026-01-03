@@ -129,12 +129,12 @@ public:
 
 	AX_NODISCARD constexpr This		operator*	(T s) const							{ return _simd * s; }
 	AX_NODISCARD constexpr This		operator/	(T s) const							{ return _simd / s; }
-	AX_NODISCARD constexpr This		operator*	(const Vec2& s) const				{ return _simd * s; }
-	AX_NODISCARD constexpr This		operator/	(const Vec2& s) const				{ return _simd / s; }
+	AX_NODISCARD constexpr This		operator*	(const Vec2& s) const				{ return This(pos * s, size * s); }
+	AX_NODISCARD constexpr This		operator/	(const Vec2& s) const				{ return This(pos / s, size * s); }
 				 constexpr void		operator*=	(T s)								{ _simd *= s; }
 				 constexpr void		operator/=	(T s)								{ _simd /= s; }
-				 constexpr void		operator*=	(const Vec2& s)						{ _simd *= s; }
-				 constexpr void		operator/=	(const Vec2& s)						{ _simd /= s; }
+				 constexpr void		operator*=	(const Vec2& s)						{ pos *= s; size *= s; }
+				 constexpr void		operator/=	(const Vec2& s)						{ pos /= s; size /= s; }
 	
 	AX_NODISCARD constexpr bool		isValid			() const						{ return w > 0 && h > 0; }
 	AX_NODISCARD constexpr This		unionWith		(const Rect2_& r) const;

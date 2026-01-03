@@ -180,8 +180,8 @@ void Font_FreeType::onGetKerning(axMutSpan<LayoutGlyph> view) {
 
 	dst->kerning.set(0, 0);
 
-	axInt prevGlyphIndex = 0;
-	axInt curGlyphIndex = 0;
+	Int prevGlyphIndex = 0;
+	Int curGlyphIndex = 0;
 	if (auto* c = _cached.find(dst->character)) {
 		prevGlyphIndex = curGlyphIndex = c->glyphIndex;
 	}
@@ -288,7 +288,7 @@ SPtr<FontFace> FontFile_FreeType::loadMem(IByteArray && mem, InNameId userDefine
 }
 
 SPtr<FontFace> FontFile_FreeType::_doLoad(InNameId userDefineName) {
-	return SPtr_new<FontFace_FreeType>(AX_NEW, userDefineName);
+	return SPtr_new<FontFace_FreeType>(AX_NEW, this, userDefineName);
 }
 
 #if 0

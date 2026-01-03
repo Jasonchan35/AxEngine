@@ -61,15 +61,15 @@ template<class T> AX_NODISCARD AX_INLINE T max	( const T& a, const T& b, const T
 template<class T> AX_NODISCARD AX_INLINE T min	( const T& a, const T& b, const T& c, const T& d )		{ return min(min(a,b), min(c,d)); }
 template<class T> AX_NODISCARD AX_INLINE T max	( const T& a, const T& b, const T& c, const T& d )		{ return max(max(a,b), max(c,d)); }
 
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	min_0	( const T& a )	{ return min(a, zero_<T>()); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	max_0	( const T& a )	{ return max(a, zero_<T>()); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T	min_0	( const T& a )	{ return min(a, zero_<T>()); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T	max_0	( const T& a )	{ return max(a, zero_<T>()); }
 
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	min_1	( const T& a )	{ return min(a, one_<T>()); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	max_1	( const T& a )	{ return max(a, one_<T>()); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T	min_1	( const T& a )	{ return min(a, one_<T>()); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T	max_1	( const T& a )	{ return max(a, one_<T>()); }
 
 //! x clamped to the range [a,b]
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp	( const T& x, const T& a, const T& b )	{ return min(max(x, a), b); }
-template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexpr T	clamp_01( const T& x )							{ return clamp(x, zero_<T>(), one_<T>()); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T	clamp	( const T& x, const T& a, const T& b )	{ return min(max(x, a), b); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T	clamp_01( const T& x )							{ return clamp(x, zero_<T>(), one_<T>()); }
 
 //--------------
 template<class T> AX_INLINE constexpr void min_itself		(T& x, const T& a ) { x = min<T>(x, a); }

@@ -228,7 +228,7 @@ protected:
 
 template<class V> inline
 IntRange ShaderParamSpace_Backend::VarInfo::assignValueToBuffer(MutByteSpan buf, const V& value) const {
-	auto srcDataType = DataType_get<V>;
+	auto srcDataType = RenderDataType_get<V>;
 	if (_dataType != srcDataType)
 		throw Error_Undefined(Fmt("Shader: assign variable type mismatch, from '{}' to '{}'", srcDataType, _dataType));
 

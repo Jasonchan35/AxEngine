@@ -104,28 +104,26 @@ public:
 		template<class ELEM = f32x3> Opt<ElemEnumerator<ELEM>> tryEditPosition () { return tryEditElements<ELEM>(VertexSemantic::POSITION ); }
 		template<class ELEM = f32x3> Opt<ElemEnumerator<ELEM>> tryEditNormal0  () { return tryEditElements<ELEM>(VertexSemantic::NORMAL0  ); }
 
-		template<class ELEM = f32x4> Opt<ElemEnumerator<ELEM>> tryEditColor(Int i) { return tryEditElements<ELEM>(VertexSemantic::COLOR0 + i); }
-		template<class ELEM = f32x4> Opt<ElemEnumerator<ELEM>> tryEditColor0   () { return tryEditElements<ELEM>(VertexSemantic::COLOR0   ); }
+		template<class ELEM = f32x4> Opt<ElemEnumerator<ELEM>> tryEditColor(Int i) { return tryEditElements<ELEM>(VertexSemantic::COLOR0 + static_cast<u16>(i)); }
+		template<class ELEM = f32x4> Opt<ElemEnumerator<ELEM>> tryEditColor0   ()  { return tryEditElements<ELEM>(VertexSemantic::COLOR0   ); }
 
-		template<class ELEM = f32x4> Opt<ElemEnumerator<ELEM>> tryEditTexCoord(Int i) { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0 + i); }
-		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord0() { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0); }
-		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord1() { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD1); }
-		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord2() { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD2); }
+		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord(Int i) { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0 + static_cast<u16>(i)); }
+		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord0()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0); }
+		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord1()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD1); }
+		template<class ELEM = f32x2> Opt<ElemEnumerator<ELEM>> tryEditTexCoord2()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD2); }
 		
 		template<class INDEX>
 		void addIndices(Span<INDEX> data) { addIndices(data.toByteSpan(), VertexIndexType_get<INDEX>); }
 		void addIndices(ByteSpan data, VertexIndexType indexType) { return subMesh.indexBuffer.addIndices(data, indexType); }
 		
 		template<class INDEX>
-		MutSpan<INDEX> addIndices(Int count) {
-			subMesh.indexBuffer.addIndices(count, VertexIndexType_get<INDEX>);
-		}
+		MutSpan<INDEX> editNewIndices(Int count) { return subMesh.indexBuffer.editNewIndices<INDEX>(count); }
 	};
 	
-	EditVertex addVertices(PrimType primType, VertexLayout vertexLayout, VertexIndexType indexType, Int newVertexCount) {
+	EditVertex editNewVertices(PrimType primType, VertexLayout vertexLayout, VertexIndexType indexType, Int newVertexCount) {
 		auto& sm = getSubMeshCanAddVertices(primType, vertexLayout, indexType, newVertexCount);
 		auto range = IntRange_StartAndSize(sm.vertexBuffer.vertexCount(), newVertexCount);
-		auto mutSpan = sm.vertexBuffer.addVertices(newVertexCount);
+		auto mutSpan = sm.vertexBuffer.editNewVertices(newVertexCount, vertexLayout);
 		return {sm, range};
 	}
 	

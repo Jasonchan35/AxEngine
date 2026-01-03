@@ -2,6 +2,7 @@
 import :RenderSystem_Backend;
 import :Font;
 import :Font_FreeType;
+import :Texture_Backend;
 
 namespace ax {
 
@@ -39,9 +40,9 @@ Two-Dimensional Rectangle Bin Packing
 
 */
 
-void FontGlyphCache::create(Int width, Int height) {
-	_packer.create(width, height);
-	_image.create(width, height);
+void FontGlyphCache::create(Vec2i size) {
+	_packer.create(size);
+	_image.create(size);
 
 	Texture2D_CreateDesc desc;
 	desc.imageInfo = _image.info(); 
@@ -106,7 +107,7 @@ FontManager::FontManager() {
 	AX_ASSERT(FontManager_instance == nullptr);
 
 	FontManager_instance = this;
-	_glyphCache.create(1024, 1024);
+	_glyphCache.create(Vec2i(1024, 1024));
 	_provider = SPtr_new<FontProvider_FreeType>(AX_NEW);
 }
 

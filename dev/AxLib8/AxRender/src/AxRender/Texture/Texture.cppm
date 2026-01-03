@@ -232,10 +232,10 @@ private:
 };
 
 
-template<> struct RenderDataType_get_<Sampler    > { static constexpr RenderDataType value = RenderDataType::SamplerState; };
-template<> struct RenderDataType_get_<Texture2D  > { static constexpr RenderDataType value = RenderDataType::Texture2D;    };
-template<> struct RenderDataType_get_<Texture3D  > { static constexpr RenderDataType value = RenderDataType::Texture3D;    };
-template<> struct RenderDataType_get_<TextureCube> { static constexpr RenderDataType value = RenderDataType::TextureCube;  };
+template<> struct RenderDataType_get_Struct<Sampler    > { static constexpr RenderDataType value = RenderDataType::SamplerState; };
+template<> struct RenderDataType_get_Struct<Texture2D  > { static constexpr RenderDataType value = RenderDataType::Texture2D;    };
+template<> struct RenderDataType_get_Struct<Texture3D  > { static constexpr RenderDataType value = RenderDataType::Texture3D;    };
+template<> struct RenderDataType_get_Struct<TextureCube> { static constexpr RenderDataType value = RenderDataType::TextureCube;  };
 
 
 } // namespace

@@ -17,6 +17,14 @@ void Image::clear() {
 	_pixelData.clear();
 }
 
+void Image::create(ColorType colorType, Vec2i size, Int strideInByte) {
+	CreateDesc desc;
+	desc.info.colorType = colorType;
+	desc.info.size = size;
+	desc.info.strideInBytes = strideInByte;
+	create(desc);
+}
+
 void Image::create(ColorType colorType, Vec2i size) {
 	CreateDesc desc;
 	desc.info.colorType = colorType;

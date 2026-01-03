@@ -49,7 +49,7 @@ struct VertexT_Pos : public VertexBase {
 	using PosType = POS_TYPE;
 	POS_TYPE pos;
 
-	static const RenderDataType	kPosType	= DataType_get<POS_TYPE>;
+	static const RenderDataType	kPosType = RenderDataType_get<POS_TYPE>;
 
 	static VertexLayout s_layout() {
 		static VertexLayoutCreator<VertexT_Pos> s;
@@ -66,7 +66,7 @@ struct VertexT_Color : public BASE {
 	using ColorType = COLOR_TYPE;
 	FixedArray<COLOR_TYPE, COLOR_COUNT>	color;
 
-	static const RenderDataType	kColorType    = DataType_get<COLOR_TYPE>;
+	static const RenderDataType	kColorType = RenderDataType_get<COLOR_TYPE>;
 	static const u8 kColorCount = COLOR_COUNT;
 
 	static VertexLayout s_layout() {
@@ -86,7 +86,7 @@ struct VertexT_Uv : public BASE
 	using UvType = UV_TYPE;
 	FixedArray<UV_TYPE, UV_COUNT>	uv;
 
-	static const RenderDataType	kUvType    = DataType_get<UV_TYPE>;
+	static const RenderDataType	kUvType = RenderDataType_get<UV_TYPE>;
 	static const u8 kUvCount = UV_COUNT;
 
 	static VertexLayout s_layout() {

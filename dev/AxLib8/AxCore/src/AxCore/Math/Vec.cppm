@@ -303,7 +303,6 @@ public:
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
 
-	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
 //	AX_INLINE constexpr Vec_(TagAll_T, const T& vec) : _simd(SimdData::s_all(vec)) {}

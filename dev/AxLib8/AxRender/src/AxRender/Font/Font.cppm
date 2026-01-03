@@ -135,7 +135,7 @@ class RenderRequest;
 
 class FontGlyphCache : public NonCopyable {
 public:
-	void create(Int width, Int height);
+	void create(Vec2i size);
 	Texture2D*	getTexture() { return _tex; }
 
 	void onDebugRender(RenderRequest& req);

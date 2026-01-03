@@ -232,14 +232,14 @@ private:
 			auto& dst = elements.emplaceBack();
 			dst.semantic = semantic;
 			dst.offset   = static_cast<u16>(MemUtil::memberOffset(attr) + AX_SIZEOF(A) * index);
-			dst.dataType = DataType_get<A>;
+			dst.dataType = RenderDataType_get<A>;
 
 		} else {
 			using A      = std::remove_extent_t<ATTR>;
 			auto& dst    = elements.emplaceBack();
 			dst.semantic = semantic;
 			dst.offset   = static_cast<u16>(MemUtil::memberOffset(attr) + AX_SIZEOF(A) * index);
-			dst.dataType = DataType_get<A>;
+			dst.dataType = RenderDataType_get<A>;
 		}
 		strideInBytes = AX_SIZEOF(VERTEX);
 	}

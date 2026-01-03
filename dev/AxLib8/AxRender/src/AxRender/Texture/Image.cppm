@@ -46,6 +46,7 @@ public:
 	using Info = ImageInfo;
 	using CreateDesc = Image_CreateDesc;
 
+			void	create(ColorType colorType, Vec2i size, Int strideInByte);
 			void	create(ColorType colorType, Vec2i size);
 			void	create(const CreateDesc& desc);
 			void	clear();
@@ -101,8 +102,8 @@ class Image_ : public Image {
 public:
 	using Color = COLOR;
 
-	void create(Int width, Int height, Int strideInBytes)	{ Base::create(Color::kColorType, width, height, strideInBytes); }
-	void create(Int width, Int height)						{ Base::create(Color::kColorType, width, height); }
+	void create(Vec2i size, Int strideInBytes)	{ Base::create(Color::kColorType, size, strideInBytes); }
+	void create(Vec2i size)						{ Base::create(Color::kColorType, size); }
 
 	MutSpan<COLOR>	row(Int y)				{ return Base::row<COLOR>(y); }
 	Span<COLOR>	row(Int y) const			{ return Base::row<COLOR>(y); }
