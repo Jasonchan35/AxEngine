@@ -267,4 +267,45 @@ public:
 };
 
 
+using UIMouseEventType   = NativeUIMouseEventType;
+using UIKeyEventType     = NativeUIKeyEventType;
+using UIMouseEventButton = NativeUIMouseEventButton;
+using UIKeyCode          = NativeUIKeyCode;
+using UIEventModifierKey = NativeUIEventModifierKey;
+
+class UIMouseEvent : public NativeUIMouseEvent {
+public:
+	Vec2f	deltaPos{0,0};
+	Button	pressedButton = Button::None;
+};
+
+class UIKeyEvent : public NativeUIKeyEvent {
+public:
+};
+
+class UIEventHandler : public NonCopyable {
+public:
+	virtual ~UIEventHandler() = default;
+	virtual void onUIMouseEvent(UIMouseEvent& ev) {}
+	virtual void onUIKeyEvent(UIKeyEvent& ev) {}
+};
+
+class UIEventManager {
+public:
+	using Type        = NativeUIMouseEventType;
+	using Button      = NativeUIMouseEventButton;
+	using ModifierKey = NativeUIEventModifierKey;
+	using Time        = NativeUIEventTime;
+	
+	static UIEventManager* s_instance();
+	
+	void _translateNativeUIMouseEvent(UIMouseEvent& outEvent, const NativeUIMouseEvent& inEvent);
+	void _translateNativeUIKeyEvent(UIKeyEvent& outEvent, const NativeUIKeyEvent& inEvent);
+	
+	bool _firstMouseEvent = true;
+	Vec2f _lastMousePos{0,0};
+	
+	Button _lastPressedButton {Button::None};
+};
+
 } // namespace ax

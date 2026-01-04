@@ -31,12 +31,16 @@ void EditorMainWindow::onWindowCloseButton() {
 	EditorApp::s_instance()->quit(0);
 }
 
-void EditorMainWindow::onNativeUIMouseEvent(NativeUIMouseEvent& ev) {
-	AX_LOG("EditorMainWindow::onNativeUIMouseEvent {}", ev);
+void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
+	if (ev.type == UIMouseEventType::Move) {
+		if (ev.pressedButton == UIMouseEventButton::Right) {
+			_renderGraph->_camera.orbit(ev.deltaPos * 10);
+		}
+	}
 }
 
-void EditorMainWindow::onNativeUIKeyEvent(NativeUIKeyEvent& ev) {
-	AX_LOG("EditorMainWindow::onNativeUIKeyEvent {}", ev);
+void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
+	
 }
 
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {

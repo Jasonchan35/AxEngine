@@ -38,8 +38,8 @@ private:
 	public:
 		UIEventHandler(NativeUIWindow_Win32* owner) : _owner(owner) {}
 
-		virtual void onUIMouseEvent(NativeUIMouseEvent& ev) override { _owner->onNativeUIMouseEvent(ev); }
-		virtual void onUIKeyEvent  (NativeUIKeyEvent&   ev) override { _owner->onNativeUIKeyEvent(ev); }
+		virtual void onNativeUIMouseEvent(NativeUIMouseEvent& ev) override { _owner->_onNativeUIMouseEvent(ev); }
+		virtual void onNativeUIKeyEvent  (NativeUIKeyEvent&   ev) override { _owner->_onNativeUIKeyEvent(ev); }
 	};
 	
 	UIEventHandler _uiEventHandler;

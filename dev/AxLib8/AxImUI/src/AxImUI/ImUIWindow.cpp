@@ -26,11 +26,13 @@ public:
 		_owner->onNativeSizeChanged(size);
 	}
 	
-	virtual	void onNativeUIMouseEvent(NativeUIMouseEvent& ev) override {
-		_owner->onNativeUIMouseEvent(ev);
+	virtual	void onUIMouseEvent(UIMouseEvent& ev) override {
+		Base::onUIMouseEvent(ev);
+		_owner->onUIMouseEvent(ev);
 	}
-	virtual	void onNativeUIKeyEvent(NativeUIKeyEvent& ev) override {
-		_owner->onNativeUIKeyEvent(ev);
+	virtual	void onUIKeyEvent(UIKeyEvent& ev) override {
+		Base::onUIKeyEvent(ev);
+		_owner->onUIKeyEvent(ev);
 	}
 	
 
@@ -54,6 +56,7 @@ ImUIWindow::ImUIWindow() {
 		RenderContext::CreateDesc desc;
 		desc.window = _nativeWin.ptr();
 		_contentView->createRenderContext(desc);
+		_contentView->setUIEventHandler(&_uiEventHandler);
 	}
 
 	auto* renderSystem = RenderSystem::s_instance();

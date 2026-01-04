@@ -86,8 +86,7 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	// }
 	
 	_camera.setViewport(req->viewport());
-	_camera.setPos(500, 500, 200);
-	
+
 	if (_testMesh3dMaterial) {
 		auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);
 		auto mvp = _camera.viewProjMatrix();

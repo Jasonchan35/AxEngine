@@ -40,12 +40,14 @@ void RenderContext_Backend::onRender() {
 	onPresentSurface(req);
 }
 
-void RenderContext_Backend::onUIMouseEvent(NativeUIMouseEvent& ev) {
+void RenderContext_Backend::onNativeUIMouseEvent(NativeUIMouseEvent& ev) {
+	Base::onNativeUIMouseEvent(ev);
 	ev.pos = worldToLocalPos(ev.worldPos);
 	imgui.onUIMouseEvent(ev);
 }
 
-void RenderContext_Backend::onUIKeyEvent(NativeUIKeyEvent& ev) {
+void RenderContext_Backend::onNativeUIKeyEvent(NativeUIKeyEvent& ev) {
+	Base::onNativeUIKeyEvent(ev);
 	imgui.onUIKeyEvent(ev);
 }
 

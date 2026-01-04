@@ -12,6 +12,10 @@ public:
 	RenderContext*	renderContext() { return _renderContext; }
 
 	void render();
+	
+	void setUIEventHandler(UIEventHandler* uiEventHandler) {
+		_renderContext->setUIEventHandler(uiEventHandler);
+	} 
 
 protected:
 	virtual void onSizeChanged(const Vec2f& size) override;

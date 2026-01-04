@@ -68,9 +68,9 @@ public:
 	AX_NODISCARD constexpr Vec3	axis () const;
 
 	AX_NODISCARD static	constexpr This s_euler(const Vec3& r);
-	AX_NODISCARD static	constexpr This s_euler_x(T rad)	{ T s, c; sincos(rad * T(0.5), s, c); return This(s,0,0,c); }
-	AX_NODISCARD static	constexpr This s_euler_y(T rad)	{ T s, c; sincos(rad * T(0.5), s, c); return This(0,s,0,c); }
-	AX_NODISCARD static	constexpr This s_euler_z(T rad)	{ T s, c; sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
+	AX_NODISCARD static	constexpr This s_euler_x(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(s,0,0,c); }
+	AX_NODISCARD static	constexpr This s_euler_y(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,s,0,c); }
+	AX_NODISCARD static	constexpr This s_euler_z(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
 
 	AX_NODISCARD static	constexpr This s_euler_deg_x(T deg)	{ return s_euler_x(radians(deg)); }
 	AX_NODISCARD static	constexpr This s_euler_deg_y(T deg)	{ return s_euler_y(radians(deg)); }
@@ -99,6 +99,11 @@ public:
 	
 	template<class V> AX_INLINE void fromCast(const V& v) { *this = s_cast(v); }	
 };
+
+template<class T> inline Vec3_<T> operator* (Vec3_<T>& v, const Quat4_<T>& quat) { return quat * v; }
+template<class T> inline void     operator*=(Vec3_<T>& v, const Quat4_<T>& quat) { v = quat * v; }
+
+
 
 template<class T, bool LONG_WAY = false> AX_NODISCARD AX_INLINE constexpr
 Quat4_<T> slerp(const Quat4_<T> & a, const Quat4_<T> & b, T weight) {
@@ -194,7 +199,7 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 
 template<class T, VecSimd SIMD> constexpr AX_INLINE auto Quat_<4, T, SIMD>::s_angleAxis(T rad, const Vec3& axis) -> This {
 	T s, c;
-	sincos(rad * T(0.5), s, c);
+	Math::sincos(rad * T(0.5), s, c);
 	return This(axis.x * s, axis.y * s, axis.z * s, c);
 }
 

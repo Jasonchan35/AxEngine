@@ -16,16 +16,11 @@ public:
 	using Rect2 = Rect2_<T>;
 	using Ray3	= Ray3_<T>;
 
-	void pan	(T x, T y);
-	void orbit	(T x, T y);
-	void move	(T x, T y, T z);
-	void move	(const Vec3& v) { move(v.x, v.y, v.z); }
+	void pan	(Vec2 v);
+	void orbit	(Vec2 v);
+	void move	(const Vec3& v);
 
 	void dolly	(T z);
-
-	void setPos(T x, T y, T z)	{ setPos(Vec3(x,y,z)); }
-	void setAim(T x, T y, T z)	{ setAim(Vec3(x,y,z)); }
-	void setUp (T x, T y, T z)	{ setUp (Vec3(x,y,z)); }
 
 	void setPos(const Vec3& pos)	{ _pos = pos; }
 	void setAim(const Vec3& aim)	{ _aim = aim; }
@@ -58,34 +53,34 @@ using Camera3f = Camera3_<f32>;
 using Camera3d = Camera3_<f64>;
 
 template<class T>
-void Camera3_<T>::pan(T x, T y) {
+void Camera3_<T>::pan(Vec2 v) {
 	auto v = _aim - _pos;
 	auto right = _up.cross(v.normal());
 
-	auto q = Quat4::s_eulerY(x) * Quat4::s_angleAxis(y, right);
+	auto q = Quat4::s_eulerY(v.x) * Quat4::s_angleAxis(v.y, right);
 	v   *= q;
 	_up *= q;
 	_aim = _pos + v;
 }
 
 template<class T>
-void Camera3_<T>::orbit(T x, T y) {
-	auto v = _pos - _aim;
-	auto right = _up.cross(v.normal());
+void Camera3_<T>::orbit(Vec2 v) {
+	auto d = _pos - _aim;
+	auto right = _up.cross(d.normal());
 
-	auto q = Quat4::s_eulerY(x) * Quat4::s_angleAxis(y, right);
-	v   *= q;
+	auto q = Quat4::s_euler_y(d.x) * Quat4::s_angleAxis(d.y, right);
+	d   *= q;
 	_up *= q;
-	_pos = _aim + v;
+	_pos = _aim + d;
 }
 
 template<class T>
-void Camera3_<T>::move(T x, T y, T z) {
+void Camera3_<T>::move(const Vec3& v) {
 	auto v = _aim - _pos;
 	auto dir = v.normal();
 	auto right = _up.cross(dir);
 
-	auto t = right * x + _up * y + dir * z;
+	auto t = right * v.x + _up * v.y + dir * v.z;
 	_pos += t;
 	_aim += t;
 }

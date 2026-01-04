@@ -19,8 +19,8 @@ public:
 	virtual void onPresentSurface(RenderRequest* req) = 0;
 
 	virtual void onPostCreate(const CreateDesc& desc) override;
-	virtual void onUIMouseEvent(NativeUIMouseEvent& ev) override;
-	virtual void onUIKeyEvent(NativeUIKeyEvent& ev) override;
+	virtual void onNativeUIMouseEvent(NativeUIMouseEvent& ev) override;
+	virtual void onNativeUIKeyEvent(NativeUIKeyEvent& ev) override;
 
 	virtual void onSetImGuiIniFilename(StrView name) override;
 	virtual void onLoadImGuiIniFile() override;

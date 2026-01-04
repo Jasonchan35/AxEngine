@@ -39,6 +39,8 @@ public:
 	void updateLayout() { onUpdateLayout(); }
 
 protected:
+	friend class NativeUIWindow_Base;
+	
 	virtual bool onRequestNativeCustomAppEvent() { return false; }
 	virtual void onHandleCustomAppEvent() {}
 	virtual void onUpdateLayout() {}

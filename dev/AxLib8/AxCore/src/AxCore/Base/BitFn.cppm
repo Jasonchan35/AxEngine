@@ -20,9 +20,9 @@ constexpr DST ax_bit_cast(const SRC& src) {
 
 template<class T> AX_NODISCARD AX_INLINE constexpr bool ax_bit_has		(const T& value, const T& bits) { return (value & bits) != T(0); }
 template<class T> AX_NODISCARD AX_INLINE constexpr bool ax_bit_has_all	(const T& value, const T& bits) { return (value & bits) == bits; }
-template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_set		(const T& value, const T& bits) { return value |=  bits; }
-template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_unset	(const T& value, const T& bits) { return value &= ~bits; }
-template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_toggle	(const T& value, const T& bits) { return value ^=  bits; }
+template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_set		(const T& value, const T& bits) { return value |  bits; }
+template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_unset	(const T& value, const T& bits) { return value & ~bits; }
+template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_toggle	(const T& value, const T& bits) { return value ^  bits; }
 template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_set		(const T& value, const T& bits, bool b) {
 	return b ? ax_bit_set(value, bits) : ax_bit_unset(value, bits);
 }

@@ -12,8 +12,8 @@ class NativeUIEventHandler_Win32 {
 public:
 	virtual ~NativeUIEventHandler_Win32() = default;
 
-	virtual void onUIMouseEvent(NativeUIMouseEvent& ev) {}
-	virtual void onUIKeyEvent(NativeUIKeyEvent& ev) {}
+	virtual void onNativeUIMouseEvent(NativeUIMouseEvent& ev) {}
+	virtual void onNativeUIKeyEvent(NativeUIKeyEvent& ev) {}
 
 	bool handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

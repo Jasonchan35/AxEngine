@@ -101,7 +101,7 @@ bool NativeUIEventHandler_Win32::_handleMouseEvent(HWND hwnd, UINT msg, WPARAM w
 	}
 
 //	AX_DUMP_VAR(ev);
-	onUIMouseEvent(ev);
+	onNativeUIMouseEvent(ev);
 	_lastMousePressedButtons = _mousePressedButtons;
 	return true;
 }
@@ -138,7 +138,7 @@ bool NativeUIEventHandler_Win32::_handleKeyEvent(HWND hwnd, UINT msg, WPARAM wPa
 	}
 
 //	AX_DUMP_VAR(ev);
-	onUIKeyEvent(ev);
+	onNativeUIKeyEvent(ev);
 	return true;
 }
 

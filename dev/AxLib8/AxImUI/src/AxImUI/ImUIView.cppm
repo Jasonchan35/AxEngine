@@ -30,13 +30,12 @@ private:
 	void _computeWorldPos();
 	void _setWorldPosDirty();
 
-	Array<SPtr<ImUIView>, 4>	_children;
+	Array<SPtr<ImUIView>, 4> _children;
 
-	ImUIView*	_parent = nullptr;
-	Vec2f	_worldPos = TagZero;
-	Rect2f	_rect = TagZero;
-
-	bool	_worldPosDirty : 1;
+	ImUIView* _parent   = nullptr;
+	Vec2f     _worldPos = TagZero;
+	Rect2f    _rect     = TagZero;
+	bool      _worldPosDirty : 1;
 };
 
 

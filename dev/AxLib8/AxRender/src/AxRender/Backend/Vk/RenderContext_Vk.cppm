@@ -78,8 +78,8 @@ private:
 	public:
 		UIEventHandler(RenderContext_Vk_Win32* owner) : _owner(owner) {}
 
-		virtual void onUIMouseEvent(NativeUIMouseEvent& ev) override { _owner->onUIMouseEvent(ev); }
-		virtual void onUIKeyEvent(NativeUIKeyEvent& ev) override { _owner->onUIKeyEvent(ev); }
+		virtual void onNativeUIMouseEvent(NativeUIMouseEvent& ev) override { _owner->onNativeUIMouseEvent(ev); }
+		virtual void onNativeUIKeyEvent  (NativeUIKeyEvent&   ev) override { _owner->onNativeUIKeyEvent(ev); }
 	};
 
 	UIEventHandler _uiEventHandler;

@@ -84,8 +84,12 @@ public:
 	virtual void onNativeSetWindowTitle	(StrView title) = 0;
 
 protected:
-	virtual	void onNativeUIMouseEvent(NativeUIMouseEvent& ev) {}
-	virtual	void onNativeUIKeyEvent(NativeUIKeyEvent& ev) {}
+	void _onNativeUIMouseEvent(NativeUIMouseEvent& ev);
+	void _onNativeUIKeyEvent  (NativeUIKeyEvent&   ev);
+	
+	virtual	void onUIMouseEvent(UIMouseEvent& ev) {}
+	virtual	void onUIKeyEvent  (UIKeyEvent&   ev) {}
+	
 	virtual	void onRender() {}
 	
 private:
@@ -124,6 +128,22 @@ void NativeUIWindow_Base::setSize(const Vec2f& size) {
 inline
 void NativeUIWindow_Base::setWindowTitle(StrView title) {
 	onNativeSetWindowTitle(title);
+}
+
+inline
+void NativeUIWindow_Base::_onNativeUIMouseEvent(NativeUIMouseEvent& ev) {
+	auto* mgr = UIEventManager::s_instance();
+	UIMouseEvent outEvent;
+	mgr->_translateNativeUIMouseEvent(outEvent, ev);
+	onUIMouseEvent(outEvent);
+}
+
+inline
+void NativeUIWindow_Base::_onNativeUIKeyEvent(NativeUIKeyEvent& ev) {
+	auto* mgr = UIEventManager::s_instance();
+	UIKeyEvent outEvent;
+	mgr->_translateNativeUIKeyEvent(outEvent, ev);
+	onUIKeyEvent(outEvent);
 }
 
 } // namespace
