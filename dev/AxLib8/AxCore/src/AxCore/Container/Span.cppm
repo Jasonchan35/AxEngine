@@ -399,11 +399,8 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return _obj_span().sliceFromBack(offset); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return _obj_span().sliceFromBack(offset); }
 
-	template<class FUNC>
-	constexpr const T* find_(FUNC func) { return _obj_span().template find_<FUNC>(func); }
-
-	template<class FUNC>
-	constexpr const T* find_(FUNC func) const { return _obj_span().template find_<FUNC>(func); }
+	template<class FUNC> constexpr       T* find_(FUNC func)       { return _obj_span().template find_<FUNC>(func); }
+	template<class FUNC> constexpr const T* find_(FUNC func) const { return _obj_span().template find_<FUNC>(func); }
 
 	template<class R> constexpr       T* find(const R& r)       { return _obj_span().template find<R>(r); }
 	template<class R> constexpr const T* find(const R& r) const { return _obj_span().template find<R>(r); }
@@ -412,23 +409,16 @@ public:
 	constexpr const T*  findMin_(FUNC func) const	{ return _obj_span().template findMin_<FUNC>(func); }
 	constexpr const T*  findMin() const				{ return _obj_span().findMin(); }
 
-	template<class FUNC> 
-	constexpr T* binarySearch_(FUNC func) { return _obj_span().binarySearch_(func); }
+	template<class FUNC> constexpr       T* binarySearch_(FUNC func)       { return _obj_span().binarySearch_(func); }
+	template<class FUNC> constexpr const T* binarySearch_(FUNC func) const { return _obj_span().binarySearch_(func); }
 
-	template<class FUNC> 
-	constexpr const T* binarySearch_(FUNC func) const { return _obj_span().binarySearch_(func); }
-
-	template<class R>
-	constexpr T* binarySearch(const R& r) { return _obj_span().binarySearch(r); }
-	
-	template<class R>
-	constexpr const T* binarySearch(const R& r) const { return _obj_span().binarySearch(r); }
+	template<class R> constexpr       T* binarySearch(const R& r)       { return _obj_span().binarySearch(r); }
+	template<class R> constexpr const T* binarySearch(const R& r) const { return _obj_span().binarySearch(r); }
 	
 	
 	template<class FUNC>
 	constexpr void	sort(FUNC func)	{ _obj_span().template sort<FUNC>(func); }
 	constexpr void	sort()			{ _obj_span().sort(); }
-
 
 	constexpr void copyValues(CSpan v, Int offset = 0)	{ _obj_span().copyValues(v, offset); }
 	constexpr void fillValues(const T& v)				{ _obj_span().fillValues(v); }

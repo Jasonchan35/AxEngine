@@ -38,8 +38,6 @@ void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
 	
 	Int constBufferIndex = 0;
 	for (auto& param : _constBuffers) {
-		_bindCount_constBuffers += param.bindCount();
-		
 		for (auto& varInfo : param.varInfos()) {
 			auto& dst       = _nameToVarInfo.emplaceBack();
 			dst.name        = varInfo.name();
@@ -51,17 +49,6 @@ void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
 	}
 	
 	_nameToVarInfo.sort();
-	
-	for (auto& param : _samplerParams) {
-		_bindCount_samplerParams += param.bindCount();
-	}
-	
-	for (auto& param : _textureParams) {
-		_bindCount_textureParams += param.bindCount();
-	}
-	for (auto& param : _storageBufferParams) {
-		_bindCount_storageBufferParams += param.bindCount();
-	}
 }
 
 template<class V>
@@ -259,14 +246,6 @@ void      ShaderPass_Backend::_createParamSpaces() {
 		if (!isOwnParamSpace(bindSpace)) {
 			auto* commonParamSpace = commonShaderPass->getParamSpace(bindSpace);
 			_shaderParamSpaces[i] = commonParamSpace;
-
-			if (commonParamSpace) {
-				_allBindCount_constBuffers        += commonParamSpace->bindCount_constBuffers       ();
-				_allBindCount_textureParams       += commonParamSpace->bindCount_textureParams      ();
-				_allBindCount_samplerParams       += commonParamSpace->bindCount_samplerParams      ();
-				_allBindCount_storageBufferParams += commonParamSpace->bindCount_storageBufferParams();
-			}
-			
 			continue;
 		}
 
@@ -274,19 +253,7 @@ void      ShaderPass_Backend::_createParamSpaces() {
 		if (!ownParamSpace) continue;
 
 		ownParamSpace->_postCreate(this);
-
-		_ownBindCount_constBuffers        += ownParamSpace->bindCount_constBuffers       ();
-		_ownBindCount_textureParams       += ownParamSpace->bindCount_textureParams      ();
-		_ownBindCount_samplerParams       += ownParamSpace->bindCount_samplerParams      ();
-		_ownBindCount_storageBufferParams += ownParamSpace->bindCount_storageBufferParams();
 	}
-
-
-	_allBindCount_constBuffers        += _ownBindCount_constBuffers       ;
-	_allBindCount_textureParams       += _ownBindCount_textureParams      ;
-	_allBindCount_samplerParams       += _ownBindCount_samplerParams      ;
-	_allBindCount_storageBufferParams += _ownBindCount_storageBufferParams;
-	
 }
 
 #if 0

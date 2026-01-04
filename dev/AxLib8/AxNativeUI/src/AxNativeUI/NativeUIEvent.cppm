@@ -227,8 +227,9 @@ public:
 	using Time        = NativeUIEventTime;
 
 	template<class CH>
-	void onFormat(Format_<CH>& ctx) const {
-		ctx.format("[NativeUIMouseEvent: type={} button={} worldPos={} modifier={} time={}]", type, button, worldPos, modifier, time);
+	void onFormat(Format_<CH>& fmt) const {
+		fmt << Fmt("[NativeUIMouseEvent: type={} button={} worldPos={} modifier={} time={}]", 
+						type, button, worldPos, modifier, time);
 	}
 
 	Type			type = Type::None;
@@ -248,8 +249,9 @@ public:
 	using Time		= NativeUIEventTime;
 
 	template<class CH>
-	void onFmt(Format_<CH>& ctx) const {
-		ctx.format("[NativeUIKeyboardEvent: type={} key={} text={} modifier={} time={}]", type, key, text, modifier, time);		
+	void onFormat(Format_<CH>& fmt) const {
+		fmt << Fmt("[NativeUIKeyboardEvent: type={} key={} text={} modifier={} time={}]", 
+						type, key, text, modifier, time);
 	}
 
 	NativeUIKeyEvent()

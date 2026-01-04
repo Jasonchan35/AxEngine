@@ -13,7 +13,8 @@ public:
 
 protected:
 	virtual void onWindowCloseButton() override;
-
+	virtual	void onNativeUIMouseEvent(NativeUIMouseEvent& ev) override;
+	virtual	void onNativeUIKeyEvent(NativeUIKeyEvent& ev) override;
 
 	struct MyRenderGraph : public DefaultRenderGraph {
 		class EditorMainWindow* win = nullptr;

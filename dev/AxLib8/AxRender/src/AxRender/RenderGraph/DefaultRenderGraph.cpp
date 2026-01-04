@@ -27,40 +27,28 @@ DefaultRenderGraph::DefaultRenderGraph() {
 
 	}
 
+	static NameId NameId_tex0 = NameId::s_make("tex0");
+	static NameId NameId_tex1 = NameId::s_make("tex1");
+	
 	if constexpr (true) {
 		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/testMesh.axShader");
 		_testMeshMaterial = Material::s_new(AX_NEW);
 		_testMeshMaterial->setShader(shader);
-		
-//		_testMeshMaterial->setParam(NameId("color"), Color4f::kRed());
-
-		static NameId tex0 = NameId::s_make("tex0");
-		static NameId tex1 = NameId::s_make("tex1");
-
-		_testMeshMaterial->setParam(tex0, _testTex0);
-		_testMeshMaterial->setParam(tex1, _testTex1);
-
-		_testMeshMaterial->setParam(tex0, _testSampler);
-		_testMeshMaterial->setParam(tex1, _testSampler);
+		_testMeshMaterial->setParam(NameId_tex0, _testTex0);
+		_testMeshMaterial->setParam(NameId_tex1, _testTex1);
+		_testMeshMaterial->setParam(NameId_tex0, _testSampler);
+		_testMeshMaterial->setParam(NameId_tex1, _testSampler);
 	}
 
 	if constexpr (true) {
 		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/testMesh3d.axShader");
 		_testMesh3dMaterial = Material::s_new(AX_NEW);
 		_testMesh3dMaterial->setShader(shader);
-		
-		//		_testMeshMaterial->setParam(NameId("color"), Color4f::kRed());
-
-		static NameId tex0 = NameId::s_make("tex0");
-		static NameId tex1 = NameId::s_make("tex1");
-
-		_testMesh3dMaterial->setParam(tex0, _testTex0);
-		_testMesh3dMaterial->setParam(tex1, _testTex1);
-
-		_testMesh3dMaterial->setParam(tex0, _testSampler);
-		_testMesh3dMaterial->setParam(tex1, _testSampler);
+		_testMesh3dMaterial->setParam(NameId_tex0, _testTex0);
+		_testMesh3dMaterial->setParam(NameId_tex1, _testTex1);
+		_testMesh3dMaterial->setParam(NameId_tex0, _testSampler);
+		_testMesh3dMaterial->setParam(NameId_tex1, _testSampler);
 	}
-	
 
 	if constexpr (true) {
 		using V = Vertex_PosUv;
@@ -75,11 +63,8 @@ DefaultRenderGraph::DefaultRenderGraph() {
 	}
 
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
-	
+
 	_testCube = RenderStockObjects::s_instance()->meshes.cube;
-	
-//	_testCube.create()
-	
 }
 
 void DefaultRenderGraph::onUpdate(RenderRequest* req) {
@@ -101,10 +86,12 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	// }
 	
 	_camera.setViewport(req->viewport());
+	_camera.setPos(500, 500, 200);
 	
 	if (_testMesh3dMaterial) {
 		auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);
-		req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), _camera.viewProjMatrix().transpose());
+		auto mvp = _camera.viewProjMatrix();
+		req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp);
 		req->drawMesh(_testCube, _testMesh3dMaterial, 0);
 	}
 

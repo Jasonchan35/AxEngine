@@ -30,6 +30,9 @@ protected:
 
 	virtual void onRenderGraph(RenderGraph& graph) {}
 
+	virtual	void onNativeUIMouseEvent(NativeUIMouseEvent& ev) {}
+	virtual	void onNativeUIKeyEvent(NativeUIKeyEvent& ev) {}
+	
 private:
 	class NativeWin;
 	UPtr<NativeWin>			_nativeWin;

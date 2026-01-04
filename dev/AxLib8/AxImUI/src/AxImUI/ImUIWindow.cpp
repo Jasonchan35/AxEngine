@@ -25,6 +25,14 @@ public:
 		Base::onSizeChanged(size);
 		_owner->onNativeSizeChanged(size);
 	}
+	
+	virtual	void onNativeUIMouseEvent(NativeUIMouseEvent& ev) override {
+		_owner->onNativeUIMouseEvent(ev);
+	}
+	virtual	void onNativeUIKeyEvent(NativeUIKeyEvent& ev) override {
+		_owner->onNativeUIKeyEvent(ev);
+	}
+	
 
 private:
 	ImUIWindow* _owner = nullptr;

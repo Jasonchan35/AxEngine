@@ -32,6 +32,10 @@ void GenNinja_Dx12::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 					"    -E $param_entry_point $\n"
 					"    -I \"$AxIncludeDir\" $\n"
 					"    -Fo \"$out\" \"$in\""
+#if 1 // debug info
+					"    -Zi $\n"
+					"    -Qembed_debug $\n"
+#endif
 					"\n\n");
 
 

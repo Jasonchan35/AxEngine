@@ -31,6 +31,14 @@ void EditorMainWindow::onWindowCloseButton() {
 	EditorApp::s_instance()->quit(0);
 }
 
+void EditorMainWindow::onNativeUIMouseEvent(NativeUIMouseEvent& ev) {
+	AX_LOG("EditorMainWindow::onNativeUIMouseEvent {}", ev);
+}
+
+void EditorMainWindow::onNativeUIKeyEvent(NativeUIKeyEvent& ev) {
+	AX_LOG("EditorMainWindow::onNativeUIKeyEvent {}", ev);
+}
+
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	win->_sceneOutlinerUIPanel.render(req);
 	DefaultRenderGraph::onBackBufferPass(req, inputs);

@@ -186,11 +186,6 @@ public:
 	NameId getTexture3DName(NameId name) const;
 	NameId getSamplerName(NameId name) const;
 
-	i32 bindCount_constBuffers        () const	{ return _bindCount_constBuffers        ; }
-	i32 bindCount_textureParams       () const	{ return _bindCount_textureParams       ; }
-	i32 bindCount_samplerParams       () const	{ return _bindCount_samplerParams       ; }
-	i32 bindCount_storageBufferParams () const	{ return _bindCount_storageBufferParams ; }
-
 	BindSpace bindSpace() const { return _bindSpace; }
 
 	TempString debugName() const;
@@ -212,12 +207,7 @@ protected:
 	BindSpace _bindSpace = BindSpace::Invalid;
 
 	bool _isGlobalCommonShader : 1 = false;
-	
-	i32 _bindCount_constBuffers        = 0;
-	i32 _bindCount_textureParams       = 0;
-	i32 _bindCount_samplerParams       = 0;
-	i32 _bindCount_storageBufferParams = 0;
-	
+
 	Array<NameToVarInfo, 32>		_nameToVarInfo;
 	Array<Pair<NameId, NameId>>		_nameToTexture2D;
 	Array<Pair<NameId, NameId>>		_nameToTexture3D;
@@ -306,16 +296,6 @@ public:
 		return ax_const_cast(_shaderParamSpaces[ax_enum_int(bs)].ptr());
 	}
 
-	i32 ownBindCount_constBuffers       () const { return _ownBindCount_constBuffers       ; }
-	i32 ownBindCount_textureParams      () const { return _ownBindCount_textureParams      ; }
-	i32 ownBindCount_samplerParams      () const { return _ownBindCount_samplerParams      ; }
-	i32 ownBindCount_storageBufferParams() const { return _ownBindCount_storageBufferParams; }
-
-	i32 allBindCount_constBuffers       () const { return _allBindCount_constBuffers       ; }
-	i32 allBindCount_textureParams      () const { return _allBindCount_textureParams      ; }
-	i32 allBindCount_samplerParams      () const { return _allBindCount_samplerParams      ; }
-	i32 allBindCount_storageBufferParams() const { return _allBindCount_storageBufferParams; }
-
 	TempString debugName() const;
 
 private:
@@ -330,16 +310,6 @@ protected:
 	ShaderStageFlags	_stageFlags = ShaderStageFlags::None;
 	NameId				_name;
 
-	i32 _ownBindCount_constBuffers        = 0;
-	i32 _ownBindCount_textureParams       = 0;
-	i32 _ownBindCount_samplerParams       = 0;
-	i32 _ownBindCount_storageBufferParams = 0;
-
-	i32 _allBindCount_constBuffers        = 0;
-	i32 _allBindCount_textureParams       = 0;
-	i32 _allBindCount_samplerParams       = 0;
-	i32 _allBindCount_storageBufferParams = 0;
-	
 	void _createParamSpaces();
 
 	template<class T>

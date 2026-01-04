@@ -248,6 +248,11 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	auto hr = dev->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(outPipeline->pipelineState.ptrForInit()));
 	Dx12Util::throwIfError(hr);
+	
+	auto shaderName = name().toString();
+	outPipeline->pipelineState->SetPrivateData(WKPDID_D3DDebugObjectName, 
+									ax_safe_cast_from(shaderName.size()), shaderName.c_str());
+	
 	return outPipeline;
 }
 
