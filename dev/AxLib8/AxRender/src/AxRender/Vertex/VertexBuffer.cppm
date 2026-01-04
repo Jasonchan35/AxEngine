@@ -27,7 +27,7 @@ public:
 	template<class VERTEX>
 	MutSpan<VERTEX> editNewVertices(Int vertexCount) {
 		if (VERTEX::s_layout() != _vertexLayout) throw Error_Undefined();
-		return MutSpan<VERTEX>::s_fromByteSpan(addVertices(vertexCount));
+		return MutSpan<VERTEX>::s_fromByteSpan(editNewVertices(vertexCount, VERTEX::s_layout));
 	}
 	MutByteSpan editNewVertices(Int n, VertexLayout vertexLayout);
 
@@ -37,7 +37,6 @@ public:
 
 	template<class E> ElemEnumerator_<E> editElements(VertexSemantic sem, IntRange vertexRange);
 	template<class E> ElemEnumerator_<E> editElements(const VertexLayoutElement* elem, IntRange vertexRange);
-
 	template<class E> Opt<ElemEnumerator_<E>> tryEditElements(VertexSemantic semantic, IntRange vertexRange) {
 		auto* elem = _vertexLayout->find(semantic);
 		if (!elem) return std::nullopt;
@@ -47,8 +46,7 @@ public:
 	template<class E> Opt<ElemEnumerator_<E>> tryEditElements(VertexSemantic semantic) {
 		return tryEditElements<E>(semantic, IntRange(_vertexCount));
 	}
-	
-	
+
 	void markDirty(IntRange vertexRange);
 
 	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {

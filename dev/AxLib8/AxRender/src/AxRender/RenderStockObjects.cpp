@@ -1,4 +1,5 @@
 module AxRender;
+import :RenderMeshEdit;
 
 namespace ax /*::AxRender*/ {
 
@@ -24,6 +25,14 @@ RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
 	Repeat     = Sampler::s_new(AX_NEW, filter, SamplerWrapUVW(TagAll, SamplerWrap::Repeat    ));
 	Mirror     = Sampler::s_new(AX_NEW, filter, SamplerWrapUVW(TagAll, SamplerWrap::Mirror    ));
 	MirrorOnce = Sampler::s_new(AX_NEW, filter, SamplerWrapUVW(TagAll, SamplerWrap::MirrorOnce));
+}
+
+RenderStockObjects::Meshes::Meshes() {
+	auto layout = Vertex_PosNormal::s_layout();
+	RenderMeshEdit(cube).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
+	RenderMeshEdit(sphere).createSphere(layout, 1, 32, 32);
+	RenderMeshEdit(cone).createCone(layout, 1, 1, 2, 32, true);
+	RenderMeshEdit(cylinder).createCylinder(layout, 1, 1, 2, 32, true, true);
 }
 
 RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }

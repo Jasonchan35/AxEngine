@@ -106,7 +106,7 @@ struct VertexT_Normal : public BASE
 	using NormalType = NORMAL_TYPE;
 	FixedArray<NORMAL_TYPE, NORMAL_COUNT>	normal;
 
-	static const RenderDataType	kNormalType    = RenderDataType_get<NORMAL_TYPE>();
+	static const RenderDataType	kNormalType = RenderDataType_get<NORMAL_TYPE>;
 	static const u8 kNormalCount = NORMAL_COUNT;
 
 	static VertexLayout s_layout() {
@@ -126,7 +126,7 @@ struct VertexT_Tangent : public BASE
 	using TangentType = TANGENT_TYPE;
 	FixedArray<TANGENT_TYPE, TANGENT_COUNT>	tangent;
 
-	static const RenderDataType	kTangentType    = RenderDataType_get<TANGENT_TYPE>();
+	static const RenderDataType	kTangentType = RenderDataType_get<TANGENT_TYPE>;
 	static const u8 kTangentCount = TANGENT_COUNT;
 
 	static VertexLayout s_layout() {
@@ -146,7 +146,7 @@ struct VertexT_Binormal : public BASE
 	using BinormalType = BINORMAL_TYPE;
 	FixedArray<BINORMAL_TYPE, BINORMAL_COUNT>	binormal;
 
-	static const RenderDataType	kBinormalType    = RenderDataType_get<BINORMAL_TYPE>();
+	static const RenderDataType	kBinormalType = RenderDataType_get<BINORMAL_TYPE>;
 	static const u8 kBinormalCount = BINORMAL_COUNT;
 
 	static VertexLayout s_layout() {

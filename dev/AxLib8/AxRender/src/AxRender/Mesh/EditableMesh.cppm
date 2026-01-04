@@ -51,8 +51,6 @@ public:
 	struct Edge;
 	struct FaceEdge;
 
-	EditableMeshEdit edit();
-
 	//-----------------------------------------------------------------
 	struct Point : public NonCopyable {
 		Vec3		pos;

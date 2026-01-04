@@ -2,6 +2,7 @@ module;
 export module AxRender:StockObjects;
 export import :Texture;
 export import :Font;
+export import :RenderMesh;
 
 export namespace ax /*::AxRender*/ {
 
@@ -55,6 +56,14 @@ public:
 	};
 	Samplers	samplers;
 
+	struct Meshes : public NonCopyable {
+		Meshes();
+		RenderMesh	cube;
+		RenderMesh	sphere;
+		RenderMesh	cone;
+		RenderMesh	cylinder;
+	};
+	
 	static RenderStockObjects* s_instance();
 
 	static void s_create();

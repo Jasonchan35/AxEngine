@@ -126,10 +126,7 @@ public:
 		auto mutSpan = sm.vertexBuffer.editNewVertices(newVertexCount, vertexLayout);
 		return {sm, range};
 	}
-	
-	
-	RenderMeshEdit edit();
-	
+
 private:
 	Array<SubMesh, 1>	_subMeshes;
 };

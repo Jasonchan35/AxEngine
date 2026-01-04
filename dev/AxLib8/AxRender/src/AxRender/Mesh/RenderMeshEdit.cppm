@@ -15,10 +15,10 @@ struct ColorPair {
 
 class RenderMeshEdit : public NonCopyable {
 public:
-	using Color4fPair		= ColorPair<Color4f>;
-
-	using AttrId			= VertexSemantic;
-	using PrimType          = RenderPrimitiveType;
+	using Color4fPair = ColorPair<Color4f>;
+	using PrimType    = RenderPrimitiveType;
+	
+	RenderMeshEdit(RenderMesh& mesh) : _mesh(mesh) {}
 
 	void createRect				(VertexLayout vertexLayout, const Rect2f& rect, const Rect2f& uv, const Color4f& color);
 	void createBorderRect		(VertexLayout vertexLayout, const Rect2f& rect, const Margin2f& border, const Rect2f& uv, const Margin2f& uvBorder, const Color4f& color, bool hasCenter);
@@ -53,35 +53,15 @@ public:
 		addLinesFromVertexNormals(vertexLayout, src, normalLength, color);
 	}
 
-	void addLinesFromVertexNormals			(VertexLayout vertexLayout, const RenderMesh&    srcMesh,      float normalLength, const Color4fPair& color);
-	void addLinesFromVertexNormals			(VertexLayout vertexLayout, const RenderSubMesh& srcSubMesh,   float normalLength, const Color4fPair& color);
-	void addLinesFromVertexNormals			(VertexLayout vertexLayout, const VertexBuffer&  vertexBuffer, float normalLength, const Color4fPair& color);
-
 	void createFromEditableMesh				(VertexLayout vertexLayout, EditableMesh& srcMesh);
 	void addFromEditableMesh				(VertexLayout vertexLayout, EditableMesh& srcMesh);
-
-	void createLinesFromEdges				(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color);
-	void createLinesFromFaceEdges			(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color);
-
-	void createLinesFromVertexNormals		(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color);
-	void createLinesFromEdgeNormals			(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color);
-	void createLinesFromFaceNormals			(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color);
-	void createLinesFromFaceVertexNormals	(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color);
 
 	void createSphere						(VertexLayout vertexLayout, float radius, Int rows, Int columns);
 	void createCylinder						(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool topCap, bool bottomCap);
 	void createCone							(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool bottomCap);
 
-	void createTextFromPointIds				(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle);
-	void createTextFromFaceIds				(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle);
-	void createTextFromEdgeIds				(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle);
-	void createTextFromFaceEdgeIds			(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle);
-
 	void setColor(const Color4f color, Int colorSet = 0);
 
-friend class RenderMesh;
-protected:
-	RenderMeshEdit(RenderMesh& mesh) : _mesh(mesh) {}
 
 private:
 	RenderMesh&	_mesh;
@@ -98,6 +78,5 @@ RenderMesh::SubMesh& RenderMesh::addSubMesh(PrimType primType, VertexLayout vert
 	return sm;	
 }
 
-inline  RenderMeshEdit RenderMesh::edit() { return RenderMeshEdit(*this); }
 
 }// namespace 

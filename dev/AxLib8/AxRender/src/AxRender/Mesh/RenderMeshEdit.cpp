@@ -600,216 +600,25 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 	}
 }
 
-void RenderMeshEdit::addLinesFromVertexNormals(VertexLayout vertexLayout, const RenderMesh& src, float normalLength, const Color4fPair& color) {
-	for (auto& sm : src.subMeshes()) {
-		addLinesFromVertexNormals(vertexLayout, sm, normalLength, color);
-	}
-}
-
-void RenderMeshEdit::addLinesFromVertexNormals(VertexLayout vertexLayout, const RenderSubMesh& src, float normalLength, const Color4fPair& color) {
-	addLinesFromVertexNormals(vertexLayout, src.vertexBuffer, normalLength, color);
-}
-
-void RenderMeshEdit::createLinesFromVertexNormals(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color) {
-	_mesh.clear();
-
-	auto n = srcMesh.points().size();
-	if (n <= 0) return;
-
-	auto edit = _mesh.editNewVertices(RenderPrimitiveType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-
-	if (auto enumerator = edit.tryEditPosition()) {
-		auto dst = enumerator->begin();
-		for (auto& pt : srcMesh.points()) {
-			*dst = Vec3f::s_cast(pt.pos);
-			++dst;
-
-			*dst = Vec3f::s_cast(pt.pos + pt.normal * normalLength);
-			++dst;
-		}
-		if (dst != enumerator->end()) throw Error_Undefined();
-	}
-
-	if (auto enumerator = edit.tryEditColor0()) {
-		Color4f c[] = { color.c0, color.c1 };
-		enumerator->fillRotateValues(c);
-	}
-}
-
-void RenderMeshEdit::createLinesFromEdgeNormals(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color) {
-	_mesh.clear();
-
-	auto n = srcMesh.edges().size();
-	if (n <= 0) return;
-
-	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-
-	if (auto enumerator = edit.tryEditPosition()) {
-		auto dst = enumerator->begin();
-		for (auto& e : srcMesh.edges()) {
-			auto center = e.center(srcMesh);
-			*dst = Vec3f::s_cast(center);
-			++dst;
-
-			*dst = Vec3f::s_cast(center + e.normal * normalLength);
-			++dst;
-		}
-		if (dst != enumerator->end()) throw Error_Undefined();
-	}
-
-	if (auto enumerator = edit.tryEditColor0()) {
-		Color4f c[] = { color.c0, color.c1 };
-		enumerator->fillRotateValues(c);
-	}
-}
-
-void RenderMeshEdit::createLinesFromFaceNormals(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color) {
-	auto n = srcMesh.faces().size();
-	if (n <= 0) return;
-
-	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-	if (auto enumerator = edit.tryEditPosition()) {
-		auto dst = enumerator->begin();
-		for (auto& face : srcMesh.faces()) {
-			auto center = face.center;
-			*dst = Vec3f::s_cast(center); ++dst;
-			*dst = Vec3f::s_cast(center + face.normal * normalLength); ++dst;
-		}
-		if (dst != enumerator->end()) throw Error_Undefined();
-	}
-
-	if (auto enumerator = edit.tryEditColor0()) {
-		Color4f c[] = { color.c0, color.c1 };
-		enumerator->fillRotateValues(c);
-	}
-}
-
-void RenderMeshEdit::createLinesFromFaceVertexNormals(VertexLayout vertexLayout, EditableMesh& srcMesh, float normalLength, const Color4fPair& color) {
-	auto n = srcMesh.faceEdges().size();
-	if (n <= 0) return;
-
-	if (srcMesh.fvNormals().size() < n) return;
-
-	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-	if (auto enumerator = edit.tryEditPosition()) {
-		auto dst = enumerator->begin();
-		for (auto& fe : srcMesh.faceEdges()) {
-			auto pos = fe.point(srcMesh).pos;
-			*dst = Vec3f::s_cast(pos); ++dst;
-			*dst = Vec3f::s_cast(pos + fe.normal(srcMesh) * normalLength); ++dst;
-		}
-		if (dst != enumerator->end()) throw Error_Undefined();
-	}
-
-	if (auto enumerator = edit.tryEditColor0()) {
-		Color4f c[] = { color.c0, color.c1 };
-		enumerator->fillRotateValues(c);
-	}
-}
-
 void RenderMeshEdit::createSphere(VertexLayout vertexLayout, float radius, Int rows, Int columns) {
 	EditableMesh tmp;
-	tmp.edit().createSphere(radius, rows, columns);
+	EditableMeshEdit(tmp).createSphere(radius, rows, columns);
 	tmp.addColorSet(Color4f(1,1,1,1));
 	createFromEditableMesh(vertexLayout, tmp);
 }
 
 void RenderMeshEdit::createCylinder(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool topCap, bool bottomCap) {
 	EditableMesh tmp;
-	tmp.edit().createCylinder(height, radius, rows, columns, topCap, bottomCap);
+	EditableMeshEdit(tmp).createCylinder(height, radius, rows, columns, topCap, bottomCap);
 	tmp.addColorSet(Color4f(1,1,1,1));
 	createFromEditableMesh(vertexLayout, tmp);
 }
 
 void RenderMeshEdit::createCone(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool bottomCap) {
 	EditableMesh tmp;
-	tmp.edit().createCone(height, radius, rows, columns, bottomCap);
+	EditableMeshEdit(tmp).createCone(height, radius, rows, columns, bottomCap);
 	tmp.addColorSet(Color4f(1,1,1,1));
 	createFromEditableMesh(vertexLayout, tmp);
-}
-
-void RenderMeshEdit::createLinesFromEdges(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color) {
-	_mesh.clear();
-
-	auto n = srcMesh.edges().size();
-	if (n <= 0) return;
-
-	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-
-	if (auto enumerator = edit.tryEditPosition()) {
-		auto dst = enumerator->begin();
-		for (auto& e : srcMesh.edges()) {
-			*dst = Vec3f::s_cast(e.point0(srcMesh).pos); ++dst;
-			*dst = Vec3f::s_cast(e.point1(srcMesh).pos); ++dst;
-		}
-		if (dst != enumerator->end()) throw Error_Undefined();
-	}
-
-	if (auto enumerator = edit.tryEditColor0()) {
-		enumerator->fillValues(color);
-	}
-}
-
-void RenderMeshEdit::createLinesFromFaceEdges(VertexLayout vertexLayout, EditableMesh& srcMesh, const Color4f& color) {
-	_mesh.clear();
-	auto n = srcMesh.faceEdges().size();
-	if (n <= 0) return;
-
-	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, n * 2);
-
-	for (auto& f : srcMesh.faces()) {
-		auto faceEdges = f.getFaceEdges(srcMesh);
-
-		if (auto enumerator = edit.tryEditPosition()) {
-			auto dst = enumerator->begin();
-			for (auto& fe : faceEdges) {
-				auto& e = fe.edge(srcMesh);
-				*dst = Vec3f::s_cast(e.point0(srcMesh).pos); ++dst;
-				*dst = Vec3f::s_cast(e.point1(srcMesh).pos); ++dst;
-			}
-			if (dst != enumerator->end()) throw Error_Undefined();
-		}
-
-		if (auto enumerator = edit.tryEditColor0()) {
-			enumerator->fillValues(color);
-		}
-	}
-}
-
-void RenderMeshEdit::createTextFromPointIds(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle) {
-	_mesh.clear();
-	TempString text;
-	for (auto& v : srcMesh.points()) {
-		text.format("{}", ax_enum_int(v.id()));
-		addTextBillboard(vertexLayout, text, Vec3f::s_cast(v.pos), fontStyle);
-	}
-}
-
-void RenderMeshEdit::createTextFromFaceIds(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle) {
-	_mesh.clear();
-	TempString text;
-	for (auto& f : srcMesh.faces()) {
-		text.format("{}", ax_enum_int(f.id()));
-		addTextBillboard(vertexLayout, text, Vec3f::s_cast(f.center), fontStyle);
-	}
-}
-
-void RenderMeshEdit::createTextFromEdgeIds(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle) {
-	_mesh.clear();
-	TempString text;
-	for (auto& e : srcMesh.edges()) {
-		text.format("{}", ax_enum_int(e.id()));
-		addTextBillboard(vertexLayout, text, Vec3f::s_cast(e.center(srcMesh)), fontStyle);
-	}
-}
-
-void RenderMeshEdit::createTextFromFaceEdgeIds(VertexLayout vertexLayout, EditableMesh& srcMesh, const FontStyle* fontStyle) {
-	_mesh.clear();
-	TempString text;
-	for (auto& fe : srcMesh.faceEdges()) {
-		text.format("{}", ax_enum_int(fe.id()));
-		addTextBillboard(vertexLayout, text, Vec3f::s_cast(fe.point(srcMesh).pos), fontStyle);
-	}
 }
 
 void RenderMeshEdit::setColor(const Color4f color, Int colorSet) {
