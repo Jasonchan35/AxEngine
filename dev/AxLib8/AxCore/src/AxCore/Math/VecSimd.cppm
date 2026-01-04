@@ -16,12 +16,10 @@ inline constexpr VecSimd VecSimd_Default = VecSimd::SSE;
 
 class VecSimd_NullReg {};
 template<Int N, class T, VecSimd SIMD>
-struct VecSimdInfo_ { using Register = VecSimd_NullReg; static constexpr Int padding = 0; };
+struct VecSimdInfo_ { using Register = VecSimd_NullReg; };
 
-template<> struct VecSimdInfo_<3, f32, VecSimd::SSE>	{ using Register = __m128;   static constexpr Int padding = 1;}; 
-template<> struct VecSimdInfo_<3, f64, VecSimd::SSE>	{ using Register = __m256d;  static constexpr Int padding = 1;};
-template<> struct VecSimdInfo_<4, f32, VecSimd::SSE>	{ using Register = __m128;   static constexpr Int padding = 0;}; 
-template<> struct VecSimdInfo_<4, f64, VecSimd::SSE>	{ using Register = __m256d;  static constexpr Int padding = 0;};
+template<> struct VecSimdInfo_<4, f32, VecSimd::SSE>	{ using Register = __m128;   }; 
+template<> struct VecSimdInfo_<4, f64, VecSimd::SSE>	{ using Register = __m256d;  };
 
 template<class VEC, class T>
 struct VecSimd_NumLimit {
@@ -42,17 +40,23 @@ template<Int N, class T, VecSimd SIMD>
 class VecSimd_Data_ {
 	using Info = VecSimdInfo_<N,T,SIMD>;
 	using Register = typename Info::Register;
-	static constexpr Int padding = Info::padding; 
 public:
 	using Vec = VecSimd_Data_;
 	union {
 		Register	mm;	
-		T			e[N + padding];
+		T			e[N];
 	};
 	
+	using VecData1 = VecSimd_Data_<1,T,SIMD>;
+	using VecData2 = VecSimd_Data_<2,T,SIMD>;
+	using VecData3 = VecSimd_Data_<3,T,SIMD>;
+	using VecData4 = VecSimd_Data_<4,T,SIMD>;
+	
 	static constexpr bool _use_SSE			= SIMD == VecSimd::SSE;
-	static constexpr bool _use_SSE_m128_ps	= (N == 3 || N == 4) && _use_SSE && Type_IsSame<T, f32>;
-	static constexpr bool _use_SSE_m256_pd	= (N == 3 || N == 4) && _use_SSE && Type_IsSame<T, f64>;
+	static constexpr bool _is_f32			= Type_IsSame<T, f32>;
+	static constexpr bool _is_f64			= Type_IsSame<T, f64>;
+	static constexpr bool _use_SSE_m128_ps	= N == 4 && _use_SSE && _is_f32;
+	static constexpr bool _use_SSE_m256_pd	= N == 4 && _use_SSE && _is_f64;
 
 	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_() = default;
 	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const VecSimd_Data_&) = default;
@@ -89,6 +93,14 @@ public:
 		static_assert(N == 4);
 	}
 
+	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(VecSimd_Data_<3,T,SIMD> v, T t3) : e{v.e[0], v.e[1], v.e[2], t3}{
+		static_assert(N == 4);
+	}
+
+	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(T t0, VecSimd_Data_<3,T,SIMD> v) : e{t0, v.e[0], v.e[1], v.e[2]}{
+		static_assert(N == 4);
+	}
+	
 	      T* data()			{ return e; }
 	const T* data() const	{ return e; }
 	
@@ -188,16 +200,19 @@ public:
 	}
 	
 	AX_NODISCARD AX_INLINE constexpr T dot(Vec vec) const {
-		if constexpr (N == 3 && _use_SSE_m128_ps) {
+#if 0		
+		if constexpr (N == 3 && _use_SSE && _is_f32) {
+			__m128 v1 = _mm_set_ps(0.0f,     e[2],     e[1],     e[0]); 
+			__m128 v2 = _mm_set_ps(0.0f, vec.e[2], vec.e[1], vec.e[0]);
 			// Mask 0x71:
-			// 0x7 (High nibble): 0111 -> Multiply elements 0, 1, and 2 (ignore 3)
+			// 0x7 (High nibble): 1110 -> Multiply elements 0, 1, and 2 (ignore 3)
 			// 0x1 (Low nibble):  0001 -> Store the result in element 0 of the output
-			__m128 res = _mm_dp_ps(mm, vec.mm, 0x71);
+			__m128 res = _mm_dp_ps(v1, v2, 0x71);
 			return _mm_cvtss_f32(res);
-		} else {
-			auto tmp = *this * vec;
-			return tmp.horizontalAdd();
 		}
+#endif		
+		auto tmp = *this * vec;
+		return tmp.horizontalAdd();
 	}
 
 //------------
