@@ -7,7 +7,7 @@ export import AxCore.NormInt;
 
 export namespace  ax {
 
-template<Int N, class T, VecSimd SIMD> class Vec_;
+template<Int N, class T, VecSimd SIMD = VecSimd_Default> class Vec_;
 template<class T, VecSimd SIMD = VecSimd_Default> using Vec1_ = Vec_<1, T, SIMD>;
 template<class T, VecSimd SIMD = VecSimd_Default> using Vec2_ = Vec_<2, T, SIMD>;
 template<class T, VecSimd SIMD = VecSimd_Default> using Vec3_ = Vec_<3, T, SIMD>;

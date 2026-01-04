@@ -53,6 +53,8 @@ private:
 	void _compileReflect_samplers		(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
 	void _compileReflect_storageBuffers	(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
 
+	RenderDataType _getRenderDataType(const D3D12_SHADER_TYPE_DESC & t);
+	
 	class IncludeHandler;
 	
 	bool checkError(HRESULT hr) {

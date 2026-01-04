@@ -94,8 +94,8 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 		if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 			if (mat.row_count == 4 && mat.column_count == 4) {
 				switch (scalar.width) {
-					case 32: return RenderDataType::Mat4f_Basic;
-					case 64: return RenderDataType::Mat4d_Basic;
+					case 32: return RenderDataType::Mat4f;
+					case 64: return RenderDataType::Mat4d;
 				}
 			}
 		}
@@ -106,56 +106,56 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 	if (src.type_flags & SPV_REFLECT_TYPE_FLAG_INT) {
 		switch (scalar.width) {
 			case 8: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i8           : RenderDataType::u8;
-				case 1: return scalar.signedness ? RenderDataType::Vec1i8_Basic : RenderDataType::Vec1u8_Basic;
-				case 2: return scalar.signedness ? RenderDataType::Vec2i8_Basic : RenderDataType::Vec2u8_Basic;
-				case 3: return scalar.signedness ? RenderDataType::Vec3i8_Basic : RenderDataType::Vec3u8_Basic;
-				case 4: return scalar.signedness ? RenderDataType::Vec4i8_Basic : RenderDataType::Vec4u8_Basic;
+				case 0: return scalar.signedness ? RenderDataType::i8     : RenderDataType::u8;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i8 : RenderDataType::Vec1u8;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i8 : RenderDataType::Vec2u8;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i8 : RenderDataType::Vec3u8;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i8 : RenderDataType::Vec4u8;
 			} break;
 			case 16: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i16           : RenderDataType::u16;
-				case 1: return scalar.signedness ? RenderDataType::Vec1i16_Basic : RenderDataType::Vec1u16_Basic;
-				case 2: return scalar.signedness ? RenderDataType::Vec2i16_Basic : RenderDataType::Vec2u16_Basic;
-				case 3: return scalar.signedness ? RenderDataType::Vec3i16_Basic : RenderDataType::Vec3u16_Basic;
-				case 4: return scalar.signedness ? RenderDataType::Vec4i16_Basic : RenderDataType::Vec4u16_Basic;
+				case 0: return scalar.signedness ? RenderDataType::i16     : RenderDataType::u16;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i16 : RenderDataType::Vec1u16;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i16 : RenderDataType::Vec2u16;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i16 : RenderDataType::Vec3u16;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i16 : RenderDataType::Vec4u16;
 			} break;
 			case 32: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i32           : RenderDataType::u32;
-				case 1: return scalar.signedness ? RenderDataType::Vec1i32_Basic : RenderDataType::Vec1u32_Basic;
-				case 2: return scalar.signedness ? RenderDataType::Vec2i32_Basic : RenderDataType::Vec2u32_Basic;
-				case 3: return scalar.signedness ? RenderDataType::Vec3i32_Basic : RenderDataType::Vec3u32_Basic;
-				case 4: return scalar.signedness ? RenderDataType::Vec4i32_Basic : RenderDataType::Vec4u32_Basic;
+				case 0: return scalar.signedness ? RenderDataType::i32     : RenderDataType::u32;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i32 : RenderDataType::Vec1u32;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i32 : RenderDataType::Vec2u32;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i32 : RenderDataType::Vec3u32;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i32 : RenderDataType::Vec4u32;
 			} break;
 			case 64: switch (vec.component_count) {
-				case 0: return scalar.signedness ? RenderDataType::i64           : RenderDataType::u64;
-				case 1: return scalar.signedness ? RenderDataType::Vec1i64_Basic : RenderDataType::Vec1u64_Basic;
-				case 2: return scalar.signedness ? RenderDataType::Vec2i64_Basic : RenderDataType::Vec2u64_Basic;
-				case 3: return scalar.signedness ? RenderDataType::Vec3i64_Basic : RenderDataType::Vec3u64_Basic;
-				case 4: return scalar.signedness ? RenderDataType::Vec4i64_Basic : RenderDataType::Vec4u64_Basic;
+				case 0: return scalar.signedness ? RenderDataType::i64     : RenderDataType::u64;
+				case 1: return scalar.signedness ? RenderDataType::Vec1i64 : RenderDataType::Vec1u64;
+				case 2: return scalar.signedness ? RenderDataType::Vec2i64 : RenderDataType::Vec2u64;
+				case 3: return scalar.signedness ? RenderDataType::Vec3i64 : RenderDataType::Vec3u64;
+				case 4: return scalar.signedness ? RenderDataType::Vec4i64 : RenderDataType::Vec4u64;
 			} break;
 		}
 	} else if (src.type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
 		switch (scalar.width) {
 			case 16: switch (vec.component_count) {
 				case 0: return RenderDataType::f16;
-				case 1: return RenderDataType::Vec1h_Basic;
-				case 2: return RenderDataType::Vec1h_Basic;
-				case 3: return RenderDataType::Vec1h_Basic;
-				case 4: return RenderDataType::Vec1h_Basic;
+				case 1: return RenderDataType::Vec1h;
+				case 2: return RenderDataType::Vec1h;
+				case 3: return RenderDataType::Vec1h;
+				case 4: return RenderDataType::Vec1h;
 			} break;
 			case 32: switch (vec.component_count) {
 				case 0: return RenderDataType::f32;
-				case 1: return RenderDataType::Vec1f_Basic;
-				case 2: return RenderDataType::Vec2f_Basic;
-				case 3: return RenderDataType::Vec3f_Basic;
-				case 4: return RenderDataType::Vec4f_Basic;
+				case 1: return RenderDataType::Vec1f;
+				case 2: return RenderDataType::Vec2f;
+				case 3: return RenderDataType::Vec3f;
+				case 4: return RenderDataType::Vec4f;
 			} break;
 			case 64: switch (vec.component_count) {
 				case 0: return RenderDataType::f64;
-				case 1: return RenderDataType::Vec1d_Basic;
-				case 2: return RenderDataType::Vec2d_Basic;
-				case 3: return RenderDataType::Vec3d_Basic;
-				case 4: return RenderDataType::Vec4d_Basic;
+				case 1: return RenderDataType::Vec1d;
+				case 2: return RenderDataType::Vec2d;
+				case 3: return RenderDataType::Vec3d;
+				case 4: return RenderDataType::Vec4d;
 			} break;
 		}
 	}

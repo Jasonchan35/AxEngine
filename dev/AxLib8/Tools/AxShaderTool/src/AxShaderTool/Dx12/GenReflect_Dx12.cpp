@@ -380,7 +380,6 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 				case D3D_REGISTER_COMPONENT_FLOAT64:	dataType.append("d");   break;
 				default: throw Error_Undefined();
 			}
-			dataType.append("_Basic");
 		} else {
 			switch (paramDesc.ComponentType) {
 				case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("u32"); break;
@@ -399,6 +398,87 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 
 		//wr.member("register", paramDesc.Register);
 	}
+}
+
+RenderDataType GenReflect_Dx12::_getRenderDataType(const D3D12_SHADER_TYPE_DESC& t) {
+	switch (t.Class) {
+		case D3D_SVC_SCALAR: {
+			switch (t.Type) {
+				case D3D_SVT_BOOL:				return RenderDataType::Bool;
+				case D3D_SVT_INT:				return RenderDataType::i32;
+				case D3D_SVT_UINT:				return RenderDataType::u32;
+				case D3D_SVT_UINT8:				return RenderDataType::u8;
+				case D3D_SVT_FLOAT:				return RenderDataType::f32;
+				case D3D_SVT_DOUBLE:			return RenderDataType::f64;
+				default: throw Error_Undefined();
+			}
+		} break;
+			
+		case D3D_SVC_VECTOR: {
+			switch (t.Type) {
+				case D3D_SVT_INT: {
+					switch (t.Columns) {
+						case 1: return RenderDataType::Vec1i32;
+						case 2: return RenderDataType::Vec2i32;
+						case 3: return RenderDataType::Vec3i32;
+						case 4: return RenderDataType::Vec4i32;
+						default: throw Error_Undefined();
+					}
+				} break;
+				case D3D_SVT_UINT: {
+					switch (t.Columns) {
+						case 1: return RenderDataType::Vec1u32;
+						case 2: return RenderDataType::Vec2u32;
+						case 3: return RenderDataType::Vec3u32;
+						case 4: return RenderDataType::Vec4u32;
+						default: throw Error_Undefined();
+					}
+				} break;
+				case D3D_SVT_UINT8: {
+					switch (t.Columns) {
+						case 1: return RenderDataType::Vec1u8;
+						case 2: return RenderDataType::Vec2u8;
+						case 3: return RenderDataType::Vec3u8;
+						case 4: return RenderDataType::Vec4u8;
+						default: throw Error_Undefined();
+					}
+				} break;
+				case D3D_SVT_FLOAT: {
+					switch (t.Columns) {
+						case 1: return RenderDataType::Vec1f;
+						case 2: return RenderDataType::Vec2f;
+						case 3: return RenderDataType::Vec3f;
+						case 4: return RenderDataType::Vec4f;
+						default: throw Error_Undefined();
+					}
+				} break;
+				case D3D_SVT_DOUBLE: {
+					switch (t.Columns) {
+						case 1: return RenderDataType::Vec1d;
+						case 2: return RenderDataType::Vec2d;
+						case 3: return RenderDataType::Vec3d;
+						case 4: return RenderDataType::Vec4d;
+						default: throw Error_Undefined();
+					}
+				} break;
+				default: throw Error_Undefined();
+			}
+		} break;
+
+		case D3D_SVC_MATRIX_ROWS:
+		case D3D_SVC_MATRIX_COLUMNS:	{
+			if (t.Rows == 4 && t.Columns == 4) {
+				switch (t.Type) {
+					case D3D_SVT_FLOAT:  return RenderDataType::Mat4f;
+					case D3D_SVT_DOUBLE: return RenderDataType::Mat4d;
+					default: throw Error_Undefined();
+				}
+			}
+		} break;
+		default: throw Error_Undefined();
+	}
+	
+	throw Error_Undefined();
 }
 
 void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
@@ -448,57 +528,10 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 			outVar.offset = ax_safe_cast_from(varDesc.StartOffset);
 					
 			//------------------------------
-			TempString dataType;
-			switch (varType.Class) {
-				case D3D_SVC_SCALAR: {
-					switch (varType.Type) {
-						case D3D_SVT_BOOL:				dataType.append("Bool");	break;
-						case D3D_SVT_INT:				dataType.append("i32");		break;
-						case D3D_SVT_UINT:				dataType.append("u32");		break;
-						case D3D_SVT_UINT8:				dataType.append("u8");		break;
-						case D3D_SVT_FLOAT:				dataType.append("f32");		break;
-						case D3D_SVT_DOUBLE:			dataType.append("f64");		break;
-						default: throw Error_Undefined();
-					}
-				} break;
-				case D3D_SVC_VECTOR: {
-					dataType.append(Fmt("Vec{}", varType.Columns));
-					switch (varType.Type) {
-						case D3D_SVT_BOOL:				dataType.append("bool");	break;
-						case D3D_SVT_INT:				dataType.append("i32");		break;
-						case D3D_SVT_UINT:				dataType.append("u32");		break;
-						case D3D_SVT_UINT8:				dataType.append("u8");		break;
-						case D3D_SVT_FLOAT:				dataType.append("f");		break;
-						case D3D_SVT_DOUBLE:			dataType.append("d");		break;
-						default: throw Error_Undefined();
-					}
-					dataType.append("_Basic");
-				} break;
-
-				case D3D_SVC_MATRIX_ROWS:
-				case D3D_SVC_MATRIX_COLUMNS:	{
-					dataType.clear();
-					if (varType.Rows == 4 && varType.Columns == 4) {
-						if (varType.Type == D3D_SVT_FLOAT) {
-							dataType = "Mat4f_Basic";
-						} else if (varType.Type == D3D_SVT_DOUBLE) {
-							dataType = "Mat4d_Basic";
-						}
-					}
-
-					if (!dataType) throw Error_Undefined();
-				} break;
-
-				default: throw Error_Undefined();
-			}
+			outVar.dataType = _getRenderDataType(varType);
 
 			if (varType.Class == D3D_SVC_MATRIX_ROWS) {
 				outVar.rowMajor = true;
-			}
-
-			if (!dataType.tryParse(outVar.dataType)) {
-				AX_LOG("Error: parse enum {}", dataType);
-				throw Error_Undefined();
 			}
 
 			if (outVar.dataType == RenderDataType::None) {

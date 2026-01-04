@@ -6,7 +6,6 @@ export import AxCore.Num;
 export namespace ax {
 
 #define AX_NumSIMD_ENUM_LIST(E) \
-	E(Default,) \
 	E(Basic,) \
 	E(SSE,)  \
 //---

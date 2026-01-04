@@ -106,7 +106,7 @@ struct VertexT_Normal : public BASE
 	using NormalType = NORMAL_TYPE;
 	FixedArray<NORMAL_TYPE, NORMAL_COUNT>	normal;
 
-	static const RenderDataType	kNormalType    = DataType_get<NORMAL_TYPE>();
+	static const RenderDataType	kNormalType    = RenderDataType_get<NORMAL_TYPE>();
 	static const u8 kNormalCount = NORMAL_COUNT;
 
 	static VertexLayout s_layout() {
@@ -126,7 +126,7 @@ struct VertexT_Tangent : public BASE
 	using TangentType = TANGENT_TYPE;
 	FixedArray<TANGENT_TYPE, TANGENT_COUNT>	tangent;
 
-	static const RenderDataType	kTangentType    = DataType_get<TANGENT_TYPE>();
+	static const RenderDataType	kTangentType    = RenderDataType_get<TANGENT_TYPE>();
 	static const u8 kTangentCount = TANGENT_COUNT;
 
 	static VertexLayout s_layout() {
@@ -146,7 +146,7 @@ struct VertexT_Binormal : public BASE
 	using BinormalType = BINORMAL_TYPE;
 	FixedArray<BINORMAL_TYPE, BINORMAL_COUNT>	binormal;
 
-	static const RenderDataType	kBinormalType    = DataType_get<BINORMAL_TYPE>();
+	static const RenderDataType	kBinormalType    = RenderDataType_get<BINORMAL_TYPE>();
 	static const u8 kBinormalCount = BINORMAL_COUNT;
 
 	static VertexLayout s_layout() {
@@ -160,43 +160,43 @@ struct VertexT_Binormal : public BASE
 	}
 };
 
-using Vertex_Pos2f				= VertexT_Pos<Vec2f_Basic>;
+using Vertex_Pos2f				= VertexT_Pos<Vec2f>;
 
-using Vertex_Pos				= VertexT_Pos<Vec3f_Basic>;
-using Vertex_PosNormal			= VertexT_Normal<Vec3f_Basic, 1, Vertex_Pos>;
+using Vertex_Pos				= VertexT_Pos<Vec3f>;
+using Vertex_PosNormal			= VertexT_Normal<Vec3f, 1, Vertex_Pos>;
 
 template<u8 COLOR>
-using Vertex_PosColor_			= VertexT_Color<Color4b_Basic,  COLOR, Vertex_Pos>;
+using Vertex_PosColor_			= VertexT_Color<Color4b,  COLOR, Vertex_Pos>;
 using Vertex_PosColor			= Vertex_PosColor_<1>;
 
 template<u8 COLOR>
-using Vertex_PosNormalColor_	= VertexT_Normal<Color3b_Basic, COLOR, Vertex_PosColor>;
+using Vertex_PosNormalColor_	= VertexT_Normal<Color3b, COLOR, Vertex_PosColor>;
 using Vertex_PosNormalColor		= Vertex_PosNormalColor_<1>;
 
 template<u8 UV>
-using Vertex_PosUv_	= VertexT_Uv<Vec2f_Basic, UV, Vertex_Pos>;
+using Vertex_PosUv_	= VertexT_Uv<Vec2f, UV, Vertex_Pos>;
 using Vertex_PosUv	= Vertex_PosUv_<1>;
 
 template<u8 UV, u8 COLOR>
-using Vertex_PosUvColor_		= VertexT_Color<Color4b_Basic, COLOR, Vertex_PosUv_<UV>>;
+using Vertex_PosUvColor_		= VertexT_Color<Color4b, COLOR, Vertex_PosUv_<UV>>;
 using Vertex_PosUvColor			= Vertex_PosUvColor_<1, 1>;
 
 template<u8 UV>				
-using Vertex_PosNormalUv_		= VertexT_Normal<Vec3f_Basic, 1, Vertex_PosUv_<UV>>;
+using Vertex_PosNormalUv_		= VertexT_Normal<Vec3f, 1, Vertex_PosUv_<UV>>;
 using Vertex_PosNormalUv		= Vertex_PosNormalUv_<1>;
 
 template<u8 UV, u8 COLOR>	
-using Vertex_PosNormalUvColor_	= VertexT_Normal<Vec3f_Basic, 1, Vertex_PosUvColor_<UV, COLOR>>;
+using Vertex_PosNormalUvColor_	= VertexT_Normal<Vec3f, 1, Vertex_PosUvColor_<UV, COLOR>>;
 using Vertex_PosNormalUvColor	= Vertex_PosNormalUvColor_<1, 1>;
 
 template<u8 UV>				
-using Vertex_PosTangentUv_		= VertexT_Tangent<Vec3f_Basic, 1, Vertex_PosNormalUv_<UV>>;
+using Vertex_PosTangentUv_		= VertexT_Tangent<Vec3f, 1, Vertex_PosNormalUv_<UV>>;
 using Vertex_PosTangentUv		= Vertex_PosTangentUv_<1>;
 
 template<u8 UV, u8 COLOR>	
-using Vertex_PosTangentUvColor_	= VertexT_Tangent<Vec3f_Basic, 1, Vertex_PosNormalUvColor_<UV, COLOR>>;
+using Vertex_PosTangentUvColor_	= VertexT_Tangent<Vec3f, 1, Vertex_PosNormalUvColor_<UV, COLOR>>;
 using Vertex_PosTangentUvColor	= Vertex_PosTangentUvColor_<1, 1>;
 
-using Vertex_ImGui = VertexT_Color<Color4b_Basic, 1, VertexT_Uv<Vec2f_Basic, 1, Vertex_Pos2f>>;
+using Vertex_ImGui = VertexT_Color<Color4b, 1, VertexT_Uv<Vec2f, 1, Vertex_Pos2f>>;
 
 }
