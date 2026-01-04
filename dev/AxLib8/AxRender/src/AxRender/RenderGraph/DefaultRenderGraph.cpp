@@ -1,7 +1,7 @@
 module AxRender;
 
 import :RenderCommandList;
-import :RenderRequest;
+import :RenderRequest_Backend;
 
 namespace ax /*::AxRender*/ {
 
@@ -44,6 +44,23 @@ DefaultRenderGraph::DefaultRenderGraph() {
 		_testMeshMaterial->setParam(tex1, _testSampler);
 	}
 
+	if constexpr (true) {
+		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/testMesh3d.axShader");
+		_testMesh3dMaterial = Material::s_new(AX_NEW);
+		_testMesh3dMaterial->setShader(shader);
+		
+		//		_testMeshMaterial->setParam(NameId("color"), Color4f::kRed());
+
+		static NameId tex0 = NameId::s_make("tex0");
+		static NameId tex1 = NameId::s_make("tex1");
+
+		_testMesh3dMaterial->setParam(tex0, _testTex0);
+		_testMesh3dMaterial->setParam(tex1, _testTex1);
+
+		_testMesh3dMaterial->setParam(tex0, _testSampler);
+		_testMesh3dMaterial->setParam(tex1, _testSampler);
+	}
+	
 
 	if constexpr (true) {
 		using V = Vertex_PosUv;
@@ -79,9 +96,16 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	}
 #endif
 
-	if (_testMeshMaterial) {
-		req->drawMesh(_testMesh, _testMeshMaterial, 0);
-		req->drawMesh(_testCube, _testMeshMaterial, 0);
+	// if (_testMeshMaterial) {
+	// 	req->drawMesh(_testMesh, _testMeshMaterial, 0);
+	// }
+	
+	_camera.setViewport(req->viewport());
+	
+	if (_testMesh3dMaterial) {
+		auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);
+		req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), _camera.viewProjMatrix().transpose());
+		req->drawMesh(_testCube, _testMesh3dMaterial, 0);
 	}
 
 	req->drawUI();

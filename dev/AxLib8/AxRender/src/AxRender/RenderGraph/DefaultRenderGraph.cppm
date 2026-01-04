@@ -40,6 +40,7 @@ private:
 	SPtr<Texture2D> 	_testTex1;
 	SPtr<Sampler>		_testSampler;
 	
+	SPtr<Material>		_testMesh3dMaterial;
 	SPtr<MeshObject>	_testCube;
 	Math::Camera3f		_camera;
 };

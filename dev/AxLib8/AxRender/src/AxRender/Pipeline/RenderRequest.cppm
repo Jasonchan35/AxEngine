@@ -67,6 +67,8 @@ public:
 	Statistics statistics;
 
 	void setViewport(const Rect2f& rect, float minDepth, float maxDepth);
+	AX_INLINE const Rect2f& viewport() { return _viewportRect; }
+	
 	void setScissorRect(const Rect2f& rect);
 	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
 

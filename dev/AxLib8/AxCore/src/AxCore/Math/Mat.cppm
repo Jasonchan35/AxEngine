@@ -525,7 +525,7 @@ auto Mat_<4, 4, T, SIMD>::operator*(const This& r) const -> This {
 
 template<class T, VecSimd SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_perspective(T fovy_rad, T aspect, T zNear, T zFar) -> This {
-	AX_ASSERT(!almostZero(aspect));
+	AX_ASSERT(!Math::almostZero(aspect));
 
 	T deltaZ = zFar - zNear;
 	T tf = tan(fovy_rad / T(2));
@@ -544,7 +544,7 @@ auto Mat_<4, 4, T, SIMD>::s_ortho(T left, T right, T bottom, T top, T zNear, T z
 	T h = top - bottom;
 	T d = zFar - zNear;
 
-	if (almostZero(w) || almostZero(h) || almostZero(d)) {
+	if (Math::almostZero(w) || Math::almostZero(h) || Math::almostZero(d)) {
 		return s_identity();
 	}
 
@@ -572,7 +572,7 @@ auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3&
 
 template<class T, VecSimd SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_rotate(const Vec3& rad) -> This {
-	if (rad.almostEqualZero()) return s_identity();
+	if (Math::almostZero(rad)) return s_identity();
 
 	Vec3 s, c;
 	sincos(rad.x, s.x, c.x);
@@ -589,7 +589,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate(const Vec3& rad) -> This {
 
 template<class T, VecSimd SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_rotate_x(T rad) -> This {
-	if (almostEqualZero(rad)) return s_identity();
+	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
 	sincos(rad, s, c);
@@ -601,7 +601,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate_x(T rad) -> This {
 
 template<class T, VecSimd SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_rotate_y(T rad) -> This {
-	if (almostZero(rad)) return s_identity();
+	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
 	sincos(rad, s, c);
@@ -613,7 +613,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate_y(T rad) -> This {
 
 template<class T, VecSimd SIMD> AX_NODISCARD constexpr
 auto Mat_<4,4,T,SIMD>::s_rotate_z(T rad) -> This {
-	if (almostZero(rad)) return s_identity();
+	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
 	sincos(rad, s, c);

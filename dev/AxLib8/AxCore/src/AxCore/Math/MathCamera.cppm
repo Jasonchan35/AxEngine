@@ -48,7 +48,7 @@ private:
 	T     _fov      = T(50.0);
 	T     _nearClip = T(0.1);
 	T     _farClip  = T(10000.0);
-	Rect2 _viewport;
+	Rect2 _viewport {0,0,1920,1080};
 	Vec3  _pos{150, 150, 200};
 	Vec3  _aim{0, 0, 0};
 	Vec3  _up{0, 1, 0};
