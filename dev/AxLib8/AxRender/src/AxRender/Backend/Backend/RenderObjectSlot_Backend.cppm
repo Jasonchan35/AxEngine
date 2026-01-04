@@ -21,8 +21,8 @@ public:
 	AX_INLINE RenderObjectSlotId slotId() const { return _slotId; }
 	AX_INLINE T*	 owner() { return _owner; }
 
-	RenderObjectSlot_Backend(T* owner) : _owner(owner) {
-		Table::s_get().scopedLock()->add(_owner);
+	RenderObjectSlot_Backend(T* owner, bool isFallbackDefault) : _owner(owner) {
+		Table::s_get().scopedLock()->add(_owner, isFallbackDefault);
 	}
 
 	~RenderObjectSlot_Backend() {
@@ -51,7 +51,7 @@ public:
 	static constexpr bool kNeedDescriptorUpdate = std::is_base_of_v<Sampler    , T>
 												| std::is_base_of_v<Texture2D  , T>;
 
-	void add(T* obj);
+	void add(T* obj, bool isFallbackDefault);
 	void remove(T* obj);
 	void markDirty(T* obj);
 

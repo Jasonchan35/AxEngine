@@ -274,6 +274,7 @@ public:
 class Shader_CreateDesc : public NonCopyable {
 public:
 	StrView		assetPath;
+	bool isFallbackDefault : 1 = false;
 };
 
 class Shader : public RenderObject {

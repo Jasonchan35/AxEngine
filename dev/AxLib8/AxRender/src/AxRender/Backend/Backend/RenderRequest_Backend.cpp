@@ -23,6 +23,9 @@ RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
 	_index                = desc.index;
 	_inlineUpload.create(this);
 	_renderRequestCount = _renderSystem->renderRequestCount();
+	
+	auto* stock = RenderStockObjects::s_instance();
+	_fallback = &stock->fallback;
 }
 
 void RenderRequest_Backend::waitCompleted() {

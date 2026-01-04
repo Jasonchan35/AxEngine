@@ -275,7 +275,7 @@ SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, StrView a
 
 Shader_Backend::Shader_Backend(const CreateDesc& desc)
 : Base(desc)
-, objectSlot(this)
+, objectSlot(this, desc.isFallbackDefault)
 {}
 
 void Shader_Backend::onLoadFile() {

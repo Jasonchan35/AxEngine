@@ -22,7 +22,7 @@ auto RenderObjectTable_Backend<T>::s_get() -> MutexProtected<This>& {
 }
 
 template<class T>
-void RenderObjectTable_Backend<T>::add(T* obj) {
+void RenderObjectTable_Backend<T>::add(T* obj, bool isFallbackDefault) {
 	if (!obj) return;
 
 	if (auto& key = obj->resourceKey()) { _keyDict.add(key, obj); }
@@ -34,11 +34,13 @@ void RenderObjectTable_Backend<T>::add(T* obj) {
 	}
 
 	auto slotId = RenderObjectSlotId_None;
-	if (_freeSlots.size()) {
-		slotId = _freeSlots.popBack();
-	} else {
-		slotId = ax_safe_cast_from(_slots.size());
-		_slots.emplaceBack();
+	if (!isFallbackDefault) {
+		if (_freeSlots.size()) {
+			slotId = _freeSlots.popBack();
+		} else {
+			slotId = ax_safe_cast_from(_slots.size());
+			_slots.emplaceBack();
+		}
 	}
 
 	handle._slotId = slotId;
@@ -51,8 +53,6 @@ template<class T>
 void RenderObjectTable_Backend<T>::markDirty(T* obj) {
 	if (!obj) { AX_ASSERT(false); return; }
 	auto& handle = obj->objectSlot;
-	if (!handle) { AX_ASSERT(false); return; }
-
 	auto slotId = handle._slotId;
 	AX_ASSERT(_slots[slotId] == obj);
 

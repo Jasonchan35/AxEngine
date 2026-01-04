@@ -8,6 +8,21 @@ static RenderStockObjects* StockObjects_instance = nullptr;
 RenderStockObjects::RenderStockObjects() {
 }
 
+RenderStockObjects::Fallback::Fallback() {
+	{
+		Sampler_CreateDesc desc;
+		desc.isFallbackDefault = true;
+		sampler = Sampler::s_new(AX_NEW, desc);
+	}
+	{
+		Image image;
+		image.create(ColorType::RGBAb, Vec2i(4,4));
+		image.fill(Color4b::kMagenta());
+		texture2D = Texture2D::s_new(AX_NEW, image);
+		texture2D->setDebugName("fallback.Texture2D");
+	}
+}
+
 RenderStockObjects::Samplers::Samplers() 
 : Point		  (SamplerFilter:: Point		 )
 , Linear	  (SamplerFilter:: Linear	 	 )

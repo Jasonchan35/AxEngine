@@ -9,7 +9,7 @@ SPtr<Sampler> Sampler_Backend::s_new(const MemAllocRequest& req, const CreateDes
 	SPtr<Sampler_Backend> o;
 	if (RenderObjectManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.samplerState))
 		o->_create(desc);
-	return o;	
+	return o;
 }
 
 SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {

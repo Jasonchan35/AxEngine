@@ -93,6 +93,9 @@ public:
 
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
 
+	using Fallback = RenderStockObjects::Fallback;
+	Fallback* _fallback = nullptr;
+	
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
 

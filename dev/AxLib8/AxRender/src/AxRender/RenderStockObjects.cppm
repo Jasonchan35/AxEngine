@@ -16,12 +16,19 @@ AX_ENUM_CLASS(AX_RenderStockTextureId_ENUM_LIST, RenderStockTextureId, u8)
 
 class RenderStockObjects : public NonCopyable {
 public:
+	struct Fallback {
+		Fallback();
+		SPtr<Sampler>	sampler;
+		SPtr<Texture2D> texture2D;
+	}; 
+	Fallback fallback;
+	
 	struct Font : public NonCopyable {
 		Font();
 		SPtr<FontStyle>		defaultFontStyle;
 	};
 	Font font;
-	
+
 	struct Texture2Ds : public NonCopyable {
 		Texture2Ds();
 

@@ -76,9 +76,13 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	for (auto& texParam : _textureParams) {
 		switch (texParam.dataType()) {
 			case RenderDataType::Texture2D: {
-				auto* tex = rttiCastCheck<Texture2D_Dx12>(texParam.texture());
-				if (!tex) throw Error_Undefined();
-				auto srcDesc = ax_const_cast(tex)->_getUpdatedDescriptor(req);
+				auto* tex = texParam.texture();
+				if (!tex) tex = req->_fallback->texture2D;
+				
+				auto* tex_dx12 = rttiCastCheck<Texture2D_Dx12>(tex);
+				if (!tex_dx12) throw Error_Undefined();
+				
+				auto srcDesc = ax_const_cast(tex_dx12)->_getUpdatedDescriptor(req);
 				req->_dynamicDescriptors.CBV_SRV_UAV.addDescriptor(srcDesc);
 				_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 			} break;
@@ -88,8 +92,13 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 
 	//TODO move to static sampler
 	for (auto& samplerParam : _samplerParams) {
-		auto* sampler = rttiCastCheck<Sampler_Dx12>(samplerParam.sampler());
-		auto& ss      = sampler->samplerState();
+		auto* sampler = samplerParam.sampler();
+		if (!sampler) sampler = req->_fallback->sampler;
+		
+		auto* sampler_dx12 = rttiCastCheck<Sampler_Dx12>(sampler);
+		if (!sampler_dx12) throw Error_Undefined();
+		
+		auto& ss = sampler_dx12->samplerState();
 //		AX_LOG("-- addSampler");
 		req->_dynamicDescriptors.Sampler.addSampler(ss);
 		_perFrameData.heapStart_Sampler.bindCount++;

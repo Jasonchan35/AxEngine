@@ -357,7 +357,7 @@ public:
 
 protected:
 	Shader_Backend(const CreateDesc& desc);
-
+	
 	void _create(const CreateDesc& desc) { onCreate(desc); }
 	virtual void onCreate(const CreateDesc& desc) { onLoadFile(); }
 	virtual void onLoadFile();
@@ -365,8 +365,7 @@ protected:
 	void destroy() { onDestroy(); }
 	virtual void onDestroy();
 
-	bool	_isGlobalCommonShader = false;
-
+	bool	_isGlobalCommonShader : 1 = false;
 	ShaderResultInfo	_info;
 
 	struct PropName {

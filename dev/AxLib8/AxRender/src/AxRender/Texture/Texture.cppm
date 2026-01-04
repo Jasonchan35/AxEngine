@@ -113,6 +113,7 @@ public:
 class Sampler_CreateDesc : NonCopyable {
 public:
 	SamplerState	samplerState;
+	bool isFallbackDefault : 1 = false;
 };
 
 class Sampler : public RenderObject {
@@ -155,10 +156,11 @@ protected:
 
 class Texture2D_CreateDesc : NonCopyable {
 public:
-	StrView			assetPath;
-	ImageInfo		imageInfo;
-	ByteSpan		pixelData;
-	bool			isBackBuffer = false;
+	StrView   assetPath;
+	ImageInfo imageInfo;
+	ByteSpan  pixelData;
+	bool      isBackBuffer : 1      = false;
+	bool      isFallbackDefault : 1 = false;
 };
 
 class Texture2D : public Texture {
@@ -190,8 +192,9 @@ protected:
 
 class Texture3D_CreateDesc : NonCopyable {
 public:
-	StrView			assetPath;
-	ImageInfo		info;
+	StrView   assetPath;
+	ImageInfo info;
+	bool      isFallbackDefault : 1 = false;
 };
 
 class Texture3D : public Texture {
@@ -212,8 +215,9 @@ private:
 
 class TextureCube_CreateDesc : NonCopyable {
 public:
-	StrView			assetPath;
-	ImageInfo		info;
+	StrView   assetPath;
+	ImageInfo info;
+	bool      isFallbackDefault : 1 = false;
 };
 
 class TextureCube : public Texture {

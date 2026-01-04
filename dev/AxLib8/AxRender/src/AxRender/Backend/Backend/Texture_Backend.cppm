@@ -14,7 +14,7 @@ public:
 	RenderObjectSlot_Backend<This>	objectSlot;
 
 protected:
-	Sampler_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this) {}
+	Sampler_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this, desc.isFallbackDefault) {}
 
 	void _create(const CreateDesc& desc) { onCreate(desc); }
 	virtual void onCreate(const CreateDesc& desc) {}
@@ -34,7 +34,7 @@ public:
 	RenderObjectSlot_Backend<This>	objectSlot;
 
 protected:
-	Texture2D_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this) {}
+	Texture2D_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this, desc.isFallbackDefault) {}
 
 	void _loadFile();
 	void _loadImage(const Image& image) { _loadImage(image.info(), image.pixelData()); }
