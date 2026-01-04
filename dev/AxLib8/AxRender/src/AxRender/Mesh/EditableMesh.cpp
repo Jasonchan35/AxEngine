@@ -113,7 +113,7 @@ EditableMesh::Face& EditableMesh::addFace(IntSpan pointIndices) {
 			e.addFaceEdge(*this, fe);
 		}
 
-		i++;
+		++i;
 	}
 
 	return face;

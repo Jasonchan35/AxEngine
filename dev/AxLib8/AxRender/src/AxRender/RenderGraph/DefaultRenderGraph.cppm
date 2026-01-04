@@ -33,15 +33,15 @@ public:
 	virtual void onLightingPass		(RenderRequest* req, Span<Input> inputs);
 
 private:
-	SPtr<Material>	_testMaterial;
-	SPtr<Material>	_testMeshMaterial;
-	RenderMesh		_testMesh;
-	SPtr<Texture2D>	_testTex0;
-	SPtr<Texture2D> _testTex1;
-	SPtr<Sampler>	_testSampler;
+	SPtr<Material>		_testMaterial;
+	SPtr<Material>		_testMeshMaterial;
+	RenderMesh			_testMesh;
+	SPtr<Texture2D>		_testTex0;
+	SPtr<Texture2D> 	_testTex1;
+	SPtr<Sampler>		_testSampler;
 	
-	RenderMesh		_testCube;
-	Math::Camera3f	_camera;
+	SPtr<MeshObject>	_testCube;
+	Math::Camera3f		_camera;
 };
 
 } // namespace

@@ -392,12 +392,12 @@ public:
 	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(Int offset, Int newSize) const	{ return _obj_span().slice(offset, newSize); }
 	AX_NODISCARD AX_INLINE	constexpr MSpan	slice			(IntRange range)				{ return _obj_span().slice(range); }
 	AX_NODISCARD AX_INLINE	constexpr CSpan	slice			(IntRange range) const			{ return _obj_span().slice(range); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return _obj_span().slice(newSize); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return _obj_span().slice(newSize); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFrom		(Int offset)					{ return _obj_span().slice(offset); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return _obj_span().slice(offset); }
-	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return _obj_span().slice(offset); }
-	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return _obj_span().slice(offset); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceBack		(Int newSize)			 		{ return _obj_span().sliceBack(newSize); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceBack		(Int newSize) const	 			{ return _obj_span().sliceBack(newSize); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFrom		(Int offset)					{ return _obj_span().sliceFrom(offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFrom		(Int offset) const				{ return _obj_span().sliceFrom(offset); }
+	AX_NODISCARD AX_INLINE	constexpr MSpan	sliceFromBack	(Int offset)					{ return _obj_span().sliceFromBack(offset); }
+	AX_NODISCARD AX_INLINE	constexpr CSpan	sliceFromBack	(Int offset) const				{ return _obj_span().sliceFromBack(offset); }
 
 	template<class FUNC>
 	constexpr const T* find_(FUNC func) { return _obj_span().template find_<FUNC>(func); }

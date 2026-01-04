@@ -32,7 +32,6 @@ public:
 
 		Texture2D*	get(RenderStockTextureId texId);
 	};
-
 	Texture2Ds	texture2Ds;
 
 	struct Samplers : public NonCopyable {
@@ -58,11 +57,12 @@ public:
 
 	struct Meshes : public NonCopyable {
 		Meshes();
-		RenderMesh	cube;
-		RenderMesh	sphere;
-		RenderMesh	cone;
-		RenderMesh	cylinder;
-	};
+		SPtr<MeshObject>	cube;
+		SPtr<MeshObject>	sphere;
+		SPtr<MeshObject>	cone;
+		SPtr<MeshObject>	cylinder;
+	}; 
+	Meshes meshes;
 	
 	static RenderStockObjects* s_instance();
 

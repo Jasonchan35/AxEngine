@@ -131,6 +131,14 @@ private:
 	Array<SubMesh, 1>	_subMeshes;
 };
 
+class MeshObject : public RenderObject {
+	AX_RTTI_INFO(MeshObject, RenderObject)
+public:
+	static SPtr<MeshObject>	s_new(const MemAllocRequest& req) { return SPtr_new<MeshObject>(req); }
+	
+	RenderMesh	meshData;
+};
+
 //--------
 
 template<class VERTEX, class INDEX> inline

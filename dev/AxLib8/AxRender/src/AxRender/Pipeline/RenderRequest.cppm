@@ -29,7 +29,8 @@ class RenderRequest : public RenderRequestBase {
 	AX_RTTI_INFO(RenderRequest, RenderRequestBase)
 public:
 	using BindSpace = ShaderParamBindSpace;
-	
+
+	void drawMesh(   MeshObject*    mesh,    Material*	material, Int materialPass);
 	void drawMesh(   RenderMesh&    mesh,    Material*	material, Int materialPass);
 	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass);
 
@@ -81,16 +82,24 @@ protected:
 	bool           _viewportIsBottomUp = false;
 };
 
+inline
 ScissorRectScope::ScissorRectScope(RenderRequest* req) noexcept {
 	if (!req) return;
 	_rect = req->scissorRect();
 	_req  = req;
 }
 
+inline
 void ScissorRectScope::detach() {
 	if (!_req) return;
 	_req->setScissorRect(_rect);
 	_req = nullptr;
+}
+
+inline
+void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass) {
+	if (!mesh) return;
+	drawMesh(mesh->meshData, material, materialPass);
 }
 
 inline

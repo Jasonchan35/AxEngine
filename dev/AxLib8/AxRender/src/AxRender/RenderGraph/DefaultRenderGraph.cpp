@@ -59,6 +59,7 @@ DefaultRenderGraph::DefaultRenderGraph() {
 
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
 	
+	_testCube = RenderStockObjects::s_instance()->meshes.cube;
 	
 //	_testCube.create()
 	
@@ -80,6 +81,7 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 
 	if (_testMeshMaterial) {
 		req->drawMesh(_testMesh, _testMeshMaterial, 0);
+		req->drawMesh(_testCube, _testMeshMaterial, 0);
 	}
 
 	req->drawUI();

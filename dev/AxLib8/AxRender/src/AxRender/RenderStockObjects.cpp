@@ -28,11 +28,18 @@ RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
 }
 
 RenderStockObjects::Meshes::Meshes() {
-	auto layout = Vertex_PosNormal::s_layout();
-	RenderMeshEdit(cube).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
-	RenderMeshEdit(sphere).createSphere(layout, 1, 32, 32);
-	RenderMeshEdit(cone).createCone(layout, 1, 1, 2, 32, true);
-	RenderMeshEdit(cylinder).createCylinder(layout, 1, 1, 2, 32, true, true);
+	auto layout = Vertex_PosNormalUv::s_layout();
+	cube = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(cube->meshData).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
+	
+	sphere = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(sphere->meshData).createSphere(layout, 1, 32, 32);
+	
+	cone = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(cone->meshData).createCone(layout, 1, 1, 2, 32, true);
+	
+	cylinder = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(cylinder->meshData).createCylinder(layout, 1, 1, 2, 32, true, true);
 }
 
 RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }
