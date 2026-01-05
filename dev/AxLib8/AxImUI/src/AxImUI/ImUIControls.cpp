@@ -5,31 +5,35 @@ import :ImUIControls;
 
 namespace AxUI {
 
-bool ImUIDragFloat(StrView label, float* v, float v_speed, float v_min, float v_max) {
-	return ::ImGui::DragFloat(TempString(label).c_str(), v, v_speed, v_min, v_max, showMixedValue ? mixedValueFormat : floatFormat);
+void ImUILabelText(ZStrView label, ZStrView text) {
+	return ::ImGui::LabelText(label.c_str(), "%s", text.c_str());
 }
 
-float ImuiInputFloat(StrView label, float* v) {
-	return ::ImGui::InputFloat(TempString(label).c_str(), v, 0, 0, showMixedValue ? mixedValueFormat : floatFormat, ImGuiInputTextFlags_EnterReturnsTrue);
+bool ImUIDragFloat(ZStrView label, float* v, float v_speed, float v_min, float v_max) {
+	return ::ImGui::DragFloat(label.c_str(), v, v_speed, v_min, v_max, showMixedValue ? mixedValueFormat : floatFormat);
 }
 
-ImUIPanel::ImUIPanel(StrView name, bool* pOpen) {
+float ImUIInputFloat(ZStrView label, float* v) {
+	return ::ImGui::InputFloat(label.c_str(), v, 0, 0, showMixedValue ? mixedValueFormat : floatFormat, ImGuiInputTextFlags_EnterReturnsTrue);
+}
+
+ImUIPanel::ImUIPanel(ZStrView name, bool* pOpen) {
 	ImGuiWindowFlags flags = ImGuiWindowFlags_MenuBar;
-	::ImGui::Begin(TempString(name).c_str(), pOpen, flags);
+	::ImGui::Begin(name.c_str(), pOpen, flags);
 }
 
 ImUIPanel::~ImUIPanel() { ImGui::End(); }
 
-ImUITreeNode::ImUITreeNode(StrView label) {
+ImUITreeNode::ImUITreeNode(ZStrView label) {
 	ImGuiTreeNodeFlags flags = 0;
-	_isOpen = ::ImGui::TreeNodeEx(TempString(label).c_str(), flags); 
+	_isOpen = ::ImGui::TreeNodeEx(label.c_str(), flags); 
 }
 
 ImUITreeNode::~ImUITreeNode() {
 	if (_isOpen) ImGui::TreePop();
 }
 
-ImUICollapsingHeader::ImUICollapsingHeader(StrView label) { ImGui::CollapsingHeader(TempString(label).c_str(), &_visiable); }
+ImUICollapsingHeader::ImUICollapsingHeader(ZStrView label) { ImGui::CollapsingHeader(label.c_str(), &_visiable); }
 
 bool IsItemClicked()	{ return ::ImGui::IsItemClicked(); }
 bool IsKeyShift()		{ return ::ImGui::GetIO().KeyShift; }

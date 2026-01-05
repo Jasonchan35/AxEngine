@@ -44,7 +44,7 @@ private:
 	T     _nearClip = T(0.1);
 	T     _farClip  = T(10000.0);
 	Rect2 _viewport {0,0,1920,1080};
-	Vec3  _pos{150, 150, 200};
+	Vec3  _pos{50, 50, 100};
 	Vec3  _aim{0, 0, 0};
 	Vec3  _up{0, 1, 0};
 };
@@ -52,18 +52,18 @@ private:
 using Camera3f = Camera3_<f32>;
 using Camera3d = Camera3_<f64>;
 
-template<class T>
+template<class T> inline
 void Camera3_<T>::pan(Vec2 v) {
-	auto v = _aim - _pos;
-	auto right = _up.cross(v.normal());
+	auto d = _aim - _pos;
+	auto right = _up.cross(d.normal());
 
-	auto q = Quat4::s_eulerY(v.x) * Quat4::s_angleAxis(v.y, right);
-	v   *= q;
+	auto q = Quat4::s_euler_y(d.x) * Quat4::s_angleAxis(d.y, right);
+	d   *= q;
 	_up *= q;
-	_aim = _pos + v;
+	_aim = _pos + d;
 }
 
-template<class T>
+template<class T> inline
 void Camera3_<T>::orbit(Vec2 v) {
 	auto d = _pos - _aim;
 	auto right = _up.cross(d.normal());
@@ -74,13 +74,13 @@ void Camera3_<T>::orbit(Vec2 v) {
 	_pos = _aim + d;
 }
 
-template<class T>
+template<class T> inline
 void Camera3_<T>::move(const Vec3& v) {
-	auto v = _aim - _pos;
-	auto dir = v.normal();
+	auto d = _aim - _pos;
+	auto dir = d.normal();
 	auto right = _up.cross(dir);
 
-	auto t = right * v.x + _up * v.y + dir * v.z;
+	auto t = right * d.x + _up * d.y + dir * d.z;
 	_pos += t;
 	_aim += t;
 }
@@ -91,7 +91,7 @@ void Camera3_<T>::dolly(T z) {
 	auto dir = v.normal();
 	auto d = v.length();
 	d += z;
-	ax_max_it(d, static_cast<T>(0.001));
+	Math::max_itself(d, static_cast<T>(0.001));
 	
 	_pos = _aim + dir * d;
 }
@@ -108,7 +108,11 @@ Mat4_<T> Camera3_<T>::viewMatrix() const {
 
 template<class T>
 Mat4_<T> Camera3_<T>::projMatrix() const {
-	T aspect = _viewport.h != 0 ? _viewport.w / _viewport.h : T(0);
+	if (Math::almostZero(_viewport.h)) {
+		AX_ASSERT(false);
+		return {};
+	}
+	T aspect = _viewport.w / _viewport.h;
 	return Mat4::s_perspective(radians(_fov), aspect, _nearClip, _farClip);
 }
 

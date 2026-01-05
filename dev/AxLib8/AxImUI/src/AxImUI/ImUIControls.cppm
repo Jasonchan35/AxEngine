@@ -8,24 +8,26 @@ export namespace AxUI {
 	constexpr const char* floatFormat = "%0.3f";
 	constexpr bool showMixedValue = false;
 
+	void ImUILabelText(ZStrView label, ZStrView text);
+
 	bool ImUIDragFloat(
-			StrView label, 
+			ZStrView label, 
 			float* v, 
 			float v_speed = 0.1f, 
 			float v_min = f32_min,
 			float v_max = f32_max);
 
-	float ImuiInputFloat(StrView label, float* v);
+	float ImUIInputFloat(ZStrView label, float* v);
 
 	class ImUIPanel : public NonCopyable {
 	public:
-		AX_NODISCARD ImUIPanel(StrView name, bool* pOpen = nullptr);
+		AX_NODISCARD ImUIPanel(ZStrView name, bool* pOpen = nullptr);
 		~ImUIPanel();
 	};
 
 	class ImUITreeNode : public NonCopyable {
 	public:
-		ImUITreeNode(StrView label);
+		ImUITreeNode(ZStrView label);
 		~ImUITreeNode();
 
 		bool isOpen() const { return _isOpen; }
@@ -36,7 +38,7 @@ export namespace AxUI {
 
 	class ImUICollapsingHeader : public NonCopyable {
 	public:
-		ImUICollapsingHeader(StrView label);
+		ImUICollapsingHeader(ZStrView label);
 
 	private:
 		bool _visiable = true;

@@ -14,11 +14,11 @@ void UIEventManager::_translateNativeUIMouseEvent(UIMouseEvent& outEvent, const 
 	
 	if (_firstMouseEvent) {
 		_firstMouseEvent = false;
-		_lastMousePos = outEvent.pos;
+		_lastMouseWorldPos = outEvent.worldPos;
 	}
-	
-	outEvent.deltaPos = copyEvent.pos - _lastMousePos;
-	_lastMousePos = outEvent.pos;
+
+	outEvent.deltaPos  = copyEvent.worldPos - _lastMouseWorldPos;
+	_lastMouseWorldPos = copyEvent.worldPos;
 	
 	switch (inEvent.type) {
 		case UIMouseEventType::Down: {

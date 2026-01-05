@@ -303,7 +303,7 @@ public:
 	void _translateNativeUIKeyEvent(UIKeyEvent& outEvent, const NativeUIKeyEvent& inEvent);
 	
 	bool _firstMouseEvent = true;
-	Vec2f _lastMousePos{0,0};
+	Vec2f _lastMouseWorldPos{0,0};
 	
 	Button _lastPressedButton {Button::None};
 };

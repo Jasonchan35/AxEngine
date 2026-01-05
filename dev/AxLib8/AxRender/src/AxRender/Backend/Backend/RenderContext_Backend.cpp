@@ -41,8 +41,8 @@ void RenderContext_Backend::onRender() {
 }
 
 void RenderContext_Backend::onNativeUIMouseEvent(NativeUIMouseEvent& ev) {
-	Base::onNativeUIMouseEvent(ev);
 	ev.pos = worldToLocalPos(ev.worldPos);
+	Base::onNativeUIMouseEvent(ev);
 	imgui.onUIMouseEvent(ev);
 }
 

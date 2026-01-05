@@ -49,14 +49,22 @@ public:
 											const T& zx, const T& zy, const T& zz, const T& zw,
 											const T& wx, const T& wy, const T& wz, const T& ww )
 		: cx(xx, xy, xz, xw)
-		, cy(xx, yy, yz, yw)
-		, cz(xx, zy, zz, zw)
-		, cw(xx, wy, wz, ww)
+		, cy(yx, yy, yz, yw)
+		, cz(zx, zy, zz, zw)
+		, cw(wx, wy, wz, ww)
 	{}
 	
 	template<VecSimd R_SIMD>
 	AX_NODISCARD constexpr Mat_(const Mat_<4,4,T,R_SIMD>& r) : Mat_(r.cx, r.cy, r.cz, r.cw) {}
 
+	template<class CH>
+	void onFormat(Format_<CH> & fmt) const {
+		fmt << cx; fmt.newline();
+		fmt << cy; fmt.newline();
+		fmt << cz; fmt.newline();
+		fmt << cw; fmt.newline();
+	}
+	
 	constexpr Num4x4 toNum() const {
 		return Num4x4(
 			cx.x, cx.y, cx.z, cx.w,
@@ -525,7 +533,10 @@ auto Mat_<4, 4, T, SIMD>::operator*(const This& r) const -> This {
 
 template<class T, VecSimd SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_perspective(T fovy_rad, T aspect, T zNear, T zFar) -> This {
-	AX_ASSERT(!Math::almostZero(aspect));
+	if (Math::almostZero(aspect)) {
+		AX_ASSERT(false);
+		return {};
+	}
 
 	T deltaZ = zFar - zNear;
 	T tf = tan(fovy_rad / T(2));
@@ -558,15 +569,15 @@ auto Mat_<4, 4, T, SIMD>::s_ortho(T left, T right, T bottom, T top, T zNear, T z
 
 template<class T, VecSimd SIMD> AX_NODISCARD constexpr
 auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3& up) -> This {
-	auto f = (aim - eye).normal();
-	auto s = f.cross(up).normal();
-	auto u = s.cross(f);
+	auto outForward = (aim - eye).normal();
+	auto outSide    = outForward.cross(up).normal();
+	auto outUp      = outSide.cross(outForward);
 
 	return This(
-		s.x,  u.x, -f.x, 0,
-		s.y,  u.y, -f.y, 0,
-		s.z,  u.z, -f.z, 0,
-		-s.dot(eye), -u.dot(eye), f.dot(eye), 1
+		outSide.x, outUp.x, -outForward.x, 0,
+		outSide.y, outUp.y, -outForward.y, 0,
+		outSide.z, outUp.z, -outForward.z, 0,
+		-outSide.dot(eye), -outUp.dot(eye), outForward.dot(eye), 1
 	);
 }
 

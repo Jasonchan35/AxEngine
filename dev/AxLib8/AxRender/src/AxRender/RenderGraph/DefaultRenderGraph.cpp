@@ -90,7 +90,7 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	if (_testMesh3dMaterial) {
 		auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);
 		auto mvp = _camera.viewProjMatrix();
-		req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp);
+		req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp.transpose());
 		req->drawMesh(_testCube, _testMesh3dMaterial, 0);
 	}
 
