@@ -16,11 +16,12 @@ public:
 	using Rect2 = Rect2_<T>;
 	using Ray3	= Ray3_<T>;
 
-	void pan	(Vec2 v);
-	void orbit	(Vec2 v);
-	void move	(const Vec3& v);
+	void pan	(Vec2 delta);
+	void orbit	(Vec2 delta);
+	void move	(const Vec2& delta) { move(Vec3(delta, 0)); }
+	void move	(const Vec3& delta);
 
-	void dolly	(T z);
+	void dolly	(T delta);
 
 	void setPos(const Vec3& pos)	{ _pos = pos; }
 	void setAim(const Vec3& aim)	{ _aim = aim; }
@@ -52,61 +53,63 @@ private:
 using Camera3f = Camera3_<f32>;
 using Camera3d = Camera3_<f64>;
 
-template<class T> inline
-void Camera3_<T>::pan(Vec2 v) {
-	auto d = _aim - _pos;
-	auto right = _up.cross(d.normal());
 
-	auto q = Quat4::s_euler_y(d.x) * Quat4::s_angleAxis(d.y, right);
-	d   *= q;
+template<class T> inline
+void Camera3_<T>::pan(Vec2 delta) {
+	auto forward = _aim - _pos;
+	auto right = _up.cross(forward.normal());
+
+	auto q = Quat4::s_euler_y(delta.x) * Quat4::s_angleAxis(delta.y, right);
+	forward *= q;
 	_up *= q;
-	_aim = _pos + d;
+	_aim = _pos + forward;
 }
 
 template<class T> inline
-void Camera3_<T>::orbit(Vec2 v) {
-	auto d = _pos - _aim;
-	auto right = _up.cross(d.normal());
+void Camera3_<T>::orbit(Vec2 delta) {
+	auto forward = _pos - _aim;
+	auto right = _up.cross(forward.normal());
 
-	auto q = Quat4::s_euler_y(d.x) * Quat4::s_angleAxis(d.y, right);
-	d   *= q;
+	auto q = Quat4::s_euler_y(delta.x) * Quat4::s_angleAxis(delta.y, right);
+	forward   *= q;
 	_up *= q;
-	_pos = _aim + d;
+	_pos = _aim + forward;
 }
 
 template<class T> inline
-void Camera3_<T>::move(const Vec3& v) {
-	auto d = _aim - _pos;
-	auto dir = d.normal();
+void Camera3_<T>::move(const Vec3& delta) {
+	auto forward = _aim - _pos;
+	auto dir = forward.normal();
 	auto right = _up.cross(dir);
 
-	auto t = right * d.x + _up * d.y + dir * d.z;
+	auto t	= right * delta.x
+			+ _up   * delta.y 
+			+ dir   * delta.z;
 	_pos += t;
 	_aim += t;
 }
 
-template<class T>
-void Camera3_<T>::dolly(T z) {
-	auto v = _pos - _aim;
-	auto dir = v.normal();
-	auto d = v.length();
-	d += z;
+template<class T> inline
+void Camera3_<T>::dolly(T delta) {
+	auto forward = _pos - _aim;
+	auto dir = forward.normal();
+	auto d = forward.length();
+	d += delta;
 	Math::max_itself(d, static_cast<T>(0.001));
-	
 	_pos = _aim + dir * d;
 }
 
-template<class T>
+template<class T> inline
 Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos) const {
 	return Ray3::s_unProjectFromInvMatrix(screenPos, viewProjMatrix().inverse(), _viewport);
 }
 
-template<class T>
+template<class T> inline
 Mat4_<T> Camera3_<T>::viewMatrix() const {
 	return Mat4::s_lookAt(_pos, _aim, _up);
 }
 
-template<class T>
+template<class T> inline
 Mat4_<T> Camera3_<T>::projMatrix() const {
 	if (Math::almostZero(_viewport.h)) {
 		AX_ASSERT(false);
@@ -115,6 +118,8 @@ Mat4_<T> Camera3_<T>::projMatrix() const {
 	T aspect = _viewport.w / _viewport.h;
 	return Mat4::s_perspective(radians(_fov), aspect, _nearClip, _farClip);
 }
+
+
 
 } // namespace
 

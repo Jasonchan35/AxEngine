@@ -151,6 +151,9 @@ public:
 	using CFixedSpan =    FixedSpan<T, kElementCount>;
 	using MFixedSpan = MutFixedSpan<T, kElementCount>;
 
+	AX_INLINE constexpr       T* data()       { return _simd.data(); }
+	AX_INLINE constexpr const T* data() const { return _simd.data(); }
+
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
@@ -269,6 +272,9 @@ public:
 	using CSpan      =         Span<T>;
 	using CFixedSpan =    FixedSpan<T, kElementCount>;
 	using MFixedSpan = MutFixedSpan<T, kElementCount>;
+
+	AX_INLINE constexpr       T* data()       { return _simd.data(); }
+	AX_INLINE constexpr const T* data() const { return _simd.data(); }
 
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
@@ -413,6 +419,9 @@ public:
 	using CFixedSpan =    FixedSpan<T, kElementCount>;
 	using MFixedSpan = MutFixedSpan<T, kElementCount>;
 
+	AX_INLINE constexpr       T* data()       { return _simd.data(); }
+	AX_INLINE constexpr const T* data() const { return _simd.data(); }
+	
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
@@ -502,6 +511,9 @@ public:
 	using CFixedSpan =    FixedSpan<T, kElementCount>;
 	using MFixedSpan = MutFixedSpan<T, kElementCount>;
 
+	AX_INLINE constexpr       T* data()       { return _simd.data(); }
+	AX_INLINE constexpr const T* data() const { return _simd.data(); }
+	
 	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
 	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }

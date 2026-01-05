@@ -128,14 +128,13 @@ public:
 				auto b = Vec3(1, 2, 3);
 				dot3 = a.dot(b);
 			}
-			
 		}
 	};
-	
+
 	template<class T>
 	void test_SSE() {
 		SIMD_Test<T, VecSimd::Basic>	basic;
-		SIMD_Test<T, VecSimd::SSE>	sse;
+		SIMD_Test<T, VecSimd::SSE>		sse;
 		AX_TEST_ALMOST_EQ(basic.add1, sse.add1);
 		AX_TEST_ALMOST_EQ(basic.add2, sse.add2);
 		AX_TEST_ALMOST_EQ(basic.add3, sse.add3);
@@ -158,6 +157,48 @@ public:
 		
 		AX_TEST_ALMOST_EQ(basic.dot3, sse.dot3);
 	}
+	
+	
+	template<class T, VecSimd SIMD>
+	struct SIMD_TestMat {
+		using Vec3 = Vec3_<T, SIMD>;
+		using Vec4 = Vec4_<T, SIMD>;
+		using Mat4 = Mat4_<T, SIMD>;
+		
+		Mat4 mat_mul;
+		Vec3 mat_mul_vector;
+		Vec4 mat_mul_point;
+		
+		SIMD_TestMat() {
+			Mat4 a(	10, 11, 12, 13,
+					14, 15, 16, 17,
+					20, 21, 22, 23,
+					24, 25, 26, 27);
+
+			Mat4 b(	30, 31, 32, 33,
+					34, 35, 36, 37,
+					40, 41, 42, 43,
+					44, 45, 46, 47);
+
+			mat_mul = a.mulMatrix(b);
+			
+			Vec3 vec(1,2,3);
+			Vec4 pt(1,2,3,4);
+			mat_mul_vector = a.mulVector(vec);
+			mat_mul_point  = a.mulPoint(pt);
+		}
+	};
+	
+	template<class T>
+	void testMat_SSE() {
+		SIMD_TestMat<T, VecSimd::Basic>	basic;
+		SIMD_TestMat<T, VecSimd::SSE>	sse;
+		
+		AX_TEST_ALMOST_EQ(basic.mat_mul, sse.mat_mul);
+		AX_TEST_ALMOST_EQ(basic.mat_mul_vector, sse.mat_mul_vector);
+		AX_TEST_ALMOST_EQ(basic.mat_mul_point , sse.mat_mul_point);
+	}
+	
 };
 
 void Test_Vec_Func() {
@@ -179,6 +220,10 @@ void Test_Vec_Func() {
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
 	
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
+	
+//	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f16>)
+	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f32>)
+	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f64>)
 }
 
 template class Vec_<4, f32, VecSimd::Basic>;
