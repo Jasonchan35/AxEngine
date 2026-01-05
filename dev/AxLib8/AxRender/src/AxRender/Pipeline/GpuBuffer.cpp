@@ -30,6 +30,11 @@ void DynamicGpuBuffer::create(const CreateDesc& desc) {
 	_data.resize(desc.bufferSize);
 }
 
+void DynamicGpuBuffer::destroy() {
+	reset();
+	_gpuBuffer.unref();
+}
+
 void DynamicGpuBuffer::reset() {
 	_data.clear();
 	_dirtyRange.reset();

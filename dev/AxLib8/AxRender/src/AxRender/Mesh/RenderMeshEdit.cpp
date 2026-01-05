@@ -355,68 +355,86 @@ void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, c
 	}
 }
 
-void RenderMeshEdit::createGrid(VertexLayout   vertexLayout,
-                                float          cellSize,
-                                Int            cellCount,
-                                const Color4f& gridLineColor,
-                                const Color4f& centerLineColor,
-                                const Color4f& gridLine2_Color,
-                                Int            gridLine2_Interval) {
-		_mesh.clear();
+void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
+                                VertexLayout    vertexLayout,
+                                float           cellSize,
+                                Int             cellCount,
+                                const Color4f&  gridLineColor,
+                                const Color4f&  centerLineColor,
+                                const Color4f&  gridLine2_Color,
+                                Int             gridLine2_Interval
+) {
+	_mesh.clear();
+	
+	Vec3f axis0;
+	Vec3f axis1;
+	
+	switch (planeAxis) {
+		case RenderPlaneAxis::XY: axis0.set(1,0,0); axis1.set(0,1,0); break;
+		case RenderPlaneAxis::YZ: axis0.set(0,1,0); axis1.set(0,0,1); break;
+		case RenderPlaneAxis::ZX: axis0.set(0,0,1); axis1.set(1,0,0); break;
+	}
 
-		const Int dx = cellCount / 2;
-		const Int dy = cellCount / 2;
+	const Int dx = cellCount / 2;
 
-		const Vec3f scale(	cellSize * static_cast<f32>(dx), 
-							cellSize * static_cast<f32>(dy), 
-							1);
+	const float scale = cellSize * static_cast<f32>(dx);
 
-		const Int dx1 = dx + 1;
-		const Int dy1 = dy + 1;
+	const Int dx1 = dx + 1;
 
-		auto vertexCount = (dx + dy) * 4 + 4;
+	auto vertexCount = (dx + dx) * 4 + 4;
 
-		_mesh.clear();
-		_mesh.setSubMeshCount(1);
+	_mesh.clear();
+	_mesh.setSubMeshCount(1);
 
-		auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, vertexCount);
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, vertexCount);
 
-		auto posEnumerator = edit.tryEditPosition();
-		auto colEnumerator = edit.tryEditColor0();
-		if (posEnumerator && colEnumerator) {
-			auto dstPos = posEnumerator->begin();
-			auto dstCol = colEnumerator->begin();
+	auto posEnumerator = edit.tryEditPosition();
+	auto colEnumerator = edit.tryEditColor0();
+	if (!posEnumerator) throw Error_Undefined();
+	
+	auto dstPos = posEnumerator->begin();
+	auto dstCol = colEnumerator ? colEnumerator->begin() : ElemIter<Color4f>();
 
-			//center line Y
-			*dstPos = Vec3f( 0,-1, 0) * scale; dstPos++;	*dstCol = centerLineColor; dstCol++;
-			*dstPos = Vec3f( 0, 1, 0) * scale; dstPos++;	*dstCol = centerLineColor; dstCol++;
+	//center line X
+	*dstPos = -axis0 * scale; ++dstPos;
+	*dstPos =  axis0 * scale; ++dstPos;
+	
+	//center line Y
+	*dstPos = -axis1 * scale; ++dstPos;
+	*dstPos =  axis1 * scale; ++dstPos;
 
-			//center line X
-			*dstPos = Vec3f(-1, 0, 0) * scale; dstPos++;	*dstCol = centerLineColor; dstCol++;
-			*dstPos = Vec3f( 1, 0, 0) * scale; dstPos++;	*dstCol = centerLineColor; dstCol++;
-
-			for (Int x = 1; x < dx1; x++) {
-				float px = static_cast<f32>(x) / static_cast<f32>(dx);
-				auto color = (gridLine2_Interval != 0 && x % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
-
-				*dstPos = Vec3f( px, -1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-				*dstPos = Vec3f( px,  1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-				*dstPos = Vec3f(-px, -1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-				*dstPos = Vec3f(-px,  1, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-			}
-
-			for (Int y = 1; y < dy1; y++) {
-				float py = static_cast<f32>(y) / static_cast<f32>(dy);
-				auto color = (gridLine2_Interval != 0 && y % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
-				*dstPos = Vec3f(-1,  py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-				*dstPos = Vec3f( 1,  py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-				*dstPos = Vec3f(-1, -py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-				*dstPos = Vec3f( 1, -py, 0) * scale; ++dstPos;	*dstCol = color; ++dstCol;
-			}
-			
-			if (dstPos != posEnumerator->end()) throw Error_Undefined();
-			if (dstCol != colEnumerator->end()) throw Error_Undefined();
+	if (dstCol) {
+		for (Int j = 0; j < 4; ++j) {
+			*dstCol = centerLineColor; ++dstCol;
 		}
+	}
+	
+	for (Int x = 1; x < dx1; x++) {
+		float px = static_cast<f32>(x) / static_cast<f32>(dx);
+		// line X
+		*dstPos = (axis0 *  px + axis1 * -1) * scale; ++dstPos;
+		*dstPos = (axis0 *  px + axis1 *  1) * scale; ++dstPos;
+		*dstPos = (axis0 * -px + axis1 * -1) * scale; ++dstPos;
+		*dstPos = (axis0 * -px + axis1 *  1) * scale; ++dstPos;
+
+		// line Y
+		*dstPos = (axis0 * -1 + axis1 *  px) * scale; ++dstPos;
+		*dstPos = (axis0 *  1 + axis1 *  px) * scale; ++dstPos;
+		*dstPos = (axis0 * -1 + axis1 * -px) * scale; ++dstPos;
+		*dstPos = (axis0 *  1 + axis1 * -px) * scale; ++dstPos;
+
+		if (dstCol) {
+			auto color = (gridLine2_Interval != 0 && x % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
+			for (Int j = 0; j < 8; ++j) {
+				*dstCol = centerLineColor; ++dstCol;
+			}
+		}
+	}
+
+	if (dstPos != posEnumerator->end()) throw Error_Undefined();
+	if (dstCol) {
+		if (dstCol != colEnumerator->end()) throw Error_Undefined();
+	}
 }
 
 void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color) {

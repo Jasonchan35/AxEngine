@@ -93,6 +93,7 @@ public:
 
 	void create(StrView name, GpuBufferType bufferType, Int bufferSize) { create(CreateDesc(name, bufferType, bufferSize)); }
 	void create(const CreateDesc& desc);
+	void destroy();
 	void reset();
 
 	Int dataSize() const { return _data.size(); }

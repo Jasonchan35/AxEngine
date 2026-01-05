@@ -67,6 +67,7 @@ public:
 
 	class Iter {
 	public:
+		constexpr Iter() = default;
 		constexpr Iter( T* p, Int stride ) : _p(p), _stride(stride) {}
 		constexpr operator const T*	()			{ return  _p; }
 		constexpr T&		operator*	()			{ return *_p; }
@@ -77,8 +78,8 @@ public:
 		constexpr bool	operator==	(const Iter & rhs)	{ return _p == rhs._p; }
 		constexpr bool	operator!=	(const Iter & rhs)	{ return _p != rhs._p; }
 	protected:
-		T*	_p;
-		Int	_stride; // in bytes
+		T*	_p = nullptr;
+		Int	_stride = 0; // in bytes
 	};
 
 	constexpr AX_INLINE This slice(IntRange range) {

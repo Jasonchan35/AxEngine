@@ -2,12 +2,19 @@ module AxRender;
 
 import :RenderCommandList;
 import :RenderRequest_Backend;
+import :RenderMeshEdit;
 
 namespace ax /*::AxRender*/ {
 
 DefaultRenderGraph::DefaultRenderGraph() {
 	backBufferPass().color0.setClearColor(Color4f(0,0,0.2f));
 
+	{
+		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/simple3d_color.axShader");
+		_mat_simple3d_color = Material::s_new(AX_NEW);
+		_mat_simple3d_color->setShader(shader);
+	}
+	
 	if constexpr (false) {
 		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/test.axShader");
 		_testMaterial = Material::s_new(AX_NEW);
@@ -58,9 +65,11 @@ DefaultRenderGraph::DefaultRenderGraph() {
 		{ auto& v = vertices.emplaceBack(); v.pos.set(-0.5f,  0.5f, 0); v.uv[0].set(0, 1); }
 		{ auto& v = vertices.emplaceBack(); v.pos.set( 0.5f,  0.5f, 0); v.uv[0].set(1, 1); }
 
-		u16 indices[] = {0, 1, 2, 2, 1, 3};
+		constexpr u16 indices[] = {0, 1, 2, 2, 1, 3};
 		_testMesh.create(vertices.constSpan(), Span(indices));
 	}
+	
+	RenderMeshEdit(_grid).createGrid(RenderPlaneAxis::ZX, Vertex_PosColor::s_layout(), 1, 15);
 
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
 
@@ -86,6 +95,8 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	// }
 	
 	_camera.setViewport(req->viewport());
+	
+	req->drawMesh(_grid, _mat_simple3d_color, 0);
 
 	if (_testMesh3dMaterial) {
 		auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);

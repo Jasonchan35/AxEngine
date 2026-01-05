@@ -138,6 +138,18 @@ public:
 	AX_NODISCARD AX_INLINE Vec min(Vec vec) const { return unroll(vec, [](T a, T b){ return Math::min(a, b); }); }
 	AX_NODISCARD AX_INLINE Vec max(Vec vec) const { return unroll(vec, [](T a, T b){ return Math::max(a, b); }); }
 	
+	AX_NODISCARD AX_INLINE constexpr auto operator-() const -> Vec {
+		if constexpr (std::is_unsigned_v<T>) {
+			return *this;
+		} else {
+			if (!std::is_constant_evaluated()) {
+				if constexpr (_use_SSE_m128_ps) return    _mm_xor_ps(mm,    _mm_set1_ps(-0.0f));
+				if constexpr (_use_SSE_m256_pd) return _mm256_xor_pd(mm, _mm256_set1_pd(-0.0));
+			}
+			return unroll([](T a) -> T { return -a; });
+		}
+	}
+	
 	AX_NODISCARD AX_INLINE constexpr auto operator+(Vec vec) const -> Vec {
 		if (!std::is_constant_evaluated()) {
 			if constexpr (_use_SSE_m128_ps) return    _mm_add_ps(mm, vec.mm);
@@ -276,17 +288,19 @@ public:
 	
 	AX_NODISCARD AX_INLINE constexpr Vec unroll(Vec vec, T (*func)(T a, T b)) const {
 		Vec ret;
-		for (Int i = 0; i < N; ++i) {
-			ret.e[i] = func(e[i], vec.e[i]);
-		}
+		for (Int i = 0; i < N; ++i) { ret.e[i] = func(e[i], vec.e[i]); }
 		return ret;
 	}
 
 	AX_NODISCARD AX_INLINE constexpr Vec unroll(T t, T (*func)(T a, T t)) const {
 		Vec ret;
-		for (Int i = 0; i < N; ++i) {
-			ret.e[i] = func(e[i], t);
-		}
+		for (Int i = 0; i < N; ++i) { ret.e[i] = func(e[i], t); }
+		return ret;
+	}
+
+	AX_NODISCARD AX_INLINE constexpr Vec unroll(T (*func)(T a)) const {
+		Vec ret;
+		for (Int i = 0; i < N; ++i) { ret.e[i] = func(e[i]); }
 		return ret;
 	}
 	

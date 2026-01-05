@@ -110,6 +110,7 @@ public:
 	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * VertexIndexType_stride(_indexType)); }
 
 	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const {
+		if (_indexType == VertexIndexType::None) return nullptr;
 		return _buffer.getUploadedGpuBuffer(req);
 	}
 

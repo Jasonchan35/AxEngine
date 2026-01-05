@@ -16,16 +16,17 @@ void VertexBuffer::create(VertexLayout vertexLayout) {
 }
 
 void VertexIndexBuffer::create(VertexIndexType indexType) {
-	if (indexType == VertexIndexType::None)
-		throw Error_Undefined();
-
 	_indexType = indexType;
 	_indexCount = 0;
 
-	DynamicGpuBuffer_CreateDesc desc;
-	desc.bufferType = GpuBufferType::Index;
-	desc.name		= "IndexBuffer";
-	_buffer.create(desc);
+	if (_indexType == VertexIndexType::None) {
+		_buffer.destroy();
+	} else {
+		DynamicGpuBuffer_CreateDesc desc;
+		desc.bufferType = GpuBufferType::Index;
+		desc.name		= "IndexBuffer";
+		_buffer.create(desc);
+	}
 }
 
 } // namespace

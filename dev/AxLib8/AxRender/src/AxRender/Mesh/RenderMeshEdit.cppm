@@ -18,6 +18,10 @@ public:
 	using Color4fPair = ColorPair<Color4f>;
 	using PrimType    = RenderPrimitiveType;
 	
+	template<class ELEM> using ElemEnumerator = typename VertexBuffer::ElemEnumerator_<ELEM>;
+	template<class ELEM> using ElemIter       = typename VertexBuffer::ElemEnumerator_<ELEM>::Iter;
+	
+	
 	RenderMeshEdit(RenderMesh& mesh) : _mesh(mesh) {}
 
 	void createRect				(VertexLayout vertexLayout, const Rect2f& rect, const Rect2f& uv, const Color4f& color);
@@ -34,13 +38,15 @@ public:
 	void createTextBillboard	(VertexLayout vertexLayout, StrView text, const Vec3f& pos, const FontStyle* style);
 	void addTextBillboard		(VertexLayout vertexLayout, StrView text, const Vec3f& pos, const FontStyle* style);
 
-	void createGrid				(VertexLayout vertexLayout,
-								 float cellSize, Int cellCount,
-								 const Color4f& centerLineColor  = Color4f(1.0,  1.0f, 1.0f),
-								 const Color4f& gridLineColor    = Color4f(0.4f, 0.4f, 0.4f),
-								 const Color4f& gridLine2_Color  = Color4f(.65f, .65f, .65f),
-								 Int     gridLine2_Interval = 5); 
-
+	void createGrid(RenderPlaneAxis planeAxis,
+	                VertexLayout    vertexLayout,
+	                float           cellSize,
+	                Int             cellCount,
+	                const Color4f&  centerLineColor    = Color4f(1.0, 1.0f, 1.0f),
+	                const Color4f&  gridLineColor      = Color4f(0.4f, 0.4f, 0.4f),
+	                const Color4f&  gridLine2_Color    = Color4f(.65f, .65f, .65f),
+	                Int             gridLine2_Interval = 5);
+	
 	void createLines			(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color);
 	void createLines			(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color);
 

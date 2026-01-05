@@ -88,6 +88,7 @@ public:
 		Vec4 add_scalar4;  Vec4 sub_scalar4;	Vec4 mul_scalar4;	Vec4 div_scalar4;
 
 		T dot3;
+		Vec4 neg;
 		
 		SIMD_Test() {
 			{
@@ -128,6 +129,11 @@ public:
 				auto b = Vec3(1, 2, 3);
 				dot3 = a.dot(b);
 			}
+			
+			{
+				auto a = Vec4(1, 2, 3, 4);
+				neg = -a;
+			}
 		}
 	};
 
@@ -156,6 +162,7 @@ public:
 		AX_TEST_ALMOST_EQ(basic.div4, sse.div4);
 		
 		AX_TEST_ALMOST_EQ(basic.dot3, sse.dot3);
+		AX_TEST_ALMOST_EQ(basic.neg,  sse.neg);
 	}
 	
 	
