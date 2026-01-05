@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxCore.VecSimd;
-export import AxCore.Num;
+export import AxCore.NormInt;
 
 export namespace ax {
 
@@ -71,11 +71,6 @@ public:
 		}
 	}
 
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num1_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num2_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0), v.at_noBoundCheck(1)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num3_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0), v.at_noBoundCheck(1), v.at_noBoundCheck(2)) {}
-	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(const Num4_<T>& v) : VecSimd_Data_(v.at_noBoundCheck(0), v.at_noBoundCheck(1), v.at_noBoundCheck(2), v.at_noBoundCheck(3)) {}
-	
 	AX_NODISCARD AX_INLINE constexpr VecSimd_Data_(T t0) : e{t0} {
 		static_assert(N == 1);
 	}

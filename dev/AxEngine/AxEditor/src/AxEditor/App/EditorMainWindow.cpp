@@ -36,9 +36,9 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 	switch (ev.type) {
 		case UIMouseEventType::Move: {
 			if (ev.pressedButton == UIMouseEventButton::Right) {
-				cam.orbit(ev.deltaPos * 0.001f);
+				cam.orbit(ev.deltaPos * 0.01f);
 			} else if (ev.pressedButton == UIMouseEventButton::Middle) {
-				cam.move(ev.deltaPos * 0.001f);
+				cam.move(ev.deltaPos * 0.01f);
 			}
 		} break;
 		case UIMouseEventType::Wheel: {

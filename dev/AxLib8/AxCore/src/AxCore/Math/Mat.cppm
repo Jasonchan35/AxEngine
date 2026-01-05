@@ -37,7 +37,6 @@ public:
 	using Vec4		= Vec4_< T, SIMD>;
 	using Mat4		= Mat4_< T, SIMD>;
 	using Rect2		= Rect2_<T, SIMD>;
-	using Num4x4	= Num_<4,4,T>;
 
 	static constexpr Int kElementCount = 16;
 
@@ -70,17 +69,7 @@ public:
 		fmt << cz; fmt.newline();
 		fmt << cw; fmt.newline();
 	}
-	
-	constexpr Num4x4 toNum() const {
-		return Num4x4(
-			cx.x, cx.y, cx.z, cx.w,
-			cy.x, cy.y, cy.z, cy.w,
-			cz.x, cz.y, cz.z, cz.w,
-			cw.x, cw.y, cw.z, cw.w);
-	}
-	constexpr operator Num4x4() const { return toNum(); }
-	
-	
+
 	AX_INLINE constexpr void set(const Vec4& cx_, const Vec4& cy_, const Vec4& cz_, const Vec4& cw_) {
 		cx = cx_;
 		cy = cy_;
@@ -170,6 +159,8 @@ public:
 				 constexpr void operator*=	(const T& s)			{ cx *= s; cy *= s; cz *= s; cw *= s; }
 				 constexpr void operator/=	(const T& s)			{ cx /= s; cy /= s; cz /= s; cw /= s; }
 
+	AX_NODISCARD constexpr This operator*	(const This &m) const { return mulMatrix(m); }
+	
 	AX_NODISCARD constexpr This mulMatrix	(const This &m) const;
 	AX_NODISCARD constexpr Vec4 mulPoint	(const Vec4&   v) const;
 	AX_NODISCARD constexpr Vec3 mulPoint	(const Vec3&   v) const;

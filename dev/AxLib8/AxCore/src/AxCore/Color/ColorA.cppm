@@ -9,7 +9,6 @@ template<class T, VecSimd SIMD>
 class Color_<ColorModel::A, T, SIMD> {
 	static constexpr Int N = 1;	
 public:
-	using Num4 = Num4_<T>;
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;

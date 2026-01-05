@@ -25,8 +25,6 @@ public:
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
 
-	using Num4 = Num4_<T>;
-		
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;

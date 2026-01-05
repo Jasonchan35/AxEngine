@@ -84,8 +84,6 @@ public:
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
 
-	using Num1 = Num1_<T>;
-	
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
@@ -106,10 +104,7 @@ public:
 	AX_INLINE constexpr void set(const T& x_) { *this = This(x_); }
 
 	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x); }
-	
-	constexpr Num1 toNum() const { return Num2(x); }
-	constexpr operator Num1() const { return toNum(); }
-	
+
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SimdData::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); } 
@@ -170,7 +165,6 @@ public:
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
 
-	using Num2 = Num2_<T>;
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
@@ -195,9 +189,6 @@ public:
 
 	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x,y); }
 
-	constexpr Num2 toNum() const { return Num2(x,y); }
-	constexpr operator Num2() const { return toNum(); }
-	
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SimdData::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); } 
@@ -305,7 +296,6 @@ public:
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
 
-	using Num3 = Num3_<T>;
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
@@ -325,9 +315,7 @@ public:
 	AX_INLINE constexpr void set(const Vec2& v_, const T& z_) { *this = This(v_.x,v_.y,z_); }
 
 	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x,y,z); }
-	constexpr Num3 toNum() const { return Num3(x,y,z); }
-	constexpr operator Num3() const { return toNum(); }
-	
+
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SimdData::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); }
@@ -438,7 +426,6 @@ public:
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
 
-	using Num4 = Num4_<T>;
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
@@ -464,9 +451,7 @@ public:
 	AX_INLINE constexpr void set(const Vec3& v_, const T& w_) { *this = This(v_.x,v_.y,v_.z,w_); }
 
 	constexpr Vec_<N,T,VecSimd::Basic> to_Basic() const { return Vec_<N,T,VecSimd::Basic>(x,y,z,w); }
-	constexpr Num4 toNum() const { return Num4(x,y,z,w); }
-	constexpr operator Num4() const { return toNum(); }
-	
+
 	AX_NODISCARD AX_INLINE constexpr static This s_all (const T& t) { return SimdData::s_all(t); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); }

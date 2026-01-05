@@ -71,8 +71,6 @@ public:
 	static const This& kBlack		() { static This s(kElemZero()); return s; }
 	static const This& kRed			() { static This s(kElemOne ()); return s; }
 	static const This& kDarkRed		() { static This s(kElemHalf()); return s; }
-
-	Num1_<T>	toNum() const { return Num1_<T>(r); }
 };
 
 template<class T, VecSimd SIMD>
@@ -147,15 +145,12 @@ public:
 	static const This& kDarkRed		() { static This s(kElemHalf(), kElemZero()); return s; }
 	static const This& kDarkGreen	() { static This s(kElemZero(), kElemHalf()); return s; }
 	static const This& kDarkYellow	() { static This s(kElemHalf(), kElemHalf()); return s; }
-
-	Num2_<T>	toNum() const { return Num2_<T>(r, g); }
 };
 
 template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGB, T, SIMD> {
 	static constexpr Int N = 3;
 public:
-	using Num3 = Num3_<T>;
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
@@ -200,9 +195,6 @@ public:
 	AX_INLINE constexpr void set(T r_, T g_, T b_) { r = r_; g = g_; b = b_; }
 	AX_INLINE constexpr void set(const ColorRGB& v) { set(v.r, v.g, v.b); }
 
-	constexpr Num3 toNum() const { return Num3(r,g,b); }
-	constexpr operator Num3() const { return toNum(); }
-		
 	AX_INLINE constexpr 	  T* data()			{ return &r; }
 	AX_INLINE constexpr const T* data() const	{ return &r; }
 
@@ -248,7 +240,6 @@ template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGBA, T, SIMD> {
 	static constexpr Int N = 4;
 public:
-	using Num4 = Num4_<T>;
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
@@ -302,9 +293,6 @@ public:
 	AX_INLINE constexpr void set(const ColorRGB& v, T a_ = kElemOne()) 
 		{ set(v.r, v.g, v.b, a); }
 
-	constexpr Num4 toNum() const { return Num4(r,g,b,a); }
-	constexpr operator Num4() const { return toNum(); }
-	
 	AX_INLINE constexpr 	  T* data()			{ return &r; }
 	AX_INLINE constexpr const T* data() const	{ return &r; }
 
