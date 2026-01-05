@@ -532,7 +532,9 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 
 			if (varType.Class == D3D_SVC_MATRIX_ROWS) {
 				outVar.rowMajor = true;
-			}
+			} else if (varType.Class == D3D_SVC_MATRIX_COLUMNS) {
+				outVar.rowMajor = false;
+			} 
 
 			if (outVar.dataType == RenderDataType::None) {
 				throw Error_Undefined();

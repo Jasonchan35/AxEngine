@@ -31,10 +31,11 @@ void GenNinja_Dx12::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 					"    -T $param_profile $\n"
 					"    -E $param_entry_point $\n"
 					"    -I \"$AxIncludeDir\" $\n"
-					"    -Fo \"$out\" \"$in\""
+					"    -Fo \"$out\" \"$in\" $\n"
+//					"    -Zpc $\n" // Pack matrices in column-major order
 #if 1 // debug info
-					"    -Zi $\n"
-					"    -Qembed_debug $\n"
+					"    -Zi $\n" // Enable debug information. Cannot be used together with -Zs
+					"    -Qembed_debug $\n" // Embed PDB in shader container (must be used with /Zi)
 #endif
 					"\n\n");
 

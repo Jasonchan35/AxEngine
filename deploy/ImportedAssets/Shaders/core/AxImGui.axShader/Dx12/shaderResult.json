@@ -56,7 +56,7 @@
               "name": "imguiProjectionMatrix", 
               "offset": 0, 
               "dataType": "Mat4f", 
-              "rowMajor": true
+              "rowMajor": false
             }, {
               "name": "AxSamplerState_fontTexture", 
               "offset": 64, 

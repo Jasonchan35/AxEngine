@@ -231,7 +231,7 @@ IntRange ShaderParamSpace_Backend::VarInfo::_assignValueToBuffer(MutByteSpan buf
 	if (Math::exactlyEqual(*dst, value)) return IntRange();
 
 	MemUtil::rawCopy(dst, &value, AX_SIZEOF(value));
-	//	*dst = value;
+	// *dst = value; // might not fit alignment for Vec4_SSE
 	return range;
 }
 

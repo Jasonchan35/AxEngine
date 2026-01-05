@@ -30,27 +30,31 @@ typedef float4 	Color4f;
 #define AX_BindSpace_Object 		space2
 #define AX_BindSpace_Bindless		space3
 
-cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
-	float		ax_g_test;
+#define f32   float
+#define Vec4f float4
+#define Mat4f float4x4
 
-	float		ax_g_time;
-	float4		ax_g_timeSin;
-	float4		ax_g_timeSlowSin;
-	float4		ax_g_deltaTime;
-	float4		ax_g_worldSpaceCameraPos;
-	float4x4	ax_g_cameraProjection;
-	float4x4	ax_g_cameraInvProjection;
+cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
+	float	ax_g_test;
+
+	float	ax_g_time;
+	Vec4f	ax_g_timeSin;
+	Vec4f	ax_g_timeSlowSin;
+	Vec4f	ax_g_deltaTime;
+	Vec4f	ax_g_worldSpaceCameraPos;
+	Mat4f	ax_g_cameraProjection;
+	Mat4f	ax_g_cameraInvProjection;
 }
 
 cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
-	float4x4 	ax_object_mvp;
-	float4x4 	ax_object_mv;
-	float4x4 	ax_object_mv_t;
-	float4x4 	ax_object_mv_it;
-	float4x4 	ax_object_v;
-	float4x4 	ax_object_vp;
-	float4x4 	ax_object_m;		// Object To World
-	float4x4 	ax_object_m_i;		// world To Object
+	Mat4f	ax_object_mvp;
+	Mat4f	ax_object_mv;
+	Mat4f	ax_object_mv_t;
+	Mat4f	ax_object_mv_it;
+	Mat4f	ax_object_v;
+	Mat4f	ax_object_vp;
+	Mat4f	ax_object_m;		// Object To World
+	Mat4f	ax_object_m_i;		// world To Object
 }
 
 #if AX_RENDER_BINDLESS
