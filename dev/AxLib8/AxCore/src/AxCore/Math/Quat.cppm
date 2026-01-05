@@ -36,6 +36,7 @@ public:
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
+	using Mat4 = Mat4_<T, SIMD>;
 	
 	AX_INLINE constexpr Quat_() = default;
 	AX_INLINE constexpr Quat_(const SimdData & simd) : _simd(simd) {}
@@ -94,10 +95,14 @@ public:
 
 	AX_NODISCARD constexpr T dot(const This& r) const;
 	
-	AX_NODISCARD constexpr This operator*(const This& q) const;
+	AX_NODISCARD constexpr Mat4 to_Mat4() const;
+	
+	AX_NODISCARD constexpr This operator* (const This& q) const;
+	AX_NODISCARD constexpr void operator*=(const This& q) { *this = *this * q; }
+	
 	AX_NODISCARD constexpr Vec3 operator*(const Vec3& v) const;
 	
-	template<class V> AX_INLINE void fromCast(const V& v) { *this = s_cast(v); }	
+	template<class V> AX_INLINE void fromCast(const V& v) { *this = s_cast(v); }
 };
 
 template<class T> inline Vec3_<T> operator* (Vec3_<T>& v, const Quat4_<T>& quat) { return quat * v; }
@@ -137,6 +142,28 @@ Quat4_<T, SIMD> slerp_longway(const Quat4_<T, SIMD> & a, const Quat4_<T, SIMD> &
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::dot(const This& r) const -> T {
 	return (x * r.x + y * r.y) + (z * r.z + w * r.w);
+}
+
+template<class T, VecSimd SIMD> constexpr 
+Mat4_<T, SIMD> Quat_<4, T, SIMD>::to_Mat4() const {
+	Mat4 res;
+	res.cx.x = 1.0f - 2.0f * (y * y + z * z);
+	res.cx.y = 2.0f * (x * y - z * w);
+	res.cx.z = 2.0f * (x * z + y * w);
+	res.cx.w = 0;
+
+	res.cy.x = 2.0f * (x * y + z * w);
+	res.cy.y = 1.0f - 2.0f * (x * x + z * z);
+	res.cy.z = 2.0f * (y * z - x * w);
+	res.cy.w = 0;
+
+	res.cz.x = 2.0f * (x * z - y * w);
+	res.cz.y = 2.0f * (y * z + x * w);
+	res.cz.z = 1.0f - 2.0f * (x * x + y * y);
+	res.cz.w = 0;
+
+	res.cw = Vec4(0,0,0,1);
+	return res;	
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::axis() const -> Vec3 {

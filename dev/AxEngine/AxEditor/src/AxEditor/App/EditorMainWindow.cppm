@@ -6,6 +6,11 @@ export import :SceneOutlinerUIPanel;
 
 export namespace AxEditor {
 
+template<class T>
+class Rotator_ {
+	
+};
+
 class EditorMainWindow : public EditorWindow {
 	AX_RTTI_INFO(EditorMainWindow, EditorWindow)
 public:

@@ -77,9 +77,7 @@ AX_NODISCARD AX_INLINE constexpr Vec_<N, T, SIMD> operator/(const T& t, const Ve
 template<class T, VecSimd SIMD>
 class Vec_<1, T, SIMD> {
 	static constexpr Int N = 1;
-	using This = Vec_;
 public:
-	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
@@ -89,6 +87,12 @@ public:
 		SimdData	_simd;
 		struct { T x; };
 	};
+	AX_META_TYPE(Vec_, NoBaseClass) {
+		AX_META_FIELD(x) {};
+		AX_META_FIELD(y) {};
+		using OwnFields = Tuple<x,y>;
+	};	
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
@@ -159,9 +163,7 @@ public:
 template<class T, VecSimd SIMD>
 class Vec_<2, T, SIMD> {
 	static constexpr Int N = 2;
-	using This = Vec_;
 public:
-	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
@@ -175,6 +177,13 @@ public:
 		SimdData	_simd;
 		struct { T x, y; };
 	};
+	
+	AX_META_TYPE(Vec_, NoBaseClass) {
+		AX_META_FIELD(x) {};
+		AX_META_FIELD(y) {};
+		using OwnFields = Tuple<x,y>;
+	};	
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
@@ -278,7 +287,6 @@ public:
 template<class T, VecSimd SIMD>
 class Vec_<3, T, SIMD> {
 	static constexpr Int N = 3;
-	using This = Vec_;
 public:
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
@@ -422,9 +430,7 @@ public:
 template<class T, VecSimd SIMD>
 class Vec_<4, T, SIMD> {
 	static constexpr Int N = 4;
-	using This = Vec_;
 public:
-	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr Int kElementCount = N;
 	static constexpr VecSimd kVecSimd = SIMD;
@@ -438,6 +444,15 @@ public:
 		SimdData	_simd;
 		struct { T x, y, z, w; };
 	};
+	
+	AX_META_TYPE(Vec_, NoBaseClass) {
+		AX_META_FIELD(x) {};
+		AX_META_FIELD(y) {};
+		AX_META_FIELD(z) {};
+		AX_META_FIELD(w) {};	
+		using OwnFields = Tuple<x,y,z,w>;
+	};
+	using _NumLimit = VecSimd_NumLimit<This, T>;
 	
 	AX_INLINE constexpr Vec_() = default;
 	AX_INLINE constexpr Vec_(const SimdData & simd) : _simd(simd) {}
@@ -508,6 +523,18 @@ public:
 	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 };
+
+namespace Math {
+	template<Int N, class T, VecSimd SIMD> inline
+	void sincos(const Vec_<N,T,SIMD>& r, Vec_<N,T,SIMD>& out_sin, Vec_<N,T,SIMD>& out_cos) {
+		for (Int i = 0; i < N; ++i) {
+			Math::sincos(r.data()[i], out_sin.data()[i], out_cos.data()[i]);
+		}
+	}
+
+} // namespace Math
+
+
 
 
 } // namespace 

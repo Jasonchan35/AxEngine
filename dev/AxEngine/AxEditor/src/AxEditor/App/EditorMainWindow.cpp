@@ -45,7 +45,6 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 			cam.dolly(ev.wheelDelta.y * -0.05f);
 		} break;
 	}
-	
 }
 
 void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
