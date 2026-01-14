@@ -87,7 +87,7 @@ bool NativeUIEventHandler_Win32::_handleMouseEvent(HWND hwnd, UINT msg, WPARAM w
 	if (wParam & MK_XBUTTON1) _mousePressedButtons |= Button::Button4;
 	if (wParam & MK_XBUTTON2) _mousePressedButtons |= Button::Button5;
 
-//	ev.pressedButtons = _mousePressedButtons;
+	ev.pressedButtons = _mousePressedButtons;
 
 	if (ev.type == Type::Down) {
 		if (_mousePressedButtons == Button::None) {
@@ -102,7 +102,6 @@ bool NativeUIEventHandler_Win32::_handleMouseEvent(HWND hwnd, UINT msg, WPARAM w
 
 //	AX_DUMP_VAR(ev);
 	onNativeUIMouseEvent(ev);
-	_lastMousePressedButtons = _mousePressedButtons;
 	return true;
 }
 

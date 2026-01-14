@@ -35,9 +35,9 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 	auto& cam = _renderGraph->_camera;
 	switch (ev.type) {
 		case UIMouseEventType::Move: {
-			if (ev.pressedButton == UIMouseEventButton::Right) {
+			if (ev.pressedButtons == UIMouseEventButton::Right) {
 				cam.orbit(ev.deltaPos.yx() * -0.005f);
-			} else if (ev.pressedButton == UIMouseEventButton::Middle) {
+			} else if (ev.pressedButtons == UIMouseEventButton::Middle) {
 				cam.move(ev.deltaPos * 0.02f * Vec2f(1,-1));
 			}
 		} break;

@@ -19,17 +19,6 @@ void UIEventManager::_translateNativeUIMouseEvent(UIMouseEvent& outEvent, const 
 
 	outEvent.deltaPos  = copyEvent.worldPos - _lastMouseWorldPos;
 	_lastMouseWorldPos = copyEvent.worldPos;
-	
-	switch (inEvent.type) {
-		case UIMouseEventType::Down: {
-			_lastPressedButton = ax_bit_set(_lastPressedButton, inEvent.button);
-		} break;
-		case UIMouseEventType::Up: {
-			_lastPressedButton = ax_bit_unset(_lastPressedButton, inEvent.button);
-		} break;
-	}
-	
-	outEvent.pressedButton = _lastPressedButton;
 }
 
 void UIEventManager::_translateNativeUIKeyEvent(UIKeyEvent& outEvent, const NativeUIKeyEvent& inEvent) {

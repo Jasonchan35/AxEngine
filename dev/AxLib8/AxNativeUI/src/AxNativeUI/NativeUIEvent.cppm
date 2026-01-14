@@ -234,6 +234,7 @@ public:
 
 	Type			type = Type::None;
 	Button			button = Button::None;
+	Button			pressedButtons = Button::None;
 	ModifierKey		modifier = ModifierKey::None;
 	Vec2f			worldPos{0,0};
 	Vec2f			pos{0,0};
@@ -276,7 +277,6 @@ using UIEventModifierKey = NativeUIEventModifierKey;
 class UIMouseEvent : public NativeUIMouseEvent {
 public:
 	Vec2f	deltaPos{0,0};
-	Button	pressedButton = Button::None;
 };
 
 class UIKeyEvent : public NativeUIKeyEvent {
@@ -304,8 +304,6 @@ public:
 	
 	bool _firstMouseEvent = true;
 	Vec2f _lastMouseWorldPos{0,0};
-	
-	Button _lastPressedButton {Button::None};
 };
 
 } // namespace ax

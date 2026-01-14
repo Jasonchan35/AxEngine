@@ -19,7 +19,6 @@ public:
 
 private:
 	NativeUIMouseEventButton _mousePressedButtons	  = NativeUIMouseEventButton::None;
-	NativeUIMouseEventButton _lastMousePressedButtons = NativeUIMouseEventButton::None;
 
 	bool _handleMouseEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool _handleKeyEvent(  HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
