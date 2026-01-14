@@ -21,7 +21,7 @@ public:
 	static constexpr ColorModel	kColorModel		= ColorModel::BGRA;
 	static constexpr ColorType	kColorType		= ColorType_make<T>(kColorModel);
 	static constexpr Int		kElementCount	= N;
-	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
+	static constexpr Int		kAlphaBits		= AX_SIZEOF(a) * 8;
 
 	using ElemLimit = ColorElemLimit<T>;
 	AX_INLINE static constexpr T kElemZero () { return ElemLimit::kZero(); }

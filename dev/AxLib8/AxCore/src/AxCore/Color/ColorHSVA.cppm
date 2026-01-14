@@ -29,7 +29,7 @@ public:
 	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
 	static constexpr Int		kElementCount	= N;
-	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
+	static constexpr Int		kAlphaBits		= AX_SIZEOF(a) * 8;
 	
 	using ColorR	= ColorR_   <T, SIMD>;
 	using ColorRG	= ColorRG_  <T, SIMD>;

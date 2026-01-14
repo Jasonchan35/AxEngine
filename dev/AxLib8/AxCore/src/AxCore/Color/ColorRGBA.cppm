@@ -9,17 +9,6 @@ template<class T, VecSimd SIMD>
 class Color_<ColorModel::R, T, SIMD> {
 	static constexpr Int N = 1;
 public:
-	using SimdData = VecSimd_Data_<N,T,SIMD>; 
-	union {
-		SimdData	_simd;
-		struct { T r; };
-	};
-	AX_META_TYPE(Color_, NoBaseClass) {
-		AX_META_FIELD(r) {};
-		using OwnFields = Tuple<r>;
-	};
-
-	using _NumLimit = VecSimd_NumLimit<This, T>;
 	using ElementType = T;
 	static constexpr VecSimd	kVecSimd		= SIMD;
 	static constexpr ColorModel	kColorModel		= ColorModel::R;
@@ -27,7 +16,20 @@ public:
 	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
 	static constexpr Int		kElementCount	= N;
 	static constexpr Int		kAlphaBits		= 0;
-	
+
+	using SimdData = VecSimd_Data_<N,T,SIMD>; 
+	union {
+		SimdData	_simd;
+		struct { T r; };
+		T e[kElementCount];
+	};
+	AX_META_TYPE(Color_, NoBaseClass) {
+		AX_META_FIELD(r) {};
+		using OwnFields = Tuple<r>;
+	};
+
+	using _NumLimit = VecSimd_NumLimit<This, T>;
+
 	using ColorR	= ColorR_   <T, SIMD>;
 	using ColorRG	= ColorRG_  <T, SIMD>;
 	using ColorRGB	= ColorRGB_ <T, SIMD>;
@@ -48,8 +50,8 @@ public:
 	
 	constexpr Vec_<N,T> to_Vec() const { return Vec_<N,T>(r); }
 	
-	AX_INLINE constexpr 	  T* data()			{ return &r; }
-	AX_INLINE constexpr const T* data() const	{ return &r; }
+	AX_INLINE constexpr 	  T* data()			{ return _simd.data(); }
+	AX_INLINE constexpr const T* data() const	{ return _simd.data(); }
 
 	using CSpan =    Span<T>;
 	using MSpan = MutSpan<T>;
@@ -77,10 +79,19 @@ template<class T, VecSimd SIMD>
 class Color_<ColorModel::RG, T, SIMD> {
 	static constexpr Int N = 2;
 public:
+	using ElementType = T;
+	static constexpr VecSimd	kVecSimd		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RG;
+	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
+	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
+	static constexpr Int		kElementCount	= N;
+	static constexpr Int		kAlphaBits		= 0;
+	
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T r, g; };
+		T e[kElementCount];
 	};
 	AX_META_TYPE(Color_, NoBaseClass) {
 		AX_META_FIELD(r) {};
@@ -89,13 +100,6 @@ public:
 	};
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
-	using ElementType = T;
-	static constexpr VecSimd	kVecSimd		= SIMD;
-	static constexpr ColorModel	kColorModel		= ColorModel::RG;
-	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
-	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= N;
-	static constexpr Int		kAlphaBits		= 0;
 	
 	using ColorR	= ColorR_   <T, SIMD>;
 	using ColorRG	= ColorRG_  <T, SIMD>;
@@ -151,10 +155,19 @@ template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGB, T, SIMD> {
 	static constexpr Int N = 3;
 public:
+	using ElementType = T;
+	static constexpr VecSimd	kVecSimd		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RGB;
+	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
+	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
+	static constexpr Int		kElementCount	= N;
+	static constexpr Int		kAlphaBits		= 0;
+
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T r, g, b; };
+		T e[kElementCount];
 	};
 	AX_META_TYPE(Color_, NoBaseClass) {
 		AX_META_FIELD(r) {};
@@ -164,13 +177,6 @@ public:
 	};	
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
-	using ElementType = T;
-	static constexpr VecSimd	kVecSimd		= SIMD;
-	static constexpr ColorModel	kColorModel		= ColorModel::RGB;
-	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
-	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= N;
-	static constexpr Int		kAlphaBits		= 0;
 	
 	using ColorR	= ColorR_   <T, SIMD>;
 	using ColorRG	= ColorRG_  <T, SIMD>;
@@ -195,8 +201,8 @@ public:
 	AX_INLINE constexpr void set(T r_, T g_, T b_) { r = r_; g = g_; b = b_; }
 	AX_INLINE constexpr void set(const ColorRGB& v) { set(v.r, v.g, v.b); }
 
-	AX_INLINE constexpr 	  T* data()			{ return &r; }
-	AX_INLINE constexpr const T* data() const	{ return &r; }
+	AX_INLINE constexpr 	  T* data()			{ return _simd.data(); }
+	AX_INLINE constexpr const T* data() const	{ return _simd.data(); }
 
 	using CSpan =    Span<T>;
 	using MSpan = MutSpan<T>;
@@ -240,10 +246,18 @@ template<class T, VecSimd SIMD>
 class Color_<ColorModel::RGBA, T, SIMD> {
 	static constexpr Int N = 4;
 public:
+	using ElementType = T;
+	static constexpr VecSimd	kVecSimd		= SIMD;
+	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
+	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
+	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
+	static constexpr Int		kElementCount	= N;
+	
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T r, g, b, a; };
+		T e[kElementCount];
 	};
 	AX_META_TYPE(Color_, NoBaseClass) {
 		AX_META_FIELD(r) {};
@@ -254,13 +268,7 @@ public:
 	};
 
 	using _NumLimit = VecSimd_NumLimit<This, T>;
-	using ElementType = T;
-	static constexpr VecSimd	kVecSimd		= SIMD;
-	static constexpr ColorModel	kColorModel		= ColorModel::RGBA;
-	static constexpr ColorElem	kColorElem		= ColorElem_get<T>;
-	static constexpr ColorType	kColorType		= ColorType_make(kColorModel, kColorElem);
-	static constexpr Int		kElementCount	= N;
-	static constexpr Int		kAlphaBits		= AX_SIZEOF(a);
+	static constexpr Int kAlphaBits = AX_SIZEOF(a) * 8;
 	
 	using ColorR	= ColorR_   <T, SIMD>;
 	using ColorRG	= ColorRG_  <T, SIMD>;
@@ -293,8 +301,8 @@ public:
 	AX_INLINE constexpr void set(const ColorRGB& v, T a_ = kElemOne()) 
 		{ set(v.r, v.g, v.b, a); }
 
-	AX_INLINE constexpr 	  T* data()			{ return &r; }
-	AX_INLINE constexpr const T* data() const	{ return &r; }
+	AX_INLINE constexpr 	  T* data()			{ return _simd.data(); }
+	AX_INLINE constexpr const T* data() const	{ return _simd.data(); }
 
 	using CSpan =    Span<T>;
 	using MSpan = MutSpan<T>;
