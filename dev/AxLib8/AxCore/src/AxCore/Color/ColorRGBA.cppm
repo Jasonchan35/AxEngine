@@ -73,6 +73,11 @@ public:
 	static const This& kBlack		() { static This s(kElemZero()); return s; }
 	static const This& kRed			() { static This s(kElemOne ()); return s; }
 	static const This& kDarkRed		() { static This s(kElemHalf()); return s; }
+	
+	template<class R, VecSimd R_SIMD>
+	static constexpr This s_conv(const ColorR_<R, R_SIMD>& rhs) {
+		return This(ColorElemUtil::s_conv<T>(rhs.r));
+	}
 };
 
 template<class T, VecSimd SIMD>
@@ -149,6 +154,12 @@ public:
 	static const This& kDarkRed		() { static This s(kElemHalf(), kElemZero()); return s; }
 	static const This& kDarkGreen	() { static This s(kElemZero(), kElemHalf()); return s; }
 	static const This& kDarkYellow	() { static This s(kElemHalf(), kElemHalf()); return s; }
+	
+	template<class R, VecSimd R_SIMD>
+	static constexpr This s_conv(const ColorRG_<R, R_SIMD>& rhs) {
+		return This(ColorElemUtil::s_conv<T>(rhs.r),
+					ColorElemUtil::s_conv<T>(rhs.g));
+	}
 };
 
 template<class T, VecSimd SIMD>
@@ -237,8 +248,11 @@ public:
 
 	void toHexString(IString& s) const;
 
-	template<class R, VecSimd R_SIMD> static constexpr This s_cast(const ColorRGB_<R, R_SIMD>& rhs) {
-		return SimdData::s_cast(rhs);
+	template<class R, VecSimd R_SIMD>
+	static constexpr This s_conv(const ColorRGB_<R, R_SIMD>& rhs) {
+		return This(ColorElemUtil::s_conv<T>(rhs.r),
+					ColorElemUtil::s_conv<T>(rhs.g),
+					ColorElemUtil::s_conv<T>(rhs.b));
 	}
 };
 
@@ -357,9 +371,13 @@ public:
 	
 	
 	void toHexString(IString& s) const;
-	
-	template<class R, VecSimd R_SIMD> static constexpr This s_cast(const ColorRGBA_<R, R_SIMD>& rhs) {
-		return SimdData::s_cast(rhs._simd);
+
+	template<class R, VecSimd R_SIMD>
+	static constexpr This s_conv(const ColorRGBA_<R, R_SIMD>& rhs) {
+		return This(ColorElemUtil::s_conv<T>(rhs.r),
+					ColorElemUtil::s_conv<T>(rhs.g),
+					ColorElemUtil::s_conv<T>(rhs.b),
+					ColorElemUtil::s_conv<T>(rhs.a));
 	}
 };
 
@@ -367,7 +385,7 @@ template <class T, VecSimd SIMD> inline
 void Color_<ColorModel::RGB, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
 	s.ensureCapacity(10);
-	auto tmp = ColorRGBb::s_cast(*this);
+	auto tmp = ColorRGBb::s_conv(*this);
 	s.append("#");
 	s.append(CharUtil::byteToHex<Char>(tmp.r.v_int));
 	s.append(CharUtil::byteToHex<Char>(tmp.g.v_int));
@@ -378,7 +396,7 @@ template<class T, VecSimd SIMD> inline
 void Color_<ColorModel::RGBA, T, SIMD>::toHexString(IString& s) const {
 	s.clear();
 	s.ensureCapacity(10);
-	auto tmp = ColorRGBAb::s_cast(*this);
+	auto tmp = ColorRGBAb::s_conv(*this);
 	s.append("#");
 	s.append(CharUtil::byteToHex<Char>(tmp.r.v_int));
 	s.append(CharUtil::byteToHex<Char>(tmp.g.v_int));

@@ -69,7 +69,7 @@ DefaultRenderGraph::DefaultRenderGraph() {
 		_testMesh.create(vertices.constSpan(), Span(indices));
 	}
 	
-	RenderMeshEdit(_grid).createGrid(RenderPlaneAxis::ZX, Vertex_PosColor::s_layout(), 1, 15);
+	RenderMeshEdit(_grid).createGrid(RenderPlaneAxis::ZX, Vertex_PosColor::s_layout(), 1, 50);
 
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
 

@@ -33,7 +33,7 @@ void RenderMeshEdit::addRect(VertexLayout vertexLayout, const Rect2f& rect, cons
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
-		auto color = color_.toPremultipliedAlpha();
+		auto color = Color4b::s_conv(color_.toPremultipliedAlpha());
 		enumerator->fillValues(color);
 	}
 
@@ -65,7 +65,7 @@ void RenderMeshEdit::addBorderRect(VertexLayout    vertexLayout,
                                    const Margin2f& border,
                                    const Rect2f&   uv,
                                    const Margin2f& uvBorder,
-                                   const Color4f&  color,
+                                   const Color4f&  color_,
                                    bool            hasCenter) {
 //  0 --- 1 ----- 2 --- 3
 //  |  \  |       |  /  |
@@ -137,6 +137,7 @@ void RenderMeshEdit::addBorderRect(VertexLayout    vertexLayout,
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
+		auto color = Color4b::s_conv(color_);
 		auto dst = enumerator->begin();
 		// top row
 		*dst = color; ++dst;
@@ -178,7 +179,7 @@ void RenderMeshEdit::addBorderRect(VertexLayout    vertexLayout,
 	edit.addIndices(indices.constSpan());
 }
 
-void RenderMeshEdit::createCube(VertexLayout vertexLayout, const Vec3f& pos, const Vec3f& size, const Color4f& color) {
+void RenderMeshEdit::createCube(VertexLayout vertexLayout, const Vec3f& pos, const Vec3f& size, const Color4f& color_) {
 //     4-------5
 //    /|      /|
 //   0-------1 |
@@ -216,6 +217,7 @@ void RenderMeshEdit::createCube(VertexLayout vertexLayout, const Vec3f& pos, con
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
+		auto color = Color4b::s_conv(color_);
 		enumerator->fillValues(color);
 	}
 
@@ -276,7 +278,7 @@ void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, c
 	auto edit = _mesh.editNewVertices(primType, vertexLayout, VertexIndexType_get<Index>, vertexCount);
 	auto baseIdx = static_cast<Index>(edit.range.start());
 
-	auto textColor = style->color;
+	auto textColor = Color4b::s_conv(style->color);
 
 // 0 ----- 1
 // |       |
@@ -359,9 +361,9 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
                                 VertexLayout    vertexLayout,
                                 float           cellSize,
                                 Int             cellCount,
-                                const Color4f&  gridLineColor,
-                                const Color4f&  centerLineColor,
-                                const Color4f&  gridLine2_Color,
+                                const Color4f&  centerLineColor_,
+                                const Color4f&  gridLineColor_,
+                                const Color4f&  gridLine2_Color_,
                                 Int             gridLine2_Interval
 ) {
 	_mesh.clear();
@@ -393,7 +395,7 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
 	if (!posEnumerator) throw Error_Undefined();
 	
 	auto dstPos = posEnumerator->begin();
-	auto dstCol = colEnumerator ? colEnumerator->begin() : ElemIter<Color4f>();
+	auto dstCol = colEnumerator ? colEnumerator->begin() : ElemIter<Color4b>();
 
 	//center line X
 	*dstPos = -axis0 * scale; ++dstPos;
@@ -404,6 +406,7 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
 	*dstPos =  axis1 * scale; ++dstPos;
 
 	if (dstCol) {
+		auto centerLineColor = Color4b::s_conv(centerLineColor_);
 		for (Int j = 0; j < 4; ++j) {
 			*dstCol = centerLineColor; ++dstCol;
 		}
@@ -424,8 +427,10 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
 		*dstPos = (axis0 *  1 + axis1 * -px) * scale; ++dstPos;
 
 		if (dstCol) {
+			auto gridLine2_Color = Color4b::s_conv(gridLine2_Color_);
+			auto gridLineColor   = Color4b::s_conv(gridLineColor_);
+			auto color = (gridLine2_Interval != 0 && x % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
 			for (Int j = 0; j < 8; ++j) {
-				auto color = (gridLine2_Interval != 0 && j % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
 				*dstCol = color; ++dstCol;
 			}
 		}
@@ -456,20 +461,20 @@ void RenderMeshEdit::createAxis(VertexLayout vertexLayout) {
 
 	if (auto enumerator = edit.tryEditColor0()) {
 		auto dstCol = enumerator->begin();
-		*dstCol = Color4f(1,0,0,1); ++dstCol;
-		*dstCol = Color4f(1,0,0,1); ++dstCol;
+		*dstCol = Color4b::kRed();   ++dstCol;
+		*dstCol = Color4b::kRed();   ++dstCol;
 
-		*dstCol = Color4f(0,1,0,1); ++dstCol;
-		*dstCol = Color4f(0,1,0,1); ++dstCol;
+		*dstCol = Color4b::kGreen(); ++dstCol;
+		*dstCol = Color4b::kGreen(); ++dstCol;
 
-		*dstCol = Color4f(0,0,1,1); ++dstCol;
-		*dstCol = Color4f(0,0,1,1); ++dstCol;
+		*dstCol = Color4b::kBlue();  ++dstCol;
+		*dstCol = Color4b::kBlue();  ++dstCol;
 		
 		if (dstCol != enumerator->end()) throw Error_Undefined(); 
 	}
 }
 
-void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color) {
+void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color_) {
 	_mesh.clear();
 
 	Int n = positions.size();
@@ -489,11 +494,12 @@ void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec3f> position
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
+		auto color = Color4b::s_conv(color_);
 		enumerator->fillValues(color);
 	}
 }
 
-void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color) {
+void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color_) {
 	_mesh.clear();
 
 	Int n = positions.size();
@@ -512,11 +518,12 @@ void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec2f> position
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
+		auto color = Color4b::s_conv(color_);
 		enumerator->fillValues(color);
 	}
 }
 
-void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color) {
+void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color_) {
 	_mesh.clear();
 
 	const Int n = positions.size();
@@ -540,11 +547,12 @@ void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec3f> posi
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
+		auto color = Color4b::s_conv(color_);
 		enumerator->fillValues(color);
 	}
 }
 
-void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color) {
+void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color_) {
 	_mesh.clear();
 
 	Int n = positions.size();
@@ -566,6 +574,7 @@ void RenderMeshEdit::createLineStrip(VertexLayout vertexLayout, Span<Vec2f> posi
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
+		auto color = Color4b::s_conv(color_);
 		enumerator->fillValues(color);
 	}
 }
@@ -614,7 +623,7 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 				auto dst = enumerator->begin();
 				auto src = face.getColors(srcMesh, i);
 				for (auto& p : src) {
-					*dst = p; 
+					*dst = Color4b::s_conv(p); 
 					++dst;
 				}
 				if (dst != enumerator->end()) throw Error_Undefined();
@@ -671,10 +680,11 @@ void RenderMeshEdit::createCone(VertexLayout vertexLayout, float height, float r
 	createFromEditableMesh(vertexLayout, tmp);
 }
 
-void RenderMeshEdit::setColor(const Color4f color, Int colorSet) {
+void RenderMeshEdit::setColor(const Color4f& color_, Int colorSet) {
 	for (auto& sm : _mesh.subMeshes()) {
 		auto sem = VertexSemantic::COLOR0 + static_cast<u16>(colorSet);
-		if (auto enumerator = sm.vertexBuffer.tryEditElements<Color4f>(sem)) {
+		if (auto enumerator = sm.vertexBuffer.tryEditElements<Color4b>(sem)) {
+			auto color = Color4b::s_conv(color_);
 			enumerator->fillValues(color);
 		}
 	}

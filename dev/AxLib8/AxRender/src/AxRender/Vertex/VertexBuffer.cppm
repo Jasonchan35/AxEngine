@@ -40,7 +40,10 @@ public:
 	template<class E> Opt<ElemEnumerator_<E>> tryEditElements(VertexSemantic semantic, IntRange vertexRange) {
 		auto* elem = _vertexLayout->find(semantic);
 		if (!elem) return std::nullopt;
-		if (elem->dataType != RenderDataType_get<E>) return std::nullopt;
+		if (elem->dataType != RenderDataType_get<E>) {
+			AX_ASSERT(false);
+			return std::nullopt;
+		}
 		return editElements<E>(semantic, vertexRange);
 	}
 	template<class E> Opt<ElemEnumerator_<E>> tryEditElements(VertexSemantic semantic) {
@@ -69,15 +72,16 @@ VertexBuffer::ElemEnumerator_<E> VertexBuffer::editElements(VertexSemantic sem, 
 }
 
 template<class E> inline
-VertexBuffer::ElemEnumerator_<E> VertexBuffer::editElements(const VertexLayoutElement* elem,
-	IntRange vertexRange) {
+VertexBuffer::ElemEnumerator_<E> VertexBuffer::editElements(const VertexLayoutElement* elem, IntRange vertexRange) {
 	if (elem->dataType != RenderDataType_get<E>) throw Error_Undefined();
 	if (!IntRange(_vertexCount).contains(vertexRange))  throw Error_Undefined();
 
 	auto rangeInBytes = vertexRange * _vertexLayout->strideInBytes;
 	_buffer.markDirty(rangeInBytes);
 	auto mutData = _buffer.mutSpan().slice(rangeInBytes);
-	return ElemEnumerator_<E>(reinterpret_cast<E*>(mutData.begin()), reinterpret_cast<E*>(mutData.end()), strideInBytes());
+	return ElemEnumerator_<E>(	reinterpret_cast<E*>(mutData.begin() + elem->offset), 
+								reinterpret_cast<E*>(mutData.end()   + elem->offset), 
+								strideInBytes());
 }
 
 class VertexIndexBuffer : public NonCopyable {

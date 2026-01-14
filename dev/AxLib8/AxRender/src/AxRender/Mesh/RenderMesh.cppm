@@ -104,8 +104,8 @@ public:
 		template<class ELEM = Vec3f> Opt<ElemEnumerator<ELEM>> tryEditPosition () { return tryEditElements<ELEM>(VertexSemantic::POSITION ); }
 		template<class ELEM = Vec3f> Opt<ElemEnumerator<ELEM>> tryEditNormal0  () { return tryEditElements<ELEM>(VertexSemantic::NORMAL0  ); }
 
-		template<class ELEM = Color4f> Opt<ElemEnumerator<ELEM>> tryEditColor(Int i) { return tryEditElements<ELEM>(VertexSemantic::COLOR0 + static_cast<u16>(i)); }
-		template<class ELEM = Color4f> Opt<ElemEnumerator<ELEM>> tryEditColor0   ()  { return tryEditElements<ELEM>(VertexSemantic::COLOR0   ); }
+		template<class ELEM = Color4b> Opt<ElemEnumerator<ELEM>> tryEditColor(Int i) { return tryEditElements<ELEM>(VertexSemantic::COLOR0 + static_cast<u16>(i)); }
+		template<class ELEM = Color4b> Opt<ElemEnumerator<ELEM>> tryEditColor0   ()  { return tryEditElements<ELEM>(VertexSemantic::COLOR0   ); }
 
 		template<class ELEM = Vec2f> Opt<ElemEnumerator<ELEM>> tryEditTexCoord(Int i) { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0 + static_cast<u16>(i)); }
 		template<class ELEM = Vec2f> Opt<ElemEnumerator<ELEM>> tryEditTexCoord0()     { return tryEditElements<ELEM>(VertexSemantic::TEXCOORD0); }

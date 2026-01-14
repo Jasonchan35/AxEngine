@@ -83,7 +83,7 @@ template<ColorElem E>	using	ColorElem_Type = typename ColorElem_Type_<E>::Type;
 
 
 struct ColorElemUtil {
-	template<class DST, class SRC> AX_INLINE static constexpr DST s_cast(const SRC& src);
+	template<class DST, class SRC> AX_INLINE static constexpr DST s_conv(const SRC& src);
 
 	static AX_INLINE f32	to_f32(UNorm8  v) { return v.to_f32(); }
 	static AX_INLINE f32	to_f32(UNorm16 v) { return v.to_f32(); }
@@ -126,7 +126,7 @@ template<> AX_INLINE f32     ColorElemUtil::from_f64<f32    >(f64 v) { return st
 template<> AX_INLINE f64     ColorElemUtil::from_f64<f64    >(f64 v) { return v; }
 
 template<class DST, class SRC> AX_INLINE constexpr
-DST ColorElemUtil::s_cast(const SRC& src) {
+DST ColorElemUtil::s_conv(const SRC& src) {
 	if constexpr (std::is_same_v<DST, SRC>) {
 		return src; // same type
 

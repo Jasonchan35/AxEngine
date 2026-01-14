@@ -68,6 +68,11 @@ public:
 	static const This& kBlack		() { static This s(kElemZero()); return s; }
 	static const This& kWhite		() { static This s(kElemOne ()); return s; }
 	static const This& kGray		() { static This s(kElemHalf()); return s; }
+	
+	template<class R, VecSimd R_SIMD>
+	static constexpr This s_conv(const ColorL_<R, R_SIMD>& rhs) {
+		return This(ColorElemUtil::s_conv<T>(rhs.luma));
+	}	
 };
 
 template<class T, VecSimd SIMD>
@@ -134,6 +139,12 @@ public:
 	static const This& kBlack		() { static This s(kElemZero()); return s; }
 	static const This& kWhite		() { static This s(kElemOne ()); return s; }
 	static const This& kGray		() { static This s(kElemHalf()); return s; }
+	
+	template<class R, VecSimd R_SIMD>
+	static constexpr This s_conv(const ColorLA_<R, R_SIMD>& rhs) {
+		return This(ColorElemUtil::s_conv<T>(rhs.luma),
+					ColorElemUtil::s_conv<T>(rhs.a));
+	}	
 };
 
 } // namespace ax

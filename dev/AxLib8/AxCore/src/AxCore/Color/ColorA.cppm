@@ -65,6 +65,11 @@ public:
 	AX_INLINE constexpr bool	operator==	(const This& rhs) const { return _simd == rhs._simd; }
 
 	static const This& kZero		() { static This s(kElemZero()); return s; }
+	
+	template<class R, VecSimd R_SIMD>
+	static constexpr This s_conv(const ColorA_<R, R_SIMD>& rhs) {
+		return This(ColorElemUtil::s_conv<T>(rhs.a));
+	}	
 };
 
 } // namespace ax

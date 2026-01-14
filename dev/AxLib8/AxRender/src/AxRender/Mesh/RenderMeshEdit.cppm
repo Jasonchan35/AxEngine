@@ -61,7 +61,7 @@ public:
 	void createCylinder						(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool topCap, bool bottomCap);
 	void createCone							(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool bottomCap);
 
-	void setColor(const Color4f color, Int colorSet = 0);
+	void setColor(const Color4f& color, Int colorSet = 0);
 
 
 private:
