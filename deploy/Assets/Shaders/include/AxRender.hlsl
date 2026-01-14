@@ -58,7 +58,7 @@ cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
 }
 
 #if AX_RENDER_BINDLESS
-	SamplerState AxBindless_SamplerState[1000] : register(s0,      AX_BindSpace_Bindless);
+	SamplerState AxBindless_SamplerState[1000] : register(s0,     AX_BindSpace_Bindless);
 	Texture2D    AxBindless_Texture2D[10000]   : register(t10000, AX_BindSpace_Bindless);
 	Texture3D    AxBindless_Texture3D[1000]    : register(t20000, AX_BindSpace_Bindless);
 	

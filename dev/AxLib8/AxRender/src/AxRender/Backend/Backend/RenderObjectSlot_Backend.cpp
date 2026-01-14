@@ -12,7 +12,7 @@ RenderObjectTable_Backend<T>::RenderObjectTable_Backend() {
 	auto frameCount = RenderSystem::s_instance()->renderRequestCount();
 	if (frameCount < 1) throw Error_Undefined();
 	_frames.resize(frameCount);
-	_slots.emplaceBack(); // slot 0 for fall back when error
+	_slots.emplaceBack(nullptr); // slot 0 for fallback when error
 }
 
 template<class T>
@@ -34,18 +34,24 @@ void RenderObjectTable_Backend<T>::add(T* obj, bool isFallbackDefault) {
 	}
 
 	auto slotId = RenderObjectSlotId_None;
-	if (!isFallbackDefault) {
+	if (isFallbackDefault) {
+		slotId = 0;
+		if (_slots[slotId]) {
+			AX_ASSERT(false); // added already ?
+			return;
+		}
+		_slots[slotId] = obj;
+
+	} else {
 		if (_freeSlots.size()) {
 			slotId = _freeSlots.popBack();
 		} else {
 			slotId = ax_safe_cast_from(_slots.size());
-			_slots.emplaceBack();
+			_slots.emplaceBack(obj);
 		}
 	}
 
 	handle._slotId = slotId;
-	_slots[slotId] = obj;
-
 	markDirty(obj);
 }
 

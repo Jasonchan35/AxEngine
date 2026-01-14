@@ -37,8 +37,8 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
 		auto addBinding = [&](const ParamBase& p, VkDescriptorType type) {
-			// AX_LOG("-- addBinding name={:26} bindPoint={:6}, bindCount={:6} type={:16} this={}",
-			//          p.name(), p.bindPoint(), p.bindCount(), type, ownParamSpace->debugName());
+			// AX_LOG("-- addBinding name={:26} bindPoint={:6}, bindCount={:6} flags={} type={:16} this={}",
+			//           p.name(), p.bindPoint(), p.bindCount(), p.stageFlags(), type, ownParamSpace->debugName());
 			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 		};
 
@@ -47,12 +47,10 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		for (auto& param : ownParamSpace->_samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
 		for (auto& param : ownParamSpace->_storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
-		if (bindings.bindings.size() > 0) {
-			if (!ownParamSpace) continue;
-			ownParamSpace->_descSetLayout_vk.create(dev, bindings, layoutFlags);
-			// AX_LOG("-- create Layout {} {}", (void*)ownParamSpace->_descSetLayout_vk.handle(), ownParamSpace->debugName());
-			_ownDescSetCount++;
-		}
+		if (!ownParamSpace) continue;
+		ownParamSpace->_descSetLayout_vk.create(dev, bindings, layoutFlags);
+//		AX_LOG("---- create Layout {} {}", (void*)ownParamSpace->_descSetLayout_vk.handle(), ownParamSpace->debugName());
+		_ownDescSetCount++;
 	}
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
@@ -62,7 +60,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		auto* layout = paramSpace->_descSetLayout_vk.handle();
 		if (!layout) continue;
 		
-		// AX_LOG("-- add Layout {} {}", (void*)layout, paramSpace->debugName());
+//		AX_LOG("-- add Layout {} {}", (void*)layout, paramSpace->debugName());
 		_allLayouts_vk.emplaceBack(layout);
 	}
 

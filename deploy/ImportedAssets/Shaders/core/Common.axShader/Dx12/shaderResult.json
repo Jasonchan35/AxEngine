@@ -41,11 +41,11 @@
       "constBuffers": [{
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 32, 
+          "dataSize": 16, 
           "variables": [{
               "name": "foo", 
               "offset": 0, 
@@ -75,7 +75,7 @@
         }, {
           "name": "AX_ConstBuffer_World", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "World", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -124,7 +124,7 @@
         }, {
           "name": "AX_ConstBuffer_Object", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Object", 
           "bindPoint": 0, 
           "bindCount": 1, 

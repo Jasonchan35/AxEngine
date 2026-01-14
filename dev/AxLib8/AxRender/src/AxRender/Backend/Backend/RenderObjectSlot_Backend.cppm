@@ -8,7 +8,7 @@ export namespace ax /*::AxRender*/ {
 template<class T> class RenderObjectTable_Backend;
 
 using RenderObjectSlotId = u32;
-RenderObjectSlotId RenderObjectSlotId_None = 0;
+RenderObjectSlotId RenderObjectSlotId_None = u32_max;
 
 template<class T>
 class RenderObjectSlot_Backend : public NonCopyable {

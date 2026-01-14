@@ -199,6 +199,14 @@ ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 	, _info(desc.info)
 	, _stageInfo(desc.stageInfo)
 {
+	{ // create BindSpace::Default (Vulkan requires all bindspace)
+		auto bindSpace = BindSpace::Default;
+		ShaderParamSpace_CreateDesc spaceDesc;
+		spaceDesc.bindSpace = bindSpace;
+		spaceDesc.shaderPass = this;
+		_shaderParamSpaces[ax_enum_int(bindSpace)] = ShaderParamSpace_Backend::s_new(AX_NEW, spaceDesc);
+	}
+	
 	_createParamSpaces();
 }
 

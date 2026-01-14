@@ -41,7 +41,7 @@
       "constBuffers": [{
           "name": "$Global", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -75,7 +75,7 @@
         }, {
           "name": "AX_ConstBuffer_World", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "World", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -124,7 +124,7 @@
         }, {
           "name": "AX_ConstBuffer_Object", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Object", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -175,14 +175,14 @@
       "textures": [{
           "name": "AxBindless_Texture2D", 
           "dataType": "Texture2D", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
           "bindPoint": 10004, 
           "bindCount": 10000
         }, {
           "name": "AxBindless_Texture3D", 
           "dataType": "Texture3D", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
           "bindPoint": 20004, 
           "bindCount": 1000
@@ -190,7 +190,7 @@
       "samplers": [{
           "name": "AxBindless_SamplerState", 
           "dataType": "SamplerState", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
           "bindPoint": 4, 
           "bindCount": 1000, 
