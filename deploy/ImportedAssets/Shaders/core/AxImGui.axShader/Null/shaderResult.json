@@ -1,7 +1,19 @@
 {
   "declare": {
     "isGlobalCommonShader": false, 
-    "props": [], 
+    "props": [{
+        "name": "fontTexture", 
+        "propType": "Texture2D", 
+        "displayName": "fontTexture", 
+        "asset": "asset path", 
+        "defaultValue": "White", 
+        "samplerState": {
+          "filter": "Point", 
+          "wrap": ["Repeat", "Clamp", "Repeat"], 
+          "minLOD": 0, 
+          "maxLOD": "Infinity"
+        }
+      }], 
     "passes": [{
         "name": "Pass0", 
         "vsFunc": "vs_main", 
