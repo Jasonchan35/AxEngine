@@ -26,12 +26,15 @@ public:
 	void setAim(const Vec3& aim)	{ _aim = aim; }
 	void setPos(const Vec3& pos) {
 		auto dir = pos - _aim;
-		_distance = dir.length();
+		_distance = Math::max(dir.length(), T(0.001));
 		_quat = Quat4::lookAt(dir / _distance, up());
 	}
 	
+	void setRotation(const Vec3& v) { _quat.setEulerDeg(v); }
+	void setRotation(const T& x, const T& y, const T& z = 0) { setRotation(Vec3(x, y, z)); }
+	
 	Quat4 quat() const { return _quat; }
-	Vec3  euler() const { return _quat.euler(); }
+	Vec3  rotation() const { return _quat.eulerDeg(); }
 	
 	Vec3 aim() const { return _aim; }
 	Vec3 pos() const { return _aim + _quat * Vec3(0,0,-_distance); }
@@ -69,18 +72,18 @@ using Camera3d = Camera3_<f64>;
 template<class T> inline
 void Camera3_<T>::pan(Vec2 delta) {
 	auto d = _quat * Vec3(0, 0, -_distance);
-	_quat *= Quat4::s_euler({delta, 0});
+	_quat *= Quat4::s_eulerRad({delta, 0});
 	_aim = _quat * Vec3(0, 0, _distance);
 }
 
 template<class T> inline
 void Camera3_<T>::orbit(Vec2 delta) {
-	auto e = _quat.euler();
+	auto e = _quat.eulerRad();
 	e.x = 0;
-	auto q = Quat4::s_euler(e);
+	auto q = Quat4::s_eulerRad(e);
 	
-	_quat *= q.inverse() * Quat4::s_eulerX(delta.x) * q;
-	_quat *= Quat4::s_eulerY(delta.y);
+	_quat *= q.inverse() * Quat4::s_eulerRadX(delta.x) * q;
+	_quat *= Quat4::s_eulerRadY(delta.y);
 }
 
 template<class T> inline

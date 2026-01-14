@@ -74,6 +74,8 @@ DefaultRenderGraph::DefaultRenderGraph() {
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
 
 	_testCube = RenderStockObjects::s_instance()->meshes.cube;
+	
+	_camera.setRotation(-30, 45);
 }
 
 void DefaultRenderGraph::onUpdate(RenderRequest* req) {

@@ -84,13 +84,13 @@ public:
 
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
-		SimdData	_simd;
+		SimdData _simd;
 		struct { T x; };
+		T e[kElementCount];
 	};
 	AX_META_TYPE(Vec_, NoBaseClass) {
 		AX_META_FIELD(x) {};
-		AX_META_FIELD(y) {};
-		using OwnFields = Tuple<x,y>;
+		using OwnFields = Tuple<x>;
 	};	
 	using _NumLimit = VecSimd_NumLimit<This, T>;
 	
@@ -176,6 +176,7 @@ public:
 	union {
 		SimdData	_simd;
 		struct { T x, y; };
+		T e[kElementCount];
 	};
 	
 	AX_META_TYPE(Vec_, NoBaseClass) {
@@ -294,10 +295,15 @@ template<class T, VecSimd SIMD>
 class Vec_<3, T, SIMD> {
 	static constexpr Int N = 3;
 public:
+	using ElementType = T;
+	static constexpr Int kElementCount = N;
+	static constexpr VecSimd kVecSimd = SIMD;
+	
 	using SimdData = VecSimd_Data_<N,T,SIMD>; 
 	union {
 		SimdData	_simd;
 		struct { T x, y, z; };
+		T e[kElementCount];
 	};
 	
 	AX_META_TYPE(Vec_, NoBaseClass) {
@@ -308,9 +314,6 @@ public:
 	};
 	
 	using _NumLimit = VecSimd_NumLimit<This, T>;
-	using ElementType = T;
-	static constexpr Int kElementCount = N;
-	static constexpr VecSimd kVecSimd = SIMD;
 
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
@@ -442,6 +445,7 @@ public:
 	union {
 		SimdData	_simd;
 		struct { T x, y, z, w; };
+		T e[kElementCount];
 	};
 	
 	AX_META_TYPE(Vec_, NoBaseClass) {
@@ -527,8 +531,26 @@ namespace Math {
 	template<Int N, class T, VecSimd SIMD> inline
 	void sincos(const Vec_<N,T,SIMD>& r, Vec_<N,T,SIMD>& out_sin, Vec_<N,T,SIMD>& out_cos) {
 		for (Int i = 0; i < N; ++i) {
-			Math::sincos(r.data()[i], out_sin.data()[i], out_cos.data()[i]);
+			Math::sincos(r.e[i], out_sin.e[i], out_cos.e[i]);
 		}
+	}
+
+	template<Int N, class T, VecSimd SIMD> inline
+	Vec_<N,T,SIMD> radians(const Vec_<N,T,SIMD>& deg) {
+		Vec_<N,T,SIMD> o;
+		for (Int i = 0; i < N; ++i) {
+			o.e[i] = Math::radians(deg.e[i]);
+		}
+		return o;
+	}
+
+	template<Int N, class T, VecSimd SIMD> inline
+	Vec_<N,T,SIMD> degress(const Vec_<N,T,SIMD>& deg) {
+		Vec_<N,T,SIMD> o;
+		for (Int i = 0; i < N; ++i) {
+			o.e[i] = Math::degress(deg.e[i]);
+		}
+		return o;
 	}
 
 } // namespace Math
