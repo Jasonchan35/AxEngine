@@ -184,12 +184,6 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 	            c.x * c.y * c.z + s.x * s.y * s.z);
 }
 
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerZ() const -> T {
-	auto a = T(2) * (x * y + w * z);
-	auto b = w * w + x * x - y * y - z * z;
-	return Math::atan2(a, b);
-}
-
 template<class T, VecSimd SIMD> constexpr 
 auto Quat_<4, T, SIMD>::normalize() const -> This {
 	T magSq = (_simd * _simd).horizontalAdd();
@@ -201,21 +195,27 @@ auto Quat_<4, T, SIMD>::normalize() const -> This {
 	}
 }
 
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerY() const -> T {
-	auto v = T(-2) * (x * z - w * y);
-	auto a = Math::clamp(v, T(-1), T(1));
-	return Math::asin(a);
-}
-
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerX() const -> T {
 	auto a = T(2) * (y * z + w * x);
 	auto b = w * w - x * x - y * y + z * z;
 	return Math::atan2(a, b);
 }
 
+template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerY() const -> T {
+	auto v = T(-2) * (x * z - w * y);
+	auto a = Math::clamp(v, T(-1), T(1));
+	return Math::asin(a);
+}
+
+template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerZ() const -> T {
+	auto a = T(2) * (x * y + w * z);
+	auto b = w * w + x * x - y * y - z * z;
+	return Math::atan2(a, b);
+}
+
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::inverse() const -> This {
 	T d = x * x + y * y + z * z + w * w;
-	return This(-x, -y, -z, w) / d;
+	return This(-x, -y, -z, w)._simd / d;
 }
 
 // operator * (Vec3, Quat4)

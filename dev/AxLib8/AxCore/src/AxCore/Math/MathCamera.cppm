@@ -30,13 +30,15 @@ public:
 		_quat = Quat4::lookAt(dir / _distance, up());
 	}
 	
-	const Vec3& aim() const { return _aim; }
+	Quat4 quat() const { return _quat; }
+	Vec3  euler() const { return _quat.euler(); }
 	
-	const Vec3 pos() const { return _aim + _quat * Vec3(0,0,-_distance); }
+	Vec3 aim() const { return _aim; }
+	Vec3 pos() const { return _aim + _quat * Vec3(0,0,-_distance); }
 
-	const Vec3 up() const		{ return _quat * Vec3(0, 1, 0); }
-	const Vec3 forward() const	{ return _quat * Vec3(0, 0, 1); }
-	const Vec3 right() const	{ return _quat * Vec3(0, 1, 0); }
+	Vec3 up() const		{ return _quat * Vec3(0, 1, 0); }
+	Vec3 forward() const	{ return _quat * Vec3(0, 0, 1); }
+	Vec3 right() const	{ return _quat * Vec3(0, 1, 0); }
 
 	void setViewport(const Rect2& v) { _viewport = v; }
 	const Rect2& viewport() const { return _viewport; }
@@ -73,7 +75,12 @@ void Camera3_<T>::pan(Vec2 delta) {
 
 template<class T> inline
 void Camera3_<T>::orbit(Vec2 delta) {
-	_quat *= Quat4::s_euler({0, delta.x, delta.y});
+	auto e = _quat.euler();
+	e.x = 0;
+	auto q = Quat4::s_euler(e);
+	
+	_quat *= q.inverse() * Quat4::s_eulerX(delta.x) * q;
+	_quat *= Quat4::s_eulerY(delta.y);
 }
 
 template<class T> inline

@@ -36,7 +36,7 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 	switch (ev.type) {
 		case UIMouseEventType::Move: {
 			if (ev.pressedButton == UIMouseEventButton::Right) {
-				cam.orbit(ev.deltaPos * 0.01f);
+				cam.orbit(ev.deltaPos.yx() * -0.01f);
 			} else if (ev.pressedButton == UIMouseEventButton::Middle) {
 				cam.move(ev.deltaPos * 0.01f);
 			}
@@ -55,9 +55,11 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 	{
 		auto& cam = _camera;
 		ImUIPanel	panel("camera");
-		ImUILabelText("pos", Fmt("{}", cam.pos()));
-		ImUILabelText("aim", Fmt("{}", cam.aim()));
-		ImUILabelText("up",  Fmt("{}", cam.up()));
+		ImUILabelText("pos"  , Fmt("{}", cam.pos()));
+		ImUILabelText("aim"  , Fmt("{}", cam.aim()));
+		ImUILabelText("up"   , Fmt("{}", cam.up()));
+		ImUILabelText("euler", Fmt("{}", cam.euler()));
+		
 		auto viewMat = cam.viewMatrix();
 		ImUILabelText("viewMatrix",  Fmt("{}", viewMat));
 		auto projMat = cam.projMatrix();

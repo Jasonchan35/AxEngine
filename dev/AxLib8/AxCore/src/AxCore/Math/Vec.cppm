@@ -203,8 +203,14 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); } 
 
-		AX_NODISCARD AX_INLINE constexpr Vec3 xy0 () const { return Vec3(x,y,0); }
+	AX_NODISCARD AX_INLINE constexpr Vec2 xy() const { return Vec2(x,y); }
+	AX_NODISCARD AX_INLINE constexpr Vec2 yx() const { return Vec2(y,x); }
+
+	AX_NODISCARD AX_INLINE constexpr Vec3 xy0 () const { return Vec3(x,y,0); }
+	AX_NODISCARD AX_INLINE constexpr Vec3 yx0 () const { return Vec3(y,x,0); }
+	
 	AX_NODISCARD AX_INLINE constexpr Vec4 xy01() const { return Vec4(x,y,0,1); }
+	AX_NODISCARD AX_INLINE constexpr Vec4 xy00() const { return Vec4(x,y,0,0); }
 	
 	template<VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
@@ -330,16 +336,9 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); }
 
-	AX_NODISCARD AX_INLINE constexpr Vec2 xx() const { return Vec2(x,x); }
 	AX_NODISCARD AX_INLINE constexpr Vec2 xy() const { return Vec2(x,y); }
-	AX_NODISCARD AX_INLINE constexpr Vec2 xz() const { return Vec2(x,z); }
-	AX_NODISCARD AX_INLINE constexpr Vec2 yx() const { return Vec2(y,x); }
-	AX_NODISCARD AX_INLINE constexpr Vec2 yy() const { return Vec2(y,y); }
-	AX_NODISCARD AX_INLINE constexpr Vec2 yz() const { return Vec2(y,z); }
-	AX_NODISCARD AX_INLINE constexpr Vec2 zx() const { return Vec2(z,x); }
-	AX_NODISCARD AX_INLINE constexpr Vec2 zy() const { return Vec2(z,y); }
-	AX_NODISCARD AX_INLINE constexpr Vec2 zz() const { return Vec2(z,z); }
-
+	
+	AX_NODISCARD AX_INLINE constexpr Vec4 xyz0() const { return Vec4(x,y,z,0); }
 	AX_NODISCARD AX_INLINE constexpr Vec4 xyz1() const { return Vec4(x,y,z,1); }
 	
 	template<VecSimd R_SIMD>
