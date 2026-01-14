@@ -437,6 +437,38 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
 	}
 }
 
+void RenderMeshEdit::createAxis(VertexLayout vertexLayout) {
+	auto edit = _mesh.editNewVertices(PrimType::Lines, vertexLayout, VertexIndexType::None, 6);
+	
+	if (auto enumerator = edit.tryEditPosition()) {
+		auto dstPos = enumerator->begin();
+		*dstPos = Vec3f(0,0,0); ++dstPos;
+		*dstPos = Vec3f(1,0,0); ++dstPos;
+		
+		*dstPos = Vec3f(0,0,0); ++dstPos;
+		*dstPos = Vec3f(0,1,0); ++dstPos;
+		
+		*dstPos = Vec3f(0,0,0); ++dstPos;
+		*dstPos = Vec3f(0,0,1); ++dstPos;
+		
+		if (dstPos != enumerator->end()) throw Error_Undefined();
+	}
+
+	if (auto enumerator = edit.tryEditColor0()) {
+		auto dstCol = enumerator->begin();
+		*dstCol = Color4f(1,0,0,1); ++dstCol;
+		*dstCol = Color4f(1,0,0,1); ++dstCol;
+
+		*dstCol = Color4f(0,1,0,1); ++dstCol;
+		*dstCol = Color4f(0,1,0,1); ++dstCol;
+
+		*dstCol = Color4f(0,0,1,1); ++dstCol;
+		*dstCol = Color4f(0,0,1,1); ++dstCol;
+		
+		if (dstCol != enumerator->end()) throw Error_Undefined(); 
+	}
+}
+
 void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color) {
 	_mesh.clear();
 

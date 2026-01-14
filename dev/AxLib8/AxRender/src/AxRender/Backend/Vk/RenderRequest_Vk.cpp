@@ -159,10 +159,18 @@ void RenderRequest_Vk::onRenderPassEnd(RenderPass* pass_) {
 
 void RenderRequest_Vk::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
 	VkViewport tmp;
+#if 1 // flip Y - in vulkan Y is downward, while DX and OpenGL is up
+	tmp.x        = rect.x;
+	tmp.y        = rect.h - rect.y;
+	tmp.width    = rect.w;
+	tmp.height   = -rect.h;
+#else
 	tmp.x        = rect.x;
 	tmp.y        = rect.y;
 	tmp.width    = rect.w;
 	tmp.height   = rect.h;
+#endif	
+
 	tmp.minDepth = minDepth;
 	tmp.maxDepth = maxDepth;
 	vkCmdSetViewport(_graphCmdList_vk, 0, 1, &tmp);

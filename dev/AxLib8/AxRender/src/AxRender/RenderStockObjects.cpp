@@ -43,7 +43,12 @@ RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
 }
 
 RenderStockObjects::Meshes::Meshes() {
+	axis = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(axis->meshData).createAxis(Vertex_PosColor::s_layout());
+
+	//----
 	auto layout = Vertex_PosNormalUv::s_layout();
+
 	cube = MeshObject::s_new(AX_NEW);
 	RenderMeshEdit(cube->meshData).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
 	

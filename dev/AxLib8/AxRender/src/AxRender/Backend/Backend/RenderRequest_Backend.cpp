@@ -71,7 +71,6 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	RenderObjectManager_Backend::s_instance()->onFrameBegin(this);
 
 	_renderContext         = renderContext;
-	_viewportIsBottomUp    = renderContext->viewportIsBottomUp();
 	_frameSize             = backBufferRenderPass->frameSize();
 	_backBufferRenderPass  = backBufferRenderPass;
 	_uptime                = _renderSystem_backend->getCurrentUptime().seconds_f64();

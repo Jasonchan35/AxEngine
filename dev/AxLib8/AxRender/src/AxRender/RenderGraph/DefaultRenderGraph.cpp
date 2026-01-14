@@ -73,7 +73,10 @@ DefaultRenderGraph::DefaultRenderGraph() {
 
 	lighting.setInputs(gbuffer.color0, gbuffer.color1);
 
-	_testCube = RenderStockObjects::s_instance()->meshes.cube;
+	auto* stockObjs = RenderStockObjects::s_instance();
+	
+	_axis     = stockObjs->meshes.axis;
+	_testCube = stockObjs->meshes.cube;
 	
 	_camera.setRotation(-30, 45);
 }
@@ -91,7 +94,10 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 		req->draw(cmd);
 	}
 #endif
-
+	auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);
+	auto mvp = _camera.viewProjMatrix();
+	req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp);
+	
 	// if (_testMeshMaterial) {
 	// 	req->drawMesh(_testMesh, _testMeshMaterial, 0);
 	// }
@@ -99,12 +105,10 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	_camera.setViewport(req->viewport());
 	
 	req->drawMesh(_grid, _mat_simple3d_color, 0);
+	req->drawMesh(_axis, _mat_simple3d_color, 0);
 
 	if (_testMesh3dMaterial) {
-		auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);
-		auto mvp = _camera.viewProjMatrix();
-		req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp);
-		req->drawMesh(_testCube, _testMesh3dMaterial, 0);
+//		req->drawMesh(_testCube, _testMesh3dMaterial, 0);
 	}
 
 	req->drawUI();

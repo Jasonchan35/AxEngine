@@ -40,11 +40,13 @@ public:
 	                const Color4f&  gridLine2_Color    = Color4f(.65f, .65f, .65f),
 	                Int             gridLine2_Interval = 5);
 	
-	void createLines			(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color);
-	void createLines			(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color);
+	void createAxis		(VertexLayout vertexLayout);
+	
+	void createLines	(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color);
+	void createLines	(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color);
 
-	void createLineStrip		(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color);
-	void createLineStrip		(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color);
+	void createLineStrip(VertexLayout vertexLayout, Span<Vec3f> positions, const Color4f& color);
+	void createLineStrip(VertexLayout vertexLayout, Span<Vec2f> positions, const Color4f& color);
 
 	template<class SRC>
 	void createLinesFromVertexNormals(VertexLayout vertexLayout, const SRC& src, float normalLength, const Color4fPair& color) {

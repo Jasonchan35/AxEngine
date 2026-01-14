@@ -39,8 +39,6 @@ public:
 
 	void setRenderGraph(RenderGraph* graph) { _renderGraph = graph; }
 
-	bool viewportIsBottomUp() const { return _viewportIsBottomUp; }
-
 	virtual Vec2f	worldToLocalPos(const Vec2f& pt) = 0;
 	virtual Vec2f	localToWorldPos(const Vec2f& pt) = 0;
 
@@ -71,8 +69,6 @@ protected:
 	RenderSystem*     _renderSystem       = nullptr;
 	NativeUIWindow*   _window             = nullptr;
 	UIEventHandler*   _uiEventHandler     = nullptr;
-	
-	bool              _viewportIsBottomUp = false;
 	const Vec2i       _minFrameSize{8, 8};
 	
 	SwapChainDesc     _swapChainDesc;

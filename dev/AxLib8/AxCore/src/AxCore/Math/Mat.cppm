@@ -162,17 +162,17 @@ public:
 
 	AX_NODISCARD constexpr bool almostEqual	(const This &r) const;
 
-	AX_NODISCARD constexpr This operator+	(const T& s) const		{ return This(cx + s, cy + s, cz + s, cw + s); }
-	AX_NODISCARD constexpr This operator-	(const T& s) const		{ return This(cx - s, cy - s, cz - s, cw - s); }
-	AX_NODISCARD constexpr This operator*	(const T& s) const		{ return This(cx * s, cy * s, cz * s, cw * s); }
-	AX_NODISCARD constexpr This operator/	(const T& s) const		{ return This(cx / s, cy / s, cz / s, cw / s); }
-
-				 constexpr void operator+=	(const T& s)			{ cx += s; cy += s; cz += s; cw += s; }
-				 constexpr void operator-=	(const T& s)			{ cx -= s; cy -= s; cz -= s; cw -= s; }
-				 constexpr void operator*=	(const T& s)			{ cx *= s; cy *= s; cz *= s; cw *= s; }
-				 constexpr void operator/=	(const T& s)			{ cx /= s; cy /= s; cz /= s; cw /= s; }
-
+	AX_NODISCARD constexpr This operator+	(const T& s) const { return This(cx + s, cy + s, cz + s, cw + s); }
+	AX_NODISCARD constexpr This operator-	(const T& s) const { return This(cx - s, cy - s, cz - s, cw - s); }
+	AX_NODISCARD constexpr This operator*	(const T& s) const { return This(cx * s, cy * s, cz * s, cw * s); }
+	AX_NODISCARD constexpr This operator/	(const T& s) const { return This(cx / s, cy / s, cz / s, cw / s); }
 	AX_NODISCARD constexpr This operator*	(const This& m) const { return mulMatrix(m); }
+
+				 constexpr void operator+=	(const T& s) { cx += s; cy += s; cz += s; cw += s; }
+				 constexpr void operator-=	(const T& s) { cx -= s; cy -= s; cz -= s; cw -= s; }
+				 constexpr void operator*=	(const T& s) { cx *= s; cy *= s; cz *= s; cw *= s; }
+				 constexpr void operator/=	(const T& s) { cx /= s; cy /= s; cz /= s; cw /= s; }
+				 constexpr void operator*=	(const This& m) { *this = mulMatrix(m); }
 	
 	AX_NODISCARD constexpr This mulMatrix	(const This& m) const;
 	AX_NODISCARD constexpr Vec4 mulPoint	(const Vec4& v) const;

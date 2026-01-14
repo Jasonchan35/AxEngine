@@ -111,12 +111,16 @@ void ImGui_Backend::onDrawUI(RenderRequest* req) {
 		float R = data->DisplayPos.x + data->DisplaySize.x;
 		float T = data->DisplayPos.y;
 		float B = data->DisplayPos.y;
-		
+
+	#if 1
+		B += data->DisplaySize.y;
+	#else
 		if (req->viewportIsBottomUp()) {
 			T += data->DisplaySize.y;
 		} else {
 			B += data->DisplaySize.y;
 		}
+	#endif
 
 		Mat4f projectionMatrix(
 			{ 2.0f/(R-L),   0.0f,           0.0f,       0.0f },

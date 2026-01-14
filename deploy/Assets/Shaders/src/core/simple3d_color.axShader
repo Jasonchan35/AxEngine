@@ -32,10 +32,6 @@ Pass "Pass0" { // Forward
 #include "AxRender.hlsl"
 
 Color4f 	color;
-Sampler_Texture2D(tex0)
-Sampler_Texture2D(tex1)
-Sampler_Texture2D(tex2)
-Sampler_Texture2D(tex3)
 
 struct VS_Input {
 	sem_pos(float4)
@@ -55,9 +51,6 @@ PS_Input vs_main(VS_Input i) {
 }
 
 float4 ps_main(PS_Input i) : SV_Target {
-	// float4 t0 = tex2D(tex0, i.uv0);
-	// float4 t1 = tex2D(tex1, i.uv0);
-	// float4 o = color * t0 * t1 * (ax_g_timeSin.y * 0.4 + 0.5); // * global_color;
 	float4 o = i.color0;
 	return o;
 }

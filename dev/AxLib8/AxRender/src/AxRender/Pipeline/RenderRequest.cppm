@@ -53,8 +53,6 @@ public:
 
 	f64	uptime() const { return _uptime; }
 
-	bool viewportIsBottomUp() const { return _viewportIsBottomUp; }
-
 	struct Statistics {
 		bool	show = false;
 		Int		drawcalls = 0;
@@ -81,7 +79,6 @@ protected:
 	Rect2f         _scissorRect{0, 0, 0, 0};
 	Rect2f         _viewportRect{0, 0, 0, 0};
 	f64            _uptime             = 0;
-	bool           _viewportIsBottomUp = false;
 };
 
 inline

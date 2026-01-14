@@ -13,7 +13,6 @@ namespace ax /*::AxRender*/ {
 RenderContext_Vk_Base::RenderContext_Vk_Base(const CreateDesc& desc)
 : Base(desc)
 {
-	_viewportIsBottomUp = true;
 }
 
 RenderContext_Vk_Base::~RenderContext_Vk_Base() {

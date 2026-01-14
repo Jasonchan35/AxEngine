@@ -64,6 +64,7 @@ public:
 
 	struct Meshes : public NonCopyable {
 		Meshes();
+		SPtr<MeshObject>	axis;
 		SPtr<MeshObject>	cube;
 		SPtr<MeshObject>	sphere;
 		SPtr<MeshObject>	cone;
