@@ -20,24 +20,69 @@ void Parser::readFile(StrView filename, TypeDB& typeDB) {
 	parseNamespace();
 }
 
+bool Parser::matchIdentifier(StrView s) {
+	if (!_token.isIdentifier(s)) return false;
+	nextToken();
+	return true;
+}
+
+bool Parser::matchOp(StrView s) {
+	if (!_token.isOp(s)) return false;
+	nextToken();
+	return true;
+}
+
+void Parser::parseExportModule() {
+	if (_module.size() > 0) {
+		error("export module already exists");
+	}
+	
+	readIdentifer(_module, "module");
+	
+	for (;;) {
+		if (matchOp(';')) return;
+		
+		if (matchOp('.')) {
+			_module.append(".");
+			String s;
+			readIdentifer(s, "module");
+			_module.append(s);
+			continue;
+		}
+		
+		if (matchOp(':')) {
+			readIdentifer(_modulePartition, "module partition");
+			readExpectOp(';');
+			return;
+		}
+		
+		errorUnexpectedToken();
+	}
+}
+
 void Parser::parseNamespace() {
 	do {
 		if (_token.isOp("}")) break;
 		if (_token.isNewline()) return;
-		
-		
-		if (_token.isIdentifier("using")) {
+
+		if (matchIdentifier("using")) {
 			parseUsing();
 			continue;
 		}
 		
-		if (_token.isIdentifier("AX_CLASS")) {
+		if (matchIdentifier("AX_CLASS")) {
 			parseClass();
 			continue;
 		}
-		if (_token.isIdentifier("namespace")) {
-			nextToken();
-
+		
+		if (matchIdentifier("export")) {
+			if (matchIdentifier("module")) {
+				parseExportModule();
+				continue;
+			}
+		}
+		
+		if (matchIdentifier("namespace")) {
 			for (;;) {
 				TempString tmp;
 				readIdentifer(tmp, "namespace name");
@@ -64,9 +109,7 @@ void Parser::parseNamespace() {
 }
 
 void Parser::parseUsing() {
-	nextToken();
 	while (!_token.isOp(";")) {
-		
 		if (!nextToken()) {
 			errorUnexpectedEndOfFile("using");
 		}
@@ -75,7 +118,6 @@ void Parser::parseUsing() {
 }
 
 void Parser::parseClass() {
-	nextToken();
 	readExpectOp("(");
 	while (!_token.isOp(")")) {
 		if (!nextToken()) {
@@ -129,12 +171,12 @@ void Parser::parseClass() {
 // class Body
 	readExpectOp("{");
 	while (!_token.isOp("}")) {
-		if (_token.isIdentifier("AX_GENERATED_BODY")) {
+		if (matchIdentifier("AX_GENERATED_BODY")) {
 			parseGeneratedBody(outType);
 			continue;
 		}
 		
-		if (_token.isIdentifier("AX_PROP")) {
+		if (matchIdentifier("AX_PROP")) {
 			parseProp(outType);
 			continue;
 		}
@@ -151,7 +193,6 @@ void Parser::parseClass() {
 }
 
 void Parser::parseGeneratedBody(TypeInfo& outType) {
-	nextToken();
 	outType.lineNumber_AX_GENERATED_BODY = _source.lineNumber();
 	readExpectOp("(");
 	while (!_token.isOp(")")) {
@@ -165,7 +206,6 @@ void Parser::parseProp(TypeInfo& outType) {
 	PropInfo::HasAttr	hasAttr;
 	Array<Attribute>	attributes;
 
-	nextToken();
 	readExpectOp("(");
 	for (;;) {
 		if (_token.isOp(")")) break;
@@ -403,7 +443,7 @@ bool Parser::nextToken() {
 }
 
 bool Parser::_nextToken() {
-	_token.type = TokenType::Unknown;
+	_token.type = TokenType::None;
 	_token.str.clear();
 
 	for (;;) {

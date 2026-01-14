@@ -10,4 +10,8 @@ ObjectManager* ObjectManager::s_instance() {
 	return s.ptr();
 }
 
+void ObjectManager::_addType(const Rtti* rtti) {
+	_types.append(rtti);
+}
+
 } // namespace

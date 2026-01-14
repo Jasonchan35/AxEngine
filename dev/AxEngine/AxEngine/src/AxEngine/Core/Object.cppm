@@ -26,7 +26,11 @@ class ObjectManager : public NonCopyable {
 public:
 	static ObjectManager* s_instance(); 
 	
+	template<class T> void addType() { _addType(rttiOf<T>()); }
+	
 private:
+	void _addType(const Rtti* rtti);
+	Array<Rtti*>	_types;
 	Array<Object*>	_objects;
 	Array<Object*>	_rootObjects;
 };

@@ -7,31 +7,35 @@
 //--- Type AxEngine::SceneComponent ----------
 #define AX_GENERATED_BODY_LINE12() \
 	AX_RTTI_INFO(SceneComponent, Object) \
-	struct MutRttiInit; \
+	struct MutRttiInit : public MutRtti { \
+		MutRttiInit();\
+	}; \
 //------
-
 
 
 //--- Type AxEngine::SceneEntity ----------
 #define AX_GENERATED_BODY_LINE17() \
 	AX_RTTI_INFO(SceneEntity, Object) \
-	struct MutRttiInit; \
+	struct MutRttiInit : public MutRtti { \
+		MutRttiInit();\
+	}; \
 //------
-
 
 
 //--- Type AxEngine::TransformComponent ----------
 #define AX_GENERATED_BODY_LINE41() \
 	AX_RTTI_INFO(TransformComponent, SceneComponent) \
-	struct MutRttiInit; \
+	struct MutRttiInit : public MutRtti { \
+		MutRttiInit();\
+	}; \
 //------
-
 
 
 //--- Type AxEngine::RenderMeshComponent ----------
 #define AX_GENERATED_BODY_LINE50() \
 	AX_RTTI_INFO(RenderMeshComponent, SceneComponent) \
-	struct MutRttiInit; \
+	struct MutRttiInit : public MutRtti { \
+		MutRttiInit();\
+	}; \
 //------
-
 

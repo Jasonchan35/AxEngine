@@ -4,3 +4,24 @@ module;
 //========================================================//
 
 module AxEngine;
+import :SceneEntity;
+
+AxEngine::SceneComponent::MutRttiInit::MutRttiInit() {
+	ownFields.ensureCapacity(0);
+}; 
+
+AxEngine::SceneEntity::MutRttiInit::MutRttiInit() {
+	ownFields.ensureCapacity(0);
+}; 
+
+AxEngine::TransformComponent::MutRttiInit::MutRttiInit() {
+	ownFields.ensureCapacity(3);
+	addField("position", &This::position);
+	addField("rotation", &This::rotation);
+	addField("scale", &This::scale);
+}; 
+
+AxEngine::RenderMeshComponent::MutRttiInit::MutRttiInit() {
+	ownFields.ensureCapacity(0);
+}; 
+

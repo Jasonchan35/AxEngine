@@ -8,7 +8,7 @@ export namespace ax::AxCppHeaderTool {
 using Source = LexerSource<Char>;
 
 #define AX_HEADERTOOL_TokenType_ENUM_LIST(E) \
-	E(Unknown,) \
+	E(None,) \
 	E(Identifier,) \
 	E(Number,) \
 	E(String,) \
@@ -25,6 +25,10 @@ class Parser : public NonCopyable {
 public:
 	void readFile(StrView filename, TypeDB& typeDB);
 
+	bool matchIdentifier(StrView s);
+	bool matchOp(StrView s);
+
+	void parseExportModule();
 	void parseNamespace();
 	void parseUsing();
 	void parseClass();
@@ -62,10 +66,10 @@ public:
 	}
 	
 	struct Token {
-		TokenType	type;
+		TokenType	type = TokenType::None;
 		String		str;
 
-		explicit operator bool() const		{ return type != TokenType::Unknown; }
+		explicit operator bool() const		{ return type != TokenType::None; }
 		bool isIdentifier() const			{ return type == TokenType::Identifier; }
 		bool isIdentifier(StrView s) const	{ return type == TokenType::Identifier && str == s; }
 		bool isOp() const					{ return type == TokenType::Op; }
@@ -85,6 +89,9 @@ public:
 	};
 
 	Token& token() { return _token; }
+	
+	const String& module() { return _module; }
+	const String& modulePartition() { return _modulePartition; }
 
 private:
 	bool _nextToken();
@@ -98,6 +105,8 @@ private:
 	void getCloseNamespaceScope(IString& outStr, IArray<String>& ns);
 
 	Array<String> _namespaces;
+	String	_module;
+	String	_modulePartition;
 
 	Token   _token;
 	String  _data;

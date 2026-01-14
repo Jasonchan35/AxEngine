@@ -47,10 +47,10 @@ int App::onRun() {
 	// searchFile.set(inputPath, "/**/*.h");
 	auto searchFile = Fmt("{}/**/*.cppm", inputPath);
 	AX_LOG("searchFile={}", searchFile);
-
-	String	_outGenTypeHeaders("#pragma once\n\n");
-	String	_outGenTypes("template<class HANDLER> inline\n"
-							 "static void generated_node_types(HANDLER& handler) {\n");
+	
+	String _outGenHeader;
+	String _outGenTypes("void registerTypes() {\n"
+						"\t""auto* mgr = AxEngine::ObjectManager::s_instance();\n");
 
 	Array<String> inputFiles;
 	File::glob(searchFile, [&inputFiles](FileEntry & entry) {
@@ -67,23 +67,28 @@ int App::onRun() {
 			continue;
 
 		FilePath::getRelPath(searchFile, f, inputPath);
-		_outGenTypeHeaders.appendFormat("#include \"{}\"\n", searchFile);
-
+		
+		if (!_outGenHeader) {
+			_outGenHeader.appendFormat("module {};\n", g._parser.module());
+		}
+		
+		_outGenHeader.appendFormat("import :{};\n", g._parser.modulePartition());
+		_outGenHeader << "\n";
+		
 		for (auto& t : g._typeDB.types.values()) {
-			_outGenTypes.appendFormat("\t""handler.template addType< {:40} >();\n", t.fullname);
+			_outGenTypes.appendFormat("\t""mgr->addType<{:40}>();\n", t.fullname);
 		}
 	}
 
 	_outGenTypes.append("}\n\n");
-
-	{
-		TempString txt(_outGenTypeHeaders, "\n\n", _outGenTypes);
-		TempString outFilename(opt.outPath, "/NodeGenTypes._impl.h");
-		File::writeFileIfChanged(outFilename, txt, opt.writeFileOpt);
-	}
-
+	
+	_outGenHeader.append(_outGenTypes);
+	
+	TempString outFilename(opt.outPath, "/GenTypes.gen.cpp");
+	File::writeFileIfChanged(outFilename, _outGenHeader, opt.writeFileOpt);
+	
 	return 0;
-} // onRun
+}
 
 
 } //namespace

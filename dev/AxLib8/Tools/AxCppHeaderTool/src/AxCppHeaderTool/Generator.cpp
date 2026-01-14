@@ -25,8 +25,9 @@ void Generator::gen(CmdOptions& opt, StrView srcFilename) {
 	
 	_outCpp = "module;\n";
 	_outCpp.append(headerMessage);
-	_outCpp.append("module AxEngine;\n");
-
+	_outCpp.appendFormat("module {};\n", _parser.module());
+	_outCpp.appendFormat("import :{};\n\n", _parser.modulePartition());
+	
 	for (auto& type : _typeDB.types.values()) {
 		gen_type(srcFilename, type);
 	}
@@ -45,22 +46,26 @@ void Generator::gen_type(StrView srcFilename, TypeInfo& type) {
 		throw Error_Runtime(Fmt("missing AX_GENERATED_BODY in type [{}]\n  filename={}", 
 									type.fullname, srcFilename));
 	}
-	_outHeader.appendFormat(    "\n//--- Type {} ----------\n", type.fullname);
-	_outHeader.appendFormat(    "#define AX_GENERATED_BODY_LINE{}() \\\n", type.lineNumber_AX_GENERATED_BODY);
-	_outHeader.appendFormat(    "\t""AX_RTTI_INFO({}, {}) \\\n", type.name, type.baseName);
-	_outHeader.appendFormat(    "\t""struct MutRttiInit; \\\n");
+	_outHeader.appendFormat("\n//--- Type {} ----------\n", type.fullname);
+	_outHeader.appendFormat("#define AX_GENERATED_BODY_LINE{}() \\\n", type.lineNumber_AX_GENERATED_BODY);
+	_outHeader.appendFormat("\t""AX_RTTI_INFO({}, {}) \\\n", type.name, type.baseName);
+	_outHeader.appendFormat("\t""struct MutRttiInit : public MutRtti {{ \\\n");
+	_outHeader.appendFormat("\t\t""MutRttiInit();\\\n");
+	_outHeader.appendFormat("\t""}}; \\\n");
+	_outHeader.appendFormat("//------\n\n");
 	
-	// _outStr.appendFormat(    "\t""struct MutRttiInit : public MutRtti {{ \\\n");
-	// _outStr.appendFormat(    "\t\t""MutRttiInit() {{ \\\n");
-	// _outStr.appendFormat(    "\t\t\t""ownFields.ensureCapacity({}); \\\n", type.props.size());
-	// for (auto &prop : type.props.values()) {
-	// 	_outStr.appendFormat("\t\t\t""addField(\"{}\", &This::{}); \\\n",
-	// 	                     prop.name, prop.name);
-	// }
-	// _outStr.appendFormat(    "\t\t""}}; \\\n");
-	// _outStr.appendFormat(    "\t""}}; \\\n");
-	_outHeader.appendFormat(    "//------\n\n");
-	_outHeader << "\n";
+//	_outCpp.appendFormat("{}\n", type.openNamespaceScope);
+	
+	_outCpp.appendFormat("""{}::MutRttiInit::MutRttiInit() {{\n", type.fullname);
+	_outCpp.appendFormat("\t""ownFields.ensureCapacity({});\n", type.props.size());
+	for (auto &prop : type.props.values()) {
+		_outCpp.appendFormat("\t""addField(\"{}\", &This::{});\n",
+		                     prop.name, prop.name);
+	}
+	_outCpp.appendFormat("}}; \n\n");
+	
+//	_outCpp.appendFormat("{}\n\n", type.closeNamespaceScope);
+
 }
 
 } //namespace
