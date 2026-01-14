@@ -151,11 +151,12 @@ function(ax_set_warning_level target_name)
 														-Wno-pre-c++17-compat
 														-Wno-reserved-identifier
 														-Wno-switch-enum
+														-Wno-switch
 														-Wno-undef
 														-Wno-undefined-func-template
-														-Wno-unreachable-code-break														
+														-Wno-unreachable-code-break
 														-Wno-unreachable-code
-														-Wno-unused-parameter														
+														-Wno-unused-parameter
 														-Wno-unused-local-typedef
 														-Wno-unused-member-function
 														-Wno-unused-const-variable

@@ -15,7 +15,8 @@ public:
 	Parser	_parser;
 	TypeDB	_typeDB;
 
-	String	_outStr;
+	String	_outHeader;
+	String	_outCpp;
 };
 
 } //namespace

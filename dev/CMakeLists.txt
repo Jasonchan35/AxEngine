@@ -41,7 +41,7 @@ endif()
 
 project(${PROJECT_NAME} VERSION 0.1.0)
 
-ax_copy_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.sln.DotSettings" "${CMAKE_CURRENT_BINARY_DIR}")
+# ax_copy_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.sln.DotSettings" "${CMAKE_CURRENT_BINARY_DIR}")
 
 # AxCore
 # +- AxFileTool, AxCppHeaderTool
