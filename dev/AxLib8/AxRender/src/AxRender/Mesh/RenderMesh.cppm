@@ -123,6 +123,7 @@ public:
 	EditVertex editNewVertices(PrimType primType, VertexLayout vertexLayout, VertexIndexType indexType, Int newVertexCount) {
 		auto& sm = getSubMeshCanAddVertices(primType, vertexLayout, indexType, newVertexCount);
 		auto range = IntRange_StartAndSize(sm.vertexBuffer.vertexCount(), newVertexCount);
+		sm.vertexBuffer.editNewVertices(newVertexCount, vertexLayout);
 		return {sm, range};
 	}
 
