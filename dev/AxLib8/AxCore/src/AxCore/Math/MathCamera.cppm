@@ -22,6 +22,8 @@ public:
 	void move	(const Vec3& delta);
 
 	void dolly	(T delta);
+	
+	T distance() const { return _distance; }
 
 	void setAim(const Vec3& aim)	{ _aim = aim; }
 	void setPos(const Vec3& pos) {
@@ -88,7 +90,7 @@ void Camera3_<T>::orbit(Vec2 delta) {
 
 template<class T> inline
 void Camera3_<T>::move(const Vec3& delta) {
-	_aim += _quat * Vec3(delta.x, delta.y, 0) + Vec3(0,0,delta.z);
+	_aim += _quat * delta;
 }
 
 template<class T> inline
@@ -103,7 +105,7 @@ Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos) const {
 
 template<class T> inline
 Mat4_<T> Camera3_<T>::viewMatrix() const {
-	return Mat4::s_translate(Vec3(0, 0, -_distance)) * _quat.to_Mat4();
+	return Mat4::s_translate(Vec3(0, 0, -_distance)) * _quat.to_Mat4() * Mat4::s_translate(_aim);
 }
 
 template<class T> inline

@@ -38,7 +38,7 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 			if (ev.pressedButton == UIMouseEventButton::Right) {
 				cam.orbit(ev.deltaPos.yx() * -0.005f);
 			} else if (ev.pressedButton == UIMouseEventButton::Middle) {
-				cam.move(ev.deltaPos * 0.01f);
+				cam.move(ev.deltaPos * 0.02f * Vec2f(1,-1));
 			}
 		} break;
 		case UIMouseEventType::Wheel: {
@@ -52,20 +52,16 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 }
 
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
-	{
+	if constexpr (true) {
 		auto& cam = _camera;
 		ImUIPanel	panel("camera");
 		ImUILabelText("pos"  , Fmt("{}", cam.pos()));
 		ImUILabelText("aim"  , Fmt("{}", cam.aim()));
 		ImUILabelText("up"   , Fmt("{}", cam.up()));
 		ImUILabelText("Rot"  , Fmt("{}", cam.rotation()));
-		
-		auto viewMat = cam.viewMatrix();
-		ImUILabelText("viewMatrix",  Fmt("{}", viewMat));
-		auto projMat = cam.projMatrix();
-		ImUILabelText("projMatrix",  Fmt("{}", projMat));
-		auto viewProjMat = cam.viewProjMatrix();
-		ImUILabelText("viewProjMatrix",  Fmt("{}", viewProjMat));
+		ImUILabelText("viewMatrix",		Fmt("{}", cam.viewMatrix()));
+		ImUILabelText("projMatrix",		Fmt("{}", cam.projMatrix()));
+		ImUILabelText("viewProjMatrix",	Fmt("{}", cam.viewProjMatrix()));
 	}
 
 	win->_sceneOutlinerUIPanel.render(req);
