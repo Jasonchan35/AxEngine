@@ -32,7 +32,7 @@ private:
 	template<bool OUTLINE> void _drawAACircleImpl(const Vec2& center, float radius, const Color& color, float outlineWidth);
 	template<bool OUTLINE> void _drawAARoundedRectImpl(const Rect2& rect, float radius, const Color& color, float outlineWidth);
 
-	AX_INLINE MutSpan<Color> _row(Int y) { return _img.template row_noCheck<Color>(y); }
+	AX_INLINE MutSpan<Color> _row(Int y) { return _img.template row_noTypeCheck<Color>(y); }
 
 	Image& _img;
 };

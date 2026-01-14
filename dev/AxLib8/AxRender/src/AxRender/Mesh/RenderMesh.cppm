@@ -57,7 +57,7 @@ public:
 
 	template<class VERTEX, class INDEX>
 	void create(Span<VERTEX> vertexData, Span<INDEX> indexData);
-	void create(VertexLayout vertexLayout, VertexIndexType indexType);
+	void create(PrimType primType, VertexLayout vertexLayout, VertexIndexType indexType);
 
 	MutSpan<SubMesh>	subMeshes()				{ return _subMeshes; }
 	   Span<SubMesh>	subMeshes() const		{ return _subMeshes; }
@@ -70,7 +70,7 @@ public:
 	template<class VERTEX>
 	struct EditVertexT {
 		SubMesh&		subMesh;
-		IntRange		range{0,0};
+		IntRange		range;
 		MutSpan<VERTEX>	vertices;
 	};	
 	
@@ -79,7 +79,7 @@ public:
 		auto& sm = getSubMeshCanAddVertices(primType, VERTEX::s_desc(), indexType, n);
 		sm.vertexBuffer.addVertices(sm.vertices);
 		
-		IntRange range(sm.vertices.size(), n);
+		auto range = IntRange::s_startAndSize(sm.vertices.size(), n);
 		auto v = sm.vertices.template add<VERTEX>(n);
 		return {sm, range, v};
 	}
@@ -123,7 +123,6 @@ public:
 	EditVertex editNewVertices(PrimType primType, VertexLayout vertexLayout, VertexIndexType indexType, Int newVertexCount) {
 		auto& sm = getSubMeshCanAddVertices(primType, vertexLayout, indexType, newVertexCount);
 		auto range = IntRange_StartAndSize(sm.vertexBuffer.vertexCount(), newVertexCount);
-		auto mutSpan = sm.vertexBuffer.editNewVertices(newVertexCount, vertexLayout);
 		return {sm, range};
 	}
 
@@ -146,5 +145,12 @@ void RenderMesh::create(Span<VERTEX> vertexData, Span<INDEX> indexData) {
 	setSubMeshCount(1);
 	_subMeshes[0].create(vertexData, indexData);
 }
+
+inline
+void RenderMesh::create(PrimType primType, VertexLayout vertexLayout, VertexIndexType indexType) {
+	setSubMeshCount(1);
+	_subMeshes[0].create(primType, vertexLayout, indexType);
+}
+
 
 } // namespace

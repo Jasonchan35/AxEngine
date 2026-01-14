@@ -51,7 +51,7 @@ public:
 
 
 class FontProvider_FreeType : public FontProvider {
-	AX_RTTI_INFO(FontProvider_FreeType, FontProvider);
+	AX_RTTI_INFO(FontProvider_FreeType, FontProvider)
 public:
 	using FontFile	 = FontFile_FreeType;
 	using FontFace	 = FontFace;
@@ -82,7 +82,7 @@ private:
 };
 
 class Font_FreeType : public Font {
-	AX_RTTI_INFO(Font_FreeType, Font);
+	AX_RTTI_INFO(Font_FreeType, Font)
 public:
 	~Font_FreeType();
 

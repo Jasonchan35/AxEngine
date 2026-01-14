@@ -113,7 +113,7 @@ public:
 	AX_NODISCARD constexpr Mat4 to_Mat4() const;
 	
 	AX_NODISCARD constexpr This operator* (const This& q) const;
-	AX_NODISCARD constexpr void operator*=(const This& q) { *this = *this * q; }
+	             constexpr void operator*=(const This& q) { *this = *this * q; }
 	
 	AX_NODISCARD constexpr Vec3 operator*(const Vec3& v) const;
 	

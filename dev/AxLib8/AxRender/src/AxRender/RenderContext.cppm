@@ -50,7 +50,7 @@ public:
 
 	void render() { onRender(); }
 
-	void setUIEventHandler(RenderContext::UIEventHandler* uiEventHandler) {
+	void setUIEventHandler(UIEventHandler* uiEventHandler) {
 		_uiEventHandler = uiEventHandler;
 	}
 	

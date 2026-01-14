@@ -98,7 +98,7 @@ public:
 };
 
 class FontProvider : public RenderObject {
-	AX_RTTI_INFO(FontProvider, RenderObject);
+	AX_RTTI_INFO(FontProvider, RenderObject)
 public:
 	using Font = Font;
 

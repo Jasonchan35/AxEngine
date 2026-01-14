@@ -162,6 +162,7 @@ function(ax_set_warning_level target_name)
 														-Wno-uninitialized
 														#
 														-mavx #enable AVX
+														-mfma #enable '_mm_fmadd_ps' requires target feature 'fma'
 														)
 	endif()
 endfunction()

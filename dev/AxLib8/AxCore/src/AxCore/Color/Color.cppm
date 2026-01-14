@@ -39,7 +39,7 @@ using Color4d_Basic = ColorRGBAd_Basic;
 template<class COLOR>
 struct ColorPair {
 	COLOR c0;
-	COLOR c1;;
+	COLOR c1;
 };
 
 using Color4fPair = ColorPair<Color4f>;

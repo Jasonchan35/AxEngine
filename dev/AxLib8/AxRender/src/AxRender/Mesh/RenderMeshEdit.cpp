@@ -424,9 +424,9 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
 		*dstPos = (axis0 *  1 + axis1 * -px) * scale; ++dstPos;
 
 		if (dstCol) {
-			auto color = (gridLine2_Interval != 0 && x % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
 			for (Int j = 0; j < 8; ++j) {
-				*dstCol = centerLineColor; ++dstCol;
+				auto color = (gridLine2_Interval != 0 && j % gridLine2_Interval == 0) ? gridLine2_Color : gridLineColor;
+				*dstCol = color; ++dstCol;
 			}
 		}
 	}
