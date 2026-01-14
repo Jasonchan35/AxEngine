@@ -89,75 +89,75 @@ void RenderMeshEdit::addBorderRect(VertexLayout    vertexLayout,
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dst = enumerator->begin();
 		// top row
-		dst->set(outerRect.xMin(), outerRect.yMin(), 0); dst++;
-		dst->set(innerRect.xMin(), outerRect.yMin(), 0); dst++;
-		dst->set(innerRect.xMax(), outerRect.yMin(), 0); dst++;
-		dst->set(outerRect.xMax(), outerRect.yMin(), 0); dst++;
+		dst->set(outerRect.xMin(), outerRect.yMin(), 0); ++dst;
+		dst->set(innerRect.xMin(), outerRect.yMin(), 0); ++dst;
+		dst->set(innerRect.xMax(), outerRect.yMin(), 0); ++dst;
+		dst->set(outerRect.xMax(), outerRect.yMin(), 0); ++dst;
 		// 2nd row
-		dst->set(outerRect.xMin(), innerRect.yMin(), 0); dst++;
-		dst->set(innerRect.xMin(), innerRect.yMin(), 0); dst++;
-		dst->set(innerRect.xMax(), innerRect.yMin(), 0); dst++;
-		dst->set(outerRect.xMax(), innerRect.yMin(), 0); dst++;
+		dst->set(outerRect.xMin(), innerRect.yMin(), 0); ++dst;
+		dst->set(innerRect.xMin(), innerRect.yMin(), 0); ++dst;
+		dst->set(innerRect.xMax(), innerRect.yMin(), 0); ++dst;
+		dst->set(outerRect.xMax(), innerRect.yMin(), 0); ++dst;
 		// 3rd row
-		dst->set(outerRect.xMin(), innerRect.yMax(), 0); dst++;
-		dst->set(innerRect.xMin(), innerRect.yMax(), 0); dst++;
-		dst->set(innerRect.xMax(), innerRect.yMax(), 0); dst++;
-		dst->set(outerRect.xMax(), innerRect.yMax(), 0); dst++;
+		dst->set(outerRect.xMin(), innerRect.yMax(), 0); ++dst;
+		dst->set(innerRect.xMin(), innerRect.yMax(), 0); ++dst;
+		dst->set(innerRect.xMax(), innerRect.yMax(), 0); ++dst;
+		dst->set(outerRect.xMax(), innerRect.yMax(), 0); ++dst;
 		// bottom row
-		dst->set(outerRect.xMin(), outerRect.yMax(), 0); dst++;
-		dst->set(innerRect.xMin(), outerRect.yMax(), 0); dst++;
-		dst->set(innerRect.xMax(), outerRect.yMax(), 0); dst++;
-		dst->set(outerRect.xMax(), outerRect.yMax(), 0); dst++;
+		dst->set(outerRect.xMin(), outerRect.yMax(), 0); ++dst;
+		dst->set(innerRect.xMin(), outerRect.yMax(), 0); ++dst;
+		dst->set(innerRect.xMax(), outerRect.yMax(), 0); ++dst;
+		dst->set(outerRect.xMax(), outerRect.yMax(), 0); ++dst;
 		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
 	if (auto enumerator = edit.tryEditTexCoord0()) {
 		auto dst = enumerator->begin();
 		// top row
-		dst->set(outerUv.xMin(), outerUv.yMin()); dst++;
-		dst->set(innerUv.xMin(), outerUv.yMin()); dst++;
-		dst->set(innerUv.xMax(), outerUv.yMin()); dst++;
-		dst->set(outerUv.xMax(), outerUv.yMin()); dst++;
+		dst->set(outerUv.xMin(), outerUv.yMin()); ++dst;
+		dst->set(innerUv.xMin(), outerUv.yMin()); ++dst;
+		dst->set(innerUv.xMax(), outerUv.yMin()); ++dst;
+		dst->set(outerUv.xMax(), outerUv.yMin()); ++dst;
 		// 2nd row
-		dst->set(outerUv.xMin(), innerUv.yMin()); dst++;
-		dst->set(innerUv.xMin(), innerUv.yMin()); dst++;
-		dst->set(innerUv.xMax(), innerUv.yMin()); dst++;
-		dst->set(outerUv.xMax(), innerUv.yMin()); dst++;
+		dst->set(outerUv.xMin(), innerUv.yMin()); ++dst;
+		dst->set(innerUv.xMin(), innerUv.yMin()); ++dst;
+		dst->set(innerUv.xMax(), innerUv.yMin()); ++dst;
+		dst->set(outerUv.xMax(), innerUv.yMin()); ++dst;
 		// 3rd row
-		dst->set(outerUv.xMin(), innerUv.yMax()); dst++;
-		dst->set(innerUv.xMin(), innerUv.yMax()); dst++;
-		dst->set(innerUv.xMax(), innerUv.yMax()); dst++;
-		dst->set(outerUv.xMax(), innerUv.yMax()); dst++;
+		dst->set(outerUv.xMin(), innerUv.yMax()); ++dst;
+		dst->set(innerUv.xMin(), innerUv.yMax()); ++dst;
+		dst->set(innerUv.xMax(), innerUv.yMax()); ++dst;
+		dst->set(outerUv.xMax(), innerUv.yMax()); ++dst;
 		// bottom row
-		dst->set(outerUv.xMin(), outerUv.yMax()); dst++;
-		dst->set(innerUv.xMin(), outerUv.yMax()); dst++;
-		dst->set(innerUv.xMax(), outerUv.yMax()); dst++;
-		dst->set(outerUv.xMax(), outerUv.yMax()); dst++;
+		dst->set(outerUv.xMin(), outerUv.yMax()); ++dst;
+		dst->set(innerUv.xMin(), outerUv.yMax()); ++dst;
+		dst->set(innerUv.xMax(), outerUv.yMax()); ++dst;
+		dst->set(outerUv.xMax(), outerUv.yMax()); ++dst;
 		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
 	if (auto enumerator = edit.tryEditColor0()) {
 		auto dst = enumerator->begin();
 		// top row
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
 		// 2nd row
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
 		// 3rd row
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
 		// bottom row
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
-		*dst = color; dst++;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
+		*dst = color; ++dst;
 		if (dst != enumerator->end()) throw Error_Undefined();
 	}
 
@@ -198,19 +198,19 @@ void RenderMeshEdit::createCube(VertexLayout vertexLayout, const Vec3f& pos, con
 		{
 			auto t = pos;
 			t.z -= s.z;
-			dst->set(t.x - s.x, t.y - s.y, t.z); dst++;
-			dst->set(t.x + s.x, t.y - s.y, t.z); dst++;
-			dst->set(t.x - s.x, t.y + s.y, t.z); dst++;
-			dst->set(t.x + s.x, t.y + s.y, t.z); dst++;
+			dst->set(t.x - s.x, t.y - s.y, t.z); ++dst;
+			dst->set(t.x + s.x, t.y - s.y, t.z); ++dst;
+			dst->set(t.x - s.x, t.y + s.y, t.z); ++dst;
+			dst->set(t.x + s.x, t.y + s.y, t.z); ++dst;
 		}
 
 		{
 			auto t = pos;
 			t.z += s.z;
-			dst->set(t.x - s.x, t.y - s.y, t.z); dst++;
-			dst->set(t.x + s.x, t.y - s.y, t.z); dst++;
-			dst->set(t.x - s.x, t.y + s.y, t.z); dst++;
-			dst->set(t.x + s.x, t.y + s.y, t.z); dst++;
+			dst->set(t.x - s.x, t.y - s.y, t.z); ++dst;
+			dst->set(t.x + s.x, t.y - s.y, t.z); ++dst;
+			dst->set(t.x - s.x, t.y + s.y, t.z); ++dst;
+			dst->set(t.x + s.x, t.y + s.y, t.z); ++dst;
 		}
 		if (dst != enumerator->end()) throw Error_Undefined();
 	}
@@ -306,17 +306,17 @@ void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, c
 		for (auto& g : glyphs) {
 			auto rc = g.vertexRect + pen.pos;
 
-			*dstPos = pos + rc.xMin_yMin().xy0(); dstPos++;
-			*dstPos = pos + rc.xMax_yMin().xy0(); dstPos++;
-			*dstPos = pos + rc.xMin_yMax().xy0(); dstPos++;
-			*dstPos = pos + rc.xMax_yMax().xy0(); dstPos++;
+			*dstPos = pos + rc.xMin_yMin().xy0(); ++dstPos;
+			*dstPos = pos + rc.xMax_yMin().xy0(); ++dstPos;
+			*dstPos = pos + rc.xMin_yMax().xy0(); ++dstPos;
+			*dstPos = pos + rc.xMax_yMax().xy0(); ++dstPos;
 
-			*dstIndex = static_cast<Index>(baseIdx + 0); dstIndex++;
-			*dstIndex = static_cast<Index>(baseIdx + 1); dstIndex++;
-			*dstIndex = static_cast<Index>(baseIdx + 3); dstIndex++;
-			*dstIndex = static_cast<Index>(baseIdx + 0); dstIndex++;
-			*dstIndex = static_cast<Index>(baseIdx + 3); dstIndex++;
-			*dstIndex = static_cast<Index>(baseIdx + 2); dstIndex++;
+			*dstIndex = static_cast<Index>(baseIdx + 0); ++dstIndex;
+			*dstIndex = static_cast<Index>(baseIdx + 1); ++dstIndex;
+			*dstIndex = static_cast<Index>(baseIdx + 3); ++dstIndex;
+			*dstIndex = static_cast<Index>(baseIdx + 0); ++dstIndex;
+			*dstIndex = static_cast<Index>(baseIdx + 3); ++dstIndex;
+			*dstIndex = static_cast<Index>(baseIdx + 2); ++dstIndex;
 
 			pen.advance(g);
 			baseIdx += 4;
@@ -327,10 +327,10 @@ void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, c
 	if (auto enumerator = edit.tryEditTexCoord0()) {
 		auto dstUv0 = enumerator->begin();
 		for (auto& g : glyphs) {
-			*dstUv0 = g.uv.xMin_yMin(); dstUv0++;
-			*dstUv0 = g.uv.xMax_yMin(); dstUv0++;
-			*dstUv0 = g.uv.xMin_yMax(); dstUv0++;
-			*dstUv0 = g.uv.xMax_yMax(); dstUv0++;
+			*dstUv0 = g.uv.xMin_yMin(); ++dstUv0;
+			*dstUv0 = g.uv.xMax_yMin(); ++dstUv0;
+			*dstUv0 = g.uv.xMin_yMax(); ++dstUv0;
+			*dstUv0 = g.uv.xMax_yMax(); ++dstUv0;
 		}
 		if (dstUv0 != enumerator->end()) throw Error_Undefined();
 	}
@@ -474,7 +474,7 @@ void RenderMeshEdit::createLines(VertexLayout vertexLayout, Span<Vec2f> position
 		auto dst = enumerator->begin();
 		for (auto& src : positions) {
 			*dst = src.xy0();
-			dst++;
+			++dst;
 		}
 		if (dst != enumerator->end()) throw Error_Undefined();
 	}
@@ -609,9 +609,9 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 			auto indices = edit.editNewIndices<Index>(triCount * 3);
 			auto vi = indices.begin();
 			for (Int tri = 0; tri < triCount; tri++) {
-				*vi = static_cast<Index>(startVi          ); vi++;
-				*vi = static_cast<Index>(startVi + tri + 1); vi++;
-				*vi = static_cast<Index>(startVi + tri + 2); vi++;
+				*vi = static_cast<Index>(startVi          ); ++vi;
+				*vi = static_cast<Index>(startVi + tri + 1); ++vi;
+				*vi = static_cast<Index>(startVi + tri + 2); ++vi;
 			}
 			if (vi != indices.end()) throw Error_Undefined();
 		}
