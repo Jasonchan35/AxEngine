@@ -77,10 +77,11 @@ public:
 		cw = cw_;
 	}
 	
-	AX_INLINE constexpr void set( const T& xx, const T& xy, const T& xz, const T& xw,
-			  const T& yx, const T& yy, const T& yz, const T& yw,
-			  const T& zx, const T& zy, const T& zz, const T& zw,
-			  const T& wx, const T& wy, const T& wz, const T& ww )
+	AX_INLINE constexpr void set( 
+			const T& xx, const T& xy, const T& xz, const T& xw,
+			const T& yx, const T& yy, const T& yz, const T& yw,
+			const T& zx, const T& zy, const T& zz, const T& zw,
+			const T& wx, const T& wy, const T& wz, const T& ww )
 	{
 		cx.set(xx, xy, xz, xw);
 		cy.set(yx, yy, yz, yw);
@@ -116,14 +117,14 @@ public:
 	AX_NODISCARD constexpr static	This s_translate		(const Vec2& v)			{ return s_translate(Vec3(v, 0)); }
 
 	AX_NODISCARD constexpr static	This s_rotate			(const Vec3 & v);
-	AX_NODISCARD constexpr static	This s_rotate_x			(T rad);
-	AX_NODISCARD constexpr static	This s_rotate_y			(T rad);
-	AX_NODISCARD constexpr static	This s_rotate_z			(T rad);
+	AX_NODISCARD constexpr static	This s_rotateX			(T rad);
+	AX_NODISCARD constexpr static	This s_rotateY			(T rad);
+	AX_NODISCARD constexpr static	This s_rotateZ			(T rad);
 
-	AX_NODISCARD constexpr static	This s_rotate_deg		(const Vec3 & v)		{ return s_rotate( radians(v)); }
-	AX_NODISCARD constexpr static	This s_rotate_deg_x		(T deg)					{ return s_rotate_x(radians(deg)); }
-	AX_NODISCARD constexpr static	This s_rotate_deg_y		(T deg)					{ return s_rotate_y(radians(deg)); }
-	AX_NODISCARD constexpr static	This s_rotate_deg_z		(T deg)					{ return s_rotate_z(radians(deg)); }
+	AX_NODISCARD constexpr static	This s_rotateDeg		(const Vec3 & v)		{ return s_rotate( radians(v)); }
+	AX_NODISCARD constexpr static	This s_rotateDegX		(T deg)					{ return s_rotateX(radians(deg)); }
+	AX_NODISCARD constexpr static	This s_rotateDegY		(T deg)					{ return s_rotateY(radians(deg)); }
+	AX_NODISCARD constexpr static	This s_rotateDegZ		(T deg)					{ return s_rotateZ(radians(deg)); }
 
 	AX_NODISCARD constexpr static	This s_scale			(T s)					{ return s_scale({s,s,s}); }
 	AX_NODISCARD constexpr static	This s_scale			(const Vec2 & v)		{ return s_scale(Vec3(v, 1)); }
@@ -132,7 +133,9 @@ public:
 	AX_NODISCARD constexpr static	This s_shear			(const Vec3 & v);
 
 	AX_NODISCARD constexpr static	This s_TRS				(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static	This s_TRS_deg			(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) { return s_TRS(translate, radians(rotate), scale); }
+	AX_NODISCARD constexpr static	This s_TRS_deg			(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) {
+		return s_TRS(translate, Math::radians(rotate), scale);
+	}
 
 	AX_NODISCARD constexpr static	This s_translateScale	(const Vec3 & translate, const Vec3 & scale);
 	AX_NODISCARD constexpr static	This s_translateScale	(const Vec3 & translate, const T &    scale) { return s_translateScale(translate, Vec3(scale)); }
@@ -141,8 +144,10 @@ public:
 	AX_NODISCARD constexpr This inverse3x3			() const;
 	AX_NODISCARD constexpr This inverse3x3Transpose	() const;
 
-	AX_NODISCARD constexpr Vec3 unprojectPoint_slow	(const Vec3& screenPos, const Rect2& viewport) const { return inverse().unprojectPoint_inv(screenPos, viewport); }
-	AX_NODISCARD constexpr Vec3 unprojectPoint_inv	(const Vec3& screenPos, const Rect2& viewport) const;
+	AX_NODISCARD constexpr Vec3 unprojectPointFromInverse	(const Vec3& screenPos, const Rect2& viewport) const;
+	AX_NODISCARD constexpr Vec3 unprojectPointSlow			(const Vec3& screenPos, const Rect2& viewport) const {
+		return inverse().unprojectPointFromInverse(screenPos, viewport);
+	}
 
 			//bool operator==			(const This &r) const	{ return cx == r.cx && cy == r.cy && cw == r.cw && cz == r.cz; }
 			//bool operator!=			(const This &r) const	{ return cx != r.cx || cy != r.cy || cw != r.cw || cz != r.cz; }
@@ -159,24 +164,19 @@ public:
 				 constexpr void operator*=	(const T& s)			{ cx *= s; cy *= s; cz *= s; cw *= s; }
 				 constexpr void operator/=	(const T& s)			{ cx /= s; cy /= s; cz /= s; cw /= s; }
 
-	AX_NODISCARD constexpr This operator*	(const This &m) const { return mulMatrix(m); }
+	AX_NODISCARD constexpr This operator*	(const This& m) const { return mulMatrix(m); }
 	
-	AX_NODISCARD constexpr This mulMatrix	(const This &m) const;
-	AX_NODISCARD constexpr Vec4 mulPoint	(const Vec4&   v) const;
-	AX_NODISCARD constexpr Vec3 mulPoint	(const Vec3&   v) const;
+	AX_NODISCARD constexpr This mulMatrix	(const This& m) const;
+	AX_NODISCARD constexpr Vec4 mulPoint	(const Vec4& v) const;
+	AX_NODISCARD constexpr Vec3 mulPoint	(const Vec3& v) const;
 
-			// faster than mulPoint but no projection
 	AX_NODISCARD constexpr Vec3 mulPoint4x3	(const Vec3& v) const;
+	AX_NODISCARD constexpr Vec3 mulVector	(const Vec3& v) const;
+	AX_NODISCARD constexpr Vec3 mulNormal	(const Vec3& v) const;
 
-			// for vector (direction)
-	AX_NODISCARD constexpr Vec3 mulVector		(const Vec3& v) const;
-
-			// for normal non-uniform scale
-	AX_NODISCARD constexpr Vec3 mulNormal		(const Vec3& v) const;
-
-	AX_NODISCARD constexpr Vec3 dir_x() const { return Vec3(cx.x, cy.x, cz.x).normal(); }
-	AX_NODISCARD constexpr Vec3 dir_y() const { return Vec3(cx.y, cy.y, cz.y).normal(); }
-	AX_NODISCARD constexpr Vec3 dir_z() const { return Vec3(cx.z, cy.z, cz.z).normal(); }
+	AX_NODISCARD constexpr Vec3 dirX() const { return Vec3(cx.x, cy.x, cz.x).normalize(); }
+	AX_NODISCARD constexpr Vec3 dirY() const { return Vec3(cx.y, cy.y, cz.y).normalize(); }
+	AX_NODISCARD constexpr Vec3 dirZ() const { return Vec3(cx.z, cy.z, cz.z).normalize(); }
 	AX_NODISCARD constexpr Vec3 position() const { return cw.xyz(); }
 };
 
@@ -568,7 +568,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate(const Vec3& rad) -> This {
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4, 4, T, SIMD>::s_rotate_x(T rad) -> This {
+auto Mat_<4, 4, T, SIMD>::s_rotateX(T rad) -> This {
 	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
@@ -580,7 +580,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate_x(T rad) -> This {
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4, 4, T, SIMD>::s_rotate_y(T rad) -> This {
+auto Mat_<4, 4, T, SIMD>::s_rotateY(T rad) -> This {
 	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
@@ -592,7 +592,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotate_y(T rad) -> This {
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4,4,T,SIMD>::s_rotate_z(T rad) -> This {
+auto Mat_<4,4,T,SIMD>::s_rotateZ(T rad) -> This {
 	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
@@ -690,8 +690,8 @@ auto Mat_<4, 4, T, SIMD>::s_ortho(T left, T right, T bottom, T top, T zNear, T z
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3& up) -> This {
-	auto outForward = (aim - eye).normal();
-	auto outSide    = outForward.cross(up).normal();
+	auto outForward = (aim - eye).normalize();
+	auto outSide    = outForward.cross(up).normalize();
 	auto outUp      = outSide.cross(outForward);
 
 	return This(
@@ -704,7 +704,7 @@ auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3&
 
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4,4,T,SIMD>::unprojectPoint_inv(const Vec3& screenPos, const Rect2& viewport) const -> Vec3 {
+auto Mat_<4,4,T,SIMD>::unprojectPointFromInverse(const Vec3& screenPos, const Rect2& viewport) const -> Vec3 {
 	auto  tmp = Vec4(screenPos, 1);
 	tmp.y = viewport.extents().y - tmp.y; // y is down
 

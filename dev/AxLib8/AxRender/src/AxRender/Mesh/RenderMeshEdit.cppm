@@ -7,15 +7,8 @@ export import :Font;
 
 export namespace ax {
 
-template<class COLOR>
-struct ColorPair {
-	COLOR c0;
-	COLOR c1;;
-};
-
 class RenderMeshEdit : public NonCopyable {
 public:
-	using Color4fPair = ColorPair<Color4f>;
 	using PrimType    = RenderPrimitiveType;
 	
 	template<class ELEM> using ElemEnumerator = typename VertexBuffer::ElemEnumerator_<ELEM>;

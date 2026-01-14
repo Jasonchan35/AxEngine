@@ -36,5 +36,12 @@ using Color4h_Basic = ColorRGBAh_Basic;
 using Color4f_Basic = ColorRGBAf_Basic;
 using Color4d_Basic = ColorRGBAd_Basic;
 
+template<class COLOR>
+struct ColorPair {
+	COLOR c0;
+	COLOR c1;;
+};
+
+using Color4fPair = ColorPair<Color4f>;
 
 } // namespace

@@ -60,36 +60,39 @@ public:
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { x=x_; y=y_; z=z_; w=w_; }
 
 	AX_NODISCARD AX_INLINE static constexpr This   s_identity ()	{ return This(T(0), T(0), T(0), T(1)); }
-						AX_INLINE constexpr void set_identity() { *this = s_identity; }
+						AX_INLINE constexpr void setIdentity() { *this = s_identity; }
 
 	AX_NODISCARD AX_INLINE static constexpr This   s_angleAxis(T rad, const Vec3& axis);
-						AX_INLINE constexpr void set_angleAxis(T rad, const Vec3& axis) { *this = s_angleAxis(rad, axis); }
+						AX_INLINE constexpr void setAngleAxis(T rad, const Vec3& axis) { *this = s_angleAxis(rad, axis); }
+	
+	AX_NODISCARD AX_INLINE static constexpr This   s_fromToRotation(const Vec3& from, const Vec3& to);
 
 	AX_NODISCARD constexpr T	angle() const { return Math::acos(w) * T(2); }
 	AX_NODISCARD constexpr Vec3	axis () const;
 
 	AX_NODISCARD static	constexpr This s_euler(const Vec3& r);
-	AX_NODISCARD static	constexpr This s_euler_x(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(s,0,0,c); }
-	AX_NODISCARD static	constexpr This s_euler_y(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,s,0,c); }
-	AX_NODISCARD static	constexpr This s_euler_z(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
+	AX_NODISCARD static	constexpr This s_eulerX(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(s,0,0,c); }
+	AX_NODISCARD static	constexpr This s_eulerY(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,s,0,c); }
+	AX_NODISCARD static	constexpr This s_eulerZ(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
 
-	AX_NODISCARD static	constexpr This s_euler_deg_x(T deg)	{ return s_euler_x(radians(deg)); }
-	AX_NODISCARD static	constexpr This s_euler_deg_y(T deg)	{ return s_euler_y(radians(deg)); }
-	AX_NODISCARD static	constexpr This s_euler_deg_z(T deg)	{ return s_euler_z(radians(deg)); }
+	AX_NODISCARD static	constexpr This s_eulerDegX(T deg)	{ return s_eulerX(radians(deg)); }
+	AX_NODISCARD static	constexpr This s_eulerDegY(T deg)	{ return s_eulerY(radians(deg)); }
+	AX_NODISCARD static	constexpr This s_eulerDegZ(T deg)	{ return s_eulerZ(radians(deg)); }
 
-			constexpr void 	set_euler(const Vec3& r)	{ *this = s_euler(r); }
-			constexpr void 	set_euler_x(T rad) { *this = s_euler_x(rad); }
-			constexpr void 	set_euler_y(T rad) { *this = s_euler_y(rad); }
-			constexpr void 	set_euler_z(T rad) { *this = s_euler_z(rad); }
-			constexpr void 	set_euler_deg_x(T deg) { *this = s_euler_deg_x(deg); }
-			constexpr void 	set_euler_deg_y(T deg) { *this = s_euler_deg_y(deg); }
-			constexpr void 	set_euler_deg_z(T deg) { *this = s_euler_deg_z(deg); }
+			constexpr void 	setEuler(const Vec3& r)	{ *this = s_euler(r); }
+			constexpr void 	setEulerX(T rad) { *this = s_eulerX(rad); }
+			constexpr void 	setEulerY(T rad) { *this = s_eulerY(rad); }
+			constexpr void 	setEulerZ(T rad) { *this = s_eulerZ(rad); }
+			constexpr void 	setEulerDegX(T deg) { *this = s_eulerDegX(deg); }
+			constexpr void 	setEulerDegY(T deg) { *this = s_eulerDegY(deg); }
+			constexpr void 	setEulerDegZ(T deg) { *this = s_eulerDegZ(deg); }
 
-	AX_NODISCARD constexpr Vec3	euler() const	{ return Vec3(euler_x(), euler_y(), euler_z()); }
-	AX_NODISCARD constexpr T	euler_x() const;
-	AX_NODISCARD constexpr T	euler_y() const;
-	AX_NODISCARD constexpr T	euler_z() const;
+	AX_NODISCARD constexpr Vec3	euler() const	{ return Vec3(eulerX(), eulerY(), eulerZ()); }
+	AX_NODISCARD constexpr T	eulerX() const;
+	AX_NODISCARD constexpr T	eulerY() const;
+	AX_NODISCARD constexpr T	eulerZ() const;
 
+	AX_NODISCARD constexpr This normalize() const;
 	AX_NODISCARD constexpr This conjugate() const { return This(-x, -y, -z, w); }
 	AX_NODISCARD constexpr This inverse() const;
 
@@ -102,7 +105,7 @@ public:
 	
 	AX_NODISCARD constexpr Vec3 operator*(const Vec3& v) const;
 	
-	template<class V> AX_INLINE void fromCast(const V& v) { *this = s_cast(v); }
+	template<class V> AX_INLINE void castFrom(const V& v) { *this = s_cast(v); }
 };
 
 template<class T> inline Vec3_<T> operator* (Vec3_<T>& v, const Quat4_<T>& quat) { return quat * v; }
@@ -181,19 +184,30 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 	            c.x * c.y * c.z + s.x * s.y * s.z);
 }
 
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_z() const -> T {
+template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerZ() const -> T {
 	auto a = T(2) * (x * y + w * z);
 	auto b = w * w + x * x - y * y - z * z;
 	return Math::atan2(a, b);
 }
 
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_y() const -> T {
+template<class T, VecSimd SIMD> constexpr 
+auto Quat_<4, T, SIMD>::normalize() const -> This {
+	T magSq = (_simd * _simd).horizontalAdd();
+	if (Math::almostZero(magSq)) {
+		return s_identity();
+	} else {
+		T invMag = Math::rsqrt_fast(magSq);
+		return *this * invMag;
+	}
+}
+
+template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerY() const -> T {
 	auto v = T(-2) * (x * z - w * y);
 	auto a = Math::clamp(v, T(-1), T(1));
 	return Math::asin(a);
 }
 
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::euler_x() const -> T {
+template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerX() const -> T {
 	auto a = T(2) * (y * z + w * x);
 	auto b = w * w - x * x - y * y + z * z;
 	return Math::atan2(a, b);
@@ -228,6 +242,20 @@ template<class T, VecSimd SIMD> constexpr AX_INLINE auto Quat_<4, T, SIMD>::s_an
 	T s, c;
 	Math::sincos(rad * T(0.5), s, c);
 	return This(axis.x * s, axis.y * s, axis.z * s, c);
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_fromToRotation(const Vec3& from, const Vec3& to) {
+	float k_cos_theta = from.dot(to);
+	float k = Math::sqrt(from.lengthSq() * to.lengthSq());
+
+	if (k_cos_theta / k == -1) {
+		Vec3 orthogonal = Orthogonal(from); 
+		return This(0, orthogonal.x, orthogonal.y, orthogonal.z).normalize();
+	}
+
+	Vec3 axis = from.cross(to);
+	return This(k_cos_theta + k, axis.x, axis.y, axis.z).normalize();
 }
 
 } // namespace

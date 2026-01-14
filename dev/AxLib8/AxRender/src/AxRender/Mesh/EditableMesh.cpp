@@ -145,7 +145,7 @@ void EditableMesh::updateFaceNormals() {
 				auto v1 = points[i]->pos;
 				auto v2 = points[i+1]->pos;
 				center += v1;
-				normal += (v1 - v0).cross(v2 - v0).normal();
+				normal += (v1 - v0).cross(v2 - v0).normalize();
 			}
 			center += points.back()->pos;
 
@@ -155,7 +155,7 @@ void EditableMesh::updateFaceNormals() {
 		}
 
 		face.center = center;
-		face.normal = normal.normal();
+		face.normal = normal.normalize();
 
 		//------
 		auto faceEdges = face.getFaceEdges(*this);
@@ -166,11 +166,11 @@ void EditableMesh::updateFaceNormals() {
 	}
 
 	for (auto& v : _points) {
-		v.normal.normalize();
+		v.normal.normalizeSelf();
 	}
 
 	for (auto& e : _edges) {
-		e.normal.normalize();
+		e.normal.normalizeSelf();
 	}
 }
 

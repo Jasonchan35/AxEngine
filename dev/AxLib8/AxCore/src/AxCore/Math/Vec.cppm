@@ -244,13 +244,13 @@ public:
 	AX_NODISCARD AX_INLINE constexpr T    invLength() const { return Math::rsqrt(lengthSq()); }
 	AX_NODISCARD AX_INLINE constexpr T    distance(const This& r) const { return (*this - r).length(); }
 	AX_NODISCARD AX_INLINE constexpr T    distanceSq(const This& r) const { return (*this - r).lengthSq(); }
-	AX_NODISCARD AX_INLINE constexpr This normal() const {
+	AX_NODISCARD AX_INLINE constexpr This normalize() const {
 		auto d = length();
 		if (Math::almostZero(d)) return s_zero();
 		return *this / d;
 	}
 
-	AX_INLINE constexpr void normalize() { *this = normal(); };	
+	AX_INLINE constexpr void normalizeSelf() { *this = normalize(); };
 
 	static This s_randomUnitVector(RandomDevice& dev = RandomDevice::s_default()) {
 		auto theta = dev.fromRange<T>(0, 1) * 2 * Math::PI_<T>;
@@ -380,13 +380,13 @@ public:
 	AX_NODISCARD AX_INLINE constexpr T    invLength() const { return Math::rsqrt(lengthSq()); }
 	AX_NODISCARD AX_INLINE constexpr T    distance(const This& r) const { return (*this - r).length(); }
 	AX_NODISCARD AX_INLINE constexpr T    distanceSq(const This& r) const { return (*this - r).lengthSq(); }
-	AX_NODISCARD AX_INLINE constexpr This normal() const {
+	AX_NODISCARD AX_INLINE constexpr This normalize() const {
 		auto d = length();
 		if (Math::almostZero(d)) return s_zero();
 		return *this / d;
 	}
 
-	AX_INLINE constexpr void normalize() { *this = normal(); };	
+	AX_INLINE constexpr void normalizeSelf() { *this = normalize(); };
 	
 	static This s_randomUnitVector(RandomDevice& dev = RandomDevice::s_default()) {
 		auto longitude = dev.fromRange<T>(0, 1) * 2 * Math::PI_<T>;

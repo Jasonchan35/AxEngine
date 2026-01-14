@@ -57,7 +57,7 @@ public:
 	{}
 
 	constexpr Plane3_(const Triangle3_<T>&  tri) {
-		normal = (tri.v1 - tri.v0).cross(tri.v2 - tri.v0).normal();
+		normal = (tri.v1 - tri.v0).cross(tri.v2 - tri.v0).normalize();
 		distance = normal.dot(tri.v0);
 	}
 
@@ -210,7 +210,7 @@ Ray3_<T> Ray3_<T>::s_unProjectFromInvMatrix(const Vec2& screenPos, const Mat4& m
 
 	Ray3_ o;
 	o.origin = v0;
-	o.dir = (v1 - v0).normal();
+	o.dir = (v1 - v0).normalize();
 	return o;
 }
 
