@@ -69,18 +69,10 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 
 void RenderObjectManager_Backend::_postCreate() {
 	RenderStockObjects::s_create();
+	auto* commonShaderPass = ShaderPass_Backend::s_commonShaderPass();
 
-	//----- common material
-	auto commonShaderFilename = StrView("ImportedAssets/Shaders/core/Common.axShader");
-	auto commonParamShader = Shader::s_new(AX_NEW, commonShaderFilename);
-	_commonMaterial = rttiCastCheck<Material_Backend>(Material::s_new(AX_NEW).ptr());
-	_commonMaterial->setShader(commonParamShader);
-
-	_commonMaterialPass = _commonMaterial->getPass(0);
-	if (!_commonMaterialPass) throw Error_Undefined();
-
-#if AX_RENDER_BINDLESS	
-	auto* bindlessSpace = _commonMaterialPass->shaderPass()->getParamSpace(ShaderParamBindSpace::Bindless);
+#if AX_RENDER_BINDLESS
+	auto* bindlessSpace = commonShaderPass->getParamSpace(ShaderParamBindSpace::Bindless);
 
 	bindless.AxBindless_SamplerState = bindlessSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
 	if (!bindless.AxBindless_SamplerState) throw Error_Undefined();

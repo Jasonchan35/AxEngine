@@ -17,5 +17,9 @@ void RenderRequest::setScissorRect(const Rect2f& rect) {
 	static_cast<RenderRequest_Backend*>(this)->setScissorRect_backend(rect);
 }
 
+void RenderRequest::setCamera(const Math::Camera3f& camera) {
+	static_cast<RenderRequest_Backend*>(this)->setCamera_backend(camera);
+}
+
 
 } // namespace

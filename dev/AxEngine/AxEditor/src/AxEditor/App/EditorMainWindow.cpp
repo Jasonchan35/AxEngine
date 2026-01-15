@@ -31,7 +31,7 @@ void EditorMainWindow::onWindowCloseButton() {
 }
 
 void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
-	auto& cam = _renderGraph->_camera;
+	auto& cam = _renderGraph->_viewportCamera;
 	switch (ev.type) {
 		case UIMouseEventType::Move: {
 			if (ev.pressedButtons == UIMouseEventButton::Right) {
@@ -52,10 +52,10 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 }
 
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
-	DemoRenderGraph::onBackBufferPass(req, inputs);
+	Base::onBackBufferPass(req, inputs);
 	
 	if constexpr (true) {
-		auto& cam = _camera;
+		auto& cam = _viewportCamera;
 		ImUIPanel	panel("camera");
 		ImUILabelText("pos"  , Fmt("{}", cam.pos()));
 		ImUILabelText("aim"  , Fmt("{}", cam.aim()));

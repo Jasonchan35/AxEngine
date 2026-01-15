@@ -5,7 +5,7 @@
 import :RenderCommandList_Vk;
 import :RenderContext_Vk;
 import :GpuBuffer_Vk;
-import :StockObjects;
+import :RenderStockObjects;
 import :RenderPass_Vk;
 
 namespace ax /*::AxRender*/ {

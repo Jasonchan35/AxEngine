@@ -69,6 +69,10 @@ public:
 	void setScissorRect(const Rect2f& rect);
 	AX_INLINE const Rect2f& scissorRect() const { return _scissorRect; }
 
+	RenderStockObjects* stockObjects() const { return _stockObjects; }
+	
+	void setCamera(const Math::Camera3f& camera);
+	
 protected:
 	RenderSystem*  _renderSystem       = nullptr;
 	RenderContext* _renderContext      = nullptr;
@@ -78,6 +82,8 @@ protected:
 	Rect2f         _scissorRect{0, 0, 0, 0};
 	Rect2f         _viewportRect{0, 0, 0, 0};
 	f64            _uptime             = 0;
+	
+	RenderStockObjects*	_stockObjects = nullptr;
 };
 
 inline

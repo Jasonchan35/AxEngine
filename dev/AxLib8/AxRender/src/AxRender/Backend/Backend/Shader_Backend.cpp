@@ -1,6 +1,6 @@
 module;
 module AxRender;
-import :StockObjects;
+import :RenderStockObjects;
 import :Material_Backend;
 import :RenderSystem_Backend;
 import :RenderObjectManager_Backend;
@@ -96,13 +96,13 @@ void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StorageBuffer& pa
 inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
 	ParamBase::create(info);
 	_dynamicSampler = info.dynamicSampler; 
-	_defaultSampler = RenderStockObjects::s_instance()->samplers.defaultValue;
+	_defaultSampler = RenderStockObjects::s_instance()->samplers->defaultValue;
 }
 
 inline void ShaderParamSpace_Backend::TextureParam::create(const Info& info) {
 	ParamBase::create(info);
 	_dataType = info.dataType;
-	_defaultTexture = RenderStockObjects::s_instance()->texture2Ds.kNone;
+	_defaultTexture = RenderStockObjects::s_instance()->texture2Ds->kNone;
 }
 
 inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
@@ -149,7 +149,7 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 	#undef E
 		case ShaderPropType::Texture2D: {
 			if (auto* param = findTextureParam(propName)) {
-				auto* tex= RenderStockObjects::s_instance()->texture2Ds.get(propInfo.defaultValue.v_stockTextureId);
+				auto* tex= RenderStockObjects::s_instance()->texture2Ds->get(propInfo.defaultValue.v_stockTextureId);
 				param->setDefaultTexture(tex);
 			}
 		} break;
@@ -157,7 +157,7 @@ void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const Shader
 		case ShaderPropType::Sampler: {
 			if (auto* param = findSamplerParam(propName)) {
 				// TODO - pick the sampler base on propInfo.default
-				auto* sampler = RenderStockObjects::s_instance()->samplers.defaultValue.ptr();
+				auto* sampler = RenderStockObjects::s_instance()->samplers->defaultValue.ptr();
 				param->setDefaultSampler(sampler);
 			}
 		} break;
@@ -218,6 +218,11 @@ ShaderPass_Backend::~ShaderPass_Backend() {
 	}
 }
 
+const ShaderPass_Backend* ShaderPass_Backend::s_commonShaderPass() {
+	auto* pass = MaterialPass_Backend::s_commonMaterialPass();
+	return pass ? pass->shaderPass() : nullptr;
+}
+
 template<class T>
 void ShaderPass_Backend::_addParamToSpace(const Array<T>& paramInfoSpan) {
 	for (auto& param : paramInfoSpan) {
@@ -241,13 +246,13 @@ TempString ShaderPass_Backend::debugName() const {
 	return Fmt("{} shader={}", _name, _shader ? _shader->debugName() : "");
 }
 
-void      ShaderPass_Backend::_createParamSpaces() {
+void ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->constBuffers);
 	_addParamToSpace(_stageInfo->storageBuffers);
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 
-	auto* commonShaderPass = RenderObjectManager_Backend::s_instance()->commonShaderPass(); 
+	auto* commonShaderPass = s_commonShaderPass(); 
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);

@@ -48,13 +48,6 @@ public:
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) {}
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {}
 
-	Material_Backend*			commonMaterial()		{ return _commonMaterial; }
-	MaterialPass_Backend*		commonMaterialPass()	{ return _commonMaterialPass; }
-
-	const ShaderPass_Backend*	commonShaderPass() {
-		return _commonMaterialPass ? _commonMaterialPass->shaderPass() : nullptr;
-	}
-
 #if AX_RENDER_BINDLESS
 	struct Bindless {
 		const ShaderParamSpace_Backend::SamplerParam*	AxBindless_SamplerState = nullptr;
@@ -75,14 +68,11 @@ protected:
 	}
 
 	using All_Table = Tuple<
-		MutexProtected<Table<Shader_Backend>   >,
-		MutexProtected<Table<Sampler_Backend>  >,
-		MutexProtected<Table<Texture2D_Backend>>
+		MutexProtected<Table< Shader_Backend    >>,
+		MutexProtected<Table< Sampler_Backend   >>,
+		MutexProtected<Table< Texture2D_Backend >>
 	>;
 	All_Table _all_table;
-
-	SPtr<Material_Backend>		_commonMaterial;
-	MaterialPass_Backend*		_commonMaterialPass = nullptr;
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>

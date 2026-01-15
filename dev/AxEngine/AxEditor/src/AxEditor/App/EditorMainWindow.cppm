@@ -21,7 +21,9 @@ protected:
 	virtual	void onUIMouseEvent(UIMouseEvent& ev) override;
 	virtual	void onUIKeyEvent(UIKeyEvent& ev) override;
 
-	struct MyRenderGraph : public DemoRenderGraph {
+	struct MyRenderGraph : public EngineRenderGraph {
+		AX_RTTI_INFO(MyRenderGraph, EngineRenderGraph)
+	public:
 		class EditorMainWindow* win = nullptr;
 		
 		virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) override;

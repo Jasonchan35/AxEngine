@@ -9,16 +9,10 @@ namespace ax /*::AxRender*/ {
 DemoRenderGraph::DemoRenderGraph() {
 	backBufferPass()->color0.setClearColor(Color4f(0,0,0.2f));
 
-	{
-		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/simple3d_color.axShader");
-		_mat_simple3d_color = Material::s_new(AX_NEW);
-		_mat_simple3d_color->setShader(shader);
-	}
+	_mat_simple3d_color = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/simple3d_color.axShader");
 	
 	if constexpr (false) {
-		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/test.axShader");
-		_testMaterial = Material::s_new(AX_NEW);
-		_testMaterial->setShader(shader);
+		_testMaterial = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/test.axShader");
 	}
 
 	if constexpr (true) {
@@ -75,8 +69,8 @@ DemoRenderGraph::DemoRenderGraph() {
 
 	auto* stockObjs = RenderStockObjects::s_instance();
 	
-	_axis     = stockObjs->meshes.axis;
-	_testCube = stockObjs->meshes.cube;
+	_axis     = stockObjs->meshes->axis;
+	_testCube = stockObjs->meshes->cube;
 	
 	_camera.setRotation(-30, 45);
 }
@@ -94,14 +88,12 @@ void DemoRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 		req->draw(cmd);
 	}
 #endif
-	auto* req_bk = rttiCastCheck<RenderRequest_Backend>(req);
-	auto mvp = _camera.viewProjMatrix();
-	req_bk->commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp);
-	
+	req->setCamera(_camera);
+
 	// if (_testMeshMaterial) {
 	// 	req->drawMesh(_testMesh, _testMeshMaterial, 0);
 	// }
-	
+
 	_camera.setViewport(req->viewport());
 	
 	req->drawMesh(_grid, _mat_simple3d_color, 0);

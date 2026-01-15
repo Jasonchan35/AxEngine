@@ -60,7 +60,9 @@ void RenderObjectManager_Vk::onPostCreate() {
 	auto* sys  = RenderSystem_Vk::s_instance();
 	auto& dev  = sys->device();
 
-	auto* bindlessParamSpace = rttiCastCheck<ShaderParamSpace_Vk>(commonShaderPass()->getParamSpace(BindSpace::Bindless));
+	auto* commonShaderPass = ShaderPass_Backend::s_commonShaderPass();
+
+	auto* bindlessParamSpace = rttiCastCheck<ShaderParamSpace_Vk>(commonShaderPass->getParamSpace(BindSpace::Bindless));
 	if (!bindlessParamSpace) throw Error_Undefined();
 
 	Int total_Texture_Count	= bindless.AxBindless_Texture2D->bindCount()

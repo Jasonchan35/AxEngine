@@ -6,3 +6,4 @@ export import :Renderer;
 export import :RenderContext;
 export import :RenderRequest;
 export import :DemoRenderGraph;
+export import :RenderMeshEdit;

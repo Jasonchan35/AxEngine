@@ -82,7 +82,6 @@ public:
 	void copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
 	bool copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
 	void copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset);
-	
 
 	Int index() const { return _index; }
 
@@ -91,10 +90,10 @@ public:
 	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
 	void setScissorRect_backend(const Rect2f& rect);
 
+	void setCamera_backend(const Math::Camera3f& camera);
+	
+	
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
-
-	using Fallback = RenderStockObjects::Fallback;
-	Fallback* _fallback = nullptr;
 	
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)

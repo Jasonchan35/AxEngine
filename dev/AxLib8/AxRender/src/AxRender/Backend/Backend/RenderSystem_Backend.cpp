@@ -1,7 +1,7 @@
 module;
 module AxRender;
 import :Material_Backend;
-import :StockObjects;
+import :RenderStockObjects;
 import :RenderRequest_Backend;
 import :RenderContext_Backend;
 import :RenderObjectManager_Backend;

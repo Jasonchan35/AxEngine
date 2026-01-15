@@ -43,9 +43,9 @@ private:
 	
 	SPtr<Material>		_testMesh3dMaterial;
 	SPtr<MeshObject>	_testCube;
+	
 	SPtr<MeshObject>	_axis;
 	RenderMesh			_grid;
-	
 	SPtr<Material>		_mat_simple3d_color;
 };
 

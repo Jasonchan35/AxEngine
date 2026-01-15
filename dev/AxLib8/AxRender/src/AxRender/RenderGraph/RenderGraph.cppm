@@ -208,7 +208,7 @@ public:
 
 	BackBufferPass* backBufferPass() { return _backBufferPass.ptr(); }
 
-	virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) = 0;
+	virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) {}
 
 	RenderGraph();
 

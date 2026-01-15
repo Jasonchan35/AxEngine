@@ -2,7 +2,7 @@ module;
 export module AxRender:Shader;
 export import :RenderState;
 export import :Vertex;
-export import :StockObjects;
+export import :RenderStockObjects;
 export import :GpuBuffer;
 
 export namespace ax /*::AxRender*/ {

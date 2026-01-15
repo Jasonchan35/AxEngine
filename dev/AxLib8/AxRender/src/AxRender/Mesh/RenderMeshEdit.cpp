@@ -255,7 +255,7 @@ void RenderMeshEdit::createTextBillboard(VertexLayout vertexLayout, StrView text
 
 void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, const Vec3f& pos, const FontStyle* style) {
 	if (!style) {
-		style = RenderStockObjects::s_instance()->font.defaultFontStyle;
+		style = RenderStockObjects::s_instance()->fonts->defaultFontStyle;
 	}
 
 	if (!style)			{ AX_ASSERT(false); return; }

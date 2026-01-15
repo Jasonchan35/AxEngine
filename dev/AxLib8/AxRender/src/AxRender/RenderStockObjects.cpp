@@ -1,11 +1,24 @@
 module AxRender;
 import :RenderMeshEdit;
+import :Material_Backend;
 
 namespace ax /*::AxRender*/ {
 
 static RenderStockObjects* StockObjects_instance = nullptr;
 
 RenderStockObjects::RenderStockObjects() {
+	AX_ASSERT(StockObjects_instance == nullptr);
+	StockObjects_instance = this;
+	
+	fallback.newObject(AX_NEW);
+	fonts.newObject(AX_NEW);
+	samplers.newObject(AX_NEW);
+	texture2Ds.newObject(AX_NEW);
+	
+	commonMaterial = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Common.axShader");
+	
+	materials.newObject(AX_NEW);
+	meshes.newObject(AX_NEW);
 }
 
 RenderStockObjects::Fallback::Fallback() {
@@ -62,11 +75,14 @@ RenderStockObjects::Meshes::Meshes() {
 	RenderMeshEdit(cylinder->meshData).createCylinder(layout, 1, 1, 2, 32, true, true);
 }
 
+RenderStockObjects::Materials::Materials() {
+	simple3d_color  = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/simple3d_color.axShader");
+}
+
 RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }
 
 void RenderStockObjects::s_create() {
-	AX_ASSERT(StockObjects_instance == nullptr);
-	StockObjects_instance = new(AX_NEW) RenderStockObjects();
+	new(AX_NEW) RenderStockObjects();
 }
 
 void RenderStockObjects::s_destroy() {

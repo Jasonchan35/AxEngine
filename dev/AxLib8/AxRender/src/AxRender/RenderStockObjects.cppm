@@ -1,5 +1,5 @@
 module;
-export module AxRender:StockObjects;
+export module AxRender:RenderStockObjects;
 export import :Texture;
 export import :Font;
 export import :RenderMesh;
@@ -21,25 +21,14 @@ public:
 		SPtr<Sampler>	sampler;
 		SPtr<Texture2D> texture2D;
 	}; 
-	Fallback fallback;
+	UPtr<Fallback> fallback;
 	
 	struct Font : public NonCopyable {
 		Font();
 		SPtr<FontStyle>		defaultFontStyle;
 	};
-	Font font;
-
-	struct Texture2Ds : public NonCopyable {
-		Texture2Ds();
-
-	#define E(T,...) SPtr<Texture2D> k##T;
-		AX_RenderStockTextureId_ENUM_LIST(E)
-	#undef E
-
-
-		Texture2D*	get(RenderStockTextureId texId);
-	};
-	Texture2Ds	texture2Ds;
+	UPtr<Font> fonts;
+	
 
 	struct Samplers : public NonCopyable {
 		Samplers();
@@ -60,8 +49,27 @@ public:
 		FilterSet	Trilinear;
 		FilterSet	Anisotropic;
 	};
-	Samplers	samplers;
+	UPtr<Samplers>	samplers;
 
+	struct Texture2Ds : public NonCopyable {
+		Texture2Ds();
+
+	#define E(T,...) SPtr<Texture2D> k##T;
+		AX_RenderStockTextureId_ENUM_LIST(E)
+	#undef E
+		Texture2D*	get(RenderStockTextureId texId);
+	};
+	UPtr<Texture2Ds>	texture2Ds;
+
+	SPtr<Material>	commonMaterial;
+	
+	struct Materials : public NonCopyable {
+		Materials();
+		SPtr<Material>	simple3d_color;
+	};
+	UPtr<Materials>	materials;
+	
+	
 	struct Meshes : public NonCopyable {
 		Meshes();
 		SPtr<MeshObject>	axis;
@@ -70,7 +78,7 @@ public:
 		SPtr<MeshObject>	cone;
 		SPtr<MeshObject>	cylinder;
 	}; 
-	Meshes meshes;
+	UPtr<Meshes> meshes;
 	
 	static RenderStockObjects* s_instance();
 

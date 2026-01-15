@@ -23,9 +23,7 @@ RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
 	_index                = desc.index;
 	_inlineUpload.create(this);
 	_renderRequestCount = _renderSystem->renderRequestCount();
-	
-	auto* stock = RenderStockObjects::s_instance();
-	_fallback = &stock->fallback;
+	_stockObjects = RenderStockObjects::s_instance();
 }
 
 void RenderRequest_Backend::waitCompleted() {
@@ -43,8 +41,8 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 void RenderRequest_Backend::_updateCommonMaterial() {
 	using namespace Math;
 
-	_commonMaterial     = _objectManager->commonMaterial();
-	_commonMaterialPass = _objectManager->commonMaterialPass();
+	_commonMaterial     = rttiCastCheck<Material_Backend>(_stockObjects->commonMaterial.ptr());
+	_commonMaterialPass = _commonMaterial->getPass(0);
 	
 	resourcesToKeep.add(_commonMaterial);
 	
@@ -120,6 +118,11 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 		return;
 	_scissorRect = rect;
 	onSetScissorRect(rect);
+}
+
+void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
+	auto mvp = camera.viewProjMatrix();
+	commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp);
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {

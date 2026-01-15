@@ -1,7 +1,7 @@
 module;
 module AxRender;
 import :RenderContext;
-import :StockObjects;
+import :RenderStockObjects;
 import :Texture_Backend;
 import :Material_Backend;
 import :RenderSystem_Backend;
@@ -135,7 +135,7 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 	AX_ASSERT(_material);
 	AX_ASSERT(_shaderPass);
 
-	auto* commonMaterialPass = RenderObjectManager_Backend::s_instance()->commonMaterialPass();
+	auto* commonMaterialPass = s_commonMaterialPass();
 		
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);
@@ -159,6 +159,11 @@ MaterialPass_Backend::~MaterialPass_Backend() {
 	}
 }
 
+MaterialPass_Backend* MaterialPass_Backend::s_commonMaterialPass() {
+	auto* mat = Material_Backend::s_commonMaterial();
+	return mat ? mat->getPass(0) : nullptr;
+}
+
 #if 0
 #pragma mark "============ Material_Backend ==============="
 #endif
@@ -168,6 +173,11 @@ Material_Backend::Material_Backend(const CreateDesc& desc)
 {
 	constexpr bool isStaticMaterial = false; // TODO
 	_maxFrameDataCount = isStaticMaterial ? 1 : RenderSystem::s_instance()->renderRequestCount();
+}
+
+Material_Backend* Material_Backend::s_commonMaterial() {
+	auto* stockObjs = RenderStockObjects::s_instance();
+	return stockObjs ? rttiCastCheck<Material_Backend>(stockObjs->commonMaterial.ptr()) : nullptr;
 }
 
 void Material_Backend::logWarningOnce(StrView msg) {
