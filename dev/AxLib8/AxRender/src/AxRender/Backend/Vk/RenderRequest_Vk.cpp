@@ -159,7 +159,9 @@ void RenderRequest_Vk::onRenderPassEnd(RenderPass* pass_) {
 
 void RenderRequest_Vk::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
 	VkViewport tmp;
-#if 1 // flip Y - in vulkan Y is downward, while DX and OpenGL is up
+#if 1
+	// flip Y - in vulkan Y is downward, while DX and OpenGL is up
+	// VK_KHR_Maintenance1 allow negative height
 	tmp.x        = rect.x;
 	tmp.y        = rect.h - rect.y;
 	tmp.width    = rect.w;
