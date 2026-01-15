@@ -12,12 +12,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #   SET(${varName} "value to return" PARENT_SCOPE)
 # endfunction()
 
-set(AX_CppHeaerTool "${CMAKE_CURRENT_BINARY_DIR}/bin/Debug/AxCppHeaderTool")
-
 function(ax_cpp_header_tool target path)
+	set(AX_CppHeaerTool "$<TARGET_FILE:AxCppHeaderTool>")
+
 	add_custom_target(${target}_CppHeaderTool
-		COMMAND ${CMAKE_COMMAND} -E echo "${target} Running AxCppHeaderTool..."
+		COMMAND ${CMAKE_COMMAND} -E echo "---- Running ${target}_CppHeaderTool..."
 		COMMAND ${AX_CppHeaerTool} -moduleName=${target} -outPath=${path} ${path}
+		COMMAND ${CMAKE_COMMAND} -E echo "---- End ${target}_CppHeaderTool ----"
 		WORKING_DIRECTORY ${path}
 	)
 	add_dependencies(${target}_CppHeaderTool "AxCppHeaderTool")
@@ -26,7 +27,7 @@ endfunction()
 
 function(ax_write_to_file filename text)
 	message("ax_write_to_file(\"${filename}\")")
-	file(GENERATE OUTPUT ${filename} CONTENT "${text}" NEWLINE_STYLE UNIX)	
+	file(GENERATE OUTPUT ${filename} CONTENT "${text}" NEWLINE_STYLE UNIX)
 endfunction()
 
 function(ax_copy_file src_filename dst_filename)

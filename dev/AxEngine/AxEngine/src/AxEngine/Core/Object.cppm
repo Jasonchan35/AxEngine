@@ -12,7 +12,7 @@ class Object_CreateDesc : public NonCopyable {
 public:
 };
 
-class Object : public RttiObject{
+class Object : public RttiObject {
 	AX_RTTI_INFO(Object, RttiObject)
 public:
 	using CreateDesc = Object_CreateDesc;

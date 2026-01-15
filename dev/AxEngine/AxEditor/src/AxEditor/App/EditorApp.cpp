@@ -71,7 +71,7 @@ void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
 
 void EditorApp::_createDemoScene() {
 	for (Int i = 0; i < 5; ++i) {
-		auto* entity = SceneEntity::s_new(AX_NEW, nullptr, Fmt("test_{}", i));
+		auto entity = SceneEntity::s_new(AX_NEW, nullptr, Fmt("test_{}", i));
 		auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
 		meshRenderer->mesh = RenderStockObjects::s_instance()->meshes->cube;
 		

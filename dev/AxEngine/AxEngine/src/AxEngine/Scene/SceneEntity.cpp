@@ -17,8 +17,8 @@ SceneEntity::SceneEntity(const CreateDesc& desc) {
 	}
 }
 
-SceneEntity* SceneEntity::s_new(const MemAllocRequest& allocReq, SceneEntity* parent, StrView name) {
-	return UPtr_new<This>(allocReq, CreateDesc(parent, name)).detach();
+SPtr<SceneEntity> SceneEntity::s_new(const MemAllocRequest& allocReq, SceneEntity* parent, StrView name) {
+	return SPtr_new<This>(allocReq, CreateDesc(parent, name));
 }
 
 SceneWorld* SceneWorld::s_instance() {
@@ -28,6 +28,30 @@ SceneWorld* SceneWorld::s_instance() {
 SceneWorld::SceneWorld() {
 	SceneWorld_instance = this;
 	_root.ref(SceneEntity::s_new(AX_NEW, nullptr, "root"));
+}
+
+void SceneWorld::Selection::select(SceneEntity* entity) {
+	deselectAll();
+	entity->editor.selected = true;
+}
+
+void SceneWorld::Selection::deselectAll() {
+	for (auto& p : _selectedEntities) {
+		if (auto sp = p.getSPtr()) {
+			sp->editor.selected = false;
+		}
+	}
+	_selectedEntities.clear();
+}
+
+void SceneWorld::Selection::getSelection(Array<SPtr<SceneEntity>> outList) {
+	outList.clear();
+	outList.ensureCapacity(_selectedEntities.size());
+	for (auto& p : _selectedEntities) {
+		if (auto sp = p.getSPtr()) {
+			outList.emplaceBack(std::move(sp));
+		}
+	}
 }
 
 }

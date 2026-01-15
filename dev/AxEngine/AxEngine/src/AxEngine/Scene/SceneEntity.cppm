@@ -29,12 +29,13 @@ public:
 	
 	SceneEntity(const CreateDesc& desc);
 
-	static SceneEntity* s_new(const MemAllocRequest& allocReq, SceneEntity* parent, StrView name);
+	static SPtr<SceneEntity> s_new(const MemAllocRequest& allocReq, SceneEntity* parent, StrView name);
 
 	template<class COMP>
 	COMP* addComponent(const MemAllocRequest& allocReq) {
-		auto comp = UPtr_new<COMP>(allocReq);
-		return static_cast<COMP*>(_components.emplaceBack(std::move(comp)).ptr());
+		auto comp = SPtr_new<COMP>(allocReq);
+		_components.emplaceBack(comp);
+		return comp;
 	}
 	
 	const String& name() const { return _name; }
@@ -61,22 +62,32 @@ protected:
 private:
 	String _name;
 	
-	Array<UPtr<SceneComponent>> _components;
-	Array<UPtr<SceneEntity>> _children;
+	Array<SPtr<SceneComponent>> _components;
+	Array<SPtr<SceneEntity>> _children;
 	SceneEntity* _parent = nullptr;
 };
 
 AX_CLASS()
 class SceneWorld : public Object {
-	AX_GENERATED_BODY()	
+	AX_GENERATED_BODY()
 public:
 	static SceneWorld* s_instance();
 	
 	SceneWorld();
 	SceneEntity* root() { return _root.ptr(); }
 	
+	struct Selection {
+		void select(SceneEntity* entity);
+		void deselectAll();
+		
+		void getSelection(Array<SPtr<SceneEntity>> outList);
+		
+	private:
+		Array<WPtr<SceneEntity>> _selectedEntities;
+	} selection;
+
 private:
-	UPtr<SceneEntity> _root;
+	SPtr<SceneEntity> _root;
 };
 
 AX_CLASS()
