@@ -16,12 +16,19 @@ function(ax_cpp_header_tool target path)
 	set(AX_CppHeaerTool "$<TARGET_FILE:AxCppHeaderTool>")
 
 	add_custom_target(${target}_CppHeaderTool
-		COMMAND ${CMAKE_COMMAND} -E echo "---- Running ${target}_CppHeaderTool..."
-		COMMAND ${AX_CppHeaerTool} -moduleName=${target} -outPath=${path} ${path}
-		COMMAND ${CMAKE_COMMAND} -E echo "---- End ${target}_CppHeaderTool ----"
+		COMMENT "---- Running ${target}_CppHeaderTool..."
+		COMMAND ${AX_CppHeaerTool} ARGS -moduleName=${target} -outPath=${path} ${path}
+		COMMENT "---- End ${target}_CppHeaderTool ----"
 		WORKING_DIRECTORY ${path}
+		DEPENDS AX_CppHeaerTool
+		VERBATIM
 	)
 	add_dependencies(${target} ${target}_CppHeaderTool)
+
+#	get_target_property(target_folder ${target} FOLDER)
+#	set_target_properties(${target}_CppHeaderTool PROPERTIES FOLDER ${target_folder})
+	set_target_properties(${target}_CppHeaderTool PROPERTIES FOLDER "RunCppHeaderTool")
+
 endfunction()
 
 function(ax_write_to_file filename text)
