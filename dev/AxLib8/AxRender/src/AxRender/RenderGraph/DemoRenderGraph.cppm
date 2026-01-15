@@ -1,14 +1,14 @@
 module;
 
-export module AxRender:DefaultRenderGraph;
+export module AxRender:DemoRenderGraph;
 export import :RenderMesh;
 export import :Material;
 export import :RenderGraph;
 
 export namespace ax /*::AxRender*/ {
 
-class DefaultRenderGraph : public RenderGraph {
-	AX_RTTI_INFO(DefaultRenderGraph, RenderGraph)
+class DemoRenderGraph : public RenderGraph {
+	AX_RTTI_INFO(DemoRenderGraph, RenderGraph)
 public:
 
 	struct GBufferPass : public Pass {
@@ -24,7 +24,7 @@ public:
 		ColorBuffer color0 {this, "color0", ColorType::RGBAf};
 	} lighting {this};
 
-	DefaultRenderGraph();
+	DemoRenderGraph();
 
 	virtual void onUpdate(RenderRequest* req) override;
 

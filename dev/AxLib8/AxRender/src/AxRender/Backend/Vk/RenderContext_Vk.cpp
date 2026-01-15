@@ -135,7 +135,7 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 
 	auto& backBufferRef    = colorBuffer_vk->backBufferRef();
 	auto* backBuffer       = _getBackBuffer(backBufferRef.index);
-	auto& presentCmdList    = backBuffer->_presentCmdList_vk;
+	auto& presentCmdList   = backBuffer->_presentCmdList_vk;
 	auto& presentSemaphore = backBuffer->_presentSemaphore_vk;
 
 	// Array<VkCommandBuffer, 2>	cmdBuffers;

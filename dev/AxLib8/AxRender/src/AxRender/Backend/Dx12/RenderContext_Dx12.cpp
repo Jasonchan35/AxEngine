@@ -128,22 +128,26 @@ void RenderContext_Dx12::onPostCreate(const CreateDesc& desc) {
 	_createSwapChain();
 }
 
-void RenderContext_Dx12::onSetFrameSize(const Vec2i& s) {
-	Base::onSetFrameSize(s);
-	if (!_hwnd) return;
-	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast_from(s.x), ax_safe_cast_from(s.y), 0);
-
+void RenderContext_Dx12::_resizeBackBuffers() {
 	RenderSystem_Backend::s_instance()->waitAllRenderCompleted();
 	
 	// release resource before resize swap chain
 	for (auto& backBuffer : _backBuffers_dx12) {
 		backBuffer->releaseResources();
 	}
-
-	Vec2i frameSize = Math::max(_minFrameSize, s);
+	
+	RECT clientRect;
+	::GetClientRect(_hwnd, &clientRect);
+	auto frameSize = Math::max(_minFrameSize, NativeUI_Win32::to_Rect2i(clientRect).size);
 	_swapChain_dx12.resizeBuffers(0, frameSize, DXGI_FORMAT_UNKNOWN, 0);
-
 	_createBackBuffers();
+}
+
+void RenderContext_Dx12::onSetFrameSize(const Vec2i& s) {
+	Base::onSetFrameSize(s);
+	if (!_hwnd) return;
+	::SetWindowPos(_hwnd, nullptr, 0, 0, ax_safe_cast_from(s.x), ax_safe_cast_from(s.y), 0);
+	_resizeBackBuffers();
 }
 
 LRESULT WINAPI RenderContext_Dx12::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {

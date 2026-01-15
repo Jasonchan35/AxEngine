@@ -6,8 +6,8 @@ import :RenderMeshEdit;
 
 namespace ax /*::AxRender*/ {
 
-DefaultRenderGraph::DefaultRenderGraph() {
-	backBufferPass().color0.setClearColor(Color4f(0,0,0.2f));
+DemoRenderGraph::DemoRenderGraph() {
+	backBufferPass()->color0.setClearColor(Color4f(0,0,0.2f));
 
 	{
 		auto shader = Shader::s_new(AX_NEW, "ImportedAssets/Shaders/core/simple3d_color.axShader");
@@ -81,11 +81,11 @@ DefaultRenderGraph::DefaultRenderGraph() {
 	_camera.setRotation(-30, 45);
 }
 
-void DefaultRenderGraph::onUpdate(RenderRequest* req) {
+void DemoRenderGraph::onUpdate(RenderRequest* req) {
 //	RenderTargetColorBufferDesc colorDesc{ColorType::RGBAf, RenderBufferLoadOp::Clear, Color4f(0, 0.5f, 0, 1)};
 }
 
-void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
+void DemoRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 #if 0
 	if (_testMaterial) {
 		Cmd_DrawCall cmd;
@@ -110,15 +110,13 @@ void DefaultRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs
 	if (_testMesh3dMaterial) {
 //		req->drawMesh(_testCube, _testMesh3dMaterial, 0);
 	}
-
-	req->drawUI();
 }
 
-void DefaultRenderGraph::onGBufferPass(RenderRequest* req, Span<Input> inputs) {
+void DemoRenderGraph::onGBufferPass(RenderRequest* req, Span<Input> inputs) {
 	// req.drawTexture(inputs[0]);
 }
 
-void DefaultRenderGraph::onLightingPass(RenderRequest* req, Span<Input> inputs) {
+void DemoRenderGraph::onLightingPass(RenderRequest* req, Span<Input> inputs) {
 	// req.drawTexture(inputs[0]);
 }
 

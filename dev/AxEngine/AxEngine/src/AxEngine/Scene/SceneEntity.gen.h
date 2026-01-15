@@ -22,18 +22,18 @@
 //------
 
 
-//--- Type AxEngine::TransformComponent ----------
+//--- Type AxEngine::CTransform ----------
 #define AX_GENERATED_BODY_LINE41() \
-	AX_RTTI_INFO(TransformComponent, SceneComponent) \
+	AX_RTTI_INFO(CTransform, SceneComponent) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
 	}; \
 //------
 
 
-//--- Type AxEngine::RenderMeshComponent ----------
+//--- Type AxEngine::CMeshRenderer ----------
 #define AX_GENERATED_BODY_LINE50() \
-	AX_RTTI_INFO(RenderMeshComponent, SceneComponent) \
+	AX_RTTI_INFO(CMeshRenderer, SceneComponent) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
 	}; \

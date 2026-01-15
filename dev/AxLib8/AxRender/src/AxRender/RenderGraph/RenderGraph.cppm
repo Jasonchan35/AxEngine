@@ -182,7 +182,7 @@ public:
 		_isBackBuffer = true;
 	}
 
-	void setRenderPass(RenderPass* pass);
+	void bindRenderPass(RenderPass* pass);
 };
 
 class RenderGraph : public RenderObject {
@@ -206,7 +206,7 @@ public:
 	void	setOutputPass(Pass& pass);
 	void	setFrameSize(Vec2i frameSize);
 
-	BackBufferPass& backBufferPass() { return _backBufferPass; }
+	BackBufferPass* backBufferPass() { return _backBufferPass.ptr(); }
 
 	virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) = 0;
 
@@ -233,7 +233,7 @@ private:
 		Array<Pass*>	_dependedPasses;
 	} _buildData;
 
-	BackBufferPass	_backBufferPass;
+	UPtr<BackBufferPass>	_backBufferPass;
 };
 
 AX_INLINE void RenderGraph_Pass::setDirty() {

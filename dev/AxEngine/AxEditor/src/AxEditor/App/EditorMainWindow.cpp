@@ -21,7 +21,6 @@ EditorMainWindow::EditorMainWindow() {
 		rc->loadImGuiIniFile();
 	}
 
-
 	_renderGraph.newObject(AX_NEW);
 	_renderGraph->win = this;
 	setRenderGraph(_renderGraph);
@@ -44,6 +43,7 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 		case UIMouseEventType::Wheel: {
 			cam.dolly(ev.wheelDelta.y * -0.05f);
 		} break;
+		default: break;
 	}
 }
 
@@ -52,6 +52,8 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 }
 
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
+	DemoRenderGraph::onBackBufferPass(req, inputs);
+	
 	if constexpr (true) {
 		auto& cam = _camera;
 		ImUIPanel	panel("camera");
@@ -65,7 +67,6 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 	}
 
 	win->_sceneOutlinerUIPanel.render(req);
-	DefaultRenderGraph::onBackBufferPass(req, inputs);
 }
 
 } //namespace

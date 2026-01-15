@@ -49,7 +49,6 @@ public:
 	AX_NODISCARD	ScissorRectScope	scissorRectScope()	{ return ScissorRectScope(this); }
 
 	void drawCall(Cmd_DrawCall& cmd);
-	void drawUI();
 
 	f64	uptime() const { return _uptime; }
 

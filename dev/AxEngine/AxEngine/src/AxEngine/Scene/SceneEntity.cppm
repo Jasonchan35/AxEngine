@@ -37,7 +37,7 @@ private:
 };
 
 AX_CLASS()
-class TransformComponent : public SceneComponent {
+class CTransform : public SceneComponent {
 	AX_GENERATED_BODY()
 	
 	AX_PROP() Vec3f position;
@@ -46,9 +46,10 @@ class TransformComponent : public SceneComponent {
 };
 
 AX_CLASS()
-class RenderMeshComponent : public SceneComponent {
+class CMeshRenderer : public SceneComponent {
 	AX_GENERATED_BODY()
 	
+	SPtr<MeshObject> mesh;
 };
 
 } // namespace

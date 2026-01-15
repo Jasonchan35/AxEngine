@@ -24,13 +24,13 @@ void RenderContext_Backend::onRender() {
 	auto* backBufferRenderPass = onAcquireBackBufferRenderPass(req);
 	if (!backBufferRenderPass) return;
 
-	auto& renderGraphBackPass = _renderGraph->backBufferPass();
+	auto* renderGraphBackPass = _renderGraph->backBufferPass();
 	if (auto* colorAtt0 = backBufferRenderPass->colorAttachment(0)) {
-		colorAtt0->desc = renderGraphBackPass.color0.desc();
+		colorAtt0->desc = renderGraphBackPass->color0.desc();
 	}
 
 	if (auto& depthAtt = backBufferRenderPass->depthAttachment()) {
-		depthAtt.desc = renderGraphBackPass.depthBuffer().desc();
+		depthAtt.desc = renderGraphBackPass->depthBuffer().desc();
 	}
 
 	req->frameBegin(this, backBufferRenderPass);

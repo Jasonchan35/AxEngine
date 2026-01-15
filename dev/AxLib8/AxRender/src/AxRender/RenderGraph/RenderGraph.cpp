@@ -60,6 +60,11 @@ void RenderGraph_Pass::_render(RenderRequest_Backend* req) {
 	if (_renderDelegate) {
 		_renderDelegate.invoke(req, _inputs);
 	}
+	
+	if (_isBackBuffer) {
+		req->drawUI_backend();
+	}
+
 	req->renderPassEnd(outPass);
 }
 
@@ -118,7 +123,7 @@ void RenderGraph::setFrameSize(Vec2i frameSize) {
 
 void RenderGraph::_render(RenderRequest_Backend* req) {
 	setFrameSize(req->frameSize());
-	_backBufferPass.setRenderPass(req->backBufferRenderPass());
+	_backBufferPass->bindRenderPass(req->backBufferRenderPass());
 
 	onUpdate(req);
 
@@ -161,7 +166,7 @@ bool RenderGraph::_rebuild() {
 	}
 
 // search depended on passes start from output pass
-	pending.emplaceBack(&_backBufferPass);
+	pending.emplaceBack(_backBufferPass.ptr());
 
 	while (pending.size()) {
 		auto* pass = pending.popBack();
@@ -244,12 +249,11 @@ bool RenderGraph::_rebuild() {
 	return true;
 }
 
-RenderGraph::RenderGraph() 
-: _backBufferPass(this, &RenderGraph::onBackBufferPass) 
-{
+RenderGraph::RenderGraph() {
+	_backBufferPass.newObject(AX_NEW, this, &RenderGraph::onBackBufferPass);
 }
 
-void RenderGraph_BackBufferPass::setRenderPass(RenderPass* pass) {
+void RenderGraph_BackBufferPass::bindRenderPass(RenderPass* pass) {
 	_renderPass = nullptr;
 	if (!pass) return;
 

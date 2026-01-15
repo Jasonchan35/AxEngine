@@ -48,6 +48,7 @@ protected:
 private:
 	void _createWindow(const CreateDesc& desc);
 	void _createSwapChain();
+	void _resizeBackBuffers();
 
 	class UIEventHandler : public NativeUIEventHandler_Win32 {
 		RenderContext_Dx12* _owner = nullptr;

@@ -14,14 +14,14 @@ AxEngine::SceneEntity::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 
-AxEngine::TransformComponent::MutRttiInit::MutRttiInit() {
+AxEngine::CTransform::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(3);
 	addField("position", &This::position);
 	addField("rotation", &This::rotation);
 	addField("scale", &This::scale);
 }; 
 
-AxEngine::RenderMeshComponent::MutRttiInit::MutRttiInit() {
+AxEngine::CMeshRenderer::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 

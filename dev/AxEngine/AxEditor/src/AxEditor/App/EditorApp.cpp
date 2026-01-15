@@ -71,7 +71,7 @@ void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
 
 void EditorApp::_createDemoScene() {
 	auto* entity = SceneEntity::s_new(AX_NEW, "test");
-	entity->addComponent<RenderMeshComponent>(AX_NEW);
+	entity->addComponent<CMeshRenderer>(AX_NEW);
 }
 
 } //namespace
