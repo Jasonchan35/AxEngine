@@ -64,6 +64,8 @@ private:
 	SceneEntity* _parent = nullptr;
 };
 
+class CMeshRendererSystem;
+
 AX_CLASS()
 class SceneWorld : public Object {
 	AX_GENERATED_BODY()
@@ -72,6 +74,8 @@ public:
 	
 	SceneWorld();
 	SceneEntity* root() { return _root.ptr(); }
+
+	UPtr<CMeshRendererSystem> _meshRendererSystem;
 	
 private:
 	SPtr<SceneEntity> _root;
@@ -81,7 +85,28 @@ AX_CLASS()
 class CMeshRenderer : public SceneComponent {
 	AX_GENERATED_BODY()
 public:	
+	CMeshRenderer();
+	virtual ~CMeshRenderer() override;
+
+	void onRender(RenderRequest* req);
+	
 	SPtr<MeshObject> mesh;
+	SPtr<Material> material;
+	
+	Int _systemSlotId;
+};
+
+AX_CLASS()
+class CMeshRendererSystem : public Object {
+	AX_GENERATED_BODY()
+public:
+	static CMeshRendererSystem* s_instance(bool createIfNone);
+	
+	void onRender(RenderRequest* req);
+	
+protected:
+	friend class CMeshRenderer;
+	Array<CMeshRenderer*> _componentList;
 };
 
 } // namespace

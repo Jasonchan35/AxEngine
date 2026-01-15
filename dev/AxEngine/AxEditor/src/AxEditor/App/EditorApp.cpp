@@ -70,13 +70,15 @@ void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
 }
 
 void EditorApp::_createDemoScene() {
+	auto* stockObjs = RenderStockObjects::s_instance();
+	
 	for (Int i = 0; i < 5; ++i) {
 		auto entity = SceneEntity::s_new(AX_NEW, nullptr, Fmt("test_{}", i));
-		
 		entity->transform.position = Vec3f(static_cast<f32>(i) * 2.0f, 0, 0);
-		
-		auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
-		meshRenderer->mesh = RenderStockObjects::s_instance()->meshes->cube;
+
+		auto* meshRenderer     = entity->addComponent<CMeshRenderer>(AX_NEW);
+		meshRenderer->mesh     = stockObjs->meshes->cube;
+		meshRenderer->material = stockObjs->materials->simple3d_color;
 		
 		for (Int j = 0; j < 3; ++j) {
 			SceneEntity::s_new(AX_NEW, entity, Fmt("child_{}.{}", i, j));

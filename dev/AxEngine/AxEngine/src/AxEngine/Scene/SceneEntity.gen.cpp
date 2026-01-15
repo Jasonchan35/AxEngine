@@ -22,3 +22,7 @@ AxEngine::CMeshRenderer::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 
+AxEngine::CMeshRendererSystem::MutRttiInit::MutRttiInit() {
+	ownFields.ensureCapacity(0);
+}; 
+

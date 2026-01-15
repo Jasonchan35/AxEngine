@@ -9,5 +9,6 @@ void registerTypes() {
 	mgr->addType<AxEngine::SceneEntity                   >();
 	mgr->addType<AxEngine::SceneWorld                    >();
 	mgr->addType<AxEngine::CMeshRenderer                 >();
+	mgr->addType<AxEngine::CMeshRendererSystem           >();
 }
 

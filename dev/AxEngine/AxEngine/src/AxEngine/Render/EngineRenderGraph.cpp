@@ -21,6 +21,12 @@ void EngineRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs)
 	Base::onBackBufferPass(req, inputs);
 	req->drawMesh(_grid, _mat_simple3d_color, 0);
 	req->drawMesh(_axis, _mat_simple3d_color, 0);
+	
+	if (auto* world = SceneWorld::s_instance()) {
+		if (auto* meshRenderer = world->_meshRendererSystem.ptr()) {
+			meshRenderer->onRender(req);
+		}
+	}
 }
 
 } // namespace
