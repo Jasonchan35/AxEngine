@@ -6,5 +6,5 @@ export import AxImUI;
 
 export namespace AxEditor {
 	using namespace AxEngine;
-	using namespace AxUI;
+	using namespace ax;
 } // namespace

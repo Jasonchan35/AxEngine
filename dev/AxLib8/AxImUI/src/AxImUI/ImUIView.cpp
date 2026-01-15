@@ -2,7 +2,7 @@ module;
 module AxImUI;
 import :ImUIView;
 
-namespace AxUI {
+namespace ax {
 
 void ImUIView::setSize(const Vec2f& s)				{ onSetSize(s); }
 void ImUIView::onSetSize(const Vec2f& s)			{ onSizeChanged(s); }

@@ -2,7 +2,7 @@ module;
 export module AxImUI:ImUIApp;
 export import :Common;
 
-export namespace AxUI {
+export namespace ax {
 
 struct ImuiApp_CreateDesc : public NativeUIApp_CreateDesc {
 	RenderSystem::CreateDesc	renderSystemDesc;

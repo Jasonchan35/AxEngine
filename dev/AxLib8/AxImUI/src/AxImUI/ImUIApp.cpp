@@ -1,7 +1,7 @@
 module AxImUI;
 import :ImUIApp;
 
-namespace AxUI {
+namespace ax {
 
 void ImUIApp::onCreate() {
 	Base::onCreate();

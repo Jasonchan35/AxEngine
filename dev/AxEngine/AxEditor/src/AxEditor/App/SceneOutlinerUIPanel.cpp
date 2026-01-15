@@ -24,7 +24,7 @@ void SceneOutlinerUIPanel::_addNode(SceneEntity* p) {
 	flags.selected = p->editor.selected;
 	
 	ImUITreeNode node(p->name(), flags);
-	if (IsItemClicked()) {
+	if (ImUI::IsItemClicked()) {
 		p->editor.selected = !p->editor.selected; 
 	}
 	p->editor.treeNodeIsOpen = node.isOpen();

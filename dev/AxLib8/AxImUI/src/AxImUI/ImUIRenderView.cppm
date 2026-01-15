@@ -2,7 +2,7 @@ module;
 export module AxImUI:ImUIRenderView;
 export import :ImUIView;
 
-export namespace AxUI {
+export namespace ax {
 
 class ImUIRenderView : public ImUIView {
 	AX_RTTI_INFO(ImUIRenderView, ImUIView)

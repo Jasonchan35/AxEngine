@@ -112,10 +112,6 @@ public:
 private:
 };
 
-
-class axUITextMesh;
-class axUITextBlock;
-
 class FontFace : public RenderObject {
 	AX_RTTI_INFO(FontFace, RenderObject)
 public:

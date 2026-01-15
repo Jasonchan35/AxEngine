@@ -1,7 +1,7 @@
 module AxImUI;
 import :ImUIRenderView;
 
-namespace AxUI {
+namespace ax {
 
 void ImUIRenderView::createRenderContext(RenderContext::CreateDesc& desc) {
 	_renderContext = RenderContext::s_new(AX_NEW, desc);

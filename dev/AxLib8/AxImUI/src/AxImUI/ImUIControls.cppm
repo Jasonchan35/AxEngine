@@ -3,70 +3,72 @@ module;
 export module AxImUI:ImUIControls;
 export import :Common; 
 
-export namespace AxUI {
-	constexpr const char* mixedValueFormat = "--";
-	constexpr const char* floatFormat = "%0.3f";
-	constexpr bool showMixedValue = false;
+export namespace ax::ImUI {
 
-	void ImUILabelText(ZStrView label, ZStrView text);
+constexpr const char* mixedValueFormat = "--";
+constexpr const char* floatFormat = "%0.3f";
+constexpr bool showMixedValue = false;
 
-	bool ImUIDragFloat(
-			ZStrView label, 
-			float* v, 
-			float v_speed = 0.1f, 
-			float v_min = f32_min,
-			float v_max = f32_max);
+bool IsItemClicked();
+bool IsKeyShift();
+bool IsKeyAlt();
+bool IsKeyCtrl();
 
-	float ImUIInputFloat(ZStrView label, float* v);
+} // namespace
 
-	class ImUIPanel : public NonCopyable {
-	public:
-		AX_NODISCARD ImUIPanel(ZStrView name, bool* pOpen = nullptr);
-		~ImUIPanel();
-	};
+export namespace ax {
 
-	struct ImUITreeNodeFlags {
-		ImUITreeNodeFlags() 
-		: open(false)
-		, hasChild(false)
-		, selected(false) 
-		{}
-		bool open     : 1;
-		bool hasChild : 1;
-		bool selected : 1;
-	};
+void ImUILabelText(ZStrView label, ZStrView text);
+bool ImUIDragFloat(
+		ZStrView label, 
+		float* v, 
+		float v_speed = 0.1f, 
+		float v_min = f32_min,
+		float v_max = f32_max);
 
-	class ImUITreeNode : public NonCopyable {
-	public:
-		ImUITreeNode(ZStrView label, ImUITreeNodeFlags flags = {});
-		~ImUITreeNode();
+float ImUIInputFloat(ZStrView label, float* v);
 
-		bool isOpen() const { return _isOpen; }
+class ImUIPanel : public NonCopyable {
+public:
+	AX_NODISCARD ImUIPanel(ZStrView name, bool* pOpen = nullptr);
+	~ImUIPanel();
+};
 
-	private:
-		bool  _isOpen = true;
-	};
+struct ImUITreeNodeFlags {
+	ImUITreeNodeFlags() 
+	: open(false)
+	, hasChild(false)
+	, selected(false) 
+	{}
+	bool open     : 1;
+	bool hasChild : 1;
+	bool selected : 1;
+};
 
-	class ImUICollapsingHeader : public NonCopyable {
-	public:
-		ImUICollapsingHeader(ZStrView label);
+class ImUITreeNode : public NonCopyable {
+public:
+	ImUITreeNode(ZStrView label, ImUITreeNodeFlags flags = {});
+	~ImUITreeNode();
 
-	private:
-		bool _visiable = true;
-	};
+	bool isOpen() const { return _isOpen; }
 
-	class ImUIPushID : public NonCopyable {
-	public:
-		ImUIPushID(const void* id);
-		ImUIPushID(int id);
-		~ImUIPushID();
-	};
+private:
+	bool  _isOpen = true;
+};
 
-	bool IsItemClicked();
+class ImUICollapsingHeader : public NonCopyable {
+public:
+	ImUICollapsingHeader(ZStrView label);
 
-	bool IsKeyShift();
-	bool IsKeyAlt();
-	bool IsKeyCtrl();
+private:
+	bool _visiable = true;
+};
 
+class ImUIPushID : public NonCopyable {
+public:
+	ImUIPushID(const void* id);
+	ImUIPushID(int id);
+	~ImUIPushID();
+};
 
 } // namespace

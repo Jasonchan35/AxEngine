@@ -3,18 +3,35 @@ module;
 module AxImUI;
 import :ImUIControls;
 
-namespace AxUI {
+namespace ax::ImUI {
+	bool IsItemClicked()	{ return ::ImGui::IsItemClicked(); }
+	bool IsKeyShift()		{ return ::ImGui::GetIO().KeyShift; }
+	bool IsKeyAlt()			{ return ::ImGui::GetIO().KeyAlt; }
+	bool IsKeyCtrl()		{ return ::ImGui::GetIO().KeyCtrl; }
+}
+
+namespace ax {
 
 void ImUILabelText(ZStrView label, ZStrView text) {
 	return ::ImGui::LabelText(label.c_str(), "%s", text.c_str());
 }
 
 bool ImUIDragFloat(ZStrView label, float* v, float v_speed, float v_min, float v_max) {
-	return ::ImGui::DragFloat(label.c_str(), v, v_speed, v_min, v_max, showMixedValue ? mixedValueFormat : floatFormat);
+	return ::ImGui::DragFloat(label.c_str(),
+	                          v,
+	                          v_speed,
+	                          v_min,
+	                          v_max,
+	                          ImUI::showMixedValue ? ImUI::mixedValueFormat : ImUI::floatFormat);
 }
 
 float ImUIInputFloat(ZStrView label, float* v) {
-	return ::ImGui::InputFloat(label.c_str(), v, 0, 0, showMixedValue ? mixedValueFormat : floatFormat, ImGuiInputTextFlags_EnterReturnsTrue);
+	return ::ImGui::InputFloat(label.c_str(),
+	                           v,
+	                           0,
+	                           0,
+	                           ImUI::showMixedValue ? ImUI::mixedValueFormat : ImUI::floatFormat,
+	                           ImGuiInputTextFlags_EnterReturnsTrue);
 }
 
 ImUIPanel::ImUIPanel(ZStrView name, bool* pOpen) {
@@ -40,11 +57,6 @@ ImUITreeNode::~ImUITreeNode() {
 }
 
 ImUICollapsingHeader::ImUICollapsingHeader(ZStrView label) { ImGui::CollapsingHeader(label.c_str(), &_visiable); }
-
-bool IsItemClicked()	{ return ::ImGui::IsItemClicked(); }
-bool IsKeyShift()		{ return ::ImGui::GetIO().KeyShift; }
-bool IsKeyAlt()			{ return ::ImGui::GetIO().KeyAlt; }
-bool IsKeyCtrl()		{ return ::ImGui::GetIO().KeyCtrl; }
 
 ImUIPushID::~ImUIPushID() { ImGui::PopID(); }
 ImUIPushID::ImUIPushID(const void* id) { ImGui::PushID(id); }
