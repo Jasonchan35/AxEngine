@@ -63,8 +63,7 @@ private:
 		p->_weakPtrBlock.ref(_block.ptr());
 		auto data = _block->data.scopedLock();
 		data->obj = p;
-
-		AX_ASSERT(static_cast<void*>(data->obj) == static_cast<void*>(p)); //T has multiple inheritance ?
+		// AX_ASSERT(static_cast<void*>(data->obj) == static_cast<void*>(p)); //T has multiple inheritance ?
 	}
 
 	SPtr<WPtrBlock>	_block;

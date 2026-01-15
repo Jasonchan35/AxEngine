@@ -33,6 +33,7 @@ SceneWorld::SceneWorld() {
 void SceneWorld::Selection::select(SceneEntity* entity) {
 	deselectAll();
 	entity->editor.selected = true;
+	_selectedEntities.emplaceBack(entity);
 }
 
 void SceneWorld::Selection::deselectAll() {
