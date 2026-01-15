@@ -14,6 +14,10 @@ AxEngine::SceneEntity::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 
+AxEngine::SceneWorld::MutRttiInit::MutRttiInit() {
+	ownFields.ensureCapacity(0);
+}; 
+
 AxEngine::CTransform::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(3);
 	addField("position", &This::position);

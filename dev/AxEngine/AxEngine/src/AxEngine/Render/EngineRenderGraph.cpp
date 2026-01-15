@@ -4,6 +4,8 @@ import :EngineRenderGraph;
 namespace AxEngine {
 
 EngineRenderGraph::EngineRenderGraph() {
+	_viewportCamera.setRotation(-30, 45);
+	
 	auto* stockObjs = RenderStockObjects::s_instance();
 	
 	RenderMeshEdit(_grid).createGrid(RenderPlaneAxis::ZX, Vertex_PosColor::s_layout(), 1, 50);

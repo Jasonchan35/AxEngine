@@ -25,9 +25,20 @@ export namespace AxUI {
 		~ImUIPanel();
 	};
 
+	struct ImUITreeNodeFlags {
+		ImUITreeNodeFlags() 
+		: open(false)
+		, hasChild(false)
+		, selected(false) 
+		{}
+		bool open     : 1;
+		bool hasChild : 1;
+		bool selected : 1;
+	};
+
 	class ImUITreeNode : public NonCopyable {
 	public:
-		ImUITreeNode(ZStrView label);
+		ImUITreeNode(ZStrView label, ImUITreeNodeFlags flags = {});
 		~ImUITreeNode();
 
 		bool isOpen() const { return _isOpen; }

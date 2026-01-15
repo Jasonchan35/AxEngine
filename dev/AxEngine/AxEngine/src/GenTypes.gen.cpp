@@ -5,6 +5,7 @@ void registerTypes() {
 	auto* mgr = AxEngine::ObjectManager::s_instance();
 	mgr->addType<AxEngine::SceneComponent                >();
 	mgr->addType<AxEngine::SceneEntity                   >();
+	mgr->addType<AxEngine::SceneWorld                    >();
 	mgr->addType<AxEngine::CTransform                    >();
 	mgr->addType<AxEngine::CMeshRenderer                 >();
 }

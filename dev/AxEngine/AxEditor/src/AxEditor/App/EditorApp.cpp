@@ -70,8 +70,15 @@ void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
 }
 
 void EditorApp::_createDemoScene() {
-	auto* entity = SceneEntity::s_new(AX_NEW, "test");
-	entity->addComponent<CMeshRenderer>(AX_NEW);
+	for (Int i = 0; i < 5; ++i) {
+		auto* entity = SceneEntity::s_new(AX_NEW, nullptr, Fmt("test_{}", i));
+		auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
+		meshRenderer->mesh = RenderStockObjects::s_instance()->meshes->cube;
+		
+		for (Int j = 0; j < 3; ++j) {
+			SceneEntity::s_new(AX_NEW, entity, Fmt("child_{}.{}", i, j));
+		}
+	}
 }
 
 } //namespace

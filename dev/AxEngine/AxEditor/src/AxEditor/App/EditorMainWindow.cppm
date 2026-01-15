@@ -32,6 +32,7 @@ protected:
 	SceneOutlinerUIPanel _sceneOutlinerUIPanel;
 	
 	SPtr<MyRenderGraph>	_renderGraph;
+	SceneWorld	_sceneWorld;
 };
 
 } //namespace

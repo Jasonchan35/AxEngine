@@ -3,6 +3,7 @@
 #include "MetaType_MACRO.h"
 
 #define AX_RTTI_INFO(T, BASE) \
+private: \
 	AX_TYPE_INFO(T, BASE) \
 public: \
 	static  Rtti* s_rtti ()				{ return rttiOf<T>(); } \

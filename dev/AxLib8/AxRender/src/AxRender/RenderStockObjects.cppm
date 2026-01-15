@@ -11,7 +11,6 @@ export namespace ax /*::AxRender*/ {
 	E(Error,) \
 	AX_RenderStockTextureId_SolidColor_ENUM_LIST(E) \
 //----
-
 AX_ENUM_CLASS(AX_RenderStockTextureId_ENUM_LIST, RenderStockTextureId, u8)
 
 class RenderStockObjects : public NonCopyable {

@@ -24,9 +24,15 @@ ImUIPanel::ImUIPanel(ZStrView name, bool* pOpen) {
 
 ImUIPanel::~ImUIPanel() { ImGui::End(); }
 
-ImUITreeNode::ImUITreeNode(ZStrView label) {
-	ImGuiTreeNodeFlags flags = 0;
-	_isOpen = ::ImGui::TreeNodeEx(label.c_str(), flags); 
+ImUITreeNode::ImUITreeNode(ZStrView label, ImUITreeNodeFlags flags) {
+	ImGuiTreeNodeFlags outFlags = ImGuiTreeNodeFlags_DrawLinesFull 
+								| ImGuiTreeNodeFlags_SpanFullWidth;
+
+	if (!flags.hasChild) outFlags |= ImGuiTreeNodeFlags_Leaf;
+	if (flags.open     ) outFlags |= ImGuiTreeNodeFlags_DefaultOpen;
+	if (flags.selected ) outFlags |= ImGuiTreeNodeFlags_Selected;
+	
+	_isOpen = ::ImGui::TreeNodeEx(label.c_str(), outFlags); 
 }
 
 ImUITreeNode::~ImUITreeNode() {

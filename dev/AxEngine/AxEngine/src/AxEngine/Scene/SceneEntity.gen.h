@@ -5,7 +5,7 @@
 
 
 //--- Type AxEngine::SceneComponent ----------
-#define AX_GENERATED_BODY_LINE12() \
+#define AX_GENERATED_BODY_LINE14() \
 	AX_RTTI_INFO(SceneComponent, Object) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
@@ -14,7 +14,7 @@
 
 
 //--- Type AxEngine::SceneEntity ----------
-#define AX_GENERATED_BODY_LINE17() \
+#define AX_GENERATED_BODY_LINE19() \
 	AX_RTTI_INFO(SceneEntity, Object) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
@@ -22,8 +22,17 @@
 //------
 
 
+//--- Type AxEngine::SceneWorld ----------
+#define AX_GENERATED_BODY_LINE69() \
+	AX_RTTI_INFO(SceneWorld, Object) \
+	struct MutRttiInit : public MutRtti { \
+		MutRttiInit();\
+	}; \
+//------
+
+
 //--- Type AxEngine::CTransform ----------
-#define AX_GENERATED_BODY_LINE41() \
+#define AX_GENERATED_BODY_LINE82() \
 	AX_RTTI_INFO(CTransform, SceneComponent) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
@@ -32,7 +41,7 @@
 
 
 //--- Type AxEngine::CMeshRenderer ----------
-#define AX_GENERATED_BODY_LINE50() \
+#define AX_GENERATED_BODY_LINE91() \
 	AX_RTTI_INFO(CMeshRenderer, SceneComponent) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
