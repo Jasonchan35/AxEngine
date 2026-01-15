@@ -155,6 +155,9 @@ inline
 VkFormat AX_VkUtil::getVkColorType(ColorType type) {
 	using SRC = ColorType;
 	switch (type) {
+		case SRC::R10G10B10A2:	return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+		case SRC::R11G11B10:	return VK_FORMAT_B10G11R11_UFLOAT_PACK32;
+		//----
 		case SRC::HSVAf:	return VK_FORMAT_R32G32B32A32_SFLOAT;
 		case SRC::RGBAf:	return VK_FORMAT_R32G32B32A32_SFLOAT;
 		case SRC::RGBAh:	return VK_FORMAT_R16G16B16A16_SFLOAT;

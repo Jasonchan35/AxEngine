@@ -150,6 +150,9 @@ constexpr StrView Dx12Util::errorToStrView(ID3DBlob* blob) {
 constexpr DXGI_FORMAT Dx12Util::getDxColorType(ColorType type) {
 	using SRC = ColorType;
 	switch (type) {
+		case SRC::R11G11B10:	return DXGI_FORMAT_R11G11B10_FLOAT;
+		case SRC::R10G10B10A2:	return DXGI_FORMAT_R10G10B10A2_UNORM;
+//----		
 		case SRC::HSVAf: 	return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case SRC::RGBAf: 	return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case SRC::RGBAh: 	return DXGI_FORMAT_R16G16B16A16_FLOAT;

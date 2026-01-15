@@ -17,6 +17,7 @@ public:
 
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) = 0;
 	virtual void onPresentSurface(RenderRequest* req) = 0;
+	virtual void onCreateSwapChain() = 0; 
 
 	virtual void onPostCreate(const CreateDesc& desc) override;
 	virtual void onNativeUIMouseEvent(NativeUIMouseEvent& ev) override;

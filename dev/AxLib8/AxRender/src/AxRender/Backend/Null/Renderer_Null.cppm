@@ -23,7 +23,6 @@ public:
 	AX_RenderSystem_FunctionInterfaces(Null, override)
 };
 
-
 class GpuBuffer_Null : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_Null, GpuBuffer_Backend)
 public:
@@ -133,6 +132,7 @@ protected:
 	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return TagZero; }
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override { return nullptr; }
 	virtual void	onPresentSurface(RenderRequest* req) override {}
+	virtual void	onCreateSwapChain() override {}
 };
 
 class RenderObjectManager_Null : public RenderObjectManager_Backend {

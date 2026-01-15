@@ -13,6 +13,7 @@ RenderContext_Backend::RenderContext_Backend(const CreateDesc& desc)
 
 void RenderContext_Backend::onPostCreate(const CreateDesc& desc) {
 	imgui.create();
+	onCreateSwapChain();
 	Base::onPostCreate(desc);
 }
 
@@ -21,16 +22,25 @@ void RenderContext_Backend::onRender() {
 
 	auto* req = renderSystem->nextRenderRequest();
 
+	auto* renderGraphBackPass = _renderGraph->backBufferPass();
+	auto& colorDesc = renderGraphBackPass->color0.desc();
+	auto& depthDesc = renderGraphBackPass->depthBuffer().desc();
+	
+	if (_swapChainDesc.colorDesc != colorDesc || _swapChainDesc.depthDesc != depthDesc) {
+		_swapChainDesc.colorDesc = colorDesc;
+		_swapChainDesc.depthDesc = depthDesc;
+		onCreateSwapChain();
+	}
+	
 	auto* backBufferRenderPass = onAcquireBackBufferRenderPass(req);
 	if (!backBufferRenderPass) return;
 
-	auto* renderGraphBackPass = _renderGraph->backBufferPass();
 	if (auto* colorAtt0 = backBufferRenderPass->colorAttachment(0)) {
-		colorAtt0->desc = renderGraphBackPass->color0.desc();
+		colorAtt0->desc = colorDesc;
 	}
 
 	if (auto& depthAtt = backBufferRenderPass->depthAttachment()) {
-		depthAtt.desc = renderGraphBackPass->depthBuffer().desc();
+		depthAtt.desc = depthDesc;
 	}
 
 	req->frameBegin(this, backBufferRenderPass);

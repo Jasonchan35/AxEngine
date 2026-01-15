@@ -39,8 +39,10 @@ protected:
 	}
 
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override;
-	virtual void                onPresentSurface(RenderRequest* req_) override;
-
+	
+	virtual void onPresentSurface(RenderRequest* req_) override;
+	virtual void onCreateSwapChain() override; 
+	
 	virtual void onPostCreate(const CreateDesc& desc) override;
 	virtual void onSetFrameSize(const Vec2i& s) override;
 	virtual void onSetRenderNeeded() override;

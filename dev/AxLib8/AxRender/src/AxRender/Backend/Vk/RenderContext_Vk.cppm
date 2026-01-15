@@ -40,6 +40,7 @@ protected:
 	void _createBackBuffers(AX_VkDevice& dev, Vec2i frameSize);
 	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override;
 	virtual void onPresentSurface(RenderRequest* req) override;
+	virtual void onCreateSwapChain() override;
 	virtual void onPostCreate(const CreateDesc& desc) override;
 	
 	AX_VkSurfaceKHR		_surface_vk;

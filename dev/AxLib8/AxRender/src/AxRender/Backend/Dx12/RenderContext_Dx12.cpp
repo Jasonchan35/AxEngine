@@ -23,11 +23,13 @@ void RenderContext_Dx12::_createSwapChain() {
 	_graphCmdQueue.create(dev);
 	_computeCmdQueue.create(dev);
 
+	ColorType colorType = _swapChainDesc.colorDesc.colorType;
+	
 	{	// create swap chain
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 		swapChainDesc.Width                 = ax_safe_cast_from(frameSize.x);
 		swapChainDesc.Height                = ax_safe_cast_from(frameSize.y);
-		swapChainDesc.Format                = DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapChainDesc.Format                = Dx12Util::getDxColorType(colorType);
 		swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.BufferCount           = ax_safe_cast_from(_swapChainDesc.backBufferCount);
 		swapChainDesc.SampleDesc.Count      = 1;
@@ -40,12 +42,12 @@ void RenderContext_Dx12::_createSwapChain() {
 		_swapChain_dx12.create(_graphCmdQueue, _hwnd, swapChainDesc);
 	}
 
-	RenderDepthType depthType = _swapChainDesc.depthAttachmentDesc.depthType;
+	RenderDepthType depthType = _swapChainDesc.depthDesc.depthType;
 	if (depthType != RenderDepthType::None) {
 		RenderPassDepthBuffer_CreateDesc depthBuf_createDesc;
 		depthBuf_createDesc.name      = Fmt("BackBuffer-depth");
 		depthBuf_createDesc.frameSize = frameSize;
-		depthBuf_createDesc.depthType = _swapChainDesc.depthAttachmentDesc.depthType;
+		depthBuf_createDesc.depthType = _swapChainDesc.depthDesc.depthType;
 		_depthBuffer_dx12             = RenderPassDepthBuffer_Backend::s_new(AX_NEW, depthBuf_createDesc);
 	}
 	
@@ -61,7 +63,7 @@ void RenderContext_Dx12::_createBackBuffers() {
 	RenderPassDepthBuffer_CreateDesc depthBuf_createDesc;
 	depthBuf_createDesc.name = Fmt("BackBuffer-depth");
 	depthBuf_createDesc.frameSize = frameSize;
-	depthBuf_createDesc.depthType = _swapChainDesc.depthAttachmentDesc.depthType;
+	depthBuf_createDesc.depthType = _swapChainDesc.depthDesc.depthType;
 	
 	_depthBuffer_dx12 = RenderPassDepthBuffer_Backend::s_new(AX_NEW, depthBuf_createDesc); 
 
@@ -79,22 +81,22 @@ void RenderContext_Dx12::_createBackBuffers() {
 
 void RenderContext_Dx12::BackBuffer_Dx12::createOrUpdate(RenderContext_Dx12* renderContext, Int index, Vec2i frameSize) {
 	_index = index;
-	auto& colorBufferAttachment = renderContext->_swapChainDesc.colorAttachmentDesc;
-	auto& depthBufferAttachment = renderContext->_swapChainDesc.depthAttachmentDesc;
+	auto& colorDesc = renderContext->_swapChainDesc.colorDesc;
+	auto& depthDesc = renderContext->_swapChainDesc.depthDesc;
 
 	RenderPassColorBuffer_CreateDesc	colorBuf_createDesc;
 	colorBuf_createDesc.name = FmtName("BackBuffer_{}-color", index);
 	colorBuf_createDesc.frameSize = frameSize;
 	colorBuf_createDesc.fromBackBuffer.set(renderContext, index);
-	colorBuf_createDesc.colorType = colorBufferAttachment.colorType;
+	colorBuf_createDesc.colorType = colorDesc.colorType;
 	
 	_colorBuf_dx12 = RenderPassColorBuffer_Backend::s_new(AX_NEW, colorBuf_createDesc);
 
 	RenderPass_CreateDesc renderPass_createDesc;
 	renderPass_createDesc.name = FmtName("BackBuffer_{}", index);
 	renderPass_createDesc.fromBackBuffer.set(renderContext, index);
-	renderPass_createDesc.colorAttachmentDescs.emplaceBack(colorBufferAttachment);
-	renderPass_createDesc.depthAttachmentDesc = depthBufferAttachment;
+	renderPass_createDesc.colorAttachmentDescs.emplaceBack(colorDesc);
+	renderPass_createDesc.depthAttachmentDesc = depthDesc;
 	renderPass_createDesc.frameSize   = frameSize;
 
 	_renderPass_dx12 = RenderPass_Backend::s_new(AX_NEW, renderPass_createDesc);
@@ -125,10 +127,12 @@ void RenderContext_Dx12::onPostCreate(const CreateDesc& desc) {
 	::SetTimer(_hwnd, kRenderTimerId, 0, nullptr);
 #endif
 
-	_createSwapChain();
+//	_createSwapChain();
 }
 
 void RenderContext_Dx12::_resizeBackBuffers() {
+	if (!_swapChain_dx12) return;
+	
 	RenderSystem_Backend::s_instance()->waitAllRenderCompleted();
 	
 	// release resource before resize swap chain
@@ -212,6 +216,10 @@ void RenderContext_Dx12::onPresentSurface(RenderRequest* req_) {
 	
 	_swapChain_dx12.present(_swapChainDesc.vsync ? 1 : 0, 0);
 	req->signalFence(_graphCmdQueue);
+}
+
+void RenderContext_Dx12::onCreateSwapChain() {
+	_createSwapChain();
 }
 
 void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {
