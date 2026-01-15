@@ -18,13 +18,6 @@ AxEngine::SceneWorld::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 
-AxEngine::CTransform::MutRttiInit::MutRttiInit() {
-	ownFields.ensureCapacity(3);
-	addField("position", &This::position);
-	addField("rotation", &This::rotation);
-	addField("scale", &This::scale);
-}; 
-
 AxEngine::CMeshRenderer::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 

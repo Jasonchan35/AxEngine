@@ -6,7 +6,7 @@ namespace AxEngine {
 SceneWorld* SceneWorld_instance = nullptr;
 
 SceneEntity::SceneEntity(const CreateDesc& desc) {
-	_name = desc.name;
+	setName(desc.name);
 	_parent = desc.parent;
 	if (!_parent) {
 		_parent = SceneWorld_instance->root();
@@ -28,31 +28,6 @@ SceneWorld* SceneWorld::s_instance() {
 SceneWorld::SceneWorld() {
 	SceneWorld_instance = this;
 	_root.ref(SceneEntity::s_new(AX_NEW, nullptr, "root"));
-}
-
-void SceneWorld::Selection::select(SceneEntity* entity) {
-	deselectAll();
-	entity->editor.selected = true;
-	_selectedEntities.emplaceBack(entity);
-}
-
-void SceneWorld::Selection::deselectAll() {
-	for (auto& p : _selectedEntities) {
-		if (auto sp = p.getSPtr()) {
-			sp->editor.selected = false;
-		}
-	}
-	_selectedEntities.clear();
-}
-
-void SceneWorld::Selection::getSelection(Array<SPtr<SceneEntity>> outList) {
-	outList.clear();
-	outList.ensureCapacity(_selectedEntities.size());
-	for (auto& p : _selectedEntities) {
-		if (auto sp = p.getSPtr()) {
-			outList.emplaceBack(std::move(sp));
-		}
-	}
 }
 
 }

@@ -38,30 +38,27 @@ public:
 		return comp;
 	}
 	
-	const String& name() const { return _name; }
+	SceneWorld* world() { return _world; }
 	
 	Int childCount() const { return _children.size(); }
 	SceneEntity* childAt(Int index) { return _children[index].ptr(); }
-	SceneEntity* operator[](Int index) { return _children[index].ptr(); }
+
+	Int componentCount() const { return _components.size(); }
+	SceneComponent* componentAt(Int index) { return _components[index].ptr(); }
+
+	struct Transform {
+		Vec3f position{0,0,0};
+		Vec3f rotation{0,0,0};
+		Vec3f scale{1,1,1};
+	};
 	
-	struct Editor {
-		Editor() 
-		: selected(false)
-		, treeNodeIsOpen(true) 
-		{}
-		bool selected       : 1;
-		bool treeNodeIsOpen : 1;
-	} editor;
-	
-	SceneWorld* world() { return _world; }
+	Transform transform;
 	
 protected:
 	friend class SceneWorld;
 	SceneWorld* _world = nullptr;
 	
 private:
-	String _name;
-	
 	Array<SPtr<SceneComponent>> _components;
 	Array<SPtr<SceneEntity>> _children;
 	SceneEntity* _parent = nullptr;
@@ -76,27 +73,8 @@ public:
 	SceneWorld();
 	SceneEntity* root() { return _root.ptr(); }
 	
-	struct Selection {
-		void select(SceneEntity* entity);
-		void deselectAll();
-		
-		void getSelection(Array<SPtr<SceneEntity>> outList);
-		
-	private:
-		Array<WPtr<SceneEntity>> _selectedEntities;
-	} selection;
-
 private:
 	SPtr<SceneEntity> _root;
-};
-
-AX_CLASS()
-class CTransform : public SceneComponent {
-	AX_GENERATED_BODY()
-	
-	AX_PROP() Vec3f position;
-	AX_PROP() Vec3f rotation;
-	AX_PROP() Vec3f scale;
 };
 
 AX_CLASS()

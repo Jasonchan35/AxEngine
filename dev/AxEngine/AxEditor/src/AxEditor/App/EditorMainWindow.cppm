@@ -3,6 +3,7 @@ module;
 export module AxEditor:EditorMainWindow;
 export import :EditorWindow;
 export import :SceneOutlinerUIPanel;
+export import :InspectorUIPanel;
 
 export namespace AxEditor {
 
@@ -30,6 +31,7 @@ protected:
 	};
 
 	SceneOutlinerUIPanel _sceneOutlinerUIPanel;
+	InspectorUIPanel _inspectorUIPanel;
 	
 	SPtr<MyRenderGraph>	_renderGraph;
 	SceneWorld	_sceneWorld;

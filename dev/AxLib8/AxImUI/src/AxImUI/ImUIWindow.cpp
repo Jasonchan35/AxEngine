@@ -44,7 +44,7 @@ ImUIWindow::ImUIWindow() {
 	{
 		NativeUIWindow_CreateDesc desc;
 		desc.isMainWindow = true;
-		desc.rect = Rect2f(100, 100, 1920, 1080) / 2;
+		desc.rect = Rect2f(100, 100, 1920, 1080); // * 0.5f;
 	//	desc.visible = false;
 		_nativeWin = UPtr_new<NativeWin>(AX_NEW, this, desc);
 	}

@@ -42,8 +42,10 @@ ImUIPanel::ImUIPanel(ZStrView name, bool* pOpen) {
 ImUIPanel::~ImUIPanel() { ImGui::End(); }
 
 ImUITreeNode::ImUITreeNode(ZStrView label, ImUITreeNodeFlags flags) {
-	ImGuiTreeNodeFlags outFlags = ImGuiTreeNodeFlags_DrawLinesFull 
-								| ImGuiTreeNodeFlags_SpanFullWidth;
+	ImGuiTreeNodeFlags outFlags = ImGuiTreeNodeFlags_DrawLinesFull
+	                              | ImGuiTreeNodeFlags_OpenOnArrow
+	                              | ImGuiTreeNodeFlags_OpenOnDoubleClick
+	                              | ImGuiTreeNodeFlags_SpanFullWidth;
 
 	if (!flags.hasChild) outFlags |= ImGuiTreeNodeFlags_Leaf;
 	if (flags.open     ) outFlags |= ImGuiTreeNodeFlags_DefaultOpen;

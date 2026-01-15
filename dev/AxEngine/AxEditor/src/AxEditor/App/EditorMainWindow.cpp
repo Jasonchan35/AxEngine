@@ -67,6 +67,7 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 	}
 
 	win->_sceneOutlinerUIPanel.render(req);
+	win->_inspectorUIPanel.render(req);
 }
 
 } //namespace

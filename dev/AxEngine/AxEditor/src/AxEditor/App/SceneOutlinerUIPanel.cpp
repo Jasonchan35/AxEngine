@@ -25,10 +25,11 @@ void SceneOutlinerUIPanel::_addNode(SceneEntity* p) {
 	
 	ImUITreeNode node(p->name(), flags);
 	if (ImUI::IsItemClicked()) {
-		SceneWorld::s_instance()->selection.select(p);
+		ObjectManager::s_instance()->selection.select(p);
 	}
-	p->editor.treeNodeIsOpen = node.isOpen();
 	
+	p->editor.treeNodeIsOpen = node.isOpen();
+
 	if (node.isOpen()) {
 		for (Int i = 0; i < childCount; ++i) {
 			_addNode(p->childAt(i));

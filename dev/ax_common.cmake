@@ -21,7 +21,6 @@ function(ax_cpp_header_tool target path)
 		COMMAND ${CMAKE_COMMAND} -E echo "---- End ${target}_CppHeaderTool ----"
 		WORKING_DIRECTORY ${path}
 	)
-	add_dependencies(${target}_CppHeaderTool "AxCppHeaderTool")
 	add_dependencies(${target} ${target}_CppHeaderTool)
 endfunction()
 

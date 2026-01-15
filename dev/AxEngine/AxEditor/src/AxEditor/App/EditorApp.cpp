@@ -72,6 +72,9 @@ void EditorApp::_onFileChanged(FileDirWatcher_Result& result) {
 void EditorApp::_createDemoScene() {
 	for (Int i = 0; i < 5; ++i) {
 		auto entity = SceneEntity::s_new(AX_NEW, nullptr, Fmt("test_{}", i));
+		
+		entity->transform.position = Vec3f(static_cast<f32>(i) * 2.0f, 0, 0);
+		
 		auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
 		meshRenderer->mesh = RenderStockObjects::s_instance()->meshes->cube;
 		
