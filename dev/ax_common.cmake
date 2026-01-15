@@ -12,6 +12,18 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #   SET(${varName} "value to return" PARENT_SCOPE)
 # endfunction()
 
+set(AX_CppHeaerTool "${CMAKE_CURRENT_BINARY_DIR}/bin/Debug/AxCppHeaderTool")
+
+function(ax_cpp_header_tool target path)
+	add_custom_target(${target}_CppHeaderTool
+		COMMAND ${CMAKE_COMMAND} -E echo "${target} Running AxCppHeaderTool..."
+		COMMAND ${AX_CppHeaerTool} -moduleName=${target} -outPath=${path} ${path}
+		WORKING_DIRECTORY ${path}
+	)
+	add_dependencies(${target}_CppHeaderTool "AxCppHeaderTool")
+	add_dependencies(${target} ${target}_CppHeaderTool)
+endfunction()
+
 function(ax_write_to_file filename text)
 	message("ax_write_to_file(\"${filename}\")")
 	file(GENERATE OUTPUT ${filename} CONTENT "${text}" NEWLINE_STYLE UNIX)	

@@ -52,6 +52,8 @@ public:
 		bool treeNodeIsOpen : 1;
 	} editor;
 	
+	SceneWorld* world() { return _world; }
+	
 protected:
 	friend class SceneWorld;
 	SceneWorld* _world = nullptr;

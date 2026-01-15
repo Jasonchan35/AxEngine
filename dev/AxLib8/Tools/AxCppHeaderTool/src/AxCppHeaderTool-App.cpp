@@ -22,8 +22,12 @@ int App::onRun() {
 
 	for (Int i = 1; i < args.size(); i++) {
 		auto& a = args[i];
-		if (auto v = a.extractFromPrefix("-outPath=")) {
-			opt.outPath = FilePath::absPath(v);
+		if (auto outPath = a.extractFromPrefix("-outPath=")) {
+			opt.outPath = FilePath::absPath(outPath);
+			
+		} else if (auto moduleName = a.extractFromPrefix("-moduleName=")) {
+			opt.moduleName = moduleName;
+			
 		} else if (a.startsWith("-")) {
 			AX_LOG("unknown option {}", a);
 			return -1;
@@ -50,12 +54,18 @@ int App::onRun() {
 	
 	String _outGenHeader;
 	String _outGenTypes("void registerTypes() {\n"
-						"\t""auto* mgr = AxEngine::ObjectManager::s_instance();\n");
+						"\t""auto* mgr = AxEngine::ObjectManager::s_instance();\n"
+						"\t""AX_UNUSED(mgr);");
 
 	Array<String> inputFiles;
 	File::glob(searchFile, [&inputFiles](FileEntry & entry) {
 		inputFiles.append(entry.fullpath);
 	});
+
+	if (opt.moduleName) {
+		_outGenHeader.appendFormat("module {};\n", opt.moduleName);
+		_outGenHeader.appendFormat("import :Common;\n\n");
+	}
 	
 	inputFiles.sort();
 
@@ -67,11 +77,6 @@ int App::onRun() {
 			continue;
 
 		FilePath::getRelPath(searchFile, f, inputPath);
-		
-		if (!_outGenHeader) {
-			_outGenHeader.appendFormat("module {};\n", g._parser.module());
-		}
-		
 		_outGenHeader.appendFormat("import :{};\n", g._parser.modulePartition());
 		_outGenHeader << "\n";
 		

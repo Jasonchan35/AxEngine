@@ -3,7 +3,7 @@
 export module AxEngine:Object;
 export import :Common;
 
-namespace AxEngine {
+export namespace AxEngine {
 
 using ObjectId = i64;
 constexpr ObjectId ObjectId_None = 0;

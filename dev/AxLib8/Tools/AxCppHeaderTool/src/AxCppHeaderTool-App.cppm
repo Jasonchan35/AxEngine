@@ -6,10 +6,11 @@ export import :PCH;
 export namespace ax::AxCppHeaderTool {
 
 struct CmdOptions {
+	CmdOptions();
+	
+	String moduleName;
 	String outPath;
 	File_WriteOpt writeFileOpt;
-	
-	CmdOptions();
 };	
 
 class App : public ConsoleApp {

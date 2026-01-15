@@ -6,8 +6,7 @@ import :Parser;
 namespace ax::AxCppHeaderTool {
 
 void Parser::readFile(StrView filename, TypeDB& typeDB) {
-	AX_LOG("Parser::readFile {}", filename);
-	
+//	AX_LOG("Parser::readFile {}", filename);
 	_typeDB = &typeDB;
 
 	File::readUtf8(filename, _data);
