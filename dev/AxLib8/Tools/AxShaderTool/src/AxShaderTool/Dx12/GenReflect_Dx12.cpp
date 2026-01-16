@@ -75,7 +75,7 @@ bool GenReflect_Dx12::tryLoadFile(ComPtr<IDxcBlobEncoding>& outBlob, StrView fil
 	UINT32 codePage = 0;
 	HRESULT hr;
 	hr = _dxcLib->CreateBlobFromFile(filenameW.c_str(), &codePage, outBlob.ptrForInit());
-	if (!checkError(hr)) {
+	if (!_checkError(hr)) {
 		return false;
 	}
 
@@ -235,7 +235,7 @@ void GenReflect_Dx12::compile(StrView      outFilename,
 	hr = result->GetStatus(&resultStatus);
 	throwIfError(hr);
 
-	if (!checkError(resultStatus)) {
+	if (!_checkError(resultStatus)) {
 		ComPtr<IDxcBlobEncoding> errorMsgBlob;
 		hr = result->GetErrorBuffer(errorMsgBlob.ptrForInit());
 		throwIfError(hr);
@@ -300,7 +300,7 @@ AX_GCC_WARNING_PUSH_AND_DISABLE("-Wlanguage-extension-token")
 	hr = container->GetPartReflection(shaderIdx, IID_PPV_ARGS(reflect.ptrForInit()));
 AX_GCC_WARNING_POP()
 
-	if (checkError(hr)) {
+	if (_checkError(hr)) {
 		D3D12_SHADER_DESC desc;
 		hr = reflect->GetDesc(&desc);
 		throwIfError(hr);
@@ -320,11 +320,11 @@ AX_GCC_WARNING_POP()
 		}
 
 		{
-			_compileReflect_inputs			(outInfo, reflect, desc);
-			_compileReflect_constBuffers	(outInfo, reflect, desc);
-			_compileReflect_textures		(outInfo, reflect, desc);
-			_compileReflect_samplers		(outInfo, reflect, desc);
-			_compileReflect_storageBuffers	(outInfo, reflect, desc);
+			_compileReflect_inputs				(outInfo, reflect, desc);
+			_compileReflect_constBuffers		(outInfo, reflect, desc);
+			_compileReflect_textures			(outInfo, reflect, desc);
+			_compileReflect_samplers			(outInfo, reflect, desc);
+			_compileReflect_structuredBuffers	(outInfo, reflect, desc);
 		}
 
 		{
@@ -346,7 +346,7 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 
 		D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
 		hr = reflect->GetInputParameterDesc(i, &paramDesc);
-		checkError(hr);
+		throwIfError(hr);
 
 		TempString semantic = StrView_c_str(paramDesc.SemanticName);
 
@@ -489,7 +489,7 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);
-		checkError(hr);
+		throwIfError(hr);
 
 		if (resDesc.Type != D3D_SIT_CBUFFER) continue;
 
@@ -500,24 +500,24 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		D3D12_SHADER_BUFFER_DESC bufDesc;
 		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);
 		hr = cb->GetDesc(&bufDesc);
-		checkError(hr);
+		throwIfError(hr);
 
-		outCB.name      = StrView_c_str(bufDesc.Name);
-		outCB.bindPoint = ax_safe_cast_from(resDesc.BindPoint);
-		outCB.bindCount = ax_safe_cast_from(resDesc.BindCount);
-		outCB.bindSpace = ax_safe_cast_from(resDesc.Space);
-		outCB.dataSize  = ax_safe_cast_from(bufDesc.Size);
+		outCB.name       = StrView_c_str(bufDesc.Name);
+		outCB.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
+		outCB.bindCount  = ax_safe_cast_from(resDesc.BindCount);
+		outCB.bindSpace  = ax_safe_cast_from(resDesc.Space);
+		outCB.bufferSize = ax_safe_cast_from(bufDesc.Size);
 
 		outCB.variables.ensureCapacity(bufDesc.Variables);
 		for (UINT j=0; j<bufDesc.Variables; j++) {
 			auto cbv = cb->GetVariableByIndex(j);
 			D3D12_SHADER_VARIABLE_DESC varDesc;
 			hr = cbv->GetDesc(&varDesc);
-			checkError(hr);
+			throwIfError(hr);
 
 			D3D12_SHADER_TYPE_DESC varType;
 			hr = cbv->GetType()->GetDesc(&varType);
-			checkError(hr);
+			throwIfError(hr);
 
 			if (!_keepUnusedVariable) {
 				if (0 == (varDesc.uFlags & D3D_SVF_USED)) continue;
@@ -550,7 +550,7 @@ void GenReflect_Dx12::_compileReflect_textures(ShaderStageInfo& outInfo, ID3D12S
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);
-		checkError(hr);
+		throwIfError(hr);
 
 		if (resDesc.Type != D3D_SIT_TEXTURE) continue;
 
@@ -592,7 +592,7 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);
-		checkError(hr);
+		throwIfError(hr);
 
 		if (resDesc.Type != D3D_SIT_SAMPLER) continue;
 
@@ -606,26 +606,29 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 	}
 }
 
-void GenReflect_Dx12::_compileReflect_storageBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
+void GenReflect_Dx12::_compileReflect_structuredBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
 	HRESULT hr;
-	outInfo.storageBuffers.ensureCapacity(desc.BoundResources);
+	outInfo.structuredBuffers.ensureCapacity(desc.BoundResources);
 	for (UINT i=0; i<desc.BoundResources; i++) {
 		D3D12_SHADER_INPUT_BIND_DESC resDesc;
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);
-		checkError(hr);
+		throwIfError(hr);
 
-		if (resDesc.Type != D3D_SIT_STRUCTURED
-		 && resDesc.Type != D3D_SIT_UAV_RWSTRUCTURED
-		 && resDesc.Type != D3D_SIT_UAV_RWBYTEADDRESS) continue;
-
-		auto& sbuf      = outInfo.storageBuffers.emplaceBack();
+		if (resDesc.Type != D3D_SIT_STRUCTURED) continue;
+		
+		D3D12_SHADER_BUFFER_DESC bufDesc;
+		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);
+		hr = cb->GetDesc(&bufDesc);
+		throwIfError(hr);
+		
+		auto& sbuf      = outInfo.structuredBuffers.emplaceBack();
 		sbuf.stageFlags = outInfo.stageFlags;
-		sbuf.dataType   = RenderDataType::StorageBuffer;
+		sbuf.dataType   = RenderDataType::StructuredBuffer;
 		sbuf.name       = StrView_c_str(resDesc.Name);
 		sbuf.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		sbuf.bindCount  = ax_safe_cast_from(resDesc.BindCount);
 		sbuf.bindSpace  = ax_safe_cast_from(resDesc.Space);
-		sbuf.rawUAV     = (resDesc.Type == D3D_SIT_UAV_RWBYTEADDRESS);
+		sbuf.bufferSize = ax_safe_cast_from(bufDesc.Size);
 	}
 }
 

@@ -20,10 +20,8 @@ public:
 
 	void _genConstBuffer	(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding);
 	void _genSampler		(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding);
-	void _genTexture		(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* spirvReflect);
-
-
-	void _genStorageBuffers	(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* spirvReflect) {}
+	void _genTexture		(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding);
+	void _genStorageBuffer	(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding);
 
 private:
 	template<class PARAM>

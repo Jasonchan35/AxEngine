@@ -250,13 +250,21 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 	E(Texture3D,)   \
 	E(TextureCube,) \
 	\
+	E(RWTexture1D,)   \
+	E(RWTexture2D,)   \
+	E(RWTexture3D,)   \
+	E(RWTextureCube,) \
+	\
 	E(Texture1DArray,)   \
 	E(Texture2DArray,)   \
 	E(Texture3DArray,)   \
 	E(TextureCubeArray,) \
 	\
 	E(ConstBuffer,) \
-	E(StorageBuffer,) \
+	E(StructuredBuffer,) \
+	E(RWStructuredBuffer,) \
+	E(ByteAddressBuffer,) \
+	E(RWByteAddressBuffer,) \
 //----
 
 #define AX_RenderDataType_ENUM_LIST(E) \

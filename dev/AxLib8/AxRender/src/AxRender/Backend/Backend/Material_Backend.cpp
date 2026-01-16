@@ -41,10 +41,10 @@ MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 		return;
 	}
 
-	MaterialParamSpace_Backend_cloneParams(_constBuffers		, _shaderParamSpace->_constBuffers       );
-	MaterialParamSpace_Backend_cloneParams(_samplerParams		, _shaderParamSpace->_samplerParams      );
-	MaterialParamSpace_Backend_cloneParams(_textureParams		, _shaderParamSpace->_textureParams      );
-	MaterialParamSpace_Backend_cloneParams(_storageBufferParams	, _shaderParamSpace->_storageBufferParams);
+	MaterialParamSpace_Backend_cloneParams(_constBuffers            , _shaderParamSpace->_constBuffers          );
+	MaterialParamSpace_Backend_cloneParams(_samplerParams           , _shaderParamSpace->_samplerParams         );
+	MaterialParamSpace_Backend_cloneParams(_textureParams           , _shaderParamSpace->_textureParams         );
+	MaterialParamSpace_Backend_cloneParams(_structuredBufferParams  , _shaderParamSpace->_structuredBufferParams);
 }
 
 void MaterialParamSpace_Backend::ConstBufferParam::create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam) {
@@ -70,7 +70,7 @@ void MaterialParamSpace_Backend::TextureParam::create(const ShaderParamSpace_Bac
 	_texture	= shaderParam.defaultTexture();
 }
 
-void MaterialParamSpace_Backend::StorageBufferParam::create(const ShaderParamSpace_Backend::StorageBufferParam& shaderParam) {
+void MaterialParamSpace_Backend::StructuredBufferParam::create(const ShaderParamSpace_Backend::StructuredBufferParam& shaderParam) {
 	ParamBase::create(shaderParam);
 
 	_shaderParam = &shaderParam;

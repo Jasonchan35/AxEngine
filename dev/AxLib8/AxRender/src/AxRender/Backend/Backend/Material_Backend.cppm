@@ -112,25 +112,25 @@ public:
 		SPtr<const Sampler>		_sampler;
 	};
 
-	struct StorageBufferParam : public ParamBase {
+	struct StructuredBufferParam : public ParamBase {
 		NameId		name() const { return _shaderParam->name(); }
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
-		void                 create(const ShaderParamSpace_Backend::StorageBufferParam& shaderParam);
-		const StorageBuffer* storageBuffer() const { return _storageBuffer; }
+		void create(const ShaderParamSpace_Backend::StructuredBufferParam& shaderParam);
+		const GpuStructuredBuffer* buffer() const { return _buffer; }
 
-		bool setStorageParam(StorageBuffer* vb) {
-			_storageBuffer.ref(vb);
+		bool setBuffer(GpuStructuredBuffer* buf) {
+			_buffer.ref(buf);
 			return true;
 		}
 
-		const GpuBuffer* gpuBuffer() const { return _storageBuffer ? _storageBuffer->gpuBuffer() : nullptr; }
-		Int              dataSize() const { return _storageBuffer ? _storageBuffer->bufferSize() : 0; }
+		const GpuBuffer* gpuBuffer() const { return _buffer ? _buffer->gpuBuffer() : nullptr; }
+		Int              dataSize() const { return _buffer ? _buffer->bufferSize() : 0; }
 
 	private:
-		const ShaderParamSpace_Backend::StorageBufferParam* _shaderParam = nullptr;
-		SPtr<const StorageBuffer>	_storageBuffer;
+		const ShaderParamSpace_Backend::StructuredBufferParam* _shaderParam = nullptr;
+		SPtr<const GpuStructuredBuffer>	_buffer;
 	};
 
 	bool setParam(NameId name, const i32&		v) { return _setVariable(name, v); }
@@ -172,10 +172,10 @@ public:
 	
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
-	Array<ConstBufferParam,   1>	_constBuffers;
-	Array<StorageBufferParam, 0>	_storageBufferParams;
-	Array<TextureParam,       2>	_textureParams;
-	Array<SamplerParam,       2>	_samplerParams;
+	Array<ConstBufferParam,      1>	_constBuffers;
+	Array<StructuredBufferParam, 1>	_structuredBufferParams;
+	Array<TextureParam,          2>	_textureParams;
+	Array<SamplerParam,          2>	_samplerParams;
 
 	const MaterialPass_Backend* materialPass() const { return _materialPass; };
 

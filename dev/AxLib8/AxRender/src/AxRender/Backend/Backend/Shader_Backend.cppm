@@ -49,12 +49,11 @@ public:
 			: _name(NameId::s_make(r.name))
 			, _offset(r.offset)
 			, _dataType(r.dataType)
-			, _rowMajor(r.rowMajor) {}
+		{}
 
 		NameId         name() const { return _name; }
 		u32            offset() const { return _offset; }
 		RenderDataType dataType() const { return _dataType; }
-		bool           rowMajor() const { return _rowMajor; }
 
 		template<class V> IntRange assignValueToBuffer(MutByteSpan buf, const V& value) const;
 
@@ -64,7 +63,6 @@ public:
 		NameId         _name;
 		u32            _offset   = 0;
 		RenderDataType _dataType = RenderDataType::None;
-		bool           _rowMajor = true;
 	};
 
 	using ParamIndex = u32;
@@ -141,27 +139,27 @@ public:
 		SPtr<Sampler>	_defaultSampler;
 	};
 
-	struct StorageBufferParam : public ParamBase {
-		using Info = ShaderStageInfo::StorageBuffer;
+	struct StructuredBufferParam : public ParamBase {
+		using Info = ShaderStageInfo::StructuredBuffer;
 
 		void create(const Info& info);
 	private:
 	};
 
-	void addParam	(const ShaderStageInfo::ConstBuffer&   paramInfo);
-	void addParam	(const ShaderStageInfo::Texture&       paramInfo);
-	void addParam	(const ShaderStageInfo::Sampler&       paramInfo);
-	void addParam	(const ShaderStageInfo::StorageBuffer& paramInfo);
+	void addParam	(const ShaderStageInfo::ConstBuffer&      paramInfo);
+	void addParam	(const ShaderStageInfo::Texture&          paramInfo);
+	void addParam	(const ShaderStageInfo::Sampler&          paramInfo);
+	void addParam	(const ShaderStageInfo::StructuredBuffer& paramInfo);
 
-	Array<ConstBuffer,        1>	_constBuffers;
-	Array<StorageBufferParam, 0>	_storageBufferParams;
-	Array<TextureParam,       4>	_textureParams;
-	Array<SamplerParam,       4>	_samplerParams;
+	Array<ConstBuffer,           1>	_constBuffers;
+	Array<StructuredBufferParam, 1>	_structuredBufferParams;
+	Array<TextureParam,          4>	_textureParams;
+	Array<SamplerParam,          4>	_samplerParams;
 
-	ConstBuffer*		findConstBuffer (NameId name) { return _findParam(_constBuffers       , name); }
-	TextureParam*		findTextureParam(NameId name) { return _findParam(_textureParams      , name); }
-	SamplerParam*		findSamplerParam(NameId name) { return _findParam(_samplerParams      , name); }
-	StorageBufferParam*	findStorageParam(NameId name) { return _findParam(_storageBufferParams, name); }
+	ConstBuffer*			findConstBuffer          (NameId name) { return _findParam(_constBuffers          , name); }
+	TextureParam*			findTextureParam         (NameId name) { return _findParam(_textureParams         , name); }
+	SamplerParam*			findSamplerParam         (NameId name) { return _findParam(_samplerParams         , name); }
+	StructuredBufferParam*	findStructuredBufferParam(NameId name) { return _findParam(_structuredBufferParams, name); }
 
 	struct NameToVarInfo {
 		NameId			name;
@@ -175,10 +173,10 @@ public:
 //		return _nameToVarInfo.find_([&](const auto& e)-> bool { return e.name == name; });
 		return _nameToVarInfo.binarySearch_([&](const auto& e)-> CmpResult { return ax_op_cmp(e.name, name); });
 	}
-	const ConstBuffer*			findConstBuffer (NameId name) const { return ax_const_cast(this)->findConstBuffer(name);  }
-	const TextureParam*			findTextureParam(NameId name) const { return ax_const_cast(this)->findTextureParam(name); }
-	const SamplerParam*			findSamplerParam(NameId name) const { return ax_const_cast(this)->findSamplerParam(name); }
-	const StorageBufferParam*	findStorageParam(NameId name) const { return ax_const_cast(this)->findStorageParam(name); }
+	const ConstBuffer*				findConstBuffer          (NameId name) const { return ax_const_cast(this)->findConstBuffer(name);  }
+	const TextureParam*				findTextureParam         (NameId name) const { return ax_const_cast(this)->findTextureParam(name); }
+	const SamplerParam*				findSamplerParam         (NameId name) const { return ax_const_cast(this)->findSamplerParam(name); }
+	const StructuredBufferParam*	findStructuredBufferParam(NameId name) const { return ax_const_cast(this)->findStructuredBufferParam(name); }
 
 	void setPropDefaultValue(NameId propName, const ShaderPropInfo& propInfo);
 

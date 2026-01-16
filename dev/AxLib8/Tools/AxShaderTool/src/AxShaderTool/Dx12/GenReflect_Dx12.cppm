@@ -47,24 +47,19 @@ public:
 
 private:
 	void _compileReflect(StrView outFilename, IDxcBlob* byteCode, StrView profile);
-	void _compileReflect_inputs			(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
-	void _compileReflect_constBuffers	(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
-	void _compileReflect_textures		(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
-	void _compileReflect_samplers		(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
-	void _compileReflect_storageBuffers	(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
-
+	void _compileReflect_inputs					(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
+	void _compileReflect_constBuffers			(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
+	void _compileReflect_textures				(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
+	void _compileReflect_samplers				(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
+	void _compileReflect_structuredBuffers		(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc);
+	
 	RenderDataType _getRenderDataType(const D3D12_SHADER_TYPE_DESC & t);
 	
 	class IncludeHandler;
 	
-	bool checkError(HRESULT hr) {
-		if (FAILED(hr))
-			return false;
-		return true;
-	}
-
+	bool _checkError(HRESULT hr) { return SUCCEEDED(hr); }
 	void throwIfError(HRESULT hr) {
-		if (!checkError(hr)) {
+		if (!_checkError(hr)) {
 			throw Error_Undefined();
 		}
 	}

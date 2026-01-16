@@ -48,8 +48,8 @@
       "stageFlags": "", 
       "inputs": [], 
       "constBuffers": [], 
-      "storageBuffers": [], 
       "textures": [], 
-      "samplers": []
+      "samplers": [], 
+      "structuredBuffers": []
     }]
 }

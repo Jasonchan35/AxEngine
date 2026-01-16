@@ -83,7 +83,7 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 			_heapProps.Type = D3D12_HEAP_TYPE_READBACK;
 		}break;
 
-		case GpuBufferType::Storage: {
+		case GpuBufferType::Structured: {
 			alignment      = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 			_resourceState = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 			_desc.Flags    = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;

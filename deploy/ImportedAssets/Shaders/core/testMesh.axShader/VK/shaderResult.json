@@ -84,7 +84,7 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 48, 
+          "bufferSize": 48, 
           "variables": [{
               "name": "color", 
               "offset": 0, 
@@ -132,8 +132,8 @@
               "rowMajor": true
             }]
         }], 
-      "storageBuffers": [], 
       "textures": [], 
-      "samplers": []
+      "samplers": [], 
+      "structuredBuffers": []
     }]
 }

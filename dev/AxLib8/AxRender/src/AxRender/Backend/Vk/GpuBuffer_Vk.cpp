@@ -31,7 +31,7 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 		}break;
-		case GpuBufferType::Storage: {
+		case GpuBufferType::Structured: {
 			usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 //			memProps = VK_MEMORY_PROPERTY_PROTECTED_BIT; // no CPU access
 			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only

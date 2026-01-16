@@ -220,7 +220,7 @@ void GenReflect_Vk::_genBindings(ShaderStageInfo& outInfo, const spv_reflect::Sh
 //			case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:	break;
 //			case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:	break;
 			case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER: _genConstBuffer(outInfo, binding); break;
-//			case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER:		break;
+			case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER: _genStorageBuffer(outInfo, binding); break;
 //			case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC: break;
 //			case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC: break;
 //			case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT: break;
@@ -267,6 +267,30 @@ void GenReflect_Vk::_genTexture(ShaderStageInfo& outInfo, const SpvReflectDescri
 	}
 }
 
+void GenReflect_Vk::_genStorageBuffer(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
+	auto& dst = outInfo.structuredBuffers.emplaceBack();
+	_genParamBase(dst, outInfo, binding);
+	dst.dataType = RenderDataType::StructuredBuffer;
+
+	auto& typeDesc = binding->type_description;
+	dst.name = StrView_c_str(typeDesc->type_name);
+
+	if (binding->block.member_count < 1)
+		throw Error_Undefined();
+		
+	auto& block = binding->block.members[0];
+	dst.bufferSize = ax_safe_cast_from(block.size);
+	u32 memberCount = block.member_count;
+	
+	for (u32 i = 0; i < memberCount; i++) {
+		auto& srcVar	= block.members[i];
+		auto& dstVar	= dst.variables.emplaceBack();
+		dstVar.name		= StrView_c_str(srcVar.name);
+		dstVar.offset	= srcVar.offset;
+		dstVar.dataType = getDataType(*srcVar.type_description);
+	}
+}
+
 void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDescriptorBinding* binding) {
 	auto& dst = outInfo.constBuffers.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
@@ -276,7 +300,7 @@ void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDe
 	dst.name = StrView_c_str(typeDesc->type_name);
 
 	auto& block = binding->block;
-	dst.dataSize = ax_safe_cast_from(block.size);
+	dst.bufferSize = ax_safe_cast_from(block.size);
 
 	u32 memberCount = block.member_count;
 	for (u32 i = 0; i < memberCount; i++) {
@@ -284,8 +308,6 @@ void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDe
 		auto& dstVar	= dst.variables.emplaceBack();
 		dstVar.name		= StrView_c_str(srcVar.name);
 		dstVar.offset	= srcVar.offset;
-	//	dstVar.rowMajor = 
-
 		dstVar.dataType = getDataType(*srcVar.type_description);
 	}
 }

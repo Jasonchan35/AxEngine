@@ -43,10 +43,10 @@ void GenResultInfo::run(StrView outFilename, StrView filename, RenderAPI api) {
 }
 
 void GenResultInfo::mergeStageInfo(ShaderStageInfo& outStageInfo, const ShaderStageInfo& inStageInfo) {
-	_mergeParam(outStageInfo.constBuffers,   inStageInfo.constBuffers.span());
-	_mergeParam(outStageInfo.textures,       inStageInfo.textures.span());
-	_mergeParam(outStageInfo.samplers,       inStageInfo.samplers.span());
-	_mergeParam(outStageInfo.storageBuffers, inStageInfo.storageBuffers.span());
+	_mergeParam(outStageInfo.constBuffers,      inStageInfo.constBuffers.span());
+	_mergeParam(outStageInfo.textures,          inStageInfo.textures.span());
+	_mergeParam(outStageInfo.samplers,          inStageInfo.samplers.span());
+	_mergeParam(outStageInfo.structuredBuffers, inStageInfo.structuredBuffers.span());
 
 	outStageInfo.stageFlags |= inStageInfo.stageFlags;
 }

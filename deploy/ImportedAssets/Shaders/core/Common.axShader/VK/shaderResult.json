@@ -45,7 +45,7 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 32, 
+          "bufferSize": 32, 
           "variables": [{
               "name": "foo", 
               "offset": 0, 
@@ -79,7 +79,7 @@
           "bindSpace": "World", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 208, 
+          "bufferSize": 208, 
           "variables": [{
               "name": "ax_g_test", 
               "offset": 0, 
@@ -128,7 +128,7 @@
           "bindSpace": "Object", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 512, 
+          "bufferSize": 512, 
           "variables": [{
               "name": "ax_object_mvp", 
               "offset": 0, 
@@ -171,7 +171,6 @@
               "rowMajor": true
             }]
         }], 
-      "storageBuffers": [], 
       "textures": [{
           "name": "AxBindless_Texture2D", 
           "dataType": "Texture2D", 
@@ -185,7 +184,7 @@
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
           "bindPoint": 20004, 
-          "bindCount": 1000
+          "bindCount": 10000
         }], 
       "samplers": [{
           "name": "AxBindless_SamplerState", 
@@ -195,6 +194,26 @@
           "bindPoint": 4, 
           "bindCount": 1000, 
           "dynamicSampler": true
+        }], 
+      "structuredBuffers": [{
+          "name": "gAxObjectData", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "Object", 
+          "bindPoint": 4, 
+          "bindCount": 1, 
+          "bufferSize": 128, 
+          "variables": [{
+              "name": "objectToWorld", 
+              "offset": 0, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }, {
+              "name": "mvp", 
+              "offset": 64, 
+              "dataType": "Mat4f", 
+              "rowMajor": true
+            }]
         }]
     }]
 }

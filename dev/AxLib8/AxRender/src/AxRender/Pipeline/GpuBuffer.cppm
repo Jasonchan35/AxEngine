@@ -10,7 +10,7 @@ export namespace ax /*::AxRender*/ {
 	E(Vertex,		) \
 	E(Index,		) \
 	E(Const,		) \
-	E(Storage,		) \
+	E(Structured,	) \
 	E(StagingToGpu,	) \
 	E(StagingToCpu,	) \
 	\
@@ -57,22 +57,22 @@ protected:
 	Int				_bufferSize = 0;
 };
 
-class StorageBuffer_CreateDesc : public NonCopyable {
+class GpuStructuredBuffer_CreateDesc : public NonCopyable {
 public:
 	String name;
 	Int	bufferSize = 0;
 };
 
-class StorageBuffer : public RenderObject {
-	AX_RTTI_INFO(StorageBuffer, RenderObject)
+class GpuStructuredBuffer : public RenderObject {
+	AX_RTTI_INFO(GpuStructuredBuffer, RenderObject)
 public:
-	using CreateDesc = StorageBuffer_CreateDesc;
+	using CreateDesc = GpuStructuredBuffer_CreateDesc;
 
 	Int bufferSize() const { return _gpuBuffer ? _gpuBuffer->bufferSize() : 0; }
 	const GpuBuffer* gpuBuffer() const { return _gpuBuffer; }
 
 protected:
-	StorageBuffer(const CreateDesc& desc);
+	GpuStructuredBuffer(const CreateDesc& desc);
 	SPtr<GpuBuffer>	_gpuBuffer;
 };
 

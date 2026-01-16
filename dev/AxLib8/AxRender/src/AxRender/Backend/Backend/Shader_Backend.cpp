@@ -88,10 +88,10 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 	}
 }
 
-void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::ConstBuffer&   paramInfo) { _addParam(_constBuffers,        paramInfo); }
-void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Texture&       paramInfo) { _addParam(_textureParams,       paramInfo); }
-void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Sampler&       paramInfo) { _addParam(_samplerParams,       paramInfo); }
-void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StorageBuffer& paramInfo) { _addParam(_storageBufferParams, paramInfo); }
+void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::ConstBuffer&      paramInfo) { _addParam(_constBuffers,           paramInfo); }
+void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Texture&          paramInfo) { _addParam(_textureParams,          paramInfo); }
+void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Sampler&          paramInfo) { _addParam(_samplerParams,          paramInfo); }
+void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StructuredBuffer& paramInfo) { _addParam(_structuredBufferParams, paramInfo); }
 
 inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
 	ParamBase::create(info);
@@ -107,7 +107,7 @@ inline void ShaderParamSpace_Backend::TextureParam::create(const Info& info) {
 
 inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
 	ParamBase::create(info);
-	_defaultValues.resize(info.dataSize);
+	_defaultValues.resize(info.bufferSize);
 	_defaultValues.fillValues(0); // set all to zero by default
 
 	_varInfos.ensureCapacity(info.variables.size());
@@ -116,7 +116,7 @@ inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
 	}
 }
 
-void ShaderParamSpace_Backend::StorageBufferParam::create(const Info& info) {
+void ShaderParamSpace_Backend::StructuredBufferParam::create(const Info& info) {
 	ParamBase::create(info);
 }
 
@@ -248,7 +248,7 @@ TempString ShaderPass_Backend::debugName() const {
 
 void ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->constBuffers);
-	_addParamToSpace(_stageInfo->storageBuffers);
+	_addParamToSpace(_stageInfo->structuredBuffers);
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 

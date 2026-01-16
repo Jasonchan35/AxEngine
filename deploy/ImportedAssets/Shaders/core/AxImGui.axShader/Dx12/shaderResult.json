@@ -63,7 +63,7 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "dataSize": 80, 
+          "bufferSize": 80, 
           "variables": [{
               "name": "imguiProjectionMatrix", 
               "offset": 0, 
@@ -81,8 +81,8 @@
               "rowMajor": true
             }]
         }], 
-      "storageBuffers": [], 
       "textures": [], 
-      "samplers": []
+      "samplers": [], 
+      "structuredBuffers": []
     }]
 }

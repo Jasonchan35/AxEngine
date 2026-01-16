@@ -42,10 +42,10 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 		};
 
-		for (auto& param : ownParamSpace->_constBuffers       ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
-		for (auto& param : ownParamSpace->_textureParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
-		for (auto& param : ownParamSpace->_samplerParams      ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
-		for (auto& param : ownParamSpace->_storageBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
+		for (auto& param : ownParamSpace->_constBuffers          ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
+		for (auto& param : ownParamSpace->_textureParams         ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
+		for (auto& param : ownParamSpace->_samplerParams         ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
+		for (auto& param : ownParamSpace->_structuredBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
 		if (!ownParamSpace) continue;
 		ownParamSpace->_descSetLayout_vk.create(dev, bindings, layoutFlags);

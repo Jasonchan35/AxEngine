@@ -15,9 +15,9 @@ GpuBuffer::GpuBuffer(const CreateDesc& desc) {
 	_bufferSize = desc.bufferSize;
 }
 
-StorageBuffer::StorageBuffer(const CreateDesc& desc) {
+GpuStructuredBuffer::GpuStructuredBuffer(const CreateDesc& desc) {
 	GpuBuffer_CreateDesc gpuBufDesc;
-	gpuBufDesc.bufferType = GpuBufferType::Storage;
+	gpuBufDesc.bufferType = GpuBufferType::Structured;
 	gpuBufDesc.bufferSize = desc.bufferSize;
 
 	_gpuBuffer = GpuBuffer::s_new(AX_NEW, gpuBufDesc);

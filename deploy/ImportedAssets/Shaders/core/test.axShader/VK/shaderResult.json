@@ -51,8 +51,8 @@
           "dataType": "u32"
         }], 
       "constBuffers": [], 
-      "storageBuffers": [], 
       "textures": [], 
-      "samplers": []
+      "samplers": [], 
+      "structuredBuffers": []
     }]
 }

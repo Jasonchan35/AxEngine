@@ -31,10 +31,10 @@ public:
 class MaterialPass_Vk : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Vk, MaterialPass_Backend)
 public:
-	using ConstBufferParam   = MaterialParamSpace_Backend::ConstBufferParam;
-	using SamplerParam       = MaterialParamSpace_Backend::SamplerParam;
-	using TextureParam       = MaterialParamSpace_Backend::TextureParam;
-	using StorageBufferParam = MaterialParamSpace_Backend::StorageBufferParam;
+	using ConstBufferParam      = MaterialParamSpace_Backend::ConstBufferParam;
+	using SamplerParam          = MaterialParamSpace_Backend::SamplerParam;
+	using TextureParam          = MaterialParamSpace_Backend::TextureParam;
+	using StructuredBufferParam = MaterialParamSpace_Backend::StructuredBufferParam;
 	
 	MaterialPass_Vk(const CreateDesc& desc);
 

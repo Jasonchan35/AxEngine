@@ -41,6 +41,7 @@ public:
 			AX_JSON_IO(se, dataType);
 		}
 	};
+	Array<Input>		inputs;
 
 	struct Variable {
 		String			name;
@@ -82,14 +83,14 @@ public:
 		}
 	};
 
-	struct ConstBuffer : public ParamBase {
-		Int				dataSize  = 0;
+	struct BufferBase : public ParamBase {
+		Int				bufferSize  = 0;
 		Array<Variable>	variables;
 
 		template<class SE>
 		void onJsonIO(SE & se) {
 			ParamBase::onJsonIO(se);
-			AX_JSON_IO(se, dataSize);
+			AX_JSON_IO(se, bufferSize);
 			AX_JSON_IO(se, variables);
 		}
 
@@ -100,9 +101,12 @@ public:
 			return nullptr;
 		}
 	};
-
-	Array<Input>		inputs;
+		
+	struct ConstBuffer : public BufferBase {};
 	Array<ConstBuffer>	constBuffers;
+
+	struct StructuredBuffer : public BufferBase {};
+	Array<StructuredBuffer> structuredBuffers;
 
 //----------
 	struct Texture : public ParamBase {};
@@ -119,18 +123,6 @@ public:
 		}		
 	};
 	Array<Sampler>		samplers;
-
-//----------
-	struct StorageBuffer : public ParamBase {
-		bool	rawUAV = false;
-
-		template<class SE>
-		void onJsonIO(SE & se) {
-			ParamBase::onJsonIO(se);
-			AX_JSON_IO(se, rawUAV);
-		}
-	};
-	Array<StorageBuffer>	storageBuffers;
 
 //----------
 	void loadFile(StrView filename_);
@@ -159,9 +151,9 @@ public:
 
 		AX_JSON_IO(se, inputs);
 		AX_JSON_IO(se, constBuffers);
-		AX_JSON_IO(se, storageBuffers);
 		AX_JSON_IO(se, textures);
 		AX_JSON_IO(se, samplers);
+		AX_JSON_IO(se, structuredBuffers);
 	}
 
 };

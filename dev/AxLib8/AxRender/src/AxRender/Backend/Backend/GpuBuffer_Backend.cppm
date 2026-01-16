@@ -44,11 +44,10 @@ inline MutByteSpan GpuBuffer_Backend::_mapMemory(IntRange range) {
 	return onMapMemory(range);
 }
 
-class StorageBuffer_Backend : public StorageBuffer {
-	AX_RTTI_INFO(StorageBuffer_Backend, StorageBuffer)
+class GpuStructuredBuffer_Backend : public GpuStructuredBuffer {
+	AX_RTTI_INFO(GpuStructuredBuffer_Backend, GpuStructuredBuffer)
 public:
-	StorageBuffer_Backend(const CreateDesc& desc) : Base(desc) {}
-	
+	GpuStructuredBuffer_Backend(const CreateDesc& desc) : Base(desc) {}
 };
 
 } // namespace

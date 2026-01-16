@@ -78,8 +78,8 @@
           "dataType": "Vec2f"
         }], 
       "constBuffers": [], 
-      "storageBuffers": [], 
       "textures": [], 
-      "samplers": []
+      "samplers": [], 
+      "structuredBuffers": []
     }]
 }
