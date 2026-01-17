@@ -40,7 +40,7 @@ public:
 
 	const ShaderPass_Vk* shaderPass_vk() const { return rttiCastCheck<ShaderPass_Vk>(shaderPass()); }
 
-	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
+	virtual bool onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 
 	const MaterialParamSpace_Vk* getParamSpace_vk(BindSpace bs) const {
 		return rttiCastCheck<MaterialParamSpace_Vk>(getParamSpace(bs));

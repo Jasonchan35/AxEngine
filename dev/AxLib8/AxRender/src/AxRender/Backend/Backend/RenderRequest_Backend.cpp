@@ -43,6 +43,20 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 
 	_commonMaterial     = rttiCastCheck<Material_Backend>(_stockObjects->commonMaterial.ptr());
 	_commonMaterialPass = _commonMaterial->getPass(0);
+
+	static NameId name_gAxPerDrawcall = NameId::s_make("gAxPerDrawcall");
+	auto* commonObjectSpace = _commonMaterialPass->getOwnParamSpace(BindSpace::Object);
+	auto* param_gAxPerDrawcall = commonObjectSpace->findStructuredBufferParam(name_gAxPerDrawcall);
+	if (!param_gAxPerDrawcall) throw Error_Undefined();
+	
+	if (!_perDrawcallStructBuf) {
+		GpuStructuredBuffer_CreateDesc createDesc;
+		createDesc.stride    = param_gAxPerDrawcall->stride();
+		createDesc.arraySize = AxRenderConfig::kMaxDrawcallCount;
+		_perDrawcallStructBuf = GpuStructuredBuffer::s_new(AX_NEW, createDesc);
+		if (!_perDrawcallStructBuf) throw Error_Undefined();
+	}
+	commonObjectSpace->setParam(name_gAxPerDrawcall, _perDrawcallStructBuf);
 	
 	resourcesToKeep.add(_commonMaterial);
 	
@@ -179,7 +193,7 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 		resourcesToKeep.add(indexBuffer);
 	}
 
-	matPass->onDrawcall(this, cmd);
+	matPass->onBindMaterial(this, cmd);
 
 	onDrawCall(cmd);
 }

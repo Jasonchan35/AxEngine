@@ -30,9 +30,9 @@ class RenderRequest : public RenderRequestBase {
 public:
 	using BindSpace = ShaderParamBindSpace;
 
-	void drawMesh(   MeshObject*    mesh,    Material*	material, Int materialPass);
-	void drawMesh(   RenderMesh&    mesh,    Material*	material, Int materialPass);
-	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass);
+	void drawMesh(   MeshObject*    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
+	void drawMesh(   RenderMesh&    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
+	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
 
 	void drawTexture(Texture2D* tex) {}
 
@@ -101,25 +101,26 @@ void ScissorRectScope::detach() {
 }
 
 inline
-void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass) {
+void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!mesh) return;
-	drawMesh(mesh->meshData, material, materialPass);
+	drawMesh(mesh->meshData, material, materialPass, objectToWorld);
 }
 
 inline
-void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialPass) {
+void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	for (auto& sm : mesh.subMeshes()) {
-		drawSubMesh(sm, material, materialPass);
+		drawSubMesh(sm, material, materialPass, objectToWorld);
 	}
 }
 
 inline
-void RenderRequest::drawSubMesh(RenderSubMesh& subMesh, Material* material, Int materialPass) {
+void RenderRequest::drawSubMesh(RenderSubMesh& subMesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!material) return;
 
 	Cmd_DrawCall cmd;
 	cmd.material = material;
 	cmd.materialPassIndex = materialPass;
+	cmd.objectToWorld = objectToWorld;
 	cmd.setSubMesh(this, subMesh);
 
 	drawCall(cmd);

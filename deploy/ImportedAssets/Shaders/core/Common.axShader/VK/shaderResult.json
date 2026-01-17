@@ -45,7 +45,6 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "bufferSize": 32, 
           "variables": [{
               "name": "foo", 
               "offset": 0, 
@@ -66,7 +65,8 @@
               "name": "AxTexture3D_foo_tex3d", 
               "offset": 16, 
               "dataType": "u32"
-            }]
+            }], 
+          "dataSize": 32
         }, {
           "name": "AX_ConstBuffer_World", 
           "dataType": "ConstBuffer", 
@@ -74,7 +74,6 @@
           "bindSpace": "World", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "bufferSize": 208, 
           "variables": [{
               "name": "ax_g_test", 
               "offset": 0, 
@@ -107,7 +106,8 @@
               "name": "ax_g_cameraInvProjection", 
               "offset": 144, 
               "dataType": "Mat4f"
-            }]
+            }], 
+          "dataSize": 208
         }, {
           "name": "AX_ConstBuffer_Object", 
           "dataType": "ConstBuffer", 
@@ -115,7 +115,6 @@
           "bindSpace": "Object", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "bufferSize": 512, 
           "variables": [{
               "name": "ax_object_mvp", 
               "offset": 0, 
@@ -148,7 +147,8 @@
               "name": "ax_object_m_i", 
               "offset": 448, 
               "dataType": "Mat4f"
-            }]
+            }], 
+          "dataSize": 512
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 
@@ -163,7 +163,7 @@
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
           "bindPoint": 20004, 
-          "bindCount": 10000
+          "bindCount": 1000
         }], 
       "samplers": [{
           "name": "AxBindless_SamplerState", 
@@ -175,18 +175,18 @@
           "dynamicSampler": true
         }], 
       "structuredBuffers": [{
-          "name": "gAxObjectData", 
+          "name": "gAxPerDrawcall", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Object", 
-          "bindPoint": 4, 
+          "bindPoint": 1004, 
           "bindCount": 1, 
-          "bufferSize": 64, 
           "variables": [{
-              "name": "objectToWorld", 
+              "name": "mvp", 
               "offset": 0, 
               "dataType": "Mat4f"
-            }]
+            }], 
+          "stride": 64
         }]
     }]
 }

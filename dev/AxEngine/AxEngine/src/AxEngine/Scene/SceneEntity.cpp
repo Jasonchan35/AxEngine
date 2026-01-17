@@ -44,11 +44,6 @@ CMeshRenderer::~CMeshRenderer() {
 	slot->_systemSlotId = _systemSlotId;
 }
 
-void CMeshRenderer::onRender(RenderRequest* req) {
-	if (!mesh || !material) return;
-	req->drawMesh(mesh, material, 0);
-};
-
 CMeshRendererSystem* CMeshRendererSystem::s_instance(bool createIfNone) {
 	SceneWorld* world = SceneWorld_instance;
 	if (!world) return nullptr;
@@ -61,9 +56,13 @@ CMeshRendererSystem* CMeshRendererSystem::s_instance(bool createIfNone) {
 }
 
 void CMeshRendererSystem::onRender(RenderRequest* req) {
+
 	for (auto* comp : _componentList) {
 		if (!comp) continue;
-		comp->onRender(req);
+		auto& objectToWorld = comp->entity()->transform.getObjectToWorld();
+		
+		if (!comp->mesh || !comp->material) return;
+		req->drawMesh(comp->mesh, comp->material, 0, objectToWorld);
 	}
 }; 
 

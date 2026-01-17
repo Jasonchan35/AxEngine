@@ -47,6 +47,8 @@ inline MutByteSpan GpuBuffer_Backend::_mapMemory(IntRange range) {
 class GpuStructuredBuffer_Backend : public GpuStructuredBuffer {
 	AX_RTTI_INFO(GpuStructuredBuffer_Backend, GpuStructuredBuffer)
 public:
+	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	
 	GpuStructuredBuffer_Backend(const CreateDesc& desc) : Base(desc) {}
 };
 

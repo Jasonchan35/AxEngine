@@ -64,8 +64,10 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	// };
 
 	auto addDescriptor = [](const ShaderParamSpace_Dx12* paramSpace, Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-		// AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type = {:8}, [{}] ",
-		//  	   p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
+#if 0
+		AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type = {:8}, [{}] ",
+		  	   p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
+#endif		
 		
 		if (p.bindCount() <= 0) throw Error_Undefined();
 		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), paramSpace->bindSpace());
@@ -77,6 +79,10 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 
 		for (auto& param : ownParamSpace->_constBuffers) {
 			addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
+		}
+		
+		for (auto& param : ownParamSpace->_structuredBufferParams) {
+			addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}
 
 		for (auto& param : ownParamSpace->_textureParams) {

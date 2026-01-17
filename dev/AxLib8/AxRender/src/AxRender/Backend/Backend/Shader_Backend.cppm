@@ -141,9 +141,10 @@ public:
 
 	struct StructuredBufferParam : public ParamBase {
 		using Info = ShaderStageInfo::StructuredBuffer;
-
 		void create(const Info& info);
+		Int stride() const { return _stride; }
 	private:
+		Int _stride = 0;
 	};
 
 	void addParam	(const ShaderStageInfo::ConstBuffer&      paramInfo);

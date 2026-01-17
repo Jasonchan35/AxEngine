@@ -38,7 +38,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 #endif
 
 	//------- update -----
-	for (auto& param : _constBuffers) {
+	for (auto& param : _constBufferParams) {
 		auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req));
 		if (!gpuBuf) throw Error_Undefined("cannot get const buffer");
 		auto info = gpuBuf->_getUpdatedDescriptorInfo(req);
@@ -83,7 +83,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 	writeDescSetHelper.updateToDevice(dev);
 }
 
-bool MaterialPass_Vk::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
+bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return false; }
 

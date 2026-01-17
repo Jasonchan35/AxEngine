@@ -622,9 +622,9 @@ auto Mat_<4,4,T,SIMD>::s_translateScale(const Vec3 & translate, const Vec3 & sca
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4,4,T,SIMD>::s_TRS_rad(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) -> This {
 	Vec3 s, c;
-	sincos(rotate.x, s.x, c.x);
-	sincos(rotate.y, s.y, c.y);
-	sincos(rotate.z, s.z, c.z);
+	Math::sincos(rotate.x, s.x, c.x);
+	Math::sincos(rotate.y, s.y, c.y);
+	Math::sincos(rotate.z, s.z, c.z);
 
 	return This(scale.x * (c.y*c.z),				scale.x * (c.y*s.z),               scale.x * (-s.y),    0,
 				scale.y * (s.x*s.y*c.z - c.x*s.z),	scale.y * (c.x*c.z + s.x*s.y*s.z), scale.y * (s.x*c.y), 0,

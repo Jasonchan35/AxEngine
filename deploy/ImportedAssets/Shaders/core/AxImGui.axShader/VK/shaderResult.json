@@ -63,7 +63,6 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "bufferSize": 80, 
           "variables": [{
               "name": "imguiProjectionMatrix", 
               "offset": 0, 
@@ -76,7 +75,8 @@
               "name": "AxTexture2D_fontTexture", 
               "offset": 68, 
               "dataType": "u32"
-            }]
+            }], 
+          "dataSize": 80
         }], 
       "textures": [], 
       "samplers": [], 

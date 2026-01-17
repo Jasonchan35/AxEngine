@@ -23,12 +23,10 @@ public:
 	struct HeapStartHandle : public NonCopyable {
 		ID3D12DescriptorHeap* d3dHeap = nullptr;
 		Dx12DescriptorHandle  handle;
-		Int bindCount = 0;
 
 		void update(Dx12DescriptorHeapChunk& heapChunk) {
 			d3dHeap = heapChunk.d3dHeap();
 			handle  = heapChunk.currentHandle();
-			bindCount = 0;
 		}
 	};
 
@@ -67,7 +65,7 @@ public:
 		return rttiCastCheck<MaterialParamSpace_Dx12>(getOwnParamSpace(bs));
 	}	
 	
-	virtual bool onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) override;
+	virtual bool onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) override;
 	virtual void onSetShader() override;
 };
 

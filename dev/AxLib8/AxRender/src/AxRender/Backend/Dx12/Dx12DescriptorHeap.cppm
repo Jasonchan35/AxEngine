@@ -34,6 +34,7 @@ struct Dx12Descriptor_ColorBuffer	{ Dx12DescriptorHandle handle; };
 struct Dx12Descriptor_DepthBuffer	{ Dx12DescriptorHandle handle; };
 struct Dx12Descriptor_Sampler		{ Dx12DescriptorHandle handle; };
 struct Dx12Descriptor_ConstBuffer	{ Dx12DescriptorHandle handle; };
+struct Dx12Descriptor_SRV			{ Dx12DescriptorHandle handle; };
 struct Dx12Descriptor_UAV			{ Dx12DescriptorHandle handle; };
 struct Dx12Descriptor_RawUAV		{ Dx12DescriptorHandle handle; };
 struct Dx12Descriptor_Texture		{ Dx12DescriptorHandle handle; };
@@ -286,20 +287,40 @@ struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 		_dev->CreateConstantBufferView(&desc, h.handle.cpu);
 		return h;
 	}
-	Dx12Descriptor_ConstBuffer addCBV(const Dx12Resource_GpuBuffer& res) {
-		return setCBV(_addHandle(), res);
-	}
+	Dx12Descriptor_ConstBuffer addCBV(const Dx12Resource_GpuBuffer& res) { return setCBV(_addHandle(), res); }
 
-	Dx12Descriptor_UAV setUAV(Int index, const Dx12Resource_GpuBuffer& buf) {
-		auto h = _getHandle<Dx12Descriptor_UAV>(index);
-		_dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
-																nullptr,
-																nullptr,
-																h.handle.cpu);
+	Dx12Descriptor_SRV setSRV(Int index, const Dx12Resource_GpuBuffer& res, Int first, Int count, Int stride) {
+		D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+		desc.Format                          = DXGI_FORMAT_UNKNOWN;
+		desc.ViewDimension                   = D3D12_SRV_DIMENSION_BUFFER;
+		desc.Shader4ComponentMapping         = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		desc.Buffer.FirstElement             = ax_safe_cast_from(first);
+		desc.Buffer.NumElements              = ax_safe_cast_from(count);
+		desc.Buffer.StructureByteStride      = ax_safe_cast_from(stride);
+		desc.Buffer.Flags                    = D3D12_BUFFER_SRV_FLAG_NONE;
+		auto h                               = _getHandle<Dx12Descriptor_SRV>(index);
+		_dev->CreateShaderResourceView(ax_const_cast(res).d3dResource(), &desc, h.handle.cpu);
 		return h;
 	}
-	Dx12Descriptor_UAV addUAV(Int index, const Dx12Resource_GpuBuffer& buf) {
-		return setUAV(_addHandle(), buf);
+	Dx12Descriptor_SRV addSRV(const Dx12Resource_GpuBuffer& res, Int first, Int count, Int stride) {
+		return setSRV(_addHandle(), res, first, count, stride);
+	}
+	
+	Dx12Descriptor_UAV setUAV(Int index, const Dx12Resource_GpuBuffer& buf, Int first, Int count, Int stride, bool isRaw) {
+		D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
+		desc.Format                           = DXGI_FORMAT_UNKNOWN;
+		desc.ViewDimension                    = D3D12_UAV_DIMENSION_BUFFER;
+		desc.Buffer.FirstElement              = ax_safe_cast_from(first);
+		desc.Buffer.NumElements               = ax_safe_cast_from(count);
+		desc.Buffer.StructureByteStride       = ax_safe_cast_from(stride);
+		desc.Buffer.Flags                     = isRaw ? D3D12_BUFFER_UAV_FLAG_RAW : D3D12_BUFFER_UAV_FLAG_NONE;  
+		desc.Buffer.CounterOffsetInBytes      = 0;
+		auto h                                = _getHandle<Dx12Descriptor_UAV>(index);
+		_dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(), nullptr, &desc, h.handle.cpu);
+		return h;
+	}
+	Dx12Descriptor_UAV addUAV(Int index, const Dx12Resource_GpuBuffer& buf, Int first, Int count, Int stride, bool isRaw) {
+		return setUAV(_addHandle(), buf, first, count, stride, isRaw);
 	}
 	
 	Dx12Descriptor_RawUAV setTypelessUAV(Int index, const Dx12Resource_GpuBuffer& buf) {
@@ -313,10 +334,7 @@ struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 		desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
 		auto h = _getHandle<Dx12Descriptor_RawUAV>(index);
-		_dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(),
-																nullptr,
-																&desc,
-																h.handle.cpu);
+		_dev->CreateUnorderedAccessView(ax_const_cast(buf).d3dResource(), nullptr, &desc, h.handle.cpu);
 		return h;
 	}
 	Dx12Descriptor_RawUAV addTypelessUAV(const Dx12Resource_GpuBuffer& buf) {

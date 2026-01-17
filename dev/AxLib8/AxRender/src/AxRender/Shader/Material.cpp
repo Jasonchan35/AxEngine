@@ -61,4 +61,8 @@ bool Material::setParam(NameId name, const Mat4d&	v) { return Material_setParam(
 bool Material::setParam(NameId name, Sampler*		v) { return Material_setParam(this, name, v); }
 bool Material::setParam(NameId name, Texture2D*		v) { return Material_setParam(this, name, v); }
 
+bool Material::setParam(NameId name, GpuStructuredBuffer* structBuf) {
+	return Material_setParam(this, name, structBuf);
+}
+
 } // namespace

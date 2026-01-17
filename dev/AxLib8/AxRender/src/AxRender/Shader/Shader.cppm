@@ -82,13 +82,11 @@ public:
 	};
 
 	struct BufferBase : public ParamBase {
-		Int				bufferSize  = 0;
 		Array<Variable>	variables;
 
 		template<class SE>
 		void onJsonIO(SE & se) {
 			ParamBase::onJsonIO(se);
-			AX_JSON_IO(se, bufferSize);
 			AX_JSON_IO(se, variables);
 		}
 
@@ -100,10 +98,24 @@ public:
 		}
 	};
 		
-	struct ConstBuffer : public BufferBase {};
+	struct ConstBuffer : public BufferBase {
+		Int dataSize = 0;
+		template<class SE>
+		void onJsonIO(SE & se) {
+			BufferBase::onJsonIO(se);
+			AX_JSON_IO(se, dataSize);
+		}
+	};
 	Array<ConstBuffer>	constBuffers;
 
-	struct StructuredBuffer : public BufferBase {};
+	struct StructuredBuffer : public BufferBase {
+		Int stride = 0;
+		template<class SE>
+		void onJsonIO(SE & se) {
+			BufferBase::onJsonIO(se);
+			AX_JSON_IO(se, stride);
+		}
+	};
 	Array<StructuredBuffer> structuredBuffers;
 
 //----------

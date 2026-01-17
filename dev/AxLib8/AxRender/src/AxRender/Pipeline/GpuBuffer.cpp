@@ -15,11 +15,17 @@ GpuBuffer::GpuBuffer(const CreateDesc& desc) {
 	_bufferSize = desc.bufferSize;
 }
 
+SPtr<GpuStructuredBuffer> GpuStructuredBuffer::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
+	return GpuStructuredBuffer_Backend::s_new(req, desc);
+}
+
 GpuStructuredBuffer::GpuStructuredBuffer(const CreateDesc& desc) {
+	_stride    = desc.stride;
+	_arraySize = desc.arraySize;
+	
 	GpuBuffer_CreateDesc gpuBufDesc;
 	gpuBufDesc.bufferType = GpuBufferType::Structured;
-	gpuBufDesc.bufferSize = desc.bufferSize;
-
+	gpuBufDesc.bufferSize = desc.stride * desc.arraySize;
 	_gpuBuffer = GpuBuffer::s_new(AX_NEW, gpuBufDesc);
 }
 

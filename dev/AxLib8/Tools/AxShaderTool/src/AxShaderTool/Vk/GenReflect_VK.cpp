@@ -279,7 +279,7 @@ void GenReflect_Vk::_genStorageBuffer(ShaderStageInfo& outInfo, const SpvReflect
 		throw Error_Undefined();
 		
 	auto& block = binding->block.members[0];
-	dst.bufferSize = ax_safe_cast_from(block.size);
+	dst.stride = ax_safe_cast_from(block.size);
 	u32 memberCount = block.member_count;
 	
 	for (u32 i = 0; i < memberCount; i++) {
@@ -300,7 +300,7 @@ void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDe
 	dst.name = StrView_c_str(typeDesc->type_name);
 
 	auto& block = binding->block;
-	dst.bufferSize = ax_safe_cast_from(block.size);
+	dst.dataSize = ax_safe_cast_from(block.size);
 
 	u32 memberCount = block.member_count;
 	for (u32 i = 0; i < memberCount; i++) {

@@ -34,6 +34,12 @@ public:
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override {}
 };
 
+class GpuStructuredBuffer_Null : public GpuStructuredBuffer_Backend {
+	AX_RTTI_INFO(GpuStructuredBuffer_Null, GpuStructuredBuffer_Backend);
+public:
+	GpuStructuredBuffer_Null(const CreateDesc& desc) : Base(desc) {}
+};
+
 class RenderPassColorBuffer_Null : public RenderPassColorBuffer_Backend {
 	AX_RTTI_INFO(RenderPassColorBuffer_Null, RenderPassColorBuffer_Backend)
 public:
@@ -110,7 +116,7 @@ class MaterialPass_Null : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Null, MaterialPass_Backend)
 public:
 	MaterialPass_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual bool onDrawcall(class RenderRequest* req, Cmd_DrawCall& cmd) override { return false; }
+	virtual bool onBindMaterial(class RenderRequest* req, Cmd_DrawCall& cmd) override { return false; }
 };
 
 class Material_Null : public Material_Backend {

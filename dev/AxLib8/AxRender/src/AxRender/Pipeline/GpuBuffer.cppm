@@ -59,8 +59,8 @@ protected:
 
 class GpuStructuredBuffer_CreateDesc : public NonCopyable {
 public:
-	String name;
-	Int	bufferSize = 0;
+	Int stride = 0;
+	Int	arraySize = 0;
 };
 
 class GpuStructuredBuffer : public RenderObject {
@@ -68,12 +68,16 @@ class GpuStructuredBuffer : public RenderObject {
 public:
 	using CreateDesc = GpuStructuredBuffer_CreateDesc;
 
+	static SPtr<GpuStructuredBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	
 	Int bufferSize() const { return _gpuBuffer ? _gpuBuffer->bufferSize() : 0; }
 	const GpuBuffer* gpuBuffer() const { return _gpuBuffer; }
 
 protected:
 	GpuStructuredBuffer(const CreateDesc& desc);
 	SPtr<GpuBuffer>	_gpuBuffer;
+	Int _stride = 0;
+	Int _arraySize = 0;
 };
 
 class DynamicGpuBuffer_CreateDesc : public NonCopyable {

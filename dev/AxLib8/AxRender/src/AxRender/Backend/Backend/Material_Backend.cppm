@@ -85,6 +85,26 @@ public:
 		DynamicGpuBuffer _dynamicGpuBuffer;
 	};
 
+	struct StructuredBufferParam : public ParamBase {
+		NameId		name() const { return _shaderParam->name(); }
+		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
+		BindCount	bindCount() const { return _shaderParam->bindCount(); }
+
+		void create(const ShaderParamSpace_Backend::StructuredBufferParam& shaderParam);
+		const GpuStructuredBuffer* buffer() const { return _buffer; }
+		
+		void setBuffer(GpuStructuredBuffer* buf) { _buffer.ref(buf); }
+		const GpuBuffer* gpuBuffer() const { return _buffer ? _buffer->gpuBuffer() : nullptr; }
+		
+		Int bufferSize() const { return _buffer ? _buffer->bufferSize() : 0; }
+		Int stride() const { return _shaderParam->stride(); }
+		Int arraySize() const { return Math::safeDiv(bufferSize(), stride()); }
+
+	private:
+		const ShaderParamSpace_Backend::StructuredBufferParam* _shaderParam = nullptr;
+		SPtr<const GpuStructuredBuffer>	_buffer;
+	};	
+
 	struct TextureParam : public ParamBase {
 		NameId         name() const { return _shaderParam->name(); }
 		BindPoint      bindPoint() const { return _shaderParam->bindPoint(); }
@@ -110,27 +130,6 @@ public:
 	private:
 		const ShaderParamSpace_Backend::SamplerParam* _shaderParam = nullptr;
 		SPtr<const Sampler>		_sampler;
-	};
-
-	struct StructuredBufferParam : public ParamBase {
-		NameId		name() const { return _shaderParam->name(); }
-		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
-		BindCount	bindCount() const { return _shaderParam->bindCount(); }
-
-		void create(const ShaderParamSpace_Backend::StructuredBufferParam& shaderParam);
-		const GpuStructuredBuffer* buffer() const { return _buffer; }
-
-		bool setBuffer(GpuStructuredBuffer* buf) {
-			_buffer.ref(buf);
-			return true;
-		}
-
-		const GpuBuffer* gpuBuffer() const { return _buffer ? _buffer->gpuBuffer() : nullptr; }
-		Int              dataSize() const { return _buffer ? _buffer->bufferSize() : 0; }
-
-	private:
-		const ShaderParamSpace_Backend::StructuredBufferParam* _shaderParam = nullptr;
-		SPtr<const GpuStructuredBuffer>	_buffer;
 	};
 
 	bool setParam(NameId name, const i32&		v) { return _setVariable(name, v); }
@@ -165,14 +164,20 @@ public:
 
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
-
-	BindSpace	bindSpace() const { return _shaderParamSpace->bindSpace(); }
+	
+	bool setParam(NameId name, GpuStructuredBuffer* v);
+	
+	BindSpace bindSpace() const { return _shaderParamSpace->bindSpace(); }
 
 	TempString debugName() const { return _shaderParamSpace ? _shaderParamSpace->debugName() : ""; }
 	
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
-	Array<ConstBufferParam,      1>	_constBuffers;
+	StructuredBufferParam* findStructuredBufferParam(NameId name) { return _findParam(_structuredBufferParams, name); }
+	TextureParam*          findTextureParam(NameId name) { return _findParam(_textureParams, name); }
+	SamplerParam*          findSamplerParam(NameId name) { return _findParam(_samplerParams, name); }
+	
+	Array<ConstBufferParam,      1>	_constBufferParams;
 	Array<StructuredBufferParam, 1>	_structuredBufferParams;
 	Array<TextureParam,          2>	_textureParams;
 	Array<SamplerParam,          2>	_samplerParams;
@@ -196,7 +201,7 @@ bool MaterialParamSpace_Backend::_setVariable(NameId name, const V& v) {
 #if 1
 	auto r = _shaderParamSpace->findVarInfo(name);
 	if (!r) return false;
-	return _constBuffers[r->constBufferIndex].setVariable(r->varInfo, v);
+	return _constBufferParams[r->constBufferIndex].setVariable(r->varInfo, v);
 	
 #else
 	bool b = false;
@@ -256,7 +261,7 @@ public:
 	const ShaderPass_Backend*	shaderPass() const { return _shaderPass; }
 	const Shader_Backend*		shader() const;
 
-	virtual bool onDrawcall(class RenderRequest* req, Cmd_DrawCall& cmd) = 0;
+	virtual bool onBindMaterial(class RenderRequest* req, Cmd_DrawCall& cmd) = 0;
 
 	bool isOwnParamSpace(BindSpace s) const { return _shaderPass->isOwnParamSpace(s); }
 

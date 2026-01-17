@@ -41,6 +41,12 @@ private:
 	Dx12Resource_GpuBuffer	_p;
 };
 
+class GpuStructuredBuffer_Dx12 : public GpuStructuredBuffer_Backend {
+	AX_RTTI_INFO(GpuStructuredBuffer_Dx12, GpuStructuredBuffer_Backend);
+public:
+	GpuStructuredBuffer_Dx12(const CreateDesc& desc) : Base(desc) {}
+};
+
 } // namespace
 
 #endif

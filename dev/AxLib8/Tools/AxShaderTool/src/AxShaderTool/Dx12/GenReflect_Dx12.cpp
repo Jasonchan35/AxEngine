@@ -506,7 +506,7 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		outCB.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		outCB.bindCount  = ax_safe_cast_from(resDesc.BindCount);
 		outCB.bindSpace  = ax_safe_cast_from(resDesc.Space);
-		outCB.bufferSize = ax_safe_cast_from(bufDesc.Size);
+		outCB.dataSize   = ax_safe_cast_from(bufDesc.Size);
 
 		outCB.variables.ensureCapacity(bufDesc.Variables);
 		for (UINT j=0; j<bufDesc.Variables; j++) {
@@ -558,7 +558,7 @@ void GenReflect_Dx12::_compileReflect_structuredBuffers(ShaderStageInfo& outInfo
 		outBufferInfo.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		outBufferInfo.bindCount  = ax_safe_cast_from(resDesc.BindCount);
 		outBufferInfo.bindSpace  = ax_safe_cast_from(resDesc.Space);
-		outBufferInfo.bufferSize = ax_safe_cast_from(bufDesc.Size);
+		outBufferInfo.stride     = ax_safe_cast_from(bufDesc.Size);
 		
 		if (bufDesc.Variables < 1) throwIfError(hr);
 		auto* cbv = cb->GetVariableByIndex(0);

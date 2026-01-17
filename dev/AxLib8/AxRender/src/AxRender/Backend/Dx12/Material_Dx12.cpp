@@ -63,13 +63,20 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	
 	auto& cmdList = req->_graphCmdList_dx12;
 	
-	for (auto& cb : _constBuffers) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(cb.getUploadedGpuBuffer(req)));
+	for (auto& constBuf : _constBufferParams) {
+		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(constBuf.getUploadedGpuBuffer(req)));
 		if (!gpuBuf) throw Error_Undefined();
 		//		AX_LOG("-- addCBV");
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		req->_dynamicDescriptors.CBV_SRV_UAV.addCBV(gpuBuf->resource());
-		_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
+	}
+	
+	for (auto& structBuf : _structuredBufferParams) {
+		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(structBuf.gpuBuffer()));
+		if (!gpuBuf) throw Error_Undefined();
+		// AX_LOG("-- add StructuredBuffer");
+		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COMMON);
+		req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(gpuBuf->resource(), 0, structBuf.arraySize(), structBuf.stride());
 	}
 
 #if !AX_RENDER_BINDLESS
@@ -111,7 +118,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	return _perFrameData;
 }
 
-bool MaterialPass_Dx12::onDrawcall(RenderRequest* req_, Cmd_DrawCall& cmd) {
+bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 	auto& cmdList = req->_graphCmdList_dx12;
 

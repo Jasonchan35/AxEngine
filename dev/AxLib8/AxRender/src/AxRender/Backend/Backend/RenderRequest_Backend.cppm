@@ -121,6 +121,8 @@ private:
 	};
 
 	InlineUpload _inlineUpload;
+	
+	SPtr<GpuStructuredBuffer> _perDrawcallStructBuf;
 };
 
 template<class OWNER, class DATA, class...ARGS>

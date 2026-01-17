@@ -8,10 +8,18 @@ export import :Object;
 export namespace AxEngine {
 
 class SceneWorld;
+class SceneEntity;
 
 AX_CLASS()
 class SceneComponent : public Object {
 	AX_GENERATED_BODY()
+public:
+	      SceneEntity* entity()       { return _entity; }
+	const SceneEntity* entity() const { return _entity; }
+
+protected:
+	friend class SceneEntity;
+	SceneEntity* _entity = nullptr;
 };
 
 AX_CLASS()
@@ -35,6 +43,7 @@ public:
 	COMP* addComponent(const MemAllocRequest& allocReq) {
 		auto comp = SPtr_new<COMP>(allocReq);
 		_components.emplaceBack(comp);
+		comp->_entity = this;
 		return comp;
 	}
 	
@@ -50,6 +59,13 @@ public:
 		Vec3f position{0,0,0};
 		Vec3f rotation{0,0,0};
 		Vec3f scale{1,1,1};
+		
+		const Mat4f& getObjectToWorld() {
+			_objectToWorld = Mat4f::s_TRS_deg(position, rotation, scale);
+			return _objectToWorld;
+		}
+	private:
+		Mat4f _objectToWorld;
 	};
 	
 	Transform transform;
@@ -87,8 +103,6 @@ class CMeshRenderer : public SceneComponent {
 public:	
 	CMeshRenderer();
 	virtual ~CMeshRenderer() override;
-
-	void onRender(RenderRequest* req);
 	
 	SPtr<MeshObject> mesh;
 	SPtr<Material> material;

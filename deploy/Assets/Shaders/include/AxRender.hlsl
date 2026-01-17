@@ -57,15 +57,17 @@ cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
 	Mat4f	ax_object_m_i;		// world To Object
 }
 
-struct AxObjectData {
-	Mat4f objectToWorld;
+struct AxPerDrawcall {
+	Mat4f mvp;
 };
-StructuredBuffer<AxObjectData> gAxObjectData : register(t0, AX_BindSpace_Object);
+StructuredBuffer<AxPerDrawcall> gAxPerDrawcall : register(t1000, AX_BindSpace_Object);
+
+AxPerDrawcall getAxPerDrawcall() { return gAxPerDrawcall[0]; }
 
 #if AX_RENDER_BINDLESS
 	SamplerState AxBindless_SamplerState[1000] : register(s0,     AX_BindSpace_Bindless);
 	Texture2D    AxBindless_Texture2D[10000]   : register(t10000, AX_BindSpace_Bindless);
-	Texture3D    AxBindless_Texture3D[10000]   : register(t20000, AX_BindSpace_Bindless);
+	Texture3D    AxBindless_Texture3D[1000]    : register(t20000, AX_BindSpace_Bindless);
 	
 	// $Global UniformBuffer should be register(x, space0)
 
@@ -81,8 +83,6 @@ StructuredBuffer<AxObjectData> gAxObjectData : register(t0, AX_BindSpace_Object)
 	#define tex2Dlod(NAME, UV, LOD) AxBindless_Texture2D[AxTexture2D_##NAME].SampleLevel(AxBindless_SamplerState[AxSamplerState_##NAME], UV, LOD)
 	#define tex3Dlod(NAME, UV, LOD) AxBindless_Texture3D[AxTexture3D_##NAME].SampleLevel(AxBindless_SamplerState[AxSamplerState_##NAME], UV, LOD)
 
-	AxObjectData getAxObjectData() { return gAxObjectData[0]; }
-
 #else
 	// HLSL can auto pick register, and "spirv-cross -fauto-bind-uniforms" can auto gen for SPIR-V
 	#define Sampler_Texture2D(NAME) 				SamplerState AxSamplerState_##NAME; Texture2D NAME;
@@ -93,8 +93,6 @@ StructuredBuffer<AxObjectData> gAxObjectData : register(t0, AX_BindSpace_Object)
 
 	#define tex2D(NAME, UV) NAME.Sample(AxSamplerState_##NAME, UV)
 	#define tex3D(NAME, UV) NAME.Sample(AxSamplerState_##NAME, UV)
-
-	AxObjectData getAxObjectData() { return gAxObjectData[0]; }
 
 #endif // else AX_RENDER_BINDLESS
 

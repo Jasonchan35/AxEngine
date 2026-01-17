@@ -84,7 +84,6 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "bufferSize": 48, 
           "variables": [{
               "name": "color", 
               "offset": 0, 
@@ -105,7 +104,8 @@
               "name": "AxTexture2D_tex1", 
               "offset": 28, 
               "dataType": "u32"
-            }]
+            }], 
+          "dataSize": 48
         }], 
       "textures": [], 
       "samplers": [], 

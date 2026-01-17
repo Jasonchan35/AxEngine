@@ -41,10 +41,10 @@ MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 		return;
 	}
 
-	MaterialParamSpace_Backend_cloneParams(_constBuffers            , _shaderParamSpace->_constBuffers          );
+	MaterialParamSpace_Backend_cloneParams(_constBufferParams       , _shaderParamSpace->_constBuffers          );
+	MaterialParamSpace_Backend_cloneParams(_structuredBufferParams  , _shaderParamSpace->_structuredBufferParams);
 	MaterialParamSpace_Backend_cloneParams(_samplerParams           , _shaderParamSpace->_samplerParams         );
 	MaterialParamSpace_Backend_cloneParams(_textureParams           , _shaderParamSpace->_textureParams         );
-	MaterialParamSpace_Backend_cloneParams(_structuredBufferParams  , _shaderParamSpace->_structuredBufferParams);
 }
 
 void MaterialParamSpace_Backend::ConstBufferParam::create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam) {
@@ -74,6 +74,14 @@ void MaterialParamSpace_Backend::StructuredBufferParam::create(const ShaderParam
 	ParamBase::create(shaderParam);
 
 	_shaderParam = &shaderParam;
+}
+
+bool MaterialParamSpace_Backend::setParam(NameId name, GpuStructuredBuffer* v) {
+	if (!_shaderParamSpace) return false;
+	auto* param = _findParam(_structuredBufferParams, name);
+	if (!param) return false;
+	param->setBuffer(v);
+	return true;
 }
 
 bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {

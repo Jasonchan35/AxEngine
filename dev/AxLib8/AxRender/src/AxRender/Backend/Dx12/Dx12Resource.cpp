@@ -52,9 +52,7 @@ void Dx12ResourceBase::destroy() {
 void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	destroy();
 
-	_desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-
-	Int alignment = 1;
+	Int alignment = 0;
 	switch (type) {
 		case GpuBufferType::Vertex: {
 			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
@@ -78,14 +76,12 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 		}break;
 
 		case GpuBufferType::StagingToCpu: {
-			alignment       = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
 			_heapProps.Type = D3D12_HEAP_TYPE_READBACK;
 		}break;
 
 		case GpuBufferType::Structured: {
-			alignment      = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
-			_resourceState = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+			_resourceState = D3D12_RESOURCE_STATE_COMMON; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 			_desc.Flags    = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}break;
 
@@ -119,8 +115,14 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	if (bufferSize <= 0) {
 		return;
 	}
-	_desc.Width = Math::alignTo(bufferSize, alignment);
-	_dataSize = bufferSize;
+	
+	if (alignment > 0) {
+		bufferSize = Math::alignTo(bufferSize, alignment);
+	}
+	_desc.Width     = ax_safe_cast_from(bufferSize);
+	_desc.Layout    = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	_dataSize       = bufferSize;
 	_create();
 }
 

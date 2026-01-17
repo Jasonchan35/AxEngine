@@ -49,6 +49,7 @@
 	E(RenderPassDepthBuffer		, API, SUFFIX) \
 	E(RenderRequest				, API, SUFFIX) \
 	E(GpuBuffer					, API, SUFFIX) \
+	E(GpuStructuredBuffer		, API, SUFFIX) \
 	E(Shader					, API, SUFFIX) \
 	E(ShaderPass				, API, SUFFIX) \
 	E(ShaderParamSpace			, API, SUFFIX) \
