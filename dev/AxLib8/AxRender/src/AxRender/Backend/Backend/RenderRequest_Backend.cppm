@@ -92,10 +92,11 @@ public:
 
 	void setCamera_backend(const Math::Camera3f& camera);
 	
-	
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
-	
-	const Mat4f& viewProjMatrix() const { return _viewProjMatrix; }
+
+	struct RootConstStruct {
+		Mat4f mvp;
+	} rootConstStruct;
 	
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)

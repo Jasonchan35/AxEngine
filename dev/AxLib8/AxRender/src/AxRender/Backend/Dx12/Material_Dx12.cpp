@@ -142,15 +142,13 @@ bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		updatedParamSpaceData[ax_enum_int(paramSpace->bindSpace())] = &data;
 	}
 
-	auto mvp = req->viewProjMatrix() * cmd.objectToWorld;
-	auto rootConstData =  Span(mvp).toByteSpan();
-
 	UINT rootParamIndex = 0;
 	for (auto& rp : shdPass->_rootParamBindings) {
 		// AX_LOG("--- setRootDescriptor bindSpace={:8} rootParamType={}", rp.bindSpace, rp.rootParamType);
 		
 		switch (rp.rootParamType) {
 			case Dx12RootParamType::RootUInt32: {
+				auto rootConstData = Span(req->rootConstStruct).toByteSpan();
 				cmdList->SetGraphicsRoot32BitConstants(rootParamIndex,
 				                                       ax_safe_cast_from(rootConstData.sizeInBytes() / 4),
 				                                       rootConstData.data(),

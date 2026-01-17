@@ -176,6 +176,8 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 	if (auto* indexBuffer = rttiCastCheck<GpuBuffer_Backend>(cmd.indexBuffer)) {
 		resourcesToKeep.add(indexBuffer);
 	}
+	
+	rootConstStruct.mvp = _viewProjMatrix * cmd.objectToWorld;
 
 	matPass->onBindMaterial(this, cmd);
 	onDrawCall(cmd);
