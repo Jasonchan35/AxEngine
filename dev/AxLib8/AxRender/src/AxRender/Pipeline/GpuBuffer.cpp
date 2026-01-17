@@ -20,13 +20,14 @@ SPtr<GpuStructuredBuffer> GpuStructuredBuffer::s_new(const MemAllocRequest& req,
 }
 
 GpuStructuredBuffer::GpuStructuredBuffer(const CreateDesc& desc) {
-	_stride    = desc.stride;
-	_arraySize = desc.arraySize;
+	_stride   = desc.stride;
+	_capacity = desc.capacity;
 	
-	GpuBuffer_CreateDesc gpuBufDesc;
-	gpuBufDesc.bufferType = GpuBufferType::Structured;
-	gpuBufDesc.bufferSize = desc.stride * desc.arraySize;
-	_gpuBuffer = GpuBuffer::s_new(AX_NEW, gpuBufDesc);
+	DynamicGpuBuffer_CreateDesc createDesc;
+	createDesc.bufferType = GpuBufferType::Structured;
+	createDesc.name = desc.name;
+	_buffer.create(createDesc);
+	_buffer.ensureDataCapacity(desc.capacity * desc.stride);
 }
 
 void DynamicGpuBuffer::create(const CreateDesc& desc) {
@@ -51,13 +52,14 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 	AX_ASSERT(_bufferType != GpuBufferType::None);
 	if (_dirtyRange.size() <= 0 && _gpuBuffer) return _gpuBuffer;
 
-	auto dataSize    = _data.size();
-	auto uploadRange = _dirtyRange;
+	auto dataSize     = _data.size();
+	auto dataCapacity = _data.capacity();
+	auto uploadRange  = _dirtyRange;
 	_dirtyRange.reset();
 	
-	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataSize) {
-		_gpuBuffer = GpuBuffer::s_new(AX_NEW, _name, _bufferType, dataSize);
-		uploadRange = IntRange(dataSize); // upload all for new buffer
+	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataCapacity) {
+		_gpuBuffer = GpuBuffer::s_new(AX_NEW, _name, _bufferType, dataCapacity);
+		uploadRange = IntRange(dataSize); // upload all data for new buffer
 	}
 
 	req->copyDataToGpuBuffer(_gpuBuffer, _data.slice(uploadRange), uploadRange.start());

@@ -94,12 +94,13 @@ public:
 		const GpuStructuredBuffer* buffer() const { return _buffer; }
 		
 		void setBuffer(GpuStructuredBuffer* buf) { _buffer.ref(buf); }
-		const GpuBuffer* gpuBuffer() const { return _buffer ? _buffer->gpuBuffer() : nullptr; }
 		
-		Int bufferSize() const { return _buffer ? _buffer->bufferSize() : 0; }
+		const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
+			return _buffer ? _buffer->getUploadedGpuBuffer(req) : nullptr;
+		}
+		
 		Int stride() const { return _shaderParam->stride(); }
-		Int arraySize() const { return Math::safeDiv(bufferSize(), stride()); }
-
+	
 	private:
 		const ShaderParamSpace_Backend::StructuredBufferParam* _shaderParam = nullptr;
 		SPtr<const GpuStructuredBuffer>	_buffer;

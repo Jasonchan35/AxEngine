@@ -149,6 +149,19 @@
               "dataType": "Mat4f"
             }], 
           "dataSize": 512
+        }, {
+          "name": "gAxRootConst", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "RootConst", 
+          "bindPoint": 1, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "mvp", 
+              "offset": 0, 
+              "dataType": "Mat4f"
+            }], 
+          "dataSize": 64
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 
@@ -174,19 +187,6 @@
           "bindCount": 1000, 
           "dynamicSampler": true
         }], 
-      "structuredBuffers": [{
-          "name": "gAxPerDrawcall", 
-          "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "Object", 
-          "bindPoint": 1004, 
-          "bindCount": 1, 
-          "variables": [{
-              "name": "mvp", 
-              "offset": 0, 
-              "dataType": "Mat4f"
-            }], 
-          "stride": 64
-        }]
+      "structuredBuffers": []
     }]
 }

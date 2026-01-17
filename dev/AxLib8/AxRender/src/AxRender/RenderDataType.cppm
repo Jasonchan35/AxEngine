@@ -56,8 +56,9 @@ struct RenderMemoryInfo {
 	E(World     , = 1) \
 	E(Object    , = 2) \
 	E(Bindless  , = 3) \
+	E(RootConst , = 4) \
 	E(_COUNT    ,    ) \
-	E(Invalid   ,= u16_max) \
+	E(Invalid   , = u16_max) \
 //-----
 AX_ENUM_CLASS(AX_ShaderParamBindSpace_ENUM_LIST, ShaderParamBindSpace, u16);
 
@@ -260,6 +261,7 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 	E(Texture3DArray,)   \
 	E(TextureCubeArray,) \
 	\
+	E(Struct,) \
 	E(ConstBuffer,) \
 	E(StructuredBuffer,) \
 	E(RWStructuredBuffer,) \

@@ -72,7 +72,6 @@ void MaterialParamSpace_Backend::TextureParam::create(const ShaderParamSpace_Bac
 
 void MaterialParamSpace_Backend::StructuredBufferParam::create(const ShaderParamSpace_Backend::StructuredBufferParam& shaderParam) {
 	ParamBase::create(shaderParam);
-
 	_shaderParam = &shaderParam;
 }
 

@@ -475,10 +475,86 @@ RenderDataType GenReflect_Dx12::_getRenderDataType(const D3D12_SHADER_TYPE_DESC&
 				}
 			}
 		} break;
+			
+		case D3D_SVC_STRUCT: {
+			return RenderDataType::Struct;
+		} break;
 		default: throw Error_Undefined();
 	}
 	
 	throw Error_Undefined();
+}
+
+void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& outInfo,
+                                                 ID3D12ShaderReflection*      reflect,
+                                                 ID3D12ShaderReflectionConstantBuffer* cb) 
+{
+	HRESULT hr;
+	
+	D3D12_SHADER_BUFFER_DESC bufDesc;
+	hr = cb->GetDesc(&bufDesc);
+	throwIfError(hr);
+
+	//----- single struct variable -----
+	if (bufDesc.Variables == 1) {
+		auto* cbv = cb->GetVariableByIndex(0);
+		D3D12_SHADER_TYPE_DESC typeDesc;
+		hr = cbv->GetType()->GetDesc(&typeDesc);
+		throwIfError(hr);
+
+		if (typeDesc.Class == D3D_SVC_STRUCT) {
+			auto* varType = cbv->GetType();
+			D3D12_SHADER_TYPE_DESC varTypeDesc;
+			hr = varType->GetDesc(&varTypeDesc);
+			throwIfError(hr);
+		
+			outInfo.variables.ensureCapacity(varTypeDesc.Members);
+			for (UINT j=0; j<varTypeDesc.Members; j++) {
+				auto* memberName = varType->GetMemberTypeName(j);
+				auto* memberType = varType->GetMemberTypeByIndex(j);
+				D3D12_SHADER_TYPE_DESC memberTypeDesc;
+				hr = memberType->GetDesc(&memberTypeDesc);
+				throwIfError(hr);
+			
+				auto& outVar  = outInfo.variables.emplaceBack();
+				outVar.name   = StrView_c_str(memberName);
+				outVar.offset = ax_safe_cast_from(memberTypeDesc.Offset);
+
+				outVar.dataType = _getRenderDataType(memberTypeDesc);
+				if (outVar.dataType == RenderDataType::None) {
+					throw Error_Undefined();
+				}
+			}
+		}
+		return;
+	}
+
+	//----- variables ----- 
+	outInfo.variables.ensureCapacity(bufDesc.Variables);
+	for (UINT j=0; j<bufDesc.Variables; j++) {
+		auto* cbv = cb->GetVariableByIndex(j);
+		D3D12_SHADER_VARIABLE_DESC varDesc;
+		hr = cbv->GetDesc(&varDesc);
+		throwIfError(hr);
+
+		D3D12_SHADER_TYPE_DESC varType;
+		hr = cbv->GetType()->GetDesc(&varType);
+		throwIfError(hr);
+
+		if (!_keepUnusedVariable) {
+			if (0 == (varDesc.uFlags & D3D_SVF_USED)) continue;
+		}
+
+		auto& outVar  = outInfo.variables.emplaceBack();
+		outVar.name   = StrView_c_str(varDesc.Name);
+		outVar.offset = ax_safe_cast_from(varDesc.StartOffset);
+					
+		outVar.dataType = _getRenderDataType(varType);
+
+		if (outVar.dataType == RenderDataType::None) {
+			throw Error_Undefined();
+		}
+	}	
 }
 
 void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
@@ -492,47 +568,22 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		throwIfError(hr);
 
 		if (resDesc.Type != D3D_SIT_CBUFFER) continue;
-
-		auto& outCB      = outInfo.constBuffers.emplaceBack();
-		outCB.stageFlags = outInfo.stageFlags;
-		outCB.dataType   = RenderDataType::ConstBuffer;
-
+		
 		D3D12_SHADER_BUFFER_DESC bufDesc;
 		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);
 		hr = cb->GetDesc(&bufDesc);
 		throwIfError(hr);
 
+		auto& outCB      = outInfo.constBuffers.emplaceBack();
+		outCB.stageFlags = outInfo.stageFlags;
+		outCB.dataType   = RenderDataType::ConstBuffer;
 		outCB.name       = StrView_c_str(bufDesc.Name);
 		outCB.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		outCB.bindCount  = ax_safe_cast_from(resDesc.BindCount);
 		outCB.bindSpace  = ax_safe_cast_from(resDesc.Space);
 		outCB.dataSize   = ax_safe_cast_from(bufDesc.Size);
-
-		outCB.variables.ensureCapacity(bufDesc.Variables);
-		for (UINT j=0; j<bufDesc.Variables; j++) {
-			auto* cbv = cb->GetVariableByIndex(j);
-			D3D12_SHADER_VARIABLE_DESC varDesc;
-			hr = cbv->GetDesc(&varDesc);
-			throwIfError(hr);
-
-			D3D12_SHADER_TYPE_DESC varType;
-			hr = cbv->GetType()->GetDesc(&varType);
-			throwIfError(hr);
-
-			if (!_keepUnusedVariable) {
-				if (0 == (varDesc.uFlags & D3D_SVF_USED)) continue;
-			}
-
-			auto& outVar  = outCB.variables.emplaceBack();
-			outVar.name   = StrView_c_str(varDesc.Name);
-			outVar.offset = ax_safe_cast_from(varDesc.StartOffset);
-					
-			outVar.dataType = _getRenderDataType(varType);
-
-			if (outVar.dataType == RenderDataType::None) {
-				throw Error_Undefined();
-			}
-		}
+		
+		_compileReflect_BufferBase(outCB, reflect, cb);
 	}
 }
 
@@ -560,30 +611,7 @@ void GenReflect_Dx12::_compileReflect_structuredBuffers(ShaderStageInfo& outInfo
 		outBufferInfo.bindSpace  = ax_safe_cast_from(resDesc.Space);
 		outBufferInfo.stride     = ax_safe_cast_from(bufDesc.Size);
 		
-		if (bufDesc.Variables < 1) throwIfError(hr);
-		auto* cbv = cb->GetVariableByIndex(0);
-
-		auto* varType = cbv->GetType();
-		D3D12_SHADER_TYPE_DESC varTypeDesc;
-		hr = varType->GetDesc(&varTypeDesc);
-		throwIfError(hr);
-
-		for (UINT j=0; j<varTypeDesc.Members; j++) {
-			auto* memberName = varType->GetMemberTypeName(j);
-			auto* memberType = varType->GetMemberTypeByIndex(j);
-			D3D12_SHADER_TYPE_DESC memberTypeDesc;
-			hr = memberType->GetDesc(&memberTypeDesc);
-			throwIfError(hr);
-			
-			auto& outVar  = outBufferInfo.variables.emplaceBack();
-			outVar.name   = StrView_c_str(memberName);
-			outVar.offset = ax_safe_cast_from(memberTypeDesc.Offset);
-
-			outVar.dataType = _getRenderDataType(memberTypeDesc);
-			if (outVar.dataType == RenderDataType::None) {
-				throw Error_Undefined();
-			}
-		}		
+		_compileReflect_BufferBase(outBufferInfo, reflect, cb);
 	}
 }
 

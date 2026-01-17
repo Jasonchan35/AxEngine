@@ -43,21 +43,6 @@ void RenderRequest_Backend::_updateCommonMaterial() {
 
 	_commonMaterial     = rttiCastCheck<Material_Backend>(_stockObjects->commonMaterial.ptr());
 	_commonMaterialPass = _commonMaterial->getPass(0);
-
-	static NameId name_gAxPerDrawcall = NameId::s_make("gAxPerDrawcall");
-	auto* commonObjectSpace = _commonMaterialPass->getOwnParamSpace(BindSpace::Object);
-	auto* param_gAxPerDrawcall = commonObjectSpace->findStructuredBufferParam(name_gAxPerDrawcall);
-	if (!param_gAxPerDrawcall) throw Error_Undefined();
-	
-	if (!_perDrawcallStructBuf) {
-		GpuStructuredBuffer_CreateDesc createDesc;
-		createDesc.stride    = param_gAxPerDrawcall->stride();
-		createDesc.arraySize = AxRenderConfig::kMaxDrawcallCount;
-		_perDrawcallStructBuf = GpuStructuredBuffer::s_new(AX_NEW, createDesc);
-		if (!_perDrawcallStructBuf) throw Error_Undefined();
-	}
-	commonObjectSpace->setParam(name_gAxPerDrawcall, _perDrawcallStructBuf);
-	
 	resourcesToKeep.add(_commonMaterial);
 	
 	f32 t = static_cast<f32>(_uptime);
@@ -88,7 +73,6 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_uptime                = _renderSystem_backend->getCurrentUptime().seconds_f64();
 	_objectManager = RenderObjectManager_Backend::s_instance();
 	_updateCommonMaterial();
-	
 	onFrameBegin();
 }
 
@@ -135,8 +119,8 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 }
 
 void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
-	auto mvp = camera.viewProjMatrix();
-	commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_mvp"), mvp);
+	_viewProjMatrix = camera.viewProjMatrix();
+	commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_vp"), _viewProjMatrix);
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
@@ -194,7 +178,6 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 	}
 
 	matPass->onBindMaterial(this, cmd);
-
 	onDrawCall(cmd);
 }
 

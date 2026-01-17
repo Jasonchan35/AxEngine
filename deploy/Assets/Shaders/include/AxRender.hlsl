@@ -25,10 +25,11 @@ typedef float4 	Color4f;
 // HLSL: resource : register(x, space) | DX: D3D12_SHADER_INPUT_BIND_DESC |  spirv-cross reflection
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"
 // HLSL: register space                | DX: "Space"                      |  Vulkan "set"
-#define AX_BindSpace_Default		space0
-#define AX_BindSpace_World   		space1
-#define AX_BindSpace_Object 		space2
-#define AX_BindSpace_Bindless		space3
+#define AX_BindSpace_Default	space0
+#define AX_BindSpace_World		space1
+#define AX_BindSpace_Object		space2
+#define AX_BindSpace_Bindless	space3
+#define AX_BindSpace_RootConst	space4
 
 #define f32   float
 #define Vec4f float4
@@ -57,12 +58,10 @@ cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
 	Mat4f	ax_object_m_i;		// world To Object
 }
 
-struct AxPerDrawcall {
+struct AxRootConst {
 	Mat4f mvp;
 };
-StructuredBuffer<AxPerDrawcall> gAxPerDrawcall : register(t1000, AX_BindSpace_Object);
-
-AxPerDrawcall getAxPerDrawcall() { return gAxPerDrawcall[0]; }
+ConstantBuffer<AxRootConst> gAxRootConst : register(b1, AX_BindSpace_RootConst);
 
 #if AX_RENDER_BINDLESS
 	SamplerState AxBindless_SamplerState[1000] : register(s0,     AX_BindSpace_Bindless);

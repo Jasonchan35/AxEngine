@@ -59,25 +59,9 @@ protected:
 
 class GpuStructuredBuffer_CreateDesc : public NonCopyable {
 public:
+	StrView name;
 	Int stride = 0;
-	Int	arraySize = 0;
-};
-
-class GpuStructuredBuffer : public RenderObject {
-	AX_RTTI_INFO(GpuStructuredBuffer, RenderObject)
-public:
-	using CreateDesc = GpuStructuredBuffer_CreateDesc;
-
-	static SPtr<GpuStructuredBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-	
-	Int bufferSize() const { return _gpuBuffer ? _gpuBuffer->bufferSize() : 0; }
-	const GpuBuffer* gpuBuffer() const { return _gpuBuffer; }
-
-protected:
-	GpuStructuredBuffer(const CreateDesc& desc);
-	SPtr<GpuBuffer>	_gpuBuffer;
-	Int _stride = 0;
-	Int _arraySize = 0;
+	Int	capacity = 0;
 };
 
 class DynamicGpuBuffer_CreateDesc : public NonCopyable {
@@ -101,6 +85,7 @@ public:
 	void reset();
 
 	Int dataSize() const { return _data.size(); }
+	Int dataCapacity() const { return _data.capacity();}
 
 	void ensureDataCapacity(Int s) { _data.ensureCapacity(s); }
 
@@ -161,5 +146,38 @@ MutByteSpan DynamicGpuBuffer::extendSize(Int sizeInBytes) {
 	_data.resize(_data.size() + sizeInBytes);
 	return _data.slice(range);
 }
+
+class GpuStructuredBuffer : public RenderObject {
+	AX_RTTI_INFO(GpuStructuredBuffer, RenderObject)
+public:
+	using CreateDesc = GpuStructuredBuffer_CreateDesc;
+
+	static SPtr<GpuStructuredBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	
+	Int dataCapacity() const { return _buffer.dataCapacity(); }
+	
+	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const {
+		return _buffer.getUploadedGpuBuffer(req);
+	}	
+
+	Int stride() const { return _stride; }
+	Int usedCount() const { return _usedCount; }
+	Int capacity() const { return _capacity; }
+	
+	void resetUsedCount() { _usedCount = 0; }
+	
+	void addData(ByteSpan data) {
+		if (data.size() != _stride) throw Error_Undefined();
+		_buffer.appendData(data);
+		++_usedCount;
+	}
+
+protected:
+	GpuStructuredBuffer(const CreateDesc& desc);
+	DynamicGpuBuffer _buffer;
+	Int _stride = 0;
+	Int _capacity = 0;
+	Int _usedCount = 0;
+};
 
 } // namespace

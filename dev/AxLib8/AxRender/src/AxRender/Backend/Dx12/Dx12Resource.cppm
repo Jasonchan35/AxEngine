@@ -257,13 +257,13 @@ struct Dx12RootParameterList {
 		return rootParamIndex;
 	}
 
-	void addRoot32BitConst(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace	bindSpace, u32 u32_value) {
+	void addRoot32BitConst(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace	bindSpace, Int sizeInBytes) {
 		auto& dst = parameters.emplaceBack();
 		dst.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 		dst.ShaderVisibility         = shaderVisibility;
 		dst.Constants.ShaderRegister = Dx12Util::castUINT(ax_enum_int(bindPoint));
 		dst.Constants.RegisterSpace  = Dx12Util::castUINT(ax_enum_int(bindSpace));
-		dst.Constants.Num32BitValues = u32_value;
+		dst.Constants.Num32BitValues = ax_safe_cast_from(sizeInBytes / 4); // 32bit = 4 bytes
 	}
 
 	void addRootCBV(D3D12_SHADER_VISIBILITY shaderVisibility, BindPoint bindPoint, BindSpace bindSpace) {

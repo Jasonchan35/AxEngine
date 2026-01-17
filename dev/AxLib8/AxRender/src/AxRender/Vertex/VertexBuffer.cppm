@@ -172,7 +172,6 @@ void VertexIndexBuffer::addIndices(ByteSpan data, VertexIndexType indexType) {
 	Int newDataBytes   = newIndexCount * stride;
 
 	_buffer.appendData(data.slice(0, newDataBytes));
-	_buffer.markDirty(Range_StartAndSize(_indexCount * stride, newDataBytes));
 	_indexCount += newIndexCount;
 }
 

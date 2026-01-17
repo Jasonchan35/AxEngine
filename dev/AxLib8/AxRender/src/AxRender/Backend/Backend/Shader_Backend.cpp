@@ -16,7 +16,7 @@ SPtr<ShaderParamSpace_Backend> ShaderParamSpace_Backend::s_new(const MemAllocReq
 }
 
 TempString ShaderParamSpace_Backend::debugName() const {
-	return Fmt("BindSpace.{:8} shaderPass={}", _bindSpace, _shaderPass ? _shaderPass->debugName() : "");
+	return Fmt("BindSpace.{:10} shaderPass={}", _bindSpace, _shaderPass ? _shaderPass->debugName() : "");
 }
 
 ShaderParamSpace_Backend::ShaderParamSpace_Backend(const CreateDesc& desc)

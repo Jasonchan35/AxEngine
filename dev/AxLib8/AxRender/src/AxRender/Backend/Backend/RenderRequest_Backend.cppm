@@ -95,6 +95,8 @@ public:
 	
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
 	
+	const Mat4f& viewProjMatrix() const { return _viewProjMatrix; }
+	
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
 
@@ -102,6 +104,7 @@ protected:
 	RenderObjectManager_Backend* _objectManager        = nullptr;
 	Material_Backend*            _commonMaterial       = nullptr;
 	MaterialPass_Backend*        _commonMaterialPass   = nullptr;
+	Mat4f                        _viewProjMatrix       = Mat4f::s_identity();
 
 private:
 	void _updateCommonMaterial();
@@ -121,8 +124,6 @@ private:
 	};
 
 	InlineUpload _inlineUpload;
-	
-	SPtr<GpuStructuredBuffer> _perDrawcallStructBuf;
 };
 
 template<class OWNER, class DATA, class...ARGS>

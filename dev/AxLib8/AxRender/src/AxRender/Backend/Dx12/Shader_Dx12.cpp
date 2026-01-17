@@ -42,18 +42,17 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	using ParamBase    = ShaderParamSpace_Backend::ParamBase;
 	using SamplerParam = ShaderParamSpace_Backend::SamplerParam; 
 	
-//	AX_LOG("--- Shader Pass {} -------", debugName());
+	AX_LOG("--- Shader Pass {} -------", debugName());
 
-	constexpr D3D12_SHADER_VISIBILITY shaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	constexpr D3D12_SHADER_VISIBILITY kDefaultShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	auto addRootDescTable = [this](const ShaderParamSpace_Dx12* paramSpace,
 	                               const Dx12DescriptorTable&   tbl,
 	                               Dx12RootParamType            rootParamType
 	) {
 		if (tbl.size() <= 0) return;
-		
-		//		AX_LOG("--- add RootParam tableSize={} type={}  [{}]", tbl.size(), rootParamType, paramSpace->debugName());
-		_pipelineRootParamList.addRootDescriptorTable(shaderVisibility, tbl);
+//		AX_LOG("--- add RootDescTable tableSize={} type={:24} [{}]", tbl.size(), rootParamType, paramSpace->debugName());
+		_pipelineRootParamList.addRootDescriptorTable(kDefaultShaderVisibility, tbl);
 		_rootParamBindings.emplaceBack(rootParamType, paramSpace->bindSpace());
 	};
 
@@ -64,10 +63,8 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	// };
 
 	auto addDescriptor = [](const ShaderParamSpace_Dx12* paramSpace, Dx12DescriptorTable& tbl, const ParamBase& p, D3D12_DESCRIPTOR_RANGE_TYPE type) {
-#if 0
-		AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type = {:8}, [{}] ",
-		  	   p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
-#endif		
+//		AX_LOG("--- addDescriptor name={:30} bindPoint={:8} bindCount={:8} type={:8}, [{}] ",
+//		       p.name(), p.bindPoint(), p.bindCount(), type, paramSpace->debugName());
 		
 		if (p.bindCount() <= 0) throw Error_Undefined();
 		tbl.addDescriptor(type, p.bindPoint(), p.bindCount(), paramSpace->bindSpace());
@@ -76,8 +73,9 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* ownParamSpace = getOwnParamSpace_dx12(bindSpace);
 		if (!ownParamSpace) continue;
-
+		
 		for (auto& param : ownParamSpace->_constBuffers) {
+			if (bindSpace == BindSpace::RootConst) continue;
 			addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 		}
 		
@@ -102,6 +100,14 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* paramSpace = getParamSpace_dx12(bindSpace);
 		if (!paramSpace) continue;
+
+		for (auto& param : paramSpace->_constBuffers) {
+			if (bindSpace != BindSpace::RootConst) continue;
+//			AX_LOG("--- add RootConst bindPoint={} dataSize={} [{}]", param.bindPoint(), param.dataSize(), paramSpace->debugName());
+			_pipelineRootParamList.addRoot32BitConst(kDefaultShaderVisibility, param.bindPoint(), bindSpace, param.dataSize());
+			_rootParamBindings.emplaceBack(Dx12RootParamType::RootUInt32, bindSpace);
+		}
+		
 		addRootDescTable(paramSpace, paramSpace->_CBV_SRV_UAV_DescTable, Dx12RootParamType::DescTable_CBV_SRV_UAV);
 		addRootDescTable(paramSpace, paramSpace->_samplerDescTable     , Dx12RootParamType::DescTable_Sampler);
 	}

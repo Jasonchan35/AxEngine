@@ -63,20 +63,21 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	
 	auto& cmdList = req->_graphCmdList_dx12;
 	
-	for (auto& constBuf : _constBufferParams) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(constBuf.getUploadedGpuBuffer(req)));
+	for (auto& param : _constBufferParams) {
+		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(param.getUploadedGpuBuffer(req)));
 		if (!gpuBuf) throw Error_Undefined();
 		//		AX_LOG("-- addCBV");
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		req->_dynamicDescriptors.CBV_SRV_UAV.addCBV(gpuBuf->resource());
 	}
 	
-	for (auto& structBuf : _structuredBufferParams) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(structBuf.gpuBuffer()));
+	for (auto& param : _structuredBufferParams) {
+		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(param.getUploadedGpuBuffer(req)));
 		if (!gpuBuf) throw Error_Undefined();
 		// AX_LOG("-- add StructuredBuffer");
+		auto* structBuf = param.buffer();
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COMMON);
-		req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(gpuBuf->resource(), 0, structBuf.arraySize(), structBuf.stride());
+		req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(gpuBuf->resource(), 0, structBuf->capacity(), structBuf->stride());
 	}
 
 #if !AX_RENDER_BINDLESS
@@ -140,12 +141,21 @@ bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		auto& data = paramSpace->getUpdatedPerFrameData(req);
 		updatedParamSpaceData[ax_enum_int(paramSpace->bindSpace())] = &data;
 	}
-	
+
+	auto mvp = req->viewProjMatrix() * cmd.objectToWorld;
+	auto rootConstData =  Span(mvp).toByteSpan();
+
 	UINT rootParamIndex = 0;
 	for (auto& rp : shdPass->_rootParamBindings) {
 		// AX_LOG("--- setRootDescriptor bindSpace={:8} rootParamType={}", rp.bindSpace, rp.rootParamType);
 		
 		switch (rp.rootParamType) {
+			case Dx12RootParamType::RootUInt32: {
+				cmdList->SetGraphicsRoot32BitConstants(rootParamIndex,
+				                                       ax_safe_cast_from(rootConstData.sizeInBytes() / 4),
+				                                       rootConstData.data(),
+				                                       0);
+			} break;
 			case Dx12RootParamType::DescTable_CBV_SRV_UAV: {
 				auto* data = updatedParamSpaceData[ax_enum_int(rp.bindSpace)];
 				if (!data) throw Error_Undefined();

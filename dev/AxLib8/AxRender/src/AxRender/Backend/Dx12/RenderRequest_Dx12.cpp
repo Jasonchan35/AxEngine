@@ -17,8 +17,8 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	AX_LOG("RenderRequest_Dx12 create#{}", desc.index);
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	_d3dDevice = dev;
-	_uploadCmdList_dx12.create(  dev, RenderCommandListType::Direct,  "uploadCmdList"); // RenderCommandListType::Copy
-	_graphCmdList_dx12.create(   dev, RenderCommandListType::Direct,  "graphCmdList");
+	_uploadCmdList_dx12.create( dev, RenderCommandListType::Direct,  "uploadCmdList"); // RenderCommandListType::Copy
+	_graphCmdList_dx12.create(  dev, RenderCommandListType::Direct,  "graphCmdList");
 	_computeCmdList_dx12.create(dev, RenderCommandListType::Compute, "computeCmdList");
 	_fence.create(dev, static_cast<u64>(_renderSeqId));
 	_cpuEvent.create();
