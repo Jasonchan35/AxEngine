@@ -47,10 +47,9 @@ public:
 		String			name;
 		u32				offset   = 0;
 		RenderDataType	dataType = RenderDataType::None;
-		bool			rowMajor = true;
 
 		constexpr bool operator==(const Variable& r) {
-			return offset == r.offset && dataType == r.dataType && rowMajor == r.rowMajor;
+			return offset == r.offset && dataType == r.dataType;
 		}
 
 		template<class SE>
@@ -58,7 +57,6 @@ public:
 			AX_JSON_IO(se, name);
 			AX_JSON_IO(se, offset);
 			AX_JSON_IO(se, dataType);
-			AX_JSON_IO(se, rowMajor);
 		}
 	};
 

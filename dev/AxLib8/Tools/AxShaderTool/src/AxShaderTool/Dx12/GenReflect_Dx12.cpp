@@ -510,7 +510,7 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 
 		outCB.variables.ensureCapacity(bufDesc.Variables);
 		for (UINT j=0; j<bufDesc.Variables; j++) {
-			auto cbv = cb->GetVariableByIndex(j);
+			auto* cbv = cb->GetVariableByIndex(j);
 			D3D12_SHADER_VARIABLE_DESC varDesc;
 			hr = cbv->GetDesc(&varDesc);
 			throwIfError(hr);
@@ -527,19 +527,63 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 			outVar.name   = StrView_c_str(varDesc.Name);
 			outVar.offset = ax_safe_cast_from(varDesc.StartOffset);
 					
-			//------------------------------
 			outVar.dataType = _getRenderDataType(varType);
-
-			if (varType.Class == D3D_SVC_MATRIX_ROWS) {
-				outVar.rowMajor = true;
-			} else if (varType.Class == D3D_SVC_MATRIX_COLUMNS) {
-				outVar.rowMajor = false;
-			} 
 
 			if (outVar.dataType == RenderDataType::None) {
 				throw Error_Undefined();
 			}
 		}
+	}
+}
+
+void GenReflect_Dx12::_compileReflect_structuredBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
+	HRESULT hr;
+	outInfo.structuredBuffers.ensureCapacity(desc.BoundResources);
+	for (UINT i=0; i<desc.BoundResources; i++) {
+		D3D12_SHADER_INPUT_BIND_DESC resDesc;
+		hr = reflect->GetResourceBindingDesc(i, &resDesc);
+		throwIfError(hr);
+
+		if (resDesc.Type != D3D_SIT_STRUCTURED) continue;
+		
+		D3D12_SHADER_BUFFER_DESC bufDesc;
+		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);
+		hr = cb->GetDesc(&bufDesc);
+		throwIfError(hr);
+		
+		auto& outBufferInfo      = outInfo.structuredBuffers.emplaceBack();
+		outBufferInfo.stageFlags = outInfo.stageFlags;
+		outBufferInfo.dataType   = RenderDataType::StructuredBuffer;
+		outBufferInfo.name       = StrView_c_str(resDesc.Name);
+		outBufferInfo.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
+		outBufferInfo.bindCount  = ax_safe_cast_from(resDesc.BindCount);
+		outBufferInfo.bindSpace  = ax_safe_cast_from(resDesc.Space);
+		outBufferInfo.bufferSize = ax_safe_cast_from(bufDesc.Size);
+		
+		if (bufDesc.Variables < 1) throwIfError(hr);
+		auto* cbv = cb->GetVariableByIndex(0);
+
+		auto* varType = cbv->GetType();
+		D3D12_SHADER_TYPE_DESC varTypeDesc;
+		hr = varType->GetDesc(&varTypeDesc);
+		throwIfError(hr);
+
+		for (UINT j=0; j<varTypeDesc.Members; j++) {
+			auto* memberName = varType->GetMemberTypeName(j);
+			auto* memberType = varType->GetMemberTypeByIndex(j);
+			D3D12_SHADER_TYPE_DESC memberTypeDesc;
+			hr = memberType->GetDesc(&memberTypeDesc);
+			throwIfError(hr);
+			
+			auto& outVar  = outBufferInfo.variables.emplaceBack();
+			outVar.name   = StrView_c_str(memberName);
+			outVar.offset = ax_safe_cast_from(memberTypeDesc.Offset);
+
+			outVar.dataType = _getRenderDataType(memberTypeDesc);
+			if (outVar.dataType == RenderDataType::None) {
+				throw Error_Undefined();
+			}
+		}		
 	}
 }
 
@@ -603,32 +647,6 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 		outSampler.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		outSampler.bindCount  = ax_safe_cast_from(resDesc.BindCount);
 		outSampler.bindSpace  = ax_safe_cast_from(resDesc.Space);
-	}
-}
-
-void GenReflect_Dx12::_compileReflect_structuredBuffers(ShaderStageInfo& outInfo, ID3D12ShaderReflection* reflect, D3D12_SHADER_DESC& desc) {
-	HRESULT hr;
-	outInfo.structuredBuffers.ensureCapacity(desc.BoundResources);
-	for (UINT i=0; i<desc.BoundResources; i++) {
-		D3D12_SHADER_INPUT_BIND_DESC resDesc;
-		hr = reflect->GetResourceBindingDesc(i, &resDesc);
-		throwIfError(hr);
-
-		if (resDesc.Type != D3D_SIT_STRUCTURED) continue;
-		
-		D3D12_SHADER_BUFFER_DESC bufDesc;
-		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);
-		hr = cb->GetDesc(&bufDesc);
-		throwIfError(hr);
-		
-		auto& sbuf      = outInfo.structuredBuffers.emplaceBack();
-		sbuf.stageFlags = outInfo.stageFlags;
-		sbuf.dataType   = RenderDataType::StructuredBuffer;
-		sbuf.name       = StrView_c_str(resDesc.Name);
-		sbuf.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
-		sbuf.bindCount  = ax_safe_cast_from(resDesc.BindCount);
-		sbuf.bindSpace  = ax_safe_cast_from(resDesc.Space);
-		sbuf.bufferSize = ax_safe_cast_from(bufDesc.Size);
 	}
 }
 

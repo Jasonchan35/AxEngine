@@ -67,18 +67,15 @@
           "variables": [{
               "name": "imguiProjectionMatrix", 
               "offset": 0, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "AxSamplerState_fontTexture", 
               "offset": 64, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }, {
               "name": "AxTexture2D_fontTexture", 
               "offset": 68, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }]
         }], 
       "textures": [], 

@@ -59,7 +59,6 @@ cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
 
 struct AxObjectData {
 	Mat4f objectToWorld;
-	Mat4f mvp;
 };
 StructuredBuffer<AxObjectData> gAxObjectData : register(t0, AX_BindSpace_Object);
 

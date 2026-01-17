@@ -88,28 +88,23 @@
           "variables": [{
               "name": "color", 
               "offset": 0, 
-              "dataType": "Vec4f", 
-              "rowMajor": true
+              "dataType": "Vec4f"
             }, {
               "name": "AxSamplerState_tex0", 
               "offset": 16, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }, {
               "name": "AxTexture2D_tex0", 
               "offset": 20, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }, {
               "name": "AxSamplerState_tex1", 
               "offset": 24, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }, {
               "name": "AxTexture2D_tex1", 
               "offset": 28, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }]
         }], 
       "textures": [], 

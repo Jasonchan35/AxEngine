@@ -49,28 +49,23 @@
           "variables": [{
               "name": "foo", 
               "offset": 0, 
-              "dataType": "f32", 
-              "rowMajor": true
+              "dataType": "f32"
             }, {
               "name": "AxSamplerState_foo_tex2d", 
               "offset": 4, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }, {
               "name": "AxTexture2D_foo_tex2d", 
               "offset": 8, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }, {
               "name": "AxSamplerState_foo_tex3d", 
               "offset": 12, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }, {
               "name": "AxTexture3D_foo_tex3d", 
               "offset": 16, 
-              "dataType": "u32", 
-              "rowMajor": true
+              "dataType": "u32"
             }]
         }, {
           "name": "AX_ConstBuffer_World", 
@@ -83,43 +78,35 @@
           "variables": [{
               "name": "ax_g_test", 
               "offset": 0, 
-              "dataType": "f32", 
-              "rowMajor": true
+              "dataType": "f32"
             }, {
               "name": "ax_g_time", 
               "offset": 4, 
-              "dataType": "f32", 
-              "rowMajor": true
+              "dataType": "f32"
             }, {
               "name": "ax_g_timeSin", 
               "offset": 16, 
-              "dataType": "Vec4f", 
-              "rowMajor": true
+              "dataType": "Vec4f"
             }, {
               "name": "ax_g_timeSlowSin", 
               "offset": 32, 
-              "dataType": "Vec4f", 
-              "rowMajor": true
+              "dataType": "Vec4f"
             }, {
               "name": "ax_g_deltaTime", 
               "offset": 48, 
-              "dataType": "Vec4f", 
-              "rowMajor": true
+              "dataType": "Vec4f"
             }, {
               "name": "ax_g_worldSpaceCameraPos", 
               "offset": 64, 
-              "dataType": "Vec4f", 
-              "rowMajor": true
+              "dataType": "Vec4f"
             }, {
               "name": "ax_g_cameraProjection", 
               "offset": 80, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_g_cameraInvProjection", 
               "offset": 144, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }]
         }, {
           "name": "AX_ConstBuffer_Object", 
@@ -132,43 +119,35 @@
           "variables": [{
               "name": "ax_object_mvp", 
               "offset": 0, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_object_mv", 
               "offset": 64, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_object_mv_t", 
               "offset": 128, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_object_mv_it", 
               "offset": 192, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_object_v", 
               "offset": 256, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_object_vp", 
               "offset": 320, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_object_m", 
               "offset": 384, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }, {
               "name": "ax_object_m_i", 
               "offset": 448, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }]
         }], 
       "textures": [{
@@ -202,17 +181,11 @@
           "bindSpace": "Object", 
           "bindPoint": 4, 
           "bindCount": 1, 
-          "bufferSize": 128, 
+          "bufferSize": 64, 
           "variables": [{
               "name": "objectToWorld", 
               "offset": 0, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
-            }, {
-              "name": "mvp", 
-              "offset": 64, 
-              "dataType": "Mat4f", 
-              "rowMajor": true
+              "dataType": "Mat4f"
             }]
         }]
     }]
