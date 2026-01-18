@@ -19,7 +19,7 @@ public:
 	MaterialParamSpace_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	struct PerFrameData : public NonCopyable {
-		VkDescriptorSet _descSet;
+		VkDescriptorSet _descSet = VK_NULL_HANDLE;
 	};
 
 	const ShaderParamSpace_Vk* shaderParamSpace_vk() const { return rttiCastCheck<ShaderParamSpace_Vk>(_shaderParamSpace.ptr()); }

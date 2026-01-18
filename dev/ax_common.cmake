@@ -84,7 +84,7 @@ function(ax_set_warning_level target_name)
 		# re-enable warning disabled by default to level 4
 		# VS2017 or later
 		target_compile_options(${target_name} PRIVATE /w45038)  # data member 'member1' will be initialized after data member 'member2'
-		target_compile_options(${target_name} PRIVATE /w45039)  # 'function': pointer or reference to potentially throwing function passed to extern C function under -EHc. Undefined behavior may occur if this function throws an exception.
+#		target_compile_options(${target_name} PRIVATE /w45039)  # 'function': pointer or reference to potentially throwing function passed to extern C function under -EHc. Undefined behavior may occur if this function throws an exception.
 		target_compile_options(${target_name} PRIVATE /w45041)  # 'member-name': out-of-line definition for constexpr static data member is not needed and is deprecated in C++17
 		target_compile_options(${target_name} PRIVATE /w45042)  # 'function': function declarations at block scope cannot be specified 'inline' in standard C++; remove 'inline' specifier 
 #		target_compile_options(${target_name} PRIVATE /w45045)  # Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
@@ -114,7 +114,7 @@ function(ax_set_warning_level target_name)
 		target_compile_options(${target_name} PRIVATE /w45256)  # 'enumeration': a non-defining declaration of an enumeration with a fixed underlying type is only permitted as a standalone declaration
 		target_compile_options(${target_name} PRIVATE /w45258)  # explicit capture of 'symbol' is not required for this use
 		target_compile_options(${target_name} PRIVATE /w45259)  # 'specialized-type': explicit specialization requires 'template <>'
-		target_compile_options(${target_name} PRIVATE /w45262)  # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]] when a break statement is intentionally omitted between cases
+#		target_compile_options(${target_name} PRIVATE /w45262)  # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]] when a break statement is intentionally omitted between cases
 		target_compile_options(${target_name} PRIVATE /w45263)  # calling 'std::move' on a temporary object prevents copy elision
 		target_compile_options(${target_name} PRIVATE /w45264)  # 'variable-name': 'const' variable is not used
 		target_compile_options(${target_name} PRIVATE /w45266)  # 'const' qualifier on return type has no effect
@@ -180,6 +180,7 @@ function(ax_set_warning_level target_name)
 														-Wno-unused-member-function
 														-Wno-unused-const-variable
 														-Wno-uninitialized
+														-Wno-microsoft-enum-value # INVALID_VALUE  = 0xFFFFFFFF
 														#
 														-mavx #enable AVX
 														-mfma #enable '_mm_fmadd_ps' requires target feature 'fma'

@@ -45,9 +45,9 @@ struct PS_Input {
 
 PS_Input vs_main(VS_Input i) {
 	PS_Input o;
-//	o.sv_pos = mul(ax_object_mvp, i.pos);
+	o.sv_pos = mul(ax_object_mvp, i.pos);
 //	o.sv_pos = mul(ax_object_vp, mul(obj.objectToWorld, i.pos));
-	o.sv_pos = mul(gAxRootConst.mvp, i.pos);
+//	o.sv_pos = mul(gAxRootConst.mvp, i.pos);
 	o.color0 = i.color0;
 	return o;
 }

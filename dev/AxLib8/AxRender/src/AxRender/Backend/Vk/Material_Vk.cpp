@@ -28,6 +28,8 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 	auto writeDescSetHelper = req->_writeDescSetHelper.scopeStart();
 
 	auto& layout = shaderParamSpace_vk()->_descSetLayout_vk;
+	if (!layout) return;
+	
 	frameData._descSet = req->_descriptorPool.allocDescriptorSet(layout);
 	
 #if AX_RENDER_DEBUG_NAME
@@ -97,6 +99,13 @@ bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* paramSpace = getParamSpace_vk(bindSpace);
 		if (!paramSpace) continue;
+		
+		if (bindSpace == BindSpace::RootConst) {
+			auto rootConstData = req->rootConstData();
+			vkCmdPushConstants(req->graphCmdList_vk(), shdPass->pipelineLayout(),
+				VK_SHADER_STAGE_ALL, 0, ax_safe_cast_from(rootConstData.sizeInBytes()), rootConstData.data());
+			continue;
+		}
 
 		auto& data = paramSpace->_perFrameDataSet.getUpdated(req);
 		allDescSets.emplaceBack(data._descSet);

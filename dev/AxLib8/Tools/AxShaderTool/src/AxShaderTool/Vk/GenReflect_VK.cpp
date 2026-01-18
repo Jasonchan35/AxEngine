@@ -1,22 +1,20 @@
 module;
 
-#if !AX_RENDERER_VK
-module AxShaderTool;
-#else
+#if AX_RENDERER_VK
 
-AX_GCC_WARNING_PUSH_AND_DISABLE("-Wmicrosoft-enum-value") // INVALID_VALUE  = 0xFFFFFFFF,
-AX_VC_WARNING_PUSH_AND_DISABLE(5039)
+// AX_GCC_WARNING_PUSH_AND_DISABLE("-Wmicrosoft-enum-value") // INVALID_VALUE  = 0xFFFFFFFF,
+// AX_VC_WARNING_PUSH_AND_DISABLE(5039)
 // Warning C5039 : 'qsort': pointer or reference to potentially throwing function passed to 'extern "C"' function under -EHc.
 // Undefined behavior may occur if this function throws an exception.
-AX_VC_WARNING_PUSH_AND_DISABLE(5262)
+// AX_VC_WARNING_PUSH_AND_DISABLE(5262)
 // Warning C5262 : implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]]
 // when a break statement is intentionally omitted between cases
 
 #include "spirv_reflect.c"
 
-AX_VC_WARNING_POP()
-AX_VC_WARNING_POP()
-AX_GCC_WARNING_POP()
+// AX_VC_WARNING_POP()
+// AX_VC_WARNING_POP()
+// AX_GCC_WARNING_POP()
 
 module AxShaderTool;
 import :GenReflect_Vk;
@@ -158,6 +156,8 @@ RenderDataType getDataType(const SpvReflectTypeDescription& src) {
 				case 4: return RenderDataType::Vec4d;
 			} break;
 		}
+	} else if (src.type_flags & SPV_REFLECT_TYPE_FLAG_STRUCT) {
+		return RenderDataType::Struct;
 	}
 
 	AX_ASSERT(false);
@@ -174,6 +174,7 @@ void GenReflect_Vk::generate(StrView outFilename, StrView filename, RenderAPI ap
 	outInfo.stageFlags = getShaderStageFlags(spirvReflect.GetShaderStage());
 
 	_genVertexInputs	(outInfo, spirvReflect);
+	_genPushConstants	(outInfo, spirvReflect);
 	_genBindings		(outInfo, spirvReflect);
 
 	auto& opt = CmdOptions::s_instance();
@@ -195,13 +196,37 @@ void GenReflect_Vk::_genVertexInputs(ShaderStageInfo& outInfo, const spv_reflect
 		auto& dst = outInfo.inputs.emplaceBack();
 		dst.dataType = getDataType(*v->type_description);
 		dst.semantic = VarNameToSemantic::s_get(StrView_c_str(v->name));
+	}
+}
 
+void GenReflect_Vk::_genPushConstants(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {
+	u32 count;
+	spirvReflect.EnumeratePushConstantBlocks(&count, nullptr);
+	Array<SpvReflectBlockVariable*, 1> blocks;
+	blocks.resize(count);
+	spirvReflect.EnumeratePushConstantBlocks(&count, blocks.data());
+	
+	for (auto& block : blocks) {
+		auto& dstCB      = outInfo.constBuffers.emplaceBack();
+		dstCB.name       = StrView_c_str(block->type_description->type_name);
+		dstCB.dataSize   = block->size;
+		dstCB.bindPoint  = static_cast<BindPoint>(0);
+		dstCB.bindCount  = 1;
+		dstCB.bindSpace  = ShaderParamBindSpace::RootConst;
+		dstCB.stageFlags = getShaderStageFlags(spirvReflect.GetShaderStage());
+
+		for (u32 i = 0; i < block->member_count; i++) {
+			auto& srcVar	= block->members[i];
+			auto& dstVar	= dstCB.variables.emplaceBack();
+			dstVar.name		= StrView_c_str(srcVar.name);
+			dstVar.offset	= srcVar.offset;
+			dstVar.dataType = getDataType(*srcVar.type_description);
+		}		
 	}
 }
 
 void GenReflect_Vk::_genBindings(ShaderStageInfo& outInfo, const spv_reflect::ShaderModule& spirvReflect) {
 	u32 count;
-
 	spirvReflect.EnumerateDescriptorBindings(&count, nullptr);
 
 	Array<SpvReflectDescriptorBinding*, 32> descriptorBindings;
@@ -313,6 +338,5 @@ void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDe
 }
 
 } // namespace
-
 
 #endif

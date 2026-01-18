@@ -27,6 +27,7 @@ void GenNinja_Dx12::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 #if AX_RENDER_BINDLESS
 					"    -DAX_RENDER_BINDLESS=1 $\n"
 #endif
+					"    -DAX_RENDER_DX12=1 $\n"
 					"    -WX $\n" // Treat warnings as errors
 					"    -T $param_profile $\n"
 					"    -E $param_entry_point $\n"

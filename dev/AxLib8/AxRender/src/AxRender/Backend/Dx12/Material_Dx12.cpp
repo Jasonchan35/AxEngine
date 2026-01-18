@@ -148,7 +148,7 @@ bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		
 		switch (rp.rootParamType) {
 			case Dx12RootParamType::RootUInt32: {
-				auto rootConstData = Span(req->rootConstStruct).toByteSpan();
+				auto rootConstData = req->rootConstData();
 				cmdList->SetGraphicsRoot32BitConstants(rootParamIndex,
 				                                       ax_safe_cast_from(rootConstData.sizeInBytes() / 4),
 				                                       rootConstData.data(),

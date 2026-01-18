@@ -761,7 +761,7 @@ public:
 	AX_VkPipelineLayout() = default;
 
 	void destroy();
-	void create(AX_VkDevice& dev, Span<VkDescriptorSetLayout>	descriptorSets);
+	void create(AX_VkDevice& dev, Span<VkDescriptorSetLayout>	descriptorSets, Span<VkPushConstantRange> pushConsts);
 
 private:
 	VkPipelineLayout _handle = VK_NULL_HANDLE;

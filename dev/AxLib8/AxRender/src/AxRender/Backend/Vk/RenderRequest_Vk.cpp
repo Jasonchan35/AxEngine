@@ -186,7 +186,7 @@ void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
 
 	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(drawcall.vertexBuffer)) {
-		constexpr u32 firstBinding = ax_enum_int(ShaderParamBindPoint::VertexBuffer);
+		constexpr u32 firstBinding = ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		constexpr u32 bindingCount = 1 ;
 		// auto vertexLayout = drawcall.vertexLayout;
 		VkDeviceSize offset = 0;

@@ -1387,15 +1387,18 @@ void AX_VkPipelineLayout::destroy() {
 	}
 }
 
-void AX_VkPipelineLayout::create(AX_VkDevice& dev, Span<VkDescriptorSetLayout> descriptorSets) {
+void AX_VkPipelineLayout::create(AX_VkDevice&                dev,
+                                 Span<VkDescriptorSetLayout> descriptorSets,
+                                 Span<VkPushConstantRange>   pushConsts) {
 	destroy();
 	_dev = &dev;
 
 	VkPipelineLayoutCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-
 	info.setLayoutCount = AX_VkUtil::castUInt32(descriptorSets.size());
 	info.pSetLayouts = descriptorSets.data();
+	info.pushConstantRangeCount = AX_VkUtil::castUInt32(pushConsts.size());
+	info.pPushConstantRanges = pushConsts.data();
 
 	auto err = vkCreatePipelineLayout(dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
 	AX_VkUtil::throwIfError(err);

@@ -48,7 +48,7 @@ cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
 }
 
 cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
-	Mat4f	ax_object_mvp;
+//	Mat4f	ax_object_mvp;
 	Mat4f	ax_object_mv;
 	Mat4f	ax_object_mv_t;
 	Mat4f	ax_object_mv_it;
@@ -58,10 +58,33 @@ cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
 	Mat4f	ax_object_m_i;		// world To Object
 }
 
-struct AxRootConst {
-	Mat4f mvp;
-};
-ConstantBuffer<AxRootConst> gAxRootConst : register(b1, AX_BindSpace_RootConst);
+// AX_PUSH_CONST
+// cbuffer AxRootConst : register(b1, AX_BindSpace_RootConst) {
+// 	Mat4f ax_object_mvp;
+// }
+
+// struct AxRootConst {
+// 	Mat4f mvp;
+// };
+// #if AX_RENDER_DX12
+//  	ConstantBuffer<AxRootConst> gAxRootConst : register(b1, AX_BindSpace_RootConst);
+// #elif AX_RENDER_VK
+// 	[[vk::push_constant]] AxRootConst gAxRootConst;
+// #endif
+
+// struct AxRootConst {
+// 	Mat4f mvp;
+// };
+
+#if AX_RENDER_VK
+	#define AX_ROOT_CONST(NAME)	[[vk::push_constant]] cbuffer NAME
+#else
+	#define AX_ROOT_CONST(NAME) cbuffer NAME : register(b1, AX_BindSpace_RootConst)
+#endif
+
+AX_ROOT_CONST(AxRootConst) {
+	Mat4f ax_object_mvp;
+}
 
 #if AX_RENDER_BINDLESS
 	SamplerState AxBindless_SamplerState[1000] : register(s0,     AX_BindSpace_Bindless);

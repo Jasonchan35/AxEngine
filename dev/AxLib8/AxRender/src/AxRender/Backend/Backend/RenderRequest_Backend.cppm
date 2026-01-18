@@ -94,9 +94,11 @@ public:
 	
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
 
-	struct RootConstStruct {
+	struct RootConst {
 		Mat4f mvp;
-	} rootConstStruct;
+	} rootConst;
+	
+	ByteSpan	rootConstData() const { return Span(rootConst).toByteSpan(); }
 	
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)

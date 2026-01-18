@@ -39,6 +39,19 @@
           "dataType": "Vec4f"
         }], 
       "constBuffers": [{
+          "name": "AxRootConst", 
+          "dataType": "None", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "RootConst", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "ax_object_mvp", 
+              "offset": 0, 
+              "dataType": "Mat4f"
+            }], 
+          "dataSize": 64
+        }, {
           "name": "$Global", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel", 
@@ -116,52 +129,35 @@
           "bindPoint": 0, 
           "bindCount": 1, 
           "variables": [{
-              "name": "ax_object_mvp", 
-              "offset": 0, 
-              "dataType": "Mat4f"
-            }, {
               "name": "ax_object_mv", 
-              "offset": 64, 
+              "offset": 0, 
               "dataType": "Mat4f"
             }, {
               "name": "ax_object_mv_t", 
-              "offset": 128, 
+              "offset": 64, 
               "dataType": "Mat4f"
             }, {
               "name": "ax_object_mv_it", 
-              "offset": 192, 
+              "offset": 128, 
               "dataType": "Mat4f"
             }, {
               "name": "ax_object_v", 
-              "offset": 256, 
+              "offset": 192, 
               "dataType": "Mat4f"
             }, {
               "name": "ax_object_vp", 
-              "offset": 320, 
+              "offset": 256, 
               "dataType": "Mat4f"
             }, {
               "name": "ax_object_m", 
-              "offset": 384, 
+              "offset": 320, 
               "dataType": "Mat4f"
             }, {
               "name": "ax_object_m_i", 
-              "offset": 448, 
+              "offset": 384, 
               "dataType": "Mat4f"
             }], 
-          "dataSize": 512
-        }, {
-          "name": "gAxRootConst", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "RootConst", 
-          "bindPoint": 1, 
-          "bindCount": 1, 
-          "variables": [{
-              "name": "mvp", 
-              "offset": 0, 
-              "dataType": "Mat4f"
-            }], 
-          "dataSize": 64
+          "dataSize": 448
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 

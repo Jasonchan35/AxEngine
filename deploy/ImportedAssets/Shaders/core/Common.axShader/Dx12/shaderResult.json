@@ -116,48 +116,44 @@
           "bindPoint": 0, 
           "bindCount": 1, 
           "variables": [{
-              "name": "ax_object_mvp", 
+              "name": "ax_object_mv", 
               "offset": 0, 
               "dataType": "Mat4f"
             }, {
-              "name": "ax_object_mv", 
+              "name": "ax_object_mv_t", 
               "offset": 64, 
               "dataType": "Mat4f"
             }, {
-              "name": "ax_object_mv_t", 
+              "name": "ax_object_mv_it", 
               "offset": 128, 
               "dataType": "Mat4f"
             }, {
-              "name": "ax_object_mv_it", 
+              "name": "ax_object_v", 
               "offset": 192, 
               "dataType": "Mat4f"
             }, {
-              "name": "ax_object_v", 
+              "name": "ax_object_vp", 
               "offset": 256, 
               "dataType": "Mat4f"
             }, {
-              "name": "ax_object_vp", 
+              "name": "ax_object_m", 
               "offset": 320, 
               "dataType": "Mat4f"
             }, {
-              "name": "ax_object_m", 
+              "name": "ax_object_m_i", 
               "offset": 384, 
               "dataType": "Mat4f"
-            }, {
-              "name": "ax_object_m_i", 
-              "offset": 448, 
-              "dataType": "Mat4f"
             }], 
-          "dataSize": 512
+          "dataSize": 448
         }, {
-          "name": "gAxRootConst", 
+          "name": "AxRootConst", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "RootConst", 
           "bindPoint": 1, 
           "bindCount": 1, 
           "variables": [{
-              "name": "mvp", 
+              "name": "ax_object_mvp", 
               "offset": 0, 
               "dataType": "Mat4f"
             }], 

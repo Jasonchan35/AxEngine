@@ -31,23 +31,31 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 	VkDescriptorBindingFlags		 bindingFlags = 0;
 #endif
 
+	Array<VkPushConstantRange, 8> pushConsts;
+	u32 pushConstOffset = 0;
+	
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto* ownParamSpace = getOwnParamSpace_vk(bindSpace);
 		if (!ownParamSpace) continue;
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
 		auto addBinding = [&](const ParamBase& p, VkDescriptorType type) {
-			// AX_LOG("-- addBinding name={:26} bindPoint={:6}, bindCount={:6} flags={} type={:16} this={}",
-			//           p.name(), p.bindPoint(), p.bindCount(), p.stageFlags(), type, ownParamSpace->debugName());
+//			AX_LOG("-- addBinding name={:26} bindPoint={:6}, bindCount={:6} flags={} type={:16} this={}",
+//			           p.name(), p.bindPoint(), p.bindCount(), p.stageFlags(), type, ownParamSpace->debugName());
 			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 		};
 
-		for (auto& param : ownParamSpace->_constBuffers          ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
+		if (bindSpace != BindSpace::RootConst) {
+			for (auto& param : ownParamSpace->_constBuffers      ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
+		}
+		
 		for (auto& param : ownParamSpace->_textureParams         ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
 		for (auto& param : ownParamSpace->_samplerParams         ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
 		for (auto& param : ownParamSpace->_structuredBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
 
 		if (!ownParamSpace) continue;
+//		if (bindings.bindings.size() <= 0) continue;
+		
 		ownParamSpace->_descSetLayout_vk.create(dev, bindings, layoutFlags);
 //		AX_LOG("---- create Layout {} {}", (void*)ownParamSpace->_descSetLayout_vk.handle(), ownParamSpace->debugName());
 		_ownDescSetCount++;
@@ -57,6 +65,16 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		auto* paramSpace = getParamSpace_vk(bindSpace);
 		if (!paramSpace) continue;
 
+		if (bindSpace == BindSpace::RootConst) {
+			for (auto& param : paramSpace->_constBuffers) {
+				auto& dst = pushConsts.emplaceBack();
+				dst.offset = pushConstOffset;
+				dst.size = ax_safe_cast_from(param.dataSize());
+				dst.stageFlags = VK_SHADER_STAGE_ALL; // AX_VkUtil::getVkShaderStageFlagBits(param.stageFlags());
+				pushConstOffset += dst.size;
+			}
+		}
+		
 		auto* layout = paramSpace->_descSetLayout_vk.handle();
 		if (!layout) continue;
 		
@@ -72,7 +90,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		stage.vkShaderModule.create(dev, bytecode);
 	};
 	_visitStages(loadStage);
-	_pipelineLayout.create(dev, _allLayouts_vk);
+	_pipelineLayout.create(dev, _allLayouts_vk, pushConsts);
 }
 
 auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
@@ -298,7 +316,7 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 
 		auto& dst = attrDesc.emplaceBack();
 		dst = {};
-		dst.binding = ax_enum_int(ShaderParamBindPoint::VertexBuffer);
+		dst.binding = ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		dst.format	= AX_VkUtil::getVkDataType(src->dataType);
 		dst.offset  = AX_VkUtil::castUInt32(src->offset);
 		dst.location = loc;
@@ -310,7 +328,7 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 		// bind vertex buffer
 		auto& dst = bindingDesc.emplaceBack();
 		dst = {};
-		dst.binding		= ax_enum_int(ShaderParamBindPoint::VertexBuffer);
+		dst.binding		= ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		dst.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
 		dst.stride		= AX_VkUtil::castUInt32(vertexLayout->strideInBytes);
 	}

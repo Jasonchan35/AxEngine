@@ -11,6 +11,7 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 					"  depfile = $out.d\n"
 					"  command = \"$vulkan_sdk/Bin/glslc\" $\n"
 					"    -x hlsl $\n"
+					"    --target-env=vulkan1.2 $\n" // Ensures support for the vk:: attributes
 					"    -fshader-stage=$param_shader_stage $\n"
 					"    -fentry-point=$param_entry_point $\n"
 					"    -fauto-bind-uniforms $\n"
@@ -23,6 +24,7 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 #if AX_RENDER_BINDLESS
 					"    -DAX_RENDER_BINDLESS=1 $\n"
 #endif
+					"    -DAX_RENDER_VK=1 $\n"
 					"    -Werror $\n" // Treat warnings as errors
 					"    -MD -MF \"$out.d\""
 					"    -I \"$AxIncludeDir\""

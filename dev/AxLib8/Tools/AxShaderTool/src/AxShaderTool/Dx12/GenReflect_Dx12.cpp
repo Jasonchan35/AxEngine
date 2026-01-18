@@ -525,8 +525,8 @@ void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& ou
 					throw Error_Undefined();
 				}
 			}
+			return;
 		}
-		return;
 	}
 
 	//----- variables ----- 

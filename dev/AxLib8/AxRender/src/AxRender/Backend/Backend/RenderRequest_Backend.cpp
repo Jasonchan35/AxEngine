@@ -177,7 +177,7 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 		resourcesToKeep.add(indexBuffer);
 	}
 	
-	rootConstStruct.mvp = _viewProjMatrix * cmd.objectToWorld;
+	rootConst.mvp = _viewProjMatrix * cmd.objectToWorld;
 
 	matPass->onBindMaterial(this, cmd);
 	onDrawCall(cmd);
