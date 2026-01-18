@@ -29,6 +29,7 @@ AX_VC_WARNING_PUSH_AND_DISABLE(5039)
 #include <shellapi.h>
 #include <conio.h>
 #include <ShlObj_core.h> // SHGetFolderPath
+#include <ShellScalingApi.h>
 
 AX_VC_WARNING_PUSH_AND_DISABLE(5204)
 // comdef.h(489,1): warning C5204: 'Font': class has virtual functions, but its trivial destructor is not virtual; instances of objects derived from 

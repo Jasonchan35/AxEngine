@@ -10,6 +10,8 @@ namespace ax {
 
 
 int NativeUIApp_Win32::onRun() {
+	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+	
 	_createHiddenWindow();
 
 	_cursorUnknown			= LoadCursor(nullptr, IDC_ARROW);
