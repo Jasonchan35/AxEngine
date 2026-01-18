@@ -39,7 +39,7 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 	req->resourcesToKeep.add(this);
 
 	if (auto* uploadBuf = rttiCast<GpuBuffer_Dx12>(_uploadBuffer.ptr())) {
-		auto& desc = _texResource.desc();
+		auto& desc = _texResource.resourceDesc();
 		
 		auto& cmdList = req->_uploadCmdList_dx12;
 		req->resourcesToKeep.add(uploadBuf);

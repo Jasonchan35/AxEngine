@@ -5,7 +5,7 @@ project(${PROJECT_NAME})
 ax_add_library(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "AxLib8")
 
-target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI imgui-docking)
+target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI imgui-docking D3D12MemoryAllocator)
 
 #--------------------
 find_package(PNG REQUIRED)

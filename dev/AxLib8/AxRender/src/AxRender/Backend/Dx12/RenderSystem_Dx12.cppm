@@ -14,6 +14,7 @@ class RenderSystem_Dx12 : public RenderSystem_Backend {
 public:
 	AX_DOWNCAST_GET_INSTANCE();
 	RenderSystem_Dx12(const CreateDesc& desc);
+	virtual ~RenderSystem_Dx12() override;
 
 	static Dx12_ID3D12Device* s_d3dDevice() { auto* t = s_instance(); return t ? t->d3dDevice() : nullptr; }
 
@@ -21,6 +22,7 @@ public:
 	
 	Dx12_ID3D12Device*		d3dDevice	()	{ return _d3dDevice; }
 	Dx12_IDXGIFactory*		dxgiFactory	()	{ return _dxgiFactory; }
+	D3D12MA::Allocator*		d3dAllocator() { return _d3dAllocator; }
 
 #if _DEBUG
 	Dx12_IDXGIDebug*		dxgiDebug	()	{ return _dxgiDebug; }
@@ -43,6 +45,8 @@ private:
 	ComPtr<Dx12_IDXGIDebug>		_dxgiDebug;
 	ComPtr<Dx12_ID3D12Debug>	_d3dDebug;
 #endif
+	
+	ComPtr<D3D12MA::Allocator>	_d3dAllocator;
 };
 
 } // namespace ax {

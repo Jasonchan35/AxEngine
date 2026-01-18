@@ -10,24 +10,19 @@ Dx12ResourceBase::Dx12ResourceBase() {
 }
 
 void Dx12ResourceBase::_reset() {
-	_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	_desc.Alignment = 0;
-	_desc.Width = 0;
-	_desc.Height = 1;
-	_desc.DepthOrArraySize = 1;
-	_desc.MipLevels = 1;
-	_desc.Format = DXGI_FORMAT_UNKNOWN;
-	_desc.SampleDesc.Count = 1;
-	_desc.SampleDesc.Quality = 0;
-	_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	_resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	_resourceDesc.Alignment = 0;
+	_resourceDesc.Width = 0;
+	_resourceDesc.Height = 1;
+	_resourceDesc.DepthOrArraySize = 1;
+	_resourceDesc.MipLevels = 1;
+	_resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+	_resourceDesc.SampleDesc.Count = 1;
+	_resourceDesc.SampleDesc.Quality = 0;
+	_resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	_resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-	_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
-	_heapProps.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	_heapProps.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-	_heapProps.CreationNodeMask = 1;
-	_heapProps.VisibleNodeMask = 1;
-
+	_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
 	_dataSize = 0;
 
@@ -35,13 +30,9 @@ void Dx12ResourceBase::_reset() {
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
-	auto hr = RenderSystem_Dx12::s_d3dDevice()->CreateCommittedResource(
-		&_heapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&_desc,
-		_resourceState,
-		clearValue,
-		IID_PPV_ARGS(_d3dResource.ptrForInit()));
+	auto* sys = RenderSystem_Dx12::s_instance();
+	auto hr = sys->d3dAllocator()->CreateResource2(	&_allocDesc, &_resourceDesc, _resourceState, clearValue, 
+													_resourceAllocation.ptrForInit(), IID_PPV_ARGS(_d3dResource.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 }
 
@@ -55,58 +46,58 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	Int alignment = 0;
 	switch (type) {
 		case GpuBufferType::Vertex: {
-			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
-			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::Index: {
-			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
-			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::Const: {
-			alignment       = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
-			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
-			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+			alignment           = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
+			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::StagingToGpu: {
-			_resourceState	= D3D12_RESOURCE_STATE_GENERIC_READ;
-			_heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+			_resourceState      = D3D12_RESOURCE_STATE_GENERIC_READ;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_UPLOAD;
 		}break;
 
 		case GpuBufferType::StagingToCpu: {
-			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
-			_heapProps.Type = D3D12_HEAP_TYPE_READBACK;
+			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_READBACK;
 		}break;
 
 		case GpuBufferType::Structured: {
-			_resourceState = D3D12_RESOURCE_STATE_COMMON; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-			_desc.Flags    = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			_resourceState      = D3D12_RESOURCE_STATE_COMMON; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+			_resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}break;
 
 		case GpuBufferType::RayTracingShaderRecord: {
-			alignment       = D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT;
-			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
-			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+			alignment           = D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT;
+			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::RayTracingInstanceDesc: {
-			alignment       = D3D12_RAYTRACING_INSTANCE_DESCS_BYTE_ALIGNMENT;
-			_resourceState  = D3D12_RESOURCE_STATE_COMMON;
-			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+			alignment           = D3D12_RAYTRACING_INSTANCE_DESCS_BYTE_ALIGNMENT;
+			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		case GpuBufferType::RayTracingScratch: {
-			_resourceState	= D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-			_desc.Flags		= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
-		}break;
+			_resourceState      = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+			_resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
+		} break;
 
 		case GpuBufferType::RayTracingAccelStruct: {
-			_resourceState	= D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-			_desc.Flags		= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-			_heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+			_resourceState      = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+			_resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 		}break;
 
 		default: throw Error_Undefined();
@@ -119,8 +110,8 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	if (alignment > 0) {
 		bufferSize = Math::alignTo(bufferSize, alignment);
 	}
-	_desc.Width     = ax_safe_cast_from(bufferSize);
-	_desc.Layout    = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	_resourceDesc.Width  = ax_safe_cast_from(bufferSize);
+	_resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 	_dataSize       = bufferSize;
 	_create();
@@ -196,35 +187,32 @@ D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandLis
 void Dx12Resource_ColorBuffer::createFromSwapChain(Dx12_IDXGISwapChain* swapChain, UINT backBufIndex) {
 	auto hr = swapChain->GetBuffer(backBufIndex, IID_PPV_ARGS(_d3dResource.ptrForInit()));
 	Dx12Util::throwIfError(hr);
-	_desc = _d3dResource->GetDesc();
+	_resourceDesc = _d3dResource->GetDesc1();
 	_resourceState = D3D12_RESOURCE_STATE_PRESENT;
-
-	D3D12_HEAP_FLAGS flags;
-	_d3dResource->GetHeapProperties(&_heapProps, &flags);
 }
 
 void Dx12Resource_ColorBuffer::create(Vec2i size, ColorType colorType) {
-	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	_desc.Format    = Dx12Util::getDxColorType(colorType);
-	_desc.Width     = Dx12Util::castUINT(size.x);
-	_desc.Height    = Dx12Util::castUINT(size.y);
-	_desc.MipLevels = 0;
-	_desc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+	_resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	_resourceDesc.Format    = Dx12Util::getDxColorType(colorType);
+	_resourceDesc.Width     = Dx12Util::castUINT(size.x);
+	_resourceDesc.Height    = Dx12Util::castUINT(size.y);
+	_resourceDesc.MipLevels = 0;
+	_resourceDesc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 	_resourceState  = D3D12_RESOURCE_STATE_PRESENT;
 	_create();
 }
 
 void Dx12Resource_DepthBuffer::create(Vec2i size, RenderDepthType depthType) {
-	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	_desc.MipLevels = 0;
-	_desc.Format    = Dx12Util::getDxDepthType(depthType);
-	_desc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-	_desc.Width     = Dx12Util::castUINT(size.x);
-	_desc.Height    = Dx12Util::castUINT(size.y);
+	_resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	_resourceDesc.MipLevels = 0;
+	_resourceDesc.Format    = Dx12Util::getDxDepthType(depthType);
+	_resourceDesc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+	_resourceDesc.Width     = Dx12Util::castUINT(size.x);
+	_resourceDesc.Height    = Dx12Util::castUINT(size.y);
 	_resourceState  = D3D12_RESOURCE_STATE_DEPTH_WRITE;
 
 	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = _desc.Format;
+	clearValue.Format = _resourceDesc.Format;
 	clearValue.DepthStencil.Depth = 1.0f;
 	clearValue.DepthStencil.Stencil = 0;
 
@@ -232,11 +220,11 @@ void Dx12Resource_DepthBuffer::create(Vec2i size, RenderDepthType depthType) {
 }
 
 void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType colorType) {
-	_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	_desc.Format    = Dx12Util::getDxColorType(colorType);
-	_desc.Width     = Dx12Util::castUINT(size.x);
-	_desc.Height    = Dx12Util::castUINT(size.y);
-	_desc.MipLevels = Dx12Util::castUINT16(mipmapCount);
+	_resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	_resourceDesc.Format    = Dx12Util::getDxColorType(colorType);
+	_resourceDesc.Width     = Dx12Util::castUINT(size.x);
+	_resourceDesc.Height    = Dx12Util::castUINT(size.y);
+	_resourceDesc.MipLevels = Dx12Util::castUINT16(mipmapCount);
 	_resourceState  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
 	_create();

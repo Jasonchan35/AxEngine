@@ -21,6 +21,9 @@ using Dx12_IDXGISwapChain  = IDXGISwapChain4;
 	using Dx12_ID3D12Debug	= ID3D12Debug6;
 #endif
 
+using Dx12_ID3DResource = ID3D12Resource2;
+
+
 struct Dx12Util {
 	Dx12Util() = delete;
 

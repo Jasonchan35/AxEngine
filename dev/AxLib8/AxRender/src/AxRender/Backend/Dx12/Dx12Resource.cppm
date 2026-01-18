@@ -31,7 +31,7 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _d3dResource ? _d3dResource->GetGPUVirtualAddress() : 0; }
 
 	Int dataSize() const { return _dataSize; }
-	ID3D12Resource** ptrForInit() { return _d3dResource.ptrForInit(); }
+	Dx12_ID3DResource** ptrForInit() { return _d3dResource.ptrForInit(); }
 
 	bool isValid() const { return _d3dResource.ptr() != nullptr; }
 
@@ -42,9 +42,9 @@ public:
 
 	operator ID3D12Resource*() { return _d3dResource; }
 
-	const D3D12_RESOURCE_DESC&	desc() const { return _desc; }
+	const D3D12_RESOURCE_DESC1&	resourceDesc() const { return _resourceDesc; }
 
-	Int bufferSize() const { return ax_safe_cast_from(_desc.Width); }
+	Int bufferSize() const { return ax_safe_cast_from(_resourceDesc.Width); }
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(StrView debugName) { _debugName.setUtf(debugName); _d3dResource->SetName(_debugName.c_str()); }
@@ -55,11 +55,12 @@ protected:
 	void _create(const D3D12_CLEAR_VALUE* clearValue = nullptr);
 	void _reset();
 
-	ComPtr<ID3D12Resource> _d3dResource;
-	Int                    _dataSize  = 0;
-	D3D12_RESOURCE_DESC    _desc      = {};
-	D3D12_HEAP_PROPERTIES  _heapProps = {};
-	D3D12_RESOURCE_STATES  _resourceState = D3D12_RESOURCE_STATE_COMMON;
+	ComPtr<Dx12_ID3DResource>   _d3dResource;
+	ComPtr<D3D12MA::Allocation> _resourceAllocation;
+	Int                         _dataSize      = 0;
+	D3D12MA::ALLOCATION_DESC    _allocDesc     = {};
+	D3D12_RESOURCE_DESC1        _resourceDesc  = {};
+	D3D12_RESOURCE_STATES       _resourceState = D3D12_RESOURCE_STATE_COMMON;
 
 #if AX_RENDER_DEBUG_NAME
 	StringW _debugName;

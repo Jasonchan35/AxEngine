@@ -20,6 +20,18 @@ RenderSystem_Dx12::RenderSystem_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
 	createDevice();
+	
+	D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
+	allocatorDesc.pDevice  = _d3dDevice;
+	allocatorDesc.pAdapter = _dxgiAdapter;
+	allocatorDesc.Flags    = ax_safe_cast_from(D3D12MA_RECOMMENDED_ALLOCATOR_FLAGS);
+ 
+	HRESULT hr = D3D12MA::CreateAllocator(&allocatorDesc, _d3dAllocator.ptrForInit());
+	Dx12Util::throwIfError(hr);
+}
+
+RenderSystem_Dx12::~RenderSystem_Dx12() {
+	destroy();
 }
 
 void RenderSystem_Dx12::createDevice() {

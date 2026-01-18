@@ -51,6 +51,8 @@ ax_copy_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.sln.DotSettings" "${CM
 #       +- AxImUI
 
 add_subdirectory(external/imgui)
+add_subdirectory(external/D3D12MemoryAllocator)
+#add_subdirectory(external/VulkanMemoryAllocator)
 
 add_subdirectory(AxLib8/AxCore)
 add_subdirectory(AxLib8/AxCore/test)

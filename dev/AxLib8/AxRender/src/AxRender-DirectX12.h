@@ -13,6 +13,8 @@
 	#pragma comment(lib, "d3d12.lib")
 	#pragma comment(lib, "dxgi.lib")
 	#pragma comment(lib, "dxguid.lib")
+
+	#include <D3D12MemoryAllocator/D3D12MemAlloc.h>
 #endif
 
 #endif
