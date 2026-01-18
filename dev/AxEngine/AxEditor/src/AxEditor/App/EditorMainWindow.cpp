@@ -41,7 +41,7 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 			}
 		} break;
 		case UIMouseEventType::Wheel: {
-			cam.dolly(ev.wheelDelta.y * -0.05f);
+			cam.dolly(ev.wheelDelta.y * -0.02f);
 		} break;
 		default: break;
 	}
