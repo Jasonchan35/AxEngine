@@ -73,7 +73,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	
 	for (auto& param : _structuredBufferParams) {
 		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(param.getUploadedGpuBuffer(req)));
-		if (!gpuBuf) throw Error_Undefined();
+		if (!gpuBuf) continue;
 		// AX_LOG("-- add StructuredBuffer");
 		auto* structBuf = param.buffer();
 		gpuBuf->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COMMON);

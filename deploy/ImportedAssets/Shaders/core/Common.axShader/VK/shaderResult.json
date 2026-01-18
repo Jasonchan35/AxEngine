@@ -121,43 +121,6 @@
               "dataType": "Mat4f"
             }], 
           "dataSize": 208
-        }, {
-          "name": "AX_ConstBuffer_Object", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "Object", 
-          "bindPoint": 0, 
-          "bindCount": 1, 
-          "variables": [{
-              "name": "ax_object_mv", 
-              "offset": 0, 
-              "dataType": "Mat4f"
-            }, {
-              "name": "ax_object_mv_t", 
-              "offset": 64, 
-              "dataType": "Mat4f"
-            }, {
-              "name": "ax_object_mv_it", 
-              "offset": 128, 
-              "dataType": "Mat4f"
-            }, {
-              "name": "ax_object_v", 
-              "offset": 192, 
-              "dataType": "Mat4f"
-            }, {
-              "name": "ax_object_vp", 
-              "offset": 256, 
-              "dataType": "Mat4f"
-            }, {
-              "name": "ax_object_m", 
-              "offset": 320, 
-              "dataType": "Mat4f"
-            }, {
-              "name": "ax_object_m_i", 
-              "offset": 384, 
-              "dataType": "Mat4f"
-            }], 
-          "dataSize": 448
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 
@@ -183,6 +146,61 @@
           "bindCount": 1000, 
           "dynamicSampler": true
         }], 
-      "structuredBuffers": []
+      "structuredBuffers": [{
+          "name": "gAxCameraData", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "Object", 
+          "bindPoint": 4, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "viewMatrix", 
+              "offset": 0, 
+              "dataType": "Mat4f"
+            }, {
+              "name": "projMatrix", 
+              "offset": 64, 
+              "dataType": "Mat4f"
+            }, {
+              "name": "viewProjMatrix", 
+              "offset": 128, 
+              "dataType": "Mat4f"
+            }], 
+          "stride": 192
+        }, {
+          "name": "gAxLightData", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "Object", 
+          "bindPoint": 5, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "color", 
+              "offset": 0, 
+              "dataType": "Vec4f"
+            }], 
+          "stride": 16
+        }, {
+          "name": "gAxObjectData", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "Object", 
+          "bindPoint": 6, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "objectToWorld", 
+              "offset": 0, 
+              "dataType": "Mat4f"
+            }, {
+              "name": "aabbMin", 
+              "offset": 64, 
+              "dataType": "Vec2f"
+            }, {
+              "name": "aabbMax", 
+              "offset": 72, 
+              "dataType": "Vec2f"
+            }], 
+          "stride": 80
+        }]
     }]
 }

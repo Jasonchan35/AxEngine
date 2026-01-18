@@ -595,7 +595,8 @@ void GenReflect_Dx12::_compileReflect_structuredBuffers(ShaderStageInfo& outInfo
 		hr = reflect->GetResourceBindingDesc(i, &resDesc);
 		throwIfError(hr);
 
-		if (resDesc.Type != D3D_SIT_STRUCTURED) continue;
+		if (resDesc.Type != D3D_SIT_STRUCTURED
+		 && resDesc.Type != D3D_SIT_UAV_RWSTRUCTURED) continue;
 		
 		D3D12_SHADER_BUFFER_DESC bufDesc;
 		auto* cb = reflect->GetConstantBufferByName(resDesc.Name);

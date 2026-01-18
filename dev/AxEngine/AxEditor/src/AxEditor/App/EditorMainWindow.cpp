@@ -57,13 +57,14 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 	if constexpr (true) {
 		auto& cam = _viewportCamera;
 		ImUIPanel	panel("camera");
-		ImUILabelText("pos"  , Fmt("{}", cam.pos()));
-		ImUILabelText("aim"  , Fmt("{}", cam.aim()));
-		ImUILabelText("up"   , Fmt("{}", cam.up()));
-		ImUILabelText("Rot"  , Fmt("{}", cam.rotation()));
-		ImUILabelText("viewMatrix",		Fmt("{}", cam.viewMatrix()));
-		ImUILabelText("projMatrix",		Fmt("{}", cam.projMatrix()));
-		ImUILabelText("viewProjMatrix",	Fmt("{}", cam.viewProjMatrix()));
+		ImUILabelText("viewport"      , Fmt("{}", cam.viewport()));
+		ImUILabelText("pos"           , Fmt("{}", cam.pos()));
+		ImUILabelText("aim"           , Fmt("{}", cam.aim()));
+		ImUILabelText("up"            , Fmt("{}", cam.up()));
+		ImUILabelText("Rot"           , Fmt("{}", cam.rotation()));
+		ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix()));
+		ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix()));
+		ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix()));
 	}
 
 	win->_sceneOutlinerUIPanel.render(req);

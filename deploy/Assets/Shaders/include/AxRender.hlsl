@@ -1,26 +1,20 @@
 #ifndef __ax_common_hlsl__
 #define __ax_common_hlsl__
 
-typedef int		i32;
-typedef uint	u32;
+typedef int			i32;
+typedef uint		u32;
+typedef half		f16;
+typedef float 		f32;
+typedef double		f64;
 
-typedef half	f16;
-typedef half2	f16x2;
-typedef half3	f16x3;
-typedef half4	f16x4;
+typedef float2		Vec2f;
+typedef float3		Vec3f;
+typedef float4		Vec4f;
 
-typedef float  	f32;
-typedef float2 	f32x2;
-typedef float3 	f32x3;
-typedef float4 	f32x4;
+typedef float4x4	Mat4f;
 
-typedef double	f64;
-typedef double2	f64x2;
-typedef double3	f64x3;
-typedef double4	f64x4;
-
-typedef float3 	Color3f;
-typedef float4 	Color4f;
+typedef float3		Color3f;
+typedef float4		Color4f;
 
 // HLSL: resource : register(x, space) | DX: D3D12_SHADER_INPUT_BIND_DESC |  spirv-cross reflection
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"
@@ -30,10 +24,6 @@ typedef float4 	Color4f;
 #define AX_BindSpace_Object		space2
 #define AX_BindSpace_Bindless	space3
 #define AX_BindSpace_RootConst	space4
-
-#define f32   float
-#define Vec4f float4
-#define Mat4f float4x4
 
 cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
 	float	ax_g_test;
@@ -47,34 +37,24 @@ cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
 	Mat4f	ax_g_cameraInvProjection;
 }
 
-cbuffer AX_ConstBuffer_Object : register(b0, AX_BindSpace_Object) {
-//	Mat4f	ax_object_mvp;
-	Mat4f	ax_object_mv;
-	Mat4f	ax_object_mv_t;
-	Mat4f	ax_object_mv_it;
-	Mat4f	ax_object_v;
-	Mat4f	ax_object_vp;
-	Mat4f	ax_object_m;		// Object To World
-	Mat4f	ax_object_m_i;		// world To Object
-}
+struct AxCameraData {
+	Mat4f	viewMatrix;
+	Mat4f	projMatrix;
+	Mat4f	viewProjMatrix;
+};
+RWStructuredBuffer<AxCameraData> gAxCameraData : register(u0, AX_BindSpace_Object);
 
-// AX_PUSH_CONST
-// cbuffer AxRootConst : register(b1, AX_BindSpace_RootConst) {
-// 	Mat4f ax_object_mvp;
-// }
+struct AxLightData {
+	Color4f	color;
+};
+RWStructuredBuffer<AxLightData> gAxLightData : register(u1, AX_BindSpace_Object);
 
-// struct AxRootConst {
-// 	Mat4f mvp;
-// };
-// #if AX_RENDER_DX12
-//  	ConstantBuffer<AxRootConst> gAxRootConst : register(b1, AX_BindSpace_RootConst);
-// #elif AX_RENDER_VK
-// 	[[vk::push_constant]] AxRootConst gAxRootConst;
-// #endif
-
-// struct AxRootConst {
-// 	Mat4f mvp;
-// };
+struct AxObjectData {
+	Mat4f	objectToWorld;
+	Vec2f	aabbMin;
+	Vec2f	aabbMax;
+};
+RWStructuredBuffer<AxObjectData> gAxObjectData : register(u2, AX_BindSpace_Object);
 
 #if AX_RENDER_VK
 	#define AX_ROOT_CONST(NAME)	[[vk::push_constant]] cbuffer NAME
