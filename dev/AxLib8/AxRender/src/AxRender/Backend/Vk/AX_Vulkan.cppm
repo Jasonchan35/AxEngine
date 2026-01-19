@@ -144,6 +144,8 @@ public:
 
 	VkInstance inst() { return _phyDev->inst(); }
 	operator VkInstance() { return inst(); }
+	
+	VmaAllocator vmaAllocator() { return _vmaAllocator; }
 
 	~AX_VkDevice() { destroy(); }
 	void destroy();
@@ -179,13 +181,13 @@ private:
 	bool _addEnabledExtensions(IArray<const char*>& arr, const char* name);
 	void _setObjectDebugName(VkObjectType objectType, void* objectHandle, StrView name);
 	void _setObjectDebugTag( VkObjectType objectType, void* objectHandle, u64 tagName, ByteSpan tag);
-
-
-	VkDevice					_handle = VK_NULL_HANDLE;
-	AX_VkPhysicalDevice*		_phyDev = nullptr;
+	void _createAllocator();
+	
+	VmaAllocator         _vmaAllocator = VK_NULL_HANDLE;
+	VkDevice             _handle       = VK_NULL_HANDLE;
+	AX_VkPhysicalDevice* _phyDev       = nullptr;
 
 	Features	_enabledFeatures = {};
-
 	AX_VkQueueFamilyIndex		_graphQueueFamilyIndex = AX_VkQueueFamilyIndex::Invalid;
 };
 
@@ -577,10 +579,31 @@ public:
 	AX_VkBuffer(AX_VkBuffer && r) noexcept;
 
 	void destroy();
-	void create(AX_VkDevice& dev, VkDeviceSize bufferSize, VkBufferUsageFlags usage);
+	void create(AX_VkDevice& dev, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VmaMemoryUsage vmaUsage);
 
 	VkMemoryRequirements getMemoryRequirements();
 
+	MutByteSpan mapMemory(IntRange range) {
+		if (!IntRange(_vmaAllocationInfo.size).contains(range))
+			throw Error_IndexOutOfRange("AX_VkBuffer::mapMemory");
+		
+		byte* p = nullptr;
+		vmaMapMemory(_dev->vmaAllocator(), _vmaAllocation, reinterpret_cast<void**>(&p));
+		return MutByteSpan(p + range.start(), range.size());
+	}
+	
+	void unmapMemory() {
+		vmaUnmapMemory(_dev->vmaAllocator(), _vmaAllocation);
+	}
+	
+	void flushMappedMemoryRanges(IntRange range) {
+		vmaFlushAllocation(_dev->vmaAllocator(), _vmaAllocation, range.start(), range.size());
+	}
+	
+	void invalidateMappedMemoryRanges(IntRange range) {
+		vmaInvalidateAllocation(_dev->vmaAllocator(), _vmaAllocation, range.start(), range.size());
+	}
+	
 	AX_VkDevice*	device() { return _dev; }
 
 #if AX_RENDER_DEBUG_NAME
@@ -588,10 +611,13 @@ public:
 #endif
 
 private:
-	VkBuffer			_handle = VK_NULL_HANDLE;
-	AX_VkDevice*		_dev = nullptr;
-	VkDeviceSize		_bufferSize = 0;
-	VkBufferUsageFlags	_usage = 0;
+	VkBuffer           _handle            = VK_NULL_HANDLE;
+	AX_VkDevice*       _dev               = nullptr;
+	VkDeviceSize       _bufferSize        = 0;
+	VkBufferUsageFlags _usage             = 0;
+	VmaMemoryUsage     _vmaUsage          = VMA_MEMORY_USAGE_UNKNOWN;
+	VmaAllocation      _vmaAllocation     = VK_NULL_HANDLE;
+	VmaAllocationInfo  _vmaAllocationInfo = {};
 };
 
 class AX_VkDeviceMemory : public NonCopyable {
@@ -617,7 +643,7 @@ public:
 	ScopedMapMemory mapMemory(IntRange range, VkMemoryMapFlags flags = 0) { return ScopedMapMemory(_mapMemory(range, flags), this); }
 
 	void flushMappedMemoryRanges(Span<IntRange> ranges);
-	void InvalidateMappedMemoryRanges(Span<IntRange> ranges);
+	void invalidateMappedMemoryRanges(Span<IntRange> ranges);
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }

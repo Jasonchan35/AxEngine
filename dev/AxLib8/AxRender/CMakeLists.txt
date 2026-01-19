@@ -5,7 +5,9 @@ project(${PROJECT_NAME})
 ax_add_library(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "AxLib8")
 
-target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI imgui-docking D3D12MemoryAllocator)
+target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI)
+target_link_libraries(${PROJECT_NAME} PUBLIC imgui-docking )
+target_link_libraries(${PROJECT_NAME} PUBLIC D3D12MemoryAllocator VulkanMemoryAllocator)
 
 #--------------------
 find_package(PNG REQUIRED)
@@ -19,10 +21,3 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Freetype::Freetype)
 
 # find_package(imgui CONFIG REQUIRED)
 # target_link_libraries(${PROJECT_NAME} PUBLIC imgui::imgui)
-
-if(WIN32)
-	set(vulkan_sdk_path $ENV{VK_SDK_PATH})
-	target_include_directories(${PROJECT_NAME} PUBLIC "${vulkan_sdk_path}/Include")
-	target_link_directories(   ${PROJECT_NAME} PUBLIC "${vulkan_sdk_path}/Lib")
-	target_link_libraries(${PROJECT_NAME} PUBLIC vulkan-1)
-endif()

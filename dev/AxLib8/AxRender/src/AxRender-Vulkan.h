@@ -3,6 +3,7 @@
 #if AX_RENDERER_VK
 
 #include <vulkan/vulkan.h>
+#include <VulkanMemoryAllocator/vk_mem_alloc.h>
 
 #if AX_NATIVE_UI_WIN32
 	#include "AxCore-OS_Windows.h"

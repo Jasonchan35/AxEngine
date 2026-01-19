@@ -14,22 +14,16 @@ class GpuBuffer_Vk : public GpuBuffer_Backend {
 public:
 	GpuBuffer_Vk(const CreateDesc& desc);
 
-	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _vkDevMem._mapMemory(range); }
-	virtual void		onUnmapMemory() override				{ return _vkDevMem._unmapMemory(); }
+	virtual MutByteSpan onMapMemory(IntRange range) override	{ return _vkBuf.mapMemory(range); }
+	virtual void        onUnmapMemory() override				{ return _vkBuf.unmapMemory(); }
 
 	virtual void		onFlush(IntRange range) override;
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override;
 
 	const VkBuffer&	vkBufHandle() const { return _vkBuf.handle(); }
 
-	AX_VkDeviceMemory&	vkDevMem()		{ return _vkDevMem; }
-	   VkDeviceMemory	vkDevMemHandle() { return _vkDevMem; }
-
 	operator AX_VkBuffer&()			{ return _vkBuf; }
 	operator    VkBuffer()			{ return _vkBuf; }
-
-	operator AX_VkDeviceMemory&()	{ return _vkDevMem; }
-	operator    VkDeviceMemory()	{ return _vkDevMem; }
 
 	VkDescriptorBufferInfo _getUpdatedDescriptorInfo(RenderRequest_Vk* req) const {
 		VkDescriptorBufferInfo info = {};
@@ -41,7 +35,6 @@ public:
 
 private:
 	AX_VkBuffer			_vkBuf;
-	AX_VkDeviceMemory	_vkDevMem;
 };
 
 class GpuStructuredBuffer_Vk : public GpuStructuredBuffer_Backend {

@@ -15,7 +15,7 @@ import :Texture_Vk;
 
 namespace ax /*::AxRender*/ {
 
-AX_RenderSystem_FunctionBodies(Vk);
+AX_RenderSystem_FunctionBodies(Vk)
 
 RenderSystem_Vk::RenderSystem_Vk(const CreateDesc& desc)
 : Base(desc)
@@ -72,6 +72,10 @@ RenderSystem_Vk::RenderSystem_Vk(const CreateDesc& desc)
 #endif
 }
 
+RenderSystem_Vk::~RenderSystem_Vk() {
+	destroy();
+}
+
 void RenderSystem_Vk::_createVkInstance() {
 
 #ifdef AX_NATIVE_UI_MACOSX
@@ -105,7 +109,18 @@ void RenderSystem_Vk::_createVkInstance() {
 		_enableDebugUtils = false;
 
 	if (!info.enableExtension(VK_EXT_DEBUG_MARKER_EXTENSION_NAME))
-		_enableDebugMarker = false;	
+		_enableDebugMarker = false;
+	
+	// VMA allocator support extensions
+	info.enableExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
+	info.enableExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
+	info.enableExtension(VK_KHR_MAINTENANCE_4_EXTENSION_NAME);
+	info.enableExtension(VK_KHR_MAINTENANCE_5_EXTENSION_NAME);
+	info.enableExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
+	info.enableExtension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+	info.enableExtension(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
+	info.enableExtension(VK_AMD_DEVICE_COHERENT_MEMORY_EXTENSION_NAME);
+	info.enableExtension(VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME);
 
 //---- surface
 	if (!info.enableExtension(VK_KHR_SURFACE_EXTENSION_NAME				)) throw Error_Undefined();

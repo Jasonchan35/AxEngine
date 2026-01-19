@@ -13,14 +13,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # endfunction()
 
 function(ax_cpp_header_tool target path)
-	set(AX_CppHeaerTool "$<TARGET_FILE:AxCppHeaderTool>")
+	set(AxCppHeaderTool_exe "$<TARGET_FILE:AxCppHeaderTool>")
 
 	add_custom_target(${target}_CppHeaderTool
 		COMMENT "---- Running ${target}_CppHeaderTool..."
-		COMMAND ${AX_CppHeaerTool} ARGS -moduleName=${target} -outPath=${path} ${path}
+		COMMAND ${AxCppHeaderTool_exe} ARGS -moduleName=${target} -outPath=${path} ${path}
 		COMMENT "---- End ${target}_CppHeaderTool ----"
 		WORKING_DIRECTORY ${path}
-		DEPENDS AX_CppHeaerTool
+		DEPENDS AxCppHeaderTool
 		VERBATIM
 	)
 	add_dependencies(${target} ${target}_CppHeaderTool)

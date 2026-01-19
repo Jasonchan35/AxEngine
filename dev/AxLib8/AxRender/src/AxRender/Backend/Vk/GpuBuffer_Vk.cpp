@@ -16,57 +16,62 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 	auto& dev = RenderSystem_Vk::s_instance()->device();
 
 	VkBufferUsageFlags usage = 0;
-	VkMemoryPropertyFlags memProps = 0;
+	VmaMemoryUsage     vmaUsage = VMA_MEMORY_USAGE_AUTO;
 
 	switch (desc.bufferType) {
 		case GpuBufferType::Vertex: {
 			usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
 		}break;
 		case GpuBufferType::Index: {
 			usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
 		}break;
 		case GpuBufferType::Const: {
 			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
 		}break;
 		case GpuBufferType::Structured: {
 			usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 //			memProps = VK_MEMORY_PROPERTY_PROTECTED_BIT; // no CPU access
-			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+//			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
 		}break;
 
 		// https://gpuopen.com/learn/vulkan-device-memory/
 		case GpuBufferType::StagingToGpu: {
 			usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-			memProps = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+//			memProps = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+			vmaUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 		}break;
 		case GpuBufferType::StagingToCpu: {
 			usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-			memProps = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+			// memProps = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+			vmaUsage = VMA_MEMORY_USAGE_GPU_TO_CPU;
 		}break;
 
 		default: throw Error_Undefined();
 	}
 
-	_vkBuf.create(dev, AX_VkUtil::castVkDeviceSize(desc.bufferSize), usage);
-	_vkDevMem.createForBuffer(_vkBuf, memProps);
+	_vkBuf.create(dev, AX_VkUtil::castVkDeviceSize(desc.bufferSize), usage, vmaUsage);
+//	_vkDevMem.createForBuffer(_vkBuf, memProps);
 
 #if AX_RENDER_DEBUG_NAME
 	_vkBuf.setDebugName(desc.name);
-	_vkDevMem.setDebugName(Fmt("{}-devMem", desc.name));
 #endif
 }
 
 void GpuBuffer_Vk::onFlush(IntRange range) {
 	switch (bufferType()) {
 		case GpuBufferType::StagingToGpu: {
-			_vkDevMem.flushMappedMemoryRanges(range);
+			_vkBuf.flushMappedMemoryRanges(range);
 		} break;
 
 		case GpuBufferType::StagingToCpu: {
-			_vkDevMem.InvalidateMappedMemoryRanges(range);
+			_vkBuf.invalidateMappedMemoryRanges(range);
 		} break;
 
 		default: AX_ASSERT(false);

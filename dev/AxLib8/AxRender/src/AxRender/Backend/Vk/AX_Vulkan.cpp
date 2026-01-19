@@ -443,10 +443,85 @@ AX_VkDevice& AX_VkDevice::create(AX_VkPhysicalDevice& phyDev) {
 	auto err = vkCreateDevice(*_phyDev, &deviceCreateInfo, AX_VkUtil::allocCallbacks(), &_handle);
 	AX_VkUtil::throwIfError(err);
 
+	_createAllocator();
 	return *this;
 }
 
+void* AX_VkDevice_MemAllocation(
+	void*                   pUserData,
+	size_t                  size,
+	size_t                  alignment,
+	VkSystemAllocationScope allocationScope) 
+{
+	auto*           allocator = ax_default_allocator();
+	MemAllocRequest req(allocator);
+	req.dataSize  = size;
+	req.alignment = alignment;
+	auto result   = allocator->allocBytes(req);
+	return result.takeOwnership();
+}
+
+void* AX_VkDevice_MemReallocation(
+	void*                   pUserData,
+	void*                   pOriginal,
+	size_t                  size,
+	size_t                  alignment,
+	VkSystemAllocationScope allocationScope)
+{
+	return AX_VkDevice_MemAllocation(pUserData, size, alignment, allocationScope);
+}
+
+void AX_VkDevice_MemFree(void* pUserData, void* pMemory) {
+	auto* allocator = ax_default_allocator();
+	allocator->dealloc(pMemory);
+}
+
+void AX_VkDevice_MemAllocationNotification(
+	void*                    pUserData,
+	size_t                   size,
+	VkInternalAllocationType allocationType,
+	VkSystemAllocationScope  allocationScope) 
+{
+}
+
+void AX_VkDevice_MemInternalFreeNotification(
+	void*                    pUserData,
+	size_t                   size,
+	VkInternalAllocationType allocationType,
+	VkSystemAllocationScope  allocationScope)
+{
+}
+
+void AX_VkDevice::_createAllocator() {
+	VkAllocationCallbacks allocationCallbacks = {};
+	allocationCallbacks.pfnAllocation         = &AX_VkDevice_MemAllocation;
+	allocationCallbacks.pfnReallocation       = &AX_VkDevice_MemReallocation;
+	allocationCallbacks.pfnFree               = &AX_VkDevice_MemFree;
+	allocationCallbacks.pfnInternalAllocation = &AX_VkDevice_MemAllocationNotification;
+	allocationCallbacks.pfnInternalFree       = &AX_VkDevice_MemInternalFreeNotification;
+	
+	VmaVulkanFunctions vulkanFunctions    = {};
+	vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
+	vulkanFunctions.vkGetDeviceProcAddr   = &vkGetDeviceProcAddr;
+
+	VmaAllocatorCreateInfo allocatorCreateInfo = {};
+	allocatorCreateInfo.flags                  = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
+	allocatorCreateInfo.vulkanApiVersion       = VK_API_VERSION_1_2;
+	allocatorCreateInfo.physicalDevice         = _phyDev->handle();
+	allocatorCreateInfo.device                 = _handle;
+	allocatorCreateInfo.instance               = inst();
+	allocatorCreateInfo.pVulkanFunctions       = &vulkanFunctions;
+	allocatorCreateInfo.pAllocationCallbacks   = &allocationCallbacks;
+ 
+	vmaCreateAllocator(&allocatorCreateInfo, &_vmaAllocator);
+}
+
 void AX_VkDevice::destroy() {
+	if (_vmaAllocator) {
+		vmaDestroyAllocator(_vmaAllocator);
+		_vmaAllocator = VK_NULL_HANDLE;
+	}
+	
 	if (_handle) {
 		vkDeviceWaitIdle(_handle);
 		vkDestroyDevice(_handle, AX_VkUtil::allocCallbacks());
@@ -1242,7 +1317,7 @@ void AX_VkDeviceMemory::flushMappedMemoryRanges(Span<IntRange> ranges) {
 	vkFlushMappedMemoryRanges(*_dev, AX_VkUtil::castUInt32(arr.size()), arr.data());
 }
 
-void AX_VkDeviceMemory::InvalidateMappedMemoryRanges(Span<IntRange> ranges) {
+void AX_VkDeviceMemory::invalidateMappedMemoryRanges(Span<IntRange> ranges) {
 	if (!_dev) { AX_ASSERT(false); return; }
 
 	Array<VkMappedMemoryRange, 32> arr;
@@ -1253,32 +1328,51 @@ void AX_VkDeviceMemory::InvalidateMappedMemoryRanges(Span<IntRange> ranges) {
 
 void AX_VkBuffer::destroy() {
 	if (_handle) {
+#if 0
 		vkDestroyBuffer(*_dev, _handle, AX_VkUtil::allocCallbacks());
+#else
+		vmaDestroyBuffer(_dev->vmaAllocator(), _handle, _vmaAllocation);
+#endif
 		_handle = VK_NULL_HANDLE;
+		_vmaAllocation = VK_NULL_HANDLE;
 		_dev = nullptr;
 	}
 }
 
-void AX_VkBuffer::create(AX_VkDevice& dev, VkDeviceSize bufferSize, VkBufferUsageFlags usage) {
-	if (_handle && _dev == &dev && bufferSize == _bufferSize && usage == _usage) 
+void AX_VkBuffer::create(AX_VkDevice&          dev,
+                         VkDeviceSize          bufferSize,
+                         VkBufferUsageFlags    usage,
+                         VmaMemoryUsage        vmaUsage) 
+{
+	if (_handle && _dev == &dev && bufferSize == _bufferSize) 
 		return;
 
 	destroy();
 	_dev = &dev;
+	_usage = usage;
+	_vmaUsage = vmaUsage;
 
 	VkBufferCreateInfo info = {};
 	info.sType					= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	info.pNext					= nullptr;
 	info.flags					= 0;
-	info.size					= Math::max(bufferSize, u64(8)); // ensure not too small
+	info.size					= Math::max(bufferSize, 8ULL); // ensure not too small
 	info.usage					= usage;
 	info.sharingMode			= VK_SHARING_MODE_EXCLUSIVE;
 	info.queueFamilyIndexCount	= 0;
 	info.pQueueFamilyIndices	= nullptr;
 
+#if 0
 	auto err = vkCreateBuffer(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
 	AX_VkUtil::throwIfError(err);
-
+#else
+	VmaAllocationCreateInfo allocInfo = {};
+	allocInfo.usage = vmaUsage;
+	
+	auto err = vmaCreateBuffer(_dev->vmaAllocator(), &info, &allocInfo, &_handle, &_vmaAllocation, &_vmaAllocationInfo);
+	AX_VkUtil::throwIfError(err);
+	
+#endif
 	_bufferSize = bufferSize;
 }
 

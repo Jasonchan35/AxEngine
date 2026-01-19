@@ -14,7 +14,7 @@ public:
 	AX_DOWNCAST_GET_INSTANCE()
 
 	RenderSystem_Vk(const CreateDesc& desc);
-	virtual ~RenderSystem_Vk() override { destroy(); }
+	virtual ~RenderSystem_Vk() override;
 
 	AX_VkPhysicalDeviceList& physicalDeviceList() { return _physicalDeviceList; }
 	AX_VkDevice& device() { return _device; }
