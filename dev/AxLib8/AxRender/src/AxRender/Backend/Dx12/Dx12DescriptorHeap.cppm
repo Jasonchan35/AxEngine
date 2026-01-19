@@ -328,7 +328,7 @@ struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
 		desc.Buffer.FirstElement = 0;
-		desc.Buffer.NumElements = Dx12Util::castUINT(buf.dataSize() / 4);
+		desc.Buffer.NumElements = Dx12Util::castUINT(buf.bufferSize() / 4);
 		desc.Buffer.StructureByteStride = 0;
 		desc.Buffer.CounterOffsetInBytes = 0;
 		desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;

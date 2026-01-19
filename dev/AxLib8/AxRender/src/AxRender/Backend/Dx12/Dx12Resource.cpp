@@ -24,7 +24,7 @@ void Dx12ResourceBase::_reset() {
 
 	_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
-	_dataSize = 0;
+	_bufferSize = 0;
 
 	_d3dResource.unref();
 	_resourceAllocation.unref();
@@ -114,8 +114,12 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 	_resourceDesc.Width  = ax_safe_cast_from(bufferSize);
 	_resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-	_dataSize       = bufferSize;
+	_bufferSize = bufferSize;
 	_create();
+	
+	if (type == GpuBufferType::Vertex) {
+		AX_LOG("-- create Dx12Resource VertexBuffer {} _dataSize={}", (void*)_d3dResource.ptr(), _bufferSize);
+	}
 }
 
 
@@ -140,7 +144,7 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	D3D12_RANGE readRange = {}; // We do not intend to read from this resource on the CPU.
 	UINT8* dst = nullptr;
 
-	if (offset < 0 || offset + data.size() > _dataSize)
+	if (offset < 0 || offset + data.size() > _bufferSize)
 		throw Error_Undefined();
 	
 	auto hr = _d3dResource->Map(0, &readRange, reinterpret_cast<void**>(&dst));

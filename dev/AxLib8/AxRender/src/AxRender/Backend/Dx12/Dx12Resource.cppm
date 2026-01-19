@@ -30,7 +30,6 @@ public:
 	ID3D12Resource*	d3dResource() { return _d3dResource; }
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _d3dResource ? _d3dResource->GetGPUVirtualAddress() : 0; }
 
-	Int dataSize() const { return _dataSize; }
 	Dx12_ID3DResource** ptrForInit() { return _d3dResource.ptrForInit(); }
 
 	bool isValid() const { return _d3dResource.ptr() != nullptr; }
@@ -44,7 +43,7 @@ public:
 
 	const D3D12_RESOURCE_DESC1&	resourceDesc() const { return _resourceDesc; }
 
-	Int bufferSize() const { return ax_safe_cast_from(_resourceDesc.Width); }
+	Int bufferSize() const { return _bufferSize; }
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(StrView debugName) { _debugName.setUtf(debugName); _d3dResource->SetName(_debugName.c_str()); }
@@ -57,7 +56,7 @@ protected:
 
 	ComPtr<Dx12_ID3DResource>   _d3dResource;
 	ComPtr<D3D12MA::Allocation> _resourceAllocation;
-	Int                         _dataSize      = 0;
+	Int                         _bufferSize    = 0;
 	D3D12MA::ALLOCATION_DESC    _allocDesc     = {};
 	D3D12_RESOURCE_DESC1        _resourceDesc  = {};
 	D3D12_RESOURCE_STATES       _resourceState = D3D12_RESOURCE_STATE_COMMON;
