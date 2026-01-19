@@ -27,6 +27,7 @@ void Dx12ResourceBase::_reset() {
 	_dataSize = 0;
 
 	_d3dResource.unref();
+	_resourceAllocation.unref();
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
