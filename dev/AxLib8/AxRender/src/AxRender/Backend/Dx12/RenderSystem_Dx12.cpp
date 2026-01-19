@@ -19,22 +19,15 @@ AX_RenderSystem_FunctionBodies(Dx12);
 RenderSystem_Dx12::RenderSystem_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
-	createDevice();
-	
-	D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
-	allocatorDesc.pDevice  = _d3dDevice;
-	allocatorDesc.pAdapter = _dxgiAdapter;
-	allocatorDesc.Flags    = ax_safe_cast_from(D3D12MA_RECOMMENDED_ALLOCATOR_FLAGS);
- 
-	HRESULT hr = D3D12MA::CreateAllocator(&allocatorDesc, _d3dAllocator.ptrForInit());
-	Dx12Util::throwIfError(hr);
+	_createDevice();
+	_createAllocator();
 }
 
 RenderSystem_Dx12::~RenderSystem_Dx12() {
 	destroy();
 }
 
-void RenderSystem_Dx12::createDevice() {
+void RenderSystem_Dx12::_createDevice() {
 	HRESULT hr;
 	UINT dxgiFactoryFlags = 0;
 
@@ -86,8 +79,10 @@ void RenderSystem_Dx12::createDevice() {
 		Dx12Util::throwIfError(hr);
 
 		if (s.HighestShaderModel < reqShaderModel) {
-			AX_LOG("DX12 supported shader model {?:X} < {?:X} is required for DXIL shader", static_cast<int>(s.HighestShaderModel), static_cast<int>(reqShaderModel));
-			//			throw Error_Undefined();
+			AX_LOG("DX12 supported shader model {:x} < {:x} is required for DXIL shader",
+			       static_cast<int>(s.HighestShaderModel),
+			       static_cast<int>(reqShaderModel));
+			// throw Error_Undefined();
 		}
 
 		if (s.HighestShaderModel >= D3D_SHADER_MODEL_5_1) {
@@ -108,8 +103,37 @@ void RenderSystem_Dx12::createDevice() {
 		_rayTracing = rt;
 	}
 #endif
-
 }
+
+void* RenderSystem_Dx12_D3D12MA_customAllocate(size_t Size, size_t Alignment, void* pPrivateData) {
+	auto* allocator = ax_default_allocator();
+	MemAllocRequest req(allocator);
+	req.dataSize = Size;
+	req.alignment = Alignment;
+	auto result = allocator->allocBytes(req);
+	return result.takeOwnership();
+}
+ 
+void RenderSystem_Dx12_D3D12MA_customFree(void* pMemory, void* pPrivateData) {
+	auto* allocator = ax_default_allocator();
+	allocator->dealloc(pMemory);
+}
+
+void RenderSystem_Dx12::_createAllocator() {
+	D3D12MA::ALLOCATION_CALLBACKS allocationCallbacks = {};
+	allocationCallbacks.pAllocate = &RenderSystem_Dx12_D3D12MA_customAllocate;
+	allocationCallbacks.pFree     = &RenderSystem_Dx12_D3D12MA_customFree;
+	
+	D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
+	allocatorDesc.pDevice  = _d3dDevice;
+	allocatorDesc.pAdapter = _dxgiAdapter;
+	allocatorDesc.Flags    = ax_safe_cast_from(D3D12MA_RECOMMENDED_ALLOCATOR_FLAGS);
+	allocatorDesc.pAllocationCallbacks = &allocationCallbacks;
+ 
+	HRESULT hr = D3D12MA::CreateAllocator(&allocatorDesc, _d3dAllocator.ptrForInit());
+	Dx12Util::throwIfError(hr);
+}
+
 
 void RenderSystem_Dx12::onGetMemoryInfo(MemoryInfo& info) {
 	DXGI_QUERY_VIDEO_MEMORY_INFO  i;

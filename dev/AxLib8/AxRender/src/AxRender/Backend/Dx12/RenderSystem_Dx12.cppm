@@ -18,8 +18,6 @@ public:
 
 	static Dx12_ID3D12Device* s_d3dDevice() { auto* t = s_instance(); return t ? t->d3dDevice() : nullptr; }
 
-	void createDevice();
-	
 	Dx12_ID3D12Device*		d3dDevice	()	{ return _d3dDevice; }
 	Dx12_IDXGIFactory*		dxgiFactory	()	{ return _dxgiFactory; }
 	D3D12MA::Allocator*		d3dAllocator() { return _d3dAllocator; }
@@ -34,6 +32,9 @@ protected:
 	virtual void onGetMemoryInfo(MemoryInfo& info) override;
 
 private:
+	void _createDevice();
+	void _createAllocator();
+	
 	void _getHardwareAdapter();
 
 	D3D_FEATURE_LEVEL			_d3dFeatureLevel = static_cast<D3D_FEATURE_LEVEL>(0);
