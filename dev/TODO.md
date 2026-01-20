@@ -1,3 +1,11 @@
+- GPU Indirect Draw
+	- compute shader object culling
+		- write indirect draw list
+		- write PerMeshData (mvp)
+		- vertex shader fetch mvp from PerMeshData[instanceId]
+		
+
+
 - Dx12
 	- Material update 
 	- move some CBV, Texture to root parameter
@@ -32,6 +40,18 @@
 - Mesh Shader
 
 - Nanite + Subdiv
+
+==== 2025-01-20 =====
+- [done] D3D12MA Allocator
+- [done] Vulkan Memory Allocator
+- [done] Vulkan Sparse Buffer (Mega Vertex/Index Buffer)
+- [done] Win32 - SetProcessDpiAwarenessContext
+- [done] Draw mesh with mvpMatrix (Vulkan-PushConstant, Dx12-RootConst)
+- [done] HLSL StruturedBuffer
+- [done] EditorUI InsepectorUIPanel
+- [done] EditorUI SceneOutlinerUIPanel
+- [done] AxCppHeaderTool
+- [done] FreeType Font
 
 ==== 2025-12-28 =====
 - [done] Type_EnumFlag<>
