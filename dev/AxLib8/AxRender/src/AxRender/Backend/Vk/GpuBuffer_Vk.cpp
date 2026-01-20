@@ -13,21 +13,24 @@ namespace ax /*::AxRender*/ {
 GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto& dev = RenderSystem_Vk::s_instance()->device();
+	auto* sys = RenderSystem_Vk::s_instance();
 
-	VkBufferUsageFlags usage = 0;
-	VmaMemoryUsage     vmaUsage = VMA_MEMORY_USAGE_AUTO;
+	VkBufferUsageFlags usage        = 0;
+	VmaMemoryUsage     vmaUsage     = VMA_MEMORY_USAGE_AUTO;
+	AX_VkSparseBuffer* sparseBuffer = nullptr;
 
 	switch (desc.bufferType) {
 		case GpuBufferType::Vertex: {
 			usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+			// sparseBuffer = sys->sparseVertexBuffer();
 		}break;
 		case GpuBufferType::Index: {
 			usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+			// sparseBuffer = sys->sparseIndexBuffer();
 		}break;
 		case GpuBufferType::Const: {
 			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
@@ -56,11 +59,11 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 		default: throw Error_Undefined();
 	}
 
-	_vkBuf.create(dev, AX_VkUtil::castVkDeviceSize(desc.bufferSize), usage, vmaUsage);
-//	_vkDevMem.createForBuffer(_vkBuf, memProps);
-
+	_vkBuf.create(sys->device(), AX_VkUtil::castVkDeviceSize(desc.bufferSize), 0, usage, vmaUsage, sparseBuffer);
 #if AX_RENDER_DEBUG_NAME
-	_vkBuf.setDebugName(desc.name);
+	if (!sparseBuffer) {
+		_vkBuf.setDebugName(desc.name);
+	}
 #endif
 }
 
@@ -80,12 +83,14 @@ void GpuBuffer_Vk::onFlush(IntRange range) {
 
 void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, IntRange srcRange, Int dstOffset) {
 	if (!_vkBuf) { AX_ASSERT(false); return; }
-
 	auto* src = rttiCastCheck<GpuBuffer_Vk>(src_);
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 
 	if (!src   ) { AX_ASSERT(false); return; }
 	if (!req   ) { AX_ASSERT(false); return; }
+
+	auto* rc = req->renderContext_vk();
+	_vkBuf.bindSparse(rc->graphQueue_vk().handle(), VK_NULL_HANDLE);
 
 	auto srcOffset  = srcRange.start();
 	auto sizeToCopy = srcRange.size();

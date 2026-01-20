@@ -17,8 +17,8 @@ public:
 	
 	RenderRequest_Vk(const CreateDesc& desc);
 
-	RenderContext_Vk*	renderContext_vk()		{ return rttiCastCheck<RenderContext_Vk>(_renderContext); }
-	RenderPass_Vk*		currentRenderPass_vk()	{ return rttiCastCheck<RenderPass_Vk   >(_currentRenderPass); }
+	RenderContext_Vk*		renderContext_vk()		{ return rttiCastCheck<RenderContext_Vk>(_renderContext); }
+	RenderPass_Vk*			currentRenderPass_vk()	{ return rttiCastCheck<RenderPass_Vk   >(_currentRenderPass); }
 	RenderCommandList_Vk&	uploadCmdList_vk()		{ return _uploadCmdList_vk; }
 	RenderCommandList_Vk&	graphCmdList_vk()		{ return _graphCmdList_vk; }
 
@@ -28,7 +28,7 @@ public:
 
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 
-	AX_VkDevice*		_device_vk = nullptr;
+	AX_VkDevice*			_device_vk = nullptr;
 
 	RenderCommandList_Vk	_uploadCmdList_vk; // submit earlier than graphCmdList
 	AX_VkSemaphore			_uploadCmdSem_vk;

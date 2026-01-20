@@ -184,12 +184,10 @@ void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 }
 
 void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
-
 	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(drawcall.vertexBuffer)) {
 		constexpr u32 firstBinding = ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		constexpr u32 bindingCount = 1 ;
-		// auto vertexLayout = drawcall.vertexLayout;
-		VkDeviceSize offset = 0;
+		VkDeviceSize offset = vb->sparseOffset();
 		vkCmdBindVertexBuffers(_graphCmdList_vk, firstBinding, bindingCount, &vb->vkBufHandle(), &offset);
 	}
 
@@ -203,8 +201,8 @@ void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
 	} else {
 		auto* ib = rttiCastCheck<GpuBuffer_Vk>(drawcall.indexBuffer);
 		if (!ib) throw Error_Undefined();
-
-		vkCmdBindIndexBuffer(_graphCmdList_vk, ib->vkBufHandle(), 0, AX_VkUtil::getVkIndexType(drawcall.indexType));
+		VkDeviceSize offset = ib->sparseOffset();
+		vkCmdBindIndexBuffer(_graphCmdList_vk, ib->vkBufHandle(), offset, AX_VkUtil::getVkIndexType(drawcall.indexType));
 		vkCmdDrawIndexed(_graphCmdList_vk,
 		                 ax_safe_cast_from(drawcall.indexCount),
 		                 ax_safe_cast_from(drawcall.instanceCount),

@@ -8,6 +8,8 @@ export import :Texture;
 
 namespace ax /*::AxRender*/ {
 
+AX_SIMPLE_ERROR(Error_Vulkan)
+
 class AX_VkUtil {
 public:
 	static VkShaderStageFlagBits	getVkShaderStageFlagBits(ShaderStageFlags f);
@@ -91,7 +93,10 @@ AX_GCC_WARNING_POP()
 
 	static class AX_VkAllocatorCallbacks* allocCallbacks();
 	static bool checkResult(VkResult res) { return res == VK_SUCCESS; }
-	static void throwIfError(VkResult res) { if (!checkResult(res)) throw Error_Undefined(); }
+	static void throwIfError(VkResult res) {
+		if (checkResult(res)) return;
+		throw Error_Vulkan(StrView_c_str(string_VkResult(res)));
+	}
 };
 
 // In alphabet order

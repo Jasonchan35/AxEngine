@@ -3,6 +3,7 @@
 #if AX_RENDERER_VK
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vk_enum_string_helper.h>
 #include <VulkanMemoryAllocator/vk_mem_alloc.h>
 
 #if AX_NATIVE_UI_WIN32

@@ -4,7 +4,6 @@ module AxRender;
 
 #if AX_RENDERER_VK
 import :AX_Vulkan;
-import :RenderSystem_Vk;
 
 namespace ax /*::AxRender*/ {
 
@@ -223,23 +222,22 @@ bool AX_VkSurfaceKHR::isSupportFormat(VkFormat format, VkColorSpaceKHR colorSpac
 	return false;
 }
 
-bool AX_VkPhysicalDevice::findQueueFamilyIndex(AX_VkQueueFamilyIndex& outIndex, VkQueueFlags hasFlags) const {
+Opt<AX_VkQueueFamilyIndex> AX_VkPhysicalDevice::findQueueFamilyIndex(VkQueueFlags hasFlags) const {
 	u32 i = 0;
 	for (auto& p : _queueFamilyProps) {
 		if (p.queueFlags & hasFlags) {
-			outIndex = static_cast<AX_VkQueueFamilyIndex>(i);
-			return true;
+			return static_cast<AX_VkQueueFamilyIndex>(i);
 		}
 		i++;
 	}
-	return false;
+	return std::nullopt;
 }
 
-bool AX_VkPhysicalDevice::findGraphicFamilIndex(AX_VkQueueFamilyIndex& outIndex) const {
-	return findQueueFamilyIndex(outIndex, VK_QUEUE_GRAPHICS_BIT);
+Opt<AX_VkQueueFamilyIndex> AX_VkPhysicalDevice::findGraphicFamilyIndex() const {
+	return findQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
 }
 
-bool AX_VkPhysicalDevice::findComputeQueueFamilyIndex(AX_VkQueueFamilyIndex& outIndex) const {
+Opt<AX_VkQueueFamilyIndex> AX_VkPhysicalDevice::findComputeQueueFamilyIndex() const {
 	u32 i = 0;
 	AX_VkQueueFamilyIndex graphQueueCanCompute = AX_VkQueueFamilyIndex::Invalid;
 
@@ -249,39 +247,46 @@ bool AX_VkPhysicalDevice::findComputeQueueFamilyIndex(AX_VkQueueFamilyIndex& out
 			if (p.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 				graphQueueCanCompute = static_cast<AX_VkQueueFamilyIndex>(i);
 			} else {
-				outIndex = static_cast<AX_VkQueueFamilyIndex>(i);
-				return true; // pick non-graph compute queue
+				return static_cast<AX_VkQueueFamilyIndex>(i);
 			}
 		}
 		i++;
 	}
 
 	if (graphQueueCanCompute != AX_VkQueueFamilyIndex::Invalid) {
-		outIndex = graphQueueCanCompute;
-		return true;
+		return graphQueueCanCompute;
 	}
 
-	return false;
+	return std::nullopt;
 }
 
-bool AX_VkPhysicalDevice::findMemoryTypeIndex(AX_VkQueueFamilyIndex& outIndex, VkFlags typeBits, VkMemoryPropertyFlags requireMask) const {
-AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
-
+Opt<AX_VkMemoryTypeIndex> AX_VkPhysicalDevice::findMemoryTypeIndex(VkFlags typeBits, VkMemoryPropertyFlags requireMask) const {
 	// Search memory types to find first index with those properties
 	for (u32 i = 0; i < VK_MAX_MEMORY_TYPES; i++) {
 		if ((typeBits & 1) == 1) {
 			// Type is available, does it match user properties?
 			if ((_memProps.memoryTypes[i].propertyFlags & requireMask) == requireMask) {
-				outIndex = static_cast<AX_VkQueueFamilyIndex>(i);
-				return true;
+				return static_cast<AX_VkMemoryTypeIndex>(i);
 			}
 		}
 		typeBits >>= 1;
 	}
 	// No memory types matched, return failure
-	return false;
+	return std::nullopt;
+}
 
-AX_GCC_WARNING_POP()
+Opt<AX_VkMemoryTypeIndex> AX_VkPhysicalDevice::findMemoryTypeIndex(VkFlags typeBits, VmaMemoryUsage vmaUsage) const {
+	switch (vmaUsage) {
+		case VMA_MEMORY_USAGE_GPU_ONLY:
+			return findMemoryTypeIndex(typeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		case VMA_MEMORY_USAGE_CPU_TO_GPU: 
+			return findMemoryTypeIndex(typeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		case VMA_MEMORY_USAGE_GPU_TO_CPU:
+			return findMemoryTypeIndex(typeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT);
+		default:
+			AX_ASSERT(false);
+			return std::nullopt;
+	}
 }
 
 AX_VkPhysicalDevice::Features::Features() {
@@ -416,7 +421,9 @@ AX_VkDevice& AX_VkDevice::create(AX_VkPhysicalDevice& phyDev) {
 
 //------
 
-	if (!phyDev.findGraphicFamilIndex(_graphQueueFamilyIndex)) {
+	if (auto opt = phyDev.findGraphicFamilyIndex()) {
+		_graphQueueFamilyIndex = opt.value();
+	} else { 
 		throw Error_Undefined();
 	}
 
@@ -527,6 +534,18 @@ void AX_VkDevice::destroy() {
 		vkDestroyDevice(_handle, AX_VkUtil::allocCallbacks());
 		_handle = VK_NULL_HANDLE;
 	}
+}
+
+Opt<AX_VkMemoryTypeIndex> AX_VkDevice::findMemoryTypeIndex(VkBuffer buf, VkMemoryPropertyFlags requireMask) const {
+	VkMemoryRequirements memReq = {};
+	vkGetBufferMemoryRequirements(_handle, buf, &memReq);
+	return _phyDev->findMemoryTypeIndex(memReq.memoryTypeBits, requireMask);
+}
+
+Opt<AX_VkMemoryTypeIndex> AX_VkDevice::findMemoryTypeIndex(VkImage img, VkMemoryPropertyFlags requireMask) const {
+	VkMemoryRequirements memReq = {};
+	vkGetImageMemoryRequirements(_handle, img, &memReq);
+	return _phyDev->findMemoryTypeIndex(memReq.memoryTypeBits, requireMask);
 }
 
 bool AX_VkDevice::_addEnabledExtensions(IArray<const char*>& arr, const char* name) {
@@ -1260,14 +1279,17 @@ void AX_VkDeviceMemory::_create(
 	VkFlags memoryTypeBits,
 	VkMemoryPropertyFlags requireMask
 ) {
-	auto memTypeIndex = AX_VkQueueFamilyIndex::Invalid;
-	if (!dev.physicalDevice()->findMemoryTypeIndex(memTypeIndex, memoryTypeBits, requireMask))
+	auto memTypeIndex = AX_VkMemoryTypeIndex::Invalid;
+	if (auto opt = dev.physicalDevice()->findMemoryTypeIndex(memoryTypeBits, requireMask)) {
+		memTypeIndex = opt.value();
+	} else {
 		throw Error_Undefined();
+	}
 
 	_create(dev, bufferSize, memTypeIndex);
 }
 
-void AX_VkDeviceMemory::_create(AX_VkDevice& dev, Int bufferSize, AX_VkQueueFamilyIndex memTypeIndex) {
+void AX_VkDeviceMemory::_create(AX_VkDevice& dev, Int bufferSize, AX_VkMemoryTypeIndex memTypeIndex) {
 	destroy();
 	_dev = &dev;
 	_bufferSize = bufferSize;
@@ -1328,11 +1350,19 @@ void AX_VkDeviceMemory::invalidateMappedMemoryRanges(Span<IntRange> ranges) {
 
 void AX_VkBuffer::destroy() {
 	if (_handle) {
-#if 0
-		vkDestroyBuffer(*_dev, _handle, AX_VkUtil::allocCallbacks());
-#else
-		vmaDestroyBuffer(_dev->vmaAllocator(), _handle, _vmaAllocation);
-#endif
+		if (_createFlags & VK_BUFFER_CREATE_SPARSE_BINDING_BIT) {
+			// AX_LOG("-- vkDestroyBuffer {} {}", (void*)_handle);
+			vkDestroyBuffer(*_dev, _handle, AX_VkUtil::allocCallbacks());
+			
+		} else if (_sparseBuffer) {
+			_sparseBuffer->freeSparseMemory(_vmaAllocation, _vmaAllocationInfo);
+			// AX_LOG("-- freeSparseMemory {} {} offset={}", (void*)_handle, (void*)_vmaAllocation, _sparseOffset);
+			_sparseBuffer = nullptr;
+			
+		} else {
+			// AX_LOG("-- vmaDestroyBuffer {} {}", (void*)_handle, (void*)_vmaAllocation);
+			vmaDestroyBuffer(_dev->vmaAllocator(), _handle, _vmaAllocation);
+		}
 		_handle = VK_NULL_HANDLE;
 		_vmaAllocation = VK_NULL_HANDLE;
 		_dev = nullptr;
@@ -1341,39 +1371,216 @@ void AX_VkBuffer::destroy() {
 
 void AX_VkBuffer::create(AX_VkDevice&          dev,
                          VkDeviceSize          bufferSize,
+                         VkBufferCreateFlags   createFlags,
                          VkBufferUsageFlags    usage,
-                         VmaMemoryUsage        vmaUsage) 
+                         VmaMemoryUsage        vmaUsage,
+                         AX_VkSparseBuffer*    sparseBuffer) 
 {
 	if (_handle && _dev == &dev && bufferSize == _bufferSize) 
 		return;
 
 	destroy();
-	_dev = &dev;
-	_usage = usage;
-	_vmaUsage = vmaUsage;
+	_dev          = &dev;
+	_usage        = usage;
+	_vmaUsage     = vmaUsage;
+	_sparseBuffer = sparseBuffer;
+	_createFlags  = createFlags;
+	
+	bufferSize = Math::max(bufferSize, 64ULL); // ensure not too small
 
 	VkBufferCreateInfo info = {};
 	info.sType					= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	info.pNext					= nullptr;
-	info.flags					= 0;
-	info.size					= Math::max(bufferSize, 8ULL); // ensure not too small
+	info.flags					= createFlags;
+	info.size					= bufferSize;
 	info.usage					= usage;
 	info.sharingMode			= VK_SHARING_MODE_EXCLUSIVE;
 	info.queueFamilyIndexCount	= 0;
 	info.pQueueFamilyIndices	= nullptr;
 
-#if 0
-	auto err = vkCreateBuffer(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
-	AX_VkUtil::throwIfError(err);
-#else
-	VmaAllocationCreateInfo allocInfo = {};
-	allocInfo.usage = vmaUsage;
+	VmaAllocationCreateInfo allocCreateInfo = {};
+	allocCreateInfo.usage = vmaUsage;
 	
-	auto err = vmaCreateBuffer(_dev->vmaAllocator(), &info, &allocInfo, &_handle, &_vmaAllocation, &_vmaAllocationInfo);
-	AX_VkUtil::throwIfError(err);
-	
-#endif
+	if (_createFlags & VK_BUFFER_CREATE_SPARSE_BINDING_BIT) {
+		// create sparseBuffer
+		auto err = vkCreateBuffer(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
+		AX_VkUtil::throwIfError(err);
+
+		// AX_LOG("-- vkCreateBuffer SPARSE {} {}", (void*)_handle, (void*)_vmaAllocation);
+		
+	} else if (sparseBuffer) {
+		sparseBuffer->allocateSparseMemory(bufferSize, &_vmaAllocation, &_vmaAllocationInfo, &_sparseOffset);
+		_handle = sparseBuffer->vkBufferHandle();
+//		AX_LOG("-- vkCreateBuffer FromSparse {} {} offset={}", (void*)_handle, (void*)_vmaAllocation, _sparseOffset);
+
+	} else {
+		// create buffer with memory
+		auto err = vmaCreateBuffer(_dev->vmaAllocator(), &info, &allocCreateInfo, &_handle, &_vmaAllocation, &_vmaAllocationInfo);
+		AX_VkUtil::throwIfError(err);
+		
+		// AX_LOG("-- vkCreateBuffer {} {}", (void*)_handle, (void*)_vmaAllocation);
+	}
+
 	_bufferSize = bufferSize;
+}
+
+void AX_VkSparseBuffer::create(AX_VkDevice& dev,
+	VkDeviceSize bufferSize,
+	VkBufferUsageFlags usage,
+	VmaMemoryUsage vmaUsage) 
+{
+	_pageBlockSize = 64 * Math::MegaBytes; // big enough for 64k vertices
+	
+	_vkBuf.create(dev, bufferSize,
+				  VK_BUFFER_CREATE_SPARSE_BINDING_BIT | VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT,
+				  usage, vmaUsage, nullptr);
+	
+	VmaPoolCreateInfo poolInfo = {};
+	poolInfo.blockSize = _pageBlockSize;
+	
+	if (auto opt = dev.findMemoryTypeIndex(_vkBuf.handle(), vmaUsage)) {
+		poolInfo.memoryTypeIndex = ax_safe_cast_from(opt.value());
+	} else {
+		throw Error_Undefined();
+	}
+	
+	auto err = vmaCreatePool(dev.vmaAllocator(), &poolInfo, &_memPool);
+	AX_VkUtil::throwIfError(err);
+	
+	VmaVirtualBlockCreateInfo virtualBlockInfo = {};
+	virtualBlockInfo.size = bufferSize;
+	
+	err = vmaCreateVirtualBlock(&virtualBlockInfo, &_virtualBlock);
+	AX_VkUtil::throwIfError(err);
+}
+
+void AX_VkSparseBuffer::destroy() {
+	auto* dev = _vkBuf.device();
+	
+	if (_memPool) {
+		vmaDestroyPool(dev->vmaAllocator(), _memPool);
+		_memPool = VK_NULL_HANDLE;
+	}
+
+	_pendingBindPages.clear();
+	_pendingUnbindPages.clear();
+	
+	if (_virtualBlock) {
+		for (auto& page : _pageDict.values()) {
+			if (page.vmaVirtualAllocation) {
+				vmaVirtualFree(_virtualBlock, page.vmaVirtualAllocation);
+				page.vmaVirtualAllocation = VK_NULL_HANDLE;
+			}
+		}
+		_pageDict.clear();
+		vmaDestroyVirtualBlock(_virtualBlock);
+		_virtualBlock = VK_NULL_HANDLE;
+	}
+
+	_vkBuf.destroy();
+}
+
+void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
+	if (_pendingBindPages.size() <= 0) return;
+
+	Array<VkSparseMemoryBind, 64> sparseMemoryBindList;
+	
+	for (auto& page : _pendingBindPages) {
+		auto& bind = sparseMemoryBindList.emplaceBack();
+		bind.resourceOffset = page->offset;
+		bind.size           = page->size;
+		bind.memory         = page->mem;
+		bind.memoryOffset   = 0;
+		bind.flags          = 0;
+	}
+	_pendingBindPages.clear();
+
+	VkSparseBufferMemoryBindInfo bufferBindInfo = {};
+	bufferBindInfo.buffer    = vkBufferHandle();
+	bufferBindInfo.bindCount = ax_safe_cast_from(sparseMemoryBindList.size());
+	bufferBindInfo.pBinds    = sparseMemoryBindList.data();
+	
+	VkBindSparseInfo bindInfo = {};
+	bindInfo.sType = VK_STRUCTURE_TYPE_BIND_SPARSE_INFO;
+	//	bindInfo.pNext = nullptr;
+	//	bindInfo.waitSemaphoreCount;
+	//	bindInfo.pWaitSemaphores;
+	bindInfo.bufferBindCount = 1;
+	bindInfo.pBufferBinds = &bufferBindInfo;
+	//	bindInfo.signalSemaphoreCount;
+	//	bindInfo.pSignalSemaphores;
+	
+	auto err = vkQueueBindSparse(queue, 1, &bindInfo, fence);
+	AX_VkUtil::throwIfError(err);
+	
+}
+
+void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
+                                             VmaAllocation*     pAllocation,
+                                             VmaAllocationInfo* pAllocationInfo,
+                                             VkDeviceSize*      pOffset) {
+	// allocate physical memory to sparseBuffer
+	
+	auto* dev = _vkBuf.device();
+	
+	VkMemoryRequirements memReq = {};
+	vkGetBufferMemoryRequirements(*dev, _vkBuf, &memReq);
+	memReq.size = size;
+	memReq.alignment = 64;
+		
+	VmaAllocationCreateInfo allocCreateInfo = {};
+	allocCreateInfo.usage = _vkBuf.vmaUsage();
+	allocCreateInfo.pool = _memPool;
+	
+	auto err = vmaAllocateMemory(dev->vmaAllocator(), &memReq, &allocCreateInfo, pAllocation, pAllocationInfo);
+	AX_VkUtil::throwIfError(err);
+	
+	VmaAllocationInfo2 info2;
+	vmaGetAllocationInfo2(dev->vmaAllocator(), *pAllocation, &info2);
+	
+	VkDeviceMemory mem = pAllocationInfo->deviceMemory;
+	Page* page = _pageDict.find(mem);
+	if (page) {
+		if (page->refCount == 0) {
+			_pendingUnbindPages.eraseIfEquals(page); // need it again, so cancel unbind
+		}
+		page->refCount++;
+		
+	} else {
+		auto& newPage = _pageDict.add(mem);
+		page = &newPage;
+		page->mem = mem;
+		page->size = info2.blockSize;
+		
+		VmaVirtualAllocationCreateInfo virtualAllocInfo = {};
+		virtualAllocInfo.size      = page->size;
+		virtualAllocInfo.alignment = page->size;
+		
+		err = vmaVirtualAllocate(_virtualBlock, &virtualAllocInfo, &newPage.vmaVirtualAllocation, &newPage.offset);
+		AX_VkUtil::throwIfError(err);
+
+		_pendingBindPages.emplaceBack(&newPage);
+	}
+
+	*pOffset = page->offset + pAllocationInfo->offset; 
+}
+
+void AX_VkSparseBuffer::freeSparseMemory(VmaAllocation vmaAllocation, VmaAllocationInfo& vmaAllocationInfo) {
+	auto* dev = _vkBuf.device();
+	
+	auto* page = _pageDict.find(vmaAllocationInfo.deviceMemory);
+	if (!page) throw Error_Vulkan("AX_VkSparseBuffer cannot find page");
+	
+	page->refCount--;
+	AX_ASSERT(page->refCount >= 0);
+	if (page->refCount == 0) {
+		_pendingUnbindPages.emplaceBack(page);
+		if (page->vmaVirtualAllocation) {
+			vmaVirtualFree(_virtualBlock, page->vmaVirtualAllocation);
+			page->vmaVirtualAllocation = VK_NULL_HANDLE;
+		}
+	}
+	vmaFreeMemory(dev->vmaAllocator(), vmaAllocation);
 }
 
 VkMemoryRequirements AX_VkBuffer::getMemoryRequirements() {

@@ -78,7 +78,7 @@ RenderSystemInfo::RenderSystemInfo() {
 	enableDebugMarker	= isDebug;
 	vsync				= true;
 	//---
-	inlineUpload.bufferSize   =  16 * 1024 * 1024;
+	inlineUpload.bufferSize   = 64 * Math::MegaBytes;
 	inlineUpload.limitPerEach = 128 * 1024;
 
 	shader.maxConstBufferCount = 6;

@@ -9,6 +9,7 @@ export namespace ax /*::AxRender*/ {
 
 class AX_VkInstance;
 enum class AX_VkQueueFamilyIndex : u32 { Invalid = UINT32_MAX };
+enum class AX_VkMemoryTypeIndex : u32 { Invalid = 0 };
 
 class AX_VkExtProcList : public NonCopyable {
 public:
@@ -43,11 +44,12 @@ public:
 
 	void logInfo(bool extensions) const;
 
-	bool findQueueFamilyIndex		(AX_VkQueueFamilyIndex& outIndex, VkQueueFlags hasFlags) const;
-	bool findGraphicFamilIndex		(AX_VkQueueFamilyIndex& outIndex) const;
-	bool findComputeQueueFamilyIndex(AX_VkQueueFamilyIndex& outIndex) const;
-
-	bool findMemoryTypeIndex		(AX_VkQueueFamilyIndex& outIndex, VkFlags typeBits, VkMemoryPropertyFlags requireMask) const;
+	Opt<AX_VkQueueFamilyIndex> findQueueFamilyIndex			(VkQueueFlags hasFlags) const;
+	Opt<AX_VkQueueFamilyIndex> findGraphicFamilyIndex		() const;
+	Opt<AX_VkQueueFamilyIndex> findComputeQueueFamilyIndex	() const;
+	
+	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkFlags typeBits, VkMemoryPropertyFlags requireMask) const;
+	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkFlags typeBits, VmaMemoryUsage vmaUsage) const;
 
 	VkInstance inst() { return _inst; }
 	operator VkInstance() { return inst(); }
@@ -176,6 +178,9 @@ public:
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { setObjectDebugName(_handle, name); }
 #endif
+
+	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkBuffer buf, VkMemoryPropertyFlags requireMask) const;
+	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkImage  img, VkMemoryPropertyFlags requireMask) const;
 
 private:
 	bool _addEnabledExtensions(IArray<const char*>& arr, const char* name);
@@ -569,6 +574,15 @@ private:
 	VkExtent2D		_frameSize = {};
 };
 
+template<>
+struct HashInt_Handler<VkDeviceMemory> {
+	AX_INLINE constexpr static HashInt onHashInt(const VkDeviceMemory& obj) {
+		return HashInt::s_fromInt(reinterpret_cast<intptr_t>(obj));
+	}
+};
+
+class AX_VkSparseBuffer;
+
 class AX_VkBuffer : public NonCopyable {
 public:
 	const VkBuffer& handle() const { return _handle; }
@@ -579,7 +593,16 @@ public:
 	AX_VkBuffer(AX_VkBuffer && r) noexcept;
 
 	void destroy();
-	void create(AX_VkDevice& dev, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VmaMemoryUsage vmaUsage);
+	void create(AX_VkDevice&        dev,
+	            VkDeviceSize        bufferSize,
+	            VkBufferCreateFlags createFlags,
+	            VkBufferUsageFlags  usage,
+	            VmaMemoryUsage      vmaUsage,
+	            AX_VkSparseBuffer*  sparseBuffer);
+
+	void bindSparse(VkQueue queue, VkFence fence);
+	AX_VkSparseBuffer* sparseBuffer() { return _sparseBuffer; }
+	VkDeviceSize sparseOffset() const { return _sparseOffset; }
 
 	VkMemoryRequirements getMemoryRequirements();
 
@@ -605,20 +628,72 @@ public:
 	}
 	
 	AX_VkDevice*	device() { return _dev; }
+	
+	VmaMemoryUsage   vmaUsage() { return _vmaUsage; }
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
 private:
-	VkBuffer           _handle            = VK_NULL_HANDLE;
-	AX_VkDevice*       _dev               = nullptr;
-	VkDeviceSize       _bufferSize        = 0;
-	VkBufferUsageFlags _usage             = 0;
-	VmaMemoryUsage     _vmaUsage          = VMA_MEMORY_USAGE_UNKNOWN;
-	VmaAllocation      _vmaAllocation     = VK_NULL_HANDLE;
-	VmaAllocationInfo  _vmaAllocationInfo = {};
+	VkBuffer             _handle            = VK_NULL_HANDLE;
+	AX_VkDevice*         _dev               = nullptr;
+	VkDeviceSize         _bufferSize        = 0;
+	VkBufferUsageFlags   _usage             = 0;
+	VkBufferCreateFlags  _createFlags       = 0;
+	VmaMemoryUsage       _vmaUsage          = VMA_MEMORY_USAGE_UNKNOWN;
+	VmaAllocation        _vmaAllocation     = VK_NULL_HANDLE;
+	VmaAllocationInfo    _vmaAllocationInfo = {};
+	AX_VkSparseBuffer*   _sparseBuffer      = nullptr;
+	VkDeviceSize         _sparseOffset      = 0;
 };
+
+class AX_VkSparseBuffer : public NonCopyable {
+public:
+	~AX_VkSparseBuffer() { destroy(); }
+	void create(AX_VkDevice&        dev,
+				VkDeviceSize        bufferSize,
+				VkBufferUsageFlags  usage,
+				VmaMemoryUsage      vmaUsage);
+	
+	void destroy();
+	
+	void bindSparse(VkQueue queue, VkFence fence);
+
+	void allocateSparseMemory(VkDeviceSize       size,
+	                          VmaAllocation*     pAllocation,
+	                          VmaAllocationInfo* pAllocationInfo,
+	                          VkDeviceSize*      pSparseOffset);
+	
+	void freeSparseMemory(VmaAllocation vmaAllocation, VmaAllocationInfo& vmaAllocationInfo);
+	
+	VkBuffer vkBufferHandle() { return _vkBuf.handle(); }
+
+private:
+	AX_VkBuffer               _vkBuf;
+	VmaPool                   _memPool = VK_NULL_HANDLE;
+	VmaVirtualBlock           _virtualBlock = VK_NULL_HANDLE;
+	
+	struct Page {
+		Int                  refCount             = 1;
+		VkDeviceMemory       mem                  = VK_NULL_HANDLE;
+		VkDeviceSize         offset               = 0;
+		VkDeviceSize         size                 = 0;
+		VmaVirtualAllocation vmaVirtualAllocation = VK_NULL_HANDLE;
+	};
+
+	VkDeviceSize               _pageBlockSize = 0;
+	Dict<VkDeviceMemory, Page> _pageDict;
+	Array<Page*>               _pendingBindPages;
+	Array<Page*>               _pendingUnbindPages;
+};
+
+inline void AX_VkBuffer::bindSparse(VkQueue queue, VkFence fence) {
+	if (_sparseBuffer) {
+		_sparseBuffer->bindSparse(queue, fence);
+	}
+}
+
 
 class AX_VkDeviceMemory : public NonCopyable {
 	using This = AX_VkDeviceMemory;
@@ -653,7 +728,7 @@ private:
 	void _fillVkMappedMemoryRange(IArray<VkMappedMemoryRange>& outArray, Span<IntRange> ranges);
 
 	void _create(AX_VkDevice& dev, Int bufferSize, VkFlags memoryTypeBits, VkMemoryPropertyFlags requireMask);
-	void _create(AX_VkDevice& dev, Int bufferSize, AX_VkQueueFamilyIndex memTypeIndex);
+	void _create(AX_VkDevice& dev, Int bufferSize, AX_VkMemoryTypeIndex memTypeIndex);
 
 	VkDeviceMemory _handle = VK_NULL_HANDLE;
 	AX_VkDevice* _dev = nullptr;

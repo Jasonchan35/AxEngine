@@ -5,6 +5,12 @@ export import AxCore.BasicType;
 
 export namespace ax::Math {
 
+constexpr Int KiloBytes = 1024;
+constexpr Int MegaBytes = KiloBytes * 1024;
+constexpr Int GigaBytes = MegaBytes * 1024;
+constexpr Int TeraBytes = GigaBytes * 1024;
+constexpr Int PetaBytes = TeraBytes * 1024;
+
 template<Int N, class T> struct pow_IMPL;
 template<class T> struct pow_IMPL<0,T> { static constexpr T compute(const T& v) { return 1; } };
 template<class T> struct pow_IMPL<1,T> { static constexpr T compute(const T& v) { return v; } };

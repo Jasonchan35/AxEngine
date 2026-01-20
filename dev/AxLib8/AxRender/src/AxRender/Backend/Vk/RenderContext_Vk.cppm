@@ -26,15 +26,17 @@ public:
 		
 		Int					_index = -1;
 
-		SPtr<RenderPassColorBuffer_Vk>	_colorBuf_vk;
-		SPtr<RenderPass_Vk>					_renderPass_vk;
-		
-		RenderCommandList_Vk	_presentCmdList_vk;
-		AX_VkSemaphore		_presentSemaphore_vk;
-		VkImage				_vkImage;
+		SPtr<RenderPassColorBuffer_Vk> _colorBuf_vk;
+		SPtr<RenderPass_Vk>            _renderPass_vk;
+		RenderCommandList_Vk           _presentCmdList_vk;
+		AX_VkSemaphore                 _presentSemaphore_vk;
+		VkImage                        _vkImage;
 	};
 	
 	BackBuffer_Vk* _getBackBuffer(Int i) { return ax_ptr_ptr(_backBuffers_vk.tryGetElement(i)); }
+	
+	AX_VkDeviceQueue& graphQueue_vk() { return _graphQueue_vk; }
+	
 protected:	
 	void _createSwapChain();
 	void _createBackBuffers(AX_VkDevice& dev, Vec2i frameSize);
@@ -42,12 +44,12 @@ protected:
 	virtual void onPresentSurface(RenderRequest* req) override;
 	virtual void onCreateSwapChain() override;
 	virtual void onPostCreate(const CreateDesc& desc) override;
-	
-	AX_VkSurfaceKHR		_surface_vk;
-	AX_VkDeviceQueue	_graphQueue_vk;
-	AX_VkDeviceQueue	_presentQueue_vk;
-	AX_VkSwapchainKHR	_swapChain_vk;
-	Array< UPtr<BackBuffer_Vk>, 8 >	_backBuffers_vk;
+
+	AX_VkSurfaceKHR               _surface_vk;
+	AX_VkDeviceQueue              _graphQueue_vk;
+	AX_VkDeviceQueue              _presentQueue_vk;
+	AX_VkSwapchainKHR             _swapChain_vk;
+	Array<UPtr<BackBuffer_Vk>, 4> _backBuffers_vk;
 };
 
 #if AX_NATIVE_UI_WIN32

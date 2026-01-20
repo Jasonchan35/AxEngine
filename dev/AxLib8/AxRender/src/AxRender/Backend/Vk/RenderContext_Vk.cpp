@@ -160,7 +160,7 @@ void RenderContext_Vk_Base::onPresentSurface(RenderRequest* req_) {
 		// semaphore and signaling the ownership released semaphore when finished
 
 		presentCmdList->beginCommand();
-		presentCmdList->pipelineBarrier(	_surface_vk.graphQueueFamilyIndex(), 
+		presentCmdList->pipelineBarrier(_surface_vk.graphQueueFamilyIndex(), 
 										_surface_vk.presentQueueFamilyIndex(),
 										colorBuffer_vk->_image);
 		presentCmdList->endCommand();

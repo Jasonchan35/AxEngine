@@ -25,16 +25,18 @@ public:
 	operator AX_VkBuffer&()			{ return _vkBuf; }
 	operator    VkBuffer()			{ return _vkBuf; }
 
+	VkDeviceSize sparseOffset() const { return _vkBuf.sparseOffset(); }
+	
 	VkDescriptorBufferInfo _getUpdatedDescriptorInfo(RenderRequest_Vk* req) const {
 		VkDescriptorBufferInfo info = {};
 		info.buffer = _vkBuf.handle();
-		info.offset = 0;
+		info.offset = sparseOffset();
 		info.range  = ax_safe_cast_from(bufferSize());
 		return info;
 	}
 
 private:
-	AX_VkBuffer			_vkBuf;
+	AX_VkBuffer	_vkBuf;
 };
 
 class GpuStructuredBuffer_Vk : public GpuStructuredBuffer_Backend {
