@@ -7,13 +7,15 @@ import :GpuBuffer_Vk;
 import :RenderSystem_Vk;
 import :RenderContext_Vk;
 import :RenderRequest_Vk;
+import :RenderObjectManager_Vk;
 
 namespace ax /*::AxRender*/ {
 
 GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc) 
 : Base(desc)
 {
-	auto* sys = RenderSystem_Vk::s_instance();
+	auto& dev = RenderSystem_Vk::s_instance()->device();
+	auto* objMgr = RenderObjectManager_Vk::s_instance();
 
 	VkBufferUsageFlags usage        = 0;
 	VmaMemoryUsage     vmaUsage     = VMA_MEMORY_USAGE_AUTO;
@@ -24,13 +26,13 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 			usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
-			sparseBuffer = sys->sparseVertexBuffer();
+			sparseBuffer = &objMgr->_sparseVertexBuffer;
 		}break;
 		case GpuBufferType::Index: {
 			usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
-			sparseBuffer = sys->sparseIndexBuffer();
+			sparseBuffer = &objMgr->_sparseIndexBuffer;
 		}break;
 		case GpuBufferType::Const: {
 			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
@@ -59,7 +61,7 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 		default: throw Error_Undefined();
 	}
 
-	_vkBuf.create(sys->device(), AX_VkUtil::castVkDeviceSize(desc.bufferSize), 0, usage, vmaUsage, sparseBuffer);
+	_vkBuf.create(dev, AX_VkUtil::castVkDeviceSize(desc.bufferSize), 0, usage, vmaUsage, sparseBuffer);
 #if AX_RENDER_DEBUG_NAME
 	if (!sparseBuffer) {
 		_vkBuf.setDebugName(desc.name);

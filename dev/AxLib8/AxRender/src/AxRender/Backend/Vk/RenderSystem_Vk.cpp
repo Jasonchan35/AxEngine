@@ -70,18 +70,10 @@ RenderSystem_Vk::RenderSystem_Vk(const CreateDesc& desc)
 #if AX_RENDER_DEBUG_NAME
 	_device.setDebugName("Renderer-Device");
 #endif
-	
-	_createSparseBuffers();
 }
 
 RenderSystem_Vk::~RenderSystem_Vk() {
 	destroy();
-}
-
-void RenderSystem_Vk::onDestroy() {
-	RenderSystem_Backend::onDestroy();
-	_sparseVertexBuffer.destroy();
-	_sparseIndexBuffer.destroy();
 }
 
 void RenderSystem_Vk::_createVkInstance() {
@@ -148,16 +140,6 @@ void RenderSystem_Vk::_createVkInstance() {
 	#endif
 
 	_vkInst.create(info);
-}
-
-void RenderSystem_Vk::_createSparseBuffers() {
-	_sparseVertexBuffer.create(_device, 32 * Math::GigaBytes, 
-	                           VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-	                           VMA_MEMORY_USAGE_GPU_ONLY);
-
-	_sparseIndexBuffer.create(_device, 8 * Math::GigaBytes,
-	                          VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-	                          VMA_MEMORY_USAGE_GPU_ONLY);
 }
 
 VkBool32 VKAPI_PTR RenderSystem_Vk::s_debugReport(

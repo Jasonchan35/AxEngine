@@ -12,11 +12,16 @@ namespace ax {
 class RenderObjectManager_Vk : public RenderObjectManager_Backend {
 	AX_RTTI_INFO(RenderObjectManager_Vk, RenderObjectManager_Backend)
 public:
+	AX_DOWNCAST_GET_INSTANCE()
+	
 	using BindSpace = ShaderParamBindSpace;
 
 	RenderObjectManager_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	virtual void onPostCreate() override;
+	
+	AX_VkSparseBuffer	_sparseVertexBuffer;
+	AX_VkSparseBuffer	_sparseIndexBuffer;
 	
 #if AX_RENDER_BINDLESS
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) override;

@@ -26,9 +26,6 @@ public:
 
 	const DescriptorSets&	descriptorSets() { return _descriptorSets; }
 
-	AX_VkSparseBuffer* sparseVertexBuffer() { return &_sparseVertexBuffer; }
-	AX_VkSparseBuffer* sparseIndexBuffer()  { return &_sparseIndexBuffer; }
-
 protected:
 	DescriptorSets	_descriptorSets;
 
@@ -36,9 +33,6 @@ protected:
 
 private:
 	void _createVkInstance();
-	void _createSparseBuffers();
-	
-	virtual void onDestroy() override;
 
 	static VkBool32 VKAPI_PTR s_debugReport(
 			VkDebugReportFlagsEXT      flags,
@@ -54,9 +48,6 @@ private:
 	AX_VkPhysicalDeviceList		_physicalDeviceList;
 	AX_VkDebugReportCallbackEXT	_debugReportCallbackExt;
 	AX_VkDevice					_device;
-	
-	AX_VkSparseBuffer			_sparseVertexBuffer;
-	AX_VkSparseBuffer			_sparseIndexBuffer;
 };
 
 } // namespace

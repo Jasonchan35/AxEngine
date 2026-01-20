@@ -61,7 +61,7 @@ public:
 protected:
 	void _postCreate();
 	virtual void onPostCreate() {}
-	
+
 	struct GpuSideData {
 		SPtr<GpuStructuredBuffer_Backend>	meshObjects;
 		SPtr<GpuStructuredBuffer_Backend>	cameras;
