@@ -1480,10 +1480,17 @@ void AX_VkSparseBuffer::destroy() {
 	_vkBuf.destroy();
 }
 
-void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
-	if (_pendingBindPages.size() <= 0) return;
 
-	Array<VkSparseMemoryBind, 64> sparseMemoryBindList;
+void AX_VkSparseBuffer::_unbindSparse(VkQueue queue, VkFence fence) {
+	if (_pendingUnbindPages.size() <= 0) return;
+	
+	
+}
+
+void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
+	if (_pendingBindPages.size() <= 0 && _pendingUnbindPages.size() <= 0) return;
+
+	Array<VkSparseMemoryBind, 8> sparseMemoryBindList;
 	
 	for (auto& page : _pendingBindPages) {
 		auto& bind = sparseMemoryBindList.emplaceBack();
@@ -1494,6 +1501,19 @@ void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
 		bind.flags          = 0;
 	}
 	_pendingBindPages.clear();
+
+	for (auto& page : _pendingUnbindPages) {
+		auto& bind = sparseMemoryBindList.emplaceBack();
+		bind.resourceOffset = page->offset;
+		bind.size           = page->size;
+		bind.memory         = nullptr; // <--- bind to null
+		bind.memoryOffset   = 0;
+		bind.flags          = 0;
+		
+		_pageDict.erase(page->mem);
+	}
+	_pendingUnbindPages.clear();
+	
 
 	VkSparseBufferMemoryBindInfo bufferBindInfo = {};
 	bufferBindInfo.buffer    = vkBufferHandle();

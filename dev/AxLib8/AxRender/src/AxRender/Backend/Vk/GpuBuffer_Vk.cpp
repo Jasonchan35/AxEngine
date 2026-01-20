@@ -24,13 +24,13 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 			usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
-			// sparseBuffer = sys->sparseVertexBuffer();
+			sparseBuffer = sys->sparseVertexBuffer();
 		}break;
 		case GpuBufferType::Index: {
 			usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
-			// sparseBuffer = sys->sparseIndexBuffer();
+			sparseBuffer = sys->sparseIndexBuffer();
 		}break;
 		case GpuBufferType::Const: {
 			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
@@ -100,7 +100,7 @@ void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, Int
 		throw Error_Undefined();
 
 	VkBufferCopy region = {};
-	region.dstOffset = AX_VkUtil::castUInt32(dstOffset);
+	region.dstOffset = AX_VkUtil::castUInt32(dstOffset + _vkBuf.sparseOffset());
 	region.srcOffset = AX_VkUtil::castUInt32(srcOffset);
 	region.size      = AX_VkUtil::castUInt32(sizeToCopy);
 	

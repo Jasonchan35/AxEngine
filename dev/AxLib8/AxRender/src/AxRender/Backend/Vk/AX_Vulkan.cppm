@@ -668,8 +668,12 @@ public:
 	void freeSparseMemory(VmaAllocation vmaAllocation, VmaAllocationInfo& vmaAllocationInfo);
 	
 	VkBuffer vkBufferHandle() { return _vkBuf.handle(); }
+	
+	bool isValid() const { return _vkBuf.handle() != nullptr; }
 
 private:
+	void _unbindSparse(VkQueue queue, VkFence fence);
+	
 	AX_VkBuffer               _vkBuf;
 	VmaPool                   _memPool = VK_NULL_HANDLE;
 	VmaVirtualBlock           _virtualBlock = VK_NULL_HANDLE;
