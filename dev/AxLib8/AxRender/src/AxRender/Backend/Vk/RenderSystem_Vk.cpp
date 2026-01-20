@@ -10,8 +10,8 @@ import :RenderContext_Vk;
 import :RenderObjectManager_Vk;
 import :RenderPass_Vk;
 import :RenderRequest_Vk;
-import :Shader_Vk;
-import :Texture_Vk;
+import :Material_Vk;
+import :MeshObject_Vk;
 
 namespace ax /*::AxRender*/ {
 

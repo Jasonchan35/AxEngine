@@ -690,5 +690,4 @@ void RenderMeshEdit::setColor(const Color4f& color_, Int colorSet) {
 	}
 }
 
-
 } // namespace

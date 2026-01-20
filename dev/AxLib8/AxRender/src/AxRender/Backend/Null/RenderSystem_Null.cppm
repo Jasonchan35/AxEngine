@@ -7,6 +7,7 @@ export import :RenderObjectManager_Backend;
 export import :RenderPass_Backend;
 export import :RenderRequest_Backend;
 export import :Texture_Backend;
+export import :MeshObject_Backend;
 export import :Material_Backend;
 export import :ImageIO;
 
@@ -21,6 +22,25 @@ public:
 	virtual ~RenderSystem_Null() override { destroy(); }
 
 	AX_RenderSystem_FunctionInterfaces(Null, override)
+};
+
+class RenderContext_Null : public RenderContext_Backend {
+	AX_RTTI_INFO(RenderContext_Null, RenderContext_Backend)
+public:
+	RenderContext_Null(const CreateDesc& desc) : Base(desc) {}
+	virtual ~RenderContext_Null() override = default;
+protected:
+	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return TagZero; }
+	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return TagZero; }
+	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override { return nullptr; }
+	virtual void	onPresentSurface(RenderRequest* req) override {}
+	virtual void	onCreateSwapChain() override {}
+};
+
+class RenderObjectManager_Null : public RenderObjectManager_Backend {
+	AX_RTTI_INFO(RenderObjectManager_Null, RenderObjectManager_Backend)
+public:
+	RenderObjectManager_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
 class GpuBuffer_Null : public GpuBuffer_Backend {
@@ -128,23 +148,10 @@ public:
 	}
 };
 
-class RenderContext_Null : public RenderContext_Backend {
-	AX_RTTI_INFO(RenderContext_Null, RenderContext_Backend)
+class MeshObject_Null : public MeshObject_Backend {
+	AX_RTTI_INFO(MeshObject_Null, MeshObject_Backend)
 public:
-	RenderContext_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual ~RenderContext_Null() override = default;
-protected:
-	virtual Vec2f	worldToLocalPos(const Vec2f& pt) override { return TagZero; }
-	virtual Vec2f	localToWorldPos(const Vec2f& pt) override { return TagZero; }
-	virtual RenderPass_Backend* onAcquireBackBufferRenderPass(RenderRequest* req) override { return nullptr; }
-	virtual void	onPresentSurface(RenderRequest* req) override {}
-	virtual void	onCreateSwapChain() override {}
-};
-
-class RenderObjectManager_Null : public RenderObjectManager_Backend {
-	AX_RTTI_INFO(RenderObjectManager_Null, RenderObjectManager_Backend)
-public:
-	RenderObjectManager_Null(const CreateDesc& desc) : Base(desc) {}
+	MeshObject_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
 } // namespace

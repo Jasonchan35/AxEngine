@@ -1,9 +1,10 @@
 module;
 
 export module AxRender:RenderObjectManager_Backend;
-export import :Texture_Backend;
-export import :Material_Backend;
 export import :RenderSystem_Backend;
+export import :Material_Backend;
+export import :MeshObject_Backend;
+export import :GpuBuffer_Backend;
 
 export namespace ax /*::AxRender*/ {
 
@@ -38,15 +39,16 @@ public:
 	template<class T>
 	AX_NODISCARD MutexProtected<Table<T>>& getTable() {
 		using TABLE = MutexProtected<Table<T>>; 
-		return _all_table.get<TABLE>();
+		return _objectTables.get<TABLE>();
 	}
 
 	auto& table_shader()	{ return getTable<Shader_Backend>(); }
 	auto& table_sampler()	{ return getTable<Sampler_Backend>(); }
 	auto& table_texture2D()	{ return getTable<Texture2D_Backend>(); }
 
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) {}
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<   Sampler_Backend>>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr< Texture2D_Backend>>& list) {}
+	virtual void onUpdateMeshObject (RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list);
 
 #if AX_RENDER_BINDLESS
 	struct Bindless {
@@ -60,19 +62,26 @@ protected:
 	void _postCreate();
 	virtual void onPostCreate() {}
 	
+	struct GpuSideData {
+		SPtr<GpuStructuredBuffer_Backend>	meshObjects;
+		SPtr<GpuStructuredBuffer_Backend>	cameras;
+		SPtr<GpuStructuredBuffer_Backend>	lights;
+	} _gpuSideData;
+
 	template<class FUNC>
 	void visit(FUNC func) {
-		_all_table.apply([&func](auto&... list) {
+		_objectTables.apply([&func](auto&... list) {
 			(func(list),...);
 		});
 	}
 
-	using All_Table = Tuple<
-		MutexProtected<Table< Shader_Backend    >>,
-		MutexProtected<Table< Sampler_Backend   >>,
-		MutexProtected<Table< Texture2D_Backend >>
+	using ObjectTables = Tuple<
+		MutexProtected<Table< Shader_Backend     >>,
+		MutexProtected<Table< Sampler_Backend    >>,
+		MutexProtected<Table< Texture2D_Backend  >>,
+		MutexProtected<Table< MeshObject_Backend >>
 	>;
-	All_Table _all_table;
+	ObjectTables _objectTables;
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>
@@ -81,10 +90,12 @@ bool RenderObjectManager_Backend::getOrNewResource(SPtr<T>&               sp,
                                                      const CREATE_DESC&     desc,
                                                      const RESOURCE_KEY&    key
 ) {
-	auto table = getTable<T>().scopedLock();
-	if (auto* p = table->findObject(key)) {
-		sp = p;
-		return false;
+	if (key) {
+		auto table = getTable<T>().scopedLock();
+		if (auto* p = table->findObject(key)) {
+			sp = p;
+			return false;
+		}
 	}
 
 	UPtr<T> u;

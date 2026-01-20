@@ -108,8 +108,12 @@ void RenderObjectTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 		e->objectSlot._dirty = false;
 	}
 
-	if constexpr (kNeedDescriptorUpdate) {
+	if constexpr (std::is_base_of_v<Sampler,T> || std::is_base_of_v<Texture,T>) {
 	 	RenderObjectManager_Backend::s_instance()->onUpdateDescriptors(req, _dirtyObjects);
+	}
+	
+	if constexpr (std::is_base_of_v<MeshObject, T>) {
+		RenderObjectManager_Backend::s_instance()->onUpdateMeshObject(req, _dirtyObjects);
 	}
 	_dirtyObjects.clear();
 }
@@ -118,5 +122,6 @@ void RenderObjectTable_Backend<T>::onFrameEnd(RenderRequest_Backend* req) {
 template class RenderObjectTable_Backend<Shader_Backend>;
 template class RenderObjectTable_Backend<Sampler_Backend>;
 template class RenderObjectTable_Backend<Texture2D_Backend>;
+template class RenderObjectTable_Backend<MeshObject_Backend>;
 
 } // namespace

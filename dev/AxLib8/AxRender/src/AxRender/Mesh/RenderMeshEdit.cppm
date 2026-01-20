@@ -4,6 +4,7 @@ export module AxRender:RenderMeshEdit;
 export import :RenderMesh;
 export import :EditableMesh;
 export import :Font;
+export import :RenderObjectManager_Backend;
 
 export namespace ax {
 
@@ -78,6 +79,5 @@ RenderMesh::SubMesh& RenderMesh::addSubMesh(PrimType primType, VertexLayout vert
 	sm.create(primType, vertexLayout, indexType);
 	return sm;	
 }
-
 
 }// namespace 

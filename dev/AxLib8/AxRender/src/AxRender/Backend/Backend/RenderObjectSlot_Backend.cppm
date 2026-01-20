@@ -48,9 +48,6 @@ public:
 	using Handle = RenderObjectSlot_Backend<T>;
 	using ResourceKey = typename T::ResourceKey;
 
-	static constexpr bool kNeedDescriptorUpdate = std::is_base_of_v<Sampler    , T>
-												| std::is_base_of_v<Texture2D  , T>;
-
 	void add(T* obj, bool isFallbackDefault);
 	void remove(T* obj);
 	void markDirty(T* obj);

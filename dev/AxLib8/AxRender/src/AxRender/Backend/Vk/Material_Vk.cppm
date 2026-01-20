@@ -6,7 +6,7 @@ export module AxRender:Material_Vk;
 export import :AX_Vulkan;
 export import :Material_Backend;
 export import :Shader_Vk;
-
+export import :Texture_Vk;
 
 export namespace ax /*::AxRender*/ {
 

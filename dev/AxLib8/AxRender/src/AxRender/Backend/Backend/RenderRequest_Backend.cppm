@@ -3,11 +3,11 @@ export module AxRender:RenderRequest_Backend;
 export import :Renderer;
 export import :RenderRequest;
 export import :RenderContext_Backend;
-export import :GpuBuffer_Backend;
-export import :Texture_Backend;
-export import :Material_Backend;
-export import :RenderPass_Backend;
 export import :RenderObjectManager_Backend;
+export import :RenderPass_Backend;
+export import :GpuBuffer_Backend;
+export import :Material_Backend;
+export import :MeshObject_Backend;
 
 export namespace ax /*::AxRender*/ {
 
@@ -44,11 +44,12 @@ public:
 
 	struct ResourcesList {
 
-		void add(const  GpuBuffer_Backend* p) { _add(p); }
-		void add(const   Material_Backend* p) { _add(p); }
 		void add(const RenderPass_Backend* p) { _add(p); }
 		void add(const    Sampler_Backend* p) { _add(p); }
 		void add(const  Texture2D_Backend* p) { _add(p); }
+		void add(const   Material_Backend* p) { _add(p); }
+		void add(const  GpuBuffer_Backend* p) { _add(p); }
+		void add(const MeshObject_Backend* p) { _add(p); }
 
 		void clear() {
 			visit([](auto& list) { list.clear(); });
@@ -72,7 +73,8 @@ public:
 			Array< SPtr<const   Material_Backend> >,
 			Array< SPtr<const RenderPass_Backend> >,
 			Array< SPtr<const    Sampler_Backend> >,
-			Array< SPtr<const  Texture2D_Backend> >
+			Array< SPtr<const  Texture2D_Backend> >,
+			Array< SPtr<const MeshObject_Backend> >
 		>;
 		All_List _all_list;
 	};

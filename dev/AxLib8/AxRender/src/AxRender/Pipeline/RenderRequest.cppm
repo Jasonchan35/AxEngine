@@ -1,6 +1,7 @@
 module;
 export module AxRender:RenderRequest;
 export import :RenderCommandList;
+export import :MeshObject;
 
 export namespace ax /*::AxRender*/ {
 
@@ -99,32 +100,5 @@ void ScissorRectScope::detach() {
 	_req->setScissorRect(_rect);
 	_req = nullptr;
 }
-
-inline
-void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
-	if (!mesh) return;
-	drawMesh(mesh->meshData, material, materialPass, objectToWorld);
-}
-
-inline
-void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
-	for (auto& sm : mesh.subMeshes()) {
-		drawSubMesh(sm, material, materialPass, objectToWorld);
-	}
-}
-
-inline
-void RenderRequest::drawSubMesh(RenderSubMesh& subMesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
-	if (!material) return;
-
-	Cmd_DrawCall cmd;
-	cmd.material = material;
-	cmd.materialPassIndex = materialPass;
-	cmd.objectToWorld = objectToWorld;
-	cmd.setSubMesh(this, subMesh);
-
-	drawCall(cmd);
-}
-
 
 } // namespace

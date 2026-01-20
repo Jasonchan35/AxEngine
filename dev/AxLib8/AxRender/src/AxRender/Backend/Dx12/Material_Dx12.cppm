@@ -1,13 +1,14 @@
 module;
 
 export module AxRender:Material_Dx12;
-import :Dx12DescriptorHeap;
+export import :Material_Backend;
 
 #if AX_RENDERER_DX12
 
-import :RenderSystem_Backend;
-import :Material_Backend;
-import :Shader_Dx12;
+export import :Dx12DescriptorHeap;
+export import :RenderSystem_Backend;
+export import :Shader_Dx12;
+export import :Texture_Dx12;
 
 namespace ax {
 
