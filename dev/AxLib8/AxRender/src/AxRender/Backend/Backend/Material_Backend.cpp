@@ -183,8 +183,8 @@ Material_Backend::Material_Backend(const CreateDesc& desc)
 }
 
 Material_Backend* Material_Backend::s_commonMaterial() {
-	auto* stockObjs = RenderStockObjects::s_instance();
-	return stockObjs ? rttiCastCheck<Material_Backend>(stockObjs->commonMaterial.ptr()) : nullptr;
+	auto* mgr = RenderObjectManager_Backend::s_instance();
+	return mgr ? mgr->commonMaterial() : nullptr;
 }
 
 void Material_Backend::logWarningOnce(StrView msg) {

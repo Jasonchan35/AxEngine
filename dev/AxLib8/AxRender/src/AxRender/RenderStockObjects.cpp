@@ -14,9 +14,7 @@ RenderStockObjects::RenderStockObjects() {
 	fonts.newObject(AX_NEW);
 	samplers.newObject(AX_NEW);
 	texture2Ds.newObject(AX_NEW);
-	
-	commonMaterial = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Common.axShader");
-	
+
 	materials.newObject(AX_NEW);
 	meshes.newObject(AX_NEW);
 }

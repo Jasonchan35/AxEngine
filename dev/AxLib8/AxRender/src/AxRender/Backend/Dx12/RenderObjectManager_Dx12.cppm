@@ -87,17 +87,11 @@ public:
 	
 	void _createDescriptors();
 
-	struct IndirectDrawCommand {
-		struct ArgumentData {
-			// D3D12_GPU_VIRTUAL_ADDRESS    argumentDataSrv;
-			D3D12_DRAW_INDEXED_ARGUMENTS drawIndexed;
-			AxDrawCallRootConst rootConst;
-		};
-
+	struct IndirectDraw {
 		ComPtr<ID3D12RootSignature>    _rootSignature;
 		ComPtr<ID3D12CommandSignature> _commandSignature;
 		void _create();
-	} indirectDrawCommand;
+	} indirectDraw;
 	
 #if AX_RENDER_BINDLESS
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) override;

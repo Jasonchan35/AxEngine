@@ -96,13 +96,11 @@ void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StructuredBuffer&
 inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
 	ParamBase::create(info);
 	_dynamicSampler = info.dynamicSampler; 
-	_defaultSampler = RenderStockObjects::s_instance()->samplers->defaultValue;
 }
 
 inline void ShaderParamSpace_Backend::TextureParam::create(const Info& info) {
 	ParamBase::create(info);
 	_dataType = info.dataType;
-	_defaultTexture = RenderStockObjects::s_instance()->texture2Ds->kNone;
 }
 
 inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {

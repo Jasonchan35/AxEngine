@@ -18,15 +18,20 @@ struct RenderSystemInfo {
 	RenderSystemInfo();
 
 	RenderAPI	api = RenderAPI::None;
-	bool multithread		: 1 = false;
-	bool enableDebugReport	: 1 = false;
-	bool enableDebugUtils	: 1 = false;
-	bool enableDebugMarker	: 1 = false;
-	bool vsync              : 1 = false;
+	bool multithread		: 1;
+	bool vsync              : 1;
+	
+	bool enableDebugReport	: 1;
+	bool enableDebugUtils	: 1;
+	bool enableDebugMarker	: 1;
+
+	struct IndirectDraw {
+		Int maxDrawCount = 0;
+	} indirectDraw;
 
 	struct InlineUpload {
-		Int bufferSize   = 0;
-		Int limitPerEach = 0;
+		Int bufferSize       = 0;
+		Int maxSizePerUpload = 0;
 	} inlineUpload;
 
 	struct Shader {

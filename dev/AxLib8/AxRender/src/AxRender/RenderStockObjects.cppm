@@ -60,8 +60,6 @@ public:
 	};
 	UPtr<Texture2Ds>	texture2Ds;
 
-	SPtr<Material>	commonMaterial;
-	
 	struct Materials : public NonCopyable {
 		Materials();
 		SPtr<Material>	simple3d_color;

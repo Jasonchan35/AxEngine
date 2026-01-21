@@ -36,10 +36,11 @@ struct D3D12_DRAW_INDEXED_ARGUMENTS {
 };
 
 struct Dx12_IndirectDrawArgument {
-	D3D12_DRAW_INDEXED_ARGUMENTS drawIndexed;
+	D3D12_DRAW_INDEXED_ARGUMENTS 	drawIndexed;
+	AxDrawCallRootConst 			rootConst;
 };
+RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> outDrawArgument : register(u0);
 
-RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> BufferOut : register(u0);
 #endif
 
 [numthreads(4, 4, 1)]

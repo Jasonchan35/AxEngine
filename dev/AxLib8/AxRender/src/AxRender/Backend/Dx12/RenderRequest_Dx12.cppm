@@ -34,9 +34,9 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 	
-	struct IndirectDrawCommand {
-		
-	};
+	struct IndirectDraw {
+		SPtr<GpuStructuredBuffer> drawArguments;
+	} indirectDraw;
 
 	struct DynamicDescriptors {
 		Dx12DescriptorHeapChunk_ColorBuffer ColorBuffer;

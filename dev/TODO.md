@@ -1,11 +1,11 @@
+- VMA/D3D12MA Allocator - add SpinLock
+
 - GPU Indirect Draw
 	- compute shader object culling
 		- write indirect draw list
 		- write PerMeshData (mvp)
 		- vertex shader fetch mvp from PerMeshData[instanceId]
 		
-
-
 - Dx12
 	- Material update 
 	- move some CBV, Texture to root parameter

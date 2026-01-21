@@ -120,7 +120,7 @@ private:
 
 		void reset() { usedBytes = 0; }
 		Int	usedBytes = 0;
-		Int	limitPerEach = 0;
+		Int	maxSizePerUpload = 0;
 		SPtr<GpuBuffer_Backend>	stagingToGpuBuffer;
 	};
 

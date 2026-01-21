@@ -152,6 +152,13 @@ class GpuStructuredBuffer : public RenderObject {
 public:
 	using CreateDesc = GpuStructuredBuffer_CreateDesc;
 
+	static SPtr<GpuStructuredBuffer> s_new(const MemAllocRequest& req, StrView name, Int stride, Int capacity) {
+		CreateDesc desc;
+		desc.name = name;
+		desc.stride = stride;
+		desc.capacity = capacity;
+		return s_new(req, desc);
+	};
 	static SPtr<GpuStructuredBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	
 	Int dataCapacity() const { return _buffer.dataCapacity(); }

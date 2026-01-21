@@ -40,8 +40,7 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 
 void RenderRequest_Backend::_updateCommonMaterial() {
 	using namespace Math;
-
-	_commonMaterial     = rttiCastCheck<Material_Backend>(_stockObjects->commonMaterial.ptr());
+	_commonMaterial     = Material_Backend::s_commonMaterial();
 	_commonMaterialPass = _commonMaterial->getPass(0);
 	resourcesToKeep.add(_commonMaterial);
 	
@@ -138,7 +137,7 @@ void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, By
 
 bool RenderRequest_Backend::copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
 	auto dataSize = data.size();
-	if (dataSize > _inlineUpload.limitPerEach) return false;
+	if (dataSize > _inlineUpload.maxSizePerUpload) return false;
 	if (dataSize > _inlineUpload.remainSize()) return false;
 
 	auto& uploadBuf = _inlineUpload.stagingToGpuBuffer;
@@ -186,7 +185,7 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {
 	auto& info = req->renderSystem()->info().inlineUpload;
 
-	limitPerEach = info.limitPerEach;
+	maxSizePerUpload = info.maxSizePerUpload;
 	if (info.bufferSize <= 0) return;
 
 	stagingToGpuBuffer = GpuBuffer_Backend::s_new(AX_NEW,

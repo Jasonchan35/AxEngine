@@ -57,16 +57,13 @@ public:
 		const ShaderParamSpace_Backend::TextureParam*	AxBindless_Texture2D = nullptr;
 	} bindless;
 #endif
+
+	Material_Backend* commonMaterial() { return _commonMaterial.ptr(); }
+	Material_Backend* indirectDrawMaterial() { return _indirectDrawMaterial.ptr(); }
 	
 protected:
 	void _postCreate();
 	virtual void onPostCreate() {}
-
-	struct GpuData {
-		SPtr<GpuStructuredBuffer_Backend>	meshObjects;
-		SPtr<GpuStructuredBuffer_Backend>	cameras;
-		SPtr<GpuStructuredBuffer_Backend>	lights;
-	} _gpuData;
 
 	template<class FUNC>
 	void visit(FUNC func) {
@@ -82,6 +79,17 @@ protected:
 		MutexProtected<Table< MeshObject_Backend >>
 	>;
 	ObjectTables _objectTables;
+	
+// objects - must after _objectTable
+	SPtr<Material_Backend>	_commonMaterial;
+	SPtr<Material_Backend>	_indirectDrawMaterial;
+	
+	struct GpuData {
+		SPtr<GpuStructuredBuffer_Backend>	meshRenderers;
+		SPtr<GpuStructuredBuffer_Backend>	meshObjects;
+		SPtr<GpuStructuredBuffer_Backend>	cameras;
+		SPtr<GpuStructuredBuffer_Backend>	lights;
+	} _gpuData;
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>

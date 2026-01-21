@@ -68,6 +68,9 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 }
 
 void RenderObjectManager_Backend::_postCreate() {
+	_commonMaterial       = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/Common.axShader");
+	_indirectDrawMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/IndirectDraw.axComputeShader");
+	
 	RenderStockObjects::s_create();
 	auto* commonShaderPass = ShaderPass_Backend::s_commonShaderPass();
 
@@ -83,7 +86,7 @@ void RenderObjectManager_Backend::_postCreate() {
 	bindless.AxBindless_Texture3D = bindlessSpace->findTextureParam(AX_NAMEID("AxBindless_Texture3D"));
 	if (!bindless.AxBindless_Texture3D) throw Error_Undefined();
 #endif
-	
+
 	onPostCreate();
 }
 

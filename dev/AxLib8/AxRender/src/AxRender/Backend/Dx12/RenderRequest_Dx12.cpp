@@ -17,8 +17,8 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	AX_LOG("RenderRequest_Dx12 create#{}", desc.index);
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	_d3dDevice = dev;
-	_uploadCmdList_dx12.create( dev, RenderCommandListType::Direct,  "uploadCmdList"); // RenderCommandListType::Copy
-	_graphCmdList_dx12.create(  dev, RenderCommandListType::Direct,  "graphCmdList");
+	_uploadCmdList_dx12.create( dev, RenderCommandListType::Direct,  "uploadCmdList" ); // RenderCommandListType::Copy
+	_graphCmdList_dx12.create(  dev, RenderCommandListType::Direct,  "graphCmdList"  );
 	_computeCmdList_dx12.create(dev, RenderCommandListType::Compute, "computeCmdList");
 	_fence.create(dev, static_cast<u64>(_renderSeqId));
 	_cpuEvent.create();
@@ -43,6 +43,10 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	Int renderReq_CBV_SRV_UAV_Count = info_req.maxConstBufferCount + info_req.maxTextureCount;
 	_dynamicDescriptors.CBV_SRV_UAV.create(Fmt("dynamic#{}.CBV_SRV_UAV", desc.index), pool.CBV_SRV_UAV, renderReq_CBV_SRV_UAV_Count       , false);
 	    _dynamicDescriptors.Sampler.create(Fmt("dynamic#{}.Sampler"    , desc.index), pool.Sampler,     info.renderRequest.maxSamplerCount, false);
+	
+	indirectDraw.drawArguments = GpuStructuredBuffer::s_new(AX_NEW, "indirectDraw.drawArguments", 
+															AX_SIZEOF(Dx12_IndirectDrawArgument),
+															info.indirectDraw.maxDrawCount);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {

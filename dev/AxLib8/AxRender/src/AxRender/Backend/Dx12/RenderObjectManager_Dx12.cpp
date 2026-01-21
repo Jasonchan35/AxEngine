@@ -33,7 +33,7 @@ void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, A
 
 void RenderObjectManager_Dx12::onPostCreate() {
 	_createDescriptors();
-	indirectDrawCommand._create();
+	indirectDraw._create();
 	
 	GpuStructuredBuffer_CreateDesc bufDesc = {};
 	bufDesc.name     = "MeshObjects";
@@ -42,10 +42,10 @@ void RenderObjectManager_Dx12::onPostCreate() {
 	_gpuData.meshObjects = GpuStructuredBuffer_Backend::s_new(AX_NEW, bufDesc);
 }
 
-void RenderObjectManager_Dx12::IndirectDrawCommand::_create() {
+void RenderObjectManager_Dx12::IndirectDraw::_create() {
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	
-	Int RootConstSizeInBytes = sizeof(ArgumentData::rootConst);
+	Int RootConstSizeInBytes = sizeof(Dx12_IndirectDrawArgument::rootConst);
 	
 	Dx12RootParameterList rootParamList;
 
@@ -57,9 +57,9 @@ void RenderObjectManager_Dx12::IndirectDrawCommand::_create() {
 //	rootParamList.addRootSRV(D3D12_SHADER_VISIBILITY_VERTEX, static_cast<BindPoint>(0), BindSpace::Object);
 	rootParamList.createRootSignature(_rootSignature);
 	
-	Array<D3D12_INDIRECT_ARGUMENT_DESC, 4> argumentDescs;
+	Array<D3D12_INDIRECT_ARGUMENT_DESC, 4> argumentDescList;
 	{
-		auto& dst = argumentDescs.emplaceBack();
+		auto& dst = argumentDescList.emplaceBack();
 		dst.Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT;
 		dst.Constant.RootParameterIndex = rootConstParamIndex;
 		dst.Constant.DestOffsetIn32BitValues = 0;
@@ -67,16 +67,18 @@ void RenderObjectManager_Dx12::IndirectDrawCommand::_create() {
 	}
 	
 	{
-		auto& dst = argumentDescs.emplaceBack();
+		auto& dst = argumentDescList.emplaceBack();
 		dst.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW;
 	}
 
 	D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = {};
-	commandSignatureDesc.ByteStride       = sizeof(ArgumentData);
-	commandSignatureDesc.NumArgumentDescs = ax_safe_cast_from(argumentDescs.size());
-	commandSignatureDesc.pArgumentDescs   = argumentDescs.data();
-	
-	auto hr = dev->CreateCommandSignature(&commandSignatureDesc, _rootSignature, IID_PPV_ARGS(_commandSignature.ptrForInit()));
+	commandSignatureDesc.ByteStride       = sizeof(Dx12_IndirectDrawArgument);
+	commandSignatureDesc.NumArgumentDescs = ax_safe_cast_from(argumentDescList.size());
+	commandSignatureDesc.pArgumentDescs   = argumentDescList.data();
+
+	auto hr = dev->CreateCommandSignature(&commandSignatureDesc,
+	                                      _rootSignature,
+	                                      IID_PPV_ARGS(_commandSignature.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 
 }
