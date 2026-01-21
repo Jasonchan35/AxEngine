@@ -427,10 +427,12 @@ void ShaderInfoParser::readPass() {
 			continue;
 		}
 
-		if (matchIdentifier("VsFunc")) { expectOp("="); readIdentifier(o.vsFunc); continue; }
-		if (matchIdentifier("PsFunc")) { expectOp("="); readIdentifier(o.psFunc); continue; }
-		if (matchIdentifier("GsFunc")) { expectOp("="); readIdentifier(o.gsFunc); continue; }
-		if (matchIdentifier("CsFunc")) { expectOp("="); readIdentifier(o.csFunc); continue; }
+		if (matchIdentifier("VertexFunc"       )) { expectOp("="); readIdentifier(o.vertexFunc       ); continue; }
+		if (matchIdentifier("PixelFunc"        )) { expectOp("="); readIdentifier(o.pixelFunc        ); continue; }
+		if (matchIdentifier("GeometryFunc"     )) { expectOp("="); readIdentifier(o.geometryFunc     ); continue; }
+		if (matchIdentifier("ComputeFunc"      )) { expectOp("="); readIdentifier(o.computeFunc      ); continue; }
+		if (matchIdentifier("MeshFunc"         )) { expectOp("="); readIdentifier(o.meshFunc         ); continue; }
+		if (matchIdentifier("AmplificationFunc")) { expectOp("="); readIdentifier(o.amplificationFunc); continue; }
 
 		throw _makeErrorUnexpectedToken();
 	}

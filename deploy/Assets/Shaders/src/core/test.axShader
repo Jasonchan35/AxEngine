@@ -14,8 +14,8 @@ Pass "Pass0" { // Forward
 
 	// DepthTest = Less
 
-	VsFunc = vs_main
-	PsFunc = ps_main
+	VertexFunc = vs_main
+	PixelFunc  = ps_main
 }
 #endif	
 
@@ -28,11 +28,11 @@ static float2 pos[3] = {
 };
 
 struct VS_Input {
-	sem_sv_vertexId(uint)
+	SEM_SV_vertexId(uint);
 };
 
 struct PS_Input {
-	sem_sv_pos(float4)
+	SEM_SV_pos(float4);
 };
 
 PS_Input vs_main(VS_Input i) {

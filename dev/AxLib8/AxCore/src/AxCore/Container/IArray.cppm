@@ -23,6 +23,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr	Int		size() const		{ return _storage.size(); }
 	AX_NODISCARD AX_INLINE constexpr 	Int		sizeInBytes() const noexcept { return size() * AX_SIZEOF(T); }
 
+	explicit operator bool() const { return size() > 0; }
+	
 	AX_NODISCARD AX_INLINE constexpr	bool inBound( Int  i ) const	{ return i >= 0 && i < size(); }
 
 	constexpr void clear() { Base::_storageClear(); }

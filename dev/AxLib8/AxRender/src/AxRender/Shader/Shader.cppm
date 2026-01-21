@@ -170,10 +170,12 @@ public:
 struct ShaderPassInfo : public NonCopyable {
 	String	name;
 
-	String	vsFunc;
-	String	psFunc;
-	String	gsFunc;
-	String	csFunc;
+	String	vertexFunc;
+	String	pixelFunc;
+	String	geometryFunc;
+	String	computeFunc;
+	String	meshFunc;
+	String	amplificationFunc;
 
 	RenderState	renderState;
 
@@ -182,10 +184,12 @@ struct ShaderPassInfo : public NonCopyable {
 	template<class SE>
 	void onJsonIO(SE& se) {
 		AX_JSON_IO(se, name);
-		AX_JSON_IO(se, vsFunc);
-		AX_JSON_IO(se, psFunc);
-		AX_JSON_IO(se, gsFunc);
-		AX_JSON_IO(se, csFunc);
+		AX_JSON_IO_NON_EMPTY(se, vertexFunc        );
+		AX_JSON_IO_NON_EMPTY(se, pixelFunc         );
+		AX_JSON_IO_NON_EMPTY(se, geometryFunc      );
+		AX_JSON_IO_NON_EMPTY(se, computeFunc       );
+		AX_JSON_IO_NON_EMPTY(se, meshFunc          );
+		AX_JSON_IO_NON_EMPTY(se, amplificationFunc );
 		AX_JSON_IO(se, renderState);
 	}
 };
@@ -256,8 +260,8 @@ public:
 	template<class SE>
 	void onJsonIO(SE& se) {
 		AX_JSON_IO(se, isGlobalCommonShader);
-		AX_JSON_IO(se, props);
-		AX_JSON_IO(se, passes);
+		AX_JSON_IO_NON_EMPTY(se, props);
+		AX_JSON_IO_NON_EMPTY(se, passes);
 	}
 };
 
@@ -269,7 +273,7 @@ public:
 	template<class SE>
 	void onJsonIO(SE& se) {
 		AX_JSON_IO(se, declare);
-		AX_JSON_IO(se, passStages);
+		AX_JSON_IO_NON_EMPTY(se, passStages);
 	}
 };
 

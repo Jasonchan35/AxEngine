@@ -30,10 +30,12 @@ void GenResultInfo::run(StrView outFilename, StrView filename, RenderAPI api) {
 			mergeStageInfo(outStageInfo, inStageInfo);
 		};
 
-		addStage(pass.vsFunc, ShaderStageFlags::Vertex  );
-		addStage(pass.psFunc, ShaderStageFlags::Pixel   );
-		addStage(pass.gsFunc, ShaderStageFlags::Geometry);
-		addStage(pass.csFunc, ShaderStageFlags::Compute );
+		addStage(pass.vertexFunc       , ShaderStageFlags::Vertex       );
+		addStage(pass.pixelFunc        , ShaderStageFlags::Pixel        );
+		addStage(pass.geometryFunc     , ShaderStageFlags::Geometry     );
+		addStage(pass.computeFunc      , ShaderStageFlags::Compute      );
+		addStage(pass.meshFunc         , ShaderStageFlags::Mesh         );
+		addStage(pass.amplificationFunc, ShaderStageFlags::Amplification);
 	}
 
 	if (_resultInfo.declare.passes.size() != _resultInfo.passStages.size())

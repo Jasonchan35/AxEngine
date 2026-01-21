@@ -4,14 +4,14 @@ Properties {
 }
 
 Pass "Pass0" {
-	CsFunc = cs_main
+	ComputeFunc = cs_main
 }
 #endif
 
 #include "AxRender.hlsl"
 
 struct CS_Input {
-	sem_sv_dispatchThreadId(uint3)
+	SEM_SV_dispatchThreadId(uint3);
 };
 
 struct Pixel

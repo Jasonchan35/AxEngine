@@ -16,23 +16,23 @@ Pass "Pass0" {
 	BlendRGB 	= [Add, One, OneMinusSrcAlpha]
 	BlendAlpha	= [Add, One, OneMinusSrcAlpha]
 	
-	VsFunc = vs_main
-	PsFunc = ps_main
+	VertexFunc = vs_main
+	PixelFunc  = ps_main
 }
 #endif
 
 #include "AxRender.hlsl"
  
 struct VS_Input {
-	sem_pos(float2)
-	sem_color0(float4)
-	sem_uv0(float2)
+	SEM_pos(float2);
+	SEM_color0(float4);
+	SEM_uv0(float2);
 };
 
 struct PS_Input {
-	sem_sv_pos(float4)
-	sem_color0(float4)
-	sem_uv0(float2)
+	SEM_SV_pos(float4);
+	SEM_color0(float4);
+	SEM_uv0(float2);
 };
 
 float4x4 imguiProjectionMatrix; 

@@ -5,14 +5,14 @@ Properties {
 }
 
 Pass "Pass0" {
-	CsFunc = cs_main
+	ComputeFunc = cs_main
 }
 #endif
 
 #include "Ax/AxWorld.hlsl"
 
 struct CS_Input {
-	sem_sv_dispatchThreadId(uint3)
+	SEM_SV_dispatchThreadId(uint3);
 };
 
 
@@ -57,12 +57,12 @@ struct AX_VkIndirectDrawArgment {
 	VkDrawIndexedIndirectCommand	drawIndexed;
 	AxDrawCallRootConst 			rootConst;
 };
-RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> outDrawArgument : register(u0);
+RWStructuredBuffer<AX_VkIndirectDrawArgment> outDrawArgument : register(u0);
 
 #endif
 
 
-[numthreads(4, 4, 1)]
+[numthreads(8, 8, 1)]
 void cs_main(CS_Input i) {
 }
 

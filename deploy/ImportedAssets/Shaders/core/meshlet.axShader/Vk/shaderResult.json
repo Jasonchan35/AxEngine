@@ -1,10 +1,15 @@
 {
   "declare": {
-    "isGlobalCommonShader": true, 
+    "isGlobalCommonShader": false, 
+    "props": [{
+        "name": "color", 
+        "propType": "Color4f", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": [0, 0, 0.5, 1]
+      }], 
     "passes": [{
         "name": "Pass0", 
-        "vertexFunc": "vs_main", 
-        "pixelFunc": "ps_main", 
         "renderState": {
           "cull": "Back", 
           "blend": {

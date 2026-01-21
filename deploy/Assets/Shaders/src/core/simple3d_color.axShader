@@ -17,8 +17,8 @@ Properties {
 }
 
 Pass "Pass0" { // Forward
-	VsFunc 		= vs_main
-	PsFunc 		= ps_main
+	VertexFunc = vs_main
+	PixelFunc  = ps_main
 
 //	Queue		= "Transparent"
 	Cull 		= None
@@ -34,13 +34,13 @@ Pass "Pass0" { // Forward
 Color4f 	color;
 
 struct VS_Input {
-	sem_pos(float4)
-	sem_color0(float4)
+	SEM_pos(float4);
+	SEM_color0(float4);
 };
 
 struct PS_Input {
-	sem_sv_pos(float4)
-	sem_color0(float4)
+	SEM_SV_pos(float4);
+	SEM_color0(float4);
 };
 
 PS_Input vs_main(VS_Input i) {

@@ -1,39 +1,31 @@
 {
   "isGlobalCommonShader": false, 
   "props": [{
-      "name": "fontTexture", 
-      "propType": "Texture2D", 
-      "displayName": "fontTexture", 
-      "asset": "asset path", 
-      "defaultValue": "White", 
-      "samplerState": {
-        "filter": "Point", 
-        "wrap": ["Repeat", "Clamp", "Repeat"], 
-        "minLOD": 0, 
-        "maxLOD": "Infinity"
-      }
+      "name": "color", 
+      "propType": "Color4f", 
+      "displayName": "", 
+      "asset": "", 
+      "defaultValue": [0, 0, 0.5, 1]
     }], 
   "passes": [{
       "name": "Pass0", 
-      "vertexFunc": "vs_main", 
-      "pixelFunc": "ps_main", 
       "renderState": {
-        "cull": "None", 
+        "cull": "Back", 
         "blend": {
           "rgb": {
-            "op": "Add", 
+            "op": "Disable", 
             "srcFactor": "One", 
             "dstFactor": "OneMinusSrcAlpha"
           }, 
           "alpha": {
-            "op": "Add", 
+            "op": "Disable", 
             "srcFactor": "One", 
             "dstFactor": "OneMinusSrcAlpha"
           }, 
           "constColor": [1, 1, 1, 1]
         }, 
         "depthTest": {
-          "op": "Always", 
+          "op": "LessEqual", 
           "writeMask": true
         }, 
         "antialiasedLine": false, 

@@ -11,10 +11,12 @@ void ShaderStageInfo::loadFile(StrView filename_) {
 
 const String& ShaderPassInfo::getFuncName(ShaderStageFlags mask) const {
 	switch (mask) {
-		case ShaderStageFlags::Vertex:		return vsFunc;
-		case ShaderStageFlags::Pixel:		return psFunc;
-		case ShaderStageFlags::Geometry:	return gsFunc;
-		case ShaderStageFlags::Compute:		return csFunc;
+		case ShaderStageFlags::Vertex:			return vertexFunc;
+		case ShaderStageFlags::Pixel:			return pixelFunc;
+		case ShaderStageFlags::Geometry:		return geometryFunc;
+		case ShaderStageFlags::Compute:			return computeFunc;
+		case ShaderStageFlags::Mesh:			return meshFunc;
+		case ShaderStageFlags::Amplification:	return amplificationFunc;
 		default: return String::kEmpty();
 	}
 }

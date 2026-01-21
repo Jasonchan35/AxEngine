@@ -76,76 +76,76 @@ typedef float4		Color4f;
 #endif // else AX_RENDER_BINDLESS
 
 // those defines ensure variable name and semantic as pair, since OpenGL/Vulkan DO NOT have semantic but relie on variable name
-#define sem_pos(					TYPE)	TYPE	pos					: POSITION;
+#define SEM_pos(					TYPE)	TYPE	pos					: POSITION
 
-#define sem_sv_pos(					TYPE)	TYPE	sv_pos				: SV_POSITION;
-#define sem_sv_depth(				TYPE)	TYPE	sv_depth			: SV_DEPTH;
-#define sem_sv_coverage(			TYPE)	TYPE	sv_coverage			: SV_COVERAGE;
-#define sem_sv_vertexId(			TYPE)	TYPE	sv_vertexId			: SV_VERTEXID;
-#define sem_sv_primitiveId(			TYPE)	TYPE	sv_primitiveId		: SV_PRIMITIVEID;
-#define sem_sv_instanceId(			TYPE)	TYPE	sv_instanceId		: SV_INSTANCEID;
-#define sem_sv_dispatchThreadId(	TYPE)	TYPE	sv_dispatchThreadId	: SV_DISPATCHTHREADID;
-#define sem_sv_groupId(				TYPE)	TYPE	sv_groupId			: SV_GROUPID;
-#define sem_sv_groupIndex(			TYPE)	TYPE	sv_groupIndex		: SV_GROUPINDEX;
-#define sem_sv_groupThreadId(		TYPE)	TYPE	sv_groupThreadId	: SV_GROUPTHREADID;
-#define sem_sv_gsInstanceId(		TYPE)	TYPE	sv_gsInstanceId		: SV_GSINSTANCEID;
+#define SEM_SV_pos(					TYPE)	TYPE	sv_pos				: SV_POSITION
+#define SEM_SV_depth(				TYPE)	TYPE	sv_depth			: SV_DEPTH;
+#define SEM_SV_coverage(			TYPE)	TYPE	sv_coverage			: SV_COVERAGE
+#define SEM_SV_vertexId(			TYPE)	TYPE	sv_vertexId			: SV_VERTEXID
+#define SEM_SV_primitiveId(			TYPE)	TYPE	sv_primitiveId		: SV_PRIMITIVEID
+#define SEM_SV_instanceId(			TYPE)	TYPE	sv_instanceId		: SV_INSTANCEID
+#define SEM_SV_dispatchThreadId(	TYPE)	TYPE	sv_dispatchThreadId	: SV_DISPATCHTHREADID
+#define SEM_SV_groupId(				TYPE)	TYPE	sv_groupId			: SV_GROUPID
+#define SEM_SV_groupIndex(			TYPE)	TYPE	sv_groupIndex		: SV_GROUPINDEX
+#define SEM_SV_groupThreadId(		TYPE)	TYPE	sv_groupThreadId	: SV_GROUPTHREADID
+#define SEM_SV_gsInstanceId(		TYPE)	TYPE	sv_gsInstanceId		: SV_GSINSTANCEID
 
-#define sem_color0(TYPE)	TYPE	color0		: COLOR0;
-#define sem_color1(TYPE)	TYPE	color1		: COLOR1;
-#define sem_color2(TYPE)	TYPE	color2		: COLOR2;
-#define sem_color3(TYPE)	TYPE	color3		: COLOR3;
-#define sem_color4(TYPE)	TYPE	color4		: COLOR4;
-#define sem_color5(TYPE)	TYPE	color5		: COLOR5;
-#define sem_color6(TYPE)	TYPE	color6		: COLOR6;
-#define sem_color7(TYPE)	TYPE	color7		: COLOR7;
+#define SEM_color0(TYPE)	TYPE	color0		: COLOR0
+#define SEM_color1(TYPE)	TYPE	color1		: COLOR1
+#define SEM_color2(TYPE)	TYPE	color2		: COLOR2
+#define SEM_color3(TYPE)	TYPE	color3		: COLOR3
+#define SEM_color4(TYPE)	TYPE	color4		: COLOR4
+#define SEM_color5(TYPE)	TYPE	color5		: COLOR5
+#define SEM_color6(TYPE)	TYPE	color6		: COLOR6
+#define SEM_color7(TYPE)	TYPE	color7		: COLOR7
 
-#define sem_normal0(TYPE)	TYPE	normal0		: NORMAL0;
-#define sem_normal1(TYPE)	TYPE	normal1		: NORMAL1;
-#define sem_normal2(TYPE)	TYPE	normal2		: NORMAL2;
-#define sem_normal3(TYPE)	TYPE	normal3		: NORMAL3;
-#define sem_normal4(TYPE)	TYPE	normal4		: NORMAL4;
-#define sem_normal5(TYPE)	TYPE	normal5		: NORMAL5;
-#define sem_normal6(TYPE)	TYPE	normal6		: NORMAL6;
-#define sem_normal7(TYPE)	TYPE	normal7		: NORMAL7;
+#define SEM_normal0(TYPE)	TYPE	normal0		: NORMAL0
+#define SEM_normal1(TYPE)	TYPE	normal1		: NORMAL1
+#define SEM_normal2(TYPE)	TYPE	normal2		: NORMAL2
+#define SEM_normal3(TYPE)	TYPE	normal3		: NORMAL3
+#define SEM_normal4(TYPE)	TYPE	normal4		: NORMAL4
+#define SEM_normal5(TYPE)	TYPE	normal5		: NORMAL5
+#define SEM_normal6(TYPE)	TYPE	normal6		: NORMAL6
+#define SEM_normal7(TYPE)	TYPE	normal7		: NORMAL7
 
-#define sem_tangent0(TYPE)	TYPE	tangent0	: TANGENT0;
-#define sem_tangent1(TYPE)	TYPE	tangent1	: TANGENT1;
-#define sem_tangent2(TYPE)	TYPE	tangent2	: TANGENT2;
-#define sem_tangent3(TYPE)	TYPE	tangent3	: TANGENT3;
-#define sem_tangent4(TYPE)	TYPE	tangent4	: TANGENT4;
-#define sem_tangent5(TYPE)	TYPE	tangent5	: TANGENT5;
-#define sem_tangent6(TYPE)	TYPE	tangent6	: TANGENT6;
-#define sem_tangent7(TYPE)	TYPE	tangent7	: TANGENT7;
+#define SEM_tangent0(TYPE)	TYPE	tangent0	: TANGENT0
+#define SEM_tangent1(TYPE)	TYPE	tangent1	: TANGENT1
+#define SEM_tangent2(TYPE)	TYPE	tangent2	: TANGENT2
+#define SEM_tangent3(TYPE)	TYPE	tangent3	: TANGENT3
+#define SEM_tangent4(TYPE)	TYPE	tangent4	: TANGENT4
+#define SEM_tangent5(TYPE)	TYPE	tangent5	: TANGENT5
+#define SEM_tangent6(TYPE)	TYPE	tangent6	: TANGENT6
+#define SEM_tangent7(TYPE)	TYPE	tangent7	: TANGENT7
 
-#define sem_binormal0(TYPE)	TYPE	binormal0	: BINORMAL0;
-#define sem_binormal1(TYPE)	TYPE	binormal1	: BINORMAL1;
-#define sem_binormal2(TYPE)	TYPE	binormal2	: BINORMAL2;
-#define sem_binormal3(TYPE)	TYPE	binormal3	: BINORMAL3;
-#define sem_binormal4(TYPE)	TYPE	binormal4	: BINORMAL4;
-#define sem_binormal5(TYPE)	TYPE	binormal5	: BINORMAL5;
-#define sem_binormal6(TYPE)	TYPE	binormal6	: BINORMAL6;
-#define sem_binormal7(TYPE)	TYPE	binormal7	: BINORMAL7;
+#define SEM_binormal0(TYPE)	TYPE	binormal0	: BINORMAL0
+#define SEM_binormal1(TYPE)	TYPE	binormal1	: BINORMAL1
+#define SEM_binormal2(TYPE)	TYPE	binormal2	: BINORMAL2
+#define SEM_binormal3(TYPE)	TYPE	binormal3	: BINORMAL3
+#define SEM_binormal4(TYPE)	TYPE	binormal4	: BINORMAL4
+#define SEM_binormal5(TYPE)	TYPE	binormal5	: BINORMAL5
+#define SEM_binormal6(TYPE)	TYPE	binormal6	: BINORMAL6
+#define SEM_binormal7(TYPE)	TYPE	binormal7	: BINORMAL7
 
-#define sem_uv0(TYPE)		TYPE	uv0		: TEXCOORD0;
-#define sem_uv1(TYPE)		TYPE	uv1		: TEXCOORD1;
-#define sem_uv2(TYPE)		TYPE	uv2		: TEXCOORD2;
-#define sem_uv3(TYPE)		TYPE	uv3		: TEXCOORD3;
-#define sem_uv4(TYPE)		TYPE	uv4		: TEXCOORD4;
-#define sem_uv5(TYPE)		TYPE	uv5		: TEXCOORD5;
-#define sem_uv6(TYPE)		TYPE	uv6		: TEXCOORD6;
-#define sem_uv7(TYPE)		TYPE	uv7		: TEXCOORD7;
-#define sem_uv8(TYPE)		TYPE	uv8		: TEXCOORD8;
-#define sem_uv9(TYPE)		TYPE	uv9		: TEXCOORD9;
+#define SEM_uv0(TYPE)		TYPE	uv0		: TEXCOORD0
+#define SEM_uv1(TYPE)		TYPE	uv1		: TEXCOORD1
+#define SEM_uv2(TYPE)		TYPE	uv2		: TEXCOORD2
+#define SEM_uv3(TYPE)		TYPE	uv3		: TEXCOORD3
+#define SEM_uv4(TYPE)		TYPE	uv4		: TEXCOORD4
+#define SEM_uv5(TYPE)		TYPE	uv5		: TEXCOORD5
+#define SEM_uv6(TYPE)		TYPE	uv6		: TEXCOORD6
+#define SEM_uv7(TYPE)		TYPE	uv7		: TEXCOORD7
+#define SEM_uv8(TYPE)		TYPE	uv8		: TEXCOORD8
+#define SEM_uv9(TYPE)		TYPE	uv9		: TEXCOORD9
 
-#define sem_uv10(TYPE)		TYPE	uv10	: TEXCOORD10;
-#define sem_uv11(TYPE)		TYPE	uv11	: TEXCOORD11;
-#define sem_uv12(TYPE)		TYPE	uv12	: TEXCOORD12;
-#define sem_uv13(TYPE)		TYPE	uv13	: TEXCOORD13;
-#define sem_uv14(TYPE)		TYPE	uv14	: TEXCOORD14;
-#define sem_uv15(TYPE)		TYPE	uv15	: TEXCOORD15;
-#define sem_uv16(TYPE)		TYPE	uv16	: TEXCOORD16;
-#define sem_uv17(TYPE)		TYPE	uv17	: TEXCOORD17;
-#define sem_uv18(TYPE)		TYPE	uv18	: TEXCOORD18;
-#define sem_uv19(TYPE)		TYPE	uv19	: TEXCOORD19;
+#define SEM_uv10(TYPE)		TYPE	uv10	: TEXCOORD10
+#define SEM_uv11(TYPE)		TYPE	uv11	: TEXCOORD11
+#define SEM_uv12(TYPE)		TYPE	uv12	: TEXCOORD12
+#define SEM_uv13(TYPE)		TYPE	uv13	: TEXCOORD13
+#define SEM_uv14(TYPE)		TYPE	uv14	: TEXCOORD14
+#define SEM_uv15(TYPE)		TYPE	uv15	: TEXCOORD15
+#define SEM_uv16(TYPE)		TYPE	uv16	: TEXCOORD16
+#define SEM_uv17(TYPE)		TYPE	uv17	: TEXCOORD17
+#define SEM_uv18(TYPE)		TYPE	uv18	: TEXCOORD18
+#define SEM_uv19(TYPE)		TYPE	uv19	: TEXCOORD19
 
 #endif // __AxBasicType_HLSL__

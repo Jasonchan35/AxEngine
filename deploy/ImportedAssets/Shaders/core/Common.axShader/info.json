@@ -1,12 +1,9 @@
 {
   "isGlobalCommonShader": true, 
-  "props": [], 
   "passes": [{
       "name": "Pass0", 
-      "vsFunc": "vs_main", 
-      "psFunc": "ps_main", 
-      "gsFunc": "", 
-      "csFunc": "", 
+      "vertexFunc": "vs_main", 
+      "pixelFunc": "ps_main", 
       "renderState": {
         "cull": "Back", 
         "blend": {

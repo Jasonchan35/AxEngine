@@ -94,10 +94,12 @@ using ShaderParamBindCount = u32;
 
 #define AX_ShaderStageFlags_ENUM_LIST(E) \
 	E(None,) \
-	E(Vertex,	= 1 << 0) \
-	E(Pixel,	= 1 << 1) \
-	E(Geometry, = 1 << 2) \
-	E(Compute,	= 1 << 15) \
+	E(Vertex       , = 1 << 0) \
+	E(Pixel        , = 1 << 1) \
+	E(Geometry     , = 1 << 2) \
+	E(Compute      , = 1 << 3) \
+	E(Mesh         , = 1 << 4) \
+	E(Amplification, = 1 << 5) \
 	E(_END,) \
 //----
 AX_ENUM_FLAGS_CLASS(AX_ShaderStageFlags_ENUM_LIST, ShaderStageFlags, u32)

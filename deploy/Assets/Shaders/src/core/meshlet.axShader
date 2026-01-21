@@ -1,0 +1,89 @@
+#if ShaderInfo
+
+Properties {
+	Color4f		color = [0, 0, 0.5, 1]
+}
+
+Pass "Pass0" {
+//	AmplificationFunc = as_main
+//	MeshFunc          = ms_main
+}
+#endif
+
+#include "Ax/AxWorld.hlsl"
+
+#define MAX(x, y) (x > y ? x : y)
+#define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))
+
+#define THREADS_PER_WAVE 32
+#define MAX_VERTS 64
+#define MAX_PRIMS 126
+#define MAX_LOD_LEVELS 8
+
+#define AS_GROUP_SIZE THREADS_PER_WAVE
+#define MS_GROUP_SIZE ROUNDUP(MAX(MAX_VERTS, MAX_PRIMS), THREADS_PER_WAVE)
+
+struct CS_Input {
+	SEM_SV_dispatchThreadId(uint);
+};
+
+struct AS_Input {
+	SEM_SV_dispatchThreadId(uint);
+	SEM_SV_groupThreadId(uint);
+	SEM_SV_groupId(uint);
+};
+
+struct AS_Payload {
+    uint InstanceCounts[MAX_LOD_LEVELS];   // The instance count for each LOD level.
+    uint GroupOffsets[MAX_LOD_LEVELS + 1]; // The offset in threadgroups for each LOD level.
+
+    // The list of instance indices after culling. Ordered as:
+    // (list of LOD 0 instance indices), (list of LOD 1 instance indices), ... (list of LOD MAX_LOD_LEVELS-1 instance indices)                                            
+    uint InstanceList[AS_GROUP_SIZE];
+    uint InstanceOffsets[MAX_LOD_LEVELS + 1]; // The offset into the Instance List at which each LOD level begins.
+};
+
+groupshared AS_Payload s_payload;
+
+// [RootSignature(ROOT_SIG)]
+[numthreads(AS_GROUP_SIZE, 1, 1)]
+void as_main(AS_Input i) {
+    uint visibleCount = 1;
+	DispatchMesh(visibleCount, 1, 1, s_payload);
+}
+
+#if AX_RENDER_VK
+	#define OutputTopology_Triangles	output_topology("triangles")
+#else
+	#define OutputTopology_Triangles	OutputTopology("triangle")
+#endif
+
+struct MS_Input {
+	SEM_SV_dispatchThreadId(uint);
+	SEM_SV_groupThreadId(uint);
+	SEM_SV_groupId(uint);
+};
+
+struct VS_Output {
+	SEM_pos(float4);
+	SEM_color0(float4);
+};
+
+//[RootSignature(ROOT_SIG)]
+[numthreads(MS_GROUP_SIZE, 1, 1)]
+[OutputTopology_Triangles]
+void ms_main(
+//	MS_Input i,
+//	SEM_SV_dispatchThreadId(uint),
+//	SEM_SV_groupThreadId(uint),
+//	SEM_SV_groupId(uint),
+    uint dtid : SV_DispatchThreadID,
+    uint gtid : SV_GroupThreadID,
+    uint gid : SV_GroupID,
+    in  payload  AS_Payload payload
+//    out vertices VS_Output outVertices[MAX_VERTS],
+//    out indices  uint3     outTriangles[MAX_PRIMS]
+) {
+
+}
+

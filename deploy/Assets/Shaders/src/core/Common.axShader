@@ -15,19 +15,19 @@ Pass "Pass0" { // Forward
 
 	// DepthTest = Less
 
-	VsFunc = vs_main
-	PsFunc = ps_main
+	VertexFunc = vs_main
+	PixelFunc  = ps_main
 }
-#endif	
+#endif
 
 #include "AxRender.hlsl"
 
 struct VS_Input {
-	sem_pos(float4)
+	SEM_pos(float4);
 };
 
 struct PS_Input {
-	sem_sv_pos(float4)
+	SEM_SV_pos(float4);
 };
 
 float foo;

@@ -10,10 +10,7 @@
       }], 
     "passes": [{
         "name": "Pass0", 
-        "vsFunc": "", 
-        "psFunc": "", 
-        "gsFunc": "", 
-        "csFunc": "cs_main", 
+        "computeFunc": "cs_main", 
         "renderState": {
           "cull": "Back", 
           "blend": {
