@@ -31,6 +31,17 @@ typedef float4		Color4f;
 #define AX_BindSpace_Bindless	space3
 #define AX_BindSpace_RootConst	space4
 
+#if AX_RENDER_VK
+	#define AX_ROOT_CONST_VAR(TYPE, NAME) \
+		[[vk::push_constant]] \
+		ConstantBuffer<TYPE> NAME; \
+	//----
+#else
+	#define AX_ROOT_CONST_VAR(TYPE, NAME) \
+		ConstantBuffer<TYPE> NAME : register(b1, AX_BindSpace_RootConst); \
+	//----
+#endif
+
 
 #if AX_RENDER_BINDLESS
 	SamplerState AxBindless_SamplerState[1000] : register(s0,     AX_BindSpace_Bindless);

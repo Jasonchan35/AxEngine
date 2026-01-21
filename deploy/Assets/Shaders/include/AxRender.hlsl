@@ -3,6 +3,9 @@
 
 #include "Ax/AxWorld.hlsl"
 
+AX_ROOT_CONST_VAR(AxDrawCallRootConst, gAxDrawCallRootConst) 
+#define AX_MATRIX_MVP gAxDrawCallRootConst.AX_MATRIX_MVP
+
 cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
 	float	ax_g_test;
 

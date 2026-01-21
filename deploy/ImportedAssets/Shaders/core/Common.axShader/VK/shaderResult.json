@@ -40,7 +40,7 @@
           "dataType": "Vec4f"
         }], 
       "constBuffers": [{
-          "name": "AxDrawCallRootConst", 
+          "name": "gAxDrawCallRootConst", 
           "dataType": "None", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "RootConst", 
@@ -58,8 +58,16 @@
               "name": "AX_MESH_CLUSTER_ID", 
               "offset": 68, 
               "dataType": "u32"
+            }, {
+              "name": "_usedPadding0", 
+              "offset": 72, 
+              "dataType": "u32"
+            }, {
+              "name": "_usedPadding1", 
+              "offset": 76, 
+              "dataType": "u32"
             }], 
-          "dataSize": 72
+          "dataSize": 80
         }, {
           "name": "$Global", 
           "dataType": "ConstBuffer", 

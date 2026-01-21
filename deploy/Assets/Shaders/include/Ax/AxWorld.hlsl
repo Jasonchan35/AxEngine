@@ -22,17 +22,12 @@ struct AxObjectData {
 };
 RWStructuredBuffer<AxObjectData> gAxObjectData : register(u2, AX_BindSpace_Object);
 
-
-#if AX_RENDER_VK
-	#define AX_ROOT_CONST(NAME)	[[vk::push_constant]] cbuffer NAME
-#else
-	#define AX_ROOT_CONST(NAME) cbuffer NAME : register(b1, AX_BindSpace_RootConst)
-#endif
-
-AX_ROOT_CONST(AxDrawCallRootConst) {
+struct AxDrawCallRootConst {
 	Mat4f AX_MATRIX_MVP;
 	u32   AX_OBJECT_ID;
 	u32   AX_MESH_CLUSTER_ID;
-}
+	u32   _usedPadding0;
+	u32   _usedPadding1;
+};
 
 #endif // __AxWorld_HLS__

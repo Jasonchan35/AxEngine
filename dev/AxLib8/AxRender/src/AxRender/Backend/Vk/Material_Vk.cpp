@@ -101,6 +101,9 @@ bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) {
 		if (!paramSpace) continue;
 		
 		if (bindSpace == BindSpace::RootConst) {
+			auto tt = AX_SIZEOF(AxDrawCallRootConst);
+			AX_UNUSED(tt);
+			
 			auto rootConstData = req->drawCallRootConstData();
 			vkCmdPushConstants(req->graphCmdList_vk(), shdPass->pipelineLayout(),
 				VK_SHADER_STAGE_ALL, 0, ax_safe_cast_from(rootConstData.sizeInBytes()), rootConstData.data());
