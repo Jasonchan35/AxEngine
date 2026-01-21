@@ -36,12 +36,31 @@ struct D3D12_DRAW_INDEXED_ARGUMENTS {
 };
 
 struct Dx12_IndirectDrawArgument {
-	D3D12_DRAW_INDEXED_ARGUMENTS 	drawIndexed;
+	D3D12_DRAW_INDEXED_ARGUMENTS	drawIndexed;
 	AxDrawCallRootConst 			rootConst;
 };
 RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> outDrawArgument : register(u0);
 
 #endif
+
+#if AX_RENDER_VK
+
+struct VkDrawIndexedIndirectCommand {
+	u32 indexCount;
+	u32 instanceCount;
+	u32 firstIndex;
+	i32 vertexOffset;
+	u32 firstInstance;
+};
+
+struct AX_VkIndirectDrawArgment {
+	VkDrawIndexedIndirectCommand	drawIndexed;
+	AxDrawCallRootConst 			rootConst;
+};
+RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> outDrawArgument : register(u0);
+
+#endif
+
 
 [numthreads(4, 4, 1)]
 void cs_main(CS_Input i) {
