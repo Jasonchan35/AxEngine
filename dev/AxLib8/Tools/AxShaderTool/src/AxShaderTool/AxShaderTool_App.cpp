@@ -30,16 +30,13 @@ void AxShaderTool_App::genNinja_ShadersInFolder(StrView outDir, StrView filename
 			auto relOutDir = Fmt("{}/{}", outDir, relFile);
 			outFiles.emplaceBack(relFile);
 			genNinja_Shader(relOutDir, entry.fullpath);
-		
 		});
 
-	
 	File::glob(Fmt("{}/**/*.axComputeShader", filename),
 		[&](auto& entry) {
 			auto relFile = FilePath::relPath(entry.fullpath, filename);
 			auto relOutDir = Fmt("{}/{}", outDir, relFile);
 			outFiles.emplaceBack(relFile);
-
 			genNinja_Shader(relOutDir, entry.fullpath);
 		});
 

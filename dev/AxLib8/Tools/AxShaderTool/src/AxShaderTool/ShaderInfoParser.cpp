@@ -16,7 +16,7 @@ void ShaderInfoParser::readFile(StrView outDir, StrView filename) {
 
 	auto ext = FilePath::extension(filename);
 
-	if (ext == "axShader") {
+	if (ext == "axShader" || ext == "axComputeShader") {
 		readShader();
 	}
 
@@ -430,6 +430,7 @@ void ShaderInfoParser::readPass() {
 		if (matchIdentifier("VsFunc")) { expectOp("="); readIdentifier(o.vsFunc); continue; }
 		if (matchIdentifier("PsFunc")) { expectOp("="); readIdentifier(o.psFunc); continue; }
 		if (matchIdentifier("GsFunc")) { expectOp("="); readIdentifier(o.gsFunc); continue; }
+		if (matchIdentifier("CsFunc")) { expectOp("="); readIdentifier(o.csFunc); continue; }
 
 		throw _makeErrorUnexpectedToken();
 	}

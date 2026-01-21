@@ -88,22 +88,18 @@ public:
 	Int index() const { return _index; }
 
 	void drawUI_backend();
-	void drawCall_backend(Cmd_DrawCall& cmd);
+	void drawCall_backend(AxDrawCallDesc& cmd);
 	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
 	void setScissorRect_backend(const Rect2f& rect);
 
 	void setCamera_backend(const Math::Camera3f& camera);
 	
 	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
-
-	struct RootConst {
-		Mat4f mvp;
-	} rootConst;
-	
-	ByteSpan	rootConstData() const { return Span(rootConst).toByteSpan(); }
+	ByteSpan	drawCallRootConstData() const { return Span(_drawCallRootConst).toByteSpan(); }
 	
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
+	AxDrawCallRootConst _drawCallRootConst;
 
 	RenderSystem_Backend*        _renderSystem_backend = nullptr;
 	RenderObjectManager_Backend* _objectManager        = nullptr;

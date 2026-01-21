@@ -119,7 +119,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	return _perFrameData;
 }
 
-bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
+bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 	auto& cmdList = req->_graphCmdList_dx12;
 
@@ -148,7 +148,7 @@ bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		
 		switch (rp.rootParamType) {
 			case Dx12RootParamType::RootUInt32: {
-				auto rootConstData = req->rootConstData();
+				auto rootConstData = req->drawCallRootConstData();
 				cmdList->SetGraphicsRoot32BitConstants(rootParamIndex,
 				                                       ax_safe_cast_from(rootConstData.sizeInBytes() / 4),
 				                                       rootConstData.data(),

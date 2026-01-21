@@ -133,7 +133,7 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 	_graphCmdList_dx12->RSSetScissorRects(1, &tmp);
 }
 
-void RenderRequest_Dx12::onDrawCall(Cmd_DrawCall& drawcall) {
+void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 	auto& cmdList = _graphCmdList_dx12;
 	
 	D3D12_PRIMITIVE_TOPOLOGY topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);

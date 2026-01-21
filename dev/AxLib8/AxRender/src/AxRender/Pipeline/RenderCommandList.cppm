@@ -9,7 +9,13 @@ export import :RenderMesh;
 
 export namespace ax /*::AxRender*/ {
 
-class Cmd_DrawCall : public NonCopyable {
+struct AxDrawCallRootConst {
+	Mat4f AX_MATRIX_MVP;
+	u32   AX_OBJECT_ID;
+	u32   AX_MESH_CLUSTER_ID;
+};
+
+class AxDrawCallDesc : public NonCopyable {
 public:
 	RenderPrimitiveType primitiveType     = RenderPrimitiveType::Triangles;
 	VertexIndexType     indexType         = VertexIndexType::None;

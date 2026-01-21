@@ -19,6 +19,7 @@
         "vsFunc": "vs_main", 
         "psFunc": "ps_main", 
         "gsFunc": "", 
+        "csFunc": "", 
         "renderState": {
           "cull": "None", 
           "blend": {

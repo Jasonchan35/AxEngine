@@ -1,6 +1,8 @@
 ﻿module AxRender;
 import :RenderObjectManager_Dx12;
 import :Texture_Dx12;
+import :MeshObject_Dx12;
+import :GpuBuffer_Dx12;
 
 namespace ax {
 
@@ -30,9 +32,59 @@ void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, A
 #endif // #if AX_RENDER_BINDLESS
 
 void RenderObjectManager_Dx12::onPostCreate() {
+	_createDescriptors();
+	indirectDrawCommand._create();
+	
+	GpuStructuredBuffer_CreateDesc bufDesc = {};
+	bufDesc.name     = "MeshObjects";
+	bufDesc.capacity = 1000000;
+	bufDesc.stride   = AX_SIZEOF(MeshObject_GpuData_Dx12);
+	_gpuData.meshObjects = GpuStructuredBuffer_Backend::s_new(AX_NEW, bufDesc);
+}
+
+void RenderObjectManager_Dx12::IndirectDrawCommand::_create() {
+	auto* dev = RenderSystem_Dx12::s_d3dDevice();
+	
+	Int RootConstSizeInBytes = sizeof(ArgumentData::rootConst);
+	
+	Dx12RootParameterList rootParamList;
+
+	UINT rootConstParamIndex = rootParamList.addRoot32BitConst(D3D12_SHADER_VISIBILITY_VERTEX,
+	                                                           static_cast<BindPoint>(0),
+	                                                           BindSpace::Object,
+	                                                           RootConstSizeInBytes);
+
+//	rootParamList.addRootSRV(D3D12_SHADER_VISIBILITY_VERTEX, static_cast<BindPoint>(0), BindSpace::Object);
+	rootParamList.createRootSignature(_rootSignature);
+	
+	Array<D3D12_INDIRECT_ARGUMENT_DESC, 4> argumentDescs;
+	{
+		auto& dst = argumentDescs.emplaceBack();
+		dst.Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT;
+		dst.Constant.RootParameterIndex = rootConstParamIndex;
+		dst.Constant.DestOffsetIn32BitValues = 0;
+		dst.Constant.Num32BitValuesToSet = Dx12Util::castUINT(RootConstSizeInBytes / 4);
+	}
+	
+	{
+		auto& dst = argumentDescs.emplaceBack();
+		dst.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW;
+	}
+
+	D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = {};
+	commandSignatureDesc.ByteStride       = sizeof(ArgumentData);
+	commandSignatureDesc.NumArgumentDescs = ax_safe_cast_from(argumentDescs.size());
+	commandSignatureDesc.pArgumentDescs   = argumentDescs.data();
+	
+	auto hr = dev->CreateCommandSignature(&commandSignatureDesc, _rootSignature, IID_PPV_ARGS(_commandSignature.ptrForInit()));
+	Dx12Util::throwIfError(hr);
+
+}
+
+void RenderObjectManager_Dx12::_createDescriptors() {
 	auto& info = RenderSystem_Dx12::s_instance()->info();
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
-
+	
 	auto& pool = descriptorHeapPools;
 	auto& info_pass = info.renderPass;
 	auto& info_req  = info.renderRequest;
@@ -46,7 +98,6 @@ void RenderObjectManager_Dx12::onPostCreate() {
 
 	Int resource_Texture2D_Count	= bindless.AxBindless_Texture2D->bindCount();
 	Int resource_Texture3D_Count	= bindless.AxBindless_Texture3D->bindCount();
-
 	Int resource_Sampler_Count      = bindless.AxBindless_SamplerState->bindCount();
 	
 #else
@@ -60,10 +111,9 @@ void RenderObjectManager_Dx12::onPostCreate() {
 
 	Int resource_CBV_SRV_UAV_Count	= resource_Texture2D_Count
 									+ resource_Texture3D_Count;
-	
+
 	pool.CBV_SRV_UAV.create("CBV_SRV_UAV-pool", dev, resource_CBV_SRV_UAV_Count + renderReq_CBV_SRV_UAV_Count * info_req.count);
 	pool.Sampler.create(    "Sampler-pool"    , dev, resource_Sampler_Count     + info_req.maxSamplerCount    * info_req.count);
-
 
 #if AX_RENDER_BINDLESS
 	bindlessDescriptors.CBV_SRV_UAV = pool.CBV_SRV_UAV.currentHandle();
@@ -72,6 +122,32 @@ void RenderObjectManager_Dx12::onPostCreate() {
 	resourceDescriptors.Sampler.create(  "resource.Sampler"  , pool.Sampler    , resource_Sampler_Count  );
 	resourceDescriptors.Texture2D.create("resource.Texture2D", pool.CBV_SRV_UAV, resource_Texture2D_Count);
 	resourceDescriptors.Texture3D.create("resource.Texture3D", pool.CBV_SRV_UAV, resource_Texture3D_Count);
+}
+
+void RenderObjectManager_Dx12::onUpdateMeshObject(RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list) {
+	auto dstData = _gpuData.meshObjects;
+	
+	for (auto& obj : list) {
+		if (!obj) continue;
+		auto slotid = obj->objectSlot.slotId();
+		AX_UNUSED(slotid);
+		
+		auto subMeshes = obj->meshData.subMeshes();
+		if (subMeshes.size() <= 0) continue;
+		auto& sm = subMeshes[0];
+
+		MeshObject_GpuData_Dx12 data = {};
+		if (auto* vb = rttiCastCheck<GpuBuffer_Dx12>(sm.vertexBuffer.getUploadedGpuBuffer(req))) {
+			auto& resource = ax_const_cast(vb)->resource();
+			data.vertexBufferLocation    = resource.gpuAddress();
+			data.vertexBufferSizeInBytes = ax_safe_cast_from(resource.bufferSize());
+		}
+		if (auto* ib = rttiCastCheck<GpuBuffer_Dx12>(sm.indexBuffer.getUploadedGpuBuffer(req))) {
+			auto& resource = ax_const_cast(ib)->resource();
+			data.indexBufferLocation    = resource.gpuAddress();
+			data.indexBufferSizeInBytes = ax_safe_cast_from(resource.bufferSize());
+		}
+	}
 }
 
 } // namespace ax

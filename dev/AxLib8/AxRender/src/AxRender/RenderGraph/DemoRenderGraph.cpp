@@ -82,7 +82,7 @@ void DemoRenderGraph::onUpdate(RenderRequest* req) {
 void DemoRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 #if 0
 	if (_testMaterial) {
-		Cmd_DrawCall cmd;
+		AxDrawCallDesc cmd;
 		cmd.setMaterialPass(_testMaterial, 0);
 		cmd.vertexCount = 3;
 		req->draw(cmd);

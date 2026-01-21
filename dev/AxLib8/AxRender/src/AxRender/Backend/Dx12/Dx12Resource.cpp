@@ -116,12 +116,7 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 
 	_bufferSize = bufferSize;
 	_create();
-	
-	if (type == GpuBufferType::Vertex) {
-		AX_LOG("-- create Dx12Resource VertexBuffer {} _dataSize={}", (void*)_d3dResource.ptr(), _bufferSize);
-	}
 }
-
 
 MutByteSpan Dx12ResourceBase::_mapMemory(IntRange range) {
 	D3D12_RANGE dxRange;
@@ -267,6 +262,34 @@ void Dx12SwapChain::create(Dx12CommandQueue& cmdQueue, HWND hwnd, DXGI_SWAP_CHAI
 void Dx12SwapChain::present(UINT SyncInterval, UINT Flags) {
 	auto hr = _swapChain->Present(SyncInterval, Flags);
 	Dx12Util::throwIfError(hr);
+}
+
+void Dx12RootParameterList::createRootSignature(ComPtr<ID3D12RootSignature> &outRootSignature) {
+	D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_0;
+	auto& desc = rootSignatureDesc.Desc_1_0;
+	desc = {};
+	desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+#if AX_RENDER_BINDLESS
+	desc.Flags |= D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
+	desc.Flags |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
+#endif
+	desc.NumParameters		= Dx12Util::castUINT(parameters.size());
+	desc.pParameters		= parameters.data();
+	desc.NumStaticSamplers	= Dx12Util::castUINT(staticSamplers.size());
+	desc.pStaticSamplers	= staticSamplers.data();
+
+	ComPtr<ID3DBlob> blob;
+	ComPtr<ID3DBlob> errorBlob;
+	auto hr = D3D12SerializeVersionedRootSignature(&rootSignatureDesc,
+												   blob.ptrForInit(),
+												   errorBlob.ptrForInit());
+	Dx12Util::throwIfError(hr, errorBlob);
+
+	auto* dev = RenderSystem_Dx12::s_d3dDevice();
+	hr = dev->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), 
+										IID_PPV_ARGS(outRootSignature.ptrForInit()));
+	Dx12Util::throwIfError(hr);	
 }
 
 } // namespace

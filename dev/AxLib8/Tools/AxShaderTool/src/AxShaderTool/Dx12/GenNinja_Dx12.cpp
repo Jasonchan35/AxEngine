@@ -65,9 +65,10 @@ void GenNinja_Dx12::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 		outStr.append("\n");
 	};
 
-	writePass(pass.vsFunc, ShaderStageFlags::Vertex  , "vs_6_0");
-	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "ps_6_0");
-	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "gs_6_0");
+	writePass(pass.vsFunc, ShaderStageFlags::Vertex  , "vs_6_2");
+	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "ps_6_2");
+	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "gs_6_2");
+	writePass(pass.csFunc, ShaderStageFlags::Compute , "cs_6_2");
 }
 
 } // namespace

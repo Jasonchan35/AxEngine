@@ -64,6 +64,7 @@ class RenderObjectManager_Dx12 : public RenderObjectManager_Backend {
 public:
 	AX_DOWNCAST_GET_INSTANCE();
 
+	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 	
 	RenderObjectManager_Dx12(const CreateDesc& desc) : Base(desc) {}
@@ -82,6 +83,21 @@ public:
 	} resourceDescriptors;
 
 	virtual void onPostCreate() override;
+	virtual void onUpdateMeshObject(RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list) override;
+	
+	void _createDescriptors();
+
+	struct IndirectDrawCommand {
+		struct ArgumentData {
+			// D3D12_GPU_VIRTUAL_ADDRESS    argumentDataSrv;
+			D3D12_DRAW_INDEXED_ARGUMENTS drawIndexed;
+			AxDrawCallRootConst rootConst;
+		};
+
+		ComPtr<ID3D12RootSignature>    _rootSignature;
+		ComPtr<ID3D12CommandSignature> _commandSignature;
+		void _create();
+	} indirectDrawCommand;
 	
 #if AX_RENDER_BINDLESS
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) override;
@@ -91,7 +107,7 @@ public:
 		Dx12DescriptorHandle	CBV_SRV_UAV;
 		Dx12DescriptorHandle	Sampler;
 	} bindlessDescriptors;
-#endif	
+#endif
 };
 
 } // namespace

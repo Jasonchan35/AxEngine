@@ -6,10 +6,6 @@ import :RenderObjectSlot_Backend;
 
 export namespace ax {
 
-struct MeshObject_GpuData {
-	BBox3f	aabb;
-};
-
 class MeshObject_Backend : public MeshObject {
 	AX_RTTI_INFO(MeshObject_Backend, MeshObject)
 public:
@@ -20,7 +16,7 @@ public:
 	: MeshObject(desc)
 	, objectSlot(this, false) {}
 	
-	RenderObjectSlot_Backend<This>	objectSlot;	
+	RenderObjectSlot_Backend<This>	objectSlot;
 };
 
 }// namespace

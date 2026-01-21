@@ -44,7 +44,7 @@ float AX_ConstBuffer_dummy_func() {
 		+ gAxObjectData[0].objectToWorld[0][0]
 		+ ax_g_test
 		+ ax_g_deltaTime.x 
-		+ ax_object_mvp[0][0];
+		+ AX_MATRIX_MVP[0][0];
 }
 
 PS_Input vs_main(VS_Input i) {

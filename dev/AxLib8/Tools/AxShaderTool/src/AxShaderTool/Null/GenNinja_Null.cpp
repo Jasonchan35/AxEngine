@@ -30,6 +30,7 @@ void GenNinja_Null::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 	writePass(pass.vsFunc, ShaderStageFlags::Vertex  , "vertex"  );
 	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "fragment");
 	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "geometry");
+	writePass(pass.csFunc, ShaderStageFlags::Compute , "compute" );
 }
 
 } // namespace

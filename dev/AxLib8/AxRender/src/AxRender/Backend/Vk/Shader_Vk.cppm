@@ -52,7 +52,7 @@ public:
 
 	Pipeline* getOrAddPipeline(const Pipeline::PsoKey& key);
 
-	bool _bindPipeline(class RenderRequest_Vk* req, Cmd_DrawCall& cmd) const;
+	bool _bindPipeline(class RenderRequest_Vk* req, AxDrawCallDesc& cmd) const;
 
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
 

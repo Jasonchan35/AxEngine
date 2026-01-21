@@ -11,7 +11,7 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 					"  depfile = $out.d\n"
 					"  command = \"$vulkan_sdk/Bin/glslc\" $\n"
 					"    -x hlsl $\n"
-					"    --target-env=vulkan1.2 $\n" // Ensures support for the vk:: attributes
+					"    --target-env=vulkan1.4 $\n" // Ensures support for the vk:: attributes
 					"    -fshader-stage=$param_shader_stage $\n"
 					"    -fentry-point=$param_entry_point $\n"
 					"    -fauto-bind-uniforms $\n"
@@ -74,6 +74,7 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 	writePass(pass.vsFunc, ShaderStageFlags::Vertex  , "vertex"  );
 	writePass(pass.psFunc, ShaderStageFlags::Pixel   , "fragment");
 	writePass(pass.gsFunc, ShaderStageFlags::Geometry, "geometry");
+	writePass(pass.csFunc, ShaderStageFlags::Compute , "compute" );
 }
 
 } // namespace

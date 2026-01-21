@@ -1,15 +1,19 @@
 #if ShaderInfo
 Properties {
-	Color4f	color = (0,1,0,1)
+	Color4f	color = [0,1,0,1]
 }
 
 Pass "Pass0" {
-	CsFunc cs_main
+	CsFunc = cs_main
 }
 #endif
 
 #include "AxRender.hlsl"
- 
+
+struct CS_Input {
+	sem_sv_dispatchThreadId(uint3)
+};
+
 struct Pixel
 {
     float3 color;
@@ -47,13 +51,13 @@ void writeToPixel(int x, int y, float3 color)
 }
 
 [numthreads(4, 4, 1)]
-void cs_main( uint3 dispatchThreadID : SV_DispatchThreadID )
+void cs_main(CS_Input i)
 {
-//	float3 pixel = readPixel(dispatchThreadID.x, dispatchThreadID.y);
+//	float3 pixel = readPixel(i.sv_dispatchThreadId.x, i.sv_dispatchThreadId.y);
 //	pixel.rgb = pixel.r * 0.3 + pixel.g * 0.59 + pixel.b * 0.11;
 
 	double d = asdouble(packDouble.x, packDouble.y);
 
-	float3 pixel = float3(dispatchThreadID.x, dispatchThreadID.y, 123.45 * testDouble);
-	writeToPixel(dispatchThreadID.x, dispatchThreadID.y, pixel);
+	float3 pixel = float3(i.sv_dispatchThreadId.x, i.sv_dispatchThreadId.y, 123.45 * testDouble);
+	writeToPixel(i.sv_dispatchThreadId.x, i.sv_dispatchThreadId.y, pixel);
 }

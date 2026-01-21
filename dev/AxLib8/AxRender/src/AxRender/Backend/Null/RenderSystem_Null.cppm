@@ -136,7 +136,7 @@ class MaterialPass_Null : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Null, MaterialPass_Backend)
 public:
 	MaterialPass_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual bool onBindMaterial(class RenderRequest* req, Cmd_DrawCall& cmd) override { return false; }
+	virtual bool onBindMaterial(class RenderRequest* req, AxDrawCallDesc& cmd) override { return false; }
 };
 
 class Material_Null : public Material_Backend {

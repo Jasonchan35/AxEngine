@@ -48,7 +48,7 @@ public:
 
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<   Sampler_Backend>>& list) {}
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr< Texture2D_Backend>>& list) {}
-	virtual void onUpdateMeshObject (RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list);
+	virtual void onUpdateMeshObject (RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list) {}
 
 #if AX_RENDER_BINDLESS
 	struct Bindless {
@@ -62,11 +62,11 @@ protected:
 	void _postCreate();
 	virtual void onPostCreate() {}
 
-	struct GpuSideData {
+	struct GpuData {
 		SPtr<GpuStructuredBuffer_Backend>	meshObjects;
 		SPtr<GpuStructuredBuffer_Backend>	cameras;
 		SPtr<GpuStructuredBuffer_Backend>	lights;
-	} _gpuSideData;
+	} _gpuData;
 
 	template<class FUNC>
 	void visit(FUNC func) {

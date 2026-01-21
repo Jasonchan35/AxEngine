@@ -7,6 +7,7 @@
         "vsFunc": "vs_main", 
         "psFunc": "ps_main", 
         "gsFunc": "", 
+        "csFunc": "", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -68,6 +69,27 @@
             }], 
           "dataSize": 32
         }, {
+          "name": "AxDrawCallRootConst", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "RootConst", 
+          "bindPoint": 1, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "AX_MATRIX_MVP", 
+              "offset": 0, 
+              "dataType": "Mat4f"
+            }, {
+              "name": "AX_OBJECT_ID", 
+              "offset": 64, 
+              "dataType": "u32"
+            }, {
+              "name": "AX_MESH_CLUSTER_ID", 
+              "offset": 68, 
+              "dataType": "u32"
+            }], 
+          "dataSize": 80
+        }, {
           "name": "AX_ConstBuffer_World", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel", 
@@ -108,19 +130,6 @@
               "dataType": "Mat4f"
             }], 
           "dataSize": 208
-        }, {
-          "name": "AxRootConst", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "RootConst", 
-          "bindPoint": 1, 
-          "bindCount": 1, 
-          "variables": [{
-              "name": "ax_object_mvp", 
-              "offset": 0, 
-              "dataType": "Mat4f"
-            }], 
-          "dataSize": 64
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 

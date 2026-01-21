@@ -183,7 +183,7 @@ void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 	vkCmdSetScissor(_graphCmdList_vk, 0, 1, &rc);
 }
 
-void RenderRequest_Vk::onDrawCall(Cmd_DrawCall& drawcall) {
+void RenderRequest_Vk::onDrawCall(AxDrawCallDesc& drawcall) {
 	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(drawcall.vertexBuffer)) {
 		constexpr u32 firstBinding = ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		constexpr u32 bindingCount = 1 ;

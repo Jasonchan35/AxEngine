@@ -7,7 +7,6 @@ export import :GpuBuffer;
 
 export namespace ax /*::AxRender*/ {
 
-
 AX_ENUM_CLASS(AX_ShaderPropType_EnumList, ShaderPropType, u16)
 
 constexpr bool ShaderPropType_isTextureType(ShaderPropType t) {
@@ -186,6 +185,7 @@ struct ShaderPassInfo : public NonCopyable {
 		AX_JSON_IO(se, vsFunc);
 		AX_JSON_IO(se, psFunc);
 		AX_JSON_IO(se, gsFunc);
+		AX_JSON_IO(se, csFunc);
 		AX_JSON_IO(se, renderState);
 	}
 };

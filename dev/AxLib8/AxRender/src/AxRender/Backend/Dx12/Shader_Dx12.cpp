@@ -121,13 +121,13 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	};
 
 	_visitStages(loadStage);
-	_createRootSignature(_pipelineRootParamList);
+	_pipelineRootParamList.createRootSignature(_rootSignature);
 }
 
 void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList) {
-	D3D12_VERSIONED_ROOT_SIGNATURE_DESC versionedDesc;
-	versionedDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_0;
-	auto& desc = versionedDesc.Desc_1_0;
+	D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_0;
+	auto& desc = rootSignatureDesc.Desc_1_0;
 	desc = {};
 
 	if (!isCompute()) {
@@ -147,7 +147,7 @@ void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList)
 	ComPtr<ID3DBlob> rootSignatureBlob;
 	ComPtr<ID3DBlob> errorBlob;
 
-	auto hr = D3D12SerializeVersionedRootSignature(&versionedDesc,
+	auto hr = D3D12SerializeVersionedRootSignature(&rootSignatureDesc,
 	                                               rootSignatureBlob.ptrForInit(),
 	                                               errorBlob.ptrForInit());
 	Dx12Util::throwIfError(hr, errorBlob);
@@ -270,7 +270,7 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 	return outPipeline;
 }
 
-bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) const {
+bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const {
 	if (!req) { AX_ASSERT(false); return false; }
 
 	auto* renderPass = req->currentRenderPass_dx12();

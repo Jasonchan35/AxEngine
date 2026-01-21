@@ -85,7 +85,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 	writeDescSetHelper.updateToDevice(dev);
 }
 
-bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
+bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	if (!req) { AX_ASSERT(false); return false; }
 
@@ -101,7 +101,7 @@ bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, Cmd_DrawCall& cmd) {
 		if (!paramSpace) continue;
 		
 		if (bindSpace == BindSpace::RootConst) {
-			auto rootConstData = req->rootConstData();
+			auto rootConstData = req->drawCallRootConstData();
 			vkCmdPushConstants(req->graphCmdList_vk(), shdPass->pipelineLayout(),
 				VK_SHADER_STAGE_ALL, 0, ax_safe_cast_from(rootConstData.sizeInBytes()), rootConstData.data());
 			continue;

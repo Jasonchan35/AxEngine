@@ -161,15 +161,16 @@ public:
 	}	
 
 	Int stride() const { return _stride; }
-	Int usedCount() const { return _usedCount; }
+	Int size() const { return _size; }
 	Int capacity() const { return _capacity; }
+
+	template<class T>
+	void setValue(Int index, const T& value) { setByteData(index, Span(value).toByteSpan()); }
 	
-	void resetUsedCount() { _usedCount = 0; }
-	
-	void addData(ByteSpan data) {
+	void setByteData(Int index, ByteSpan data) {
+		if (index < 0 || index >= _size) throw Error_IndexOutOfRange();
 		if (data.size() != _stride) throw Error_Undefined();
-		_buffer.appendData(data);
-		++_usedCount;
+		_buffer.setData(data, index * _stride);
 	}
 
 protected:
@@ -177,7 +178,7 @@ protected:
 	DynamicGpuBuffer _buffer;
 	Int _stride = 0;
 	Int _capacity = 0;
-	Int _usedCount = 0;
+	Int _size = 0;
 };
 
 } // namespace

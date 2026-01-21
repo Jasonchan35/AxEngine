@@ -56,7 +56,6 @@ CMeshRendererSystem* CMeshRendererSystem::s_instance(bool createIfNone) {
 }
 
 void CMeshRendererSystem::onRender(RenderRequest* req) {
-
 	for (auto* comp : _componentList) {
 		if (!comp) continue;
 		auto& objectToWorld = comp->entity()->transform.getObjectToWorld();

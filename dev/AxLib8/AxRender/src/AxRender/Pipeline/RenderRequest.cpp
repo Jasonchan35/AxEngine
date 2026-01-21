@@ -26,16 +26,15 @@ void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialP
 void RenderRequest::drawSubMesh(RenderSubMesh& subMesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!material) return;
 
-	Cmd_DrawCall cmd;
-	cmd.material = material;
-	cmd.materialPassIndex = materialPass;
-	cmd.objectToWorld = objectToWorld;
-	cmd.setSubMesh(this, subMesh);
-
-	drawCall(cmd);
+	AxDrawCallDesc desc;
+	desc.material = material;
+	desc.materialPassIndex = materialPass;
+	desc.objectToWorld = objectToWorld;
+	desc.setSubMesh(this, subMesh);
+	drawCall(desc);
 }
 
-void RenderRequest::drawCall(Cmd_DrawCall& cmd) {
+void RenderRequest::drawCall(AxDrawCallDesc& cmd) {
 	static_cast<RenderRequest_Backend*>(this)->drawCall_backend(cmd);
 }
 

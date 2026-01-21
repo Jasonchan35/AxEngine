@@ -54,7 +54,7 @@ public:
 
 	Pipeline* getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::PsoKey& key);
 	
-	bool _bindPipeline(RenderRequest_Dx12* req, Cmd_DrawCall& cmd) const;
+	bool _bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const;
 	void _createRootSignature(Dx12RootParameterList& rootParamList);
 
 	const ShaderParamSpace_Dx12* getParamSpace_dx12(BindSpace s) const {

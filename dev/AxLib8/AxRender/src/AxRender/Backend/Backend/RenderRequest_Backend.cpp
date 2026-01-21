@@ -158,7 +158,7 @@ void RenderRequest_Backend::drawUI_backend() {
 	renderContext_backend()->imgui.onDrawUI(this);
 }
 
-void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
+void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	if (cmd.instanceCount <= 0) { AX_ASSERT(false); return; }
 
 	auto* material = rttiCastCheck<Material_Backend>(cmd.material);
@@ -177,7 +177,7 @@ void RenderRequest_Backend::drawCall_backend(Cmd_DrawCall& cmd) {
 		resourcesToKeep.add(indexBuffer);
 	}
 	
-	rootConst.mvp = _viewProjMatrix * cmd.objectToWorld;
+	_drawCallRootConst.AX_MATRIX_MVP = _viewProjMatrix * cmd.objectToWorld;
 
 	matPass->onBindMaterial(this, cmd);
 	onDrawCall(cmd);

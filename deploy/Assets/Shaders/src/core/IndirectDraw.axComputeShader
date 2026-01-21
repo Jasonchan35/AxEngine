@@ -1,0 +1,48 @@
+#if ShaderInfo
+
+Properties {
+	Color4f		color = [0, 0, 0.5, 1]
+}
+
+Pass "Pass0" {
+	CsFunc = cs_main
+}
+#endif
+
+#include "Ax/AxWorld.hlsl"
+
+struct CS_Input {
+	sem_sv_dispatchThreadId(uint3)
+};
+
+
+#if AX_RENDER_DX12
+
+typedef uint64_t D3D12_GPU_VIRTUAL_ADDRESS;
+
+struct D3D12_DRAW_ARGUMENTS {
+	u32 VertexCountPerInstance;
+	u32 InstanceCount;
+	u32 StartVertexLocation;
+	u32 StartInstanceLocation;
+};
+
+struct D3D12_DRAW_INDEXED_ARGUMENTS {
+	u32 IndexCountPerInstance;
+	u32 InstanceCount;
+	u32 StartIndexLocation;
+	i32 BaseVertexLocation;
+	u32 StartInstanceLocation;
+};
+
+struct Dx12_IndirectDrawArgument {
+	D3D12_DRAW_INDEXED_ARGUMENTS drawIndexed;
+};
+
+RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> BufferOut : register(u0);
+#endif
+
+[numthreads(4, 4, 1)]
+void cs_main(CS_Input i) {
+}
+

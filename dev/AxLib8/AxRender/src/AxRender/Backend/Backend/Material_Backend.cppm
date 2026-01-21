@@ -35,8 +35,8 @@ export namespace ax /*::AxRender*/ {
 */
 
 class MaterialPass_Backend;
-class Cmd_DrawCall;
 class Material_Backend;
+class AxDrawCallDesc;
 
 class MaterialParamSpace_CreateDesc : public NonCopyable {
 public:
@@ -262,7 +262,7 @@ public:
 	const ShaderPass_Backend*	shaderPass() const { return _shaderPass; }
 	const Shader_Backend*		shader() const;
 
-	virtual bool onBindMaterial(class RenderRequest* req, Cmd_DrawCall& cmd) = 0;
+	virtual bool onBindMaterial(class RenderRequest* req, AxDrawCallDesc& cmd) = 0;
 
 	bool isOwnParamSpace(BindSpace s) const { return _shaderPass->isOwnParamSpace(s); }
 

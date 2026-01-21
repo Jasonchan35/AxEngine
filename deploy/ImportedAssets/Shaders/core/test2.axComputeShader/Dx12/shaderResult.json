@@ -1,8 +1,81 @@
 {
   "declare": {
     "isGlobalCommonShader": false, 
-    "props": [], 
-    "passes": []
+    "props": [{
+        "name": "color", 
+        "propType": "Color4f", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": [0, 1, 0, 1]
+      }], 
+    "passes": [{
+        "name": "Pass0", 
+        "vsFunc": "", 
+        "psFunc": "", 
+        "gsFunc": "", 
+        "csFunc": "cs_main", 
+        "renderState": {
+          "cull": "Back", 
+          "blend": {
+            "rgb": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "alpha": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "constColor": [1, 1, 1, 1]
+          }, 
+          "depthTest": {
+            "op": "LessEqual", 
+            "writeMask": true
+          }, 
+          "antialiasedLine": false, 
+          "wireframe": false
+        }
+      }]
   }, 
-  "passStages": []
+  "passStages": [{
+      "bindless": true, 
+      "stageFlags": "Compute", 
+      "csWorkgroupSize": [1, 1, 1], 
+      "inputs": [], 
+      "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Compute", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "testDouble", 
+              "offset": 0, 
+              "dataType": "f64"
+            }], 
+          "dataSize": 32
+        }], 
+      "textures": [], 
+      "samplers": [], 
+      "structuredBuffers": [{
+          "name": "BufferOut", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Compute", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "color", 
+              "offset": 0, 
+              "dataType": "Vec3f"
+            }, {
+              "name": "foo", 
+              "offset": 12, 
+              "dataType": "f32"
+            }], 
+          "stride": 16
+        }]
+    }]
 }

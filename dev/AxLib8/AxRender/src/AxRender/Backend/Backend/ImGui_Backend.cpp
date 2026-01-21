@@ -187,7 +187,7 @@ void ImGui_Backend::onDrawUI(RenderRequest* req) {
 
 			req->setScissorRect({a, b - a});
 
-			Cmd_DrawCall drawcall;
+			AxDrawCallDesc drawcall;
 
 			drawcall.material		   = _material;
 			drawcall.materialPassIndex = 0;

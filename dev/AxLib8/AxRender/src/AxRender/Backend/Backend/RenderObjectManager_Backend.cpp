@@ -71,12 +71,6 @@ void RenderObjectManager_Backend::_postCreate() {
 	RenderStockObjects::s_create();
 	auto* commonShaderPass = ShaderPass_Backend::s_commonShaderPass();
 
-	GpuStructuredBuffer_CreateDesc bufDesc = {};
-	bufDesc.name = "MeshObjects";
-	bufDesc.capacity = 1000000;
-	bufDesc.stride   = AX_SIZEOF(MeshObject_GpuData);
-	_gpuSideData.meshObjects = GpuStructuredBuffer_Backend::s_new(AX_NEW, bufDesc); 
-	
 #if AX_RENDER_BINDLESS
 	auto* bindlessSpace = commonShaderPass->getParamSpace(ShaderParamBindSpace::Bindless);
 
@@ -91,17 +85,6 @@ void RenderObjectManager_Backend::_postCreate() {
 #endif
 	
 	onPostCreate();
-}
-
-void RenderObjectManager_Backend::onUpdateMeshObject(RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list) {
-	auto dstData = _gpuSideData.meshObjects;
-	
-	for (auto& obj : list) {
-		if (!obj) continue;
-		auto slotid = obj->objectSlot.slotId();
-		AX_UNUSED(slotid);
-		
-	}
 }
 
 } // namespace

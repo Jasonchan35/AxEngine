@@ -279,7 +279,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 	return outPipeline;
 }
 
-bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req, Cmd_DrawCall& cmd) const {
+bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd) const {
 	// TODO lookup compatible renderPass instead
 	if (!req) { AX_ASSERT(false); return false; }
 	

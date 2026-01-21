@@ -7,6 +7,7 @@
         "vsFunc": "vs_main", 
         "psFunc": "ps_main", 
         "gsFunc": "", 
+        "csFunc": "", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -39,18 +40,26 @@
           "dataType": "Vec4f"
         }], 
       "constBuffers": [{
-          "name": "AxRootConst", 
+          "name": "AxDrawCallRootConst", 
           "dataType": "None", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "RootConst", 
           "bindPoint": 0, 
           "bindCount": 1, 
           "variables": [{
-              "name": "ax_object_mvp", 
+              "name": "AX_MATRIX_MVP", 
               "offset": 0, 
               "dataType": "Mat4f"
+            }, {
+              "name": "AX_OBJECT_ID", 
+              "offset": 64, 
+              "dataType": "u32"
+            }, {
+              "name": "AX_MESH_CLUSTER_ID", 
+              "offset": 68, 
+              "dataType": "u32"
             }], 
-          "dataSize": 64
+          "dataSize": 72
         }, {
           "name": "$Global", 
           "dataType": "ConstBuffer", 
