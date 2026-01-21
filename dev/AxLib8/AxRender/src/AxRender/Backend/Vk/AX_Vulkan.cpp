@@ -1429,14 +1429,15 @@ void AX_VkSparseBuffer::create(AX_VkDevice& dev,
 	VkBufferUsageFlags usage,
 	VmaMemoryUsage vmaUsage) 
 {
-	_pageBlockSize = 64 * Math::MegaBytes; // big enough for 64k vertices
+	auto md = _mdata.scopedLock();
+	md->_pageBlockSize = 64 * Math::MegaBytes; // big enough for 64k vertices
 	
 	_vkBuf.create(dev, bufferSize,
 				  VK_BUFFER_CREATE_SPARSE_BINDING_BIT | VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT,
 				  usage, vmaUsage, nullptr);
 	
 	VmaPoolCreateInfo poolInfo = {};
-	poolInfo.blockSize = _pageBlockSize;
+	poolInfo.blockSize = md->_pageBlockSize;
 	
 	if (auto opt = dev.findMemoryTypeIndex(_vkBuf.handle(), vmaUsage)) {
 		poolInfo.memoryTypeIndex = ax_safe_cast_from(opt.value());
@@ -1444,55 +1445,50 @@ void AX_VkSparseBuffer::create(AX_VkDevice& dev,
 		throw Error_Undefined();
 	}
 	
-	auto err = vmaCreatePool(dev.vmaAllocator(), &poolInfo, &_memPool);
+	auto err = vmaCreatePool(dev.vmaAllocator(), &poolInfo, &md->_memPool);
 	AX_VkUtil::throwIfError(err);
 	
 	VmaVirtualBlockCreateInfo virtualBlockInfo = {};
 	virtualBlockInfo.size = bufferSize;
 	
-	err = vmaCreateVirtualBlock(&virtualBlockInfo, &_virtualBlock);
+	err = vmaCreateVirtualBlock(&virtualBlockInfo, &md->_virtualBlock);
 	AX_VkUtil::throwIfError(err);
 }
 
 void AX_VkSparseBuffer::destroy() {
 	auto* dev = _vkBuf.device();
+	auto md = _mdata.scopedLock();
 	
-	if (_memPool) {
-		vmaDestroyPool(dev->vmaAllocator(), _memPool);
-		_memPool = VK_NULL_HANDLE;
+	if (md->_memPool) {
+		vmaDestroyPool(dev->vmaAllocator(), md->_memPool);
+		md->_memPool = VK_NULL_HANDLE;
 	}
 
-	_pendingBindPages.clear();
-	_pendingUnbindPages.clear();
+	md->_pendingBindPages.clear();
+	md->_pendingUnbindPages.clear();
 	
-	if (_virtualBlock) {
-		for (auto& page : _pageDict.values()) {
+	if (md->_virtualBlock) {
+		for (auto& page : md->_pageDict.values()) {
 			if (page.vmaVirtualAllocation) {
-				vmaVirtualFree(_virtualBlock, page.vmaVirtualAllocation);
+				vmaVirtualFree(md->_virtualBlock, page.vmaVirtualAllocation);
 				page.vmaVirtualAllocation = VK_NULL_HANDLE;
 			}
 		}
-		_pageDict.clear();
-		vmaDestroyVirtualBlock(_virtualBlock);
-		_virtualBlock = VK_NULL_HANDLE;
+		md->_pageDict.clear();
+		vmaDestroyVirtualBlock(md->_virtualBlock);
+		md->_virtualBlock = VK_NULL_HANDLE;
 	}
 
 	_vkBuf.destroy();
 }
 
-
-void AX_VkSparseBuffer::_unbindSparse(VkQueue queue, VkFence fence) {
-	if (_pendingUnbindPages.size() <= 0) return;
-	
-	
-}
-
 void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
-	if (_pendingBindPages.size() <= 0 && _pendingUnbindPages.size() <= 0) return;
+	auto md = _mdata.scopedLock();
+	if (md->_pendingBindPages.size() <= 0 && md->_pendingUnbindPages.size() <= 0) return;
 
 	Array<VkSparseMemoryBind, 8> sparseMemoryBindList;
 	
-	for (auto& page : _pendingBindPages) {
+	for (auto& page : md->_pendingBindPages) {
 		auto& bind = sparseMemoryBindList.emplaceBack();
 		bind.resourceOffset = page->offset;
 		bind.size           = page->size;
@@ -1500,9 +1496,9 @@ void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
 		bind.memoryOffset   = 0;
 		bind.flags          = 0;
 	}
-	_pendingBindPages.clear();
+	md->_pendingBindPages.clear();
 
-	for (auto& page : _pendingUnbindPages) {
+	for (auto& page : md->_pendingUnbindPages) {
 		auto& bind = sparseMemoryBindList.emplaceBack();
 		bind.resourceOffset = page->offset;
 		bind.size           = page->size;
@@ -1510,10 +1506,9 @@ void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
 		bind.memoryOffset   = 0;
 		bind.flags          = 0;
 		
-		_pageDict.erase(page->mem);
+		md->_pageDict.erase(page->mem);
 	}
-	_pendingUnbindPages.clear();
-	
+	md->_pendingUnbindPages.clear();
 
 	VkSparseBufferMemoryBindInfo bufferBindInfo = {};
 	bufferBindInfo.buffer    = vkBufferHandle();
@@ -1532,7 +1527,6 @@ void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
 	
 	auto err = vkQueueBindSparse(queue, 1, &bindInfo, fence);
 	AX_VkUtil::throwIfError(err);
-	
 }
 
 void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
@@ -1542,6 +1536,7 @@ void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
 	// allocate physical memory to sparseBuffer
 	
 	auto* dev = _vkBuf.device();
+	auto md = _mdata.scopedLock();
 	
 	VkMemoryRequirements memReq = {};
 	vkGetBufferMemoryRequirements(*dev, _vkBuf, &memReq);
@@ -1550,7 +1545,7 @@ void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
 		
 	VmaAllocationCreateInfo allocCreateInfo = {};
 	allocCreateInfo.usage = _vkBuf.vmaUsage();
-	allocCreateInfo.pool = _memPool;
+	allocCreateInfo.pool = md->_memPool;
 	
 	auto err = vmaAllocateMemory(dev->vmaAllocator(), &memReq, &allocCreateInfo, pAllocation, pAllocationInfo);
 	AX_VkUtil::throwIfError(err);
@@ -1559,15 +1554,15 @@ void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
 	vmaGetAllocationInfo2(dev->vmaAllocator(), *pAllocation, &info2);
 	
 	VkDeviceMemory mem = pAllocationInfo->deviceMemory;
-	Page* page = _pageDict.find(mem);
+	Page* page = md->_pageDict.find(mem);
 	if (page) {
 		if (page->refCount == 0) {
-			_pendingUnbindPages.eraseIfEquals(page); // need it again, so cancel unbind
+			md->_pendingUnbindPages.eraseIfEquals(page); // need it again, so cancel unbind
 		}
 		page->refCount++;
 		
 	} else {
-		auto& newPage = _pageDict.add(mem);
+		auto& newPage = md->_pageDict.add(mem);
 		page = &newPage;
 		page->mem = mem;
 		page->size = info2.blockSize;
@@ -1576,10 +1571,10 @@ void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
 		virtualAllocInfo.size      = page->size;
 		virtualAllocInfo.alignment = page->size;
 		
-		err = vmaVirtualAllocate(_virtualBlock, &virtualAllocInfo, &newPage.vmaVirtualAllocation, &newPage.offset);
+		err = vmaVirtualAllocate(md->_virtualBlock, &virtualAllocInfo, &newPage.vmaVirtualAllocation, &newPage.offset);
 		AX_VkUtil::throwIfError(err);
 
-		_pendingBindPages.emplaceBack(&newPage);
+		md->_pendingBindPages.emplaceBack(&newPage);
 	}
 
 	*pOffset = page->offset + pAllocationInfo->offset; 
@@ -1587,16 +1582,17 @@ void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
 
 void AX_VkSparseBuffer::freeSparseMemory(VmaAllocation vmaAllocation, VmaAllocationInfo& vmaAllocationInfo) {
 	auto* dev = _vkBuf.device();
+	auto md = _mdata.scopedLock();
 	
-	auto* page = _pageDict.find(vmaAllocationInfo.deviceMemory);
+	auto* page = md->_pageDict.find(vmaAllocationInfo.deviceMemory);
 	if (!page) throw Error_Vulkan("AX_VkSparseBuffer cannot find page");
 	
 	page->refCount--;
 	AX_ASSERT(page->refCount >= 0);
 	if (page->refCount == 0) {
-		_pendingUnbindPages.emplaceBack(page);
+		md->_pendingUnbindPages.emplaceBack(page);
 		if (page->vmaVirtualAllocation) {
-			vmaVirtualFree(_virtualBlock, page->vmaVirtualAllocation);
+			vmaVirtualFree(md->_virtualBlock, page->vmaVirtualAllocation);
 			page->vmaVirtualAllocation = VK_NULL_HANDLE;
 		}
 	}

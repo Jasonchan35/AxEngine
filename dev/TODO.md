@@ -1,5 +1,3 @@
-- VMA/D3D12MA Allocator - add SpinLock
-
 - GPU Indirect Draw
 	- compute shader object culling
 		- write indirect draw list

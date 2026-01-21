@@ -668,15 +668,11 @@ public:
 	void freeSparseMemory(VmaAllocation vmaAllocation, VmaAllocationInfo& vmaAllocationInfo);
 	
 	VkBuffer vkBufferHandle() { return _vkBuf.handle(); }
-	
 	bool isValid() const { return _vkBuf.handle() != nullptr; }
 
 private:
-	void _unbindSparse(VkQueue queue, VkFence fence);
-	
-	AX_VkBuffer               _vkBuf;
-	VmaPool                   _memPool = VK_NULL_HANDLE;
-	VmaVirtualBlock           _virtualBlock = VK_NULL_HANDLE;
+
+	AX_VkBuffer _vkBuf;
 	
 	struct Page {
 		Int                  refCount             = 1;
@@ -685,11 +681,18 @@ private:
 		VkDeviceSize         size                 = 0;
 		VmaVirtualAllocation vmaVirtualAllocation = VK_NULL_HANDLE;
 	};
+	
+	struct MData {
+		VmaPool                   _memPool = VK_NULL_HANDLE;
+		VmaVirtualBlock           _virtualBlock = VK_NULL_HANDLE;
 
-	VkDeviceSize               _pageBlockSize = 0;
-	Dict<VkDeviceMemory, Page> _pageDict;
-	Array<Page*>               _pendingBindPages;
-	Array<Page*>               _pendingUnbindPages;
+		VkDeviceSize               _pageBlockSize = 0;
+		Dict<VkDeviceMemory, Page> _pageDict;
+		Array<Page*>               _pendingBindPages;
+		Array<Page*>               _pendingUnbindPages;
+	};
+
+	SpinLockProtected<MData> _mdata;
 };
 
 inline void AX_VkBuffer::bindSparse(VkQueue queue, VkFence fence) {
