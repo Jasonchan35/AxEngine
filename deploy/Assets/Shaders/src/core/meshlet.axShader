@@ -1,12 +1,12 @@
-#if ShaderInfo
+#if AX_SHADER_INFO
 
 Properties {
 	Color4f		color = [0, 0, 0.5, 1]
 }
 
 Pass "Pass0" {
-//	AmplificationFunc = as_main
-//	MeshFunc          = ms_main
+	AmplificationFunc = as_main
+	MeshFunc          = ms_main
 }
 #endif
 
@@ -53,9 +53,9 @@ void as_main(AS_Input i) {
 }
 
 #if AX_RENDER_VK
-	#define OutputTopology_Triangles	output_topology("triangles")
+	#define OutputTopology_Triangles	outputtopology("triangle")
 #else
-	#define OutputTopology_Triangles	OutputTopology("triangle")
+	#define OutputTopology_Triangles	outputtopology("triangle")
 #endif
 
 struct MS_Input {

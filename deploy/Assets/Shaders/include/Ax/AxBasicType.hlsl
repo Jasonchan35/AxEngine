@@ -25,11 +25,11 @@ typedef float4		Color4f;
 // HLSL: resource : register(x, space) | DX: D3D12_SHADER_INPUT_BIND_DESC |  spirv-cross reflection
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"
 // HLSL: register space                | DX: "Space"                      |  Vulkan "set"
-#define AX_BindSpace_Default	space0
-#define AX_BindSpace_World		space1
-#define AX_BindSpace_Object		space2
-#define AX_BindSpace_Bindless	space3
-#define AX_BindSpace_RootConst	space4
+#define AX_BindSpace_Default    space0
+#define AX_BindSpace_World      space1
+#define AX_BindSpace_Object     space2
+#define AX_BindSpace_Bindless   space3
+#define AX_BindSpace_RootConst  space4
 
 #if AX_RENDER_VK
 	#define AX_ROOT_CONST_VAR(TYPE, NAME) \
@@ -50,11 +50,11 @@ typedef float4		Color4f;
 	
 	// $Global UniformBuffer should be register(x, space0)
 
-	#define Sampler_Texture2D(NAME)					u32 AxSamplerState_##NAME; u32 AxTexture2D_##NAME; 
-	#define Sampler_Texture3D(NAME)					u32 AxSamplerState_##NAME; u32 AxTexture3D_##NAME; 
+	#define Sampler_Texture2D(NAME)					uniform u32 AxSamplerState_##NAME; uniform u32 AxTexture2D_##NAME; 
+	#define Sampler_Texture3D(NAME)					uniform u32 AxSamplerState_##NAME; uniform u32 AxTexture3D_##NAME; 
 
-	#define Sampler_Texture2D_(NAME, REG, SPACE)	u32 AxSamplerState_##NAME; u32 AxTexture2D_##NAME; 
-	#define Sampler_Texture3D_(NAME, REG, SPACE)	u32 AxSamplerState_##NAME; u32 AxTexture3D_##NAME; 
+	#define Sampler_Texture2D_(NAME, REG, SPACE)	uniform u32 AxSamplerState_##NAME; uniform u32 AxTexture2D_##NAME; 
+	#define Sampler_Texture3D_(NAME, REG, SPACE)	uniform u32 AxSamplerState_##NAME; uniform u32 AxTexture3D_##NAME; 
 
 	#define tex2D(NAME, UV) AxBindless_Texture2D[AxTexture2D_##NAME].Sample(AxBindless_SamplerState[AxSamplerState_##NAME], UV)
 	#define tex3D(NAME, UV) AxBindless_Texture3D[AxTexture3D_##NAME].Sample(AxBindless_SamplerState[AxSamplerState_##NAME], UV)
@@ -79,7 +79,7 @@ typedef float4		Color4f;
 #define SEM_pos(					TYPE)	TYPE	pos					: POSITION
 
 #define SEM_SV_pos(					TYPE)	TYPE	sv_pos				: SV_POSITION
-#define SEM_SV_depth(				TYPE)	TYPE	sv_depth			: SV_DEPTH;
+#define SEM_SV_depth(				TYPE)	TYPE	sv_depth			: SV_DEPTH
 #define SEM_SV_coverage(			TYPE)	TYPE	sv_coverage			: SV_COVERAGE
 #define SEM_SV_vertexId(			TYPE)	TYPE	sv_vertexId			: SV_VERTEXID
 #define SEM_SV_primitiveId(			TYPE)	TYPE	sv_primitiveId		: SV_PRIMITIVEID

@@ -77,9 +77,9 @@
           "dataType": "Vec2f"
         }], 
       "constBuffers": [{
-          "name": "$Global", 
+          "name": "$Globals", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel", 
+          "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 

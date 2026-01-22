@@ -1,0 +1,309 @@
+{
+    "parameters": [
+        {
+            "name": "AxBindless_SamplerState",
+            "binding": {"kind": "samplerState", "space": 3, "index": 10000},
+            "type": {
+                "kind": "array",
+                "elementCount": 1000,
+                "elementType": {
+                    "kind": "samplerState"
+                }
+            }
+        },
+        {
+            "name": "AxBindless_Texture2D",
+            "binding": {"kind": "shaderResource", "space": 3, "index": 30000},
+            "type": {
+                "kind": "array",
+                "elementCount": 10000,
+                "elementType": {
+                    "kind": "resource",
+                    "baseShape": "texture2D",
+                    "resultType": {
+                        "kind": "vector",
+                        "elementCount": 4,
+                        "elementType": {
+                            "kind": "scalar",
+                            "scalarType": "float32"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "AxBindless_Texture3D",
+            "binding": {"kind": "shaderResource", "space": 3, "index": 40000},
+            "type": {
+                "kind": "array",
+                "elementCount": 1000,
+                "elementType": {
+                    "kind": "resource",
+                    "baseShape": "texture3D",
+                    "resultType": {
+                        "kind": "vector",
+                        "elementCount": 4,
+                        "elementType": {
+                            "kind": "scalar",
+                            "scalarType": "float32"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "gAxCameraData",
+            "binding": {"kind": "unorderedAccess", "space": 2, "index": 30000},
+            "type": {
+                "kind": "resource",
+                "baseShape": "structuredBuffer",
+                "access": "readWrite",
+                "resultType": {
+                    "kind": "struct",
+                    "name": "AxCameraData",
+                    "fields": [
+                        {
+                            "name": "viewMatrix",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "projMatrix",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 64, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "viewProjMatrix",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 128, "size": 64, "elementStride": 0}
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "gAxLightData",
+            "binding": {"kind": "unorderedAccess", "space": 2, "index": 30001},
+            "type": {
+                "kind": "resource",
+                "baseShape": "structuredBuffer",
+                "access": "readWrite",
+                "resultType": {
+                    "kind": "struct",
+                    "name": "AxLightData",
+                    "fields": [
+                        {
+                            "name": "color",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "gAxObjectData",
+            "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002},
+            "type": {
+                "kind": "resource",
+                "baseShape": "structuredBuffer",
+                "access": "readWrite",
+                "resultType": {
+                    "kind": "struct",
+                    "name": "AxObjectData",
+                    "fields": [
+                        {
+                            "name": "objectToWorld",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "aabbMin",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 2,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 64, "size": 8, "elementStride": 4}
+                        },
+                        {
+                            "name": "aabbMax",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 2,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 72, "size": 8, "elementStride": 4}
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "entryPoints": [
+        {
+            "name": "ms_main",
+            "stage": "mesh",
+            "parameters": [
+                {
+                    "name": "dtid",
+                    "semanticName": "SV_DISPATCHTHREADID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
+                },
+                {
+                    "name": "gtid",
+                    "semanticName": "SV_GROUPTHREADID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
+                },
+                {
+                    "name": "gid",
+                    "semanticName": "SV_GROUPID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
+                },
+                {
+                    "name": "payload",
+                    "stage": "mesh",
+                    "binding": {"kind": "varyingInput", "index": 0, "count": 58},
+                    "type": {
+                        "kind": "struct",
+                        "name": "AS_Payload",
+                        "fields": [
+                            {
+                                "name": "InstanceCounts",
+                                "type": {
+                                    "kind": "array",
+                                    "elementCount": 8,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "uint32"
+                                    }
+                                },
+                                "stage": "mesh",
+                                "binding": {"kind": "varyingInput", "index": 0, "count": 8}
+                            },
+                            {
+                                "name": "GroupOffsets",
+                                "type": {
+                                    "kind": "array",
+                                    "elementCount": 9,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "uint32"
+                                    }
+                                },
+                                "stage": "mesh",
+                                "binding": {"kind": "varyingInput", "index": 8, "count": 9}
+                            },
+                            {
+                                "name": "InstanceList",
+                                "type": {
+                                    "kind": "array",
+                                    "elementCount": 32,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "uint32"
+                                    }
+                                },
+                                "stage": "mesh",
+                                "binding": {"kind": "varyingInput", "index": 17, "count": 32}
+                            },
+                            {
+                                "name": "InstanceOffsets",
+                                "type": {
+                                    "kind": "array",
+                                    "elementCount": 9,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "uint32"
+                                    }
+                                },
+                                "stage": "mesh",
+                                "binding": {"kind": "varyingInput", "index": 49, "count": 9}
+                            }
+                        ]
+                    }
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "AxBindless_SamplerState",
+                    "binding": {"kind": "samplerState", "space": 3, "index": 10000, "used": 0}
+                },
+                {
+                    "name": "AxBindless_Texture2D",
+                    "binding": {"kind": "shaderResource", "space": 3, "index": 30000, "used": 0}
+                },
+                {
+                    "name": "AxBindless_Texture3D",
+                    "binding": {"kind": "shaderResource", "space": 3, "index": 40000, "used": 0}
+                },
+                {
+                    "name": "gAxCameraData",
+                    "binding": {"kind": "unorderedAccess", "space": 2, "index": 30000, "used": 0}
+                },
+                {
+                    "name": "gAxLightData",
+                    "binding": {"kind": "unorderedAccess", "space": 2, "index": 30001, "used": 0}
+                },
+                {
+                    "name": "gAxObjectData",
+                    "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002, "used": 0}
+                }
+            ]
+        }
+    ]
+}

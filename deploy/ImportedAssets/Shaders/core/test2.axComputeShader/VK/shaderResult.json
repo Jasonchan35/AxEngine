@@ -41,7 +41,7 @@
       "csWorkgroupSize": [1, 1, 1], 
       "inputs": [], 
       "constBuffers": [{
-          "name": "$Global", 
+          "name": "$Globals", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Compute", 
           "bindSpace": "Default", 
@@ -77,7 +77,7 @@
           "dataType": "StructuredBuffer", 
           "stageFlags": "Compute", 
           "bindSpace": "Default", 
-          "bindPoint": 4, 
+          "bindPoint": 30000, 
           "bindCount": 1, 
           "variables": [{
               "name": "color", 

@@ -11,13 +11,14 @@ set outputDir=%projectRoot%\deploy\ImportedAssets\Shaders
 
 set ninja=%projectRoot%\dev\ninja.exe
 set vulkan_sdk_bin=%VK_SDK_PATH%
+set slang_sdk=%projectRoot%\dev\external\slang\slang-2026.1-windows-x86_64
 set windows_sdk_bin=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64
 
 set AxIncludeDir=include
 set AxEngine_bin=%projectRoot%\dev\_build\vs2022-x64-windows\bin\Debug
 set AxShaderTool=%AxEngine_bin%\AxShaderTool.exe
 
-%AxShaderTool% -genNinja -file=src -quiet=1 -out="%outputDir%"
+%AxShaderTool% -genNinja -file=src -quiet=0 -out="%outputDir%"
 
 @IF NOT %ERRORLEVEL% EQU 0 GOTO :error_handler
 

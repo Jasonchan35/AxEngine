@@ -76,7 +76,52 @@
           "semantic": "TEXCOORD0", 
           "dataType": "Vec2f"
         }], 
-      "constBuffers": [], 
+      "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "color", 
+              "offset": 0, 
+              "dataType": "Vec4f"
+            }, {
+              "name": "AxSamplerState_tex0", 
+              "offset": 16, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture2D_tex0", 
+              "offset": 20, 
+              "dataType": "u32"
+            }, {
+              "name": "AxSamplerState_tex1", 
+              "offset": 24, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture2D_tex1", 
+              "offset": 28, 
+              "dataType": "u32"
+            }, {
+              "name": "AxSamplerState_tex2", 
+              "offset": 32, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture2D_tex2", 
+              "offset": 36, 
+              "dataType": "u32"
+            }, {
+              "name": "AxSamplerState_tex3", 
+              "offset": 40, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture2D_tex3", 
+              "offset": 44, 
+              "dataType": "u32"
+            }], 
+          "dataSize": 48
+        }], 
       "textures": [], 
       "samplers": [], 
       "structuredBuffers": []

@@ -56,7 +56,7 @@
           "dataType": "Vec2f"
         }], 
       "constBuffers": [{
-          "name": "$Global", 
+          "name": "$Globals", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Default", 
@@ -75,7 +75,7 @@
               "offset": 68, 
               "dataType": "u32"
             }], 
-          "dataSize": 80
+          "dataSize": 72
         }], 
       "textures": [], 
       "samplers": [], 

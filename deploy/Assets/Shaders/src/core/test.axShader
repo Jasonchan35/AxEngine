@@ -1,4 +1,4 @@
-#if ShaderInfo
+#if AX_SHADER_INFO
 Properties {
 	Color4f		ambient
 	f32			shininess

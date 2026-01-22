@@ -10,6 +10,8 @@
       }], 
     "passes": [{
         "name": "Pass0", 
+        "meshFunc": "ms_main", 
+        "amplificationFunc": "as_main", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -36,7 +38,7 @@
   }, 
   "passStages": [{
       "bindless": true, 
-      "stageFlags": "", 
+      "stageFlags": "Mesh | Amplification", 
       "inputs": [], 
       "constBuffers": [], 
       "textures": [], 

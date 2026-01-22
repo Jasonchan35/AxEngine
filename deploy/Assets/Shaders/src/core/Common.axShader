@@ -1,4 +1,4 @@
-#if ShaderInfo
+#if AX_SHADER_INFO
 
 _GlobalCommonShader
 
@@ -30,7 +30,7 @@ struct PS_Input {
 	SEM_SV_pos(float4);
 };
 
-float foo;
+uniform float foo;
 
 Sampler_Texture2D(foo_tex2d);
 Sampler_Texture3D(foo_tex3d);

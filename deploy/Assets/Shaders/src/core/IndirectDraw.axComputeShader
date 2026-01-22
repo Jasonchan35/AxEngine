@@ -1,4 +1,4 @@
-#if ShaderInfo
+#if AX_SHADER_INFO
 
 Properties {
 	Color4f		color = [0, 0, 0.5, 1]
@@ -16,7 +16,7 @@ struct CS_Input {
 };
 
 
-#if AX_RENDER_DX12
+#ifdef AX_RENDER_DX12
 
 typedef uint64_t D3D12_GPU_VIRTUAL_ADDRESS;
 
@@ -43,7 +43,7 @@ RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> outDrawArgument : register(u0);
 
 #endif
 
-#if AX_RENDER_VK
+#ifdef AX_RENDER_VK
 
 struct VkDrawIndexedIndirectCommand {
 	u32 indexCount;

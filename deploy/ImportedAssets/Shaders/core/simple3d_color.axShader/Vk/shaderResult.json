@@ -76,7 +76,20 @@
           "semantic": "COLOR0", 
           "dataType": "Vec4f"
         }], 
-      "constBuffers": [], 
+      "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "color", 
+              "offset": 0, 
+              "dataType": "Vec4f"
+            }], 
+          "dataSize": 16
+        }], 
       "textures": [], 
       "samplers": [], 
       "structuredBuffers": []

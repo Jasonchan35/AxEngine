@@ -1,4 +1,4 @@
-#if ShaderInfo
+#if AX_SHADER_INFO
 Properties {
 	Texture2D	fontTexture "fontTexture" = White {
 		 Asset = "asset path"
@@ -35,7 +35,7 @@ struct PS_Input {
 	SEM_uv0(float2);
 };
 
-float4x4 imguiProjectionMatrix; 
+uniform float4x4 imguiProjectionMatrix; 
 
 Sampler_Texture2D(fontTexture);
 

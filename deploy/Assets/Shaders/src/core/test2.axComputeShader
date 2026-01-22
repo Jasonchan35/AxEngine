@@ -1,4 +1,4 @@
-#if ShaderInfo
+#if AX_SHADER_INFO
 Properties {
 	Color4f	color = [0,1,0,1]
 }
@@ -23,12 +23,12 @@ struct Pixel
 static const int sizeofPixel = 16;
 
 // StructuredBuffer<Pixel> Buffer0 : register(t0);
-RWStructuredBuffer<Pixel> BufferOut : register(u0);
-double testDouble;
-double testDouble2;
+uniform RWStructuredBuffer<Pixel> BufferOut : register(u0);
+uniform double testDouble;
+uniform double testDouble2;
 
-uint packDouble0, packDouble1;
-uint2 packDouble;
+uniform uint packDouble0, packDouble1;
+uniform uint2 packDouble;
 
 /*
 float3 readPixel(int x, int y)
@@ -58,6 +58,6 @@ void cs_main(CS_Input i)
 
 	double d = asdouble(packDouble.x, packDouble.y);
 
-	float3 pixel = float3(i.sv_dispatchThreadId.x, i.sv_dispatchThreadId.y, 123.45 * testDouble);
+	float3 pixel = float3(i.sv_dispatchThreadId.x, i.sv_dispatchThreadId.y, (float)(123.45 * testDouble));
 	writeToPixel(i.sv_dispatchThreadId.x, i.sv_dispatchThreadId.y, pixel);
 }

@@ -43,6 +43,23 @@
       "constBuffers": [], 
       "textures": [], 
       "samplers": [], 
-      "structuredBuffers": []
+      "structuredBuffers": [{
+          "name": "outDrawArgument", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Compute", 
+          "bindSpace": "Default", 
+          "bindPoint": 30000, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "drawIndexed", 
+              "offset": 0, 
+              "dataType": "Struct"
+            }, {
+              "name": "rootConst", 
+              "offset": 32, 
+              "dataType": "Struct"
+            }], 
+          "stride": 100
+        }]
     }]
 }

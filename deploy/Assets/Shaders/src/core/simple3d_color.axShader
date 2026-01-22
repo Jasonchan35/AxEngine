@@ -1,4 +1,4 @@
-#if ShaderInfo
+#if AX_SHADER_INFO
 Properties {
 //	Type	  name "displayName" = defaultValue { Other Options }
 // 	optional: displayName, = defaultValue
@@ -31,7 +31,7 @@ Pass "Pass0" { // Forward
 
 #include "AxRender.hlsl"
 
-Color4f 	color;
+uniform Color4f color;
 
 struct VS_Input {
 	SEM_pos(float4);
