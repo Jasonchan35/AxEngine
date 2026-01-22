@@ -15,20 +15,12 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 function(ax_cpp_header_tool target path)
 	set(AxCppHeaderTool_exe "$<TARGET_FILE:AxCppHeaderTool>")
 
-	add_custom_target(${target}_CppHeaderTool
-		COMMENT "---- Running ${target}_CppHeaderTool..."
+	add_custom_command(TARGET ${target}
+		PRE_BUILD
 		COMMAND ${AxCppHeaderTool_exe} ARGS -moduleName=${target} -outPath=${path} ${path}
-		COMMENT "---- End ${target}_CppHeaderTool ----"
-		WORKING_DIRECTORY ${path}
-		DEPENDS AxCppHeaderTool
 		VERBATIM
 	)
-	add_dependencies(${target} ${target}_CppHeaderTool)
-
-#	get_target_property(target_folder ${target} FOLDER)
-#	set_target_properties(${target}_CppHeaderTool PROPERTIES FOLDER ${target_folder})
-	set_target_properties(${target}_CppHeaderTool PROPERTIES FOLDER "RunCppHeaderTool")
-
+	add_dependencies(${target} AxCppHeaderTool)
 endfunction()
 
 function(ax_write_to_file filename text)
