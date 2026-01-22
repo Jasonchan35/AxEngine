@@ -27,6 +27,8 @@ endif()
 set(AX_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
+get_property(AX_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
 message("==== ${PROJECT_NAME} ====")
 message("AX_PROJECT_ROOT                = ${AX_PROJECT_ROOT}")
 message("VCPKG_TARGET_TRIPLET           = ${VCPKG_TARGET_TRIPLET}")
@@ -43,7 +45,7 @@ endif()
 
 project(${PROJECT_NAME} VERSION 0.1.0)
 
-ax_copy_file("${AX_PROJECT_ROOT}/${PROJECT_NAME}.sln.DotSettings" "${CMAKE_CURRENT_BINARY_DIR}")
+ax_copy_file_if_newer("${AX_PROJECT_ROOT}/${PROJECT_NAME}.sln.DotSettings" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sln.DotSettings")
 
 # AxCore
 # +- AxFileTool, AxCppHeaderTool
@@ -55,6 +57,7 @@ ax_copy_file("${AX_PROJECT_ROOT}/${PROJECT_NAME}.sln.DotSettings" "${CMAKE_CURRE
 add_subdirectory(external/imgui)
 add_subdirectory(external/D3D12MemoryAllocator)
 add_subdirectory(external/VulkanMemoryAllocator)
+add_subdirectory(external/OpenUSD)
 
 add_subdirectory(AxLib8/AxCore)
 add_subdirectory(AxLib8/AxCore/test)

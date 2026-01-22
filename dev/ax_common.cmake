@@ -14,13 +14,12 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 function(ax_cpp_header_tool target path)
 	set(AxCppHeaderTool_exe "$<TARGET_FILE:AxCppHeaderTool>")
-
+	add_dependencies(${target} AxCppHeaderTool)
 	add_custom_command(TARGET ${target}
 		PRE_BUILD
 		COMMAND ${AxCppHeaderTool_exe} ARGS -moduleName=${target} -outPath=${path} ${path}
 		VERBATIM
 	)
-	add_dependencies(${target} AxCppHeaderTool)
 endfunction()
 
 function(ax_write_to_file filename text)
@@ -28,9 +27,34 @@ function(ax_write_to_file filename text)
 	file(GENERATE OUTPUT ${filename} CONTENT "${text}" NEWLINE_STYLE UNIX)
 endfunction()
 
-function(ax_copy_file src_filename dst_filename)
-	message("ax_copy_file(\"${src_filename}\" \"${dst_filename}\")")
-	file(COPY "${src_filename}" DESTINATION "${dst_filename}")
+function(ax_is_file_newer_than src_filename dst_filename RESULT_VAR)
+# the cmake built-in "IS_NEWER_THAN" will return true even the timestamps are the same
+	set(RET FALSE)
+
+	if(NOT EXISTS ${dst_filename})
+		set(RET TRUE)
+	else()
+		file(TIMESTAMP "${src_filename}" srcTime "%Y%m%d%H%M%S")
+		file(TIMESTAMP "${dst_filename}" dstTime "%Y%m%d%H%M%S")
+		if(srcTime GREATER dstTime)
+			set(RET TRUE)
+		endif()
+	endif()
+
+	set(${RESULT_VAR} ${RET} PARENT_SCOPE)
+endfunction()
+
+function(ax_copy_file_if_newer src_filename dst_filename)
+	ax_is_file_newer_than(${src_filename} ${dst_filename} is_newer)
+
+	if(is_newer)
+		message("[U] ax_copy_file_if_newer(\"${src_filename}\" -> \"${dst_filename}\")")
+		get_filename_component(dst_dir "${dst_filename}" DIRECTORY)
+		file(MAKE_DIRECTORY "${dst_dir}")
+		file(COPY_FILE "${src_filename}" "${dst_filename}")
+	else()
+#		message("[=] ax_copy_file_if_newer(\"${src_filename}\" \"${dst_filename}\")")
+	endif()
 endfunction()
 
 function(ax_add_all_subdirectory_recurse src_path)
@@ -76,14 +100,14 @@ function(ax_set_warning_level target_name)
 		# re-enable warning disabled by default to level 4
 		# VS2017 or later
 		target_compile_options(${target_name} PRIVATE /w45038)  # data member 'member1' will be initialized after data member 'member2'
-#		target_compile_options(${target_name} PRIVATE /w45039)  # 'function': pointer or reference to potentially throwing function passed to extern C function under -EHc. Undefined behavior may occur if this function throws an exception.
+		target_compile_options(${target_name} PRIVATE /w45039)  # 'function': pointer or reference to potentially throwing function passed to extern C function under -EHc. Undefined behavior may occur if this function throws an exception.
 		target_compile_options(${target_name} PRIVATE /w45041)  # 'member-name': out-of-line definition for constexpr static data member is not needed and is deprecated in C++17
 		target_compile_options(${target_name} PRIVATE /w45042)  # 'function': function declarations at block scope cannot be specified 'inline' in standard C++; remove 'inline' specifier 
 #		target_compile_options(${target_name} PRIVATE /w45045)  # Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
 
 		# VS2019 or later
 		target_compile_options(${target_name} PRIVATE /w45052)  # Keyword 'keyword-name' was introduced in C++ version and requires use of the 'option' command-line option
-#		target_compile_options(${target_name} PRIVATE /w45204)  # A class with virtual functions has non-virtual trivial destructor
+		target_compile_options(${target_name} PRIVATE /w45204)  # A class with virtual functions has non-virtual trivial destructor
 		target_compile_options(${target_name} PRIVATE /w45214)  # applying 'keyword' to an operand with a volatile qualified type is deprecated in C++20
 		target_compile_options(${target_name} PRIVATE /w45215)  # 'function-parameter' a function parameter with a volatile qualified type is deprecated in C++20
 		target_compile_options(${target_name} PRIVATE /w45216)  # 'return-type' a volatile qualified return type is deprecated in C++20
@@ -106,7 +130,7 @@ function(ax_set_warning_level target_name)
 		target_compile_options(${target_name} PRIVATE /w45256)  # 'enumeration': a non-defining declaration of an enumeration with a fixed underlying type is only permitted as a standalone declaration
 		target_compile_options(${target_name} PRIVATE /w45258)  # explicit capture of 'symbol' is not required for this use
 		target_compile_options(${target_name} PRIVATE /w45259)  # 'specialized-type': explicit specialization requires 'template <>'
-#		target_compile_options(${target_name} PRIVATE /w45262)  # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]] when a break statement is intentionally omitted between cases
+		target_compile_options(${target_name} PRIVATE /w45262)  # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]] when a break statement is intentionally omitted between cases
 		target_compile_options(${target_name} PRIVATE /w45263)  # calling 'std::move' on a temporary object prevents copy elision
 		target_compile_options(${target_name} PRIVATE /w45264)  # 'variable-name': 'const' variable is not used
 		target_compile_options(${target_name} PRIVATE /w45266)  # 'const' qualifier on return type has no effect

@@ -1,18 +1,16 @@
 ﻿module;
 
-#include <pxr/usd/usd/stage.h>
-#include <pxr/usd/usd/prim.h>
-#include <pxr/usd/usd/primRange.h>
+#include "AxOpenUSD-HEADER.h"
 
 module AxEditor;
-import :AxOpenUsd;
+import :AxOpenUSD;
 
 namespace AxEditor {
 
-AxOpenUsd::AxOpenUsd() {
+AxOpenUSD::AxOpenUSD() {
 }
 
-void AxOpenUsd::openFile(StrView filename) {
+void AxOpenUSD::openFile(StrView filename) {
 	System::setEnvVariable("TF_DEBUG", "PLUG_INFO_SEARCH");
 	
 	System::setEnvVariable("PXR_PLUGINPATH_NAME", 
@@ -25,8 +23,6 @@ void AxOpenUsd::openFile(StrView filename) {
 	if (!stage) {
 		throw Error_Undefined(Fmt("cannot load USD file {}", filename));
 	}
-	
-	
 }
 
 } // namespace

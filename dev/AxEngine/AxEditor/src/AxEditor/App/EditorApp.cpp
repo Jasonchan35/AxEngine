@@ -4,7 +4,7 @@ module AxEditor;
 
 import :EditorApp;
 import :EditorMainWindow;
-import :AxOpenUsd;
+import :AxOpenUSD;
 
 namespace AxEditor {
 
@@ -89,7 +89,7 @@ void EditorApp::_createDemoScene() {
 }
 
 void EditorApp::_testLoadOpenUsd() {
-	AxOpenUsd usd;
+	AxOpenUSD usd;
 	usd.openFile("Assets/Scenes/test.usda");
 }
 

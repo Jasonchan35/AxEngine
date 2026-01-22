@@ -98,7 +98,7 @@ public:
 	using std_string_view = std::basic_string_view<std::remove_cv_t<T>>;
 	
 	constexpr MutStrView_() noexcept = default;
-	constexpr MutStrView_(const This&) noexcept = default;
+	constexpr MutStrView_(const MutStrView_&) noexcept = default;
 	constexpr MutStrView_(T* data, Int size) noexcept : _data(data), _size(size) {}
 	constexpr MutStrView_(MutZStrView_<T> r) noexcept : _data(r.data()), _size(r.size()) {}
 	constexpr MutStrView_(T& ch) noexcept : _data(&ch), _size(1) {}

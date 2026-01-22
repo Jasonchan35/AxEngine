@@ -1,13 +1,13 @@
 ﻿module;
 
-export module AxEditor:AxOpenUsd;
+export module AxEditor:AxOpenUSD;
 export import :Common;
 
 export namespace AxEditor {
 
-class AxOpenUsd : public NonCopyable {
+class AxOpenUSD : public NonCopyable {
 public:
-	AxOpenUsd();
+	AxOpenUSD();
 	
 	void openFile(StrView filename);
 };
