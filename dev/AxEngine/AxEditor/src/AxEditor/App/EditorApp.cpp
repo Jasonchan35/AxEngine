@@ -90,7 +90,7 @@ void EditorApp::_createDemoScene() {
 
 void EditorApp::_testLoadOpenUsd() {
 	AxOpenUsd usd;
-	usd.openFile("Assets/Scenes/main_sponza/NewSponza_Main_USD_Yup_003.usda");
+	usd.openFile("Assets/Scenes/test.usda");
 }
 
 } //namespace
