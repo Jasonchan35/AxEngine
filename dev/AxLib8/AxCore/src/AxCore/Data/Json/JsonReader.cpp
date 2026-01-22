@@ -380,16 +380,21 @@ bool JsonReader::_nextToken() {
 			_nextChar();
 		}
 
+		if (_ch == '#') {
+			// trim inline comment #
+			_nextChar();
+			while (_ch != '\n' && _ch != 0) { _nextChar(); }
+			continue;
+		}
+		
 		if (_ch == '/') {
 			_nextChar();
 			switch (_ch) {
 				case '/': { 
-					//trim inline comment
+					// trim inline comment '//'
 					_nextChar();
-					while (_ch != '\n' && _ch != 0) {
-						_nextChar();
-					}
-				}continue; //back to trim space again
+					while (_ch != '\n' && _ch != 0) { _nextChar(); }
+				} continue; //back to trim space again
 
 				case '*': {
 					//trim block comment
