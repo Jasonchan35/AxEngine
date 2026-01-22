@@ -576,7 +576,7 @@ private:
 
 template<>
 struct HashInt_Handler<VkDeviceMemory> {
-	AX_INLINE constexpr static HashInt onHashInt(const VkDeviceMemory& obj) {
+	AX_INLINE static HashInt onHashInt(const VkDeviceMemory& obj) {
 		return HashInt::s_fromInt(reinterpret_cast<intptr_t>(obj));
 	}
 };

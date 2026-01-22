@@ -55,7 +55,7 @@ public:
 };
 
 class GpuStructuredBuffer_Null : public GpuStructuredBuffer_Backend {
-	AX_RTTI_INFO(GpuStructuredBuffer_Null, GpuStructuredBuffer_Backend);
+	AX_RTTI_INFO(GpuStructuredBuffer_Null, GpuStructuredBuffer_Backend)
 public:
 	GpuStructuredBuffer_Null(const CreateDesc& desc) : Base(desc) {}
 };

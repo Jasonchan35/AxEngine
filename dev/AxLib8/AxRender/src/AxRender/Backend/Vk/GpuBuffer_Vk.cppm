@@ -40,7 +40,7 @@ private:
 };
 
 class GpuStructuredBuffer_Vk : public GpuStructuredBuffer_Backend {
-	AX_RTTI_INFO(GpuStructuredBuffer_Vk, GpuStructuredBuffer_Backend);
+	AX_RTTI_INFO(GpuStructuredBuffer_Vk, GpuStructuredBuffer_Backend)
 public:
 	GpuStructuredBuffer_Vk(const CreateDesc& desc) : Base(desc) {}
 };
