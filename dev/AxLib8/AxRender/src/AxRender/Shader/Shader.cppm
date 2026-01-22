@@ -44,7 +44,8 @@ public:
 
 	struct Variable {
 		String			name;
-		u32				offset   = 0;
+		u32				offset = 0;
+		u32				size   = 0;
 		RenderDataType	dataType = RenderDataType::None;
 
 		constexpr bool operator==(const Variable& r) {

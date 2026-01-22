@@ -12,7 +12,7 @@ void ShaderInfoParser::readFile(StrView outDir, StrView filename) {
 	nextToken();
 	if (!expectOp("#")) return;
 	if (!expectIdentifier("if")) return;
-	if (!expectIdentifier("ShaderInfo")) return;
+	if (!expectIdentifier("AX_SHADER_INFO")) return;
 
 	auto ext = FilePath::extension(filename);
 

@@ -11,7 +11,10 @@ export namespace ax /*::AxRender*/ {
 
 class GenNinja_Dx12 : public NonCopyable {
 public:
-	void writeNinjaPass(IString& outStr, IArray<String> & outJsonFileList, ShaderPassInfo& pass, StrView relSourceFilename);
+	void writeNinjaPass(IString&        outStr,
+	                    IArray<String>& outJsonFileList,
+	                    ShaderPassInfo& pass,
+	                    StrView         relSourceFilename);
 };
 
 } // namespace

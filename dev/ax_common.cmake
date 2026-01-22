@@ -91,7 +91,7 @@ function(ax_set_warning_level target_name)
 
 		# VS2019 or later
 		target_compile_options(${target_name} PRIVATE /w45052)  # Keyword 'keyword-name' was introduced in C++ version and requires use of the 'option' command-line option
-		target_compile_options(${target_name} PRIVATE /w45204)  # A class with virtual functions has non-virtual trivial destructor
+#		target_compile_options(${target_name} PRIVATE /w45204)  # A class with virtual functions has non-virtual trivial destructor
 		target_compile_options(${target_name} PRIVATE /w45214)  # applying 'keyword' to an operand with a volatile qualified type is deprecated in C++20
 		target_compile_options(${target_name} PRIVATE /w45215)  # 'function-parameter' a function parameter with a volatile qualified type is deprecated in C++20
 		target_compile_options(${target_name} PRIVATE /w45216)  # 'return-type' a volatile qualified return type is deprecated in C++20

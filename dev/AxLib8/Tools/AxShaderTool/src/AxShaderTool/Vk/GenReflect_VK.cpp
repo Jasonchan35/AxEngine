@@ -1,3 +1,5 @@
+#if 0
+
 module;
 
 #if AX_RENDERER_VK
@@ -27,6 +29,7 @@ struct VarNameToSemantic {
 		static VarNameToSemantic s;
 		auto* p = s._dict.find(name);
 		if (!p) {
+			return VertexSemantic::None; // TODO
 			throw Error_Undefined(Fmt("Cannot resolve vertex semantic from name '{}'", name));
 		}
 		return *p;
@@ -210,7 +213,7 @@ void GenReflect_Vk::_genPushConstants(ShaderStageInfo& outInfo, const spv_reflec
 		auto& dstCB      = outInfo.constBuffers.emplaceBack();
 		dstCB.name       = StrView_c_str(block->type_description->type_name);
 		dstCB.dataSize   = block->size;
-		dstCB.bindPoint  = static_cast<BindPoint>(0);
+		dstCB.bindPoint  = BindPoint::Zero;
 		dstCB.bindCount  = 1;
 		dstCB.bindSpace  = ShaderParamBindSpace::RootConst;
 		dstCB.stageFlags = getShaderStageFlags(spirvReflect.GetShaderStage());
@@ -296,9 +299,7 @@ void GenReflect_Vk::_genStorageBuffer(ShaderStageInfo& outInfo, const SpvReflect
 	auto& dst = outInfo.structuredBuffers.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
 	dst.dataType = RenderDataType::StructuredBuffer;
-
-	auto& typeDesc = binding->type_description;
-	dst.name = StrView_c_str(typeDesc->type_name);
+	dst.name = StrView_c_str(binding->name);
 
 	if (binding->block.member_count < 1)
 		throw Error_Undefined();
@@ -320,9 +321,7 @@ void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDe
 	auto& dst = outInfo.constBuffers.emplaceBack();
 	_genParamBase(dst, outInfo, binding);
 	dst.dataType = RenderDataType::ConstBuffer;
-
-	auto& typeDesc = binding->type_description;
-	dst.name = StrView_c_str(typeDesc->type_name);
+	dst.name = StrView_c_str(binding->name);
 
 	auto& block = binding->block;
 	dst.dataSize = ax_safe_cast_from(block.size);
@@ -338,5 +337,7 @@ void GenReflect_Vk::_genConstBuffer(ShaderStageInfo& outInfo, const SpvReflectDe
 }
 
 } // namespace
+
+#endif
 
 #endif

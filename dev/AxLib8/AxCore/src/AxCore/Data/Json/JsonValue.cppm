@@ -116,6 +116,21 @@ public:
 
 	template<class R>
 	void operator=(const R& r) { setValue(r); }
+
+	JsonValue*	member(StrView name) {
+		JsonValue* o = findMember(name);
+		if (!o) throw Error_JsonReader(Fmt("no member {}", name));
+		return o;
+	}
+
+	const JsonValue* member(StrView name) const { return ax_const_cast(this)->member(name); }
+	
+	      JsonObject& memberObject(StrView name)       { return member(name)->asObject(); }
+	const JsonObject& memberObject(StrView name) const { return member(name)->asObject(); }
+	      JsonArray&  memberArray (StrView name)       { return member(name)->asArray(); }
+	const JsonArray&  memberArray (StrView name) const { return member(name)->asArray(); }
+	      String&     memberString(StrView name)       { return member(name)->asString(); }
+	const String&     memberString(StrView name) const { return member(name)->asString(); }
 	
 //---------
 			JsonValue*	findMember(StrView name);
@@ -287,7 +302,21 @@ public:
 		return m;
 	}
 	const Value* findMember(StrView name) const { return ax_const_cast(this)->findMember(name); }
-
+	
+	JsonValue*	member(StrView name) {
+		JsonValue* o = findMember(name);
+		if (!o) throw Error_JsonReader(Fmt("no member {}", name));
+		return o;
+	}
+	const JsonValue* member(StrView name) const { return ax_const_cast(this)->member(name); }
+	
+	      JsonObject& memberObject(StrView name)       { return member(name)->asObject(); }
+	const JsonObject& memberObject(StrView name) const { return member(name)->asObject(); }
+	      JsonArray&  memberArray (StrView name)       { return member(name)->asArray(); }
+	const JsonArray&  memberArray (StrView name) const { return member(name)->asArray(); }
+	      String&     memberString(StrView name)       { return member(name)->asString(); }
+	const String&     memberString(StrView name) const { return member(name)->asString(); }
+	
 	Value* getOrAddMember(StrView name) {
 		if (auto* m = members.find(name)) return m;
 		return &members.add(name);

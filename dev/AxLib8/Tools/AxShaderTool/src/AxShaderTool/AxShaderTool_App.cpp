@@ -2,7 +2,7 @@ module AxShaderTool;
 import :App;
 import :GenReflect_Null;
 import :GenReflect_Dx12;
-import :GenReflect_Vk;
+import :GenReflect_Slang;
 import :ShaderInfoParser;
 import :GenResultInfo;
 
@@ -130,6 +130,7 @@ void AxShaderTool_App::writeNinja_Header(IString& outStr) {
 	
 	writeEnvVar("ninja");
 	writeEnvVar("vulkan_sdk");
+	writeEnvVar("slang_sdk");
 	writeEnvVar("windows_sdk_bin");
 	writeEnvVar("AxEngine_bin");
 	writeEnvVar("AxIncludeDir");
@@ -282,7 +283,7 @@ int AxShaderTool_App::onRun() {
 
 #if AX_RENDERER_VK
 	} else if (opt.genReflect_Vk) {
-		GenReflect_Vk c;
+		GenReflect_Slang c;
 		c.generate(opt.out, opt.file, RenderAPI::Vk);
 #endif
 

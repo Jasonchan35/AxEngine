@@ -309,14 +309,16 @@ AX_GCC_WARNING_POP()
 
 		auto programType = (desc.Version & 0xFFFF0000) >> 16;
 		switch (programType) {
-			case D3D12_SHVER_VERTEX_SHADER:		outInfo.stageFlags = ShaderStageFlags::Vertex;		break;
-			case D3D12_SHVER_PIXEL_SHADER:		outInfo.stageFlags = ShaderStageFlags::Pixel;		break;
-			case D3D12_SHVER_GEOMETRY_SHADER:	outInfo.stageFlags = ShaderStageFlags::Geometry;	break;
-			case D3D12_SHVER_COMPUTE_SHADER:	outInfo.stageFlags = ShaderStageFlags::Compute;		break;
+			case D3D12_SHVER_VERTEX_SHADER:        outInfo.stageFlags = ShaderStageFlags::Vertex;        break;
+			case D3D12_SHVER_PIXEL_SHADER:         outInfo.stageFlags = ShaderStageFlags::Pixel;         break;
+			case D3D12_SHVER_GEOMETRY_SHADER:      outInfo.stageFlags = ShaderStageFlags::Geometry;      break;
+			case D3D12_SHVER_COMPUTE_SHADER:       outInfo.stageFlags = ShaderStageFlags::Compute;       break;
+			case D3D12_SHVER_MESH_SHADER:          outInfo.stageFlags = ShaderStageFlags::Mesh;          break;
+			case D3D12_SHVER_AMPLIFICATION_SHADER: outInfo.stageFlags = ShaderStageFlags::Amplification; break;
 			default: {
-				AX_ASSERT(false);
-				AX_LOG("Unknown shader stage type {}", programType);
-			} break;
+				throw Error_Runtime(Fmt("Unknown shader stage type {}", programType));
+			}
+			break;
 		}
 
 		{
@@ -548,7 +550,8 @@ void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& ou
 		auto& outVar  = outInfo.variables.emplaceBack();
 		outVar.name   = StrView_c_str(varDesc.Name);
 		outVar.offset = ax_safe_cast_from(varDesc.StartOffset);
-					
+		outVar.size   = ax_safe_cast_from(varDesc.Size);
+
 		outVar.dataType = _getRenderDataType(varType);
 
 		if (outVar.dataType == RenderDataType::None) {
