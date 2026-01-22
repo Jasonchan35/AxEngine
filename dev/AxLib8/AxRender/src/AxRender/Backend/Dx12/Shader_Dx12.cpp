@@ -42,7 +42,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	using ParamBase    = ShaderParamSpace_Backend::ParamBase;
 	using SamplerParam = ShaderParamSpace_Backend::SamplerParam; 
 	
-	AX_LOG("--- Shader Pass {} -------", debugName());
+//	AX_LOG("--- Shader Pass {} -------", debugName());
 
 	constexpr D3D12_SHADER_VISIBILITY kDefaultShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
