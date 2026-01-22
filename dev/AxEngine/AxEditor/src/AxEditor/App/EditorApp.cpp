@@ -4,6 +4,7 @@ module AxEditor;
 
 import :EditorApp;
 import :EditorMainWindow;
+import :AxOpenUsd;
 
 namespace AxEditor {
 
@@ -57,6 +58,7 @@ void EditorApp::onCreate() {
 	_engine.create(engineDesc);
 	
 	_createDemoScene();
+	_testLoadOpenUsd();
 }
 
 void EditorApp::onPeekMessage() {
@@ -84,6 +86,11 @@ void EditorApp::_createDemoScene() {
 			SceneEntity::s_new(AX_NEW, entity, Fmt("child_{}.{}", i, j));
 		}
 	}
+}
+
+void EditorApp::_testLoadOpenUsd() {
+	AxOpenUsd usd;
+	usd.openFile("Assets/Scenes/main_sponza/NewSponza_Main_USD_Yup_003.usda");
 }
 
 } //namespace

@@ -12,8 +12,8 @@ call _vcpkg\bootstrap-vcpkg.bat
 _vcpkg\vcpkg install libpng:%triplets% --recurse
 _vcpkg\vcpkg install libjpeg-turbo:%triplets% --recurse
 _vcpkg\vcpkg install freetype:%triplets% --recurse
+_vcpkg\vcpkg install usd:%triplets% --recurse
 
-@rem _vcpkg\vcpkg install usd:%triplets% --recurse
 @rem _vcpkg\vcpkg install assimp:%triplets% --recurse
 @rem _vcpkg\vcpkg install imgui:%triplets% --recurse
 @rem _vcpkg\vcpkg install directxtex:%triplets% --recurse
