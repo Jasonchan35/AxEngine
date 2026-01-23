@@ -12,8 +12,8 @@ namespace AxEditor {
 class AxAssimp_Importer : public NonCopyable {
 public:
 	Array<SPtr<MeshObject>> _meshes;
-	
-	
+	JsonValue _metadata;
+
 	void openFile(StrView filename) {
 		Assimp::Importer importer;
 	
@@ -39,12 +39,51 @@ public:
 			throw Error_Runtime(msg);
 		}
 		
+		importMetaData(_metadata.setToObject(), scene->mMetaData);
+		AX_LOG("Metadata {}", _metadata);
+		
 		for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 			aiMesh* srcMesh = scene->mMeshes[i];
 			importMesh(srcMesh);
 		}
 		
-		importNode(scene->mRootNode, nullptr, Mat4f::s_identity());
+		importNode(scene->mRootNode, nullptr);
+	}
+	
+	static void importMetaData(JsonObject* jsonObj, const aiMetadata* srcData) {
+		if (!srcData) return;
+		
+		for (unsigned int i = 0; i < srcData->mNumProperties; ++i) {
+			auto* dstVal = jsonObj->getOrAddMember(toStrView(srcData->mKeys[i]));
+			
+			auto& srcVal = srcData->mValues[i];
+			switch (srcVal.mType) {
+				case AI_BOOL         : dstVal->setValue(reinterpret_cast<bool*>(srcVal.mData)); break;
+				case AI_INT32        : dstVal->setValue(reinterpret_cast<i32 *>(srcVal.mData)); break;
+				case AI_INT64        : dstVal->setValue(reinterpret_cast<i64 *>(srcVal.mData)); break;
+				case AI_UINT32       : dstVal->setValue(reinterpret_cast<u32 *>(srcVal.mData)); break;
+				case AI_UINT64       : dstVal->setValue(reinterpret_cast<u64 *>(srcVal.mData)); break;
+				case AI_FLOAT        : dstVal->setValue(reinterpret_cast<f32 *>(srcVal.mData)); break;
+				case AI_DOUBLE       : dstVal->setValue(reinterpret_cast<f64 *>(srcVal.mData)); break;
+				case AI_AISTRING     : {
+					auto* srcString = static_cast<aiString*>(srcVal.mData);
+					dstVal->setValue(toStrView(*srcString));
+				} break;
+				case AI_AIVECTOR3D   : {
+					const auto* srcVertor = static_cast<aiVector3D*>(srcVal.mData);
+					auto& dstArray  = *dstVal->setToArray(3);
+					dstArray[0] = srcVertor->x;
+					dstArray[1] = srcVertor->y;
+					dstArray[2] = srcVertor->z;
+				} break;
+				case AI_AIMETADATA   : {
+					auto* srcMetadata = static_cast<aiMetadata*>(srcVal.mData);
+					importMetaData(dstVal->setToObject(), srcMetadata);
+				} break;
+				default: throw Error_Runtime(Fmt("Unknown aiMetadata type: %d", ax_enum_int(srcVal.mType)));
+			}
+		}
+		
 	}
 
 	static StrView toStrView(const aiString&     s) { return StrView(s.data, s.length); }
@@ -104,14 +143,12 @@ public:
 			default: AX_ASSERT_TODO();
 		}
 	}
-	
-	void importNode(const aiNode* srcNode, SceneEntity* parent, const Mat4f& parentInverseMat) {
+
+	void importNode(const aiNode* srcNode, SceneEntity* parent) {
 		auto entity = SceneEntity::s_new(AX_NEW, parent, toStrView(srcNode->mName));
 		
-		auto worldMat = toMat4f(srcNode->mTransformation);
-		auto localMat = worldMat * parentInverseMat;
+		auto localMat = toMat4f(srcNode->mTransformation);
 		entity->transform.setMatrix(localMat);
-		auto worldMatInv = worldMat.inverse();
 		
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
@@ -123,7 +160,7 @@ public:
 
 		entity->ensureChildrenCapacity(srcNode->mNumChildren);
 		for (auto* srcChild : Span(srcNode->mChildren, srcNode->mNumChildren)) {
-			importNode(srcChild, entity, worldMatInv);
+			importNode(srcChild, entity);
 		}
 	}
 };
