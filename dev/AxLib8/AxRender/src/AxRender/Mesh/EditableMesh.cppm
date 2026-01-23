@@ -164,6 +164,7 @@ public:
 	void	clear();
 
 	Face&		addFace(IntSpan pointIndices);
+	
 	Point&		addPoint(const Vec3& pos);
 	Point&		addPoint(double x, double y, double z) { return addPoint(Vec3(x,y,z)); }
 
@@ -213,7 +214,6 @@ public:
 
 	EditableMesh();
 
-private:
 	Array<Face>      _faces;
 	Array<Point>     _points;
 	Array<Edge>      _edges;

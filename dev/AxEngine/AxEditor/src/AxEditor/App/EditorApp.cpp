@@ -58,9 +58,9 @@ void EditorApp::onCreate() {
 	engineDesc.inEditor = true;
 	_engine.create(engineDesc);
 	
-	_createDemoScene();
+//	_createDemoScene();
 	_testLoadFbx();
-	_testLoadOpenUsd();
+//	_testLoadOpenUsd();
 }
 
 void EditorApp::onPeekMessage() {

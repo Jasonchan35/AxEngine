@@ -23,7 +23,7 @@ void InspectorUIPanel::render(RenderRequest* req) {
 	
 	if (auto* entity = rttiCast<SceneEntity>(obj)) {
 		ImUILabelText("position", Fmt("{}", entity->transform.position));
-		ImUILabelText("rotation", Fmt("{}", entity->transform.rotation));
+		ImUILabelText("rotation", Fmt("{}", entity->transform.rotation.eulerDeg()));
 		ImUILabelText("scale"   , Fmt("{}", entity->transform.scale   ));
 		
 		Int componentCount = entity->componentCount();

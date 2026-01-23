@@ -51,17 +51,26 @@ public:
 	
 	Int childCount() const { return _children.size(); }
 	SceneEntity* childAt(Int index) { return _children[index].ptr(); }
+	void ensureChildrenCapacity(Int n) { _children.ensureCapacity(n); }
 
 	Int componentCount() const { return _components.size(); }
 	SceneComponent* componentAt(Int index) { return _components[index].ptr(); }
 
 	struct Transform {
-		Vec3f position{0,0,0};
-		Vec3f rotation{0,0,0};
-		Vec3f scale{1,1,1};
+		Vec3f  position = Vec3f::s_zero();
+		Quat4f rotation = Quat4f::s_identity();
+		Vec3f  scale    = Vec3f::s_one();
+		
+		void setTRS(const Vec3f& position_, const Quat4f& rotation_, const Vec3f& scale_) {
+			position = position_;
+			rotation = rotation_;
+			scale    = scale_;
+		};
+		
+		void setMatrix(const Mat4f& mat) { mat.getTRS(position, rotation, scale); }
 		
 		const Mat4f& getObjectToWorld() {
-			_objectToWorld = Mat4f::s_TRS_deg(position, rotation, scale);
+			_objectToWorld = Mat4f::s_TRS(position, rotation, scale);
 			return _objectToWorld;
 		}
 	private:

@@ -7,8 +7,6 @@ export namespace AxEditor {
 
 class AxAssimp : public NonCopyable {
 public:
-	AxAssimp();
-	
 	void openFile(StrView filename);
 };
 
