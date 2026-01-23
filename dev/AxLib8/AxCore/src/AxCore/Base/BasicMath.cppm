@@ -117,7 +117,7 @@ template<class T> requires Type_IsFundamental<T> AX_NODISCARD AX_INLINE constexp
 template<class T> inline constexpr T infinity_() { return NumLimit<T>::infinity(); }
 struct infinity { template<class T> constexpr operator T() const { return infinity_<T>(); } };
 
-template<class T> inline constexpr T epsilon_()	{ return NumLimit<T>::epsilon(); }
+template<class T> inline constexpr auto epsilon_()	{ return NumLimit<T>::epsilon(); }
 struct epsilon { template<class T> constexpr operator T() const { return epsilon_<T>(); } };
 
 template<class T> inline constexpr T NaN_() { return NumLimit<T>::NaN(); }
@@ -167,23 +167,23 @@ AX_NODISCARD AX_INLINE constexpr modf_Result<T> modf(const T& v) {
 }
 
 template<class T> requires Type_IsFundamental<T>
-AX_NODISCARD AX_INLINE constexpr bool almostEqual(const T& a, const T& b) {
+AX_NODISCARD AX_INLINE constexpr bool almostEqual(const T& a, const T& b, const T& epsilon = Math::epsilon_<T>()) {
 	if constexpr (Type_IsIntType<T>) {
 		return a == b;
 	} else {
 		auto diff = abs(a - b);
-		return diff <= epsilon_<T>();
+		return diff <= epsilon;
 	}
 }
 
-template<class A, class B>
-AX_NODISCARD AX_INLINE constexpr bool almostEqual(const A& a, const B& b) {
-	return a.almostEqual(b);
+template<class A, class B, class EP = decltype(Math::epsilon_<A>())>
+AX_NODISCARD AX_INLINE constexpr bool almostEqual(const A& a, const B& b, const EP& epsilon = Math::epsilon_<A>()) {
+	return a.almostEqual(b, epsilon);
 }
 
 template<class T> AX_NODISCARD AX_INLINE constexpr
-bool almostZero(const T& a) {
-	return (almostEqual(a, zero_<T>()));
+bool almostZero(const T& a, T epsilon = Math::epsilon_<T>()) {
+	return almostEqual(a, epsilon);
 }
 
 template<class T> AX_NODISCARD AX_INLINE constexpr
@@ -193,8 +193,8 @@ bool exactlyEqual(const T& a, const T& b) {
 	AX_GCC_WARNING_POP()
 }
 
-template< class T > AX_NODISCARD AX_INLINE constexpr
-T	safeDiv	( const T& a, const T& b )	{ return almostZero(b) ? zero_<T>() : a / b; }
+template<class T> requires Type_IsFundamental<T>
+AX_NODISCARD AX_INLINE constexpr T safeDiv(const T& a, const T& b) { return almostZero(b) ? zero_<T>() : a / b; }
 
 template< class T > AX_NODISCARD AX_INLINE constexpr
 bool	isInRange	(const T& x, const T& a, const T & b)		{ return x >= a && x <= b; }

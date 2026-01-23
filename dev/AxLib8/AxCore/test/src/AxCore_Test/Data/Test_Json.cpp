@@ -81,8 +81,8 @@ public:
 			AX_TEST_EQ(obj["m_int"]		, 10);
 			AX_TEST_EQ(obj["m_null"]	, nullptr);
 
-			AX_TEST_ALMOST_EQ(obj["m_float"]	, 3.4f);
-			AX_TEST_ALMOST_EQ(obj["m_double"]	, 1.23);
+			AX_TEST_ALMOST_EQ(obj["m_float"].asDouble() , static_cast<f64>(3.4f));
+			AX_TEST_ALMOST_EQ(obj["m_double"].asDouble(), 1.23);
 
 			auto* jsonArr = obj["m_array"].tryGetArray();
 			AX_TEST_IF(jsonArr != nullptr);

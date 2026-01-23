@@ -14,10 +14,13 @@ template<> struct PI_Struct<f32> { static constexpr f32 value = 3.14159265358979
 template<> struct PI_Struct<f64> { static constexpr f64 value = 3.14159265358979323846; };
 template<class T> constexpr T	PI_ = PI_Struct<T>::value;
 
-template<class T> AX_NODISCARD AX_INLINE constexpr T radians	(T deg) { return deg * (PI_<T> / T(180.0)); }
-template<class T> AX_NODISCARD AX_INLINE constexpr T degrees	(T rad) { return rad * (T(180.0) / PI_<T>); }
+template<class T> requires Type_IsFundamental<T> 
+AX_NODISCARD AX_INLINE constexpr T radians(T deg) { return deg * (PI_<T> / T(180.0)); }
+template<class T> requires Type_IsFundamental<T> 
+AX_NODISCARD AX_INLINE constexpr T degrees(T rad) { return rad * (T(180.0) / PI_<T>); }
 
-template< class T > constexpr T	reciprocal( const T& a ) { return safeDiv(T(1), a); }
+template< class T > requires Type_IsFundamental<T> 
+constexpr T	reciprocal( const T& a ) { return safeDiv(T(1), a); }
 
 AX_NODISCARD AX_INLINE float	sin	( float  rad ) { return std::sin(rad); }
 AX_NODISCARD AX_INLINE double	sin	( double rad ) { return std::sin(rad); }

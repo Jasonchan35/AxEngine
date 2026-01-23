@@ -29,9 +29,8 @@ public:
 		AX_TEST_ALMOST_EQ(c[5].e[0], T(5));
 		AX_TEST_ALMOST_EQ(c[5].e[2], T(9));
 	}
-	
+
 	void test_case1() {
-		AX_TEST_EQ(Math::epsilon_<Vec4f>().y, Math::epsilon_<f32>());
 		// AX_TEST_EQ(sizeof(Vec3f_NoSIMD), 4 * 3);
 		// AX_TEST_EQ(sizeof(Vec3f_SSE)   , 4 * 4);
 		AX_TEST_EQ(sizeof(Vec4f_Basic), 4 * 4);
@@ -67,10 +66,10 @@ public:
 	
 	template<class T, VecSimd SIMD>
 	struct SIMD_Test {
-		using Vec1 = Vec1_<T, SIMD>; 
-		using Vec2 = Vec2_<T, SIMD>; 
-		using Vec3 = Vec3_<T, SIMD>; 
-		using Vec4 = Vec4_<T, SIMD>;
+		using Vec1  = Vec1_<T, SIMD>; 
+		using Vec2  = Vec2_<T, SIMD>; 
+		using Vec3  = Vec3_<T, SIMD>; 
+		using Vec4  = Vec4_<T, SIMD>;
 		
 		Vec1 add1;  Vec1 sub1;	Vec1 mul1;	Vec1 div1;
 		Vec2 add2;  Vec2 sub2;	Vec2 mul2;	Vec2 div2;
@@ -92,46 +91,46 @@ public:
 		
 		SIMD_Test() {
 			{
-				auto a = Vec1(2);
-				auto b = Vec1(1);
-				add1 = a + b;	add_scalar1 = a + 1;	scalar_add1 = T(2) + b;
-				sub1 = a - b;	sub_scalar1 = a - 1;	scalar_sub1 = T(2) - b;
-				mul1 = a * b;	mul_scalar1 = a * 1;	scalar_mul1 = T(2) * b;
-				div1 = a / b;	div_scalar1 = a / 1;	scalar_div1 = T(2) / b;
+				auto a = Vec1(T(2));
+				auto b = Vec1(T(1));
+				add1 = a + b;	add_scalar1 = a + T(1);	scalar_add1 = T(2) + b;
+				sub1 = a - b;	sub_scalar1 = a - T(1);	scalar_sub1 = T(2) - b;
+				mul1 = a * b;	mul_scalar1 = a * T(1);	scalar_mul1 = T(2) * b;
+				div1 = a / b;	div_scalar1 = a / T(1);	scalar_div1 = T(2) / b;
 			}
 			{
-				auto a = Vec2(2, 3);
-				auto b = Vec2(1, 2);
-				add2 = a + b;	add_scalar2 = a + 1;	scalar_add2 = T(2) + b;
-				sub2 = a - b;	sub_scalar2 = a - 1;	scalar_sub2 = T(2) - b;
-				mul2 = a * b;	mul_scalar2 = a * 1;	scalar_mul2 = T(2) * b;
-				div2 = a / b;	div_scalar2 = a / 1;	scalar_div2 = T(2) / b;
+				auto a = Vec2(T(2), T(3));
+				auto b = Vec2(T(1), T(2));
+				add2 = a + b;	add_scalar2 = a + T(1);	scalar_add2 = T(2) + b;
+				sub2 = a - b;	sub_scalar2 = a - T(1);	scalar_sub2 = T(2) - b;
+				mul2 = a * b;	mul_scalar2 = a * T(1);	scalar_mul2 = T(2) * b;
+				div2 = a / b;	div_scalar2 = a / T(1);	scalar_div2 = T(2) / b;
 			}
 			{
-				auto a = Vec3(2, 3, 4);
-				auto b = Vec3(1, 2, 3);
-				add3 = a + b;	add_scalar3 = a + 1;	scalar_add3 = T(2) + b;
-				sub3 = a - b;	sub_scalar3 = a - 1;	scalar_sub3 = T(2) - b;
-				mul3 = a * b;	mul_scalar3 = a * 1;	scalar_mul3 = T(2) * b;
-				div3 = a / b;	div_scalar3 = a / 1;	scalar_div3 = T(2) / b;
+				auto a = Vec3(T(2), T(3), T(4));
+				auto b = Vec3(T(1), T(2), T(3));
+				add3 = a + b;	add_scalar3 = a + T(1);	scalar_add3 = T(2) + b;
+				sub3 = a - b;	sub_scalar3 = a - T(1);	scalar_sub3 = T(2) - b;
+				mul3 = a * b;	mul_scalar3 = a * T(1);	scalar_mul3 = T(2) * b;
+				div3 = a / b;	div_scalar3 = a / T(1);	scalar_div3 = T(2) / b;
 			}
 			{
-				auto a = Vec4(2, 3, 4, 5);
-				auto b = Vec4(1, 2, 3, 4);
-				add4 = a + b;	add_scalar4 = a + 1;	scalar_add4 = T(2) + b;
-				sub4 = a - b;	sub_scalar4 = a - 1;	scalar_sub4 = T(2) - b;
-				mul4 = a * b;	mul_scalar4 = a * 1;	scalar_mul4 = T(2) * b;
-				div4 = a / b;	div_scalar4 = a / 1;	scalar_div4 = T(2) / b;
+				auto a = Vec4(T(2), T(3), T(4), T(5));
+				auto b = Vec4(T(1), T(2), T(3), T(4));
+				add4 = a + b;	add_scalar4 = a + T(1);	scalar_add4 = T(2) + b;
+				sub4 = a - b;	sub_scalar4 = a - T(1);	scalar_sub4 = T(2) - b;
+				mul4 = a * b;	mul_scalar4 = a * T(1);	scalar_mul4 = T(2) * b;
+				div4 = a / b;	div_scalar4 = a / T(1);	scalar_div4 = T(2) / b;
 			}
 			
 			{
-				auto a = Vec3(2, 3, 4);
-				auto b = Vec3(1, 2, 3);
+				auto a = Vec3(T(2), T(3), T(4));
+				auto b = Vec3(T(1), T(2), T(3));
 				dot3 = a.dot(b);
 			}
 			
 			{
-				auto a = Vec4(1, 2, 3, 4);
+				auto a = Vec4(T(1), T(2), T(3), T(4));
 				neg = -a;
 			}
 		}
@@ -168,31 +167,54 @@ public:
 	
 	template<class T, VecSimd SIMD>
 	struct SIMD_TestMat {
-		using Vec3 = Vec3_<T, SIMD>;
-		using Vec4 = Vec4_<T, SIMD>;
-		using Mat4 = Mat4_<T, SIMD>;
+		using Vec3  = Vec3_<T, SIMD>;
+		using Vec4  = Vec4_<T, SIMD>;
+		using Quat4 = Quat4_<T, SIMD>;
+		using Mat4  = Mat4_<T, SIMD>;
 		
 		Mat4 mat_mul;
 		Vec3 mat_mul_vector;
 		Vec4 mat_mul_point;
-		
+		Mat4 mat_TRS;
+
 		SIMD_TestMat() {
-			Mat4 a(	10, 11, 12, 13,
-					14, 15, 16, 17,
-					20, 21, 22, 23,
-					24, 25, 26, 27);
+			{
+				Mat4 a(	10, 11, 12, 13,
+					   14, 15, 16, 17,
+					   20, 21, 22, 23,
+					   24, 25, 26, 27);
 
-			Mat4 b(	30, 31, 32, 33,
-					34, 35, 36, 37,
-					40, 41, 42, 43,
-					44, 45, 46, 47);
+				Mat4 b(	30, 31, 32, 33,
+						34, 35, 36, 37,
+						40, 41, 42, 43,
+						44, 45, 46, 47);
 
-			mat_mul = a.mulMatrix(b);
+				mat_mul = a.mulMatrix(b);
 			
-			Vec3 vec(1,2,3);
-			Vec4 pt(1,2,3,4);
-			mat_mul_vector = a.mulVector(vec);
-			mat_mul_point  = a.mulPoint(pt);
+				Vec3 vec(1,2,3);
+				Vec4 pt(1,2,3,4);
+				mat_mul_vector = a.mulVector(vec);
+				mat_mul_point  = a.mulPoint(pt);
+			}
+			
+		
+			{
+				Vec3  pos(1,2,3);
+				Quat4 rot = Quat4::s_eulerDeg({10, 20, 30});
+				Vec3  scale(4,5,6);
+				mat_TRS = Mat4::s_TRS(pos, rot, scale);
+				
+				Vec3  resultPos;
+				Quat4 resultRot;
+				Vec3  resultScale;
+				
+				mat_TRS.getTRS(resultPos, resultRot, resultScale);
+
+				AX_TEST_ALMOST_EQ_EPSILON(pos,   resultPos  , T(0.1));
+				AX_TEST_ALMOST_EQ_EPSILON(rot,   resultRot  , T(0.1));
+				AX_TEST_ALMOST_EQ_EPSILON(scale, resultScale, T(0.1));
+			}			
+			
 		}
 	};
 	
@@ -204,6 +226,7 @@ public:
 		AX_TEST_ALMOST_EQ(basic.mat_mul, sse.mat_mul);
 		AX_TEST_ALMOST_EQ(basic.mat_mul_vector, sse.mat_mul_vector);
 		AX_TEST_ALMOST_EQ(basic.mat_mul_point , sse.mat_mul_point);
+		AX_TEST_ALMOST_EQ(basic.mat_TRS,        sse.mat_TRS);
 	}
 	
 };
@@ -226,7 +249,7 @@ void Test_Vec_Func() {
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f32>)
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
 	
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
+//	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
 	
 //	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f16>)
 	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f32>)

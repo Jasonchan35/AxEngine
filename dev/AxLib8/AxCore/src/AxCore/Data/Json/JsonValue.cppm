@@ -3,7 +3,7 @@ module;
 
 export module AxCore.JsonValue;
 export import AxCore.Logger;
-export import AxCore.Quat;
+export import AxCore.Mat;
 export import AxCore.Dict;
 
 export namespace ax {
@@ -65,10 +65,6 @@ public:
 	bool operator==(u16 v) const { return operator==(static_cast<u64>(v)); }
 	bool operator==(u32 v) const { return operator==(static_cast<u64>(v)); }
 	bool operator==(u64 v) const { u64 tmp; if (!tryGetValue(tmp)) return false; return v == tmp; }
-
-	template<class R> requires Type_IsFundamental<R>
-	constexpr bool almostEqual(const R& r) const { R tmp; return tryGetValue(tmp) && Math::almostEqual(tmp, r); }
-	
 	bool operator==(StrViewA v) const { if (!isString()) return false; return asString() == v; }
 	
 	bool operator==(const bool & v) const { if (!isBool()) return false; return asBool() == v; }
@@ -472,22 +468,6 @@ bool JsonValue::tryGetValue(Mat4_<R, R_SIMD>& outValue) const noexcept {
 	if (!arr[2].tryGetValue(outValue.cz)) return false;
 	if (!arr[3].tryGetValue(outValue.cw)) return false;
 	return true;
-}
-
-} // namespace
-
-namespace ax::Math {
-
-AX_INLINE bool almostEqual(const JsonValue& v, float f) {
-	float tmp;
-	if (!v.tryGetValue(tmp)) return false;
-	return almostEqual(tmp, f);
-}
-
-AX_INLINE bool almostEqual(const JsonValue& v, double f) {
-	double tmp;
-	if (!v.tryGetValue(tmp)) return false;
-	return almostEqual(tmp, f);
 }
 
 } // namespace

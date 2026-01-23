@@ -114,10 +114,12 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); } 
 
 	template<VecSimd R_SIMD>
-	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec, T epsilon = Math::epsilon_<T>) const { 
+		return _simd.almostEqual(vec._simd, epsilon); 
+	}
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
-	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero(T epsilon = Math::epsilon_<T>()) const { return _simd.almostZero(epsilon); }
 
 	AX_NODISCARD AX_INLINE constexpr This min(const This& vec) const { return _simd.min(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr This max(const This& vec) const { return _simd.max(vec._simd); }
@@ -214,10 +216,12 @@ public:
 	AX_NODISCARD AX_INLINE constexpr Vec4 xy00() const { return Vec4(x,y,0,0); }
 	
 	template<VecSimd R_SIMD>
-	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec, T epsilon = Math::epsilon_<T>()) const { 
+		return _simd.almostEqual(vec._simd, epsilon); 
+	}
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
-	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero(T epsilon = Math::epsilon_<T>()) const { return _simd.almostZero(epsilon); }
 
 	AX_NODISCARD AX_INLINE constexpr This min(const This& vec) const { return _simd.min(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr This max(const This& vec) const { return _simd.max(vec._simd); }
@@ -345,10 +349,12 @@ public:
 	AX_NODISCARD AX_INLINE constexpr Vec4 xyz1() const { return Vec4(x,y,z,1); }
 	
 	template<VecSimd R_SIMD>
-	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec, T epsilon = Math::epsilon_<T>()) const { 
+		return _simd.almostEqual(vec._simd, epsilon); 
+	}
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
-	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero(T epsilon = Math::epsilon_<T>()) const { return _simd.almostZero(epsilon); }
 
 	AX_NODISCARD AX_INLINE constexpr This min(const This& vec) const { return _simd.min(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr This max(const This& vec) const { return _simd.max(vec._simd); }
@@ -477,14 +483,18 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); }
 
-	AX_INLINE constexpr Vec3	xyz_direct() const	{ return Vec3(x,y,z); }
-	AX_INLINE constexpr Vec3	xyz_div_w() const	{ return (*this / w).xyz_direct(); } // de-homogenize
+	AX_INLINE constexpr Vec3	xyz() const	{ return Vec3(x,y,z); }
+	AX_INLINE constexpr Vec3	xyz_div_w() const	{ return (*this / w).xyz(); } // de-homogenize
+	AX_INLINE constexpr Vec4	xyz0() const	{ return Vec4(x,y,z,0); }
+	AX_INLINE constexpr Vec4	xyz1() const	{ return Vec4(x,y,z,1); }
 
 	template<VecSimd R_SIMD>
-	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec) const { return _simd.almostEqual(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec, T epsilon = Math::epsilon_<T>()) const { 
+		return _simd.almostEqual(vec._simd, epsilon); 
+	}
 	AX_NODISCARD AX_INLINE constexpr bool exactlyEqual(const This& vec) const { return _simd.exactlyEqual(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
-	AX_NODISCARD AX_INLINE constexpr bool almostZero() const { return _simd.almostZero(); }
+	AX_NODISCARD AX_INLINE constexpr bool almostZero(T epsilon = Math::epsilon_<T>()) const { return _simd.almostZero(epsilon); }
 
 	AX_NODISCARD AX_INLINE constexpr This min(const This& vec) const { return _simd.min(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr This max(const This& vec) const { return _simd.max(vec._simd); }
@@ -545,14 +555,22 @@ namespace Math {
 	}
 
 	template<Int N, class T, VecSimd SIMD> inline
-	Vec_<N,T,SIMD> degress(const Vec_<N,T,SIMD>& deg) {
+	Vec_<N,T,SIMD> degrees(const Vec_<N,T,SIMD>& rad) {
 		Vec_<N,T,SIMD> o;
 		for (Int i = 0; i < N; ++i) {
-			o.e[i] = Math::degress(deg.e[i]);
+			o.e[i] = Math::degrees(rad.e[i]);
 		}
 		return o;
 	}
 
+	template<Int N, class T, VecSimd SIMD> inline
+	Vec_<N,T,SIMD> safeDiv(const Vec_<N,T,SIMD>& v, const T& d) {
+		Vec_<N,T,SIMD> o;
+		for (Int i = 0; i < N; ++i) {
+			o.e[i] = Math::safeDiv(v.e[i], d);
+		}
+		return o;
+	}
 } // namespace Math
 
 

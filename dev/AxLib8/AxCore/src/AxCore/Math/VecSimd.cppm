@@ -31,8 +31,8 @@ struct VecSimd_NumLimit {
 	static constexpr VEC  lowest        () { return  VEC::s_all(T_NumLimit::lowest());      }
 	static constexpr VEC  min           () { return  VEC::s_all(T_NumLimit::min());         }
 	static constexpr VEC  max           () { return  VEC::s_all(T_NumLimit::max());         }
-	static constexpr VEC  epsilon       () { return  VEC::s_all(T_NumLimit::epsilon());     }
 	static constexpr VEC  NaN           () { return  VEC::s_all(T_NumLimit::NaN());         }
+	static constexpr T    epsilon       () { return  T_NumLimit::epsilon();                 }
 };
 
 template<Int N, class T, VecSimd SIMD>
@@ -120,17 +120,26 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static Vec s_one () { return s_all(1); }
 
 	template<VecSimd R_SIMD>
-	AX_NODISCARD AX_INLINE bool almostEqual(VecSimd_Data_<N, T, R_SIMD> vec) const {
-		return unroll_and(vec, [](T a, T b){ return Math::almostEqual(a, b); });
+	AX_NODISCARD AX_INLINE bool almostEqual(VecSimd_Data_<N, T, R_SIMD> vec, T epsilon) const {
+		for (Int i = 0; i < N; ++i) {
+			if (!Math::almostEqual(e[i], vec.e[i], epsilon)) return false;
+		}
+		return true;
 	}
 
-	AX_NODISCARD AX_INLINE bool almostZero() const {
-		return unroll_and_0([](T a){ return Math::almostZero(a); });
+	AX_NODISCARD AX_INLINE bool almostZero(T epsilon) const {
+		for (Int i = 0; i < N; ++i) {
+			if (!Math::almostZero(e[i], epsilon)) return false;
+		}
+		return true;
 	}
 
 	template<VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE bool exactlyEqual(VecSimd_Data_<N, T, R_SIMD> vec) const {
-		return unroll_and(vec, [](T a, T b){ return Math::exactlyEqual(a, b); });
+		for (Int i = 0; i < N; ++i) {
+			if (!Math::exactlyEqual(e[i], vec.e[i])) return false;
+		}
+		return true;
 	}
 
 	AX_NODISCARD AX_INLINE bool operator==(Vec vec) const { return exactlyEqual(vec); }
@@ -251,41 +260,8 @@ public:
 			ret.e[i] = func(t);
 		}		
 		return ret;
-	}		
-
-	AX_NODISCARD AX_INLINE constexpr bool unroll_and_0(bool (*func)(T a)) const {
-		bool ret = func(e[0]);
-		for (Int i = 1; i < N; ++i) {
-			ret = ret && func(e[i]);
-		}
-		return ret;
 	}
 
-	AX_NODISCARD AX_INLINE constexpr bool unroll_or(bool (*func)(T a)) const {
-		bool ret = func(e[0]);
-		for (Int i = 1; i < N; ++i) {
-			ret = ret || func(e[i]);
-		}
-		return ret;
-	}
-
-	template<VecSimd R_SIMD>
-	AX_NODISCARD AX_INLINE constexpr bool unroll_and(VecSimd_Data_<N, T, R_SIMD> vec, bool (*func)(T a, T b)) const {
-		bool ret = func(e[0], vec.e[0]);
-		for (Int i = 1; i < N; ++i) {
-			ret = ret && func(e[i], vec.e[i]);
-		}
-		return ret;
-	}
-
-	AX_NODISCARD AX_INLINE constexpr bool unroll_or(Vec vec, bool (*func)(T a, T b)) const {
-		bool ret = func(e[0], vec.e[0]);
-		for (Int i = 1; i < N; ++i) {
-			ret = ret || func(e[i], vec.e[i]);
-		}
-		return ret;
-	}
-	
 	AX_NODISCARD AX_INLINE constexpr Vec unroll(Vec vec, T (*func)(T a, T b)) const {
 		Vec ret;
 		for (Int i = 0; i < N; ++i) { ret.e[i] = func(e[i], vec.e[i]); }

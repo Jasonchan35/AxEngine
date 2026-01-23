@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxCore.MathShapes;
-export import AxCore.Quat;
+export import AxCore.Mat;
 
 export namespace ax::Math {
 #define AX_MathAxisDir_ENUM_LIST(E) \

@@ -105,7 +105,7 @@ Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos) const {
 
 template<class T> inline
 Mat4_<T> Camera3_<T>::viewMatrix() const {
-	return Mat4::s_translate(Vec3(0, 0, -_distance)) * _quat.to_Mat4() * Mat4::s_translate(_aim);
+	return Mat4::s_translate(Vec3(0, 0, -_distance)) * Mat4::s_quat(_quat) * Mat4::s_translate(_aim);
 }
 
 template<class T> inline

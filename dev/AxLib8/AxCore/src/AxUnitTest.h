@@ -54,6 +54,13 @@
 	} while (false) \
 //----
 
+#define AX_TEST_ALMOST_EQ_EPSILON(A, B, EP) \
+	do { \
+		auto tmpTestMsg = Fmt("{} == {}\n  (value: almostEqual({}, {}, {}))", #A, #B, A, B, EP); \
+		::ax::UnitTest_Validate(Math::almostEqual(A, B, EP), tmpTestMsg.c_str()); \
+	} while (false) \
+//----
+
 #define AX_TEST_NOT_ALMOST_EQ(A, B) \
 	do { \
 		auto tmpTestMsg = Fmt("{} == {}\n  (value: !almostEqual({}, {}))", #A, #B, A, B); \
