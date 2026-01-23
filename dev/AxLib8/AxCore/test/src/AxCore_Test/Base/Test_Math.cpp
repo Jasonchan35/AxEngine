@@ -27,6 +27,8 @@ public:
 		auto one  = f16::s_one();
 		auto half = f16::s_half();
 		auto two  = f16::s_two();
+
+		AX_TEST_ALMOST_EQ(two - one, one);
 		
 		AX_TEST_ALMOST_EQ(zero.to_f32(), float(0));
 		AX_TEST_ALMOST_EQ(one.to_f32(),  float(1));

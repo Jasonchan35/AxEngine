@@ -245,11 +245,10 @@ void Test_Vec_Func() {
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u16>)
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u32>)
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u64>)
-	
+
+	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f32>)
 	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
-	
-//	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
 	
 //	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f16>)
 	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f32>)

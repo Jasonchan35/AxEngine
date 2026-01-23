@@ -44,9 +44,9 @@ public:
 	AX_INLINE constexpr This operator-() const { return -_v; }
 
 	AX_INLINE constexpr This operator+(const This& r) const { return _v + r._v; }
-	AX_INLINE constexpr This operator-(const This& r) const { return _v + r._v; }
-	AX_INLINE constexpr This operator*(const This& r) const { return _v + r._v; }
-	AX_INLINE constexpr This operator/(const This& r) const { return _v + r._v; }
+	AX_INLINE constexpr This operator-(const This& r) const { return _v - r._v; }
+	AX_INLINE constexpr This operator*(const This& r) const { return _v * r._v; }
+	AX_INLINE constexpr This operator/(const This& r) const { return _v / r._v; }
 
 	AX_INLINE constexpr void  operator+=(const This& r) { *this = *this + r; }
 	AX_INLINE constexpr void  operator-=(const This& r) { *this = *this - r; }

@@ -533,7 +533,7 @@ namespace half_float
 		struct binary_t {};
 
 		/// Tag for binary construction.
-		HALF_CONSTEXPR_CONST binary_t binary = binary_t();
+		inline HALF_CONSTEXPR_CONST binary_t binary = binary_t();
 
 		/// \name Implementation defined classification and arithmetic
 		/// \{
@@ -2062,7 +2062,7 @@ namespace half_float
 		/// This initializes the half to 0. Although this does not match the builtin types' default-initialization semantics 
 		/// and may be less efficient than no initialization, it is needed to provide proper value-initialization semantics.
 		// HALF_CONSTEXPR half() HALF_NOEXCEPT : data_() {}
-		HALF_CONSTEXPR half() HALF_NOEXCEPT : data_() {}
+		HALF_CONSTEXPR half() = default;
 
 		/// Conversion constructor.
 		/// \param rhs float to convert
