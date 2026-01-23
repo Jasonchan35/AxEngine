@@ -23,6 +23,7 @@ public:
 
 	void dolly	(T delta);
 	
+	void setDistance(T distance) { _distance = distance; }
 	T distance() const { return _distance; }
 
 	void setAim(const Vec3& aim)	{ _aim = aim; }

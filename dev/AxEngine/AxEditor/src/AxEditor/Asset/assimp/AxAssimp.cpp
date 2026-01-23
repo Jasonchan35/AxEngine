@@ -23,12 +23,12 @@ public:
 		const aiScene* scene = importer.ReadFile(TempString(filename).c_str(),
 												 aiProcess_Triangulate
 												 // | aiProcess_CalcTangentSpace
-												 // | aiProcess_SortByPType
 												 // | aiProcessPreset_TargetRealtime_MaxQuality
 												 // | aiProcess_ConvertToLeftHanded
 												 // | aiProcess_GlobalScale
 												 // | aiProcess_ForceGenNormals
 												 // | aiProcess_DropNormals
+												 | aiProcess_SortByPType // only one primitive type per mesh
 												 | aiProcess_PopulateArmatureData
 												 | aiProcess_SplitLargeMeshes
 												 | aiProcess_JoinIdenticalVertices);
@@ -39,12 +39,12 @@ public:
 			throw Error_Runtime(msg);
 		}
 		
-		importNode(scene->mRootNode, nullptr, Mat4f::s_identity());
-	
 		for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 			aiMesh* srcMesh = scene->mMeshes[i];
 			importMesh(srcMesh);
-		}		
+		}
+		
+		importNode(scene->mRootNode, nullptr, Mat4f::s_identity());
 	}
 
 	static StrView toStrView(const aiString&     s) { return StrView(s.data, s.length); }
@@ -58,26 +58,51 @@ public:
 						m.a4, m.b4, m.c4, m.d4);
 	}
 	
+	static RenderPrimitiveType toPrimType(int t) {
+		if (t & aiPrimitiveType_TRIANGLE)	return RenderPrimitiveType::Triangles;
+		if (t & aiPrimitiveType_LINE    )	return RenderPrimitiveType::Lines;
+		if (t & aiPrimitiveType_POINT   )	return RenderPrimitiveType::Points;
+		throw Error_Runtime(Fmt("Unknown aiPrimitiveType type: %d", t));
+	}
+	
 	void importMesh(aiMesh* srcMesh) {
-		EditableMesh editMesh;
-		editMesh._points.ensureCapacity(srcMesh->mNumVertices);
-		editMesh._faces.ensureCapacity(srcMesh->mNumFaces);
-		editMesh._faceEdges.ensureCapacity(srcMesh->mNumFaces * 3);
+		auto meshObject = MeshObject_Backend::s_new(AX_NEW);
+		_meshes.emplaceBack(meshObject);
+		auto& meshData = meshObject->meshData;
 		
-		for (auto& srcVert : Span(srcMesh->mVertices, srcMesh->mNumVertices)) {
-			editMesh.addPoint(toVec3d(srcVert));
+		VertexLayout vertexLayout = Vertex_PosNormalUvColor::s_layout();
+		RenderPrimitiveType primType = toPrimType(srcMesh->mPrimitiveTypes);
+		meshData.create(primType, vertexLayout, VertexIndexType::u16);
+
+		Int numVertices = srcMesh->mNumVertices;
+		RenderMeshEdit editMesh(meshData);
+
+		auto editVertices = meshData.editNewVertices(primType, vertexLayout, VertexIndexType::u16, numVertices);
+
+		if (auto enumerator = editVertices.tryEditPosition()) {
+			auto dst = enumerator->begin();
+			for (auto& srcPos : Span(srcMesh->mVertices, numVertices)) {
+				*dst = toVec3f(srcPos);
+				++dst;
+			}
+			if (dst != enumerator->end()) throw Error_Undefined();
 		}
 		
-		for (auto& srcFace : Span(srcMesh->mFaces, srcMesh->mNumFaces)) {
-			Array<Int, 32> indices;
-			indices.appendRange(
-				Span(srcFace.mIndices, srcFace.mNumIndices), 
-				[](auto& v) { return v;	});
-			editMesh.addFace(indices);
+		switch (primType) {
+			case RenderPrimitiveType::Triangles: {
+				for (auto& srcFace : Span(srcMesh->mFaces, srcMesh->mNumFaces)) {
+					if (srcFace.mNumIndices != 3) continue;
+					const auto* vi = srcFace.mIndices;
+					u16 indices[] = {
+						static_cast<u16>(vi[0]),
+						static_cast<u16>(vi[1]),
+						static_cast<u16>(vi[2])
+					};
+					editVertices.addIndices(Span(indices));
+				}
+			} break;
+			default: AX_ASSERT_TODO();
 		}
-		
-//		auto dstMesh = MeshObject_Backend::s_new(AX_NEW);
-//		RenderMeshEdit(dstMesh->meshData).createFromEditableMesh(editMesh);
 	}
 	
 	void importNode(const aiNode* srcNode, SceneEntity* parent, const Mat4f& parentInverseMat) {
@@ -87,6 +112,14 @@ public:
 		auto localMat = worldMat * parentInverseMat;
 		entity->transform.setMatrix(localMat);
 		auto worldMatInv = worldMat.inverse();
+		
+		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
+			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
+				auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
+				meshRenderer->mesh = *meshObj;
+				meshRenderer->material = RenderStockObjects::s_instance()->materials->simple3d_color;
+			}
+		} 
 
 		entity->ensureChildrenCapacity(srcNode->mNumChildren);
 		for (auto* srcChild : Span(srcNode->mChildren, srcNode->mNumChildren)) {
