@@ -26,6 +26,11 @@ public:
 												 // | aiProcess_SortByPType
 												 // | aiProcessPreset_TargetRealtime_MaxQuality
 												 // | aiProcess_ConvertToLeftHanded
+												 // | aiProcess_GlobalScale
+												 // | aiProcess_ForceGenNormals
+												 // | aiProcess_DropNormals
+												 | aiProcess_PopulateArmatureData
+												 | aiProcess_SplitLargeMeshes
 												 | aiProcess_JoinIdenticalVertices);
 
 		// Check for errors
@@ -47,10 +52,10 @@ public:
 	static Vec3d   toVec3d  (const aiVector3f&   v) { return Vec3d::s_cast(toVec3f(v)); }
 	static Quat4f  toQuat4f (const aiQuaternion& q) { return Quat4f(q.x, q.y, q.z, q.w); }
 	static Mat4f   toMat4f  (const aiMatrix4x4&  m) {
-		return Mat4f(	m.a1, m.a2, m.a3, m.a4,
-						m.b1, m.b2, m.b3, m.b4,
-						m.c1, m.c2, m.c3, m.c4,
-						m.d1, m.d2, m.d3, m.d4).transpose();
+		return Mat4f(	m.a1, m.b1, m.c1, m.d1,
+						m.a2, m.b2, m.c2, m.d2,
+						m.a3, m.b3, m.c3, m.d3,
+						m.a4, m.b4, m.c4, m.d4);
 	}
 	
 	void importMesh(aiMesh* srcMesh) {

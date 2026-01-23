@@ -322,14 +322,11 @@ constexpr void Mat_<4, 4, T, SIMD>::getTRS(Vec3& pos, Quat4& quat, Vec3& scale) 
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4,4,T,SIMD>::transpose() const -> This {
-	return This(
-		cx.x, cy.x, cz.x, cw.x,
-		cx.y, cy.y, cz.y, cw.y,
-		cx.z, cy.z, cz.z, cw.z,
-		cx.w, cy.w, cz.w, cw.w
-	);
+	return This(xx, yx, zx, wx,
+				xy, yy, zy, wy,
+				xz, yz, zz, wz,
+				xw, yw, zw, ww);
 }
-
 
 template<class T, VecSimd SIMD> constexpr 
 auto Mat_<4, 4, T, SIMD>::mulMatrix(const This& m) const -> This {
