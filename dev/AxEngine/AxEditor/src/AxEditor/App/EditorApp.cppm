@@ -22,6 +22,7 @@ private:
 	void _onFileChanged(FileDirWatcher_Result& result);
 	void _createDemoScene();
 	void _testLoadOpenUsd();
+	void _testLoadFbx();
 
 	AxEngine::Engine		_engine;
 	UPtr<EditorMainWindow>	_mainWin;

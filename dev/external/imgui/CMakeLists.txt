@@ -2,7 +2,7 @@ set(PROJECT_NAME imgui-docking)
 message("==== ${PROJECT_NAME} ====")
 project(${PROJECT_NAME})
 
-add_library(${PROJECT_NAME})
+add_library(${PROJECT_NAME} STATIC)
 file(GLOB_RECURSE all_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*.*")
 
 target_include_directories(${PROJECT_NAME} PUBLIC src)

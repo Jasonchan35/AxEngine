@@ -1,5 +1,7 @@
 #pragma once
 
+#if 0
+
 AX_VC_WARNING_PUSH()
 AX_VC_WARNING_DISABLE(4244) // '=': conversion from 'int' to 'unsigned short', possible loss of data
 AX_VC_WARNING_DISABLE(4305) // 'argument': truncation from 'double' to 'float'
@@ -14,3 +16,5 @@ AX_VC_WARNING_DISABLE(5220) // 'tbb::internal::atomic_impl<T>::converter<volatil
 #include <pxr/usd/usd/stage.h>
 
 AX_VC_WARNING_POP()
+
+#endif

@@ -57,6 +57,16 @@ function(ax_copy_file_if_newer src_filename dst_filename)
 	endif()
 endfunction()
 
+function(ax_copy_dir_if_newer srcDir dstDir)
+	file(GLOB_RECURSE all_files "${srcDir}/*.*")
+	foreach(srcAbs IN LISTS all_files)
+		file(RELATIVE_PATH srcRel "${srcDir}" "${srcAbs}")
+		get_filename_component(dstAbs "${dstDir}/${srcRel}" ABSOLUTE)
+		# message("---> ${srcAbs} ${dstAbs} ...")
+		ax_copy_file_if_newer(${srcAbs} ${dstAbs})
+	endforeach()
+endfunction()
+
 function(ax_add_all_subdirectory_recurse src_path)
 	file(GLOB_RECURSE V_GLOB LIST_DIRECTORIES true "${src_path}/*")
 	foreach(item ${V_GLOB})
@@ -367,7 +377,7 @@ endfunction()
 
 
 function(ax_add_library target_name src_path)
-	add_library(${target_name})
+	add_library(${target_name} STATIC)
 	ax_target_source_from_folder(${target_name} ${src_path})
 
 	target_include_directories(${target_name} PUBLIC src)

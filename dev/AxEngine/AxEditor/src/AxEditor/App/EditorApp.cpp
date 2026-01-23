@@ -5,6 +5,7 @@ module AxEditor;
 import :EditorApp;
 import :EditorMainWindow;
 import :AxOpenUSD;
+import :AxAssimp;
 
 namespace AxEditor {
 
@@ -58,6 +59,7 @@ void EditorApp::onCreate() {
 	_engine.create(engineDesc);
 	
 	_createDemoScene();
+	_testLoadFbx();
 	_testLoadOpenUsd();
 }
 
@@ -90,7 +92,12 @@ void EditorApp::_createDemoScene() {
 
 void EditorApp::_testLoadOpenUsd() {
 	AxOpenUSD usd;
-	usd.openFile("Assets/Scenes/test.usda");
+	usd.openFile("Assets/Scenes/Kitchen_set/Kitchen_set.usd");
+}
+
+void EditorApp::_testLoadFbx() {
+	AxAssimp assimp;
+	assimp.openFile("Assets/Scenes/test/test.fbx");
 }
 
 } //namespace

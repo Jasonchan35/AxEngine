@@ -11,6 +11,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # target_include_directories(${PROJECT_NAME} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/_build/include")
 # target_link_directories(   ${PROJECT_NAME} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/_build/lib")
 
+
+
 file(GLOB_RECURSE all_lib "${CMAKE_CURRENT_SOURCE_DIR}/_build/lib/*.lib")
 foreach(filepath IN LISTS all_lib)
 #	message("import lib ${filepath}")
@@ -19,8 +21,6 @@ foreach(filepath IN LISTS all_lib)
 #	message("lib ${filename}")
 	target_link_libraries(${PROJECT_NAME} INTERFACE "${filename}")
 endforeach()
-# target_link_libraries(${PROJECT_NAME} INTERFACE "usd_tf.lib" "usd_sdf.lib" "usd_usd.lib")
-
 
 file(GLOB_RECURSE all_dll 
 	"${CMAKE_CURRENT_SOURCE_DIR}/_build/bin/*.dll" 
@@ -40,6 +40,15 @@ foreach(src_filename IN LISTS all_dll)
 	endif()
 endforeach()
 
+if(AX_IS_MULTI_CONFIG)
+	foreach(CONFIG IN LISTS CMAKE_CONFIGURATION_TYPES)
+		ax_copy_dir_if_newer("${CMAKE_CURRENT_SOURCE_DIR}/_build/lib/usd"     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CONFIG}/usd")
+	endforeach()
+	ax_copy_dir_if_newer("${CMAKE_CURRENT_SOURCE_DIR}/_build/plugin"  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin")
+else()
+	ax_copy_dir_if_newer("${CMAKE_CURRENT_SOURCE_DIR}/_build/plugin/usd"  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin/usd")
+#	ax_copy_dir_if_newer("${CMAKE_CURRENT_SOURCE_DIR}/_build/lib/usd"     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/usd")
+endif()
 
 
 
