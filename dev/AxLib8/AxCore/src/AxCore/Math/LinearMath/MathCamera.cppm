@@ -1,7 +1,7 @@
 ﻿module;
 
-export module AxCore.MathCamera;
-export import AxCore.MathShapes;
+export module AxCore.LinearMath:Camera;
+export import :Shapes;
 
 export namespace ax::Math {
 

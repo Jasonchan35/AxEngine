@@ -35,7 +35,7 @@ void AxCore_Test_File() {
 }
 
 void AxCore_Test_Math() {
-    AX_TEST_FUNC(Test_Vec)
+    AX_TEST_FUNC(Test_LinearMath)
 }
 
 void AxCore_Test_Other() {

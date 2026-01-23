@@ -1,7 +1,7 @@
 ﻿module;
 
-export module AxCore.Quat; // Quaternion
-export import AxCore.Vec;
+export module AxCore.LinearMath:Quat; // Quaternion
+export import :Vec;
 
 export namespace ax {
 

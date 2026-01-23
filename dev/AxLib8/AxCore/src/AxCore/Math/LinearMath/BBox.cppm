@@ -1,7 +1,7 @@
 ﻿module;
 
-export module AxCore.BBox; // Bounding Box
-export import AxCore.Vec;
+export module AxCore.LinearMath:BBox; // Bounding Box
+export import :Vec;
 export import AxCore.Array;
 export import AxCore.Math;
 

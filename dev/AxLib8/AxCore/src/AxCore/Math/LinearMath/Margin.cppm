@@ -1,7 +1,7 @@
 ﻿module;
 
-export module AxCore.Margin;
-export import AxCore.Vec;
+export module AxCore.LinearMath:Margin;
+export import :Vec;
 
 export namespace ax {
 

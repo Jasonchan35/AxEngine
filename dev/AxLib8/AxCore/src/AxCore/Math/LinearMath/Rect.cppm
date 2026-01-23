@@ -1,6 +1,6 @@
 ﻿module;
-export module AxCore.Rect;
-export import AxCore.Margin;
+export module AxCore.LinearMath:Rect;
+export import :Margin;
 
 export namespace ax {
 

@@ -1,10 +1,10 @@
 ﻿module;
 
-export module AxCore.Mat; // Matrix
-export import AxCore.Vec;
-export import AxCore.BBox;
-export import AxCore.Rect;
-export import AxCore.Quat;
+export module AxCore.LinearMath:Mat; // Matrix
+export import :Vec;
+export import :BBox;
+export import :Rect;
+export import :Quat;
 
 export namespace ax {
 

@@ -3,7 +3,7 @@ module;
 
 export module AxCore.JsonValue;
 export import AxCore.Logger;
-export import AxCore.Mat;
+export import AxCore.LinearMath;
 export import AxCore.Dict;
 
 export namespace ax {
@@ -80,7 +80,7 @@ public:
 
 	void setValue(bool      b);
 
-	void setValue(f16  v) { setValue(v.to_f64()); }
+	void setValLinearMathue(f16  v) { setValue(v.to_f64()); }
 	void setValue(f32  v) { setValue(static_cast<f64>(v)); }
 	void setValue(f64  v);
 

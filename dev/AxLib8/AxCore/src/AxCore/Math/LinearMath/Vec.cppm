@@ -1,5 +1,5 @@
 ﻿module;
-export module AxCore.Vec;
+export module AxCore.LinearMath:Vec;
 export import AxCore.VecSimd;
 export import AxCore.Random;
 export import AxCore.MetaType;

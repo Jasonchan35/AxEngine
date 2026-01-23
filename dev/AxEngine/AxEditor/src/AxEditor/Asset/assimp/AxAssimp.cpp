@@ -13,6 +13,8 @@ class AxAssimp_Importer : public NonCopyable {
 public:
 	Array<SPtr<MeshObject>> _meshes;
 	JsonValue _metadata;
+	
+	static constexpr float kLengthScale = 0.01f;
 
 	void openFile(StrView filename) {
 		Assimp::Importer importer;
@@ -24,10 +26,15 @@ public:
 												 aiProcess_Triangulate
 												 // | aiProcess_CalcTangentSpace
 												 // | aiProcessPreset_TargetRealtime_MaxQuality
-												 // | aiProcess_ConvertToLeftHanded
 												 // | aiProcess_GlobalScale
 												 // | aiProcess_ForceGenNormals
 												 // | aiProcess_DropNormals
+												 //---
+												 // | aiProcess_ConvertToLeftHanded
+												 // | aiProcess_MakeLeftHanded
+												 // | aiProcess_FlipUVs
+												 // | aiProcess_FlipWindingOrder
+												 //---
 												 | aiProcess_SortByPType // only one primitive type per mesh
 												 | aiProcess_PopulateArmatureData
 												 | aiProcess_SplitLargeMeshes
@@ -96,6 +103,8 @@ public:
 						m.a3, m.b3, m.c3, m.d3,
 						m.a4, m.b4, m.c4, m.d4);
 	}
+
+	static Vec3f   toLengthVec3(const Vec3f& v) { return Vec3f(v.x, v.y, v.z) * kLengthScale; }
 	
 	static RenderPrimitiveType toPrimType(int t) {
 		if (t & aiPrimitiveType_TRIANGLE)	return RenderPrimitiveType::Triangles;
@@ -121,7 +130,7 @@ public:
 		if (auto enumerator = editVertices.tryEditPosition()) {
 			auto dst = enumerator->begin();
 			for (auto& srcPos : Span(srcMesh->mVertices, numVertices)) {
-				*dst = toVec3f(srcPos);
+				*dst = toLengthVec3(toVec3f(srcPos));
 				++dst;
 			}
 			if (dst != enumerator->end()) throw Error_Undefined();
@@ -146,9 +155,19 @@ public:
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {
 		auto entity = SceneEntity::s_new(AX_NEW, parent, toStrView(srcNode->mName));
-		
+
+#if 1
 		auto localMat = toMat4f(srcNode->mTransformation);
 		entity->transform.setMatrix(localMat);
+		auto& pos = entity->transform.position;
+		pos = toLengthVec3(pos);
+#else
+		aiVector3D pos;
+		aiQuaternion quat;
+		aiVector3D scale;
+		srcNode->mTransformation.Decompose(scale, quat, pos);
+		entity->transform.setTRS(toLengthVec3(toVec3f(pos)), toQuat4f(quat), toVec3f(scale));
+#endif
 		
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {

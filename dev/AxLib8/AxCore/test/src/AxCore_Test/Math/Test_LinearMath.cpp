@@ -1,14 +1,14 @@
 
 import AxCore_Test.PCH;
 
-import AxCore.Vec;
+import AxCore.LinearMath;
 import AxCore.VecSimd;
 import AxCore.Random;
 import AxCore.Color;
 
 namespace ax {
 
-class Test_Vec : public UnitTestClass {
+class Test_LinearMath : public UnitTestClass {
 public:
 
 	template<class T>
@@ -231,28 +231,28 @@ public:
 	
 };
 
-void Test_Vec_Func() {
-	AX_TEST_RUN_CASE(Test_Vec::test_VecSimd<f32>)
-	AX_TEST_RUN_CASE(Test_Vec::test_VecSimd<f64>)
+void Test_LinearMath_Func() {
+	AX_TEST_RUN_CASE(Test_LinearMath::test_VecSimd<f32>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_VecSimd<f64>)
 
-	AX_TEST_RUN_CASE(Test_Vec::test_case1)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_case1)
 	
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i8>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i16>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i32>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<i64>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u8>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u16>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u32>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<u64>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<i8>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<i16>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<i32>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<i64>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<u8>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<u16>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<u32>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<u64>)
 
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f16>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f32>)
-	AX_TEST_RUN_CASE(Test_Vec::test_SSE<f64>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<f16>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<f32>)
+	AX_TEST_RUN_CASE(Test_LinearMath::test_SSE<f64>)
 	
-//	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f16>)
-	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f32>)
-	AX_TEST_RUN_CASE(Test_Vec::testMat_SSE<f64>)
+//	AX_TEST_RUN_CASE(Test_LinearMath::testMat_SSE<f16>)
+	AX_TEST_RUN_CASE(Test_LinearMath::testMat_SSE<f32>)
+	AX_TEST_RUN_CASE(Test_LinearMath::testMat_SSE<f64>)
 }
 
 template class Vec_<4, f32, VecSimd::Basic>;
@@ -260,4 +260,4 @@ template class Vec_<4, f32, VecSimd::SSE>;
 
 } // namespace
 
-void Test_Vec() { ax::Test_Vec_Func(); }
+void Test_LinearMath() { ax::Test_LinearMath_Func(); }

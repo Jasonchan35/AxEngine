@@ -1,7 +1,7 @@
 module;
 
 export module AxCore.Color:ColorType;
-export import AxCore.Mat;
+export import AxCore.LinearMath;
 
 export namespace ax {
 
