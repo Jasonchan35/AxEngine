@@ -849,7 +849,7 @@ auto Mat_<4, 4, T, SIMD>::s_perspective(T verticalFieldOfViewInRadians,
 	T invTanFov = cosFov / sinFov;
 	T aspect = height / width;
 	
-	T forwardSign = desc.isRightHanded ? T(1) : T(-1);
+	T forwardSign = desc.isRightHanded ? T(-1) : T(1);
 	T zRange      = zFar;
 	T zScale      = T(1);
 	switch (desc.range) {
@@ -887,7 +887,7 @@ auto Mat_<4, 4, T, SIMD>::s_ortho(T left,   T right, T bottom, T top, T nearClip
 	T h  = top   - bottom;
 	T dz = zFar  - zNear;
 
-	T forwardSign = desc.isRightHanded ? -1 : 1;
+	T forwardSign = desc.isRightHanded ? T(-1) : T(1);
 	T zRange      = zFar;
 	T zScale      = T(1);
 	switch (desc.range) {
@@ -912,33 +912,20 @@ template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3& up,
                                    const ProjectionDesc& desc) -> This 
 {
-	if (desc.isRightHanded) {
-		auto f = (aim - eye).normalize(); // forward
-		auto s = f.cross(up).normalize(); // side
-		auto u = s.cross(f);              // up
+	auto f = (aim - eye).normalize(); // forward
+	if (!desc.isRightHanded) f = -f;
+	
+	auto s = f.cross(up).normalize(); // side
+	auto u = s.cross(f);              // up
 
-		return This(
-			s.x, u.x, -f.x, 0,
-			s.y, u.y, -f.y, 0,
-			s.z, u.z, -f.z, 0,
-			-s.dot(eye), 
-			-u.dot(eye), 
-			 f.dot(eye), 1
-		);
-	} else {
-		auto f = (aim - eye).normalize(); // forward
-		auto s = up.cross(f).normalize(); // side
-		auto u = f.cross(s);              // up
-
-		return This(
-			s.x, u.x, f.x, 0,
-			s.y, u.y, f.y, 0,
-			s.z, u.z, f.z, 0,
-			-s.dot(eye), 
-			-u.dot(eye), 
-			-f.dot(eye), 1
-		);
-	}
+	return This(
+		s.x, u.x, -f.x, 0,
+		s.y, u.y, -f.y, 0,
+		s.z, u.z, -f.z, 0,
+		-s.dot(eye), 
+		-u.dot(eye), 
+		 f.dot(eye), 1
+	);
 }
 
 

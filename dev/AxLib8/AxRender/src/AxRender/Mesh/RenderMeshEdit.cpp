@@ -406,8 +406,14 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
 	*dstPos =  axis1 * scale; ++dstPos;
 
 	if (dstCol) {
-		auto centerLineColor = Color4b::s_conv(centerLineColor_);
-		for (Int j = 0; j < 4; ++j) {
+		{
+			auto centerLineColor = Color4b::s_conv(centerLineColor_ * Color4f(0,0,1,1));
+			*dstCol = centerLineColor; ++dstCol;
+			*dstCol = centerLineColor; ++dstCol;
+		}
+		{
+			auto centerLineColor = Color4b::s_conv(centerLineColor_ * Color4f(1,0,0,1));
+			*dstCol = centerLineColor; ++dstCol;
 			*dstCol = centerLineColor; ++dstCol;
 		}
 	}

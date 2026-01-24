@@ -97,4 +97,9 @@ Mat4_<T> Camera3_<T>::projMatrix(const ProjectionDesc& desc) const {
 	                           desc);
 }
 
+template<class T> inline
+Mat4_<T> Camera3_<T>::viewMatrix(const ProjectionDesc& desc) const {
+	return Mat4::s_lookAt(eye(), aim, up(), desc);
+}
+
 } // namespace

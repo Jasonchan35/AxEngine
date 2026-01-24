@@ -41,7 +41,7 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 			}
 		} break;
 		case UIMouseEventType::Wheel: {
-			cam.dolly(ev.wheelDelta.y * -0.02f);
+			cam.dolly(ev.wheelDelta.y * -0.025f);
 		} break;
 		default: break;
 	}
@@ -67,14 +67,17 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 		ImUILabelText("Rot"           , Fmt("{}", cam.rotation));
 		ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix(projDesc)));
 		ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix(projDesc)));
-		ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix(projDesc)));
+		
+		auto vp = cam.viewProjMatrix(projDesc);
+		ImUILabelText("viewProjMatrix", Fmt("{}", vp));
+		ImUILabelText("project point", Fmt("{}", vp.mulPoint(Vec3f(1,1,1))));
 
-		if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {100, 40})) {
+		if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
 			AX_TOGGLE_BOOL(projDesc.isReverseZ);
 			setProjectionDesc(projDesc);
 		}
 		
-		if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {100, 40})) {
+		if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {160, 40})) {
 			AX_TOGGLE_BOOL(projDesc.isRightHanded);
 			setProjectionDesc(projDesc);
 		}

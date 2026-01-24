@@ -5,7 +5,8 @@ namespace AxEngine {
 
 EngineRenderGraph::EngineRenderGraph() {
 	_viewportCamera.setRotation(30, -45);
-	_viewportCamera.distance = 50;
+//	_viewportCamera.setRotation(0, 0);
+	_viewportCamera.distance = 20;
 	
 	auto* stockObjs = RenderStockObjects::s_instance();
 	

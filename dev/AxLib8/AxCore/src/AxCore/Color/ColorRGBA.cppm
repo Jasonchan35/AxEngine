@@ -298,6 +298,8 @@ public:
 
 //---
 	AX_INLINE Color_() = default;
+	AX_INLINE constexpr Color_(const SimdData & simd) : _simd(simd) {}
+	
 	AX_INLINE explicit constexpr Color_(const T& r_, const T& g_, const T& b_, const T& a_ = kElemOne())
 		: _simd(r_, g_, b_, a_) {}
 
@@ -331,6 +333,16 @@ public:
 	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }
 
 	AX_INLINE constexpr bool operator==	(const This& rhs) const { return _simd == rhs._simd; }
+	
+	AX_NODISCARD AX_INLINE constexpr This operator-() const	{ return -_simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator+(const This& rhs) const { return _simd + rhs._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator-(const This& rhs) const { return _simd - rhs._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator*(const This& rhs) const { return _simd * rhs._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator/(const This& rhs) const { return _simd / rhs._simd; }
+	AX_NODISCARD AX_INLINE constexpr This operator+(const T& t) const { return _simd + t; }
+	AX_NODISCARD AX_INLINE constexpr This operator-(const T& t) const { return _simd - t; }
+	AX_NODISCARD AX_INLINE constexpr This operator*(const T& t) const { return _simd * t; }
+	AX_NODISCARD AX_INLINE constexpr This operator/(const T& t) const { return _simd / t; }
 
 	// template<VecSimd R_SIMD>
 	// AX_INLINE constexpr bool almostEqual( const ColorRGBA_<T, SIMD>& rhs) const { return _simd.almostEqual(rhs._simd); }

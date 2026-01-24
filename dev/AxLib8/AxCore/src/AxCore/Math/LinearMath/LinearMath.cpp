@@ -1,30 +1,19 @@
 module AxCore.LinearMath;
 import :Camera;
 import :Quat;
+import :Mat;
 
+namespace  ax {
+//	template class  Mat_<4,4,f32, VecSimd_Default>;
+//	template class  Mat_<4,4,f32, VecSimd::SSE>;
+//	template class  Mat_<4,4,f32, VecSimd::Basic>;
+//
+//	template class  Mat_<4,4,f64, VecSimd_Default>;
+//	template class  Mat_<4,4,f64, VecSimd_Default>;
+//	template class  Mat_<4,4,f64, VecSimd_Default>;
+} // namespace
+ 
 namespace ax::Math {
-
-template<class T>
-Mat4_<T> Camera3_<T>::viewMatrix(const ProjectionDesc& desc) const {
-#if 0
-	if (desc.isRightHanded) {
-		auto eye = aim + rotation * Vec3(0, 0, distance);
-		return Mat4::s_lookAt(eye, aim, up(), desc);
-	} else {
-		auto eye = aim + rotation * Vec3(0, 0, -distance);
-		return Mat4::s_lookAt(eye, aim, up(), desc);
-	}
-	
-#else
-	if (desc.isRightHanded) {
-		auto pos = Vec3(0, 0, distance) - rotation.conjugate() * aim;
-		return Mat4::s_TRS(pos, rotation, Vec3::s_one());
-	} else {
-		auto pos = Vec3(0, 0, -distance) - rotation.conjugate() * aim;
-		return Mat4::s_TRS(pos, rotation, Vec3::s_one());
-	}
-#endif
-}
 
 // ---- explicit instantiation --- 
 template class Camera3_<f32>;
