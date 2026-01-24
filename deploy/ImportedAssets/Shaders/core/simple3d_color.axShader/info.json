@@ -57,7 +57,7 @@
           "constColor": [1, 1, 1, 1]
         }, 
         "depthTest": {
-          "op": "Less", 
+          "op": "Greater", 
           "writeMask": true
         }, 
         "antialiasedLine": false, 

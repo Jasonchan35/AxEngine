@@ -25,7 +25,7 @@ Pass "Pass0" { // Forward
 //	Wireframe 	= true
 	BlendRGB   	= [Add, One, OneMinusSrcAlpha]
 	BlendAlpha 	= [Add, One, OneMinusSrcAlpha]
-	DepthTest 	= Less
+	DepthTest 	= Greater
 }
 #endif
 

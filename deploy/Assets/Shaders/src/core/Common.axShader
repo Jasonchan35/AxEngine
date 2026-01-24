@@ -13,7 +13,7 @@ Pass "Pass0" { // Forward
 	// BlendRGB   = {Add, One, OneMinusSrcAlpha}
 	// BlendAlpha =	{Add, One, OneMinusSrcAlpha }
 
-	// DepthTest = Less
+	// DepthTest = Greater
 
 	VertexFunc = vs_main
 	PixelFunc  = ps_main
