@@ -7,6 +7,43 @@ export import AxCore.NormInt;
 
 export namespace  ax {
 
+struct AxisSystem {
+	enum class Up     : u8 { X, Y, Z, NegX, NegY, NegZ };
+	enum class Front  : u8 { X, Y, Z, NegX, NegY, NegZ };
+	enum class Right  : u8 { X, Y, Z, NegX, NegY, NegZ };
+
+	enum class Handed : u8 { Right, Left };
+	Handed     handed     = Handed::Right;
+	
+	Up     up     = Up::Y;
+	Front  front  = Front::Z;
+	Right  right  = Right::X;
+	
+	constexpr AxisSystem() = default;
+	constexpr AxisSystem(Handed handed_, Up up_, Front front_, Right right_) 
+				: handed(handed_), up(up_), front(front_), right(right_) {}
+
+	static constexpr AxisSystem s_OpenGL()  		{ return AxisSystem(Handed::Right, Up::Y, Front::Z,    Right::X   ); }
+	static constexpr AxisSystem s_DirectX() 		{ return AxisSystem(Handed::Left , Up::Y, Front::Z,    Right::NegX); }
+	static constexpr AxisSystem s_MayaZUp() 		{ return AxisSystem(Handed::Right, Up::Z, Front::NegY, Right::X   ); }
+	static constexpr AxisSystem s_MayaYUp() 		{ return AxisSystem(Handed::Right, Up::Y, Front::Z,    Right::X   ); }
+	static constexpr AxisSystem s_MontionBuilder()	{ return s_MayaYUp(); }
+	static constexpr AxisSystem s_3DSMax()			{ return s_MayaZUp(); }
+};
+
+struct ProjectionDesc {
+	enum class DepthRange : u8 { ZeroToOne, NegOneToOne};
+	DepthRange range = DepthRange::ZeroToOne;
+	
+	bool isRightHanded = true;
+	bool isReverseZ    = true;
+};
+
+template<Int N, Int M, class T, VecSimd SIMD> class Mat_;
+template <class T, VecSimd SIMD = VecSimd_Default> using Mat3_		= Mat_<3, 3, T, SIMD>;
+template <class T, VecSimd SIMD = VecSimd_Default> using Mat4_		= Mat_<4, 4, T, SIMD>;
+template <class T, VecSimd SIMD = VecSimd_Default> using Mat4x3_	= Mat_<4, 3, T, SIMD>;
+
 template<Int N, class T, VecSimd SIMD = VecSimd_Default> class Vec_;
 template<class T, VecSimd SIMD = VecSimd_Default> using Vec1_ = Vec_<1, T, SIMD>;
 template<class T, VecSimd SIMD = VecSimd_Default> using Vec2_ = Vec_<2, T, SIMD>;

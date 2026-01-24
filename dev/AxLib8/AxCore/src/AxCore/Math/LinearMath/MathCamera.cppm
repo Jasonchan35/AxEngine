@@ -23,11 +23,11 @@ public:
 
 	void dolly	(T delta);
 
-	Vec3 position() const { return aim + rotation * Vec3(0,0,-distance); }
-	void setPosition(const Vec3& pos) {
-		auto dir = pos - aim;
+	Vec3 eye() const { return aim + rotation * Vec3(0, 0, -distance); }
+	void setEye(const Vec3& eye) {
+		auto dir = eye - aim;
 		distance = Math::max(dir.length(), T(0.001));
-		rotation = Quat4::lookAt(dir / distance, up());
+		rotation = Quat4::s_lookAt(dir / distance, up());
 	}
 	
 	void setRotation(const Vec3& v) { rotation.setEulerDeg(v); }
@@ -37,7 +37,7 @@ public:
 	Vec3 up() const			{ return rotation * Vec3(0, 1, 0); }
 	Vec3 forward() const	{ return rotation * Vec3(0, 0, 1); }
 
-	Ray3 getRay(const Vec2& screenPos) const;
+	Ray3 getRay(const Vec2& screenPos, const ProjectionDesc& desc) const;
 
 	Mat4 viewMatrix(const ProjectionDesc& desc) const;
 	Mat4 projMatrix(const ProjectionDesc& desc) const;
@@ -85,24 +85,15 @@ void Camera3_<T>::dolly(T delta) {
 }
 
 template<class T> inline
-Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos) const {
-	return Ray3::s_unProjectFromInvMatrix(screenPos, viewProjMatrix().inverse(), viewport);
+Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos, const ProjectionDesc& desc) const {
+	return Ray3::s_unprojectFromInverseMatrix(screenPos, viewProjMatrix(desc).inverse(), viewport);
 }
 
-template<class T> inline
-Mat4_<T> Camera3_<T>::viewMatrix(const ProjectionDesc& desc) const {
-	if (desc.isRightHanded) {
-		return Mat4::s_translate(Vec3(0, 0,  distance)) * Mat4::s_quat( rotation) * Mat4::s_translate(aim);
-	} else {
-		return Mat4::s_translate(Vec3(0, 0, -distance)) * Mat4::s_quat(rotation.inverse()) * Mat4::s_translate(aim);
-	}
-}
 
 template<class T> inline
 Mat4_<T> Camera3_<T>::projMatrix(const ProjectionDesc& desc) const {
 	return Mat4::s_perspective(radians(verticalFieldOfView),
-	                           viewport.w, viewport.h,
-	                           nearClip, farClip,
+	                           viewport.w, viewport.h, nearClip, farClip,
 	                           desc);
 }
 

@@ -8,44 +8,6 @@ export import :Quat;
 
 export namespace ax {
 
-template<Int N, Int M, class T, VecSimd SIMD> class Mat_;
-
-template <class T, VecSimd SIMD = VecSimd_Default> using Mat3_		= Mat_<3, 3, T, SIMD>;
-template <class T, VecSimd SIMD = VecSimd_Default> using Mat4_		= Mat_<4, 4, T, SIMD>;
-template <class T, VecSimd SIMD = VecSimd_Default> using Mat4x3_	= Mat_<4, 3, T, SIMD>;
-
-struct AxisSystem {
-	enum class Up     : u8 { X, Y, Z, NegX, NegY, NegZ };
-	enum class Front  : u8 { X, Y, Z, NegX, NegY, NegZ };
-	enum class Right  : u8 { X, Y, Z, NegX, NegY, NegZ };
-
-	enum class Handed : u8 { Right, Left };
-	Handed     handed     = Handed::Right;
-	
-	Up     up     = Up::Y;
-	Front  front  = Front::Z;
-	Right  right  = Right::X;
-	
-	constexpr AxisSystem() = default;
-	constexpr AxisSystem(Handed handed_, Up up_, Front front_, Right right_) 
-				: handed(handed_), up(up_), front(front_), right(right_) {}
-
-	static constexpr AxisSystem s_OpenGL()  		{ return AxisSystem(Handed::Right, Up::Y, Front::Z,    Right::X   ); }
-	static constexpr AxisSystem s_DirectX() 		{ return AxisSystem(Handed::Left , Up::Y, Front::Z,    Right::NegX); }
-	static constexpr AxisSystem s_MayaZUp() 		{ return AxisSystem(Handed::Right, Up::Z, Front::NegY, Right::X   ); }
-	static constexpr AxisSystem s_MayaYUp() 		{ return AxisSystem(Handed::Right, Up::Y, Front::Z,    Right::X   ); }
-	static constexpr AxisSystem s_MontionBuilder()	{ return s_MayaYUp(); }
-	static constexpr AxisSystem s_3DSMax()			{ return s_MayaZUp(); }
-};
-
-struct ProjectionDesc {
-	enum class DepthRange : u8 { ZeroToOne, NegOneToOne};
-	DepthRange range = DepthRange::ZeroToOne;
-	
-	bool isRightHanded = true;
-	bool isReverseZ    = true;
-};
-
 using Mat4f			= Mat4_<f32>;
 using Mat4f_SSE		= Mat4_<f32, VecSimd::SSE>;
 using Mat4f_Basic	= Mat4_<f32, VecSimd::Basic>;
@@ -185,7 +147,7 @@ public:
 													 const ProjectionDesc& desc);
 	
 	AX_NODISCARD constexpr static	This s_translate	(const Vec3& v);
-	AX_NODISCARD constexpr static	This s_translate	(const Vec2& v)			{ return s_translate(Vec3(v, 0)); }
+	AX_NODISCARD constexpr static	This s_translate	(const Vec2& v)		{ return s_translate(Vec3(v, 0)); }
 
 	AX_NODISCARD constexpr static	This s_rotateRad	(const Vec3 & v);
 	AX_NODISCARD constexpr static	This s_rotateRadX	(T rad);
@@ -197,17 +159,17 @@ public:
 	AX_NODISCARD constexpr static	This s_rotateDegY	(T deg)				{ return s_rotateRadY(radians(deg)); }
 	AX_NODISCARD constexpr static	This s_rotateDegZ	(T deg)				{ return s_rotateRadZ(radians(deg)); }
 
-	AX_NODISCARD constexpr static	This s_quat			(const Quat4& q);
+	AX_NODISCARD constexpr static	This s_quat		(const Quat4& q);
 
-	AX_NODISCARD constexpr static	This s_scale		(T s)				{ return s_scale({s,s,s}); }
-	AX_NODISCARD constexpr static	This s_scale		(const Vec2 & v)	{ return s_scale(Vec3(v, 1)); }
-	AX_NODISCARD constexpr static	This s_scale		(const Vec3 & v);
+	AX_NODISCARD constexpr static	This s_scale	(T s)				{ return s_scale({s,s,s}); }
+	AX_NODISCARD constexpr static	This s_scale	(const Vec2 & v)	{ return s_scale(Vec3(v, 1)); }
+	AX_NODISCARD constexpr static	This s_scale	(const Vec3 & v);
 
-	AX_NODISCARD constexpr static	This s_shear		(const Vec3 & v);
+	AX_NODISCARD constexpr static	This s_shear	(const Vec3 & v);
 
-	AX_NODISCARD constexpr static	This s_TRS	(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static	This s_TRS_rad			(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static	This s_TRS_deg			(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) {
+	AX_NODISCARD constexpr static	This s_TRS		(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
+	AX_NODISCARD constexpr static	This s_TRS_rad	(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale);
+	AX_NODISCARD constexpr static	This s_TRS_deg	(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) {
 		return s_TRS_rad(translate, Math::radians(rotate), scale);
 	}
 
@@ -219,6 +181,8 @@ public:
 	AX_NODISCARD constexpr This inverse3x3Transpose	() const;
 	
 	AX_NODISCARD constexpr T    determinant			() const;
+	
+	AX_NODISCARD constexpr Quat4 toQuat() const;
 
 	AX_NODISCARD constexpr Vec3 unprojectPointFromInverseMatrix	(const Vec3& screenPos, const Rect2& viewport) const;
 	AX_NODISCARD constexpr Vec3 unprojectPointSlow				(const Vec3& screenPos, const Rect2& viewport) const {
@@ -253,8 +217,15 @@ public:
 	AX_NODISCARD constexpr Vec3 directionX() const { return Vec3(cx.x, cy.x, cz.x).normalize(); }
 	AX_NODISCARD constexpr Vec3 directionY() const { return Vec3(cx.y, cy.y, cz.y).normalize(); }
 	AX_NODISCARD constexpr Vec3 directionZ() const { return Vec3(cx.z, cy.z, cz.z).normalize(); }
-	AX_NODISCARD constexpr Vec3 position() const { return cw.xyz(); }
+	constexpr void setDirection(const Vec3& dirX, const Vec3& dirY, const Vec3& dirZ) {
+		xx = dirX.x; yx = dirX.y; zx = dirX.z;
+		xy = dirY.x; yy = dirY.y; zy = dirY.z;
+		xz = dirZ.x; yz = dirZ.y; zz = dirZ.z;
+	}
 	
+	AX_NODISCARD constexpr Vec3 position() const { return cw.xyz(); }
+				 constexpr void setPosition(const Vec3& pos) { cw.x = pos.x; cw.y = pos.y; cw.z = pos.z; }
+
 	constexpr void getTRS(Vec3& pos, Quat4& quat, Vec3& scale) const;
 };
 
@@ -290,7 +261,7 @@ auto Mat_<4,4,T,SIMD>::mulPoint(const Vec4& v) const -> Vec4 {
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::mulPoint(const Vec3& v) const -> Vec3 {
-	return mulPoint(Vec4(v, 1)).toVec3();
+	return mulPoint(Vec4(v, 1)).xyz_div_w();
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr
@@ -320,42 +291,46 @@ constexpr void Mat_<4, 4, T, SIMD>::getTRS(Vec3& pos, Quat4& quat, Vec3& scale) 
 	if (determinant() < 0) { scale = -scale; }
 	
 	// remove scale
-	Mat4 rotMat(Math::safeDiv(cx.xyz0(), scale.x),
-				Math::safeDiv(cy.xyz0(), scale.y),
-				Math::safeDiv(cz.xyz0(), scale.z),
-				Vec4(0,0,0,1));
-	
-	T t = rotMat.xx + rotMat.yy + rotMat.zz;
+	Mat4 mat(Math::safeDiv(cx.xyz0(), scale.x),
+			 Math::safeDiv(cy.xyz0(), scale.y),
+			 Math::safeDiv(cz.xyz0(), scale.z),
+			 Vec4(0,0,0,1));
+	quat = mat.toQuat();
+}
 
+template<class T, VecSimd SIMD>
+constexpr auto Mat_<4, 4, T, SIMD>::toQuat() const -> Quat4 {
+	Quat4 quat; 
+	T t = xx + yy + zz;
 	if( t > T(0)) {
 		T s = std::sqrt(1 + t) * T(2.0);
-		quat.x = (rotMat.zy - rotMat.yz) / s;
-		quat.y = (rotMat.xz - rotMat.zx) / s;
-		quat.z = (rotMat.yx - rotMat.xy) / s;
+		quat.x = (zy - yz) / s;
+		quat.y = (xz - zx) / s;
+		quat.z = (yx - xy) / s;
 		quat.w = T(0.25) * s;
 		
-	} else if( rotMat.xx > rotMat.yy && rotMat.xx > rotMat.zz ) {
-		T s = std::sqrt(T(1) + rotMat.xx - rotMat.yy - rotMat.zz) * T(2);
+	} else if( xx > yy && xx > zz ) {
+		T s = std::sqrt(T(1) + xx - yy - zz) * T(2);
 		quat.x = T(0.25) * s;
-		quat.y = (rotMat.yx + rotMat.xy) / s;
-		quat.z = (rotMat.xz + rotMat.zx) / s;
-		quat.w = (rotMat.zy - rotMat.yz) / s;
+		quat.y = (yx + xy) / s;
+		quat.z = (xz + zx) / s;
+		quat.w = (zy - yz) / s;
 		
-	} else if( rotMat.yy > rotMat.zz) {
-		T s = std::sqrt(T(1) + rotMat.yy - rotMat.xx - rotMat.zz) * T(2);
-		quat.x = (rotMat.yx + rotMat.xy) / s;
+	} else if( yy > zz) {
+		T s = std::sqrt(T(1) + yy - xx - zz) * T(2);
+		quat.x = (yx + xy) / s;
 		quat.y = T(0.25) * s;
-		quat.z = (rotMat.zy + rotMat.yz) / s;
-		quat.w = (rotMat.xz - rotMat.zx) / s;
+		quat.z = (zy + yz) / s;
+		quat.w = (xz - zx) / s;
 		
 	} else {
-		T s = std::sqrt(T(1) + rotMat.zz - rotMat.xx - rotMat.yy) * T(2);
-		quat.x = (rotMat.xz + rotMat.zx) / s;
-		quat.y = (rotMat.zy + rotMat.yz) / s;
+		T s = std::sqrt(T(1) + zz - xx - yy) * T(2);
+		quat.x = (xz + zx) / s;
+		quat.y = (zy + yz) / s;
 		quat.z = T(0.25) * s;
-		quat.w = (rotMat.yx - rotMat.xy) / s;
-	}	
-	
+		quat.w = (yx - xy) / s;
+	}
+	return quat;
 }
 
 template<class T, VecSimd SIMD> constexpr
@@ -935,32 +910,47 @@ auto Mat_<4, 4, T, SIMD>::s_ortho(T left,   T right, T bottom, T top, T nearClip
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3& up,
-                                   const ProjectionDesc& desc) -> This {
-	auto outForward = (eye - aim).normalize();
-	if (desc.isRightHanded) outForward = -outForward;
+                                   const ProjectionDesc& desc) -> This 
+{
+	if (desc.isRightHanded) {
+		auto f = (aim - eye).normalize(); // forward
+		auto s = f.cross(up).normalize(); // side
+		auto u = s.cross(f);              // up
 
-	auto outRight   = outForward.cross(up).normalize();
-	auto outUp      = outRight.cross(outForward);
+		return This(
+			s.x, u.x, -f.x, 0,
+			s.y, u.y, -f.y, 0,
+			s.z, u.z, -f.z, 0,
+			-s.dot(eye), 
+			-u.dot(eye), 
+			 f.dot(eye), 1
+		);
+	} else {
+		auto f = (aim - eye).normalize(); // forward
+		auto s = up.cross(f).normalize(); // side
+		auto u = f.cross(s);              // up
 
-	return This(
-		outRight.x, outUp.x, -outForward.x, 0,
-		outRight.y, outUp.y, -outForward.y, 0,
-		outRight.z, outUp.z, -outForward.z, 0,
-		-outRight.dot(eye), -outUp.dot(eye), outForward.dot(eye), 1
-	);
+		return This(
+			s.x, u.x, f.x, 0,
+			s.y, u.y, f.y, 0,
+			s.z, u.z, f.z, 0,
+			-s.dot(eye), 
+			-u.dot(eye), 
+			-f.dot(eye), 1
+		);
+	}
 }
 
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4,4,T,SIMD>::unprojectPointFromInverseMatrix(const Vec3& screenPos, const Rect2& viewport) const -> Vec3 {
 	auto  tmp = Vec4(screenPos, 1);
-	tmp.y = viewport.extents().y - tmp.y; // y is down
+	tmp.y = viewport.size.y - tmp.y; // y is down
 
-	tmp.x = (tmp.x - viewport.min.x) / viewport.extents().x * 2 - 1;
-	tmp.y = (tmp.y - viewport.min.y) / viewport.extents().y * 2 - 1;
+	tmp.x = (tmp.x - viewport.x) / viewport.size.x * 2 - 1;
+	tmp.y = (tmp.y - viewport.y) / viewport.size.y * 2 - 1;
 
-	auto vec = mulPoint(tmp);
-	return vec.homogenize();
+	return mulPoint(tmp).xyz_div_w();
 }
 
 } // namespace

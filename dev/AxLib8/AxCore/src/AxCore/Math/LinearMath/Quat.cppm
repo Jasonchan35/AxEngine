@@ -36,6 +36,7 @@ public:
 	using Vec2 = Vec2_<T, SIMD>;
 	using Vec3 = Vec3_<T, SIMD>;
 	using Vec4 = Vec4_<T, SIMD>;
+	using Mat4 = Mat4_<T, SIMD>;
 	
 	AX_INLINE constexpr Quat_() = default;
 	AX_INLINE constexpr Quat_(const SimdData & simd) : _simd(simd) {}
@@ -69,7 +70,8 @@ public:
 						AX_INLINE constexpr void setAngleAxis(T rad, const Vec3& axis) { *this = s_angleAxis(rad, axis); }
 	
 	AX_NODISCARD AX_INLINE static constexpr This   s_fromDirToDir(const Vec3& from, const Vec3& to);
-
+	AX_NODISCARD AX_INLINE static constexpr This   s_lookAt(const Vec3& direction, const Vec3& up);
+	
 	AX_NODISCARD constexpr T	angle() const { return Math::acos(w) * T(2); }
 	AX_NODISCARD constexpr Vec3	axis () const;
 
@@ -246,6 +248,17 @@ constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_fromDirToDir(con
 
 	Vec3 axis = from.cross(to);
 	return This(k_cos_theta + k, axis.x, axis.y, axis.z).normalize();
+}
+
+template<class T, VecSimd SIMD>
+constexpr auto Quat_<4, T, SIMD>::s_lookAt(const Vec3& direction, const Vec3& up) -> This {
+	auto forward = direction.normalize();
+	auto right   = up.cross(direction).normalize();
+	auto newUp   = direction.cross(right);
+
+	Mat4 mat;
+	mat.setDirection(right, forward, newUp);
+	return mat.toQuat();
 }
 
 } // namespace

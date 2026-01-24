@@ -73,6 +73,9 @@ public:
 	AX_NODISCARD constexpr Vec2		xCenter_yMin() const { return Vec2(xCenter(), yMin()); }
 	AX_NODISCARD constexpr Vec2		xCenter_yMax() const { return Vec2(xCenter(), yMax()); }
 
+	AX_NODISCARD constexpr Vec2		min() const { return xMin_yMin(); }
+	AX_NODISCARD constexpr Vec2		max() const { return xMax_yMax(); }
+	
 	AX_NODISCARD constexpr Vec2		topLeft		() const { return xMin_yMin(); }
 	AX_NODISCARD constexpr Vec2		topRight	() const { return xMax_yMin(); }
 	AX_NODISCARD constexpr Vec2		bottomLeft	() const { return xMin_yMax(); }

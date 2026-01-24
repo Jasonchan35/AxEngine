@@ -37,11 +37,11 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 			if (ev.pressedButtons == UIMouseEventButton::Right) {
 				cam.orbit(ev.deltaPos.yx() * 0.005f);
 			} else if (ev.pressedButtons == UIMouseEventButton::Middle) {
-				cam.move(ev.deltaPos * 0.02f);
+				cam.move(ev.deltaPos * Vec2f(-1,1) * 0.02f);
 			}
 		} break;
 		case UIMouseEventType::Wheel: {
-			cam.dolly(ev.wheelDelta.y * 0.02f);
+			cam.dolly(ev.wheelDelta.y * -0.02f);
 		} break;
 		default: break;
 	}
@@ -60,7 +60,8 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 		auto& cam = _viewportCamera;
 		ImUIPanel	panel("camera");
 		ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
-		ImUILabelText("pos"           , Fmt("{}", cam.position()));
+		ImUILabelText("distance"      , Fmt("{}", cam.distance));
+		ImUILabelText("eye"           , Fmt("{}", cam.eye()));
 		ImUILabelText("aim"           , Fmt("{}", cam.aim));
 		ImUILabelText("up"            , Fmt("{}", cam.up()));
 		ImUILabelText("Rot"           , Fmt("{}", cam.rotation));
