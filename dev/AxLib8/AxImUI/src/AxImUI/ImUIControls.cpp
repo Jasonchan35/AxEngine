@@ -12,6 +12,10 @@ namespace ax::ImUI {
 
 namespace ax {
 
+bool ImUIButton(ZStrView label, Vec2f size) {
+	return ::ImGui::Button(label.c_str(), ImVec2(size.x, size.y));
+}
+
 void ImUILabelText(ZStrView label, ZStrView text) {
 	return ::ImGui::LabelText(label.c_str(), "%s", text.c_str());
 }

@@ -157,7 +157,7 @@ Quat4_<T, SIMD> slerp_longway(const Quat4_<T, SIMD> & a, const Quat4_<T, SIMD> &
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::dot(const This& r) const -> T {
-	return (x * r.x + y * r.y) + (z * r.z + w * r.w);
+	return _simd.dot(r._simd);
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::axis() const -> Vec3 {
@@ -177,9 +177,9 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 
 template<class T, VecSimd SIMD> constexpr 
 auto Quat_<4, T, SIMD>::normalize() const -> This {
-	T magSq = (_simd * _simd).horizontalAdd();
+	T magSq = _simd.dot(_simd);
 	if (Math::almostZero(magSq)) {
-		return s_identity();
+		return *this;
 	} else {
 		T invMag = Math::rsqrt_fast(magSq);
 		return *this * invMag;
@@ -205,8 +205,7 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::inverse() const -> This {
-	T d = x * x + y * y + z * z + w * w;
-	return This(-x, -y, -z, w)._simd / d;
+	return conjugate()._simd / _simd.dot(_simd);
 }
 
 // operator * (Vec3, Quat4)

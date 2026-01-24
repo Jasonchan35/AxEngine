@@ -210,6 +210,9 @@ public:
 
 	virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) {}
 
+	void setProjectionDesc(const ProjectionDesc& desc) { _projectionDesc = desc; _dirty = true; }
+	const ProjectionDesc& projectionDesc() const { return _projectionDesc; }
+	
 	RenderGraph();
 
 friend class RenderContext_Backend;
@@ -222,6 +225,7 @@ protected:
 	bool	_rebuild();
 
 private:
+	ProjectionDesc	_projectionDesc;
 	Vec2i	_frameSize {0,0};
 	bool	_dirty = true;
 

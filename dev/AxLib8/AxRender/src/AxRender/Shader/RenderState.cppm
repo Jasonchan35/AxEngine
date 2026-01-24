@@ -68,7 +68,8 @@ public:
 	float		pointSize = 5;
 	
 	struct DepthTest {
-		RenderDepthTestOp	op = RenderDepthTestOp::LessEqual;
+		using Op = RenderDepthTestOp;
+		Op op = ProjectionDesc().isReverseZ ? Op::Greater : Op::Less;
 		bool writeMask = true;
 
 		AX_INLINE
@@ -76,7 +77,7 @@ public:
 			return op == r.op && writeMask == r.writeMask;
 		}
 
-		bool isEnable() const { return op != RenderDepthTestOp::Always; }
+		bool isEnable() const { return op != Op::Always; }
 
 		template<class SE>
 		void onJsonIO(SE& se) {

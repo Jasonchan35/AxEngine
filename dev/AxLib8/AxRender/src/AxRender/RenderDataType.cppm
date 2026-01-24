@@ -304,7 +304,7 @@ class RenderPassDepthAttachmentDesc {
 public:
 	RenderDepthType    depthType    = RenderDepthType::Depth_UNorm24_Stencil_UInt8;
 	RenderBufferLoadOp loadOp       = RenderBufferLoadOp::Clear;
-	f32                clearDepth   = 1;
+	f32                clearDepth   = ProjectionDesc().isReverseZ ? 0.0f : 1.0f;
 	u32                clearStencil = 0;
 	
 	AX_INLINE bool isEnabled() const { return depthType != RenderDepthType::None; }

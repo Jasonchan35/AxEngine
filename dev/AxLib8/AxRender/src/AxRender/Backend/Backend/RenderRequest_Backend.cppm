@@ -105,7 +105,6 @@ protected:
 	RenderObjectManager_Backend* _objectManager        = nullptr;
 	Material_Backend*            _commonMaterial       = nullptr;
 	MaterialPass_Backend*        _commonMaterialPass   = nullptr;
-	Mat4f                        _viewProjMatrix       = Mat4f::s_identity();
 
 private:
 	void _updateCommonMaterial();

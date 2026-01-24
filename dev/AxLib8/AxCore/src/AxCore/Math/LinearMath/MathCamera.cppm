@@ -22,51 +22,36 @@ public:
 	void move	(const Vec3& delta);
 
 	void dolly	(T delta);
-	
-	void setDistance(T distance) { _distance = distance; }
-	T distance() const { return _distance; }
 
-	void setAim(const Vec3& aim)	{ _aim = aim; }
-	void setPos(const Vec3& pos) {
-		auto dir = pos - _aim;
-		_distance = Math::max(dir.length(), T(0.001));
-		_quat = Quat4::lookAt(dir / _distance, up());
+	Vec3 position() const { return aim + rotation * Vec3(0,0,-distance); }
+	void setPosition(const Vec3& pos) {
+		auto dir = pos - aim;
+		distance = Math::max(dir.length(), T(0.001));
+		rotation = Quat4::lookAt(dir / distance, up());
 	}
 	
-	void setRotation(const Vec3& v) { _quat.setEulerDeg(v); }
+	void setRotation(const Vec3& v) { rotation.setEulerDeg(v); }
 	void setRotation(const T& x, const T& y, const T& z = 0) { setRotation(Vec3(x, y, z)); }
+
+	Vec3 right() const		{ return rotation * Vec3(1, 0, 0); }
+	Vec3 up() const			{ return rotation * Vec3(0, 1, 0); }
+	Vec3 forward() const	{ return rotation * Vec3(0, 0, 1); }
+
+	Ray3 getRay(const Vec2& screenPos) const;
+
+	Mat4 viewMatrix(const ProjectionDesc& desc) const;
+	Mat4 projMatrix(const ProjectionDesc& desc) const;
+	Mat4 viewProjMatrix(const ProjectionDesc& desc) const { return projMatrix(desc) * viewMatrix(desc); }
+
+	Vec3  aim {0, 0, 0};
+	Quat4 rotation { Quat4::s_identity() };
+	T     distance = 100;
+
+	T     verticalFieldOfView = T(50.0);
+	T     nearClip = T(0.1);
+	T     farClip  = T(10000.0);
 	
-	Quat4 quat() const { return _quat; }
-	Vec3  rotation() const { return _quat.eulerDeg(); }
-	
-	Vec3 aim() const { return _aim; }
-	Vec3 pos() const { return _aim + _quat * Vec3(0,0,-_distance); }
-
-	Vec3 up() const		{ return _quat * Vec3(0, 1, 0); }
-	Vec3 forward() const	{ return _quat * Vec3(0, 0, 1); }
-	Vec3 right() const	{ return _quat * Vec3(0, 1, 0); }
-
-	void setViewport(const Rect2& v) { _viewport = v; }
-	const Rect2& viewport() const { return _viewport; }
-
-	Ray3	getRay(const Vec2& screenPos) const;
-
-	Mat4	viewMatrix() const;
-	Mat4	projMatrix() const;
-	Mat4	viewProjMatrix() const { return projMatrix() * viewMatrix(); }
-
-private:
-	T     _fov      = T(50.0);
-	T     _nearClip = T(0.1);
-	T     _farClip  = T(10000.0);
-	Rect2 _viewport {0,0,1920,1080};
-	Vec3  _aim{0, 0, 0};
-	
-	// Vec3  _pos{50, 50, 100};
-	// Vec3  _up{0, 1, 0};
-	
-	T     _distance = 20;
-	Quat4 _quat { Quat4::s_identity() };
+	Rect2 viewport {0,0,1920,1080};
 };
 
 using Camera3f = Camera3_<f32>;
@@ -74,50 +59,51 @@ using Camera3d = Camera3_<f64>;
 
 template<class T> inline
 void Camera3_<T>::pan(Vec2 delta) {
-	auto d = _quat * Vec3(0, 0, -_distance);
-	_quat *= Quat4::s_eulerRad({delta, 0});
-	_aim = _quat * Vec3(0, 0, _distance);
+	auto d = rotation * Vec3(0, 0, -distance);
+	rotation *= Quat4::s_eulerRad({delta, 0});
+	aim = rotation * Vec3(0, 0, distance);
 }
 
 template<class T> inline
 void Camera3_<T>::orbit(Vec2 delta) {
-	auto e = _quat.eulerRad();
+	auto e = rotation.eulerRad();
 	e.x = 0;
 	auto q = Quat4::s_eulerRad(e);
-	
-	_quat *= q.inverse() * Quat4::s_eulerRadX(delta.x) * q;
-	_quat *= Quat4::s_eulerRadY(delta.y);
+
+	rotation *= q.inverse() * Quat4::s_eulerRadX(delta.x) * q;
+	rotation *= Quat4::s_eulerRadY(delta.y);
 }
 
 template<class T> inline
 void Camera3_<T>::move(const Vec3& delta) {
-	_aim += _quat * delta;
+	aim += rotation * delta;
 }
 
 template<class T> inline
 void Camera3_<T>::dolly(T delta) {
-	_distance += delta;
+	distance += delta;
 }
 
 template<class T> inline
 Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos) const {
-	return Ray3::s_unProjectFromInvMatrix(screenPos, viewProjMatrix().inverse(), _viewport);
+	return Ray3::s_unProjectFromInvMatrix(screenPos, viewProjMatrix().inverse(), viewport);
 }
 
 template<class T> inline
-Mat4_<T> Camera3_<T>::viewMatrix() const {
-	return Mat4::s_translate(Vec3(0, 0, -_distance)) * Mat4::s_quat(_quat) * Mat4::s_translate(_aim);
-}
-
-template<class T> inline
-Mat4_<T> Camera3_<T>::projMatrix() const {
-	if (Math::almostZero(_viewport.h)) {
-		AX_ASSERT(false);
-		return {};
+Mat4_<T> Camera3_<T>::viewMatrix(const ProjectionDesc& desc) const {
+	if (desc.isRightHanded) {
+		return Mat4::s_translate(Vec3(0, 0,  distance)) * Mat4::s_quat( rotation) * Mat4::s_translate(aim);
+	} else {
+		return Mat4::s_translate(Vec3(0, 0, -distance)) * Mat4::s_quat(rotation.inverse()) * Mat4::s_translate(aim);
 	}
-	T aspect = _viewport.w / _viewport.h;
-	return Mat4::s_perspective(radians(_fov), aspect, _nearClip, _farClip);
+}
+
+template<class T> inline
+Mat4_<T> Camera3_<T>::projMatrix(const ProjectionDesc& desc) const {
+	return Mat4::s_perspective(radians(verticalFieldOfView),
+	                           viewport.w, viewport.h,
+	                           nearClip, farClip,
+	                           desc);
 }
 
 } // namespace
-

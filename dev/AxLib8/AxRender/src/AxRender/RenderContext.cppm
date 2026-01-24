@@ -52,6 +52,8 @@ public:
 		_uiEventHandler = uiEventHandler;
 	}
 	
+	const RenderGraph* renderGraph() const { return _renderGraph.ptr(); }
+	
 friend class RenderSystem;
 friend class RenderRequest;
 protected:

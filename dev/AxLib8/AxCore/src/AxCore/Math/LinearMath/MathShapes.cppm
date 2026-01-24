@@ -199,14 +199,14 @@ using Line3f = Line3_<f32>;
 using Line3d = Line3_<f64>;
 
 template<class T> constexpr
-Ray3_<T> Ray3_<T>::s_unprojectFromInverseMatrix(const Vec2& screenPos, const Mat4& mat, const Rect2& viewport) {
+Ray3_<T> Ray3_<T>::s_unprojectFromInverseMatrix(const Vec2& screenPos, const Mat4& invMat, const Rect2& viewport) {
 	auto pt = screenPos;
 
 	Vec3 p0(pt, 0);
 	Vec3 p1(pt, 1);
 
-	auto v0 = Vec3::s_unprojectFromInverseMatrix(p0, mat, viewport);
-	auto v1 = Vec3::s_unprojectFromInverseMatrix(p1, mat, viewport);
+	auto v0 = invMat.unprojectPointFromInverseMatrix(p0, viewport);
+	auto v1 = invMat.unprojectPointFromInverseMatrix(p1, viewport);
 
 	Ray3_ o;
 	o.origin = v0;

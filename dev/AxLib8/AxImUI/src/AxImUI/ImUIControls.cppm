@@ -18,6 +18,8 @@ bool IsKeyCtrl();
 
 export namespace ax {
 
+bool ImUIButton(ZStrView label, Vec2f size);
+
 void ImUILabelText(ZStrView label, ZStrView text);
 bool ImUIDragFloat(
 		ZStrView label, 

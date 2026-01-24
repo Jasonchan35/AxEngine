@@ -35,13 +35,13 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 	switch (ev.type) {
 		case UIMouseEventType::Move: {
 			if (ev.pressedButtons == UIMouseEventButton::Right) {
-				cam.orbit(ev.deltaPos.yx() * -0.005f);
+				cam.orbit(ev.deltaPos.yx() * 0.005f);
 			} else if (ev.pressedButtons == UIMouseEventButton::Middle) {
-				cam.move(ev.deltaPos * 0.02f * Vec2f(1,-1));
+				cam.move(ev.deltaPos * 0.02f);
 			}
 		} break;
 		case UIMouseEventType::Wheel: {
-			cam.dolly(ev.wheelDelta.y * -0.02f);
+			cam.dolly(ev.wheelDelta.y * 0.02f);
 		} break;
 		default: break;
 	}
@@ -55,16 +55,28 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 	Base::onBackBufferPass(req, inputs);
 	
 	if constexpr (true) {
+		ProjectionDesc projDesc = projectionDesc();
+		
 		auto& cam = _viewportCamera;
 		ImUIPanel	panel("camera");
-		ImUILabelText("viewport"      , Fmt("{}", cam.viewport()));
-		ImUILabelText("pos"           , Fmt("{}", cam.pos()));
-		ImUILabelText("aim"           , Fmt("{}", cam.aim()));
+		ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
+		ImUILabelText("pos"           , Fmt("{}", cam.position()));
+		ImUILabelText("aim"           , Fmt("{}", cam.aim));
 		ImUILabelText("up"            , Fmt("{}", cam.up()));
-		ImUILabelText("Rot"           , Fmt("{}", cam.rotation()));
-		ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix()));
-		ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix()));
-		ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix()));
+		ImUILabelText("Rot"           , Fmt("{}", cam.rotation));
+		ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix(projDesc)));
+		ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix(projDesc)));
+		ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix(projDesc)));
+
+		if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {100, 40})) {
+			AX_TOGGLE_BOOL(projDesc.isReverseZ);
+			setProjectionDesc(projDesc);
+		}
+		
+		if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {100, 40})) {
+			AX_TOGGLE_BOOL(projDesc.isRightHanded);
+			setProjectionDesc(projDesc);
+		}
 	}
 
 	win->_sceneOutlinerUIPanel.render(req);

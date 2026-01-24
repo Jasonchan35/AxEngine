@@ -6,6 +6,7 @@ export import :MeshObject;
 export namespace ax /*::AxRender*/ {
 
 class RenderContext;
+class RenderGraph;
 class RenderGraph_Output;
 class RenderPassId : public NonCopyable {};
 
@@ -45,8 +46,6 @@ public:
 	RenderContext*	renderContext() { return _renderContext; }
 	RenderPass*		currentRenderPass()	{ return _currentRenderPass; }
 
-	Int				renderRequestCount() const { return _renderRequestCount; }
-	
 	AX_NODISCARD	ScissorRectScope	scissorRectScope()	{ return ScissorRectScope(this); }
 
 	void drawCall(AxDrawCallDesc& cmd);
@@ -75,16 +74,18 @@ public:
 	void setCamera(const Math::Camera3f& camera);
 	
 protected:
-	RenderSystem*  _renderSystem       = nullptr;
-	RenderContext* _renderContext      = nullptr;
-	RenderPass*    _currentRenderPass  = nullptr;
-	Int            _renderRequestCount = 0;
-	Vec2i          _frameSize{0, 0};
-	Rect2f         _scissorRect{0, 0, 0, 0};
-	Rect2f         _viewportRect{0, 0, 0, 0};
-	f64            _uptime             = 0;
-	
-	RenderStockObjects*	_stockObjects = nullptr;
+	RenderSystem*       _renderSystem       = nullptr;
+	RenderContext*      _renderContext      = nullptr;
+	const RenderGraph*  _renderGraph        = nullptr;
+	RenderStockObjects* _stockObjects       = nullptr;
+	RenderPass*         _currentRenderPass  = nullptr;
+	ProjectionDesc      _projectionDesc;
+	Mat4f               _viewProjMatrix     = Mat4f::s_identity();
+	f64                 _uptime             = 0;
+	Vec2i               _frameSize{0, 0};
+	Rect2f              _scissorRect{0, 0, 0, 0};
+	Rect2f              _viewportRect{0, 0, 0, 0};
+
 };
 
 inline

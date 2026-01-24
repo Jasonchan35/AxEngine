@@ -142,7 +142,7 @@ public:
 	AX_INLINE constexpr void operator-=(const T& t) { _simd -= t; }
 	AX_INLINE constexpr void operator*=(const T& t) { _simd *= t; }
 	AX_INLINE constexpr void operator/=(const T& t) { _simd /= t; }
-	
+
 	template <class R, VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SimdData::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }

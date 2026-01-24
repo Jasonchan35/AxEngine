@@ -94,7 +94,7 @@ void DemoRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	// 	req->drawMesh(_testMesh, _testMeshMaterial, 0);
 	// }
 
-	_camera.setViewport(req->viewport());
+	_camera.viewport = req->viewport();
 	
 	req->drawMesh(_grid, _mat_simple3d_color);
 	req->drawMesh(_axis, _mat_simple3d_color);

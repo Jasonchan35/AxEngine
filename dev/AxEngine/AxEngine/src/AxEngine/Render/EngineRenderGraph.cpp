@@ -4,8 +4,8 @@ import :EngineRenderGraph;
 namespace AxEngine {
 
 EngineRenderGraph::EngineRenderGraph() {
-	_viewportCamera.setRotation(-30, 45);
-//	_viewportCamera.setDistance(10);
+	_viewportCamera.setRotation(30, -45);
+	_viewportCamera.distance = 50;
 	
 	auto* stockObjs = RenderStockObjects::s_instance();
 	
@@ -15,8 +15,7 @@ EngineRenderGraph::EngineRenderGraph() {
 }
 
 void EngineRenderGraph::onUpdate(RenderRequest* req) {
-	auto viewport = Rect2f(Vec2f(0,0), Vec2f::s_cast(req->frameSize()));
-	_viewportCamera.setViewport(viewport);
+	_viewportCamera.viewport = Rect2f(Vec2f(0,0), Vec2f::s_cast(req->frameSize()));
 	req->setCamera(_viewportCamera);
 }
 

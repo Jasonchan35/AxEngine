@@ -173,6 +173,9 @@
 //----------------
 #define AX_NEW	::ax::MemAllocRequest(ax_current_allocator())
 
+// also work with bit field bool
+#define AX_TOGGLE_BOOL(V) do { V = !V; } while(false)
+
 #define AX_SIMPLE_ERROR(ERROR_TYPE) \
 	class ERROR_TYPE : public Error { \
 		public: \

@@ -22,8 +22,7 @@ RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
 	_renderSystem_backend = desc.renderSystem;
 	_index                = desc.index;
 	_inlineUpload.create(this);
-	_renderRequestCount = _renderSystem->renderRequestCount();
-	_stockObjects = RenderStockObjects::s_instance();
+	_stockObjects         = RenderStockObjects::s_instance();
 }
 
 void RenderRequest_Backend::waitCompleted() {
@@ -66,11 +65,13 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
 	RenderObjectManager_Backend::s_instance()->onFrameBegin(this);
 
-	_renderContext         = renderContext;
-	_frameSize             = backBufferRenderPass->frameSize();
-	_backBufferRenderPass  = backBufferRenderPass;
-	_uptime                = _renderSystem_backend->getCurrentUptime().seconds_f64();
-	_objectManager = RenderObjectManager_Backend::s_instance();
+	_renderContext        = renderContext;
+	_renderGraph          = renderContext->renderGraph();
+	_projectionDesc       = _renderGraph->projectionDesc();
+	_frameSize            = backBufferRenderPass->frameSize();
+	_backBufferRenderPass = backBufferRenderPass;
+	_uptime               = _renderSystem_backend->getCurrentUptime().seconds_f64();
+	_objectManager        = RenderObjectManager_Backend::s_instance();
 	_updateCommonMaterial();
 	onFrameBegin();
 }
@@ -118,7 +119,7 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 }
 
 void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
-	_viewProjMatrix = camera.viewProjMatrix();
+	_viewProjMatrix = camera.viewProjMatrix(_projectionDesc);
 	commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_vp"), _viewProjMatrix);
 }
 
