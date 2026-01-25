@@ -1,19 +1,10 @@
 #if AX_SHADER_INFO
 Properties {
-//	Type	  name "displayName" = defaultValue { Other Options }
-// 	optional: displayName, = defaultValue
-
-	Color4f		color // = [0, 0, 0.5, 1]
-	float		global_shininess // = $variable_name
-
-	Texture2D	tex0 "Texture0" = White {
-		 Asset = "asset path"
-		 Filter = Bilinear
-		 Wrap = [Repeat, Clamp]
-	}
-
-	Texture2D	tex1 "Texture1" = Blue
-
+	Color4f color     = [1, 1, 1, 1]
+    Color3f ambient   = [0.2, 0.2, 0.2]
+    Color3f diffuse   = [0.8, 0.8, 0.8]
+    Color3f specular  = [1, 1, 1]
+    float   shininess = 32
 }
 
 Pass "Pass0" { // Forward
@@ -21,37 +12,68 @@ Pass "Pass0" { // Forward
 	PixelFunc  = ps_main
 
 //	Queue		= "Transparent"
-	Cull 		= None
+//	Cull 		= None
 //	Wireframe 	= true
-	BlendRGB   	= [Add, One, OneMinusSrcAlpha]
-	BlendAlpha 	= [Add, One, OneMinusSrcAlpha]
-	DepthTest 	= Greater
+//	BlendRGB   	= [Add, One, OneMinusSrcAlpha]
+//	BlendAlpha 	= [Add, One, OneMinusSrcAlpha]
+//	DepthTest 	= Greater
 }
 #endif
 
 #include "AxRender.hlsl"
 
-uniform Color4f color;
+uniform Color3f color;
+uniform Color3f ambient;
+uniform Color3f diffuse;
+uniform Color3f specular;
+uniform float   shininess;
 
 struct VS_Input {
 	SEM_pos(float4);
 	SEM_color0(float4);
+	SEM_normal(float3);
 };
 
 struct PS_Input {
 	SEM_sv_pos(float4);
 	SEM_color0(float4);
+	SEM_normal(float3);
+	SEM_worldPos(float3);
 };
 
 PS_Input vs_main(VS_Input i) {
 	PS_Input o;
-	o.sv_pos = mul(AX_MATRIX_MVP, i.pos);
-	o.color0 = i.color0;
+	Vec4f wpos = mul(AX_MATRIX_M,   i.pos);
+	o.worldPos = wpos.xyz / wpos.w;
+
+	o.sv_pos   = mul(AX_MATRIX_MVP, i.pos);
+	o.color0   = i.color0;
+	o.normal   = mul(transpose((Mat3f)AX_MATRIX_MVP), i.normal);
 	return o;
 }
 
 float4 ps_main(PS_Input i) : SV_Target {
-	float4 o = i.color0;
-	return o;
+	Vec3f   cameraPos  = Vec3f(0, 0, 0);
+	Vec3f   lightPos   = Vec3f(10, 10, 10);
+	Color3f lightColor = Color3f(1,1,1);
+
+	Vec3f lightDir  = normalize(lightPos  - i.worldPos);
+	Vec3f viewDir   = normalize(cameraPos - i.worldPos);
+
+	// ambient
+	Color3f _ambient = lightColor * ambient;
+
+	// diffuse 
+	Vec3f norm       = normalize(i.normal);
+	float diff       = max(dot(norm, lightDir), 0.0);
+	Color3f _diffuse = lightColor * (diff * diffuse);
+
+	// specular
+	Vec3f reflectDir  = reflect(-lightDir, norm);  
+	float spec        = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	Color3f _specular = lightColor * (specular * spec);
+		
+	Color3f o = _ambient + _diffuse + _specular;
+	return Color4f(o, 1);
 }
 

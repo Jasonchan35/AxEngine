@@ -177,6 +177,7 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 		resourcesToKeep.add(indexBuffer);
 	}
 	
+	_drawCallRootConst.AX_MATRIX_M   = cmd.objectToWorld;
 	_drawCallRootConst.AX_MATRIX_MVP = _viewProjMatrix * cmd.objectToWorld;
 
 	matPass->onBindMaterial(this, cmd);

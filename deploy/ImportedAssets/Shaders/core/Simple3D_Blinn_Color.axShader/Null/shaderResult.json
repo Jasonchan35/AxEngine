@@ -8,50 +8,44 @@
         "asset": "", 
         "defaultValue": [1, 1, 1, 1]
       }, {
-        "name": "global_shininess", 
+        "name": "ambient", 
+        "propType": "Color3f", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": [0.20000000298023224, 0.20000000298023224, 0.20000000298023224]
+      }, {
+        "name": "diffuse", 
+        "propType": "Color3f", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": [0.800000011920929, 0.800000011920929, 0.800000011920929]
+      }, {
+        "name": "specular", 
+        "propType": "Color3f", 
+        "displayName": "", 
+        "asset": "", 
+        "defaultValue": [1, 1, 1]
+      }, {
+        "name": "shininess", 
         "propType": "f32", 
         "displayName": "", 
         "asset": "", 
-        "defaultValue": 0
-      }, {
-        "name": "tex0", 
-        "propType": "Texture2D", 
-        "displayName": "Texture0", 
-        "asset": "asset path", 
-        "defaultValue": "White", 
-        "samplerState": {
-          "filter": "Bilinear", 
-          "wrap": ["Repeat", "Clamp", "Repeat"], 
-          "minLOD": 0, 
-          "maxLOD": "Infinity"
-        }
-      }, {
-        "name": "tex1", 
-        "propType": "Texture2D", 
-        "displayName": "Texture1", 
-        "asset": "", 
-        "defaultValue": "Blue", 
-        "samplerState": {
-          "filter": "Bilinear", 
-          "wrap": ["Repeat", "Repeat", "Repeat"], 
-          "minLOD": 0, 
-          "maxLOD": "Infinity"
-        }
+        "defaultValue": 32
       }], 
     "passes": [{
         "name": "Pass0", 
         "vertexFunc": "vs_main", 
         "pixelFunc": "ps_main", 
         "renderState": {
-          "cull": "None", 
+          "cull": "Back", 
           "blend": {
             "rgb": {
-              "op": "Add", 
+              "op": "Disable", 
               "srcFactor": "One", 
               "dstFactor": "OneMinusSrcAlpha"
             }, 
             "alpha": {
-              "op": "Add", 
+              "op": "Disable", 
               "srcFactor": "One", 
               "dstFactor": "OneMinusSrcAlpha"
             }, 

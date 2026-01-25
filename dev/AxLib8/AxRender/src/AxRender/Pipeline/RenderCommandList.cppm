@@ -11,6 +11,7 @@ export namespace ax /*::AxRender*/ {
 
 struct AxDrawCallRootConst {
 	Mat4f AX_MATRIX_MVP;
+	Mat4f AX_MATRIX_M;
 	u32   AX_OBJECT_ID;
 	u32   AX_MESH_CLUSTER_ID;
 	u32   _usedPadding0;

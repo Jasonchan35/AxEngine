@@ -4,7 +4,11 @@
 #include "Ax/AxWorld.hlsl"
 
 AX_ROOT_CONST_VAR(AxDrawCallRootConst, gAxDrawCallRootConst) 
-#define AX_MATRIX_MVP gAxDrawCallRootConst.AX_MATRIX_MVP
+#define AX_MATRIX_MVP        gAxDrawCallRootConst.AX_MATRIX_MVP
+#define AX_MATRIX_M          gAxDrawCallRootConst.AX_MATRIX_M
+#define AX_OBJECT_ID         gAxDrawCallRootConst.AX_OBJECT_ID
+#define AX_MESH_CLUSTER_ID   gAxDrawCallRootConst.AX_MESH_CLUSTER_ID
+
 
 cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
 	float	ax_g_test;

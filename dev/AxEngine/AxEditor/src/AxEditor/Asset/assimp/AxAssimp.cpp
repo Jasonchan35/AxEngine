@@ -182,7 +182,7 @@ public:
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
 				auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
 				meshRenderer->mesh = *meshObj;
-				meshRenderer->material = RenderStockObjects::s_instance()->materials->Simple3D_Unlit_Color;
+				meshRenderer->material = RenderStockObjects::s_instance()->materials->Simple3D_Blinn_Color;
 			}
 		} 
 

@@ -43,15 +43,15 @@
         "vertexFunc": "vs_main", 
         "pixelFunc": "ps_main", 
         "renderState": {
-          "cull": "None", 
+          "cull": "Back", 
           "blend": {
             "rgb": {
-              "op": "Add", 
+              "op": "Disable", 
               "srcFactor": "One", 
               "dstFactor": "OneMinusSrcAlpha"
             }, 
             "alpha": {
-              "op": "Add", 
+              "op": "Disable", 
               "srcFactor": "One", 
               "dstFactor": "OneMinusSrcAlpha"
             }, 
@@ -75,8 +75,39 @@
         }, {
           "semantic": "COLOR0", 
           "dataType": "Vec4f"
+        }, {
+          "semantic": "TEXCOORD0", 
+          "dataType": "Vec2f"
+        }, {
+          "semantic": "TEXCOORD1", 
+          "dataType": "Vec2f"
         }], 
-      "constBuffers": [], 
+      "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "AxSamplerState_tex0", 
+              "offset": 16, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture2D_tex0", 
+              "offset": 20, 
+              "dataType": "u32"
+            }, {
+              "name": "AxSamplerState_tex1", 
+              "offset": 24, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture2D_tex1", 
+              "offset": 28, 
+              "dataType": "u32"
+            }], 
+          "dataSize": 32
+        }], 
       "textures": [], 
       "samplers": [], 
       "structuredBuffers": []

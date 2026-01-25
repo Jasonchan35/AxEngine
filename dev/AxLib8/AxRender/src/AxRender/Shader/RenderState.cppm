@@ -4,7 +4,7 @@ export import :RenderDataType;
 
 export namespace ax /*::AxRender*/ {
 
-#define AX_RenderDepthTestOp_ENUM_LIST(E) \
+#define AX_RenderState_DepthTestOp_ENUM_LIST(E) \
 	E(Less,) \
 	E(Equal,) \
 	E(LessEqual,) \
@@ -15,9 +15,9 @@ export namespace ax /*::AxRender*/ {
 	E(Never,) \
 	E(_END,) \
 //-----
-AX_ENUM_CLASS(AX_RenderDepthTestOp_ENUM_LIST, RenderDepthTestOp, u8)
+AX_ENUM_CLASS(AX_RenderState_DepthTestOp_ENUM_LIST, RenderState_DepthTestOp, u8)
 
-#define AX_RenderBlendOp_ENUM_LIST(E) \
+#define AX_RenderState_BlendOp_ENUM_LIST(E) \
 	E(Disable,) \
 	E(Add,) \
 	E(Sub,) \
@@ -26,9 +26,9 @@ AX_ENUM_CLASS(AX_RenderDepthTestOp_ENUM_LIST, RenderDepthTestOp, u8)
 	E(Max,) \
 	E(_END,) \
 //-----
-AX_ENUM_CLASS(AX_RenderBlendOp_ENUM_LIST, RenderBlendOp, u8)
+AX_ENUM_CLASS(AX_RenderState_BlendOp_ENUM_LIST, RenderState_BlendOp, u8)
 
-#define AX_RenderBlendFactor_ENUM_LIST(E) \
+#define AX_RenderState_BlendFactor_ENUM_LIST(E) \
 	E(Zero,) \
 	E(One,) \
 	E(SrcColor,) \
@@ -46,30 +46,33 @@ AX_ENUM_CLASS(AX_RenderBlendOp_ENUM_LIST, RenderBlendOp, u8)
 	E(SrcAlphaSaturate,) \
 	E(_END,) \
 //-----
-AX_ENUM_CLASS(AX_RenderBlendFactor_ENUM_LIST, RenderBlendFactor, u8)
+AX_ENUM_CLASS(AX_RenderState_BlendFactor_ENUM_LIST, RenderState_BlendFactor, u8)
 
-#define AX_RenderCullMode_ENUM_LIST(E) \
+#define AX_RenderState_CullMode_ENUM_LIST(E) \
 	E(Back,) \
 	E(Front,) \
 	E(None,) \
 //----
-AX_ENUM_CLASS(AX_RenderCullMode_ENUM_LIST, RenderCullMode, u8)
+AX_ENUM_CLASS(AX_RenderState_CullMode_ENUM_LIST, RenderState_CullMode, u8)
 
 class RenderState {
 	using This = RenderState;
 public:
-	using Rect2			= Rect2f;
+	using Rect2       = Rect2f;
+	using CullMode    = RenderState_CullMode;
+	using DepthTestOp = RenderState_DepthTestOp;
+	using BlendOp     = RenderState_BlendOp;
+	using BlendFactor = RenderState_BlendFactor;
 
 	static const Int kMaxRenderTargetCount = 8;
 
-	RenderCullMode	cull = RenderCullMode::Back;
+	CullMode	cull = CullMode::Back;
 	bool		antialiasedLine = false;
 	bool		wireframe = false;
 	float		pointSize = 5;
 	
 	struct DepthTest {
-		using Op = RenderDepthTestOp;
-		Op op = ProjectionDesc().isReverseZ ? Op::Greater : Op::Less;
+		DepthTestOp op = ProjectionDesc().isReverseZ ? DepthTestOp::Greater : DepthTestOp::Less;
 		bool writeMask = true;
 
 		AX_INLINE
@@ -77,7 +80,7 @@ public:
 			return op == r.op && writeMask == r.writeMask;
 		}
 
-		bool isEnable() const { return op != Op::Always; }
+		bool isEnable() const { return op != DepthTestOp::Always; }
 
 		template<class SE>
 		void onJsonIO(SE& se) {
@@ -88,11 +91,11 @@ public:
 	DepthTest	depthTest;
 
 	struct BlendFunc {
-		RenderBlendOp		op;
-		RenderBlendFactor	srcFactor;
-		RenderBlendFactor	dstFactor;
+		BlendOp		op;
+		BlendFactor	srcFactor;
+		BlendFactor	dstFactor;
 
-		void set(RenderBlendOp op_, RenderBlendFactor srcFactor_, RenderBlendFactor dstFactor_) {
+		void set(BlendOp op_, BlendFactor srcFactor_, BlendFactor dstFactor_) {
 			op = op_;
 			srcFactor = srcFactor_;
 			dstFactor = dstFactor_;
@@ -113,7 +116,7 @@ public:
 
 		Blend();
 
-		bool isEnable() const { return rgb.op != RenderBlendOp::Disable || alpha.op != RenderBlendOp::Disable; }
+		bool isEnable() const { return rgb.op != BlendOp::Disable || alpha.op != BlendOp::Disable; }
 
 		template<class SE>
 		void onJsonIO(SE& se) {

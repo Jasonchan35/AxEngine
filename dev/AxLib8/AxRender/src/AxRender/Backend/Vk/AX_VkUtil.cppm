@@ -17,7 +17,7 @@ public:
 	static VkPrimitiveTopology		getVkPrimitiveTopology	(RenderPrimitiveType t);
 
 	static VkIndexType				getVkIndexType			(VertexIndexType t);
-	static VkCompareOp				getVkDepthTestOp		(RenderDepthTestOp v);
+	static VkCompareOp				getVkDepthTestOp		(RenderState_DepthTestOp v);
 
 	static VkAttachmentLoadOp		getVkLoadOp				(RenderBufferLoadOp v);
 
@@ -29,9 +29,9 @@ public:
 	static VkSamplerAddressMode		getVkSamplerWrap		(SamplerWrap   v);
 	static VkSamplerMipmapMode		getVkSamplerMipmapMode	(SamplerFilter v);
 
-	static VkBlendOp				getVkBlendOp			(RenderBlendOp		v);
-	static VkBlendFactor			getVkBlendFactor		(RenderBlendFactor	v);
-	static VkCullModeFlagBits		getVkCullMode			(RenderCullMode		v);
+	static VkBlendOp				getVkBlendOp			(RenderState_BlendOp     v);
+	static VkBlendFactor			getVkBlendFactor		(RenderState_BlendFactor v);
+	static VkCullModeFlagBits		getVkCullMode			(RenderState_CullMode    v);
 
 	static bool formatHasDepth	(VkFormat f);
 	static bool formatHasStencil(VkFormat f);
@@ -328,8 +328,8 @@ inline VkSamplerAddressMode AX_VkUtil::getVkSamplerWrap(SamplerWrap v) {
 	}
 }
 
-inline VkBlendOp AX_VkUtil::getVkBlendOp(RenderBlendOp v) {
-	using SRC = RenderBlendOp;
+inline VkBlendOp AX_VkUtil::getVkBlendOp(RenderState_BlendOp v) {
+	using SRC = RenderState_BlendOp;
 	switch (v) {
 		case SRC::Add:		return VK_BLEND_OP_ADD;
 		case SRC::Sub:		return VK_BLEND_OP_SUBTRACT;
@@ -340,8 +340,8 @@ inline VkBlendOp AX_VkUtil::getVkBlendOp(RenderBlendOp v) {
 	}
 }
 
-inline VkBlendFactor AX_VkUtil::getVkBlendFactor(RenderBlendFactor v) {
-	using SRC = RenderBlendFactor;
+inline VkBlendFactor AX_VkUtil::getVkBlendFactor(RenderState_BlendFactor v) {
+	using SRC = RenderState_BlendFactor;
 	switch (v) {
 		case SRC::Zero:						return VK_BLEND_FACTOR_ZERO;
 		case SRC::One:						return VK_BLEND_FACTOR_ONE;
@@ -350,20 +350,20 @@ inline VkBlendFactor AX_VkUtil::getVkBlendFactor(RenderBlendFactor v) {
 		case SRC::SrcColor:					return VK_BLEND_FACTOR_SRC_COLOR;
 		case SRC::DstColor:					return VK_BLEND_FACTOR_DST_COLOR;
 		case SRC::ConstColor:				return VK_BLEND_FACTOR_CONSTANT_COLOR;
-			//	case SRC::ConstAlpha:				return VK_BLEND_FACTOR_CONSTANT_ALPHA;
+	//	case SRC::ConstAlpha:				return VK_BLEND_FACTOR_CONSTANT_ALPHA;
 		case SRC::OneMinusSrcAlpha:			return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		case SRC::OneMinusSrcColor:			return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
 		case SRC::OneMinusDstAlpha:			return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
 		case SRC::OneMinusDstColor:			return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
 		case SRC::OneMinusConstColor:		return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
-			//	case SRC::OneMinusConstAlpha:		return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
+	//	case SRC::OneMinusConstAlpha:		return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
 		case SRC::SrcAlphaSaturate:			return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
 		default: throw Error_Undefined();
 	}
 }
 
-inline VkCullModeFlagBits AX_VkUtil::getVkCullMode(RenderCullMode v) {
-	using SRC = RenderCullMode;
+inline VkCullModeFlagBits AX_VkUtil::getVkCullMode(RenderState_CullMode v) {
+	using SRC = RenderState_CullMode;
 	switch (v) {
 		case SRC::None:		return VK_CULL_MODE_NONE;
 		case SRC::Back:		return VK_CULL_MODE_BACK_BIT;
@@ -383,8 +383,8 @@ VkIndexType AX_VkUtil::getVkIndexType(VertexIndexType t) {
 }
 
 inline
-VkCompareOp AX_VkUtil::getVkDepthTestOp(RenderDepthTestOp v) {
-	using SRC = RenderDepthTestOp;
+VkCompareOp AX_VkUtil::getVkDepthTestOp(RenderState_DepthTestOp v) {
+	using SRC = RenderState_DepthTestOp;
 	switch (v) {
 		case SRC::Always:		return  VK_COMPARE_OP_ALWAYS;
 		case SRC::Less:			return  VK_COMPARE_OP_LESS;

@@ -77,23 +77,27 @@
               "offset": 0, 
               "dataType": "Mat4f"
             }, {
-              "name": "AX_OBJECT_ID", 
+              "name": "AX_MATRIX_M", 
               "offset": 64, 
+              "dataType": "Mat4f"
+            }, {
+              "name": "AX_OBJECT_ID", 
+              "offset": 128, 
               "dataType": "u32"
             }, {
               "name": "AX_MESH_CLUSTER_ID", 
-              "offset": 68, 
+              "offset": 132, 
               "dataType": "u32"
             }, {
               "name": "_usedPadding0", 
-              "offset": 72, 
+              "offset": 136, 
               "dataType": "u32"
             }, {
               "name": "_usedPadding1", 
-              "offset": 76, 
+              "offset": 140, 
               "dataType": "u32"
             }], 
-          "dataSize": 80
+          "dataSize": 144
         }, {
           "name": "AX_ConstBuffer_World", 
           "dataType": "ConstBuffer", 

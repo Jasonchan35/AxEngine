@@ -1,31 +1,16 @@
 #if AX_SHADER_INFO
 Properties {
-//	Type	  name "displayName" = defaultValue { Other Options }
-// 	optional: displayName, = defaultValue
-
 	Color4f		color // = [0, 0, 0.5, 1]
-	float		global_shininess // = $variable_name
-
-	Texture2D	tex0 "Texture0" = White {
-		 Asset = "asset path"
-		 Filter = Bilinear
-		 Wrap = [Repeat, Clamp]
-	}
-
-	Texture2D	tex1 "Texture1" = Blue
-
 }
 
 Pass "Pass0" { // Forward
 	VertexFunc = vs_main
 	PixelFunc  = ps_main
 
-//	Queue		= "Transparent"
-	Cull 		= None
-//	Wireframe 	= true
-	BlendRGB   	= [Add, One, OneMinusSrcAlpha]
-	BlendAlpha 	= [Add, One, OneMinusSrcAlpha]
-	DepthTest 	= Greater
+//	Cull 		= None
+//	BlendRGB   	= [Add, One, OneMinusSrcAlpha]
+//	BlendAlpha 	= [Add, One, OneMinusSrcAlpha]
+//	DepthTest 	= Greater
 }
 #endif
 

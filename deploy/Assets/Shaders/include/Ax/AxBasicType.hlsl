@@ -17,6 +17,8 @@ typedef float2		Vec2f;
 typedef float3		Vec3f;
 typedef float4		Vec4f;
 
+typedef float2x2	Mat2f;
+typedef float3x3	Mat3f;
 typedef float4x4	Mat4f;
 
 typedef float3		Color3f;
@@ -77,6 +79,8 @@ typedef float4		Color4f;
 
 // those defines ensure variable name and semantic as pair, since OpenGL/Vulkan DO NOT have semantic but relie on variable name
 #define SEM_pos(					TYPE)	TYPE	pos					: POSITION
+#define SEM_worldPos(				TYPE)	TYPE	worldPos			: POSITION1
+#define SEM_screenPos(				TYPE)	TYPE	screenPos			: POSITION2
 
 #define SEM_sv_pos(					TYPE)	TYPE	sv_pos				: SV_POSITION
 #define SEM_sv_depth(				TYPE)	TYPE	sv_depth			: SV_DEPTH
@@ -90,6 +94,7 @@ typedef float4		Color4f;
 #define SEM_sv_groupThreadId(		TYPE)	TYPE	sv_groupThreadId	: SV_GROUPTHREADID
 #define SEM_sv_gsInstanceId(		TYPE)	TYPE	sv_gsInstanceId		: SV_GSINSTANCEID
 
+#define SEM_color( TYPE)	TYPE	color		: COLOR
 #define SEM_color0(TYPE)	TYPE	color0		: COLOR0
 #define SEM_color1(TYPE)	TYPE	color1		: COLOR1
 #define SEM_color2(TYPE)	TYPE	color2		: COLOR2
@@ -99,6 +104,7 @@ typedef float4		Color4f;
 #define SEM_color6(TYPE)	TYPE	color6		: COLOR6
 #define SEM_color7(TYPE)	TYPE	color7		: COLOR7
 
+#define SEM_normal( TYPE)	TYPE	normal		: NORMAL
 #define SEM_normal0(TYPE)	TYPE	normal0		: NORMAL0
 #define SEM_normal1(TYPE)	TYPE	normal1		: NORMAL1
 #define SEM_normal2(TYPE)	TYPE	normal2		: NORMAL2
@@ -108,6 +114,7 @@ typedef float4		Color4f;
 #define SEM_normal6(TYPE)	TYPE	normal6		: NORMAL6
 #define SEM_normal7(TYPE)	TYPE	normal7		: NORMAL7
 
+#define SEM_tangent( TYPE)	TYPE	tangent		: TANGENT
 #define SEM_tangent0(TYPE)	TYPE	tangent0	: TANGENT0
 #define SEM_tangent1(TYPE)	TYPE	tangent1	: TANGENT1
 #define SEM_tangent2(TYPE)	TYPE	tangent2	: TANGENT2
@@ -117,6 +124,7 @@ typedef float4		Color4f;
 #define SEM_tangent6(TYPE)	TYPE	tangent6	: TANGENT6
 #define SEM_tangent7(TYPE)	TYPE	tangent7	: TANGENT7
 
+#define SEM_binormal( TYPE)	TYPE	binormal	: BINORMAL
 #define SEM_binormal0(TYPE)	TYPE	binormal0	: BINORMAL0
 #define SEM_binormal1(TYPE)	TYPE	binormal1	: BINORMAL1
 #define SEM_binormal2(TYPE)	TYPE	binormal2	: BINORMAL2
@@ -126,6 +134,7 @@ typedef float4		Color4f;
 #define SEM_binormal6(TYPE)	TYPE	binormal6	: BINORMAL6
 #define SEM_binormal7(TYPE)	TYPE	binormal7	: BINORMAL7
 
+#define SEM_uv( TYPE)		TYPE	uv		: TEXCOORD
 #define SEM_uv0(TYPE)		TYPE	uv0		: TEXCOORD0
 #define SEM_uv1(TYPE)		TYPE	uv1		: TEXCOORD1
 #define SEM_uv2(TYPE)		TYPE	uv2		: TEXCOORD2

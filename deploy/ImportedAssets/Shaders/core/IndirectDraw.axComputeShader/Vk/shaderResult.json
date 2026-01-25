@@ -59,7 +59,7 @@
               "offset": 32, 
               "dataType": "Struct"
             }], 
-          "stride": 100
+          "stride": 164
         }]
     }]
 }

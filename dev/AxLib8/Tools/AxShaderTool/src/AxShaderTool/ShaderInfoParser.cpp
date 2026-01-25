@@ -404,7 +404,7 @@ void ShaderInfoParser::readPass() {
 		if (matchIdentifier("DepthTest") ) {
 			expectOp("=");
 
-			RenderDepthTestOp v;
+			RenderState_DepthTestOp v;
 			readEnum(v);
 			o.renderState.depthTest.op = v;
 			continue; 

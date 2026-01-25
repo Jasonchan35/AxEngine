@@ -42,15 +42,15 @@
       "vertexFunc": "vs_main", 
       "pixelFunc": "ps_main", 
       "renderState": {
-        "cull": "None", 
+        "cull": "Back", 
         "blend": {
           "rgb": {
-            "op": "Add", 
+            "op": "Disable", 
             "srcFactor": "One", 
             "dstFactor": "OneMinusSrcAlpha"
           }, 
           "alpha": {
-            "op": "Add", 
+            "op": "Disable", 
             "srcFactor": "One", 
             "dstFactor": "OneMinusSrcAlpha"
           }, 
