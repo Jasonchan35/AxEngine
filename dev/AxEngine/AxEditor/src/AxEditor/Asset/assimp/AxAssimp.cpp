@@ -13,8 +13,10 @@ class AxAssimp_Importer : public NonCopyable {
 public:
 	Array<SPtr<MeshObject>> _meshes;
 	JsonValue _metadata;
+	Quat4f _constAxisRot;
 	
 	static constexpr float kLengthScale = 1.0f;
+	static Vec3f   convAxis(const Vec3f& v) { return Vec3f(v.x, v.z, -v.y); }
 
 	void openFile(StrView filename) {
 		Assimp::Importer importer;
@@ -48,13 +50,22 @@ public:
 		
 		importMetaData(_metadata.setToObject(), scene->mMetaData);
 		AX_LOG("Metadata {}", _metadata);
+
+		auto convAxisMat = Mat4f::s_direction(convAxis(Vec3f(1, 0, 0)),
+		                                      convAxis(Vec3f(0, 1, 0)),
+		                                      convAxis(Vec3f(0, 0, 1))).transpose();
+		_constAxisRot = convAxisMat.toQuat();
 		
 		for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 			aiMesh* srcMesh = scene->mMeshes[i];
 			importMesh(srcMesh);
 		}
 		
-		importNode(scene->mRootNode, nullptr);
+		// importNode(scene->mRootNode, nullptr);
+		
+		for (auto* srcChild : Span(scene->mRootNode->mChildren, scene->mRootNode->mNumChildren)) {
+			importNode(srcChild, nullptr);
+		}		
 	}
 	
 	static void importMetaData(JsonObject* jsonObj, const aiMetadata* srcData) {
@@ -104,7 +115,7 @@ public:
 						m.a4, m.b4, m.c4, m.d4);
 	}
 
-	static Vec3f   toLengthVec3(const Vec3f& v) { return Vec3f(v.x, v.z, -v.y) * kLengthScale; }
+	static Vec3f   toLengthVec3(const Vec3f& v) { return convAxis(v) * kLengthScale; }
 	
 	static RenderPrimitiveType toPrimType(int t) {
 		if (t & aiPrimitiveType_TRIANGLE)	return RenderPrimitiveType::Triangles;
@@ -155,21 +166,17 @@ public:
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {
 		auto entity = SceneEntity::s_new(AX_NEW, parent, toStrView(srcNode->mName));
-
-#if 0
+		
+		auto& tran = entity->transform;
 		auto localMat = toMat4f(srcNode->mTransformation);
-		entity->transform.setMatrix(localMat);
-		auto& pos = entity->transform.position;
-		pos = toLengthVec3(pos);
-#else
-		aiVector3D pos;
-		aiQuaternion quat;
-		aiVector3D scale;
-		srcNode->mTransformation.Decompose(scale, quat, pos);
+		tran.setLocalMatrix(localMat);
+		if (!parent) {
+			tran.rotation *= _constAxisRot;
+		} else {
+			tran.position = toLengthVec3(tran.position);
+		}
 
-		auto newQuet = parent ? toQuat4f(quat) : Quat4f::s_identity(); 
-		entity->transform.setTRS(toLengthVec3(toVec3f(pos)), newQuet, toVec3f(scale));
-#endif
+		AX_LOG("importNode {} {}", entity->name(), entity->transform.rotation.eulerDeg());
 		
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {

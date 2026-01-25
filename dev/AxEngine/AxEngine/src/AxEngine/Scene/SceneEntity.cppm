@@ -85,6 +85,9 @@ public:
 		return _worldMatrix;
 	}
 	
+		  SceneEntity* parent()       { return _parent; }
+	const SceneEntity* parent() const { return _parent; }
+	
 protected:
 	friend class SceneWorld;
 	SceneWorld* _world = nullptr;

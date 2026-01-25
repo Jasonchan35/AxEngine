@@ -58,7 +58,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
 	
 	template <class R, VecSimd R_SIMD>
-	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Vec_<N, R, R_SIMD>& vec) { return SimdData::s_cast(vec._simd); }
+	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Quat4_<R, R_SIMD>& vec) { return SimdData::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
 	
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { x=x_; y=y_; z=z_; w=w_; }
@@ -76,24 +76,28 @@ public:
 	AX_NODISCARD constexpr Vec3	axis () const;
 
 	AX_NODISCARD static	constexpr This s_eulerRad(const Vec3& r);
+	AX_NODISCARD static	constexpr This s_eulerRad(T x, T y, T z)	{ return s_eulerRad(Vec3(x,y,z)); }
 	AX_NODISCARD static	constexpr This s_eulerRadX(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(s,0,0,c); }
 	AX_NODISCARD static	constexpr This s_eulerRadY(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,s,0,c); }
 	AX_NODISCARD static	constexpr This s_eulerRadZ(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
 
 	AX_NODISCARD static	constexpr This s_eulerDeg(const Vec3& r)	{ return s_eulerRad(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_eulerDeg(T x, T y, T z)	{ return s_eulerRad(Math::radians(Vec3(x,y,z))); }
 	AX_NODISCARD static	constexpr This s_eulerDegX(T deg)			{ return s_eulerRadX(Math::radians(deg)); }
 	AX_NODISCARD static	constexpr This s_eulerDegY(T deg)			{ return s_eulerRadY(Math::radians(deg)); }
 	AX_NODISCARD static	constexpr This s_eulerDegZ(T deg)			{ return s_eulerRadZ(Math::radians(deg)); }
 
-			constexpr void 	setEulerRad(const Vec3& r)	{ *this = s_eulerRad(r); }
-			constexpr void 	setEulerRadX(T rad) { *this = s_eulerRadX(rad); }
-			constexpr void 	setEulerRadY(T rad) { *this = s_eulerRadY(rad); }
-			constexpr void 	setEulerRadZ(T rad) { *this = s_eulerRadZ(rad); }
+	constexpr void 	setEulerRad(const Vec3& r)	{ *this = s_eulerRad(r); }
+	constexpr void 	setEulerRad(T x, T y, T z)  { setEulerRad(Vec3(x,y,z)); }
+	constexpr void 	setEulerRadX(T rad) { *this = s_eulerRadX(rad); }
+	constexpr void 	setEulerRadY(T rad) { *this = s_eulerRadY(rad); }
+	constexpr void 	setEulerRadZ(T rad) { *this = s_eulerRadZ(rad); }
 	
-			constexpr void 	setEulerDeg(const Vec3& r)	{ *this = s_eulerDeg(r); }
-			constexpr void 	setEulerDegX(T deg) { *this = s_eulerDegX(deg); }
-			constexpr void 	setEulerDegY(T deg) { *this = s_eulerDegY(deg); }
-			constexpr void 	setEulerDegZ(T deg) { *this = s_eulerDegZ(deg); }
+	constexpr void 	setEulerDeg(const Vec3& r)	{ *this = s_eulerDeg(r); }
+	constexpr void 	setEulerDeg(T x, T y, T z)  { setEulerDeg(Vec3(x,y,z)); }
+	constexpr void 	setEulerDegX(T deg) { *this = s_eulerDegX(deg); }
+	constexpr void 	setEulerDegY(T deg) { *this = s_eulerDegY(deg); }
+	constexpr void 	setEulerDegZ(T deg) { *this = s_eulerDegZ(deg); }
 
 	AX_NODISCARD constexpr Vec3	eulerRad() const	{ return Vec3(eulerRadX(), eulerRadY(), eulerRadZ()); }
 	AX_NODISCARD constexpr T	eulerRadX() const;
@@ -249,10 +253,7 @@ constexpr auto Quat_<4, T, SIMD>::s_lookAt(const Vec3& direction, const Vec3& up
 	auto forward = direction.normalize();
 	auto right   = up.cross(direction).normalize();
 	auto newUp   = direction.cross(right);
-
-	Mat4 mat;
-	mat.setDirection(right, forward, newUp);
-	return mat.toQuat();
+	return Mat4::s_direction(right, forward, newUp).toQuat();
 }
 
 } // namespace

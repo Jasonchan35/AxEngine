@@ -111,14 +111,14 @@ public:
 	}
 			T* data()		{ return cx.data(); }
 	const	T* data() const { return cx.data(); }
-	
-	AX_INLINE static constexpr This s_zero()		{ return This(Vec4::s_zero(), Vec4::s_zero(), Vec4::s_zero(), Vec4::s_zero()); }
-	AX_INLINE static constexpr This s_identity()	{ return This(	1,0,0,0,
-																	0,1,0,0,
-																	0,0,1,0,
-																	0,0,0,1); }
 
-	constexpr void set_identity()	{ *this = s_identity(); }
+	AX_NODISCARD static constexpr This s_zero();
+
+	AX_NODISCARD static constexpr This s_identity();
+	template<class R, VecSimd R_SIMD>
+	AX_NODISCARD static constexpr This s_cast(const Mat4_<R, R_SIMD>& v);
+
+	constexpr void setIdentity()	{ *this = s_identity(); }
 
 	AX_NODISCARD constexpr This transpose() const;
 
@@ -149,7 +149,11 @@ public:
 	AX_NODISCARD constexpr static This s_translate	(const Vec3& v);
 	AX_NODISCARD constexpr static This s_translate	(const Vec2& v)		{ return s_translate(Vec3(v, 0)); }
 	AX_NODISCARD constexpr static This s_translate	(T x, T y, T z)		{ return s_translate(Vec3(x,y,z)); }
-
+	AX_NODISCARD constexpr static This s_translateAndScale	(const Vec3 & translate, const Vec3 & scale);
+	AX_NODISCARD constexpr static This s_translateAndScale	(const Vec3 & translate, const T &    scale) {
+		return s_translateAndScale(translate, Vec3(scale));
+	}
+	
 	AX_NODISCARD constexpr static This s_rotateRad	(const Vec3 & v);
 	AX_NODISCARD constexpr static This s_rotateRad	(T x, T y, T z)		{ return s_rotateRad(Vec3(x,y,z)); }
 	AX_NODISCARD constexpr static This s_rotateRadX	(T rad);
@@ -177,9 +181,16 @@ public:
 		return s_TRS_rad(translate, Math::radians(rotate), scale);
 	}
 
-	AX_NODISCARD constexpr static This s_translateScale	(const Vec3 & translate, const Vec3 & scale);
-	AX_NODISCARD constexpr static This s_translateScale	(const Vec3 & translate, const T &    scale) {
-		return s_translateScale(translate, Vec3(scale));
+	AX_NODISCARD constexpr static This s_directionAndTranslate(const Vec3& dirX, const Vec3& dirY, const Vec3& dirZ,
+																const Vec3& translate) {
+		return This(dirX.x, dirX.y, dirX.z, 0,
+					dirY.x, dirY.y, dirY.z, 0,
+					dirZ.x, dirZ.y, dirZ.z, 0,
+					translate.x, translate.y, translate.z, 1);
+	}
+
+	AX_NODISCARD constexpr static This s_direction(const Vec3& dirX, const Vec3& dirY, const Vec3& dirZ) {
+		return s_directionAndTranslate(dirX, dirY, dirZ, Vec3::s_zero());
 	}
 
 	AX_NODISCARD constexpr This inverse				() const;
@@ -223,11 +234,6 @@ public:
 	AX_NODISCARD constexpr Vec3 directionX() const { return Vec3(cx.x, cy.x, cz.x).normalize(); }
 	AX_NODISCARD constexpr Vec3 directionY() const { return Vec3(cx.y, cy.y, cz.y).normalize(); }
 	AX_NODISCARD constexpr Vec3 directionZ() const { return Vec3(cx.z, cy.z, cz.z).normalize(); }
-	constexpr void setDirection(const Vec3& dirX, const Vec3& dirY, const Vec3& dirZ) {
-		xx = dirX.x; yx = dirX.y; zx = dirX.z;
-		xy = dirY.x; yy = dirY.y; zy = dirY.z;
-		xz = dirZ.x; yz = dirZ.y; zz = dirZ.z;
-	}
 	
 	AX_NODISCARD constexpr Vec3 position() const { return cw.xyz(); }
 				 constexpr void setPosition(const Vec3& pos) { cw.x = pos.x; cw.y = pos.y; cw.z = pos.z; }
@@ -235,6 +241,29 @@ public:
 	constexpr void getTRS(Vec3& pos, Quat4& quat, Vec3& scale) const;
 	constexpr void setTRS(const Vec3& pos, const Quat4& quat, const Vec3& scale) { *this = s_TRS(pos, quat, scale); } 
 };
+
+template<class T, VecSimd SIMD>
+constexpr typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_zero() {
+	return This(Vec4::s_zero(), Vec4::s_zero(), Vec4::s_zero(), Vec4::s_zero());
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_identity() { 
+	return This(1,0,0,0,
+	            0,1,0,0,
+	            0,0,1,0,
+	            0,0,0,1); 
+}
+
+template<class T, VecSimd SIMD>
+template<class R, VecSimd R_SIMD> constexpr
+typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_cast(const Mat4_<R, R_SIMD>& v) {
+	This o;
+	for (Int i = 0; i < kElementCount; i++) {
+		o.e[i] = static_cast<T>(v.e[i]);
+	}
+	return o;
+}
 
 template<class T, VecSimd SIMD> constexpr
 bool Mat_<4,4,T,SIMD>::almostEqual(const This &r, T epsilon) const {
@@ -719,7 +748,7 @@ auto Mat_<4,4,T,SIMD>::s_rotateRadZ(T rad) -> This {
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4,4,T,SIMD>::s_translateScale(const Vec3 & translate, const Vec3 & scale) -> This {
+auto Mat_<4,4,T,SIMD>::s_translateAndScale(const Vec3 & translate, const Vec3 & scale) -> This {
 	return This( scale.x, 0, 0, 0,
 				 0, scale.y, 0, 0,
 				 0, 0, scale.z, 0,
