@@ -273,7 +273,7 @@ public:
 	ShaderPass_Backend(const CreateDesc& desc);
 	virtual ~ShaderPass_Backend() override;
 
-	static const ShaderPass_Backend* s_commonShaderPass();
+	static const ShaderPass_Backend* s_globalCommonShaderPass();
 	
 	      Shader_Backend* shader()       { return _shader; }
 	const Shader_Backend* shader() const { return _shader; }

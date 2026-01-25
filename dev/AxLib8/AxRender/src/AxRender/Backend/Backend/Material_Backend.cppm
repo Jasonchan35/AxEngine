@@ -257,7 +257,7 @@ public:
 	MaterialPass_Backend(const CreateDesc& desc);
 	virtual ~MaterialPass_Backend() override;
 
-	static MaterialPass_Backend* s_commonMaterialPass();
+	static MaterialPass_Backend* s_globalCommonMaterialPass();
 
 	const ShaderPass_Backend*	shaderPass() const { return _shaderPass; }
 	const Shader_Backend*		shader() const;
@@ -311,7 +311,7 @@ class Material_Backend : public Material {
 public:
 	Material_Backend(const CreateDesc& desc);
 	
-	static Material_Backend* s_commonMaterial();
+	static Material_Backend* s_globalCommonMaterial();
 
 	static SPtr<This> s_new(const MemAllocRequest& req, Shader* shader = nullptr);
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView shaderAssetPath);

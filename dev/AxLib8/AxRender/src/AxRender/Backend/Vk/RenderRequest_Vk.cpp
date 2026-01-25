@@ -64,7 +64,7 @@ void RenderRequest_Vk::onWaitCompleted() {
 
 void RenderRequest_Vk::_updatedBindlessResources() {
 #if 0 // AX_RENDER_BINDLESS
-	auto* commonPass = rttiCastCheck<MaterialPass_Vk>(_commonMaterialPass);
+	auto* commonPass = rttiCastCheck<MaterialPass_Vk>(_globalCommonMaterialPass);
 	if (!commonPass) return;
 
 	auto* bindlessParamSpace = commonPass->getOwnParamSpace_vk(BindSpace::Bindless);

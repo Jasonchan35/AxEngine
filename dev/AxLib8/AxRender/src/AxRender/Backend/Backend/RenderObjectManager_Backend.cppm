@@ -58,7 +58,7 @@ public:
 	} bindless;
 #endif
 
-	Material_Backend* commonMaterial() { return _commonMaterial.ptr(); }
+	Material_Backend* globalCommonMaterial() { return _globalCommonMaterial.ptr(); }
 	Material_Backend* indirectDrawMaterial() { return _indirectDrawMaterial.ptr(); }
 	
 protected:
@@ -81,7 +81,7 @@ protected:
 	ObjectTables _objectTables;
 	
 // objects - must after _objectTable
-	SPtr<Material_Backend>	_commonMaterial;
+	SPtr<Material_Backend>	_globalCommonMaterial;
 	SPtr<Material_Backend>	_indirectDrawMaterial;
 	
 	struct GpuData {

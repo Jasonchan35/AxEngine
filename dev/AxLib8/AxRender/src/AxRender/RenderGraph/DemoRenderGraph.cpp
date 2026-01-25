@@ -69,8 +69,8 @@ DemoRenderGraph::DemoRenderGraph() {
 
 	auto* stockObjs = RenderStockObjects::s_instance();
 	
-	_axis     = stockObjs->meshes->axis;
-	_testCube = stockObjs->meshes->cube;
+	_axis     = stockObjs->meshes->Axis;
+	_testCube = stockObjs->meshes->Cube;
 	
 	_camera.setRotation(-30, 45);
 }

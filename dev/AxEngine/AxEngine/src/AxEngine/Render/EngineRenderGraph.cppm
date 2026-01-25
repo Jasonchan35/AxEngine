@@ -16,7 +16,7 @@ public:
 	Math::Camera3f		_viewportCamera;
 	SPtr<MeshObject>	_axis;
 	RenderMesh			_grid;
-	SPtr<Material>		_mat_simple3d_color;
+	SPtr<Material>		_matSimple3D_Unlit_Color;
 };
 
 } // namespace

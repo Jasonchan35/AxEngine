@@ -21,7 +21,7 @@
             "constColor": [1, 1, 1, 1]
           }, 
           "depthTest": {
-            "op": "LessEqual", 
+            "op": "Greater", 
             "writeMask": true
           }, 
           "antialiasedLine": false, 
@@ -37,11 +37,40 @@
           "dataType": "Vec4f"
         }], 
       "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "variables": [{
+              "name": "foo", 
+              "offset": 0, 
+              "dataType": "f32"
+            }, {
+              "name": "AxSamplerState_foo_tex2d", 
+              "offset": 4, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture2D_foo_tex2d", 
+              "offset": 8, 
+              "dataType": "u32"
+            }, {
+              "name": "AxSamplerState_foo_tex3d", 
+              "offset": 12, 
+              "dataType": "u32"
+            }, {
+              "name": "AxTexture3D_foo_tex3d", 
+              "offset": 16, 
+              "dataType": "u32"
+            }], 
+          "dataSize": 32
+        }, {
           "name": "gAxDrawCallRootConst", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "RootConst", 
-          "bindPoint": 0, 
+          "bindPoint": 1, 
           "bindCount": 1, 
           "variables": [{
               "name": "AX_MATRIX_MVP", 
@@ -105,58 +134,29 @@
               "offset": 144, 
               "dataType": "Mat4f"
             }], 
-          "dataSize": 200
-        }, {
-          "name": "$Globals", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "Default", 
-          "bindPoint": 0, 
-          "bindCount": 1, 
-          "variables": [{
-              "name": "foo", 
-              "offset": 0, 
-              "dataType": "f32"
-            }, {
-              "name": "AxSamplerState_foo_tex2d", 
-              "offset": 4, 
-              "dataType": "u32"
-            }, {
-              "name": "AxTexture2D_foo_tex2d", 
-              "offset": 8, 
-              "dataType": "u32"
-            }, {
-              "name": "AxSamplerState_foo_tex3d", 
-              "offset": 12, 
-              "dataType": "u32"
-            }, {
-              "name": "AxTexture3D_foo_tex3d", 
-              "offset": 16, 
-              "dataType": "u32"
-            }], 
-          "dataSize": 20
+          "dataSize": 208
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 
-          "dataType": "None", 
+          "dataType": "Texture2D", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
-          "bindPoint": 30000, 
+          "bindPoint": 10000, 
           "bindCount": 10000
         }, {
           "name": "AxBindless_Texture3D", 
-          "dataType": "None", 
+          "dataType": "Texture3D", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
-          "bindPoint": 40000, 
+          "bindPoint": 20000, 
           "bindCount": 1000
         }], 
       "samplers": [{
           "name": "AxBindless_SamplerState", 
-          "dataType": "None", 
+          "dataType": "SamplerState", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Bindless", 
-          "bindPoint": 10000, 
+          "bindPoint": 0, 
           "bindCount": 1000, 
           "dynamicSampler": true
         }], 
@@ -165,7 +165,7 @@
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Object", 
-          "bindPoint": 30000, 
+          "bindPoint": 0, 
           "bindCount": 1, 
           "variables": [{
               "name": "viewMatrix", 
@@ -186,7 +186,7 @@
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Object", 
-          "bindPoint": 30001, 
+          "bindPoint": 1, 
           "bindCount": 1, 
           "variables": [{
               "name": "color", 
@@ -199,7 +199,7 @@
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel", 
           "bindSpace": "Object", 
-          "bindPoint": 30002, 
+          "bindPoint": 2, 
           "bindCount": 1, 
           "variables": [{
               "name": "objectToWorld", 

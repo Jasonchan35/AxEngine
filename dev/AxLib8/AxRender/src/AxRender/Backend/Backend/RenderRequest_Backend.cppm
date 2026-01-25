@@ -94,7 +94,7 @@ public:
 
 	void setCamera_backend(const Math::Camera3f& camera);
 	
-	MaterialPass_Backend*	commonMaterialPass()	{ return _commonMaterialPass; };
+	MaterialPass_Backend*	globalCommonMaterialPass()	{ return _globalCommonMaterialPass; };
 	ByteSpan	drawCallRootConstData() const { return Span(_drawCallRootConst).toByteSpan(); }
 	
 protected:
@@ -103,11 +103,11 @@ protected:
 
 	RenderSystem_Backend*        _renderSystem_backend = nullptr;
 	RenderObjectManager_Backend* _objectManager        = nullptr;
-	Material_Backend*            _commonMaterial       = nullptr;
-	MaterialPass_Backend*        _commonMaterialPass   = nullptr;
+	Material_Backend*            _globalCommonMaterial       = nullptr;
+	MaterialPass_Backend*        _globalCommonMaterialPass   = nullptr;
 
 private:
-	void _updateCommonMaterial();
+	void _updateGlobalCommonMaterial();
 	
 	Int _index = 0;
 	SPtr<RenderPass_Backend>	_backBufferRenderPass;

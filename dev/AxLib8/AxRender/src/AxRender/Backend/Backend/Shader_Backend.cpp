@@ -217,8 +217,8 @@ ShaderPass_Backend::~ShaderPass_Backend() {
 	}
 }
 
-const ShaderPass_Backend* ShaderPass_Backend::s_commonShaderPass() {
-	auto* pass = MaterialPass_Backend::s_commonMaterialPass();
+const ShaderPass_Backend* ShaderPass_Backend::s_globalCommonShaderPass() {
+	auto* pass = MaterialPass_Backend::s_globalCommonMaterialPass();
 	return pass ? pass->shaderPass() : nullptr;
 }
 
@@ -251,7 +251,7 @@ void ShaderPass_Backend::_createParamSpaces() {
 	_addParamToSpace(_stageInfo->textures);
 	_addParamToSpace(_stageInfo->samplers);
 
-	auto* commonShaderPass = s_commonShaderPass(); 
+	auto* commonShaderPass = s_globalCommonShaderPass(); 
 
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);

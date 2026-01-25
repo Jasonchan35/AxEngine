@@ -142,13 +142,13 @@ MaterialPass_Backend::MaterialPass_Backend(const CreateDesc& desc)
 	AX_ASSERT(_material);
 	AX_ASSERT(_shaderPass);
 
-	auto* commonMaterialPass = s_commonMaterialPass();
+	auto* globalCommonMaterialPass = s_globalCommonMaterialPass();
 		
 	for (auto bindSpace : Range_(BindSpace::_COUNT)) {
 		auto i = ax_enum_int(bindSpace);
 		auto& ownParamSpace = _materialParamSpaces[i];
 		if (!isOwnParamSpace(bindSpace)) {
-			ownParamSpace = commonMaterialPass->getParamSpace(bindSpace);
+			ownParamSpace = globalCommonMaterialPass->getParamSpace(bindSpace);
 			continue;
 		}
 		
@@ -166,8 +166,8 @@ MaterialPass_Backend::~MaterialPass_Backend() {
 	}
 }
 
-MaterialPass_Backend* MaterialPass_Backend::s_commonMaterialPass() {
-	auto* mat = Material_Backend::s_commonMaterial();
+MaterialPass_Backend* MaterialPass_Backend::s_globalCommonMaterialPass() {
+	auto* mat = Material_Backend::s_globalCommonMaterial();
 	return mat ? mat->getPass(0) : nullptr;
 }
 
@@ -182,9 +182,9 @@ Material_Backend::Material_Backend(const CreateDesc& desc)
 	_maxFrameDataCount = isStaticMaterial ? 1 : RenderSystem::s_instance()->renderRequestCount();
 }
 
-Material_Backend* Material_Backend::s_commonMaterial() {
+Material_Backend* Material_Backend::s_globalCommonMaterial() {
 	auto* mgr = RenderObjectManager_Backend::s_instance();
-	return mgr ? mgr->commonMaterial() : nullptr;
+	return mgr ? mgr->globalCommonMaterial() : nullptr;
 }
 
 void Material_Backend::logWarningOnce(StrView msg) {

@@ -69,7 +69,7 @@ void RenderObjectManager_Vk::onPostCreate() {
 	
 #if AX_RENDER_BINDLESS
 
-	auto* commonShaderPass = ShaderPass_Backend::s_commonShaderPass();
+	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();
 
 	auto* bindlessParamSpace = rttiCastCheck<ShaderParamSpace_Vk>(commonShaderPass->getParamSpace(BindSpace::Bindless));
 	if (!bindlessParamSpace) throw Error_Undefined();

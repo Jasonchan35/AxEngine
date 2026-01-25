@@ -37,19 +37,19 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 	_inlineUpload.reset();
 }
 
-void RenderRequest_Backend::_updateCommonMaterial() {
+void RenderRequest_Backend::_updateGlobalCommonMaterial() {
 	using namespace Math;
-	_commonMaterial     = Material_Backend::s_commonMaterial();
-	_commonMaterialPass = _commonMaterial->getPass(0);
-	resourcesToKeep.add(_commonMaterial);
+	_globalCommonMaterial     = Material_Backend::s_globalCommonMaterial();
+	_globalCommonMaterialPass = _globalCommonMaterial->getPass(0);
+	resourcesToKeep.add(_globalCommonMaterial);
 	
 	f32 t = static_cast<f32>(_uptime);
 	Vec4f timeSin		(sin(t),   sin(t*4), sin(t*9), sin(t*16));
 	Vec4f timeSlowSin   (sin(t/2), sin(t/4), sin(t/9), sin(t/16));
 
 	auto setParam = [&](BindSpace space, NameId name, auto& value) {
-		if (!_commonMaterial->setParam(space, name, value)) {
-			_commonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
+		if (!_globalCommonMaterial->setParam(space, name, value)) {
+			_globalCommonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
 		}
 	};
 
@@ -72,7 +72,7 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_backBufferRenderPass = backBufferRenderPass;
 	_uptime               = _renderSystem_backend->getCurrentUptime().seconds_f64();
 	_objectManager        = RenderObjectManager_Backend::s_instance();
-	_updateCommonMaterial();
+	_updateGlobalCommonMaterial();
 	onFrameBegin();
 }
 
@@ -120,7 +120,7 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 
 void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
 	_viewProjMatrix = camera.viewProjMatrix(_projectionDesc);
-	commonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_vp"), _viewProjMatrix);
+	globalCommonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_vp"), _viewProjMatrix);
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {

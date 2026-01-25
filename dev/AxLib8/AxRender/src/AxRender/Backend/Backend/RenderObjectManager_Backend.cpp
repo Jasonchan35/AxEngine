@@ -68,11 +68,11 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 }
 
 void RenderObjectManager_Backend::_postCreate() {
-	_commonMaterial       = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/Common.axShader");
+	_globalCommonMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/AxGlobalCommon.axShader");
 	_indirectDrawMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/IndirectDraw.axComputeShader");
 	
 	RenderStockObjects::s_create();
-	auto* commonShaderPass = ShaderPass_Backend::s_commonShaderPass();
+	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();
 
 #if AX_RENDER_BINDLESS
 	auto* bindlessSpace = commonShaderPass->getParamSpace(ShaderParamBindSpace::Bindless);

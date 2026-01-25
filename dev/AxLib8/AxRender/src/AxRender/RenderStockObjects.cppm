@@ -62,18 +62,21 @@ public:
 
 	struct Materials : public NonCopyable {
 		Materials();
-		SPtr<Material>	simple3d_color;
+		SPtr<Material>	Simple3D_Unlit_Color;
+		SPtr<Material>	Simple3D_Unlit_Texture;
+		SPtr<Material>	Simple3D_Blinn_Color;
+		SPtr<Material>	Simple3D_Blinn_Texture;
 	};
 	UPtr<Materials>	materials;
 	
 	
 	struct Meshes : public NonCopyable {
 		Meshes();
-		SPtr<MeshObject>	axis;
-		SPtr<MeshObject>	cube;
-		SPtr<MeshObject>	sphere;
-		SPtr<MeshObject>	cone;
-		SPtr<MeshObject>	cylinder;
+		SPtr<MeshObject>	Axis;
+		SPtr<MeshObject>	Cube;
+		SPtr<MeshObject>	Sphere;
+		SPtr<MeshObject>	Cone;
+		SPtr<MeshObject>	Cylinder;
 	}; 
 	UPtr<Meshes> meshes;
 	

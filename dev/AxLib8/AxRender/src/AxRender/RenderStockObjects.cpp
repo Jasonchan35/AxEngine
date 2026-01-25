@@ -54,27 +54,30 @@ RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
 }
 
 RenderStockObjects::Meshes::Meshes() {
-	axis = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(axis->meshData).createAxis(Vertex_PosColor::s_layout());
+	Axis = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(Axis->meshData).createAxis(Vertex_PosColor::s_layout());
 
 	//----
 	auto layout = Vertex_PosNormalUvColor::s_layout();
 
-	cube = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(cube->meshData).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
+	Cube = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(Cube->meshData).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
 	
-	sphere = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(sphere->meshData).createSphere(layout, 1, 32, 32);
+	Sphere = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(Sphere->meshData).createSphere(layout, 1, 32, 32);
 	
-	cone = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(cone->meshData).createCone(layout, 1, 1, 2, 32, true);
+	Cone = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(Cone->meshData).createCone(layout, 1, 1, 2, 32, true);
 	
-	cylinder = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(cylinder->meshData).createCylinder(layout, 1, 1, 2, 32, true, true);
+	Cylinder = MeshObject::s_new(AX_NEW);
+	RenderMeshEdit(Cylinder->meshData).createCylinder(layout, 1, 1, 2, 32, true, true);
 }
 
 RenderStockObjects::Materials::Materials() {
-	simple3d_color  = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/simple3d_color.axShader");
+	Simple3D_Unlit_Color   = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Unlit_Color.axShader");
+	Simple3D_Unlit_Texture = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Unlit_Texture.axShader");
+	Simple3D_Blinn_Color   = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Blinn_Color.axShader");
+	Simple3D_Blinn_Texture = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Blinn_Texture.axShader");
 }
 
 RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }
