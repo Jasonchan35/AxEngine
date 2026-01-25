@@ -140,41 +140,47 @@ public:
 													 T width, T height, T nearClip, T farClip, 
 													 const ProjectionDesc& desc);
 
-	AX_NODISCARD constexpr static	This s_ortho	(T left, T right, T bottom, T top, T nearClip, T farClip, 
+	AX_NODISCARD constexpr static This s_ortho	(T left, T right, T bottom, T top, T nearClip, T farClip, 
 													 const ProjectionDesc& desc);
 	
-	AX_NODISCARD constexpr static	This s_lookAt	(const Vec3 & eye, const Vec3 & aim, const Vec3 & up, 
+	AX_NODISCARD constexpr static This s_lookAt	(const Vec3 & eye, const Vec3 & aim, const Vec3 & up, 
 													 const ProjectionDesc& desc);
 	
-	AX_NODISCARD constexpr static	This s_translate	(const Vec3& v);
-	AX_NODISCARD constexpr static	This s_translate	(const Vec2& v)		{ return s_translate(Vec3(v, 0)); }
+	AX_NODISCARD constexpr static This s_translate	(const Vec3& v);
+	AX_NODISCARD constexpr static This s_translate	(const Vec2& v)		{ return s_translate(Vec3(v, 0)); }
+	AX_NODISCARD constexpr static This s_translate	(T x, T y, T z)		{ return s_translate(Vec3(x,y,z)); }
 
-	AX_NODISCARD constexpr static	This s_rotateRad	(const Vec3 & v);
-	AX_NODISCARD constexpr static	This s_rotateRadX	(T rad);
-	AX_NODISCARD constexpr static	This s_rotateRadY	(T rad);
-	AX_NODISCARD constexpr static	This s_rotateRadZ	(T rad);
+	AX_NODISCARD constexpr static This s_rotateRad	(const Vec3 & v);
+	AX_NODISCARD constexpr static This s_rotateRad	(T x, T y, T z)		{ return s_rotateRad(Vec3(x,y,z)); }
+	AX_NODISCARD constexpr static This s_rotateRadX	(T rad);
+	AX_NODISCARD constexpr static This s_rotateRadY	(T rad);
+	AX_NODISCARD constexpr static This s_rotateRadZ	(T rad);
 
-	AX_NODISCARD constexpr static	This s_rotateDeg	(const Vec3 & v)	{ return s_rotateRad( radians(v)); }
-	AX_NODISCARD constexpr static	This s_rotateDegX	(T deg)				{ return s_rotateRadX(radians(deg)); }
-	AX_NODISCARD constexpr static	This s_rotateDegY	(T deg)				{ return s_rotateRadY(radians(deg)); }
-	AX_NODISCARD constexpr static	This s_rotateDegZ	(T deg)				{ return s_rotateRadZ(radians(deg)); }
+	AX_NODISCARD constexpr static This s_rotateDeg	(const Vec3 & v)	{ return s_rotateRad(radians(v)); }
+	AX_NODISCARD constexpr static This s_rotateDeg	(T x, T y, T z)		{ return s_rotateRad(radians(Vec3(x,y,z))); }
+	AX_NODISCARD constexpr static This s_rotateDegX	(T deg)				{ return s_rotateRadX(radians(deg)); }
+	AX_NODISCARD constexpr static This s_rotateDegY	(T deg)				{ return s_rotateRadY(radians(deg)); }
+	AX_NODISCARD constexpr static This s_rotateDegZ	(T deg)				{ return s_rotateRadZ(radians(deg)); }
 
-	AX_NODISCARD constexpr static	This s_quat		(const Quat4& q);
+	AX_NODISCARD constexpr static This s_quat		(const Quat4& q);
 
-	AX_NODISCARD constexpr static	This s_scale	(T s)				{ return s_scale({s,s,s}); }
-	AX_NODISCARD constexpr static	This s_scale	(const Vec2 & v)	{ return s_scale(Vec3(v, 1)); }
-	AX_NODISCARD constexpr static	This s_scale	(const Vec3 & v);
+	AX_NODISCARD constexpr static This s_scale	(T s)				{ return s_scale(Vec3::s_all(s)); }
+	AX_NODISCARD constexpr static This s_scale	(const Vec2 & v)	{ return s_scale(Vec3(v, 1)); }
+	AX_NODISCARD constexpr static This s_scale	(const Vec3 & v);
+	AX_NODISCARD constexpr static This s_scale	(T x, T y, T z)		{ return s_scale(Vec3(x,y,z)); }
 
-	AX_NODISCARD constexpr static	This s_shear	(const Vec3 & v);
+	AX_NODISCARD constexpr static This s_shear	(const Vec3 & v);
 
-	AX_NODISCARD constexpr static	This s_TRS		(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static	This s_TRS_rad	(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static	This s_TRS_deg	(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) {
+	AX_NODISCARD constexpr static This s_TRS		(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
+	AX_NODISCARD constexpr static This s_TRS_rad	(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale);
+	AX_NODISCARD constexpr static This s_TRS_deg	(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale) {
 		return s_TRS_rad(translate, Math::radians(rotate), scale);
 	}
 
-	AX_NODISCARD constexpr static	This s_translateScale	(const Vec3 & translate, const Vec3 & scale);
-	AX_NODISCARD constexpr static	This s_translateScale	(const Vec3 & translate, const T &    scale) { return s_translateScale(translate, Vec3(scale)); }
+	AX_NODISCARD constexpr static This s_translateScale	(const Vec3 & translate, const Vec3 & scale);
+	AX_NODISCARD constexpr static This s_translateScale	(const Vec3 & translate, const T &    scale) {
+		return s_translateScale(translate, Vec3(scale));
+	}
 
 	AX_NODISCARD constexpr This inverse				() const;
 	AX_NODISCARD constexpr This inverse3x3			() const;

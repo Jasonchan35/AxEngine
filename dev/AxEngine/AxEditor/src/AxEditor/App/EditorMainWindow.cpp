@@ -60,17 +60,14 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 		auto& cam = _viewportCamera;
 		ImUIPanel	panel("camera");
 		ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
+		ImUILabelText("rotation"      , Fmt("{}", cam.rotation.eulerDeg()));
 		ImUILabelText("distance"      , Fmt("{}", cam.distance));
 		ImUILabelText("eye"           , Fmt("{}", cam.eye()));
 		ImUILabelText("aim"           , Fmt("{}", cam.aim));
 		ImUILabelText("up"            , Fmt("{}", cam.up()));
-		ImUILabelText("Rot"           , Fmt("{}", cam.rotation));
 		ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix(projDesc)));
 		ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix(projDesc)));
-		
-		auto vp = cam.viewProjMatrix(projDesc);
-		ImUILabelText("viewProjMatrix", Fmt("{}", vp));
-		ImUILabelText("project point", Fmt("{}", vp.mulPoint(Vec3f(1,1,1))));
+		ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix(projDesc)));
 
 		if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
 			AX_TOGGLE_BOOL(projDesc.isReverseZ);

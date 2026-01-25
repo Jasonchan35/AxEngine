@@ -395,12 +395,11 @@ void RenderMeshEdit::createGrid(VertexLayout vertexLayout, const Vec3f& axis0, c
 
 	if (dstCol) {
 		{
-			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(0,0,0,1)); ++dstCol;
-			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(0,0,1,1)); ++dstCol;
-		}
-		{
-			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(0,0,0,1)); ++dstCol;
-			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(1,0,0,1)); ++dstCol;
+			auto color = Color4b::s_conv(centerLineColor_);
+			*dstCol = color; ++dstCol;
+			*dstCol = color; ++dstCol;
+			*dstCol = color; ++dstCol;
+			*dstCol = color; ++dstCol;
 		}
 	}
 	

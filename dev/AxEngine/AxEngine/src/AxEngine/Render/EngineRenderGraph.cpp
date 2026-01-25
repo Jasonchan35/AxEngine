@@ -4,7 +4,7 @@ import :EngineRenderGraph;
 namespace AxEngine {
 
 EngineRenderGraph::EngineRenderGraph() {
-	_viewportCamera.setRotation(30, 45);
+	_viewportCamera.setRotation(30, -150);
 //	_viewportCamera.setRotation(0, 0);
 	_viewportCamera.distance = 20;
 	
@@ -23,7 +23,7 @@ void EngineRenderGraph::onUpdate(RenderRequest* req) {
 void EngineRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	Base::onBackBufferPass(req, inputs);
 	req->drawMesh(_grid, _matSimple3D_Unlit_Color, 0);
-	req->drawMesh(_axis, _matSimple3D_Unlit_Color, 0);
+	req->drawMesh(_axis, _matSimple3D_Unlit_Color, 0, Mat4f::s_translate(0, 0.01f, 0));
 	
 	if (auto* world = SceneWorld::s_instance()) {
 		if (auto* meshRenderer = world->_meshRendererSystem.ptr()) {
