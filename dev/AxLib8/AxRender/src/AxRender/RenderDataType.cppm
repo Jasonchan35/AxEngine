@@ -77,20 +77,6 @@ enum class ShaderParamBindPoint : u32 {
 };
 AX_ENUM_STR_FROM_INT(ShaderParamBindPoint)
 
-#define AX_RenderAxis_ENUM_LIST(E) \
-	E(X,) \
-	E(Y,) \
-	E(Z,) \
-//----
-AX_ENUM_FLAGS_CLASS(AX_RenderAxis_ENUM_LIST, RenderAxis, u8)
-
-#define AX_RenderPlaneAxis_ENUM_LIST(E) \
-	E(XY,) \
-	E(YZ,) \
-	E(ZX,) \
-//----
-AX_ENUM_FLAGS_CLASS(AX_RenderPlaneAxis_ENUM_LIST, RenderPlaneAxis, u8)
-
 using ShaderParamBindCount = u32;
 
 #define AX_ShaderStageFlags_ENUM_LIST(E) \

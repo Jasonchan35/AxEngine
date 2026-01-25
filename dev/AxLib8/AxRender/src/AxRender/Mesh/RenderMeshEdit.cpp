@@ -357,26 +357,14 @@ void RenderMeshEdit::addTextBillboard(VertexLayout vertexLayout, StrView text, c
 	}
 }
 
-void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
-                                VertexLayout    vertexLayout,
-                                float           cellSize,
-                                Int             cellCount,
-                                const Color4f&  centerLineColor_,
+void RenderMeshEdit::createGrid(VertexLayout vertexLayout, const Vec3f& axis0, const Vec3f& axis1, 
+                                float cellSize, Int cellCount,
+                                const Color4f&  centerLineColor_, 
                                 const Color4f&  gridLineColor_,
-                                const Color4f&  gridLine2_Color_,
-                                Int             gridLine2_Interval
-) {
+                                const Color4f&  gridLine2_Color_, 
+                                Int gridLine2_Interval)
+{
 	_mesh.clear();
-	
-	Vec3f axis0;
-	Vec3f axis1;
-	
-	switch (planeAxis) {
-		case RenderPlaneAxis::XY: axis0.set(1,0,0); axis1.set(0,1,0); break;
-		case RenderPlaneAxis::YZ: axis0.set(0,1,0); axis1.set(0,0,1); break;
-		case RenderPlaneAxis::ZX: axis0.set(0,0,1); axis1.set(1,0,0); break;
-	}
-
 	const Int dx = cellCount / 2;
 
 	const float scale = cellSize * static_cast<f32>(dx);
@@ -397,24 +385,22 @@ void RenderMeshEdit::createGrid(RenderPlaneAxis planeAxis,
 	auto dstPos = posEnumerator->begin();
 	auto dstCol = colEnumerator ? colEnumerator->begin() : ElemIter<Color4b>();
 
-	//center line X
+	//center line Z
 	*dstPos = -axis0 * scale; ++dstPos;
 	*dstPos =  axis0 * scale; ++dstPos;
 	
-	//center line Y
+	//center line X
 	*dstPos = -axis1 * scale; ++dstPos;
 	*dstPos =  axis1 * scale; ++dstPos;
 
 	if (dstCol) {
 		{
-			auto centerLineColor = Color4b::s_conv(centerLineColor_ * Color4f(0,0,1,1));
-			*dstCol = centerLineColor; ++dstCol;
-			*dstCol = centerLineColor; ++dstCol;
+			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(0,0,0,1)); ++dstCol;
+			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(0,0,1,1)); ++dstCol;
 		}
 		{
-			auto centerLineColor = Color4b::s_conv(centerLineColor_ * Color4f(1,0,0,1));
-			*dstCol = centerLineColor; ++dstCol;
-			*dstCol = centerLineColor; ++dstCol;
+			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(0,0,0,1)); ++dstCol;
+			*dstCol = Color4b::s_conv(centerLineColor_ * Color4f(1,0,0,1)); ++dstCol;
 		}
 	}
 	

@@ -10,7 +10,7 @@ EngineRenderGraph::EngineRenderGraph() {
 	
 	auto* stockObjs = RenderStockObjects::s_instance();
 	
-	RenderMeshEdit(_grid).createGrid(RenderPlaneAxis::ZX, Vertex_PosColor::s_layout(), 1, 50);
+	RenderMeshEdit(_grid).createGrid(Vertex_PosColor::s_layout(), Vec3f(1,0,0), Vec3f(0,0,1), 1, 50);
 	_mat_simple3d_color = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/simple3d_color.axShader");
 	_axis = stockObjs->meshes->axis;
 }

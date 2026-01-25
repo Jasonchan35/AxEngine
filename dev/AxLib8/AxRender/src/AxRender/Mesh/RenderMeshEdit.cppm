@@ -32,10 +32,8 @@ public:
 	void createTextBillboard	(VertexLayout vertexLayout, StrView text, const Vec3f& pos, const FontStyle* style);
 	void addTextBillboard		(VertexLayout vertexLayout, StrView text, const Vec3f& pos, const FontStyle* style);
 
-	void createGrid(RenderPlaneAxis planeAxis,
-	                VertexLayout    vertexLayout,
-	                float           cellSize,
-	                Int             cellCount,
+	void createGrid(VertexLayout vertexLayout, const Vec3f& axis0, const Vec3f& axis1,
+	                float cellSize, Int cellCount,
 	                const Color4f&  centerLineColor    = Color4f(1.0, 1.0f, 1.0f),
 	                const Color4f&  gridLineColor      = Color4f(0.4f, 0.4f, 0.4f),
 	                const Color4f&  gridLine2_Color    = Color4f(.65f, .65f, .65f),
