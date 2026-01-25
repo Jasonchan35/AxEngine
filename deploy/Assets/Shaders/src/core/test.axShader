@@ -28,11 +28,11 @@ static float2 pos[3] = {
 };
 
 struct VS_Input {
-	SEM_SV_vertexId(uint);
+	SEM_sv_vertexId(uint);
 };
 
 struct PS_Input {
-	SEM_SV_pos(float4);
+	SEM_sv_pos(float4);
 };
 
 PS_Input vs_main(VS_Input i) {

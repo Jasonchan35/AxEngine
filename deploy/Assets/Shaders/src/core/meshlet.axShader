@@ -24,13 +24,13 @@ Pass "Pass0" {
 #define MS_GROUP_SIZE ROUNDUP(MAX(MAX_VERTS, MAX_PRIMS), THREADS_PER_WAVE)
 
 struct CS_Input {
-	SEM_SV_dispatchThreadId(uint);
+	SEM_sv_dispatchThreadId(uint);
 };
 
 struct AS_Input {
-	SEM_SV_dispatchThreadId(uint);
-	SEM_SV_groupThreadId(uint);
-	SEM_SV_groupId(uint);
+	SEM_sv_dispatchThreadId(uint);
+	SEM_sv_groupThreadId(uint);
+	SEM_sv_groupId(uint);
 };
 
 struct AS_Payload {
@@ -59,9 +59,9 @@ void as_main(AS_Input i) {
 #endif
 
 struct MS_Input {
-	SEM_SV_dispatchThreadId(uint);
-	SEM_SV_groupThreadId(uint);
-	SEM_SV_groupId(uint);
+	SEM_sv_dispatchThreadId(uint);
+	SEM_sv_groupThreadId(uint);
+	SEM_sv_groupId(uint);
 };
 
 struct VS_Output {
@@ -74,9 +74,9 @@ struct VS_Output {
 [OutputTopology_Triangles]
 void ms_main(
 //	MS_Input i,
-//	SEM_SV_dispatchThreadId(uint),
-//	SEM_SV_groupThreadId(uint),
-//	SEM_SV_groupId(uint),
+//	SEM_sv_dispatchThreadId(uint),
+//	SEM_sv_groupThreadId(uint),
+//	SEM_sv_groupId(uint),
     uint dtid : SV_DispatchThreadID,
     uint gtid : SV_GroupThreadID,
     uint gid : SV_GroupID,

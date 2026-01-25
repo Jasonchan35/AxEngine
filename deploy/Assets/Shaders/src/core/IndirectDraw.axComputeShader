@@ -12,7 +12,7 @@ Pass "Pass0" {
 #include "Ax/AxWorld.hlsl"
 
 struct CS_Input {
-	SEM_SV_dispatchThreadId(uint3);
+	SEM_sv_dispatchThreadId(uint3);
 };
 
 

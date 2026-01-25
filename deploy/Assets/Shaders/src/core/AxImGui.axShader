@@ -30,7 +30,7 @@ struct VS_Input {
 };
 
 struct PS_Input {
-	SEM_SV_pos(float4);
+	SEM_sv_pos(float4);
 	SEM_color0(float4);
 	SEM_uv0(float2);
 };

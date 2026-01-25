@@ -78,17 +78,17 @@ typedef float4		Color4f;
 // those defines ensure variable name and semantic as pair, since OpenGL/Vulkan DO NOT have semantic but relie on variable name
 #define SEM_pos(					TYPE)	TYPE	pos					: POSITION
 
-#define SEM_SV_pos(					TYPE)	TYPE	sv_pos				: SV_POSITION
-#define SEM_SV_depth(				TYPE)	TYPE	sv_depth			: SV_DEPTH
-#define SEM_SV_coverage(			TYPE)	TYPE	sv_coverage			: SV_COVERAGE
-#define SEM_SV_vertexId(			TYPE)	TYPE	sv_vertexId			: SV_VERTEXID
-#define SEM_SV_primitiveId(			TYPE)	TYPE	sv_primitiveId		: SV_PRIMITIVEID
-#define SEM_SV_instanceId(			TYPE)	TYPE	sv_instanceId		: SV_INSTANCEID
-#define SEM_SV_dispatchThreadId(	TYPE)	TYPE	sv_dispatchThreadId	: SV_DISPATCHTHREADID
-#define SEM_SV_groupId(				TYPE)	TYPE	sv_groupId			: SV_GROUPID
-#define SEM_SV_groupIndex(			TYPE)	TYPE	sv_groupIndex		: SV_GROUPINDEX
-#define SEM_SV_groupThreadId(		TYPE)	TYPE	sv_groupThreadId	: SV_GROUPTHREADID
-#define SEM_SV_gsInstanceId(		TYPE)	TYPE	sv_gsInstanceId		: SV_GSINSTANCEID
+#define SEM_sv_pos(					TYPE)	TYPE	sv_pos				: SV_POSITION
+#define SEM_sv_depth(				TYPE)	TYPE	sv_depth			: SV_DEPTH
+#define SEM_sv_coverage(			TYPE)	TYPE	sv_coverage			: SV_COVERAGE
+#define SEM_sv_vertexId(			TYPE)	TYPE	sv_vertexId			: SV_VERTEXID
+#define SEM_sv_primitiveId(			TYPE)	TYPE	sv_primitiveId		: SV_PRIMITIVEID
+#define SEM_sv_instanceId(			TYPE)	TYPE	sv_instanceId		: SV_INSTANCEID
+#define SEM_sv_dispatchThreadId(	TYPE)	TYPE	sv_dispatchThreadId	: SV_DISPATCHTHREADID
+#define SEM_sv_groupId(				TYPE)	TYPE	sv_groupId			: SV_GROUPID
+#define SEM_sv_groupIndex(			TYPE)	TYPE	sv_groupIndex		: SV_GROUPINDEX
+#define SEM_sv_groupThreadId(		TYPE)	TYPE	sv_groupThreadId	: SV_GROUPTHREADID
+#define SEM_sv_gsInstanceId(		TYPE)	TYPE	sv_gsInstanceId		: SV_GSINSTANCEID
 
 #define SEM_color0(TYPE)	TYPE	color0		: COLOR0
 #define SEM_color1(TYPE)	TYPE	color1		: COLOR1
