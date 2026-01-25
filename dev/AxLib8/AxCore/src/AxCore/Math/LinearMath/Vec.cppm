@@ -32,7 +32,10 @@ struct AxisSystem {
 };
 
 struct ProjectionDesc {
-	enum class DepthRange : u8 { ZeroToOne, NegOneToOne};
+	enum class DepthRange : u8 {
+		ZeroToOne, 
+		NegOneToOne // only used by Legacy OpenGL, can be changed by glClipControl(GL_UPPER_LEFT, GL_ZERO_TO_ONE); 
+	};
 	DepthRange range = DepthRange::ZeroToOne;
 	
 	bool isRightHanded = true;
