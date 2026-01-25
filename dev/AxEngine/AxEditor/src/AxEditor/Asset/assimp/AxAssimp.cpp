@@ -14,7 +14,7 @@ public:
 	Array<SPtr<MeshObject>> _meshes;
 	JsonValue _metadata;
 	
-	static constexpr float kLengthScale = 0.01f;
+	static constexpr float kLengthScale = 1.0f;
 
 	void openFile(StrView filename) {
 		Assimp::Importer importer;
@@ -104,7 +104,7 @@ public:
 						m.a4, m.b4, m.c4, m.d4);
 	}
 
-	static Vec3f   toLengthVec3(const Vec3f& v) { return Vec3f(v.x, v.y, v.z) * kLengthScale; }
+	static Vec3f   toLengthVec3(const Vec3f& v) { return Vec3f(v.x, v.z, -v.y) * kLengthScale; }
 	
 	static RenderPrimitiveType toPrimType(int t) {
 		if (t & aiPrimitiveType_TRIANGLE)	return RenderPrimitiveType::Triangles;
@@ -156,7 +156,7 @@ public:
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {
 		auto entity = SceneEntity::s_new(AX_NEW, parent, toStrView(srcNode->mName));
 
-#if 1
+#if 0
 		auto localMat = toMat4f(srcNode->mTransformation);
 		entity->transform.setMatrix(localMat);
 		auto& pos = entity->transform.position;
@@ -166,7 +166,9 @@ public:
 		aiQuaternion quat;
 		aiVector3D scale;
 		srcNode->mTransformation.Decompose(scale, quat, pos);
-		entity->transform.setTRS(toLengthVec3(toVec3f(pos)), toQuat4f(quat), toVec3f(scale));
+
+		auto newQuet = parent ? toQuat4f(quat) : Quat4f::s_identity(); 
+		entity->transform.setTRS(toLengthVec3(toVec3f(pos)), newQuet, toVec3f(scale));
 #endif
 		
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {

@@ -1,0 +1,10 @@
+{
+	"rawDataPath": "RawData",
+	"rawDataExportDir": "ImportedAssets/JxLocalTemp/JxAutoImport",
+	"export_opt_axis_forward": "-Y",
+	"export_opt_axis_up": "Z",
+	"requireFps": 30,
+	"requireUnitSystem": "METRIC",
+	"requireLengthUnit": "METERS",
+	"requireScaleLength": 1
+}

@@ -123,8 +123,8 @@ public:
 	template<class V> AX_INLINE void castFrom(const V& v) { *this = s_cast(v); }
 };
 
-template<class T> inline Vec3_<T> operator* (Vec3_<T>& v, const Quat4_<T>& quat) { return quat * v; }
-template<class T> inline void     operator*=(Vec3_<T>& v, const Quat4_<T>& quat) { v = quat * v; }
+template<class T, VecSimd SIMD> inline Vec3_<T> operator* (Vec3_<T,SIMD>& v, const Quat4_<T,SIMD>& quat) { return quat * v; }
+template<class T, VecSimd SIMD> inline void     operator*=(Vec3_<T,SIMD>& v, const Quat4_<T,SIMD>& quat) { v = quat * v; }
 
 
 
@@ -208,12 +208,6 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::inverse() const -> This {
 	return conjugate()._simd / _simd.dot(_simd);
-}
-
-// operator * (Vec3, Quat4)
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr
-Vec_<3, T, SIMD> operator*(const Vec_<3, T, SIMD> & vec, const Quat4_<T, SIMD>& q) {
-	return q.inverse() * vec;
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const Vec3_<T, SIMD>& v) const -> Vec3 {

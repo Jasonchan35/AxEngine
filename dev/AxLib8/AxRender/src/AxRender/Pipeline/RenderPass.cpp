@@ -14,8 +14,8 @@ RenderPassColorBuffer::RenderPassColorBuffer(const CreateDesc& desc) {
 RenderPassDepthBuffer::RenderPassDepthBuffer(const CreateDesc& desc) 
 : Base(RenderDataType::DepthTexture)
 {
-	_textureType      = RenderDataType::DepthTexture;
-	_depthType = desc.depthType;
+	_textureType = RenderDataType::DepthTexture;
+	_depthType   = desc.depthType;
 }
 
 RenderPass::RenderPass(const CreateDesc& desc) {

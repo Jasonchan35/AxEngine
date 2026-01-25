@@ -14,14 +14,24 @@ RenderPassColorBuffer_Dx12::RenderPassColorBuffer_Dx12(const CreateDesc& desc): 
 		UINT backBufIndex = ax_safe_cast_from(desc.fromBackBuffer.index);
 		_resource_dx12.createFromSwapChain(renderContext_dx12->_swapChain_dx12, backBufIndex);
 	} else {
-		_resource_dx12.create(desc.frameSize, desc.colorType);
+		D3D12_CLEAR_VALUE clearValue;
+		clearValue.Format = Dx12Util::getDxColorType(desc.colorType);
+		clearValue.Color[0] = desc.clearColor.r;
+		clearValue.Color[1] = desc.clearColor.g;
+		clearValue.Color[2] = desc.clearColor.b;
+		clearValue.Color[3] = desc.clearColor.a;
+		_resource_dx12.create(desc.frameSize, desc.colorType, clearValue);
 	}
 }
 
 RenderPassDepthBuffer_Dx12::RenderPassDepthBuffer_Dx12(const CreateDesc& desc)
 : Base(desc)
 {
-	_resource_dx12.create(desc.frameSize, desc.depthType);
+	D3D12_CLEAR_VALUE clearValue;
+	clearValue.Format = Dx12Util::getDxDepthType(desc.depthType);
+	clearValue.DepthStencil.Depth   = desc.clearDepth;
+	clearValue.DepthStencil.Stencil = static_cast<u8>(desc.clearStencil);
+	_resource_dx12.create(desc.frameSize, desc.depthType, clearValue);
 }
 
 RenderPass_Dx12::RenderPass_Dx12(const CreateDesc& desc)

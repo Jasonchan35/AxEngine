@@ -69,12 +69,12 @@ protected:
 class Dx12Resource_ColorBuffer : public Dx12ResourceBase {
 public:
 	void createFromSwapChain(Dx12_IDXGISwapChain* swapChain, UINT backBufIndex);
-	void create(Vec2i size, ColorType colorType);
+	void create(Vec2i size, ColorType colorType, const D3D12_CLEAR_VALUE& clearValue);
 };
 
 class Dx12Resource_DepthBuffer : public Dx12ResourceBase {
 public:
-	void create(Vec2i size, RenderDepthType depthType);
+	void create(Vec2i size, RenderDepthType depthType, const D3D12_CLEAR_VALUE& clearValue);
 };
 
 class Dx12Resource_GpuBuffer : public Dx12ResourceBase {

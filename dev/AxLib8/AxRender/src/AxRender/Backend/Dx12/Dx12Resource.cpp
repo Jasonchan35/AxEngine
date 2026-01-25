@@ -191,7 +191,7 @@ void Dx12Resource_ColorBuffer::createFromSwapChain(Dx12_IDXGISwapChain* swapChai
 	_resourceState = D3D12_RESOURCE_STATE_PRESENT;
 }
 
-void Dx12Resource_ColorBuffer::create(Vec2i size, ColorType colorType) {
+void Dx12Resource_ColorBuffer::create(Vec2i size, ColorType colorType, const D3D12_CLEAR_VALUE& clearValue) {
 	_resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	_resourceDesc.Format    = Dx12Util::getDxColorType(colorType);
 	_resourceDesc.Width     = Dx12Util::castUINT(size.x);
@@ -199,10 +199,10 @@ void Dx12Resource_ColorBuffer::create(Vec2i size, ColorType colorType) {
 	_resourceDesc.MipLevels = 0;
 	_resourceDesc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 	_resourceState  = D3D12_RESOURCE_STATE_PRESENT;
-	_create();
+	_create(&clearValue);
 }
 
-void Dx12Resource_DepthBuffer::create(Vec2i size, RenderDepthType depthType) {
+void Dx12Resource_DepthBuffer::create(Vec2i size, RenderDepthType depthType, const D3D12_CLEAR_VALUE& clearValue) {
 	_resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	_resourceDesc.MipLevels = 0;
 	_resourceDesc.Format    = Dx12Util::getDxDepthType(depthType);
@@ -210,12 +210,6 @@ void Dx12Resource_DepthBuffer::create(Vec2i size, RenderDepthType depthType) {
 	_resourceDesc.Width     = Dx12Util::castUINT(size.x);
 	_resourceDesc.Height    = Dx12Util::castUINT(size.y);
 	_resourceState  = D3D12_RESOURCE_STATE_DEPTH_WRITE;
-
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = _resourceDesc.Format;
-	clearValue.DepthStencil.Depth = 1.0f;
-	clearValue.DepthStencil.Stencil = 0;
-
 	_create(&clearValue);
 }
 
@@ -226,7 +220,6 @@ void Dx12Resource_Texture2D::create(Vec2i size, Int mipmapCount, ColorType color
 	_resourceDesc.Height    = Dx12Util::castUINT(size.y);
 	_resourceDesc.MipLevels = Dx12Util::castUINT16(mipmapCount);
 	_resourceState  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-
 	_create();
 }
 

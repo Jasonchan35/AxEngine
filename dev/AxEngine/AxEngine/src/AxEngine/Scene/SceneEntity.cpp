@@ -58,7 +58,7 @@ CMeshRendererSystem* CMeshRendererSystem::s_instance(bool createIfNone) {
 void CMeshRendererSystem::onRender(RenderRequest* req) {
 	for (auto* comp : _componentList) {
 		if (!comp) continue;
-		auto& objectToWorld = comp->entity()->transform.getObjectToWorld();
+		auto& objectToWorld = comp->entity()->worldMatrix();
 		
 		if (!comp->mesh || !comp->material) return;
 		req->drawMesh(comp->mesh, comp->material, 0, objectToWorld);

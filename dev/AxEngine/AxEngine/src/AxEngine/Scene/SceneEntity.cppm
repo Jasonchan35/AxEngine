@@ -67,17 +67,23 @@ public:
 			scale    = scale_;
 		};
 		
-		void setMatrix(const Mat4f& mat) { mat.getTRS(position, rotation, scale); }
-		
-		const Mat4f& getObjectToWorld() {
-			_objectToWorld = Mat4f::s_TRS(position, rotation, scale);
-			return _objectToWorld;
+		void setLocalMatrix(const Mat4f& mat) { mat.getTRS(position, rotation, scale); }
+		const Mat4f& localMatrix() {
+			_localMatrix.setTRS(position, rotation, scale);
+			return _localMatrix;
 		}
 	private:
-		Mat4f _objectToWorld;
+		Mat4f _localMatrix;
 	};
 	
 	Transform transform;
+	
+	const Mat4f& worldMatrix() {
+		// TODO dirty _worldMatrix
+		_worldMatrix = transform.localMatrix();
+		if (_parent) _worldMatrix *= _parent->worldMatrix();
+		return _worldMatrix;
+	}
 	
 protected:
 	friend class SceneWorld;
@@ -87,6 +93,7 @@ private:
 	Array<SPtr<SceneComponent>> _components;
 	Array<SPtr<SceneEntity>> _children;
 	SceneEntity* _parent = nullptr;
+	Mat4f _worldMatrix;
 };
 
 class CMeshRendererSystem;

@@ -233,6 +233,7 @@ public:
 				 constexpr void setPosition(const Vec3& pos) { cw.x = pos.x; cw.y = pos.y; cw.z = pos.z; }
 
 	constexpr void getTRS(Vec3& pos, Quat4& quat, Vec3& scale) const;
+	constexpr void setTRS(const Vec3& pos, const Quat4& quat, const Vec3& scale) { *this = s_TRS(pos, quat, scale); } 
 };
 
 template<class T, VecSimd SIMD> constexpr

@@ -22,6 +22,7 @@ public:
 	NameId              name;
 	Vec2i               frameSize{0, 0};
 	ColorType           colorType = ColorType::RGBAb;
+	Color4f             clearColor = Color4f::kBlack();
 	RenderBackBufferRef fromBackBuffer;
 };
 
@@ -46,6 +47,8 @@ class RenderPassDepthBuffer_CreateDesc : NonCopyable {
 public:
 	String          name;
 	Vec2i           frameSize{0, 0};
+	f32             clearDepth   = ProjectionDesc().isReverseZ ? 0.0f : 1.0f;
+	u32             clearStencil = 0;
 	RenderDepthType depthType = RenderDepthType::None;
 };
 
