@@ -13,7 +13,7 @@ void GenNinja_Null::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 					"    -out=\"$out\" $\n"
 					"\n\n");
 
-	outStr.append(Fmt("SourceFile={}\n\n", relSourceFilename));
+	outStr.append(Fmt("SourceFile={}\n\n", AxNinjaBuild::escapeString(relSourceFilename)));
 
 	
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {

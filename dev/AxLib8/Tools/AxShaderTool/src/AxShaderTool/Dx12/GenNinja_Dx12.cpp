@@ -23,8 +23,8 @@ void GenNinja_Dx12::writeNinjaPass(IString&        outStr,
 		"    -entry=$param_entry_point $\n"
 		"    -I=\"$AxIncludeDir\" $\n"
 		"    -out=\"$out\" $\n"
-		"    -file=\"$in\""
-		"\n\n"
+		"    -file=$in $\n"
+		"\n"
 		"rule build_Shader_Dx12_bin\n"
 		"  command = \"$windows_sdk_bin/dxc\" $\n"
 #if AX_RENDER_BINDLESS
@@ -35,7 +35,7 @@ void GenNinja_Dx12::writeNinjaPass(IString&        outStr,
 		"    -T $param_profile $\n"
 		"    -E $param_entry_point $\n"
 		"    -I \"$AxIncludeDir\" $\n"
-		"    -Fo \"$out\" \"$in\" $\n"
+		"    -Fo \"$out\" $in $\n"
 		//					"    -Zpc $\n" // Pack matrices in column-major order
 #if 1 // debug info
 		"    -Zi $\n"           // Enable debug information. Cannot be used together with -Zs
@@ -43,7 +43,7 @@ void GenNinja_Dx12::writeNinjaPass(IString&        outStr,
 #endif
 		"\n\n");
 
-	outStr.append(Fmt("SourceFile={}\n\n", relSourceFilename));
+	outStr.append(Fmt("SourceFile={}\n\n", AxNinjaBuild::escapeString(relSourceFilename)));
 
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
 		if (!entryPoint) return;

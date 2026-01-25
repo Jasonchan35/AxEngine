@@ -5,6 +5,7 @@ import :GenReflect_Dx12;
 import :GenReflect_Slang;
 import :ShaderInfoParser;
 import :GenResultInfo;
+import AxNinjaBuild;
 
 namespace ax /*::AxRender*/ {
 
@@ -53,8 +54,9 @@ void AxShaderTool_App::genNinja_Shaders(StrView outDir, const Array<String>& fil
 				"\n");
 
 	for (auto& f : files) {
-		auto absFilename = FilePath::absPath(f);
-		outStr.append(Fmt("build {}/shaderResult.json: build_shader {} | ${{AxShaderTool}} \n", f, f));
+		// auto absFilename = FilePath::absPath(f);
+		auto escFile = AxNinjaBuild::escapeString(f);
+		outStr.appendFormat("build {0}/shaderResult.json: build_shader {0} | ${{AxShaderTool}} \n", escFile);
 	}
 
 	File::writeFileIfChanged(Fmt("{}/build.ninja", outDir), outStr, opt.writeFileOpt);
@@ -88,7 +90,7 @@ void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
 
 	opt.keepUnusedVariable = parser.info.isGlobalCommonShader;
 
-	outStr.append(Fmt("SourceFile={}\n\n", filename));
+	outStr.append(Fmt("SourceFile={}\n\n", AxNinjaBuild::escapeString(filename)));
 
 	auto func = [&](RenderAPI api) {
 		outStr.append(Fmt("build {}/shaderResult.json: build_api_shader {} | ${{SourceFile}} ${{AxShaderTool}} \n", api, api));

@@ -34,7 +34,7 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 					"    -reflection-json \"$out.reflect\" $\n"
 					"    -fvk-use-entrypoint-name $\n"
 					"    -o \"$out\" $\n"
-					"    -- \"$in\" $\n"
+					"    -- $in $\n"
 					"\n\n");
 	
 	
@@ -60,7 +60,7 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 					"    -Werror $\n" // Treat warnings as errors
 					"    -MD -MF \"$out.d\" $\n"
 					"    -I \"$AxIncludeDir\" $\n"
-					"    -o \"$out\" \"$in\" $\n"
+					"    -o \"$out\" $in $\n"
 					"\n\n");
 #endif
 	
@@ -71,18 +71,18 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 					"    --remove-unused-variables $\n"
 					"    --hlsl-auto-binding sampler $\n" // assign register id "Texture2D NAME : register(t ## REG); "
 					"    --set-hlsl-vertex-input-semantic 100 POSITION $\n"
-					"    --output \"$out\" \"$in\""
+					"    --output \"$out\" $in"
 					"\n\n");
 #endif
 
 	outStr.append(	"rule build_Shader_Vk_json\n"
 					"  command = \"${AxShaderTool}\" $\n"
 					"    -genReflect_Vk $\n"
-					"    -file=\"$in\"  $\n"
+					"    -file=$in $\n"
 					"    -out=\"$out\"  $\n"
 					"\n\n");
 
-	outStr.append(Fmt("SourceFile={}\n\n", relSourceFilename));
+	outStr.append(Fmt("SourceFile={}\n\n", AxNinjaBuild::escapeString(relSourceFilename)));
 
 	auto writePass = [&](StrView entryPoint, ShaderStageFlags stageFlags, StrView profile) {
 		if (!entryPoint) return;
