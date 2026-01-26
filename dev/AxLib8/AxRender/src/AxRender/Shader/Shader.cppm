@@ -84,10 +84,12 @@ public:
 
 	struct BufferBase : public ParamBase {
 		Array<Variable>	variables;
+		Int stride = 0;
 
 		template<class SE>
 		void onJsonIO(SE & se) {
 			ParamBase::onJsonIO(se);
+			AX_JSON_IO(se, stride);
 			AX_JSON_IO(se, variables);
 		}
 
@@ -99,24 +101,10 @@ public:
 		}
 	};
 		
-	struct ConstBuffer : public BufferBase {
-		Int dataSize = 0;
-		template<class SE>
-		void onJsonIO(SE & se) {
-			BufferBase::onJsonIO(se);
-			AX_JSON_IO(se, dataSize);
-		}
-	};
+	struct ConstBuffer : public BufferBase {};
 	Array<ConstBuffer>	constBuffers;
 
-	struct StructuredBuffer : public BufferBase {
-		Int stride = 0;
-		template<class SE>
-		void onJsonIO(SE & se) {
-			BufferBase::onJsonIO(se);
-			AX_JSON_IO(se, stride);
-		}
-	};
+	struct StructuredBuffer : public BufferBase {};
 	Array<StructuredBuffer> structuredBuffers;
 
 //----------
@@ -166,7 +154,6 @@ public:
 		AX_JSON_IO(se, samplers);
 		AX_JSON_IO(se, structuredBuffers);
 	}
-
 };
 
 struct ShaderPassInfo : public NonCopyable {

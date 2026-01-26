@@ -105,7 +105,7 @@ inline void ShaderParamSpace_Backend::TextureParam::create(const Info& info) {
 
 inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
 	ParamBase::create(info);
-	_defaultValues.resize(info.dataSize);
+	_defaultValues.resize(info.stride);
 	_defaultValues.fillValues(0); // set all to zero by default
 
 	_varInfos.ensureCapacity(info.variables.size());

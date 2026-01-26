@@ -47,6 +47,7 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
+          "stride": 32, 
           "variables": [{
               "name": "testDouble", 
               "dataType": "f64", 
@@ -72,8 +73,7 @@
               "dataType": "Vec2u32", 
               "offset": 24, 
               "size": 8
-            }], 
-          "dataSize": 32
+            }]
         }], 
       "textures": [], 
       "samplers": [], 
@@ -84,6 +84,7 @@
           "bindSpace": "Default", 
           "bindPoint": 30000, 
           "bindCount": 1, 
+          "stride": 16, 
           "variables": [{
               "name": "color", 
               "dataType": "Vec3f", 
@@ -94,8 +95,7 @@
               "dataType": "f32", 
               "offset": 12, 
               "size": 4
-            }], 
-          "stride": 16
+            }]
         }]
     }]
 }

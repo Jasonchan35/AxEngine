@@ -32,8 +32,8 @@ public:
 private:
 	ShaderStageInfo::ConstBuffer _globalConstBuffer;
 	
-	void _genParamBase (ShaderStageInfo::ParamBase & dst, ShaderStageInfo& outInfo, const SrcParam& srcParam);
-	void _genVariables (ShaderStageInfo::BufferBase& dst, Int& outDataSize, const JsonArray& json_fields);
+	void _genParamBase (ShaderStageInfo::ParamBase & dstParam, const ShaderStageInfo& info, const SrcParam& srcParam);
+	void _genVariables (ShaderStageInfo::BufferBase& dstBuf, const JsonArray& json_fields);
 };
 
 } // namespace

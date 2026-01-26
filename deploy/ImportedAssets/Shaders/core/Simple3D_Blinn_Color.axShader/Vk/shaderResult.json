@@ -80,6 +80,7 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
+          "stride": 64, 
           "variables": [{
               "name": "color", 
               "dataType": "Vec4f", 
@@ -105,8 +106,7 @@
               "dataType": "f32", 
               "offset": 60, 
               "size": 4
-            }], 
-          "dataSize": 64
+            }]
         }], 
       "textures": [], 
       "samplers": [], 

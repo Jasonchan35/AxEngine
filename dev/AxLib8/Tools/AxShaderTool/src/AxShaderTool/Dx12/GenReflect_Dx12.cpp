@@ -584,7 +584,7 @@ void GenReflect_Dx12::_compileReflect_constBuffers(ShaderStageInfo& outInfo, ID3
 		outCB.bindPoint  = ax_safe_cast_from(resDesc.BindPoint);
 		outCB.bindCount  = ax_safe_cast_from(resDesc.BindCount);
 		outCB.bindSpace  = ax_safe_cast_from(resDesc.Space);
-		outCB.dataSize   = ax_safe_cast_from(bufDesc.Size);
+		outCB.stride     = ax_safe_cast_from(bufDesc.Size);
 		
 		_compileReflect_BufferBase(outCB, reflect, cb);
 	}

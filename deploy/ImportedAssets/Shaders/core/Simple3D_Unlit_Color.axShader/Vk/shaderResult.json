@@ -53,13 +53,13 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
+          "stride": 16, 
           "variables": [{
               "name": "color", 
               "dataType": "Vec4f", 
               "offset": 0, 
               "size": 16
-            }], 
-          "dataSize": 16
+            }]
         }], 
       "textures": [], 
       "samplers": [], 

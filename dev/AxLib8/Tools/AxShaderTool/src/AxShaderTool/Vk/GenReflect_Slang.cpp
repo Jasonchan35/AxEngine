@@ -141,9 +141,9 @@ void GenReflect_Slang::generate(StrView outFilename, StrView filename, RenderAPI
 	_genBindings		(outInfo, json_root);
 	
 	if (_globalConstBuffer.variables) {
-		_globalConstBuffer.dataSize = 0; 
+		_globalConstBuffer.stride = 0; 
 		for (auto& v : _globalConstBuffer.variables) {
-			Math::max_itself(_globalConstBuffer.dataSize, v.offset + v.size); 
+			Math::max_itself(_globalConstBuffer.stride, v.offset + v.size); 
 		} 
 		outInfo.constBuffers.emplaceBack(_globalConstBuffer);
 	}
@@ -214,24 +214,24 @@ void GenReflect_Slang::_genBindings(ShaderStageInfo& outInfo, const JsonValue& j
 	}
 }
 
-void GenReflect_Slang::_genParamBase(ShaderStageInfo::ParamBase& dst, ShaderStageInfo& outInfo, const SrcParam& srcParam) {
-	dst.name  = srcParam.parameter->member("name")->asString();
-	dst.stageFlags = outInfo.stageFlags;
+void GenReflect_Slang::_genParamBase(ShaderStageInfo::ParamBase& dstParam, const ShaderStageInfo& info, const SrcParam& srcParam) {
+	dstParam.name  = srcParam.parameter->member("name")->asString();
+	dstParam.stageFlags = info.stageFlags;
 	
 	if (srcParam.binding->member("kind")->asString() == "pushConstantBuffer") {
-		dst.bindPoint = BindPoint::Zero;
-		dst.bindSpace = BindSpace::RootConst;
-		dst.bindCount = 1;
+		dstParam.bindPoint = BindPoint::Zero;
+		dstParam.bindSpace = BindSpace::RootConst;
+		dstParam.bindCount = 1;
 	} else {
 		auto* json_space = srcParam.binding->findMember("space");
 		
-		dst.bindSpace = json_space ? static_cast<BindSpace>(json_space->asInt64()) : BindSpace::Default;
-		dst.bindPoint = static_cast<BindPoint>(srcParam.binding->member("index")->asInt64());
+		dstParam.bindSpace = json_space ? static_cast<BindSpace>(json_space->asInt64()) : BindSpace::Default;
+		dstParam.bindPoint = static_cast<BindPoint>(srcParam.binding->member("index")->asInt64());
 		
 		if (srcParam.elementType) {
-			dst.bindCount = ax_safe_cast_from(srcParam.type->member("elementCount")->asInt64());
+			dstParam.bindCount = ax_safe_cast_from(srcParam.type->member("elementCount")->asInt64());
 		} else {
-			dst.bindCount = 1;
+			dstParam.bindCount = 1;
 		}
 	}
 }
@@ -246,11 +246,11 @@ void GenReflect_Slang::_genGlobalParam(ShaderStageInfo& outInfo, const SrcParam&
 	dstVar.size     = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
 }
 
-void GenReflect_Slang::_genVariables(ShaderStageInfo::BufferBase& dst, Int& outDataSize, const JsonArray& json_fields) {
-	outDataSize = 0;
-	dst.variables.ensureCapacity(json_fields.size());
+void GenReflect_Slang::_genVariables(ShaderStageInfo::BufferBase& dstBuf, const JsonArray& json_fields) {
+	dstBuf.stride = 0;
+	dstBuf.variables.ensureCapacity(json_fields.size());
 	for (auto& json_field : json_fields) {
-		auto& dstVar = dst.variables.emplaceBack();
+		auto& dstVar = dstBuf.variables.emplaceBack();
 		auto& json_field_binding = json_field.memberObject("binding");
 		
 		dstVar.name     = json_field.memberString("name");
@@ -258,7 +258,7 @@ void GenReflect_Slang::_genVariables(ShaderStageInfo::BufferBase& dst, Int& outD
 		dstVar.offset   = ax_safe_cast_from(json_field_binding.member("offset")->asInt64());
 		dstVar.size     = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
 		
-		Math::max_itself(outDataSize, dstVar.offset + dstVar.size);
+		Math::max_itself(dstBuf.stride, dstVar.offset + dstVar.size);
 	}
 }
 
@@ -280,7 +280,7 @@ void GenReflect_Slang::_genStructuredBuffer(ShaderStageInfo& outInfo, const SrcP
 	auto& json_fields     = json_resultType.memberArray("fields");
 	
 	_genParamBase(dstBuf, outInfo, srcParam);
-	_genVariables(dstBuf, dstBuf.stride, json_fields);
+	_genVariables(dstBuf, json_fields);
 }
 
 void GenReflect_Slang::_genConstBuffer(ShaderStageInfo& outInfo, const SrcParam& srcParam) {
@@ -292,7 +292,7 @@ void GenReflect_Slang::_genConstBuffer(ShaderStageInfo& outInfo, const SrcParam&
 	auto& json_fields               = json_elementVarLayoutType.memberArray("fields");
 	
 	_genParamBase(dstBuf, outInfo, srcParam);
-	_genVariables(dstBuf, dstBuf.dataSize, json_fields);
+	_genVariables(dstBuf, json_fields);
 }
 
 } // namespace
