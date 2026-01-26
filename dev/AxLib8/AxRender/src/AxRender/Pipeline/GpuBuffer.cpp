@@ -11,8 +11,11 @@ SPtr<GpuBuffer> GpuBuffer::s_new(const MemAllocRequest& req, const CreateDesc& d
 }
 
 GpuBuffer::GpuBuffer(const CreateDesc& desc) {
-	_bufferType = desc.bufferType;
-	_bufferSize = desc.bufferSize;
+	_name               = NameId::s_make(desc.name);
+	_bufferType         = desc.bufferType;
+	_bufferSize         = desc.bufferSize;
+	_virtualMemMaxSize  = desc.virtualMemMaxSize;
+	_virtualMemPageSize = desc.virtualMemPageSize;
 }
 
 SPtr<GpuStructuredBuffer> GpuStructuredBuffer::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
@@ -32,8 +35,10 @@ GpuStructuredBuffer::GpuStructuredBuffer(const CreateDesc& desc) {
 
 void DynamicGpuBuffer::create(const CreateDesc& desc) {
 	reset();
-	_name = desc.name;
-	_bufferType = desc.bufferType;
+	_name               = desc.name;
+	_bufferType         = desc.bufferType;
+	_virtualMemMaxSize  = desc.virtualMemMaxSize;
+	_virtualMemPageSize = desc.virtualMemPageSize;
 	_data.resize(desc.bufferSize);
 }
 
@@ -56,10 +61,25 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 	auto dataCapacity = _data.capacity();
 	auto uploadRange  = _dirtyRange;
 	_dirtyRange.reset();
-	
+
 	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataCapacity) {
-		_gpuBuffer = GpuBuffer::s_new(AX_NEW, _name, _bufferType, dataCapacity);
-		uploadRange = IntRange(dataSize); // upload all data for new buffer
+		if (_gpuBuffer && _virtualMemMaxSize) {
+			_gpuBuffer->ensureCapacity(req, dataCapacity);
+			
+		} else {
+			GpuVirtualAllocator_CreateDesc allocatorDesc;
+			allocatorDesc.bufferType = _bufferType;
+			auto gpuAllocator = GpuVirtualAllocator_Backend::s_new(AX_NEW, allocatorDesc);
+			
+			GpuBuffer_CreateDesc bufferDesc;
+			bufferDesc.bufferType         = _bufferType;
+			bufferDesc.bufferSize         = dataCapacity;
+			bufferDesc.virtualMemMaxSize  = _virtualMemMaxSize;
+			bufferDesc.virtualMemPageSize = _virtualMemPageSize;
+			
+			_gpuBuffer = GpuBuffer::s_new(AX_NEW, bufferDesc);
+			uploadRange = IntRange(dataSize); // upload all data for new buffer
+		}
 	}
 
 	req->copyDataToGpuBuffer(_gpuBuffer, _data.slice(uploadRange), uploadRange.start());

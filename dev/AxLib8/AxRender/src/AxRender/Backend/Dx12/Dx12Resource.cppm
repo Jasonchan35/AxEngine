@@ -9,11 +9,6 @@ import :RenderSystem_Backend;
 
 namespace ax {
 
-enum class Dx12ResourceType {
-	None,
-	ColorBuffer,
-};
-
 class Dx12ResourceBase : public NonCopyable {
 	using This = Dx12ResourceBase;
 public:
@@ -41,25 +36,28 @@ public:
 
 	operator ID3D12Resource*() { return _d3dResource; }
 
-	const D3D12_RESOURCE_DESC1&	resourceDesc() const { return _resourceDesc; }
+	const D3D12MA::ALLOCATION_DESC&  allocDesc() const { return _allocDesc; }
+	const D3D12_RESOURCE_DESC&	resourceDesc() const { return _resourceDesc; }
 
-	Int bufferSize() const { return _bufferSize; }
+	Int bufferSize() const { return _bufferCapacity; }
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(StrView debugName) { _debugName.setUtf(debugName); _d3dResource->SetName(_debugName.c_str()); }
 #endif
-	
+
 protected:
 	Dx12ResourceBase();
 	void _create(const D3D12_CLEAR_VALUE* clearValue = nullptr);
 	void _reset();
 
 	ComPtr<Dx12_ID3DResource>   _d3dResource;
-	ComPtr<D3D12MA::Allocation> _resourceAllocation;
-	Int                         _bufferSize    = 0;
-	D3D12MA::ALLOCATION_DESC    _allocDesc     = {};
-	D3D12_RESOURCE_DESC1        _resourceDesc  = {};
-	D3D12_RESOURCE_STATES       _resourceState = D3D12_RESOURCE_STATE_COMMON;
+	ComPtr<D3D12MA::Allocation> _d3d12maAllocation;
+	Int                         _bufferCapacity     = 0;
+	D3D12MA::ALLOCATION_DESC    _allocDesc          = {};
+	D3D12_RESOURCE_DESC         _resourceDesc       = {};
+	D3D12_RESOURCE_STATES       _resourceState      = D3D12_RESOURCE_STATE_COMMON;
+	Int                         _virtualMemMaxSize  = 0;
+	Int                         _virtualMemPageSize = 0;
 
 #if AX_RENDER_DEBUG_NAME
 	StringW _debugName;
@@ -79,9 +77,9 @@ public:
 
 class Dx12Resource_GpuBuffer : public Dx12ResourceBase {
 public:
-	void create(GpuBufferType type, Int bufferSize);
-	void create(GpuBufferType type, ByteSpan data) {
-		create(type, data.sizeInBytes());
+	void create(GpuBufferType type, Int bufferSize, Int virtualMemMaxSize, Int virtualMemPageSize);
+	void create(GpuBufferType type, ByteSpan data, Int virtualMemMaxSize, Int virtualMemPageSize) {
+		create(type, data.sizeInBytes(), virtualMemMaxSize, virtualMemPageSize);
 		uploadToGpu(0, data);
 	}
 };
@@ -169,6 +167,8 @@ public:
 
 //	ID3D12CommandQueue* operator->() { return _queue; }
 	operator ID3D12CommandQueue* ()  { return _queue; }
+	
+	ID3D12CommandQueue* queue() { return _queue.ptr(); }
 private:
 	ComPtr<ID3D12CommandQueue>	_queue;
 };

@@ -1414,7 +1414,7 @@ void AX_VkBuffer::create(AX_VkDevice&          dev,
 //		AX_LOG("-- vkCreateBuffer FromSparse {} {} offset={}", (void*)_handle, (void*)_vmaAllocation, _sparseOffset);
 
 	} else {
-		// create buffer with memory
+		// create buffer with gpu memory
 		auto err = vmaCreateBuffer(_dev->vmaAllocator(), &info, &allocCreateInfo, &_handle, &_vmaAllocation, &_vmaAllocationInfo);
 		AX_VkUtil::throwIfError(err);
 		

@@ -188,12 +188,14 @@ void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {
 	auto& info = req->renderSystem()->info().inlineUpload;
 
 	maxSizePerUpload = info.maxSizePerUpload;
-	if (info.bufferSize <= 0) return;
+	if (info.maxBufferSize <= 0) return;
 
-	stagingToGpuBuffer = GpuBuffer_Backend::s_new(AX_NEW,
-	                                               Fmt("{}-InlineUpload", req->name()),
-	                                               GpuBufferType::StagingToGpu,
-	                                               info.bufferSize);
+	GpuBuffer_CreateDesc bufDesc;
+	bufDesc.name = Fmt("{}-InlineUpload", req->name());
+	bufDesc.bufferType = GpuBufferType::StagingToGpu;
+	bufDesc.bufferSize = info.maxBufferSize;
+
+	stagingToGpuBuffer = GpuBuffer_Backend::s_new(AX_NEW, bufDesc);
 }
 
 } // namespace ax /*::AxRender*/

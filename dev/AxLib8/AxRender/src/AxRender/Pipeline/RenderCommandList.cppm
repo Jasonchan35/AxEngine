@@ -14,7 +14,8 @@ struct AxDrawCallRootConst {
 	Mat4f AX_MATRIX_M;
 	u32   AX_OBJECT_ID;
 	u32   AX_MESH_CLUSTER_ID;
-	u32   _usedPadding0;
+	u16   AX_CAMERA_ID;
+	u16   _usedPadding0;
 	u32   _usedPadding1;
 };
 

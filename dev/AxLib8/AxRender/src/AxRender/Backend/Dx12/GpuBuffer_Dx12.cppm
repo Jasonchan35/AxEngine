@@ -13,12 +13,7 @@ namespace ax {
 class GpuBuffer_Dx12 : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_Dx12, GpuBuffer_Backend)
 public:
-	GpuBuffer_Dx12(const CreateDesc& desc) : Base(desc) {
-		_p.create(desc.bufferType, desc.bufferSize);
-#if AX_RENDER_DEBUG_NAME
-		_p.setDebugName(desc.name);
-#endif		
-	}
+	GpuBuffer_Dx12(const CreateDesc& desc);
 
 	virtual void onUploadToGpu(Int offset, ByteSpan data) final {
 		_p.uploadToGpu(offset, data);
@@ -31,6 +26,18 @@ public:
 //	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _p.gpuAddress(); }
 
 protected:
+	struct MemPage {
+		ComPtr<ID3D12Heap1>	_d3dHeap;
+	};
+
+	struct VirtualMemData {
+		Array<MemPage>  _memPages;
+	};
+	
+	UPtr<VirtualMemData>	_virtualMemData;
+	
+	virtual void onSetCapacity(RenderRequest* req_, Int newCapacity) override;
+	
 	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _p._mapMemory(range); }
 	virtual void		onUnmapMemory() override				{ return _p._unmapMemory(); }
 
@@ -39,6 +46,12 @@ protected:
 
 private:
 	Dx12Resource_GpuBuffer	_p;
+};
+
+class GpuVirtualAllocator_Dx12 : public GpuVirtualAllocator_Backend {
+	AX_RTTI_INFO(GpuVirtualAllocator_Dx12, GpuVirtualAllocator_Backend)
+public:
+	GpuVirtualAllocator_Dx12(const CreateDesc& desc) : Base(desc) {}
 };
 
 class GpuStructuredBuffer_Dx12 : public GpuStructuredBuffer_Backend {

@@ -24,24 +24,31 @@ void Dx12ResourceBase::_reset() {
 
 	_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
-	_bufferSize = 0;
+	_bufferCapacity = 0;
 
 	_d3dResource.unref();
-	_resourceAllocation.unref();
+	_d3d12maAllocation.unref();
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
-	auto* sys = RenderSystem_Dx12::s_instance();
-	auto hr = sys->d3dAllocator()->CreateResource2(	&_allocDesc, &_resourceDesc, _resourceState, clearValue, 
-													_resourceAllocation.ptrForInit(), IID_PPV_ARGS(_d3dResource.ptrForInit()));
-	Dx12Util::throwIfError(hr);
+	if (_virtualMemMaxSize) {
+		auto* dev = RenderSystem_Dx12::s_d3dDevice();
+		auto hr = dev->CreateReservedResource(&_resourceDesc, _resourceState, clearValue, IID_PPV_ARGS(_d3dResource.ptrForInit()));
+		Dx12Util::throwIfError(hr);
+		
+	} else {		
+		auto* sys = RenderSystem_Dx12::s_instance();
+		auto hr = sys->d3dAllocator()->CreateResource(&_allocDesc, &_resourceDesc, _resourceState, clearValue, 
+														_d3d12maAllocation.ptrForInit(), IID_PPV_ARGS(_d3dResource.ptrForInit()));
+		Dx12Util::throwIfError(hr);
+	}
 }
 
 void Dx12ResourceBase::destroy() {
 	_reset();
 }
 
-void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
+void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, Int virtualMemMaxSize, Int virtualMemPageSize) {
 	destroy();
 
 	Int alignment = 0;
@@ -104,17 +111,23 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize) {
 		default: throw Error_Undefined();
 	}
 
-	if (bufferSize <= 0) {
-		return;
-	}
-	
 	if (alignment > 0) {
 		bufferSize = Math::alignTo(bufferSize, alignment);
 	}
-	_resourceDesc.Width  = ax_safe_cast_from(bufferSize);
-	_resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	
+	if (virtualMemMaxSize > 0) {
+		_resourceDesc.Width  = ax_safe_cast_from(virtualMemMaxSize);
+		AX_ASSERT(bufferSize == 0);
+		bufferSize = 0;
+	} else {
+		_resourceDesc.Width  = ax_safe_cast_from(bufferSize);
+	}
 
-	_bufferSize = bufferSize;
+	_bufferCapacity     = bufferSize;
+	_virtualMemMaxSize  = virtualMemMaxSize;
+	_virtualMemPageSize = virtualMemPageSize;
+	
+	_resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	_create();
 }
 
@@ -139,7 +152,7 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	D3D12_RANGE readRange = {}; // We do not intend to read from this resource on the CPU.
 	UINT8* dst = nullptr;
 
-	if (offset < 0 || offset + data.size() > _bufferSize)
+	if (offset < 0 || offset + data.size() > _bufferCapacity)
 		throw Error_Undefined();
 	
 	auto hr = _d3dResource->Map(0, &readRange, reinterpret_cast<void**>(&dst));
@@ -187,7 +200,7 @@ D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier(ID3D12GraphicsCommandLis
 void Dx12Resource_ColorBuffer::createFromSwapChain(Dx12_IDXGISwapChain* swapChain, UINT backBufIndex) {
 	auto hr = swapChain->GetBuffer(backBufIndex, IID_PPV_ARGS(_d3dResource.ptrForInit()));
 	Dx12Util::throwIfError(hr);
-	_resourceDesc = _d3dResource->GetDesc1();
+	_resourceDesc = _d3dResource->GetDesc();
 	_resourceState = D3D12_RESOURCE_STATE_PRESENT;
 }
 
@@ -198,7 +211,8 @@ void Dx12Resource_ColorBuffer::create(Vec2i size, ColorType colorType, const D3D
 	_resourceDesc.Height    = Dx12Util::castUINT(size.y);
 	_resourceDesc.MipLevels = 0;
 	_resourceDesc.Flags     = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-	_resourceState  = D3D12_RESOURCE_STATE_PRESENT;
+	
+	_resourceState = D3D12_RESOURCE_STATE_PRESENT;
 	_create(&clearValue);
 }
 

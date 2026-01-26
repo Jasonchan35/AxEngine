@@ -10,10 +10,12 @@
 -->
 	<Type Name="ax::RenderObject">
 		<DisplayString>debugName={_debugName} name={_name}</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
 		</Expand>
+		-->
 	</Type>
 
 	<Type Name="ax::Texture2D_Backend">

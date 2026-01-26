@@ -32,6 +32,8 @@ public:
 	SPtr<RenderPassDepthBuffer_Dx12>	_depthBuffer_dx12;
 	BackBuffer_Dx12* _getBackBuffer(Int i) { return ax_ptr_ptr(_backBuffers_dx12.tryGetElement(i)); }
 
+	Dx12CommandQueue&	graphCmdQueue() { return _graphCmdQueue; }
+	
 protected:
 	static LRESULT WINAPI s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	AX_INLINE static This* s_getThis(HWND hwnd) {
@@ -64,7 +66,7 @@ private:
 	UIEventHandler _uiEventHandler;	
 
 	ThreadId			_currentThreadId;
-	Dx12CommandQueue	_graphCmdQueue;
+	Dx12CommandQueue	_graphCmdQueue; // TODO move to RenderSystem_Dx12
 	Dx12CommandQueue	_computeCmdQueue;
 
 	void _createBackBuffers();

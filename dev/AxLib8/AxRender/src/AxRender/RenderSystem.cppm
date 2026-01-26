@@ -30,7 +30,7 @@ struct RenderSystemInfo {
 	} indirectDraw;
 
 	struct InlineUpload {
-		Int bufferSize       = 0;
+		Int maxBufferSize    = 0;
 		Int maxSizePerUpload = 0;
 	} inlineUpload;
 

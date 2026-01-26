@@ -21,18 +21,26 @@ export namespace ax /*::AxRender*/ {
 //----
 AX_ENUM_CLASS(AX_RENDER_GpuBufferType_ENUM_LIST, GpuBufferType, u8)
 
+class GpuVirtualAllocator;
+class DynamicGpuBuffer;
+
 class GpuBuffer_CreateDesc : public NonCopyable {
 public:
 	GpuBuffer_CreateDesc() = default;
-	GpuBuffer_CreateDesc(StrView name_, GpuBufferType bufferType_, Int bufferSize_)
+
+	GpuBuffer_CreateDesc(StrView       name_,
+	                     GpuBufferType bufferType_,
+	                     Int           bufferSize_)
 		: name(name_)
 		, bufferType(bufferType_)
 		, bufferSize(bufferSize_)
 	{}
 
-	StrView			name;
-	GpuBufferType	bufferType = GpuBufferType::None;
-	Int				bufferSize = 0;
+	String        name;
+	GpuBufferType bufferType         = GpuBufferType::None;
+	Int           bufferSize         = 0;
+	Int           virtualMemMaxSize  = 0;
+	Int           virtualMemPageSize = 0;
 };
 
 class GpuBuffer : public RenderObject {
@@ -45,23 +53,43 @@ public:
 		return s_new(req, CreateDesc(name, type, size));
 	}
 	
-	GpuBufferType	bufferType() const	{ return _bufferType; }
-	Int				bufferSize() const	{ return _bufferSize; }
-	IntRange		bufferRange() const { return IntRange(_bufferSize); }
-
+	GpuBufferType bufferType() const			{ return _bufferType; }
+	Int           bufferSize() const			{ return _bufferSize; }
+	IntRange      bufferRange() const			{ return IntRange(_bufferSize); }
+	Int           virtualMemMaxSize() const		{ return _virtualMemMaxSize; }
+	Int           virtualMemPageSize() const	{ return _virtualMemPageSize; }
+	
 	bool inBound(IntRange range) const { return IntRange(_bufferSize).contains(range); }
 
+	void ensureCapacity(RenderRequest* req, Int newSize) {
+		if (_bufferSize >= newSize) return;
+		onSetCapacity(req, newSize);
+		AX_ASSERT(_bufferSize >= newSize);
+	}
+	
 protected:
+	friend class DynamicGpuBuffer;
 	GpuBuffer(const CreateDesc& desc);
-	GpuBufferType	_bufferType = GpuBufferType::None;
-	Int				_bufferSize = 0;
+
+	virtual void onSetCapacity(RenderRequest* req, Int newCapacity) = 0;
+
+	GpuBufferType _bufferType         = GpuBufferType::None;
+	Int           _bufferSize         = 0;
+	Int           _virtualMemMaxSize  = 0;
+	Int           _virtualMemPageSize = 0;
 };
 
-class GpuStructuredBuffer_CreateDesc : public NonCopyable {
+
+class GpuVirtualAllocator_CreateDesc : public NonCopyable {
 public:
-	StrView name;
-	Int stride = 0;
-	Int	capacity = 0;
+	GpuBufferType bufferType = GpuBufferType::None;
+};
+
+class GpuVirtualAllocator : public RenderObject {
+	AX_RTTI_INFO(GpuVirtualAllocator, RenderObject)
+public:
+	using CreateDesc = GpuVirtualAllocator_CreateDesc;
+	GpuVirtualAllocator(const CreateDesc& desc) {}
 };
 
 class DynamicGpuBuffer_CreateDesc : public NonCopyable {
@@ -70,9 +98,11 @@ public:
 	DynamicGpuBuffer_CreateDesc(StrView name_, GpuBufferType bufferType_, Int bufferSize_)
 		: name(name_), bufferType(bufferType_), bufferSize(bufferSize_) {}
 
-	StrView			name;
+	String			name;
 	GpuBufferType	bufferType = GpuBufferType::None;
 	Int				bufferSize = 0;
+	Int				virtualMemMaxSize = 0;
+	Int				virtualMemPageSize = 0;
 };
 
 class DynamicGpuBuffer : public NonCopyable {
@@ -108,10 +138,11 @@ private:
 	String	_name;
 	GpuBufferType	_bufferType = GpuBufferType::None;
 
-	Array<Byte>			_data;
-	SPtr<GpuBuffer>		_gpuBuffer;
-
-	IntRange			_dirtyRange = {};
+	Array<Byte>     _data;
+	IntRange        _dirtyRange = {};
+	SPtr<GpuBuffer> _gpuBuffer;
+	Int             _virtualMemMaxSize  = 0;
+	Int             _virtualMemPageSize = 0;
 };
 
 inline
@@ -146,6 +177,13 @@ MutByteSpan DynamicGpuBuffer::extendSize(Int sizeInBytes) {
 	_data.resize(_data.size() + sizeInBytes);
 	return _data.slice(range);
 }
+
+class GpuStructuredBuffer_CreateDesc : public NonCopyable {
+public:
+	String name;
+	Int stride = 0;
+	Int capacity = 0;
+};
 
 class GpuStructuredBuffer : public RenderObject {
 	AX_RTTI_INFO(GpuStructuredBuffer, RenderObject)

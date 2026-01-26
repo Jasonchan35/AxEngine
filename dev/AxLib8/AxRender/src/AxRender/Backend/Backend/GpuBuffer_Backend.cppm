@@ -15,7 +15,6 @@ public:
 	}
 
 	void copyData(ByteSpan data, Int offset = 0);
-
 	void copyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset);
 
 	void		_unmapMemory() { onUnmapMemory(); }
@@ -28,13 +27,10 @@ public:
 	void flush(IntRange range);
 
 protected:
-
 	virtual MutByteSpan	onMapMemory(IntRange range) = 0;
 	virtual void		onUnmapMemory() = 0;
 	virtual void		onFlush(IntRange range) = 0;
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) = 0;
-
-
 	GpuBuffer_Backend(const CreateDesc& desc) : Base(desc) {}
 };
 
@@ -44,12 +40,25 @@ inline MutByteSpan GpuBuffer_Backend::_mapMemory(IntRange range) {
 	return onMapMemory(range);
 }
 
+class GpuVirtualAllocator_Backend : public GpuVirtualAllocator {
+	AX_RTTI_INFO(GpuVirtualAllocator_Backend, GpuVirtualAllocator)
+public:
+	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	
+	GpuVirtualAllocator_Backend(const CreateDesc& desc) : Base(desc) {}
+	
+	virtual void onAllocateGpuMemory(GpuBuffer* dstBuffer, Int size) {}
+	virtual void onFreeGpuMemory(GpuBuffer* dstBuffer) {}
+};
+
 class GpuStructuredBuffer_Backend : public GpuStructuredBuffer {
 	AX_RTTI_INFO(GpuStructuredBuffer_Backend, GpuStructuredBuffer)
 public:
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	
 	GpuStructuredBuffer_Backend(const CreateDesc& desc) : Base(desc) {}
+	
+	
 };
 
 } // namespace

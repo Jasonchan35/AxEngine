@@ -30,9 +30,12 @@ void GpuBuffer_Backend::flush(IntRange range) {
 	onFlush(range);
 }
 
-SPtr<GpuStructuredBuffer_Backend::This> GpuStructuredBuffer_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newGpuStructuredBuffer(req, desc));
+auto GpuVirtualAllocator_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) -> SPtr<This> {
+	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newGpuVirtualAllocator(req, desc));
 }
 
+auto GpuStructuredBuffer_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) -> SPtr<This> {
+	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newGpuStructuredBuffer(req, desc));
+}
 
 } // namespace

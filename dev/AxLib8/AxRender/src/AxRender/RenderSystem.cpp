@@ -81,7 +81,7 @@ RenderSystemInfo::RenderSystemInfo() {
 	//---
 	indirectDraw.maxDrawCount = 256 * 1024;
 
-	inlineUpload.bufferSize       = 64 * Math::MegaBytes;
+	inlineUpload.maxBufferSize    = 64 * Math::MegaBytes;
 	inlineUpload.maxSizePerUpload =  2 * Math::MegaBytes;
 
 	shader.maxConstBufferCount = 6;

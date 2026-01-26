@@ -14,8 +14,10 @@ class GpuBuffer_Vk : public GpuBuffer_Backend {
 public:
 	GpuBuffer_Vk(const CreateDesc& desc);
 
+	virtual void		onSetCapacity(RenderRequest* req, Int newCapacity) override { AX_ASSERT_TODO(); }
+	
 	virtual MutByteSpan onMapMemory(IntRange range) override	{ return _vkBuf.mapMemory(range); }
-	virtual void        onUnmapMemory() override				{ return _vkBuf.unmapMemory(); }
+	virtual void		onUnmapMemory() override				{ return _vkBuf.unmapMemory(); }
 
 	virtual void		onFlush(IntRange range) override;
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override;
@@ -37,6 +39,12 @@ public:
 
 private:
 	AX_VkBuffer	_vkBuf;
+};
+
+class GpuVirtualAllocator_Vk : public GpuVirtualAllocator_Backend {
+	AX_RTTI_INFO(GpuVirtualAllocator_Vk, GpuVirtualAllocator_Backend)
+public:
+	GpuVirtualAllocator_Vk(const CreateDesc& desc) : Base(desc) {}
 };
 
 class GpuStructuredBuffer_Vk : public GpuStructuredBuffer_Backend {

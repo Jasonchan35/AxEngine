@@ -48,6 +48,7 @@
 	E(RenderPassColorBuffer		, API, SUFFIX) \
 	E(RenderPassDepthBuffer		, API, SUFFIX) \
 	E(RenderRequest				, API, SUFFIX) \
+	E(GpuVirtualAllocator		, API, SUFFIX) \
 	E(GpuBuffer					, API, SUFFIX) \
 	E(GpuStructuredBuffer		, API, SUFFIX) \
 	E(MeshObject				, API, SUFFIX) \
@@ -59,8 +60,8 @@
 	E(MaterialParamSpace		, API, SUFFIX) \
 	E(Sampler					, API, SUFFIX) \
 	E(Texture2D					, API, SUFFIX) \
-	/* E(Texture3D					, API, SUFFIX) */ \
-	/* E(TextureCube				, API, SUFFIX) */ \
+/*	E(Texture3D					, API, SUFFIX) */ \
+/*	E(TextureCube				, API, SUFFIX) */ \
 //----
 
 #define AX_RenderObject_ForwardDeclare(OBJ, ...)	\

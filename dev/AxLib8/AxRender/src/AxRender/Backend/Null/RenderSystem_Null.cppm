@@ -48,10 +48,17 @@ class GpuBuffer_Null : public GpuBuffer_Backend {
 public:
 	GpuBuffer_Null(const CreateDesc& desc) : Base(desc) {}
 
+	virtual void		onSetCapacity(RenderRequest* req, Int newCapacity) override {}
 	virtual MutByteSpan	onMapMemory(IntRange range) override { return MutByteSpan(); }
 	virtual void		onUnmapMemory() override {}
 	virtual void		onFlush(IntRange range) override {}
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override {}
+};
+
+class GpuVirtualAllocator_Null : public GpuVirtualAllocator_Backend {
+	AX_RTTI_INFO(GpuVirtualAllocator_Null, GpuVirtualAllocator_Backend)
+public:
+	GpuVirtualAllocator_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
 class GpuStructuredBuffer_Null : public GpuStructuredBuffer_Backend {
