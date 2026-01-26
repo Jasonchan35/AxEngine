@@ -27,6 +27,18 @@ private:
 	Rect2f         _rect = TagZero;
 };
 
+struct AxRenderGpuData_Camera {
+	Vec3f	worldPos;
+	Vec2f	viewportMin;
+	Vec2f	viewportMax;
+	Mat4f	projMatrix;
+	Mat4f	projMatrixInv;
+	Mat4f	viewMatrix;
+	Mat4f	viewMatrixInv;
+	Mat4f	viewProjMatrix;
+	Mat4f	viewProjMatrixInv;
+};
+
 class RenderRequest : public RenderRequestBase {
 	AX_RTTI_INFO(RenderRequest, RenderRequestBase)
 public:
@@ -72,6 +84,7 @@ public:
 	RenderStockObjects* stockObjects() const { return _stockObjects; }
 	
 	void setCamera(const Math::Camera3f& camera);
+	const AxRenderGpuData_Camera&	cameraData() const { return _cameraData; }
 	
 protected:
 	RenderSystem*       _renderSystem       = nullptr;
@@ -80,12 +93,12 @@ protected:
 	RenderStockObjects* _stockObjects       = nullptr;
 	RenderPass*         _currentRenderPass  = nullptr;
 	ProjectionDesc      _projectionDesc;
-	Mat4f               _viewProjMatrix     = Mat4f::s_identity();
 	f64                 _uptime             = 0;
 	Vec2i               _frameSize{0, 0};
 	Rect2f              _scissorRect{0, 0, 0, 0};
 	Rect2f              _viewportRect{0, 0, 0, 0};
 
+	AxRenderGpuData_Camera _cameraData;
 };
 
 inline

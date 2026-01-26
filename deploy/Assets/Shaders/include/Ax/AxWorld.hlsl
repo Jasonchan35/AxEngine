@@ -13,6 +13,8 @@ ConstantBuffer<AxRenderGpuData_World> axWorld : register(b0, AX_BindSpace_World)
 
 struct AxRenderGpuData_Camera {
 	Vec3f	worldPos;
+	Vec2f	viewportMin;
+	Vec2f	viewportMax;
 	Mat4f	projMatrix;
 	Mat4f	projMatrixInv;
 	Mat4f	viewMatrix;

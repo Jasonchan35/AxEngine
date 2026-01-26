@@ -72,41 +72,51 @@
           "bindSpace": "World", 
           "bindPoint": 1, 
           "bindCount": 1, 
-          "stride": 400, 
+          "stride": 416, 
           "variables": [{
               "name": "worldPos", 
               "dataType": "Vec3f", 
               "offset": 0, 
               "size": 12
             }, {
+              "name": "viewportMin", 
+              "dataType": "Vec2f", 
+              "offset": 16, 
+              "size": 8
+            }, {
+              "name": "viewportMax", 
+              "dataType": "Vec2f", 
+              "offset": 24, 
+              "size": 8
+            }, {
               "name": "projMatrix", 
               "dataType": "Mat4f", 
-              "offset": 16, 
+              "offset": 32, 
               "size": 64
             }, {
               "name": "projMatrixInv", 
               "dataType": "Mat4f", 
-              "offset": 80, 
+              "offset": 96, 
               "size": 64
             }, {
               "name": "viewMatrix", 
               "dataType": "Mat4f", 
-              "offset": 144, 
+              "offset": 160, 
               "size": 64
             }, {
               "name": "viewMatrixInv", 
               "dataType": "Mat4f", 
-              "offset": 208, 
+              "offset": 224, 
               "size": 64
             }, {
               "name": "viewProjMatrix", 
               "dataType": "Mat4f", 
-              "offset": 272, 
+              "offset": 288, 
               "size": 64
             }, {
               "name": "viewProjMatrixInv", 
               "dataType": "Mat4f", 
-              "offset": 336, 
+              "offset": 352, 
               "size": 64
             }]
         }, {
@@ -138,12 +148,12 @@
               "offset": 132, 
               "size": 4
             }, {
-              "name": "AX_CAMERA_ID", 
+              "name": "_usedPadding0", 
               "dataType": "u32", 
               "offset": 136, 
               "size": 4
             }, {
-              "name": "_usedPadding0", 
+              "name": "_usedPadding1", 
               "dataType": "u32", 
               "offset": 140, 
               "size": 4

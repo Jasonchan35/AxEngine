@@ -47,7 +47,10 @@ PS_Input vs_main(VS_Input i) {
 	Vec4f wpos = mul(AX_MATRIX_M,   i.pos);
 	o.worldPos = wpos.xyz / wpos.w;
 
-	o.sv_pos   = mul(AX_MATRIX_MVP, i.pos);
+//	o.sv_pos   = mul(AX_MATRIX_MVP, i.pos);
+
+	o.sv_pos   = ax_project_vertex(i.pos);
+
 	o.color0   = i.color0;
 	o.normal   = mul(transpose((Mat3f)AX_MATRIX_MVP), i.normal);
 	return o;

@@ -119,7 +119,37 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 }
 
 void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
-	_viewProjMatrix = camera.viewProjMatrix(_projectionDesc);
+	_cameraData.worldPos          = camera.eye();
+	_cameraData.viewportMin       = camera.viewport.min();
+	_cameraData.viewportMax       = camera.viewport.max();
+	
+	_cameraData.projMatrix        = camera.projMatrix(_projectionDesc);
+	_cameraData.projMatrixInv     = _cameraData.projMatrix.inverse();
+	_cameraData.viewMatrix        = camera.viewMatrix(_projectionDesc);
+	_cameraData.viewMatrixInv     = _cameraData.viewMatrix.inverse();
+	_cameraData.viewProjMatrix    = camera.viewProjMatrix(_projectionDesc);
+	_cameraData.viewProjMatrixInv = _cameraData.viewProjMatrix.inverse();
+	
+	auto* matPass = MaterialPass_Backend::s_globalCommonMaterialPass();
+	if (!matPass) { AX_ASSERT(false); return; }
+	auto* paramSpace = matPass->getOwnParamSpace(BindSpace::World);
+	if (!paramSpace) { AX_ASSERT(false); return; }
+	
+	auto* cb = paramSpace->constBuffer_camera();
+	if (!cb) { AX_ASSERT(false); return; }
+	
+	cb->setVariable(AX_NAMEID("worldPos"         ), _cameraData.worldPos         );
+	cb->setVariable(AX_NAMEID("viewportMin"      ), _cameraData.viewportMin      ); 
+	cb->setVariable(AX_NAMEID("viewportMax"      ), _cameraData.viewportMax      ); 
+	cb->setVariable(AX_NAMEID("projMatrix"       ), _cameraData.projMatrix       ); 
+	cb->setVariable(AX_NAMEID("projMatrixInv"    ), _cameraData.projMatrixInv    ); 
+	cb->setVariable(AX_NAMEID("viewMatrix"       ), _cameraData.viewMatrix       ); 
+	cb->setVariable(AX_NAMEID("viewMatrixInv"    ), _cameraData.viewMatrixInv    ); 
+	cb->setVariable(AX_NAMEID("viewProjMatrix"   ), _cameraData.viewProjMatrix   ); 
+	cb->setVariable(AX_NAMEID("viewProjMatrixInv"), _cameraData.viewProjMatrixInv);
+	
+	// force update to GPU
+	cb->getUploadedGpuBuffer(this);
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
@@ -177,7 +207,7 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	}
 	
 	_drawCallRootConst.AX_MATRIX_M   = cmd.objectToWorld;
-	_drawCallRootConst.AX_MATRIX_MVP = _viewProjMatrix * cmd.objectToWorld;
+	_drawCallRootConst.AX_MATRIX_MVP = _cameraData.viewProjMatrix * cmd.objectToWorld;
 
 	matPass->onBindMaterial(this, cmd);
 	onDrawCall(cmd);

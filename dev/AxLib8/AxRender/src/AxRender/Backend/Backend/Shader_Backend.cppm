@@ -72,7 +72,7 @@ public:
 		ShaderStageFlags _stageFlags = ShaderStageFlags::None;
 	};
 
-	struct ConstBuffer : public ParamBase {
+	struct ConstBufferParam : public ParamBase {
 		using Info = ShaderStageInfo::ConstBuffer;
 
 		void	create(const Info& info);
@@ -138,12 +138,12 @@ public:
 	void addParam	(const ShaderStageInfo::Sampler&          paramInfo);
 	void addParam	(const ShaderStageInfo::StructuredBuffer& paramInfo);
 
-	Array<ConstBuffer,           1>	_constBuffers;
+	Array<ConstBufferParam,      1>	_constBuffers;
 	Array<StructuredBufferParam, 1>	_structuredBufferParams;
 	Array<TextureParam,          4>	_textureParams;
 	Array<SamplerParam,          4>	_samplerParams;
 
-	ConstBuffer*			findConstBuffer          (NameId name) { return _findParam(_constBuffers          , name); }
+	ConstBufferParam*			findConstBuffer          (NameId name) { return _findParam(_constBuffers          , name); }
 	TextureParam*			findTextureParam         (NameId name) { return _findParam(_textureParams         , name); }
 	SamplerParam*			findSamplerParam         (NameId name) { return _findParam(_samplerParams         , name); }
 	StructuredBufferParam*	findStructuredBufferParam(NameId name) { return _findParam(_structuredBufferParams, name); }
@@ -160,7 +160,7 @@ public:
 //		return _nameToVarInfo.find_([&](const auto& e)-> bool { return e.name == name; });
 		return _nameToVarInfo.binarySearch_([&](const auto& e)-> CmpResult { return ax_op_cmp(e.name, name); });
 	}
-	const ConstBuffer*				findConstBuffer          (NameId name) const { return ax_const_cast(this)->findConstBuffer(name);  }
+	const ConstBufferParam*				findConstBuffer          (NameId name) const { return ax_const_cast(this)->findConstBuffer(name);  }
 	const TextureParam*				findTextureParam         (NameId name) const { return ax_const_cast(this)->findTextureParam(name); }
 	const SamplerParam*				findSamplerParam         (NameId name) const { return ax_const_cast(this)->findSamplerParam(name); }
 	const StructuredBufferParam*	findStructuredBufferParam(NameId name) const { return ax_const_cast(this)->findStructuredBufferParam(name); }
@@ -192,7 +192,7 @@ protected:
 	BindSpace _bindSpace = BindSpace::Invalid;
 
 	bool _isGlobalCommonShader : 1 = false;
-
+	
 	Array<NameToVarInfo, 32>		_nameToVarInfo;
 	Array<Pair<NameId, NameId>>		_nameToTexture2D;
 	Array<Pair<NameId, NameId>>		_nameToTexture3D;

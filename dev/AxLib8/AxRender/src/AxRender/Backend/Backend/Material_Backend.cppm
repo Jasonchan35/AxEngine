@@ -71,7 +71,7 @@ public:
 		BindPoint	bindPoint() const { return _shaderParam->bindPoint(); }
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
-		void		create(const ShaderParamSpace_Backend::ConstBuffer& shaderParam);
+		void		create(const ShaderParamSpace_Backend::ConstBufferParam& shaderParam);
 		Int			dataSize() const { return _dynamicGpuBuffer.dataSize(); }
 
 		const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
@@ -81,7 +81,7 @@ public:
 		template<class V> bool setVariable(const VarInfo* varInfo, const V& value);
 		template<class V> bool setVariable(NameId name, const V& value);
 	private:
-		const ShaderParamSpace_Backend::ConstBuffer* _shaderParam = nullptr;
+		const ShaderParamSpace_Backend::ConstBufferParam* _shaderParam = nullptr;
 		DynamicGpuBuffer _dynamicGpuBuffer;
 	};
 
@@ -174,9 +174,10 @@ public:
 	
 	const ShaderParamSpace_Backend* shaderParamSpace_backend() const { return _shaderParamSpace.ptr(); }
 
-	StructuredBufferParam* findStructuredBufferParam(NameId name) { return _findParam(_structuredBufferParams, name); }
-	TextureParam*          findTextureParam(NameId name) { return _findParam(_textureParams, name); }
-	SamplerParam*          findSamplerParam(NameId name) { return _findParam(_samplerParams, name); }
+	ConstBufferParam*      findConstBufferParam(NameId name)		{ return _findParam(_constBufferParams, name); }
+	StructuredBufferParam* findStructuredBufferParam(NameId name)	{ return _findParam(_structuredBufferParams, name); }
+	TextureParam*          findTextureParam(NameId name)			{ return _findParam(_textureParams, name); }
+	SamplerParam*          findSamplerParam(NameId name)			{ return _findParam(_samplerParams, name); }
 	
 	Array<ConstBufferParam,      1>	_constBufferParams;
 	Array<StructuredBufferParam, 1>	_structuredBufferParams;
@@ -185,10 +186,16 @@ public:
 
 	const MaterialPass_Backend* materialPass() const { return _materialPass; };
 
+	ConstBufferParam* constBuffer_globals() { return _constBuffer_globals; }
+	ConstBufferParam* constBuffer_camera () { return _constBuffer_camera ; }
+	
 protected:
 	friend class MaterialPass_Backend;
 	MaterialPass_Backend* _materialPass = nullptr;
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
+	
+	ConstBufferParam* _constBuffer_globals = nullptr;
+	ConstBufferParam* _constBuffer_camera  = nullptr;
 
 	template<class T> T* _findParam(IArray<T>& arr, NameId name) {
 		return arr.find_([&name](const T& e) { return e.name() == name; });

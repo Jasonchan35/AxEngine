@@ -52,7 +52,7 @@ void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
 }
 
 template<class V>
-void ShaderParamSpace_Backend::ConstBuffer::setVariableDefault(const VarInfo& varInfo, const V& value) {
+void ShaderParamSpace_Backend::ConstBufferParam::setVariableDefault(const VarInfo& varInfo, const V& value) {
 	varInfo.assignValueToBuffer(_defaultValues, value);
 }
 
@@ -70,7 +70,7 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 		}
 	}
 
-	if constexpr (std::is_same_v<ConstBuffer, T> ) {
+	if constexpr (std::is_same_v<ConstBufferParam, T> ) {
 		for (auto& varInfo : dst.varInfos()) {
 			auto str = varInfo.name().toString();
 			
@@ -88,10 +88,10 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 	}
 }
 
-void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::ConstBuffer&      paramInfo) { _addParam(_constBuffers,           paramInfo); }
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Texture&          paramInfo) { _addParam(_textureParams,          paramInfo); }
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Sampler&          paramInfo) { _addParam(_samplerParams,          paramInfo); }
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StructuredBuffer& paramInfo) { _addParam(_structuredBufferParams, paramInfo); }
+void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::ConstBuffer&      paramInfo) { _addParam(_constBuffers,           paramInfo); }
 
 inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
 	ParamBase::create(info);
@@ -103,7 +103,7 @@ inline void ShaderParamSpace_Backend::TextureParam::create(const Info& info) {
 	_dataType = info.dataType;
 }
 
-inline void ShaderParamSpace_Backend::ConstBuffer::create(const Info& info) {
+inline void ShaderParamSpace_Backend::ConstBufferParam::create(const Info& info) {
 	ParamBase::create(info);
 	_defaultValues.resize(info.stride);
 	_defaultValues.fillValues(0); // set all to zero by default

@@ -178,6 +178,30 @@
                             "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                         },
                         {
+                            "name": "viewportMin",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 2,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 16, "size": 8, "elementStride": 4}
+                        },
+                        {
+                            "name": "viewportMax",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 2,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 24, "size": 8, "elementStride": 4}
+                        },
+                        {
                             "name": "projMatrix",
                             "type": {
                                 "kind": "matrix",
@@ -188,7 +212,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 16, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 32, "size": 64, "elementStride": 0}
                         },
                         {
                             "name": "projMatrixInv",
@@ -201,7 +225,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 80, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 96, "size": 64, "elementStride": 0}
                         },
                         {
                             "name": "viewMatrix",
@@ -214,7 +238,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 144, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 160, "size": 64, "elementStride": 0}
                         },
                         {
                             "name": "viewMatrixInv",
@@ -227,7 +251,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 208, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 224, "size": 64, "elementStride": 0}
                         },
                         {
                             "name": "viewProjMatrix",
@@ -240,7 +264,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 272, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 288, "size": 64, "elementStride": 0}
                         },
                         {
                             "name": "viewProjMatrixInv",
@@ -253,7 +277,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 336, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 352, "size": 64, "elementStride": 0}
                         }
                     ]
                 },
@@ -278,6 +302,30 @@
                                 "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                             },
                             {
+                                "name": "viewportMin",
+                                "type": {
+                                    "kind": "vector",
+                                    "elementCount": 2,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 16, "size": 8, "elementStride": 4}
+                            },
+                            {
+                                "name": "viewportMax",
+                                "type": {
+                                    "kind": "vector",
+                                    "elementCount": 2,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 24, "size": 8, "elementStride": 4}
+                            },
+                            {
                                 "name": "projMatrix",
                                 "type": {
                                     "kind": "matrix",
@@ -288,7 +336,7 @@
                                         "scalarType": "float32"
                                     }
                                 },
-                                "binding": {"kind": "uniform", "offset": 16, "size": 64, "elementStride": 0}
+                                "binding": {"kind": "uniform", "offset": 32, "size": 64, "elementStride": 0}
                             },
                             {
                                 "name": "projMatrixInv",
@@ -301,7 +349,7 @@
                                         "scalarType": "float32"
                                     }
                                 },
-                                "binding": {"kind": "uniform", "offset": 80, "size": 64, "elementStride": 0}
+                                "binding": {"kind": "uniform", "offset": 96, "size": 64, "elementStride": 0}
                             },
                             {
                                 "name": "viewMatrix",
@@ -314,7 +362,7 @@
                                         "scalarType": "float32"
                                     }
                                 },
-                                "binding": {"kind": "uniform", "offset": 144, "size": 64, "elementStride": 0}
+                                "binding": {"kind": "uniform", "offset": 160, "size": 64, "elementStride": 0}
                             },
                             {
                                 "name": "viewMatrixInv",
@@ -327,7 +375,7 @@
                                         "scalarType": "float32"
                                     }
                                 },
-                                "binding": {"kind": "uniform", "offset": 208, "size": 64, "elementStride": 0}
+                                "binding": {"kind": "uniform", "offset": 224, "size": 64, "elementStride": 0}
                             },
                             {
                                 "name": "viewProjMatrix",
@@ -340,7 +388,7 @@
                                         "scalarType": "float32"
                                     }
                                 },
-                                "binding": {"kind": "uniform", "offset": 272, "size": 64, "elementStride": 0}
+                                "binding": {"kind": "uniform", "offset": 288, "size": 64, "elementStride": 0}
                             },
                             {
                                 "name": "viewProjMatrixInv",
@@ -353,11 +401,11 @@
                                         "scalarType": "float32"
                                     }
                                 },
-                                "binding": {"kind": "uniform", "offset": 336, "size": 64, "elementStride": 0}
+                                "binding": {"kind": "uniform", "offset": 352, "size": 64, "elementStride": 0}
                             }
                         ]
                     },
-                    "binding": {"kind": "uniform", "offset": 0, "size": 400, "elementStride": 0}
+                    "binding": {"kind": "uniform", "offset": 0, "size": 416, "elementStride": 0}
                 }
             }
         },
@@ -492,7 +540,7 @@
                             "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "AX_CAMERA_ID",
+                            "name": "_usedPadding0",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -500,7 +548,7 @@
                             "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "_usedPadding0",
+                            "name": "_usedPadding1",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -560,7 +608,7 @@
                                 "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
                             },
                             {
-                                "name": "AX_CAMERA_ID",
+                                "name": "_usedPadding0",
                                 "type": {
                                     "kind": "scalar",
                                     "scalarType": "uint32"
@@ -568,7 +616,7 @@
                                 "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
                             },
                             {
-                                "name": "_usedPadding0",
+                                "name": "_usedPadding1",
                                 "type": {
                                     "kind": "scalar",
                                     "scalarType": "uint32"
@@ -781,7 +829,7 @@
                 },
                 {
                     "name": "axCamera",
-                    "binding": {"kind": "constantBuffer", "space": 2, "index": 1, "used": 0}
+                    "binding": {"kind": "constantBuffer", "space": 2, "index": 1, "used": 1}
                 },
                 {
                     "name": "axLights",
