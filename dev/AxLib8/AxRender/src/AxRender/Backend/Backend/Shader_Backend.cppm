@@ -8,23 +8,6 @@ export namespace ax /*::AxRender*/ {
 class Shader_Backend;
 class ShaderPass_Backend;
 
-struct ShaderParamTotalBindCount {
-	using This = ShaderParamTotalBindCount;
-	
-	Int constBuffers        = 0;
-	Int textureParams       = 0;
-	Int samplerParams       = 0;
-	Int storageBufferParams = 0;
-
-	template<class FUNC>
-	void unroll(const This& rhs, FUNC func) {
-		func(constBuffers       , rhs);
-		func(textureParams      , rhs);
-		func(samplerParams      , rhs);
-		func(storageBufferParams, rhs);
-	} 
-};
-
 class ShaderParamSpace_CreateDesc : public NonCopyable {
 public:
 	using BindSpace = ShaderParamBindSpace;
@@ -48,11 +31,13 @@ public:
 		VarInfo(const ShaderStageInfo::Variable& r)
 			: _name(NameId::s_make(r.name))
 			, _offset(r.offset)
+			, _size(r.size)
 			, _dataType(r.dataType)
 		{}
 
 		NameId         name() const { return _name; }
-		u32            offset() const { return _offset; }
+		Int            offset() const { return _offset; }
+		Int            size() const { return _size; }
 		RenderDataType dataType() const { return _dataType; }
 
 		template<class V> IntRange assignValueToBuffer(MutByteSpan buf, const V& value) const;
@@ -61,7 +46,8 @@ public:
 		template<class V> IntRange _assignValueToBuffer(MutByteSpan buf, const V& value) const;
 		
 		NameId         _name;
-		u32            _offset   = 0;
+		Int            _offset   = 0;
+		Int            _size     = 0;
 		RenderDataType _dataType = RenderDataType::None;
 	};
 
@@ -221,7 +207,9 @@ IntRange ShaderParamSpace_Backend::VarInfo::_assignValueToBuffer(MutByteSpan buf
 
 	IntRange range = IntRange_StartAndSize(_offset, AX_SIZEOF(value));
 
-	if (!buf.inBound(range)) throw Error_Undefined();
+	if (!buf.inBound(range)) {
+		throw Error_Undefined(Fmt("Shader: assign variable to constBuffer out of range {} -> {}", range, buf.sizeInBytes()));
+	}
 
 	AX_GCC_WARNING_PUSH_AND_DISABLE("-Wunsafe-buffer-usage")
 	auto* dst = reinterpret_cast<V*>(buf.data() + range.start());

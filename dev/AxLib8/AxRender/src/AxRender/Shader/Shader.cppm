@@ -44,9 +44,9 @@ public:
 
 	struct Variable {
 		String			name;
-		u32				offset = 0;
-		u32				size   = 0;
 		RenderDataType	dataType = RenderDataType::None;
+		Int				offset = 0;
+		Int				size   = 0;
 
 		constexpr bool operator==(const Variable& r) {
 			return offset == r.offset && dataType == r.dataType;
@@ -55,8 +55,9 @@ public:
 		template<class SE>
 		void onJsonIO(SE & se) {
 			AX_JSON_IO(se, name);
-			AX_JSON_IO(se, offset);
 			AX_JSON_IO(se, dataType);
+			AX_JSON_IO(se, offset);
+			AX_JSON_IO(se, size);
 		}
 	};
 

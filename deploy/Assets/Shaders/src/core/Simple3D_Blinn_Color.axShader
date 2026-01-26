@@ -22,7 +22,8 @@ Pass "Pass0" { // Forward
 
 #include "AxRender.hlsl"
 
-uniform Color3f color;
+uniform Color4f color;
+
 uniform Color3f ambient;
 uniform Color3f diffuse;
 uniform Color3f specular;

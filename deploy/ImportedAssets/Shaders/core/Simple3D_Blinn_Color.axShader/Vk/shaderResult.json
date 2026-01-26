@@ -82,26 +82,31 @@
           "bindCount": 1, 
           "variables": [{
               "name": "color", 
+              "dataType": "Vec4f", 
               "offset": 0, 
-              "dataType": "Vec3f"
+              "size": 16
             }, {
               "name": "ambient", 
+              "dataType": "Vec3f", 
               "offset": 16, 
-              "dataType": "Vec3f"
+              "size": 12
             }, {
               "name": "diffuse", 
+              "dataType": "Vec3f", 
               "offset": 32, 
-              "dataType": "Vec3f"
+              "size": 12
             }, {
               "name": "specular", 
+              "dataType": "Vec3f", 
               "offset": 48, 
-              "dataType": "Vec3f"
+              "size": 12
             }, {
               "name": "shininess", 
+              "dataType": "f32", 
               "offset": 60, 
-              "dataType": "f32"
+              "size": 4
             }], 
-          "dataSize": 52
+          "dataSize": 64
         }], 
       "textures": [], 
       "samplers": [], 

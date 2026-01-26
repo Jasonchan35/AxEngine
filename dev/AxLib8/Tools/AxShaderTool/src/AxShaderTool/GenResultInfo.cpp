@@ -56,7 +56,12 @@ void GenResultInfo::mergeStageInfo(ShaderStageInfo& outStageInfo, const ShaderSt
 void GenResultInfo::_mergeVariables(IArray<Variables>& dstArray, Span<Variables> srcSpan) {
 	for (auto& src : srcSpan) {
 		auto f = dstArray.find_([&](const auto& e){ return e.name == src.name; });
-		if (f) continue;
+		if (f) {
+			if (f->dataType != src.dataType) throw Error_Runtime(Fmt("variable'{}' dataType mismatch", src.name));
+			if (f->offset   != src.offset  ) throw Error_Runtime(Fmt("variable'{}' offset mismatch", src.name));
+			if (f->size     != src.size    ) throw Error_Runtime(Fmt("variable'{}' size mismatch", src.name));
+			continue;
+		}
 		dstArray.emplaceBack(src);
 	}
 }

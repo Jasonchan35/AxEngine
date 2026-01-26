@@ -52,14 +52,16 @@
           "bindCount": 1, 
           "variables": [{
               "name": "drawIndexed", 
+              "dataType": "Struct", 
               "offset": 0, 
-              "dataType": "Struct"
+              "size": 20
             }, {
               "name": "rootConst", 
+              "dataType": "Struct", 
               "offset": 32, 
-              "dataType": "Struct"
+              "size": 144
             }], 
-          "stride": 164
+          "stride": 176
         }]
     }]
 }

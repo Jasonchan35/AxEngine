@@ -530,10 +530,10 @@
         },
         {
             "name": "color",
-            "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4},
+            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4},
             "type": {
                 "kind": "vector",
-                "elementCount": 3,
+                "elementCount": 4,
                 "elementType": {
                     "kind": "scalar",
                     "scalarType": "float32"
@@ -705,7 +705,7 @@
                 },
                 {
                     "name": "color",
-                    "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
+                    "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
                 },
                 {
                     "name": "ambient",

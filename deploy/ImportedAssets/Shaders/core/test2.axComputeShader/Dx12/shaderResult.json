@@ -49,8 +49,9 @@
           "bindCount": 1, 
           "variables": [{
               "name": "testDouble", 
+              "dataType": "f64", 
               "offset": 0, 
-              "dataType": "f64"
+              "size": 8
             }], 
           "dataSize": 32
         }], 
@@ -65,12 +66,14 @@
           "bindCount": 1, 
           "variables": [{
               "name": "color", 
+              "dataType": "Vec3f", 
               "offset": 0, 
-              "dataType": "Vec3f"
+              "size": 0
             }, {
               "name": "foo", 
+              "dataType": "f32", 
               "offset": 12, 
-              "dataType": "f32"
+              "size": 0
             }], 
           "stride": 16
         }]

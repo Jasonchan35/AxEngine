@@ -85,40 +85,49 @@
           "bindCount": 1, 
           "variables": [{
               "name": "color", 
+              "dataType": "Vec4f", 
               "offset": 0, 
-              "dataType": "Vec4f"
+              "size": 16
             }, {
               "name": "AxSamplerState_tex0", 
+              "dataType": "u32", 
               "offset": 16, 
-              "dataType": "u32"
+              "size": 4
             }, {
               "name": "AxTexture2D_tex0", 
+              "dataType": "u32", 
               "offset": 20, 
-              "dataType": "u32"
+              "size": 4
             }, {
               "name": "AxSamplerState_tex1", 
+              "dataType": "u32", 
               "offset": 24, 
-              "dataType": "u32"
+              "size": 4
             }, {
               "name": "AxTexture2D_tex1", 
+              "dataType": "u32", 
               "offset": 28, 
-              "dataType": "u32"
+              "size": 4
             }, {
               "name": "AxSamplerState_tex2", 
+              "dataType": "u32", 
               "offset": 32, 
-              "dataType": "u32"
+              "size": 4
             }, {
               "name": "AxTexture2D_tex2", 
+              "dataType": "u32", 
               "offset": 36, 
-              "dataType": "u32"
+              "size": 4
             }, {
               "name": "AxSamplerState_tex3", 
+              "dataType": "u32", 
               "offset": 40, 
-              "dataType": "u32"
+              "size": 4
             }, {
               "name": "AxTexture2D_tex3", 
+              "dataType": "u32", 
               "offset": 44, 
-              "dataType": "u32"
+              "size": 4
             }], 
           "dataSize": 48
         }], 

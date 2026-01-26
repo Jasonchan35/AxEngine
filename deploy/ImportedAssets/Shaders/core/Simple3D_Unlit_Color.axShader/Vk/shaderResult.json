@@ -55,8 +55,9 @@
           "bindCount": 1, 
           "variables": [{
               "name": "color", 
+              "dataType": "Vec4f", 
               "offset": 0, 
-              "dataType": "Vec4f"
+              "size": 16
             }], 
           "dataSize": 16
         }], 

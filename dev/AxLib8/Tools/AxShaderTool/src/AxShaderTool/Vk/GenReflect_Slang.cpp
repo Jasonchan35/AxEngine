@@ -143,7 +143,7 @@ void GenReflect_Slang::generate(StrView outFilename, StrView filename, RenderAPI
 	if (_globalConstBuffer.variables) {
 		_globalConstBuffer.dataSize = 0; 
 		for (auto& v : _globalConstBuffer.variables) {
-			_globalConstBuffer.dataSize += v.size; 
+			Math::max_itself(_globalConstBuffer.dataSize, v.offset + v.size); 
 		} 
 		outInfo.constBuffers.emplaceBack(_globalConstBuffer);
 	}
@@ -238,10 +238,10 @@ void GenReflect_Slang::_genParamBase(ShaderStageInfo::ParamBase& dst, ShaderStag
 
 void GenReflect_Slang::_genGlobalParam(ShaderStageInfo& outInfo, const SrcParam& srcParam) {
 	auto& dstVar = _globalConstBuffer.variables.emplaceBack();
+	auto& json_field_binding = srcParam.parameter->memberObject("binding");
+	
 	dstVar.name     = srcParam.parameter->memberString("name");
 	dstVar.dataType = getDataType(srcParam.parameter->memberObject("type"));
-	
-	auto& json_field_binding = srcParam.parameter->memberObject("binding");
 	dstVar.offset   = ax_safe_cast_from(json_field_binding.member("offset")->asInt64());
 	dstVar.size     = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
 }
@@ -258,7 +258,7 @@ void GenReflect_Slang::_genVariables(ShaderStageInfo::BufferBase& dst, Int& outD
 		dstVar.offset   = ax_safe_cast_from(json_field_binding.member("offset")->asInt64());
 		dstVar.size     = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
 		
-		outDataSize += dstVar.size;
+		Math::max_itself(outDataSize, dstVar.offset + dstVar.size);
 	}
 }
 
