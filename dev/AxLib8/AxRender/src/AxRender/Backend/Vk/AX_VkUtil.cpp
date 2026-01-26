@@ -16,6 +16,15 @@ AX_VkAllocatorCallbacks* AX_VkUtil::allocCallbacks() {
 #endif
 }
 
+VkMemoryPropertyFlags AX_VkUtil::getVkMemoryPropertyFlags(VmaMemoryUsage vmaUsage) {
+	switch (vmaUsage) {
+		case VMA_MEMORY_USAGE_GPU_ONLY  : return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		case VMA_MEMORY_USAGE_CPU_TO_GPU: return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		case VMA_MEMORY_USAGE_GPU_TO_CPU: return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+		default: AX_ASSERT(false); return 0;
+	}
+}
+
 bool AX_VkUtil::formatHasDepth(VkFormat f) {
 	switch (f) {
 		case VK_FORMAT_D16_UNORM:

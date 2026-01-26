@@ -56,8 +56,7 @@ protected:
 	D3D12MA::ALLOCATION_DESC    _allocDesc          = {};
 	D3D12_RESOURCE_DESC         _resourceDesc       = {};
 	D3D12_RESOURCE_STATES       _resourceState      = D3D12_RESOURCE_STATE_COMMON;
-	Int                         _virtualMemMaxSize  = 0;
-	Int                         _virtualMemPageSize = 0;
+	GpuVirtualMemoryDesc        _virMemDesc;
 
 #if AX_RENDER_DEBUG_NAME
 	StringW _debugName;
@@ -77,9 +76,9 @@ public:
 
 class Dx12Resource_GpuBuffer : public Dx12ResourceBase {
 public:
-	void create(GpuBufferType type, Int bufferSize, Int virtualMemMaxSize, Int virtualMemPageSize);
-	void create(GpuBufferType type, ByteSpan data, Int virtualMemMaxSize, Int virtualMemPageSize) {
-		create(type, data.sizeInBytes(), virtualMemMaxSize, virtualMemPageSize);
+	void create(GpuBufferType type, Int bufferSize, const GpuVirtualMemoryDesc& virMemDesc);
+	void create(GpuBufferType type, ByteSpan data, const GpuVirtualMemoryDesc& virMemDesc) {
+		create(type, data.sizeInBytes(), virMemDesc);
 		uploadToGpu(0, data);
 	}
 };

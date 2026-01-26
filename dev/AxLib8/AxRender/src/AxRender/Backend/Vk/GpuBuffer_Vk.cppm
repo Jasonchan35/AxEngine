@@ -14,8 +14,8 @@ class GpuBuffer_Vk : public GpuBuffer_Backend {
 public:
 	GpuBuffer_Vk(const CreateDesc& desc);
 
-	virtual void		onSetCapacity(RenderRequest* req, Int newCapacity) override { AX_ASSERT_TODO(); }
-	
+	virtual void		onSetCapacity(RenderRequest* req_, Int newCapacity) override;
+
 	virtual MutByteSpan onMapMemory(IntRange range) override	{ return _vkBuf.mapMemory(range); }
 	virtual void		onUnmapMemory() override				{ return _vkBuf.unmapMemory(); }
 
@@ -38,6 +38,21 @@ public:
 	}
 
 private:
+	struct MemPage {
+		AX_VkDeviceMemory devMem;
+	};
+
+	struct VirtualMemoryBlock {
+		Array<MemPage>  _memPages;
+		
+		VirtualMemoryBlock(const GpuVirtualMemoryDesc& desc) {
+			if (desc.maxSize <= 0) throw Error_Undefined();
+			auto pageCount = desc.computePageCount(desc.maxSize);
+			_memPages.resize(pageCount);
+		}
+	};
+	UPtr<VirtualMemoryBlock>	_virMemBlock;
+	
 	AX_VkBuffer	_vkBuf;
 };
 

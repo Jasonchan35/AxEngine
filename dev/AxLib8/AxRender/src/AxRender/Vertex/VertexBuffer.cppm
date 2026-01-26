@@ -16,9 +16,16 @@ public:
 
 	void ensureBufferCapacity(Int n) { _buffer.ensureDataCapacity(n * strideInBytes()); }
 
-							void create(VertexLayout vertexLayout);
-	template<class VERTEX>	void create() { create(VERTEX::s_layout()); }
-	template<class VERTEX>	void create(Span<VERTEX> data) { create<VERTEX>(); addVertices(data); }
+	void create(VertexLayout vertexLayout, const GpuVirtualMemoryDesc& virMemDesc = {});
+	
+	template<class VERTEX>
+	void create(const GpuVirtualMemoryDesc& virMemDesc = {}) {
+		create(VERTEX::s_layout(), virMemDesc);
+	}
+	template<class VERTEX>
+	void create(Span<VERTEX> data, const GpuVirtualMemoryDesc& virMemDesc = {}) {
+		create<VERTEX>(virMemDesc); addVertices(data);
+	}
 
 	template<class VERTEX>
 	void addVertices(Span<VERTEX> data) { addVertices(data.toByteSpan(), VERTEX::s_layout()); }
@@ -91,9 +98,17 @@ public:
 	AX_INLINE Int				indexCount() const		{ return _indexCount; }
 	AX_INLINE VertexIndexType	indexType() const		{ return _indexType; }
 
-							void create(VertexIndexType indexType);
-	template<class INDEX>	void create() { create(VertexIndexType_get<INDEX>); }
-	template<class INDEX>	void create(Span<INDEX> data) { create<INDEX>(); addVertices(data); }
+	void create(VertexIndexType indexType, const GpuVirtualMemoryDesc& virMemDesc = {});
+	
+	template<class INDEX>
+	void create(const GpuVirtualMemoryDesc& virMemDesc = {}) {
+		create(VertexIndexType_get<INDEX>, virMemDesc);
+	}
+	
+	template<class INDEX>
+	void create(Span<INDEX> data, const GpuVirtualMemoryDesc& virMemDesc = {}) {
+		create<INDEX>(virMemDesc); addVertices(data);
+	}
 
 	template<class INDEX>
 	void addIndices(Span<INDEX> data) { addIndices(data.toByteSpan(), VertexIndexType_get<INDEX>); }

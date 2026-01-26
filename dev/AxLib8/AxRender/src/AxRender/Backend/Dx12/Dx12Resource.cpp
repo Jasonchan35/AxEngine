@@ -31,7 +31,7 @@ void Dx12ResourceBase::_reset() {
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
-	if (_virtualMemMaxSize) {
+	if (_virMemDesc.maxSize) {
 		auto* dev = RenderSystem_Dx12::s_d3dDevice();
 		auto hr = dev->CreateReservedResource(&_resourceDesc, _resourceState, clearValue, IID_PPV_ARGS(_d3dResource.ptrForInit()));
 		Dx12Util::throwIfError(hr);
@@ -48,7 +48,7 @@ void Dx12ResourceBase::destroy() {
 	_reset();
 }
 
-void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, Int virtualMemMaxSize, Int virtualMemPageSize) {
+void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, const GpuVirtualMemoryDesc& virMemDesc) {
 	destroy();
 
 	Int alignment = 0;
@@ -115,18 +115,17 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, Int virt
 		bufferSize = Math::alignTo(bufferSize, alignment);
 	}
 	
-	if (virtualMemMaxSize > 0) {
-		_resourceDesc.Width  = ax_safe_cast_from(virtualMemMaxSize);
+	if (virMemDesc.maxSize > 0) {
+		_resourceDesc.Width  = ax_safe_cast_from(virMemDesc.maxSize);
 		AX_ASSERT(bufferSize == 0);
 		bufferSize = 0;
 	} else {
 		_resourceDesc.Width  = ax_safe_cast_from(bufferSize);
 	}
 
-	_bufferCapacity     = bufferSize;
-	_virtualMemMaxSize  = virtualMemMaxSize;
-	_virtualMemPageSize = virtualMemPageSize;
-	
+	_bufferCapacity = bufferSize;
+	_virMemDesc     = virMemDesc;
+
 	_resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	_create();
 }

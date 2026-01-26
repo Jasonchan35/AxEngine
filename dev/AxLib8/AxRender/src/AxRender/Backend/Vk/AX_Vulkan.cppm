@@ -49,7 +49,9 @@ public:
 	Opt<AX_VkQueueFamilyIndex> findComputeQueueFamilyIndex	() const;
 	
 	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkFlags typeBits, VkMemoryPropertyFlags requireMask) const;
-	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkFlags typeBits, VmaMemoryUsage vmaUsage) const;
+	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkFlags typeBits, VmaMemoryUsage vmaUsage) const {
+		return findMemoryTypeIndex(typeBits, AX_VkUtil::getVkMemoryPropertyFlags(vmaUsage));
+	}
 
 	VkInstance inst() { return _inst; }
 	operator VkInstance() { return inst(); }
@@ -474,6 +476,7 @@ private:
 	VkImageLayout		 _layout	= VK_IMAGE_LAYOUT_UNDEFINED;
 	VkPipelineStageFlags _stage		= VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 
+	// TODO use VMA allocator
 	bool _isBackBuffer = false;
 };
 
@@ -593,12 +596,12 @@ public:
 	AX_VkBuffer(AX_VkBuffer && r) noexcept;
 
 	void destroy();
-	void create(AX_VkDevice&        dev,
-	            VkDeviceSize        bufferSize,
-	            VkBufferCreateFlags createFlags,
-	            VkBufferUsageFlags  usage,
-	            VmaMemoryUsage      vmaUsage,
-	            AX_VkSparseBuffer*  sparseBuffer);
+	void create(AX_VkDevice&         dev,
+	            VkDeviceSize         bufferSize,
+	            VkBufferUsageFlags   usage,
+	            VmaMemoryUsage       vmaUsage,
+	            GpuVirtualMemoryDesc virMemDesc,
+	            AX_VkSparseBuffer*   sparseBuffer);
 
 	void bindSparse(VkQueue queue, VkFence fence);
 	AX_VkSparseBuffer* sparseBuffer() { return _sparseBuffer; }
@@ -630,6 +633,7 @@ public:
 	AX_VkDevice*	device() { return _dev; }
 	
 	VmaMemoryUsage   vmaUsage() { return _vmaUsage; }
+	const GpuVirtualMemoryDesc& virMemDesc() const { return _virMemDesc; }
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
@@ -640,12 +644,12 @@ private:
 	AX_VkDevice*         _dev               = nullptr;
 	VkDeviceSize         _bufferSize        = 0;
 	VkBufferUsageFlags   _usage             = 0;
-	VkBufferCreateFlags  _createFlags       = 0;
 	VmaMemoryUsage       _vmaUsage          = VMA_MEMORY_USAGE_UNKNOWN;
 	VmaAllocation        _vmaAllocation     = VK_NULL_HANDLE;
 	VmaAllocationInfo    _vmaAllocationInfo = {};
 	AX_VkSparseBuffer*   _sparseBuffer      = nullptr;
 	VkDeviceSize         _sparseOffset      = 0;
+	GpuVirtualMemoryDesc _virMemDesc;
 };
 
 class AX_VkSparseBuffer : public NonCopyable {
@@ -709,12 +713,20 @@ public:
 	operator const VkDeviceMemory&() { return _handle; }
 
 	AX_VkDeviceMemory() = default;
+	AX_VkDeviceMemory(AX_VkDeviceMemory&& rhs) 
+	: _handle(rhs._handle), _dev(rhs._dev), _bufferSize(rhs._bufferSize) {
+		rhs._handle = VK_NULL_HANDLE;
+		rhs._dev = nullptr;
+		rhs._bufferSize = 0;
+	}	
+	
 	~AX_VkDeviceMemory() { destroy(); }
 
 	void destroy();
-	AX_VkDeviceMemory& createForImage(AX_VkImage&  img, VkMemoryPropertyFlags requireMask);
-	AX_VkDeviceMemory& createForBuffer(AX_VkBuffer& buf, VkMemoryPropertyFlags requireMask);
-
+	void createForImage(AX_VkImage&  img, VkMemoryPropertyFlags requireMask);
+	void createForBuffer(AX_VkBuffer& buf);
+	void createForVirtualMemPage(AX_VkBuffer& buf, Int pageSize);
+	
 	void copyData(ByteSpan data, Int offset = 0, VkMemoryMapFlags flags = 0);
 
 	void		_unmapMemory();
@@ -737,9 +749,9 @@ private:
 	void _create(AX_VkDevice& dev, Int bufferSize, VkFlags memoryTypeBits, VkMemoryPropertyFlags requireMask);
 	void _create(AX_VkDevice& dev, Int bufferSize, AX_VkMemoryTypeIndex memTypeIndex);
 
-	VkDeviceMemory _handle = VK_NULL_HANDLE;
-	AX_VkDevice* _dev = nullptr;
-	Int _bufferSize = 0;
+	VkDeviceMemory _handle     = VK_NULL_HANDLE;
+	AX_VkDevice*   _dev        = nullptr;
+	Int            _bufferSize = 0;
 };
 inline void AX_VkDeviceMemory::_unmapMemory() {
 	vkUnmapMemory(*_dev, _handle);

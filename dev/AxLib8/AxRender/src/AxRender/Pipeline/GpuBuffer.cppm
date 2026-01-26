@@ -37,10 +37,9 @@ public:
 	{}
 
 	String        name;
-	GpuBufferType bufferType         = GpuBufferType::None;
-	Int           bufferSize         = 0;
-	Int           virtualMemMaxSize  = 0;
-	Int           virtualMemPageSize = 0;
+	GpuBufferType bufferType = GpuBufferType::None;
+	Int           bufferSize = 0;
+	GpuVirtualMemoryDesc virMemDesc;
 };
 
 class GpuBuffer : public RenderObject {
@@ -56,8 +55,7 @@ public:
 	GpuBufferType bufferType() const			{ return _bufferType; }
 	Int           bufferSize() const			{ return _bufferSize; }
 	IntRange      bufferRange() const			{ return IntRange(_bufferSize); }
-	Int           virtualMemMaxSize() const		{ return _virtualMemMaxSize; }
-	Int           virtualMemPageSize() const	{ return _virtualMemPageSize; }
+	const GpuVirtualMemoryDesc& virMemDesc() const { return _virMemDesc; }
 	
 	bool inBound(IntRange range) const { return IntRange(_bufferSize).contains(range); }
 
@@ -73,10 +71,9 @@ protected:
 
 	virtual void onSetCapacity(RenderRequest* req, Int newCapacity) = 0;
 
-	GpuBufferType _bufferType         = GpuBufferType::None;
-	Int           _bufferSize         = 0;
-	Int           _virtualMemMaxSize  = 0;
-	Int           _virtualMemPageSize = 0;
+	GpuBufferType        _bufferType = GpuBufferType::None;
+	Int                  _bufferSize = 0;
+	GpuVirtualMemoryDesc _virMemDesc;
 };
 
 
@@ -101,8 +98,7 @@ public:
 	String			name;
 	GpuBufferType	bufferType = GpuBufferType::None;
 	Int				bufferSize = 0;
-	Int				virtualMemMaxSize = 0;
-	Int				virtualMemPageSize = 0;
+	GpuVirtualMemoryDesc virMemDesc;
 };
 
 class DynamicGpuBuffer : public NonCopyable {
@@ -138,11 +134,10 @@ private:
 	String	_name;
 	GpuBufferType	_bufferType = GpuBufferType::None;
 
-	Array<Byte>     _data;
-	IntRange        _dirtyRange = {};
-	SPtr<GpuBuffer> _gpuBuffer;
-	Int             _virtualMemMaxSize  = 0;
-	Int             _virtualMemPageSize = 0;
+	Array<Byte>          _data;
+	IntRange             _dirtyRange = {};
+	SPtr<GpuBuffer>      _gpuBuffer;
+	GpuVirtualMemoryDesc _virMemDesc;
 };
 
 inline

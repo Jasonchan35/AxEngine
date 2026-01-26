@@ -32,6 +32,8 @@ public:
 	static VkBlendOp				getVkBlendOp			(RenderState_BlendOp     v);
 	static VkBlendFactor			getVkBlendFactor		(RenderState_BlendFactor v);
 	static VkCullModeFlagBits		getVkCullMode			(RenderState_CullMode    v);
+	
+	static VkMemoryPropertyFlags	getVkMemoryPropertyFlags(VmaMemoryUsage vmaUsage);
 
 	static bool formatHasDepth	(VkFormat f);
 	static bool formatHasStencil(VkFormat f);

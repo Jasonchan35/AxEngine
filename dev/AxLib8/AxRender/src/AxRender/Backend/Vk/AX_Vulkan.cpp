@@ -275,20 +275,6 @@ Opt<AX_VkMemoryTypeIndex> AX_VkPhysicalDevice::findMemoryTypeIndex(VkFlags typeB
 	return std::nullopt;
 }
 
-Opt<AX_VkMemoryTypeIndex> AX_VkPhysicalDevice::findMemoryTypeIndex(VkFlags typeBits, VmaMemoryUsage vmaUsage) const {
-	switch (vmaUsage) {
-		case VMA_MEMORY_USAGE_GPU_ONLY:
-			return findMemoryTypeIndex(typeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		case VMA_MEMORY_USAGE_CPU_TO_GPU: 
-			return findMemoryTypeIndex(typeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		case VMA_MEMORY_USAGE_GPU_TO_CPU:
-			return findMemoryTypeIndex(typeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT);
-		default:
-			AX_ASSERT(false);
-			return std::nullopt;
-	}
-}
-
 AX_VkPhysicalDevice::Features::Features() {
 
 	v10.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
@@ -1227,7 +1213,7 @@ void AX_VkDeviceMemory::destroy() {
 	}
 }
 
-AX_VkDeviceMemory& AX_VkDeviceMemory::createForImage(AX_VkImage& img, VkMemoryPropertyFlags requireMask) {
+void AX_VkDeviceMemory::createForImage(AX_VkImage& img, VkMemoryPropertyFlags requireMask) {
 	destroy();
 
 	auto req = img.getMemoryRequirements();
@@ -1236,21 +1222,29 @@ AX_VkDeviceMemory& AX_VkDeviceMemory::createForImage(AX_VkImage& img, VkMemoryPr
 
 	auto err = vkBindImageMemory(*dev, img, _handle, 0);
 	AX_VkUtil::throwIfError(err);
-
-	return *this;
 }
 
-AX_VkDeviceMemory& AX_VkDeviceMemory::createForBuffer(AX_VkBuffer& buf, VkMemoryPropertyFlags requireMask) {
+void AX_VkDeviceMemory::createForBuffer(AX_VkBuffer& buf) {
 	destroy();
-
-	auto req = buf.getMemoryRequirements();
+	auto memReq = buf.getMemoryRequirements();
 	auto* dev = buf.device();
-	_create(*dev, ax_safe_cast_from(req.size), req.memoryTypeBits, requireMask);
-
+	auto memPropFlags = AX_VkUtil::getVkMemoryPropertyFlags(buf.vmaUsage());
+	_create(*dev, ax_safe_cast_from(memReq.size), memReq.memoryTypeBits, memPropFlags);
+	
 	auto err = vkBindBufferMemory(*dev, buf, _handle, 0);
 	AX_VkUtil::throwIfError(err);
+}
 
-	return *this;
+void AX_VkDeviceMemory::createForVirtualMemPage(AX_VkBuffer& buf, Int pageSize) {
+	AX_ASSERT(buf.virMemDesc().maxSize > 0);
+	
+	destroy();
+	auto memReq = buf.getMemoryRequirements();
+	memReq.size = pageSize;
+	
+	auto* dev = buf.device();
+	auto memPropFlags = AX_VkUtil::getVkMemoryPropertyFlags(buf.vmaUsage());
+	_create(*dev, ax_safe_cast_from(memReq.size), memReq.memoryTypeBits, memPropFlags);
 }
 
 void AX_VkDeviceMemory::copyData(
@@ -1350,7 +1344,7 @@ void AX_VkDeviceMemory::invalidateMappedMemoryRanges(Span<IntRange> ranges) {
 
 void AX_VkBuffer::destroy() {
 	if (_handle) {
-		if (_createFlags & VK_BUFFER_CREATE_SPARSE_BINDING_BIT) {
+		if (_virMemDesc.maxSize) {
 			// AX_LOG("-- vkDestroyBuffer {} {}", (void*)_handle);
 			vkDestroyBuffer(*_dev, _handle, AX_VkUtil::allocCallbacks());
 			
@@ -1369,12 +1363,12 @@ void AX_VkBuffer::destroy() {
 	}
 }
 
-void AX_VkBuffer::create(AX_VkDevice&          dev,
-                         VkDeviceSize          bufferSize,
-                         VkBufferCreateFlags   createFlags,
-                         VkBufferUsageFlags    usage,
-                         VmaMemoryUsage        vmaUsage,
-                         AX_VkSparseBuffer*    sparseBuffer) 
+void AX_VkBuffer::create(AX_VkDevice&         dev,
+                         VkDeviceSize         bufferSize,
+                         VkBufferUsageFlags   usage,
+                         VmaMemoryUsage       vmaUsage,
+                         GpuVirtualMemoryDesc virMemDesc,
+                         AX_VkSparseBuffer*   sparseBuffer) 
 {
 	if (_handle && _dev == &dev && bufferSize == _bufferSize) 
 		return;
@@ -1384,14 +1378,14 @@ void AX_VkBuffer::create(AX_VkDevice&          dev,
 	_usage        = usage;
 	_vmaUsage     = vmaUsage;
 	_sparseBuffer = sparseBuffer;
-	_createFlags  = createFlags;
+	_virMemDesc   = virMemDesc;
 	
 	bufferSize = Math::max(bufferSize, 64ULL); // ensure not too small
 
 	VkBufferCreateInfo info = {};
 	info.sType					= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	info.pNext					= nullptr;
-	info.flags					= createFlags;
+	info.flags					= 0;
 	info.size					= bufferSize;
 	info.usage					= usage;
 	info.sharingMode			= VK_SHARING_MODE_EXCLUSIVE;
@@ -1401,12 +1395,12 @@ void AX_VkBuffer::create(AX_VkDevice&          dev,
 	VmaAllocationCreateInfo allocCreateInfo = {};
 	allocCreateInfo.usage = vmaUsage;
 	
-	if (_createFlags & VK_BUFFER_CREATE_SPARSE_BINDING_BIT) {
-		// create sparseBuffer
+	if (_virMemDesc.maxSize) {
+		// create virtual address only
+		info.flags = VK_BUFFER_CREATE_SPARSE_BINDING_BIT | VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT;
+		info.size = _virMemDesc.maxSize;
 		auto err = vkCreateBuffer(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
 		AX_VkUtil::throwIfError(err);
-
-		// AX_LOG("-- vkCreateBuffer SPARSE {} {}", (void*)_handle, (void*)_vmaAllocation);
 		
 	} else if (sparseBuffer) {
 		sparseBuffer->allocateSparseMemory(bufferSize, &_vmaAllocation, &_vmaAllocationInfo, &_sparseOffset);
@@ -1432,9 +1426,9 @@ void AX_VkSparseBuffer::create(AX_VkDevice& dev,
 	auto md = _mdata.scopedLock();
 	md->_pageBlockSize = 64 * Math::MegaBytes; // big enough for 64k vertices
 	
-	_vkBuf.create(dev, bufferSize,
-				  VK_BUFFER_CREATE_SPARSE_BINDING_BIT | VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT,
-				  usage, vmaUsage, nullptr);
+	GpuVirtualMemoryDesc virMemDesc(bufferSize, md->_pageBlockSize);
+	
+	_vkBuf.create(dev, bufferSize, usage, vmaUsage, virMemDesc, nullptr);
 	
 	VmaPoolCreateInfo poolInfo = {};
 	poolInfo.blockSize = md->_pageBlockSize;
@@ -1517,14 +1511,9 @@ void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
 	
 	VkBindSparseInfo bindInfo = {};
 	bindInfo.sType = VK_STRUCTURE_TYPE_BIND_SPARSE_INFO;
-	//	bindInfo.pNext = nullptr;
-	//	bindInfo.waitSemaphoreCount;
-	//	bindInfo.pWaitSemaphores;
 	bindInfo.bufferBindCount = 1;
 	bindInfo.pBufferBinds = &bufferBindInfo;
-	//	bindInfo.signalSemaphoreCount;
-	//	bindInfo.pSignalSemaphores;
-	
+
 	auto err = vkQueueBindSparse(queue, 1, &bindInfo, fence);
 	AX_VkUtil::throwIfError(err);
 }

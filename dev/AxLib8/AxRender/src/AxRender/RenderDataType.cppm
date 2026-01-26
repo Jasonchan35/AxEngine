@@ -264,6 +264,16 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 //-------
 AX_ENUM_CLASS(AX_RenderDataType_ENUM_LIST, RenderDataType, u16);
 
+struct GpuVirtualMemoryDesc {
+	Int maxSize  = 0;
+	Int pageSize = 0;
+	
+	GpuVirtualMemoryDesc() = default;
+	GpuVirtualMemoryDesc(Int maxSize_, Int pageSize_) : maxSize(maxSize_), pageSize(pageSize_) {}
+	
+	Int computePageCount(Int v) const { return Math::alignTo(v, pageSize) / pageSize; }
+};
+
 struct RenderDataTypeInfo {
 	RenderDataType	dataType		= RenderDataType::None;
 	i16				elementCount	= 0;

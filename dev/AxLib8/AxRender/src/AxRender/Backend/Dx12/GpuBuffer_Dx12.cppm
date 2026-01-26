@@ -30,11 +30,16 @@ protected:
 		ComPtr<ID3D12Heap1>	_d3dHeap;
 	};
 
-	struct VirtualMemData {
+	struct VirtualMemoryBlock {
 		Array<MemPage>  _memPages;
+		
+		VirtualMemoryBlock(const GpuVirtualMemoryDesc& desc) {
+			if (desc.maxSize <= 0) throw Error_Undefined();
+			auto pageCount = desc.computePageCount(desc.maxSize);
+			_memPages.resize(pageCount);
+		}
 	};
-	
-	UPtr<VirtualMemData>	_virtualMemData;
+	UPtr<VirtualMemoryBlock>	_virMemBlock;
 	
 	virtual void onSetCapacity(RenderRequest* req_, Int newCapacity) override;
 	
