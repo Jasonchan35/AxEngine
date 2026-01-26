@@ -62,46 +62,6 @@ void RenderRequest_Vk::onWaitCompleted() {
 	_graphCmdList_vk.resetAndReleaseResource();
 }
 
-void RenderRequest_Vk::_updatedBindlessResources() {
-#if 0 // AX_RENDER_BINDLESS
-	auto* commonPass = rttiCastCheck<MaterialPass_Vk>(_globalCommonMaterialPass);
-	if (!commonPass) return;
-
-	auto* bindlessParamSpace = commonPass->getOwnParamSpace_vk(BindSpace::Bindless);
-	if (!bindlessParamSpace) throw Error_Undefined();
-
-	auto curDescSet = bindlessParamSpace->_perFrameDataSet.getUpdated(this)._descSet;
-	
-	auto* shaderParamSpace = bindlessParamSpace->shaderParamSpace_vk();
-	if (!shaderParamSpace) return;
-	
-	auto writeDescHelper = _writeDescSetHelper.scopeStart();
-
-	{
-		auto* samplerParam   = shaderParamSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
-		for (auto& sampler_ : updatedBindlessResources.samplers) {
-			if (!sampler_) continue;
-			auto* sampler      = rttiCast<Sampler_Vk>(sampler_.ptr());
-			u32   arrayElement = sampler->objectSlot.slotId();
-			writeDescHelper.addSamplerInfo(samplerParam->bindPoint(), curDescSet, arrayElement, sampler->vkHandle());
-		}
-	}
-	
-	{
-		auto* texture2DParam = shaderParamSpace->findTextureParam(AX_NAMEID("AxBindless_Texture2D"));
-		for (auto& tex_ : updatedBindlessResources.texture2Ds) {
-			auto* tex = rttiCastCheck<Texture2D_Vk>(tex_.ptr());
-			if (!tex) continue;
-			u32   arrayElement = tex->objectSlot.slotId();
-			auto info = tex->_bindImage(this);
-			writeDescHelper.addImageInfo(texture2DParam->bindPoint(), curDescSet, arrayElement, info.imageView, info.imageLayout);
-		}
-	}
-
-	writeDescHelper.updateToDevice(_device_vk->handle());
-#endif
-}
-
 void RenderRequest_Vk::onFrameBegin() {
 #if AX_RENDER_BINDLESS
 	auto* resMgr = rttiCastCheck<RenderObjectManager_Vk>(_objectManager);
@@ -114,7 +74,6 @@ void RenderRequest_Vk::onFrameBegin() {
 }
 
 void RenderRequest_Vk::onFrameEnd() {
-	_updatedBindlessResources();
 	_graphCmdList_vk.commandEnd();
 	_uploadCmdList_vk.commandEnd();
 }

@@ -57,7 +57,7 @@ PS_Input vs_main(VS_Input i) {
 float4 ps_main(PS_Input i) : SV_Target {
 	float4 t0 = tex2D(tex0, i.uv0);
 	float4 t1 = tex2D(tex1, i.uv0);
-	float4 o = color * t0 * t1 * (ax_g_timeSin.y * 0.4 + 0.5); // * global_color;
+	float4 o = color * t0 * t1 * (axWorld.timeSin.y * 0.4 + 0.5); // * global_color;
 	return o;
 }
 

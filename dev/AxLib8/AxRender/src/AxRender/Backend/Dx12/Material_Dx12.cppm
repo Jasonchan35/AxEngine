@@ -38,10 +38,10 @@ public:
 
 	const PerFrameData& getUpdatedPerFrameData(RenderRequest_Dx12* req) const {
 		auto* mut = ax_const_cast(this);
-		// if (bindSpace() != BindSpace::Object && !mut->_renderSeqIdGraud.update(req)) {
-		// 	return _perFrameData;
-		// }
-		return mut->_updatedPerFrameData(req);
+		if (mut->_renderSeqIdGraud.update(req)) {
+			return mut->_updatedPerFrameData(req);
+		}
+		return _perFrameData;
 	}
 private:
 	PerFrameData&    _updatedPerFrameData(RenderRequest_Dx12* req);

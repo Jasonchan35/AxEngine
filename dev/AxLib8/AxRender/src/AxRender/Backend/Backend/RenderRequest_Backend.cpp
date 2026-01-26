@@ -120,7 +120,6 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 
 void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
 	_viewProjMatrix = camera.viewProjMatrix(_projectionDesc);
-	globalCommonMaterialPass()->setParam(ShaderParamBindSpace::Object, AX_NAMEID("ax_object_vp"), _viewProjMatrix);
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {

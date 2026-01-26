@@ -3,32 +3,43 @@
 
 #include "AxBasicType.hlsl"
 
-struct AxCameraData {
-	Mat4f	viewMatrix;
-	Mat4f	projMatrix;
-	Mat4f	viewProjMatrix;
+struct AxRenderGpuData_World {
+	float	time;
+	float	deltaTime;
+	Vec4f	timeSin;
+	Vec4f	timeSlowSin;
 };
-RWStructuredBuffer<AxCameraData> gAxCameraData : register(u0, AX_BindSpace_Object);
+ConstantBuffer<AxRenderGpuData_World> axWorld : register(b0, AX_BindSpace_World);
 
-struct AxLightData {
+struct AxRenderGpuData_Camera {
+	Vec3f	worldPos;
+	Mat4f	projMatrix;
+	Mat4f	projMatrixInv;
+	Mat4f	viewMatrix;
+	Mat4f	viewMatrixInv;
+	Mat4f	viewProjMatrix;
+	Mat4f	viewProjMatrixInv;
+};
+ConstantBuffer<AxRenderGpuData_Camera> axCamera : register(b1, AX_BindSpace_World);
+
+struct AxRenderGpuData_Light {
 	Color4f	color;
 };
-RWStructuredBuffer<AxLightData> gAxLightData : register(u1, AX_BindSpace_Object);
+RWStructuredBuffer<AxRenderGpuData_Light> axLights : register(u1, AX_BindSpace_World);
 
-struct AxObjectData {
-	Mat4f	objectToWorld;
+struct AxRenderGpuData_Object {
+	Mat4f	worldMatrix;
 	Vec2f	aabbMin;
 	Vec2f	aabbMax;
 };
-RWStructuredBuffer<AxObjectData> gAxObjectData : register(u2, AX_BindSpace_Object);
+RWStructuredBuffer<AxRenderGpuData_Object> axObjects : register(u2, AX_BindSpace_World);
 
 struct AxDrawCallRootConst {
 	Mat4f AX_MATRIX_MVP;
 	Mat4f AX_MATRIX_M;
 	u32   AX_OBJECT_ID;
 	u32   AX_MESH_CLUSTER_ID;
-	u16   AX_CAMERA_ID;
-	u16   _usedPadding0;
+	u32   _usedPadding0;
 	u32   _usedPadding1;
 };
 

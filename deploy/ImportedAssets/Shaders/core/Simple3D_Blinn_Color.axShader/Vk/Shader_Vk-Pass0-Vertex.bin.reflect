@@ -52,28 +52,130 @@
             }
         },
         {
-            "name": "gAxCameraData",
-            "binding": {"kind": "unorderedAccess", "space": 2, "index": 30000},
+            "name": "axWorld",
+            "binding": {"kind": "constantBuffer", "space": 2, "index": 0},
             "type": {
-                "kind": "resource",
-                "baseShape": "structuredBuffer",
-                "access": "readWrite",
-                "resultType": {
+                "kind": "constantBuffer",
+                "elementType": {
                     "kind": "struct",
-                    "name": "AxCameraData",
+                    "name": "AxRenderGpuData_World",
                     "fields": [
                         {
-                            "name": "viewMatrix",
+                            "name": "time",
                             "type": {
-                                "kind": "matrix",
-                                "rowCount": 4,
-                                "columnCount": 4,
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "deltaTime",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "timeSin",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 4,
                                 "elementType": {
                                     "kind": "scalar",
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 16, "size": 16, "elementStride": 4}
+                        },
+                        {
+                            "name": "timeSlowSin",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 32, "size": 16, "elementStride": 4}
+                        }
+                    ]
+                },
+                "containerVarLayout": {
+                    "binding": {"kind": "constantBuffer", "index": 0}
+                },
+                "elementVarLayout": {
+                    "type": {
+                        "kind": "struct",
+                        "name": "AxRenderGpuData_World",
+                        "fields": [
+                            {
+                                "name": "time",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "deltaTime",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "timeSin",
+                                "type": {
+                                    "kind": "vector",
+                                    "elementCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 16, "size": 16, "elementStride": 4}
+                            },
+                            {
+                                "name": "timeSlowSin",
+                                "type": {
+                                    "kind": "vector",
+                                    "elementCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 32, "size": 16, "elementStride": 4}
+                            }
+                        ]
+                    },
+                    "binding": {"kind": "uniform", "offset": 0, "size": 48, "elementStride": 0}
+                }
+            }
+        },
+        {
+            "name": "axCamera",
+            "binding": {"kind": "constantBuffer", "space": 2, "index": 1},
+            "type": {
+                "kind": "constantBuffer",
+                "elementType": {
+                    "kind": "struct",
+                    "name": "AxRenderGpuData_Camera",
+                    "fields": [
+                        {
+                            "name": "worldPos",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 3,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                         },
                         {
                             "name": "projMatrix",
@@ -86,7 +188,46 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 64, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 16, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "projMatrixInv",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 80, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "viewMatrix",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 144, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "viewMatrixInv",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 208, "size": 64, "elementStride": 0}
                         },
                         {
                             "name": "viewProjMatrix",
@@ -99,14 +240,129 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 128, "size": 64, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 272, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "viewProjMatrixInv",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 336, "size": 64, "elementStride": 0}
                         }
                     ]
+                },
+                "containerVarLayout": {
+                    "binding": {"kind": "constantBuffer", "index": 0}
+                },
+                "elementVarLayout": {
+                    "type": {
+                        "kind": "struct",
+                        "name": "AxRenderGpuData_Camera",
+                        "fields": [
+                            {
+                                "name": "worldPos",
+                                "type": {
+                                    "kind": "vector",
+                                    "elementCount": 3,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
+                            },
+                            {
+                                "name": "projMatrix",
+                                "type": {
+                                    "kind": "matrix",
+                                    "rowCount": 4,
+                                    "columnCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 16, "size": 64, "elementStride": 0}
+                            },
+                            {
+                                "name": "projMatrixInv",
+                                "type": {
+                                    "kind": "matrix",
+                                    "rowCount": 4,
+                                    "columnCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 80, "size": 64, "elementStride": 0}
+                            },
+                            {
+                                "name": "viewMatrix",
+                                "type": {
+                                    "kind": "matrix",
+                                    "rowCount": 4,
+                                    "columnCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 144, "size": 64, "elementStride": 0}
+                            },
+                            {
+                                "name": "viewMatrixInv",
+                                "type": {
+                                    "kind": "matrix",
+                                    "rowCount": 4,
+                                    "columnCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 208, "size": 64, "elementStride": 0}
+                            },
+                            {
+                                "name": "viewProjMatrix",
+                                "type": {
+                                    "kind": "matrix",
+                                    "rowCount": 4,
+                                    "columnCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 272, "size": 64, "elementStride": 0}
+                            },
+                            {
+                                "name": "viewProjMatrixInv",
+                                "type": {
+                                    "kind": "matrix",
+                                    "rowCount": 4,
+                                    "columnCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "binding": {"kind": "uniform", "offset": 336, "size": 64, "elementStride": 0}
+                            }
+                        ]
+                    },
+                    "binding": {"kind": "uniform", "offset": 0, "size": 400, "elementStride": 0}
                 }
             }
         },
         {
-            "name": "gAxLightData",
+            "name": "axLights",
             "binding": {"kind": "unorderedAccess", "space": 2, "index": 30001},
             "type": {
                 "kind": "resource",
@@ -114,7 +370,7 @@
                 "access": "readWrite",
                 "resultType": {
                     "kind": "struct",
-                    "name": "AxLightData",
+                    "name": "AxRenderGpuData_Light",
                     "fields": [
                         {
                             "name": "color",
@@ -133,7 +389,7 @@
             }
         },
         {
-            "name": "gAxObjectData",
+            "name": "axObjects",
             "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002},
             "type": {
                 "kind": "resource",
@@ -141,10 +397,10 @@
                 "access": "readWrite",
                 "resultType": {
                     "kind": "struct",
-                    "name": "AxObjectData",
+                    "name": "AxRenderGpuData_Object",
                     "fields": [
                         {
-                            "name": "objectToWorld",
+                            "name": "worldMatrix",
                             "type": {
                                 "kind": "matrix",
                                 "rowCount": 4,
@@ -236,7 +492,7 @@
                             "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "_usedPadding0",
+                            "name": "AX_CAMERA_ID",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -244,7 +500,7 @@
                             "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "_usedPadding1",
+                            "name": "_usedPadding0",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -304,7 +560,7 @@
                                 "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
                             },
                             {
-                                "name": "_usedPadding0",
+                                "name": "AX_CAMERA_ID",
                                 "type": {
                                     "kind": "scalar",
                                     "scalarType": "uint32"
@@ -312,7 +568,7 @@
                                 "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
                             },
                             {
-                                "name": "_usedPadding1",
+                                "name": "_usedPadding0",
                                 "type": {
                                     "kind": "scalar",
                                     "scalarType": "uint32"
@@ -322,209 +578,6 @@
                         ]
                     },
                     "binding": {"kind": "uniform", "offset": 0, "size": 144, "elementStride": 0}
-                }
-            }
-        },
-        {
-            "name": "AX_ConstBuffer_World",
-            "binding": {"kind": "constantBuffer", "space": 1, "index": 0},
-            "type": {
-                "kind": "constantBuffer",
-                "elementType": {
-                    "kind": "struct",
-                    "fields": [
-                        {
-                            "name": "ax_g_test",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "float32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "ax_g_time",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "float32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "ax_g_timeSin",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 16, "size": 16, "elementStride": 4}
-                        },
-                        {
-                            "name": "ax_g_timeSlowSin",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 32, "size": 16, "elementStride": 4}
-                        },
-                        {
-                            "name": "ax_g_deltaTime",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 48, "size": 16, "elementStride": 4}
-                        },
-                        {
-                            "name": "ax_g_worldSpaceCameraPos",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 64, "size": 16, "elementStride": 4}
-                        },
-                        {
-                            "name": "ax_g_cameraProjection",
-                            "type": {
-                                "kind": "matrix",
-                                "rowCount": 4,
-                                "columnCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 80, "size": 64, "elementStride": 0}
-                        },
-                        {
-                            "name": "ax_g_cameraInvProjection",
-                            "type": {
-                                "kind": "matrix",
-                                "rowCount": 4,
-                                "columnCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 144, "size": 64, "elementStride": 0}
-                        }
-                    ]
-                },
-                "containerVarLayout": {
-                    "binding": {"kind": "constantBuffer", "index": 0}
-                },
-                "elementVarLayout": {
-                    "type": {
-                        "kind": "struct",
-                        "fields": [
-                            {
-                                "name": "ax_g_test",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "ax_g_time",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "ax_g_timeSin",
-                                "type": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 16, "size": 16, "elementStride": 4}
-                            },
-                            {
-                                "name": "ax_g_timeSlowSin",
-                                "type": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 32, "size": 16, "elementStride": 4}
-                            },
-                            {
-                                "name": "ax_g_deltaTime",
-                                "type": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 48, "size": 16, "elementStride": 4}
-                            },
-                            {
-                                "name": "ax_g_worldSpaceCameraPos",
-                                "type": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 64, "size": 16, "elementStride": 4}
-                            },
-                            {
-                                "name": "ax_g_cameraProjection",
-                                "type": {
-                                    "kind": "matrix",
-                                    "rowCount": 4,
-                                    "columnCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 80, "size": 64, "elementStride": 0}
-                            },
-                            {
-                                "name": "ax_g_cameraInvProjection",
-                                "type": {
-                                    "kind": "matrix",
-                                    "rowCount": 4,
-                                    "columnCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 144, "size": 64, "elementStride": 0}
-                            }
-                        ]
-                    },
-                    "binding": {"kind": "uniform", "offset": 0, "size": 208, "elementStride": 0}
                 }
             }
         },
@@ -723,24 +776,24 @@
                     "binding": {"kind": "shaderResource", "space": 3, "index": 40000, "used": 0}
                 },
                 {
-                    "name": "gAxCameraData",
-                    "binding": {"kind": "unorderedAccess", "space": 2, "index": 30000, "used": 0}
+                    "name": "axWorld",
+                    "binding": {"kind": "constantBuffer", "space": 2, "index": 0, "used": 0}
                 },
                 {
-                    "name": "gAxLightData",
+                    "name": "axCamera",
+                    "binding": {"kind": "constantBuffer", "space": 2, "index": 1, "used": 0}
+                },
+                {
+                    "name": "axLights",
                     "binding": {"kind": "unorderedAccess", "space": 2, "index": 30001, "used": 0}
                 },
                 {
-                    "name": "gAxObjectData",
+                    "name": "axObjects",
                     "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002, "used": 0}
                 },
                 {
                     "name": "gAxDrawCallRootConst",
                     "binding": {"kind": "pushConstantBuffer", "index": 0}
-                },
-                {
-                    "name": "AX_ConstBuffer_World",
-                    "binding": {"kind": "constantBuffer", "space": 1, "index": 0, "used": 0}
                 },
                 {
                     "name": "color",

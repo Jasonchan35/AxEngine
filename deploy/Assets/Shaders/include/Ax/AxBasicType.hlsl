@@ -28,10 +28,9 @@ typedef float4		Color4f;
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"
 // HLSL: register space                | DX: "Space"                      |  Vulkan "set"
 #define AX_BindSpace_Default    space0
-#define AX_BindSpace_World      space1
-#define AX_BindSpace_Object     space2
+#define AX_BindSpace_RootConst  space1
+#define AX_BindSpace_World      space2
 #define AX_BindSpace_Bindless   space3
-#define AX_BindSpace_RootConst  space4
 
 #if AX_RENDER_VK
 	#define AX_ROOT_CONST_VAR(TYPE, NAME) \

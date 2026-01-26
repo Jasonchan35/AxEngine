@@ -53,12 +53,6 @@ private:
 	Dx12Resource_GpuBuffer	_p;
 };
 
-class GpuVirtualAllocator_Dx12 : public GpuVirtualAllocator_Backend {
-	AX_RTTI_INFO(GpuVirtualAllocator_Dx12, GpuVirtualAllocator_Backend)
-public:
-	GpuVirtualAllocator_Dx12(const CreateDesc& desc) : Base(desc) {}
-};
-
 class GpuStructuredBuffer_Dx12 : public GpuStructuredBuffer_Backend {
 	AX_RTTI_INFO(GpuStructuredBuffer_Dx12, GpuStructuredBuffer_Backend)
 public:

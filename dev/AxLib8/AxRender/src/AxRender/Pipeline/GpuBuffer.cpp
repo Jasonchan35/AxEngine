@@ -61,10 +61,6 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 	_dirtyRange.reset();
 
 	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataCapacity) {
-		GpuVirtualAllocator_CreateDesc allocatorDesc;
-		allocatorDesc.bufferType = _bufferType;
-		auto gpuAllocator = GpuVirtualAllocator_Backend::s_new(AX_NEW, allocatorDesc);
-		
 		GpuBuffer_CreateDesc bufferDesc;
 		bufferDesc.bufferType = _bufferType;
 		bufferDesc.bufferSize = _virMemDesc.maxSize ? 0 : dataCapacity;

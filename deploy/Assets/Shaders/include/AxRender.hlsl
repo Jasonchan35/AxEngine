@@ -9,17 +9,4 @@ AX_ROOT_CONST_VAR(AxDrawCallRootConst, gAxDrawCallRootConst)
 #define AX_OBJECT_ID         gAxDrawCallRootConst.AX_OBJECT_ID
 #define AX_MESH_CLUSTER_ID   gAxDrawCallRootConst.AX_MESH_CLUSTER_ID
 
-
-cbuffer AX_ConstBuffer_World : register(b0, AX_BindSpace_World) {
-	float	ax_g_test;
-
-	float	ax_g_time;
-	Vec4f	ax_g_timeSin;
-	Vec4f	ax_g_timeSlowSin;
-	Vec4f	ax_g_deltaTime;
-	Vec4f	ax_g_worldSpaceCameraPos;
-	Mat4f	ax_g_cameraProjection;
-	Mat4f	ax_g_cameraInvProjection;
-}
-
 #endif // __AxRender_HLSL__

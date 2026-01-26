@@ -21,7 +21,6 @@ export namespace ax /*::AxRender*/ {
 //----
 AX_ENUM_CLASS(AX_RENDER_GpuBufferType_ENUM_LIST, GpuBufferType, u8)
 
-class GpuVirtualAllocator;
 class DynamicGpuBuffer;
 
 class GpuBuffer_CreateDesc : public NonCopyable {
@@ -74,19 +73,6 @@ protected:
 	GpuBufferType        _bufferType = GpuBufferType::None;
 	Int                  _bufferSize = 0;
 	GpuVirtualMemoryDesc _virMemDesc;
-};
-
-
-class GpuVirtualAllocator_CreateDesc : public NonCopyable {
-public:
-	GpuBufferType bufferType = GpuBufferType::None;
-};
-
-class GpuVirtualAllocator : public RenderObject {
-	AX_RTTI_INFO(GpuVirtualAllocator, RenderObject)
-public:
-	using CreateDesc = GpuVirtualAllocator_CreateDesc;
-	GpuVirtualAllocator(const CreateDesc& desc) {}
 };
 
 class DynamicGpuBuffer_CreateDesc : public NonCopyable {

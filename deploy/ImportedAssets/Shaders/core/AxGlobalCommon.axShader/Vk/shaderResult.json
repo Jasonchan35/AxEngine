@@ -37,6 +37,79 @@
           "dataType": "Vec4f"
         }], 
       "constBuffers": [{
+          "name": "axWorld", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "World", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "stride": 48, 
+          "variables": [{
+              "name": "time", 
+              "dataType": "f32", 
+              "offset": 0, 
+              "size": 4
+            }, {
+              "name": "deltaTime", 
+              "dataType": "f32", 
+              "offset": 4, 
+              "size": 4
+            }, {
+              "name": "timeSin", 
+              "dataType": "Vec4f", 
+              "offset": 16, 
+              "size": 16
+            }, {
+              "name": "timeSlowSin", 
+              "dataType": "Vec4f", 
+              "offset": 32, 
+              "size": 16
+            }]
+        }, {
+          "name": "axCamera", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "World", 
+          "bindPoint": 1, 
+          "bindCount": 1, 
+          "stride": 400, 
+          "variables": [{
+              "name": "worldPos", 
+              "dataType": "Vec3f", 
+              "offset": 0, 
+              "size": 12
+            }, {
+              "name": "projMatrix", 
+              "dataType": "Mat4f", 
+              "offset": 16, 
+              "size": 64
+            }, {
+              "name": "projMatrixInv", 
+              "dataType": "Mat4f", 
+              "offset": 80, 
+              "size": 64
+            }, {
+              "name": "viewMatrix", 
+              "dataType": "Mat4f", 
+              "offset": 144, 
+              "size": 64
+            }, {
+              "name": "viewMatrixInv", 
+              "dataType": "Mat4f", 
+              "offset": 208, 
+              "size": 64
+            }, {
+              "name": "viewProjMatrix", 
+              "dataType": "Mat4f", 
+              "offset": 272, 
+              "size": 64
+            }, {
+              "name": "viewProjMatrixInv", 
+              "dataType": "Mat4f", 
+              "offset": 336, 
+              "size": 64
+            }]
+        }, {
           "name": "gAxDrawCallRootConst", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel", 
@@ -65,64 +138,15 @@
               "offset": 132, 
               "size": 4
             }, {
-              "name": "_usedPadding0", 
+              "name": "AX_CAMERA_ID", 
               "dataType": "u32", 
               "offset": 136, 
               "size": 4
             }, {
-              "name": "_usedPadding1", 
+              "name": "_usedPadding0", 
               "dataType": "u32", 
               "offset": 140, 
               "size": 4
-            }]
-        }, {
-          "name": "AX_ConstBuffer_World", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "World", 
-          "bindPoint": 0, 
-          "bindCount": 1, 
-          "stride": 208, 
-          "variables": [{
-              "name": "ax_g_test", 
-              "dataType": "f32", 
-              "offset": 0, 
-              "size": 4
-            }, {
-              "name": "ax_g_time", 
-              "dataType": "f32", 
-              "offset": 4, 
-              "size": 4
-            }, {
-              "name": "ax_g_timeSin", 
-              "dataType": "Vec4f", 
-              "offset": 16, 
-              "size": 16
-            }, {
-              "name": "ax_g_timeSlowSin", 
-              "dataType": "Vec4f", 
-              "offset": 32, 
-              "size": 16
-            }, {
-              "name": "ax_g_deltaTime", 
-              "dataType": "Vec4f", 
-              "offset": 48, 
-              "size": 16
-            }, {
-              "name": "ax_g_worldSpaceCameraPos", 
-              "dataType": "Vec4f", 
-              "offset": 64, 
-              "size": 16
-            }, {
-              "name": "ax_g_cameraProjection", 
-              "dataType": "Mat4f", 
-              "offset": 80, 
-              "size": 64
-            }, {
-              "name": "ax_g_cameraInvProjection", 
-              "dataType": "Mat4f", 
-              "offset": 144, 
-              "size": 64
             }]
         }, {
           "name": "$Globals", 
@@ -184,34 +208,10 @@
           "dynamicSampler": true
         }], 
       "structuredBuffers": [{
-          "name": "gAxCameraData", 
+          "name": "axLights", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "Object", 
-          "bindPoint": 30000, 
-          "bindCount": 1, 
-          "stride": 192, 
-          "variables": [{
-              "name": "viewMatrix", 
-              "dataType": "Mat4f", 
-              "offset": 0, 
-              "size": 64
-            }, {
-              "name": "projMatrix", 
-              "dataType": "Mat4f", 
-              "offset": 64, 
-              "size": 64
-            }, {
-              "name": "viewProjMatrix", 
-              "dataType": "Mat4f", 
-              "offset": 128, 
-              "size": 64
-            }]
-        }, {
-          "name": "gAxLightData", 
-          "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "Object", 
+          "bindSpace": "World", 
           "bindPoint": 30001, 
           "bindCount": 1, 
           "stride": 16, 
@@ -222,15 +222,15 @@
               "size": 16
             }]
         }, {
-          "name": "gAxObjectData", 
+          "name": "axObjects", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel", 
-          "bindSpace": "Object", 
+          "bindSpace": "World", 
           "bindPoint": 30002, 
           "bindCount": 1, 
           "stride": 80, 
           "variables": [{
-              "name": "objectToWorld", 
+              "name": "worldMatrix", 
               "dataType": "Mat4f", 
               "offset": 0, 
               "size": 64

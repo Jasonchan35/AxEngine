@@ -55,12 +55,6 @@ public:
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override {}
 };
 
-class GpuVirtualAllocator_Null : public GpuVirtualAllocator_Backend {
-	AX_RTTI_INFO(GpuVirtualAllocator_Null, GpuVirtualAllocator_Backend)
-public:
-	GpuVirtualAllocator_Null(const CreateDesc& desc) : Base(desc) {}
-};
-
 class GpuStructuredBuffer_Null : public GpuStructuredBuffer_Backend {
 	AX_RTTI_INFO(GpuStructuredBuffer_Null, GpuStructuredBuffer_Backend)
 public:

@@ -51,7 +51,7 @@ void RenderObjectManager_Dx12::IndirectDraw::_create() {
 
 	UINT rootConstParamIndex = rootParamList.addRoot32BitConst(D3D12_SHADER_VISIBILITY_VERTEX,
 	                                                           BindPoint::Zero,
-	                                                           BindSpace::Object,
+	                                                           BindSpace::World,
 	                                                           RootConstSizeInBytes);
 
 //	rootParamList.addRootSRV(D3D12_SHADER_VISIBILITY_VERTEX, static_cast<BindPoint>(0), BindSpace::Object);

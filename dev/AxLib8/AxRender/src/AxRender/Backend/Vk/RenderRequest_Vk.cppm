@@ -22,8 +22,6 @@ public:
 	RenderCommandList_Vk&	uploadCmdList_vk()		{ return _uploadCmdList_vk; }
 	RenderCommandList_Vk&	graphCmdList_vk()		{ return _graphCmdList_vk; }
 
-	void _updatedBindlessResources();
-	
 	RenderSystem_Vk*	renderSystem_vk() { return rttiCastCheck<RenderSystem_Vk>(_renderSystem); }
 
 	AX_RenderRequest_Backend_FunctionInterfaces(override)

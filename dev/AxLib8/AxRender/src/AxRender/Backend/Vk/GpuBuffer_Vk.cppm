@@ -56,12 +56,6 @@ private:
 	AX_VkBuffer	_vkBuf;
 };
 
-class GpuVirtualAllocator_Vk : public GpuVirtualAllocator_Backend {
-	AX_RTTI_INFO(GpuVirtualAllocator_Vk, GpuVirtualAllocator_Backend)
-public:
-	GpuVirtualAllocator_Vk(const CreateDesc& desc) : Base(desc) {}
-};
-
 class GpuStructuredBuffer_Vk : public GpuStructuredBuffer_Backend {
 	AX_RTTI_INFO(GpuStructuredBuffer_Vk, GpuStructuredBuffer_Backend)
 public:
