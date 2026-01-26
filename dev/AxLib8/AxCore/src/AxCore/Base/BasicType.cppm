@@ -147,6 +147,8 @@ template<class T> constexpr bool Type_IsEnum        =  std::is_enum_v<T>;
 template<class T> struct Type_IsEnumFlag_T : std::false_type {}; 
 template<class T> constexpr bool Type_IsEnumFlag    =  Type_IsEnumFlag_T<T>::value;
 
+template<class T> using Type_ToVoid = void;
+
 template<class T>
 struct Type_IntOrEnumInt_T { using Type = T; }; 
 

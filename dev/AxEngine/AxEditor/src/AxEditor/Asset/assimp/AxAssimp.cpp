@@ -128,8 +128,36 @@ public:
 		auto meshObject = MeshObject_Backend::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
 		auto& meshData = meshObject->meshData;
-		
+
 		VertexLayout vertexLayout = Vertex_PosNormalUvColor::s_layout();
+		if (srcMesh->HasNormals()) {
+			switch (srcMesh->GetNumUVChannels()) {
+				case 0: vertexLayout = Vertex_PosNormalUvColor_<0, 1>::s_layout(); break;
+				case 1: vertexLayout = Vertex_PosNormalUvColor_<1, 1>::s_layout(); break;
+				case 2: vertexLayout = Vertex_PosNormalUvColor_<2, 1>::s_layout(); break;
+				case 3: vertexLayout = Vertex_PosNormalUvColor_<3, 1>::s_layout(); break;
+				case 4: vertexLayout = Vertex_PosNormalUvColor_<4, 1>::s_layout(); break;
+				case 5: vertexLayout = Vertex_PosNormalUvColor_<5, 1>::s_layout(); break;
+				case 6: vertexLayout = Vertex_PosNormalUvColor_<6, 1>::s_layout(); break;
+				case 7: vertexLayout = Vertex_PosNormalUvColor_<7, 1>::s_layout(); break;
+				case 8: vertexLayout = Vertex_PosNormalUvColor_<8, 1>::s_layout(); break;
+				default: throw Error_Undefined(Fmt("import assimp: unsupported UV channel count {}", srcMesh->GetNumUVChannels()));
+			}
+		} else {
+			switch (srcMesh->GetNumUVChannels()) {
+				case 0: vertexLayout = Vertex_PosUvColor_<0, 1>::s_layout(); break;
+				case 1: vertexLayout = Vertex_PosUvColor_<1, 1>::s_layout(); break;
+				case 2: vertexLayout = Vertex_PosUvColor_<2, 1>::s_layout(); break;
+				case 3: vertexLayout = Vertex_PosUvColor_<3, 1>::s_layout(); break;
+				case 4: vertexLayout = Vertex_PosUvColor_<4, 1>::s_layout(); break;
+				case 5: vertexLayout = Vertex_PosUvColor_<5, 1>::s_layout(); break;
+				case 6: vertexLayout = Vertex_PosUvColor_<6, 1>::s_layout(); break;
+				case 7: vertexLayout = Vertex_PosUvColor_<7, 1>::s_layout(); break;
+				case 8: vertexLayout = Vertex_PosUvColor_<8, 1>::s_layout(); break;
+				default: throw Error_Undefined(Fmt("import assimp: unsupported UV channel count {}", srcMesh->GetNumUVChannels()));
+			}
+		}
+
 		RenderPrimitiveType primType = toPrimType(srcMesh->mPrimitiveTypes);
 		meshData.create(primType, vertexLayout, VertexIndexType::u16);
 
@@ -137,11 +165,19 @@ public:
 		RenderMeshEdit editMesh(meshData);
 
 		auto editVertices = meshData.editNewVertices(primType, vertexLayout, VertexIndexType::u16, numVertices);
-
 		if (auto enumerator = editVertices.tryEditPosition()) {
 			auto dst = enumerator->begin();
-			for (auto& srcPos : Span(srcMesh->mVertices, numVertices)) {
-				*dst = toLengthVec3(toVec3f(srcPos));
+			for (auto& srcValue : Span(srcMesh->mVertices, numVertices)) {
+				*dst = toLengthVec3(toVec3f(srcValue));
+				++dst;
+			}
+			if (dst != enumerator->end()) throw Error_Undefined();
+		}
+		
+		if (auto enumerator = editVertices.tryEditNormal0()) {
+			auto dst = enumerator->begin();
+			for (auto& srcValue : Span(srcMesh->mNormals, numVertices)) {
+				*dst = toLengthVec3(toVec3f(srcValue));
 				++dst;
 			}
 			if (dst != enumerator->end()) throw Error_Undefined();

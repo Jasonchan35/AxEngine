@@ -4,7 +4,6 @@ export import :RenderDataType;
 export import :VertexLayout;
 
 export namespace ax /*::AxRender*/ {
-
 struct VertexBase {
 	using PosType    = void;
 	using ColorType  = void;
@@ -101,8 +100,7 @@ struct VertexT_Uv : public BASE
 };
 
 template<class NORMAL_TYPE, u8 NORMAL_COUNT, class BASE>
-struct VertexT_Normal : public BASE
-{
+struct VertexT_Normal : public BASE {
 	using NormalType = NORMAL_TYPE;
 	FixedArray<NORMAL_TYPE, NORMAL_COUNT>	normal;
 
@@ -160,6 +158,14 @@ struct VertexT_Binormal : public BASE
 	}
 };
 
+//----- COUNT = 0 -----
+template<class COLOR_TYPE   , class BASE> struct VertexT_Color<   COLOR_TYPE   , 0, BASE> : public BASE {};
+template<class UV_TYPE      , class BASE> struct VertexT_Uv<      UV_TYPE      , 0, BASE> : public BASE {};
+template<class NORMAL_TYPE  , class BASE> struct VertexT_Normal<  NORMAL_TYPE  , 0, BASE> : public BASE {};
+template<class TANGENT_TYPE , class BASE> struct VertexT_Tangent< TANGENT_TYPE , 0, BASE> : public BASE {};
+template<class BINORMAL_TYPE, class BASE> struct VertexT_Binormal<BINORMAL_TYPE, 0, BASE> : public BASE {};
+//----------
+
 using Vertex_Pos2f				= VertexT_Pos<Vec2f>;
 
 using Vertex_Pos				= VertexT_Pos<Vec3f>;
@@ -185,15 +191,15 @@ template<u8 UV>
 using Vertex_PosNormalUv_		= VertexT_Normal<Vec3f, 1, Vertex_PosUv_<UV>>;
 using Vertex_PosNormalUv		= Vertex_PosNormalUv_<1>;
 
-template<u8 UV, u8 COLOR>	
+template<u8 UV, u8 COLOR>
 using Vertex_PosNormalUvColor_	= VertexT_Normal<Vec3f, 1, Vertex_PosUvColor_<UV, COLOR>>;
 using Vertex_PosNormalUvColor	= Vertex_PosNormalUvColor_<1, 1>;
 
-template<u8 UV>				
+template<u8 UV>	
 using Vertex_PosTangentUv_		= VertexT_Tangent<Vec3f, 1, Vertex_PosNormalUv_<UV>>;
 using Vertex_PosTangentUv		= Vertex_PosTangentUv_<1>;
 
-template<u8 UV, u8 COLOR>	
+template<u8 UV, u8 COLOR>
 using Vertex_PosTangentUvColor_	= VertexT_Tangent<Vec3f, 1, Vertex_PosNormalUvColor_<UV, COLOR>>;
 using Vertex_PosTangentUvColor	= Vertex_PosTangentUvColor_<1, 1>;
 
