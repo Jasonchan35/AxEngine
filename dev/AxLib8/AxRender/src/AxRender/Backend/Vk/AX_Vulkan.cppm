@@ -173,13 +173,13 @@ public:
 
 	template<class OBJ>
 	void setObjectDebugName(OBJ& objectHandle, StrView name) {
-		auto t = AX_VkUtil::s_objectType<OBJ>();
+		auto t = AX_VkUtil::s_objectType(objectHandle);
 		_setObjectDebugName(t, objectHandle, name);
 	}
 
 	template<class OBJ>
 	void setObjectDebugTag(OBJ& objectHandle, u64 tagName, ByteSpan tag) {
-		auto t = AX_VkUtil::s_objectType<OBJ>();
+		auto t = AX_VkUtil::s_objectType(objectHandle);
 		_setObjectDebugTag(t, objectHandle, tagName, tag);
 	}
 

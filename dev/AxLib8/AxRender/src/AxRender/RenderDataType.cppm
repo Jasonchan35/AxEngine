@@ -53,9 +53,9 @@ struct RenderMemoryInfo {
 // HLSL: "register space", DX Reflection: Space, Vulkan: "set"
 #define AX_ShaderParamBindSpace_ENUM_LIST(E) \
 	E(Default   , = 0) \
-	E(RootConst , = 1) \
-	E(World     , = 2) \
-	E(Bindless  , = 3) \
+	E(World     , = 1) \
+	E(Bindless  , = 2) \
+	E(RootConst , = 3) \
 	E(_COUNT    ,    ) \
 	E(Invalid   , = u16_max) \
 //-----

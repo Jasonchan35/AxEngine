@@ -91,7 +91,13 @@ AX_GCC_WARNING_POP()
 
 	}
 
-	template<class OBJ> constexpr static VkObjectType s_objectType();
+	template<class OBJ>
+	constexpr static VkObjectType s_objectType();
+
+	template<class OBJ>
+	constexpr static VkObjectType s_objectType(const OBJ& obj) {
+		return s_objectType<OBJ>();
+	}
 
 	static class AX_VkAllocatorCallbacks* allocCallbacks();
 	static bool checkResult(VkResult res) { return res == VK_SUCCESS; }
@@ -102,21 +108,23 @@ AX_GCC_WARNING_POP()
 };
 
 // In alphabet order
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkBuffer			>() { return VK_OBJECT_TYPE_BUFFER;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkCommandBuffer	>() { return VK_OBJECT_TYPE_COMMAND_BUFFER;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkCommandPool		>() { return VK_OBJECT_TYPE_COMMAND_POOL;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkDescriptorSet	>() { return VK_OBJECT_TYPE_DESCRIPTOR_SET;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkDevice			>() { return VK_OBJECT_TYPE_DEVICE;			}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkDeviceMemory	>() { return VK_OBJECT_TYPE_DEVICE_MEMORY;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkFence			>() { return VK_OBJECT_TYPE_FENCE;			}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkFramebuffer		>() { return VK_OBJECT_TYPE_FRAMEBUFFER;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkImage			>() { return VK_OBJECT_TYPE_IMAGE;			}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkImageView		>() { return VK_OBJECT_TYPE_IMAGE_VIEW;		}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkRenderPass		>() { return VK_OBJECT_TYPE_RENDER_PASS;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkSampler			>() { return VK_OBJECT_TYPE_SAMPLER;		}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkSemaphore		>() { return VK_OBJECT_TYPE_SEMAPHORE;		}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkShaderModule	>() { return VK_OBJECT_TYPE_SHADER_MODULE;	}
-template<> constexpr VkObjectType AX_VkUtil::s_objectType<VkQueue			>() { return VK_OBJECT_TYPE_QUEUE;			}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkBuffer		>() { return VK_OBJECT_TYPE_BUFFER;			}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkCommandBuffer	>() { return VK_OBJECT_TYPE_COMMAND_BUFFER;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkCommandPool	>() { return VK_OBJECT_TYPE_COMMAND_POOL;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkDescriptorSet	>() { return VK_OBJECT_TYPE_DESCRIPTOR_SET;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkDevice		>() { return VK_OBJECT_TYPE_DEVICE;			}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkDeviceMemory	>() { return VK_OBJECT_TYPE_DEVICE_MEMORY;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkFence			>() { return VK_OBJECT_TYPE_FENCE;			}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkFramebuffer	>() { return VK_OBJECT_TYPE_FRAMEBUFFER;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkImage			>() { return VK_OBJECT_TYPE_IMAGE;			}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkImageView		>() { return VK_OBJECT_TYPE_IMAGE_VIEW;		}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkPipeline		>() { return VK_OBJECT_TYPE_PIPELINE;		}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkPipelineCache	>() { return VK_OBJECT_TYPE_PIPELINE_CACHE;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkRenderPass	>() { return VK_OBJECT_TYPE_RENDER_PASS;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkSampler		>() { return VK_OBJECT_TYPE_SAMPLER;		}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkSemaphore		>() { return VK_OBJECT_TYPE_SEMAPHORE;		}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkShaderModule	>() { return VK_OBJECT_TYPE_SHADER_MODULE;	}
+template<> AX_INLINE constexpr VkObjectType AX_VkUtil::s_objectType<VkQueue			>() { return VK_OBJECT_TYPE_QUEUE;			}
 
 
 class AX_VkAllocatorCallbacks : public VkAllocationCallbacks {

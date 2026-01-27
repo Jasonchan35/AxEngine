@@ -220,8 +220,9 @@ public:
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
 				auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
 				meshRenderer->mesh = *meshObj;
-				meshRenderer->material = stockObjs->materials->meshlet;
-//				meshRenderer->material = stockObjs->materials->Simple3D_Blinn_Color;
+				meshRenderer->material	= srcMeshIndex % 2 
+										? stockObjs->materials->meshlet 
+										: stockObjs->materials->Simple3D_Blinn_Color;
 			}
 		} 
 

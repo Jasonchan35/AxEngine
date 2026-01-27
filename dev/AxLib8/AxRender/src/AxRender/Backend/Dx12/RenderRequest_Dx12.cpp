@@ -146,7 +146,8 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 	auto& cmdList = _graphCmdList_dx12;
 	
 	if (matPass->isMeshShader()) {
-		cmdList->DispatchMesh(16, 1, 1); // TODO
+		auto& group = drawcall.dispatchGroupCount;
+		cmdList->DispatchMesh(group.x, group.y, group.z);
 		return;
 	}
 	

@@ -143,6 +143,18 @@ void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 }
 
 void RenderRequest_Vk::onDrawCall(AxDrawCallDesc& drawcall) {
+	auto* mat = rttiCastCheck<Material_Vk>(drawcall.material);
+	if (!mat) return;
+	auto* matPass = mat->getPass(drawcall.materialPassIndex);
+	if (!matPass) return;
+
+	if (matPass->isMeshShader()) {
+		auto& group = drawcall.dispatchGroupCount;
+		auto* ext = AX_VkExtProcList::s_instance();
+		ext->vkCmdDrawMeshTasksEXT(_graphCmdList_vk, group.x, group.y, group.z); 
+		return;
+	}
+	
 	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(drawcall.vertexBuffer)) {
 		constexpr u32 firstBinding = ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		constexpr u32 bindingCount = 1 ;

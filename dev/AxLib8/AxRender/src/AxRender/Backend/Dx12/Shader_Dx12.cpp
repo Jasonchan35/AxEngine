@@ -163,7 +163,7 @@ void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList)
 }
 
 template<class PSO_DESC>
-void ShaderPass_Dx12::_setPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc) {
+void ShaderPass_Dx12::_commonPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc) {
 	auto& renderState =  _info->renderState;
 	{ // rasterizer
 		constexpr bool debugWireframe = false;
@@ -240,11 +240,8 @@ void ShaderPass_Dx12::_setPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc) {
 	}
 }
 
-auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
-	if (_vertexStage.bytecode.size() <= 0) { AX_ASSERT(false);  return nullptr; }
-	if ( _pixelStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
-	
-	Pipeline::PsoKey psoKey;
+auto ShaderPass_Dx12::getOrAddGraphicsPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
+	PsoKey psoKey;
 	psoKey.vertexLayout  = cmd.vertexLayout;
 	psoKey.primitiveType = cmd.primitiveType;
 	
@@ -254,8 +251,28 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& 
 		}
 	}
 	
-	VertexInputLayoutDesc_Dx12 vertexInputLayoutDesc;
+	Pipeline* outPipeline = nullptr;
+	if (isMeshShader()) {
+		outPipeline = _createMeshShaderPipeline(req, cmd, psoKey);
+	} else {
+		outPipeline = _createVertexShaderPipeline(req, cmd, psoKey);
+	}
+	outPipeline->key = psoKey;
 
+	auto shaderName = name().toString();
+	outPipeline->pipelineState->SetPrivateData(WKPDID_D3DDebugObjectName, 
+									ax_safe_cast_from(shaderName.size()), shaderName.c_str());
+	
+	return outPipeline;
+}
+
+auto ShaderPass_Dx12::_createVertexShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& psoKey) 
+-> Pipeline*
+{
+	if (_vertexStage.bytecode.size() <= 0) { AX_ASSERT(false);  return nullptr; }
+	if ( _pixelStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
+	
+	VertexInputLayoutDesc_Dx12 vertexInputLayoutDesc;
 	if (!vertexInputLayoutDesc.init(*_stageInfo, psoKey.vertexLayout)) {
 		AX_ASSERT(false);
 		return nullptr;
@@ -265,29 +282,25 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& 
 	psoDesc.InputLayout.NumElements = Dx12Util::castUINT(vertexInputLayoutDesc.desc_dx12.size());
 	psoDesc.InputLayout.pInputElementDescs = vertexInputLayoutDesc.desc_dx12.data();
 	psoDesc.PrimitiveTopologyType = Dx12Util::getDxPrimitiveTopologyType(psoKey.primitiveType);
-//-----
+	//-----
 	psoDesc.pRootSignature = _rootSignature;
 	psoDesc.VS = Dx12Util::getDxBytecode(_vertexStage.bytecode);
 	psoDesc.PS = Dx12Util::getDxBytecode(_pixelStage.bytecode);
 	psoDesc.GS = Dx12Util::getDxBytecode(_geometryStage.bytecode);
-//-----
-	_setPsoDesc(req, psoDesc);
-
-	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
-	outPipeline->key = psoKey;
-
+	//-----
+	_commonPsoDesc(req, psoDesc);
+	
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
+	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
 	auto hr = dev->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(outPipeline->pipelineState.ptrForInit()));
 	Dx12Util::throwIfError(hr);
-	
-	auto shaderName = name().toString();
-	outPipeline->pipelineState->SetPrivateData(WKPDID_D3DDebugObjectName, 
-									ax_safe_cast_from(shaderName.size()), shaderName.c_str());
 	
 	return outPipeline;
 }
 
-auto ShaderPass_Dx12::getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
+auto ShaderPass_Dx12::_createMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& psoKey) 
+-> Pipeline*
+{
 	if ( _meshStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
 	if (_pixelStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
 	
@@ -296,10 +309,7 @@ auto ShaderPass_Dx12::getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDraw
 	psoDesc.MS             = Dx12Util::getDxBytecode(_meshStage.bytecode);
 	psoDesc.PS             = Dx12Util::getDxBytecode(_pixelStage.bytecode);
 	
-	_setPsoDesc(req, psoDesc);
-
-	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
-	// outPipeline->key = psoKey;
+	_commonPsoDesc(req, psoDesc);
 
 	auto psoStream = CD3DX12_PIPELINE_MESH_STATE_STREAM(psoDesc);
 	
@@ -309,38 +319,22 @@ auto ShaderPass_Dx12::getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDraw
 
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 
+	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
 	auto hr = dev->CreatePipelineState(&streamDesc, IID_PPV_ARGS(outPipeline->pipelineState.ptrForInit()));
 	Dx12Util::throwIfError(hr);
-	
-	auto shaderName = name().toString();
-	outPipeline->pipelineState->SetPrivateData(WKPDID_D3DDebugObjectName, 
-									ax_safe_cast_from(shaderName.size()), shaderName.c_str());
 	
 	return outPipeline;
 }
 
 bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const {
 	if (!req) { AX_ASSERT(false); return false; }
+	
+	auto* pipeline = ax_const_cast(this)->getOrAddGraphicsPipeline(req, cmd);
+	if (!pipeline) { AX_ASSERT(false); return false; }
 
-	if (isMeshShader()) {
-		auto* pipeline = ax_const_cast(this)->getOrAddMeshShaderPipeline(req, cmd);
-		if (!pipeline) { AX_ASSERT(false); return false; }
-
-		auto& cmdList = req->graphCmdList_dx12();
-		cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
-		cmdList->SetPipelineState(pipeline->pipelineState);
-		
-	} else {
-		auto* renderPass = req->currentRenderPass_dx12();
-		if (!renderPass) { AX_ASSERT(false); return false; }
-
-		auto* pipeline = ax_const_cast(this)->getOrAddPipeline(req, cmd);
-		if (!pipeline) { AX_ASSERT(false); return false; }
-
-		auto& cmdList = req->graphCmdList_dx12();
-		cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
-		cmdList->SetPipelineState(pipeline->pipelineState);
-	}
+	auto& cmdList = req->graphCmdList_dx12();
+	cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
+	cmdList->SetPipelineState(pipeline->pipelineState);
 
 	return true;
 }

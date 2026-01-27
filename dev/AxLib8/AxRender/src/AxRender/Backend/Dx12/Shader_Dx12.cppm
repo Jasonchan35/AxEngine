@@ -50,12 +50,15 @@ public:
 	using Pipeline = ShaderPipeline_Dx12;
 	using BindSpace = ShaderParamBindSpace;
 	
+	using PsoKey = Pipeline::PsoKey;
+	
 	ShaderPass_Dx12(const CreateDesc& desc);
 
-	template<class PSO_DESC> void _setPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc);
+	template<class PSO_DESC> void _commonPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc);
 	
-	Pipeline* getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
-	Pipeline* getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
+	Pipeline* getOrAddGraphicsPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
+	Pipeline* _createVertexShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& posKey);
+	Pipeline* _createMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& posKey);
 	
 	bool _bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const;
 	void _createRootSignature(Dx12RootParameterList& rootParamList);

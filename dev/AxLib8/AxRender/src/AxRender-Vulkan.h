@@ -19,6 +19,7 @@
 	E(vkQueueInsertDebugUtilsLabelEXT) \
 	E(vkCmdBeginDebugUtilsLabelEXT) \
 	E(vkCmdEndDebugUtilsLabelEXT) \
+	E(vkCmdDrawMeshTasksEXT) \
 //	E(vkCmdSetCheckpointNV)	\
 //	E(vkGetQueueCheckpointDataNV) \
 //	E(vkCreateSwapchainKHR) \

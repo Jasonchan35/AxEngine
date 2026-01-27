@@ -4,7 +4,7 @@ export module AxRender:Shader_Vk;
 
 #if AX_RENDERER_VK
 export import :AX_Vulkan;
-export import :RenderRequest_Backend;
+export import :RenderRequest_Vk;
 export import :Shader_Backend;
 
 export namespace ax /*::AxRender*/ {
@@ -47,12 +47,14 @@ class ShaderPass_Vk : public ShaderPass_Backend {
 	AX_RTTI_INFO(ShaderPass_Vk, ShaderPass_Backend)
 public:
 	using Pipeline = ShaderPipeline_Vk;
+	using PsoKey   = Pipeline::PsoKey;
 
 	ShaderPass_Vk(const CreateDesc& desc);
 
-	Pipeline* getOrAddPipeline(const Pipeline::PsoKey& key);
-
-	bool _bindPipeline(class RenderRequest_Vk* req, AxDrawCallDesc& cmd) const;
+	Pipeline*		getOrAddGraphicsPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd);
+	UPtr<Pipeline>	_createGraphicsPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd, PsoKey& psoKey);
+	
+	bool _bindPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd) const;
 
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
 
