@@ -1,3 +1,5 @@
+module;
+
 module AxRender;
 import :Shader_Dx12;
 import :RenderSystem_Dx12;
@@ -160,7 +162,88 @@ void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList)
 	Dx12Util::throwIfError(hr);
 }
 
+template<class PSO_DESC>
+void ShaderPass_Dx12::_setPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc) {
+	auto& renderState =  _info->renderState;
+	{ // rasterizer
+		constexpr bool debugWireframe = false;
+		psoDesc.RasterizerState.FillMode = debugWireframe ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;
+
+		psoDesc.RasterizerState.FrontCounterClockwise = true;
+		psoDesc.RasterizerState.CullMode              = Dx12Util::getDxCullMode(renderState.cull);
+		psoDesc.DepthStencilState.DepthEnable         = renderState.depthTest.isEnable();
+		psoDesc.DepthStencilState.DepthWriteMask      = renderState.depthTest.writeMask
+															? D3D12_DEPTH_WRITE_MASK_ALL
+															: D3D12_DEPTH_WRITE_MASK_ZERO;
+		psoDesc.DepthStencilState.DepthFunc           = Dx12Util::getDxDepthTestOp(renderState.depthTest.op);
+		psoDesc.DepthStencilState.StencilEnable       = false;
+		psoDesc.RasterizerState.DepthBias             = D3D12_DEFAULT_DEPTH_BIAS;
+		psoDesc.RasterizerState.DepthBiasClamp        = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+		psoDesc.RasterizerState.SlopeScaledDepthBias  = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+		psoDesc.RasterizerState.DepthClipEnable       = TRUE;
+		
+		psoDesc.RasterizerState.MultisampleEnable     = FALSE;
+		psoDesc.RasterizerState.AntialiasedLineEnable = FALSE;
+		psoDesc.RasterizerState.ForcedSampleCount     = 0;
+		psoDesc.RasterizerState.ConservativeRaster    = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+	}	
+
+	// blend
+	if constexpr (true) {
+		psoDesc.BlendState.AlphaToCoverageEnable = FALSE;
+		psoDesc.BlendState.IndependentBlendEnable = FALSE;
+
+		D3D12_RENDER_TARGET_BLEND_DESC rt;
+		rt.LogicOpEnable = false;
+
+		rt.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		if (renderState.blend.isEnable()) {
+			rt.BlendEnable	= true;
+			rt.BlendOp			= Dx12Util::getDxBlendOp(renderState.blend.rgb.op);
+			rt.BlendOpAlpha		= Dx12Util::getDxBlendOp(renderState.blend.alpha.op);
+			rt.SrcBlend			= Dx12Util::getDxBlendFactor(renderState.blend.rgb.srcFactor);
+			rt.DestBlend		= Dx12Util::getDxBlendFactor(renderState.blend.rgb.dstFactor);
+			rt.SrcBlendAlpha	= Dx12Util::getDxBlendFactor(renderState.blend.alpha.srcFactor);
+			rt.DestBlendAlpha	= Dx12Util::getDxBlendFactor(renderState.blend.alpha.dstFactor);
+		}else{
+			rt.BlendEnable	= false;
+		}
+
+		psoDesc.BlendState.RenderTarget[0] = rt;
+
+		rt.BlendEnable = false;
+		for (UINT i = 1; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+			psoDesc.BlendState.RenderTarget[ i ] = rt;
+	}	
+	
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.SampleDesc.Count = 1;
+	
+	// render target
+	if constexpr (true) {
+		auto* pass = req->currentRenderPass();
+		auto rtv = Span(psoDesc.RTVFormats);
+		Int colorAttachmentCount = pass->colorAttachments().size();
+		if (colorAttachmentCount > rtv.size()) {
+			throw Error_Undefined("render pass has too many color attachments");
+		}
+
+		for (Int i = 0; i < colorAttachmentCount; ++i) {
+			auto* ca = pass->colorAttachment(i);
+			psoDesc.RTVFormats[i] = Dx12Util::getDxColorType(ca->desc.colorType);
+		}
+
+		if (pass->depthAttachment()) {
+			psoDesc.DSVFormat = Dx12Util::getDxDepthType(pass->depthAttachment().desc.depthType);
+		}
+	}
+}
+
 auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
+	if (_vertexStage.bytecode.size() <= 0) { AX_ASSERT(false);  return nullptr; }
+	if ( _pixelStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
+	
 	Pipeline::PsoKey psoKey;
 	psoKey.vertexLayout  = cmd.vertexLayout;
 	psoKey.primitiveType = cmd.primitiveType;
@@ -172,99 +255,24 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& 
 	}
 	
 	VertexInputLayoutDesc_Dx12 vertexInputLayoutDesc;
-	if (_vsStage.bytecode.size() <= 0) {
-		AX_ASSERT(false); 
-		return nullptr;
-	}
 
 	if (!vertexInputLayoutDesc.init(*_stageInfo, psoKey.vertexLayout)) {
 		AX_ASSERT(false);
 		return nullptr;
 	}	
-
-	auto& rs =  _info->renderState;
 	
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout.NumElements = Dx12Util::castUINT(vertexInputLayoutDesc.desc_dx12.size());
 	psoDesc.InputLayout.pInputElementDescs = vertexInputLayoutDesc.desc_dx12.data();
+	psoDesc.PrimitiveTopologyType = Dx12Util::getDxPrimitiveTopologyType(psoKey.primitiveType);
 //-----
 	psoDesc.pRootSignature = _rootSignature;
-
-	psoDesc.VS = Dx12Util::getDxBytecode(_vsStage.bytecode);
-	psoDesc.PS = Dx12Util::getDxBytecode(_psStage.bytecode);
-	psoDesc.GS = Dx12Util::getDxBytecode(_gsStage.bytecode);
-//	psoDesc.MS = Dx12Util::getDxBytecode(_msStage.bytecode);
-	
+	psoDesc.VS = Dx12Util::getDxBytecode(_vertexStage.bytecode);
+	psoDesc.PS = Dx12Util::getDxBytecode(_pixelStage.bytecode);
+	psoDesc.GS = Dx12Util::getDxBytecode(_geometryStage.bytecode);
 //-----
-	psoDesc.RasterizerState.FillMode = psoKey.debugWireframe ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;
+	_setPsoDesc(req, psoDesc);
 
-	psoDesc.RasterizerState.FrontCounterClockwise = true;
-	psoDesc.RasterizerState.CullMode              = Dx12Util::getDxCullMode(rs.cull);
-	psoDesc.DepthStencilState.DepthEnable         = rs.depthTest.isEnable();
-	psoDesc.DepthStencilState.DepthWriteMask      = rs.depthTest.writeMask
-		                                                ? D3D12_DEPTH_WRITE_MASK_ALL
-		                                                : D3D12_DEPTH_WRITE_MASK_ZERO;
-	psoDesc.DepthStencilState.DepthFunc           = Dx12Util::getDxDepthTestOp(rs.depthTest.op);
-	psoDesc.DepthStencilState.StencilEnable       = false;
-	psoDesc.RasterizerState.DepthBias             = D3D12_DEFAULT_DEPTH_BIAS;
-	psoDesc.RasterizerState.DepthBiasClamp        = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
-	psoDesc.RasterizerState.SlopeScaledDepthBias  = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-	psoDesc.RasterizerState.DepthClipEnable       = TRUE;
-	
-	psoDesc.RasterizerState.MultisampleEnable     = FALSE;
-	psoDesc.RasterizerState.AntialiasedLineEnable = FALSE;
-	psoDesc.RasterizerState.ForcedSampleCount     = 0;
-	psoDesc.RasterizerState.ConservativeRaster    = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-//-----
-	{	// blend
-		psoDesc.BlendState.AlphaToCoverageEnable = FALSE;
-		psoDesc.BlendState.IndependentBlendEnable = FALSE;
-
-		D3D12_RENDER_TARGET_BLEND_DESC rt;
-		rt.LogicOpEnable = false;
-
-		rt.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-		if (rs.blend.isEnable()) {
-			rt.BlendEnable	= true;
-			rt.BlendOp			= Dx12Util::getDxBlendOp(rs.blend.rgb.op);
-			rt.BlendOpAlpha		= Dx12Util::getDxBlendOp(rs.blend.alpha.op);
-			rt.SrcBlend			= Dx12Util::getDxBlendFactor(rs.blend.rgb.srcFactor);
-			rt.DestBlend		= Dx12Util::getDxBlendFactor(rs.blend.rgb.dstFactor);
-			rt.SrcBlendAlpha	= Dx12Util::getDxBlendFactor(rs.blend.alpha.srcFactor);
-			rt.DestBlendAlpha	= Dx12Util::getDxBlendFactor(rs.blend.alpha.dstFactor);
-		}else{
-			rt.BlendEnable	= false;
-		}
-
-		psoDesc.BlendState.RenderTarget[0] = rt;
-
-		rt.BlendEnable = false;
-		for (UINT i = 1; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
-			psoDesc.BlendState.RenderTarget[ i ] = rt;
-	}
-
-//-----
-	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = Dx12Util::getDxPrimitiveTopologyType(psoKey.primitiveType);
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.SampleDesc.Count = 1;
-
-	auto* pass = req->currentRenderPass();
-	auto rtv = Span(psoDesc.RTVFormats);
-	Int colorAttachmentCount = pass->colorAttachments().size();
-	if (colorAttachmentCount > rtv.size()) {
-		throw Error_Undefined("render pass has too many color attachments");
-	}
-
-	for (Int i = 0; i < colorAttachmentCount; ++i) {
-		auto* ca = pass->colorAttachment(i);
-		psoDesc.RTVFormats[i] = Dx12Util::getDxColorType(ca->desc.colorType);
-	}
-
-	if (pass->depthAttachment()) {
-		psoDesc.DSVFormat = Dx12Util::getDxDepthType(pass->depthAttachment().desc.depthType);
-	}
-	
 	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
 	outPipeline->key = psoKey;
 
@@ -280,7 +288,35 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& 
 }
 
 auto ShaderPass_Dx12::getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
-	return nullptr;
+	if ( _meshStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
+	if (_pixelStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
+	
+	D3DX12_MESH_SHADER_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.pRootSignature = _rootSignature.ptr();
+	psoDesc.MS             = Dx12Util::getDxBytecode(_meshStage.bytecode);
+	psoDesc.PS             = Dx12Util::getDxBytecode(_pixelStage.bytecode);
+	
+	_setPsoDesc(req, psoDesc);
+
+	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
+	// outPipeline->key = psoKey;
+
+	auto psoStream = CD3DX12_PIPELINE_MESH_STATE_STREAM(psoDesc);
+	
+	D3D12_PIPELINE_STATE_STREAM_DESC streamDesc;
+	streamDesc.pPipelineStateSubobjectStream = &psoStream;
+	streamDesc.SizeInBytes                   = sizeof(psoStream);
+
+	auto* dev = RenderSystem_Dx12::s_d3dDevice();
+
+	auto hr = dev->CreatePipelineState(&streamDesc, IID_PPV_ARGS(outPipeline->pipelineState.ptrForInit()));
+	Dx12Util::throwIfError(hr);
+	
+	auto shaderName = name().toString();
+	outPipeline->pipelineState->SetPrivateData(WKPDID_D3DDebugObjectName, 
+									ax_safe_cast_from(shaderName.size()), shaderName.c_str());
+	
+	return outPipeline;
 }
 
 bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const {

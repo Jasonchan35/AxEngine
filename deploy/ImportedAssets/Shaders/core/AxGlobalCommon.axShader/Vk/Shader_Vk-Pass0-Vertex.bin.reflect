@@ -704,7 +704,7 @@
             "result": {
                 "type": {
                     "kind": "struct",
-                    "name": "PS_Input",
+                    "name": "VS_Output",
                     "fields": [
                         {
                             "name": "sv_pos",

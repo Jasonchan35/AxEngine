@@ -42,15 +42,15 @@ struct VS_Input {
 	SEM_uv1(float2);
 };
 
-struct PS_Input {
+struct VS_Output {
 	SEM_sv_pos(float4);
 	SEM_color0(float4);
 	SEM_uv0(float2);
 	SEM_uv1(float2);
 };
 
-PS_Input vs_main(VS_Input i) {
-	PS_Input o;
+VS_Output vs_main(VS_Input i) {
+	VS_Output o;
 	o.sv_pos = mul(AX_MATRIX_MVP, i.pos);
 	o.color0 = i.color0;
 	o.uv0    = i.uv0;
@@ -58,7 +58,7 @@ PS_Input vs_main(VS_Input i) {
 	return o;
 }
 
-float4 ps_main(PS_Input i) : SV_Target {
+float4 ps_main(VS_Output i) : SV_Target {
 	float4 o = i.color0 * tex2D(tex0, i.uv0) * tex2D(tex1, i.uv1);
 	return o;
 }

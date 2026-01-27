@@ -52,6 +52,8 @@ public:
 	
 	ShaderPass_Dx12(const CreateDesc& desc);
 
+	template<class PSO_DESC> void _setPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc);
+	
 	Pipeline* getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
 	Pipeline* getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
 	
@@ -68,22 +70,22 @@ public:
 	
 	template<class FUNC>
 	void _visitStages(FUNC func) {
-		func(_vsStage, ShaderStageFlags::Vertex);
-		func(_psStage, ShaderStageFlags::Pixel);
-		func(_gsStage, ShaderStageFlags::Geometry);
-		func(_csStage, ShaderStageFlags::Compute);
-		func(_msStage, ShaderStageFlags::Mesh);
+		func(_vertexStage  , ShaderStageFlags::Vertex);
+		func(_pixelStage   , ShaderStageFlags::Pixel);
+		func(_geometryStage, ShaderStageFlags::Geometry);
+		func(_computeStage , ShaderStageFlags::Compute);
+		func(_meshStage    , ShaderStageFlags::Mesh);
 	}
 
 	struct Stage {
 		FileMemMap bytecode;
 	};
 
-	Stage _vsStage;
-	Stage _psStage;
-	Stage _gsStage;
-	Stage _csStage;
-	Stage _msStage;
+	Stage _vertexStage;
+	Stage _pixelStage;
+	Stage _geometryStage;
+	Stage _computeStage;
+	Stage _meshStage;
 
 	struct RootParamBinding {
 		RootParamBinding(Dx12RootParamType rootParamType_, BindSpace bindSpace_)

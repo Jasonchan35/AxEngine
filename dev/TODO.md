@@ -1,3 +1,5 @@
+- Mega vertex buffer
+
 - GPU Indirect Draw
 	- compute shader object culling
 		- write indirect draw list

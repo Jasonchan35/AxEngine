@@ -29,7 +29,7 @@ struct VS_Input {
 	SEM_uv0(float2);
 };
 
-struct PS_Input {
+struct VS_Output {
 	SEM_sv_pos(float4);
 	SEM_color0(float4);
 	SEM_uv0(float2);
@@ -39,15 +39,15 @@ uniform float4x4 imguiProjectionMatrix;
 
 Sampler_Texture2D(fontTexture);
 
-PS_Input vs_main(VS_Input i) {
-	PS_Input o;
+VS_Output vs_main(VS_Input i) {
+	VS_Output o;
 	o.sv_pos = mul(imguiProjectionMatrix, float4(i.pos.xy, 0.f, 1.f));
 	o.color0 = i.color0;
 	o.uv0  = i.uv0;
 	return o;
 }
 
-float4 ps_main(PS_Input i) : SV_TARGET {
+float4 ps_main(VS_Output i) : SV_TARGET {
 	float4 o = i.color0 * tex2D(fontTexture, i.uv0).r;
 	return o;
 }

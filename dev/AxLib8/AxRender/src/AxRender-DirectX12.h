@@ -3,7 +3,9 @@
 #if AX_RENDERER_DX12
 
 #if AX_OS_WINDOWS
-	#include <d3d12.h>
+//	#include <d3d12.h>
+	#include "AxRender/Backend/Dx12/DirectX-Headers/directx/d3dx12.h"
+
 	#include <dxgi1_6.h>
 
 	#if _DEBUG

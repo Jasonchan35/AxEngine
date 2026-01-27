@@ -24,6 +24,7 @@ EditorMainWindow::EditorMainWindow() {
 	_renderGraph.newObject(AX_NEW);
 	_renderGraph->win = this;
 	setRenderGraph(_renderGraph);
+	setSize({1920, 1080});
 }
 
 void EditorMainWindow::onWindowCloseButton() {

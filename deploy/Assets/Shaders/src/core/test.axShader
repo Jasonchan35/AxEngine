@@ -31,17 +31,17 @@ struct VS_Input {
 	SEM_sv_vertexId(uint);
 };
 
-struct PS_Input {
+struct VS_Output {
 	SEM_sv_pos(float4);
 };
 
-PS_Input vs_main(VS_Input i) {
-	PS_Input o;
+VS_Output vs_main(VS_Input i) {
+	VS_Output o;
 	o.sv_pos = float4(pos[i.sv_vertexId], 0, 1);
 	return o;
 }
 
-float4 ps_main(PS_Input i) : SV_Target {
+float4 ps_main(VS_Output i) : SV_Target {
 	float4 o = float4(0, 0.5f, 1, 1);
 	return o;
 }
