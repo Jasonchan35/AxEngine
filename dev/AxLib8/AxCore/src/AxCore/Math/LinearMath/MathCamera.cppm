@@ -59,9 +59,9 @@ using Camera3d = Camera3_<f64>;
 
 template<class T> inline
 void Camera3_<T>::pan(Vec2 delta) {
-	auto d = rotation * Vec3(0, 0, -distance);
+	auto d = rotation * Vec3(0, 0, distance);
 	rotation *= Quat4::s_eulerRad({delta, 0});
-	aim = rotation * Vec3(0, 0, distance);
+	aim = d - rotation * Vec3(0, 0, distance);
 }
 
 template<class T> inline

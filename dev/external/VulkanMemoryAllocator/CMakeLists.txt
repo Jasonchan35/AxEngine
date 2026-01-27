@@ -15,3 +15,7 @@ if(WIN32)
 	target_link_directories(   ${PROJECT_NAME} PUBLIC "${vulkan_sdk_path}/Lib")
 	target_link_libraries(${PROJECT_NAME} PUBLIC vulkan-1)
 endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		target_compile_options(${PROJECT_NAME} PRIVATE -Wno-nullability-completeness)
+endif()

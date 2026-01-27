@@ -98,7 +98,7 @@ public:
 	AX_INLINE constexpr BigIntType toBigInt() const { return static_cast<BigIntType>(v_int); }
 	AX_INLINE constexpr FloatType  toFloat() const  { return toFloat_<FloatType>(); }
 
-	AX_INLINE constexpr f16  to_f16() const { return f16::s_make(to_f32()); }
+	AX_INLINE constexpr f16  to_f16() const { return f16(to_f32()); }
 	AX_INLINE constexpr f32  to_f32() const { return static_cast<f32>(v_int) / static_cast<f32>(kIntMax); }
 	AX_INLINE constexpr f64  to_f64() const { return static_cast<f64>(v_int) / static_cast<f64>(kIntMax); }
 

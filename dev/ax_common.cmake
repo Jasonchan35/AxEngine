@@ -192,7 +192,7 @@ function(ax_set_warning_level target_name)
 														-Wno-missing-prototypes
 														-Wno-newline-eof
 														-Wno-nested-anon-types
-														-Wno-missing-noreturn
+														#-Wno-missing-noreturn
 														-Wno-pre-c++17-compat
 														-Wno-reserved-identifier
 														-Wno-switch-enum
@@ -207,6 +207,7 @@ function(ax_set_warning_level target_name)
 														-Wno-unused-const-variable
 														-Wno-uninitialized
 														-Wno-microsoft-enum-value # INVALID_VALUE  = 0xFFFFFFFF
+														-Wno-nullability-completeness
 														#
 														-mavx #enable AVX
 														-mfma #enable '_mm_fmadd_ps' requires target feature 'fma'
