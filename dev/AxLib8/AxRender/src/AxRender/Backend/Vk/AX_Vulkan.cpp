@@ -45,23 +45,38 @@ bool AX_VkInstanceCreateInfo::Props::hasExtension(StrView name) const {
 	return false;
 }
 
-bool AX_VkInstanceCreateInfo::enableLayer(StrLit name) {
-	if (!props.hasLayer(name))
+void AX_VkInstanceCreateInfo::enableLayer(StrLit name) {
+	if (!tryEnableLayer(name)) {
+		throw Error_Undefined(Fmt("Cannot enable VkInstance layer {}", name));
+	}
+}
+
+bool AX_VkInstanceCreateInfo::tryEnableLayer(StrLit name) {
+	if (!props.hasLayer(name)) {
+		AX_LOG("Cannot enable VkInstance layer {}", name);
 		return false;
+	}
 	_enabledLayerNames.append(name.c_str());
 	return true;
 }
 
-bool AX_VkInstanceCreateInfo::enableExtension(StrLit name) {
-	if (!props.hasExtension(name))
+void AX_VkInstanceCreateInfo::enableExtension(StrLit name) {
+	if (!tryEnableExtension(name)) {
+		throw Error_Undefined(Fmt("Cannot enable VkInstance extension {}", name));
+	}
+}
+
+bool AX_VkInstanceCreateInfo::tryEnableExtension(StrLit name) {
+	if (!props.hasExtension(name)) {
+		AX_LOG("Vk: Cannot enable VkInstance extension {}", name);
 		return false;
+	}
 	_enabledExtensionNames.append(name.c_str());
 	return true;
 }
 
 void AX_VkInstanceCreateInfo::logInfo() {
-	TempString s = "== AX_VkInstanceCreateInfo::logInfo ==";
-	
+	TempString s = "== AX_VkInstanceCreateInfo::logInfo ==\n";
 #if 0
 	s.append("VkInstance Layers\n");
 	for (auto& e : props.layers) {
@@ -90,8 +105,8 @@ void AX_VkInstanceCreateInfo::logInfo() {
 	applicationVersion = 0;
 	pEngineName = "RenderSystem_VK";
 	engineVersion = 0;
-	apiVersion = AX_VkUtil::makeApiVersion(0, 1, 3, 0);
-//	apiVersion = VK_API_VERSION_1_3;
+//	apiVersion = AX_VkUtil::makeApiVersion(0, 1, 3, 0);
+	apiVersion = VK_API_VERSION_1_4;
  }
 
 AX_VkInstanceCreateInfo::AX_VkInstanceCreateInfo() {
@@ -276,15 +291,20 @@ Opt<AX_VkMemoryTypeIndex> AX_VkPhysicalDevice::findMemoryTypeIndex(VkFlags typeB
 }
 
 AX_VkPhysicalDevice::Features::Features() {
+	base.sType       = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+	v11.sType        = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+	v12.sType        = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+	v13.sType        = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+	v14.sType        = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES;
+	fragmentShadingRate.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR;
+	meshShader.sType          = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
 
-	v10.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-	v11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-	v12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-	v13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
-
-	v10.pNext = &v11;
-	v11.pNext = &v12;
-	v12.pNext = &v13;
+	base.pNext = &v11;
+	v11.pNext  = &v12;
+	v12.pNext  = &v13;
+	v13.pNext  = &v14;
+	v14.pNext  = &fragmentShadingRate;
+	fragmentShadingRate.pNext = &meshShader;
 }
 
 void AX_VkPhysicalDevice::create(Int index, VkInstance inst, VkPhysicalDevice phyDev) {
@@ -294,7 +314,7 @@ void AX_VkPhysicalDevice::create(Int index, VkInstance inst, VkPhysicalDevice ph
 
 	vkGetPhysicalDeviceProperties(_phyDev, &_props);
 
-	vkGetPhysicalDeviceFeatures2(phyDev, &_features.v10);
+	vkGetPhysicalDeviceFeatures2(phyDev, &_features.base);
 
 	{
 		_deviceMemorySize = 0;
@@ -396,15 +416,46 @@ AX_VkDevice& AX_VkDevice::create(AX_VkPhysicalDevice& phyDev) {
 #endif
 
 	Array<const char*, 16> enabledExtensionNames;
-	if (!_addEnabledExtensions(enabledExtensionNames, VK_KHR_SWAPCHAIN_EXTENSION_NAME))
-		throw Error_Undefined();
+	
+	auto tryEnableExtension = [&](StrLit name) -> bool {
+		if (!_phyDev->hasExtension(name.c_str())) {
+			AX_LOG("Cannot enable VkDevice extension {}", name);
+			return false;
+		}
+		enabledExtensionNames.append(name.c_str());
+		return true;
+	};
+	
+	auto enableExtension = [&](StrLit name) -> void {
+		if (!tryEnableExtension(name)) {
+			throw Error_Undefined(Fmt("Vk: Cannot enable VkDevice extension {}", name));
+		}
+	};
 
+	enableExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+	
+	if constexpr(true) { // VMA allocator support extensions
+		tryEnableExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
+		tryEnableExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
+		tryEnableExtension(VK_KHR_MAINTENANCE_4_EXTENSION_NAME);
+		tryEnableExtension(VK_KHR_MAINTENANCE_5_EXTENSION_NAME);
+		tryEnableExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
+		tryEnableExtension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+		tryEnableExtension(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
+		tryEnableExtension(VK_AMD_DEVICE_COHERENT_MEMORY_EXTENSION_NAME);
+		tryEnableExtension(VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME);
+	}
+	
+	if constexpr(true) { // Mesh Shader
+		tryEnableExtension(VK_KHR_FRAGMENT_SHADER_BARYCENTRIC_EXTENSION_NAME);
+		tryEnableExtension(VK_EXT_MESH_SHADER_EXTENSION_NAME);
+	}
+	
 // optional extensions
-	_addEnabledExtensions(enabledExtensionNames, VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
+	tryEnableExtension(VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
 	// already included in Vulkan 1.1
-	_addEnabledExtensions(enabledExtensionNames, VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME);
-	_addEnabledExtensions(enabledExtensionNames, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
-
+	tryEnableExtension(VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME);
+	tryEnableExtension(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
 //------
 
 	if (auto opt = phyDev.findGraphicFamilyIndex()) {
@@ -423,7 +474,7 @@ AX_VkDevice& AX_VkDevice::create(AX_VkPhysicalDevice& phyDev) {
 
 	VkDeviceCreateInfo deviceCreateInfo = {};
 	deviceCreateInfo.sType						= VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceCreateInfo.pNext						= &_enabledFeatures.v10;
+	deviceCreateInfo.pNext						= &_enabledFeatures.base;
 	deviceCreateInfo.flags						= 0;
 	deviceCreateInfo.queueCreateInfoCount		= 1;
 	deviceCreateInfo.pQueueCreateInfos			= &queueCreateInfo;
@@ -532,13 +583,6 @@ Opt<AX_VkMemoryTypeIndex> AX_VkDevice::findMemoryTypeIndex(VkImage img, VkMemory
 	VkMemoryRequirements memReq = {};
 	vkGetImageMemoryRequirements(_handle, img, &memReq);
 	return _phyDev->findMemoryTypeIndex(memReq.memoryTypeBits, requireMask);
-}
-
-bool AX_VkDevice::_addEnabledExtensions(IArray<const char*>& arr, const char* name) {
-	if (!_phyDev->hasExtension(name))
-		return false;
-	arr.append(name);
-	return true;
 }
 
 void AX_VkDevice::getQueue(AX_VkDeviceQueue &outQueue, AX_VkQueueFamilyIndex queueFamilyIndex, u32 queueIndex) {

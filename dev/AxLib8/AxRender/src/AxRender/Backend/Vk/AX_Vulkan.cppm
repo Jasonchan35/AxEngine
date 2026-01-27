@@ -70,10 +70,13 @@ public:
 
 	struct Features {
 		Features();
-		VkPhysicalDeviceFeatures2			v10 = {};
-		VkPhysicalDeviceVulkan11Features	v11 = {};
-		VkPhysicalDeviceVulkan12Features	v12 = {};
-		VkPhysicalDeviceVulkan13Features	v13 = {};
+		VkPhysicalDeviceFeatures2				base = {};
+		VkPhysicalDeviceVulkan11Features		v11  = {};
+		VkPhysicalDeviceVulkan12Features		v12  = {};
+		VkPhysicalDeviceVulkan13Features		v13  = {};
+		VkPhysicalDeviceVulkan14Features		v14  = {};
+		VkPhysicalDeviceFragmentShadingRateFeaturesKHR fragmentShadingRate = {};
+		VkPhysicalDeviceMeshShaderFeaturesEXT	meshShader = {};
 	};
 	const Features& features() const { return _features; }
 
@@ -125,8 +128,11 @@ struct AX_VkInstanceCreateInfo : public VkInstanceCreateInfo {
 	};
 	const Props	props;
 
-	bool enableLayer		(StrLit name);
-	bool enableExtension	(StrLit name);
+	void enableLayer		(StrLit name);
+	bool tryEnableLayer		(StrLit name);
+	
+	void enableExtension	(StrLit name);
+	bool tryEnableExtension	(StrLit name);
 
 	void logInfo();
 
@@ -185,7 +191,6 @@ public:
 	Opt<AX_VkMemoryTypeIndex> findMemoryTypeIndex(VkImage  img, VkMemoryPropertyFlags requireMask) const;
 
 private:
-	bool _addEnabledExtensions(IArray<const char*>& arr, const char* name);
 	void _setObjectDebugName(VkObjectType objectType, void* objectHandle, StrView name);
 	void _setObjectDebugTag( VkObjectType objectType, void* objectHandle, u64 tagName, ByteSpan tag);
 	void _createAllocator();

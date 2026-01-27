@@ -73,20 +73,22 @@ private:
 
 	template<class FUNC>
 	void _visitStages(FUNC func) {
-		func(_vsStage, ShaderStageFlags::Vertex);
-		func(_psStage, ShaderStageFlags::Pixel);
-		func(_gsStage, ShaderStageFlags::Geometry);
-		func(_csStage, ShaderStageFlags::Compute);
+		func(_vertexStage  , ShaderStageFlags::Vertex);
+		func(_pixelStage   , ShaderStageFlags::Pixel);
+		func(_geometryStage, ShaderStageFlags::Geometry);
+		func(_computeStage , ShaderStageFlags::Compute);
+		func(_meshStage    , ShaderStageFlags::Mesh);
 	}
 
 	struct Stage {
 		AX_VkShaderModule	vkShaderModule;
 	};
 
-	Stage _vsStage;
-	Stage _psStage;
-	Stage _gsStage;
-	Stage _csStage;
+	Stage _vertexStage;
+	Stage _pixelStage;
+	Stage _geometryStage;
+	Stage _computeStage;
+	Stage _meshStage;
 };
 
 class Shader_Vk : public Shader_Backend {

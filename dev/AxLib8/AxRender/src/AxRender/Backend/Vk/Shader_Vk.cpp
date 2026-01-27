@@ -139,7 +139,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 
 //-----
 	VertexInputLayoutDesc_Vk vertexInputLayoutDesc;
-	if (!_vsStage.vkShaderModule) { AX_ASSERT(false); return nullptr; }
+	if (!_vertexStage.vkShaderModule) { AX_ASSERT(false); return nullptr; }
 
 	if (!vertexInputLayoutDesc.init(*_stageInfo, key.vertexLayout)) {
 		AX_ASSERT(false);
@@ -180,7 +180,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 	pipelineCreateInfo.stageCount	= AX_VkUtil::castUInt32(stageCreateInfos.size());
 	pipelineCreateInfo.pStages		= stageCreateInfos.data();
 
-	auto feature_v10 = dev.enabledFeatures().v10.features;
+	auto features_base = dev.enabledFeatures().base.features;
 
 #define AX_VkDevice_RequireFeature(feature, state, value) \
 	if (!Math::exactlyEqual(state, value) && !feature) { \
@@ -196,7 +196,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 	multisampleState.sType	= VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 	multisampleState.alphaToOneEnable = VK_FALSE;
-	AX_VkDevice_RequireFeature(feature_v10.alphaToOne, multisampleState.alphaToOneEnable, VK_FALSE);
+	AX_VkDevice_RequireFeature(features_base.alphaToOne, multisampleState.alphaToOneEnable, VK_FALSE);
 
 //--------
 	VkPipelineRasterizationStateCreateInfo	rasterizationState	= {};
@@ -205,13 +205,13 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 	rasterizationState.sType	= VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 
 	rasterizationState.depthClampEnable			= VK_FALSE;
-	AX_VkDevice_RequireFeature(feature_v10.depthClamp, rasterizationState.depthClampEnable, VK_FALSE);
+	AX_VkDevice_RequireFeature(features_base.depthClamp, rasterizationState.depthClampEnable, VK_FALSE);
 
 	rasterizationState.rasterizerDiscardEnable	= VK_FALSE;
 
 //	rasterizationState.polygonMode	= key.debugWireframe ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL;
 	rasterizationState.polygonMode	= VK_POLYGON_MODE_FILL;
-	AX_VkDevice_RequireFeature(feature_v10.fillModeNonSolid, rasterizationState.polygonMode, VK_POLYGON_MODE_FILL);
+	AX_VkDevice_RequireFeature(features_base.fillModeNonSolid, rasterizationState.polygonMode, VK_POLYGON_MODE_FILL);
 
 	rasterizationState.cullMode					= AX_VkUtil::getVkCullMode(rs.cull);
 	rasterizationState.frontFace				= VK_FRONT_FACE_COUNTER_CLOCKWISE;
@@ -219,12 +219,12 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 	rasterizationState.depthBiasConstantFactor	= 0;
 
 	rasterizationState.depthBiasClamp			= 0;
-	AX_VkDevice_RequireFeature(feature_v10.depthBiasClamp, rasterizationState.depthBiasClamp, 0.0f);
+	AX_VkDevice_RequireFeature(features_base.depthBiasClamp, rasterizationState.depthBiasClamp, 0.0f);
 
 	rasterizationState.depthBiasSlopeFactor		= 0;
 
 	rasterizationState.lineWidth				= 1.0f;
-	AX_VkDevice_RequireFeature(feature_v10.wideLines, rasterizationState.lineWidth, 1.0f);
+	AX_VkDevice_RequireFeature(features_base.wideLines, rasterizationState.lineWidth, 1.0f);
 
 //-----
 	VkPipelineColorBlendStateCreateInfo	colorBlendState	= {};
@@ -269,7 +269,7 @@ auto ShaderPass_Vk::getOrAddPipeline(const Pipeline::PsoKey& key) -> Pipeline* {
 		depthStencilState.depthCompareOp	= AX_VkUtil::getVkDepthTestOp(rs.depthTest.op);
 		depthStencilState.stencilTestEnable = VK_FALSE;
 		depthStencilState.depthBoundsTestEnable = VK_FALSE;
-		AX_VkDevice_RequireFeature(feature_v10.depthBounds, depthStencilState.depthBoundsTestEnable, VK_FALSE);
+		AX_VkDevice_RequireFeature(features_base.depthBounds, depthStencilState.depthBoundsTestEnable, VK_FALSE);
 	}
 
 //----- 

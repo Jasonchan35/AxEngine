@@ -141,10 +141,12 @@ inline
 VkShaderStageFlagBits AX_VkUtil::getVkShaderStageFlagBits(ShaderStageFlags f) {
 	using SRC = ShaderStageFlags;
 	u64 o = 0;
-	if (ax_bit_has(f, SRC::Vertex	)) o |= VK_SHADER_STAGE_VERTEX_BIT;
-	if (ax_bit_has(f, SRC::Pixel	)) o |= VK_SHADER_STAGE_FRAGMENT_BIT;
-	if (ax_bit_has(f, SRC::Geometry	)) o |= VK_SHADER_STAGE_GEOMETRY_BIT;
-	if (ax_bit_has(f, SRC::Compute	)) o |= VK_SHADER_STAGE_COMPUTE_BIT;
+	if (ax_bit_has(f, SRC::Vertex		)) o |= VK_SHADER_STAGE_VERTEX_BIT;
+	if (ax_bit_has(f, SRC::Pixel		)) o |= VK_SHADER_STAGE_FRAGMENT_BIT;
+	if (ax_bit_has(f, SRC::Geometry		)) o |= VK_SHADER_STAGE_GEOMETRY_BIT;
+	if (ax_bit_has(f, SRC::Compute		)) o |= VK_SHADER_STAGE_COMPUTE_BIT;
+	if (ax_bit_has(f, SRC::Mesh			)) o |= VK_SHADER_STAGE_MESH_BIT_EXT;
+	if (ax_bit_has(f, SRC::Amplification)) o |= VK_SHADER_STAGE_TASK_BIT_EXT;
 	return static_cast<VkShaderStageFlagBits>(o);
 }
 

@@ -102,41 +102,32 @@ void RenderSystem_Vk::_createVkInstance() {
 	info.logInfo();
 
 	// extensions
-	if (!info.enableExtension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
-		_enableDebugReport = false;
-
-	if (!info.enableExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME))
-		_enableDebugUtils = false;
-
-	if (!info.enableExtension(VK_EXT_DEBUG_MARKER_EXTENSION_NAME))
-		_enableDebugMarker = false;
+	_enableDebugReport = info.tryEnableExtension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+	_enableDebugUtils  = info.tryEnableExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	_enableDebugMarker = info.tryEnableExtension(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
 	
-	// VMA allocator support extensions
-	info.enableExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
-	info.enableExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-	info.enableExtension(VK_KHR_MAINTENANCE_4_EXTENSION_NAME);
-	info.enableExtension(VK_KHR_MAINTENANCE_5_EXTENSION_NAME);
-	info.enableExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
-	info.enableExtension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
-	info.enableExtension(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
-	info.enableExtension(VK_AMD_DEVICE_COHERENT_MEMORY_EXTENSION_NAME);
-	info.enableExtension(VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME);
-
 //---- surface
-	if (!info.enableExtension(VK_KHR_SURFACE_EXTENSION_NAME				)) throw Error_Undefined();
+	info.enableExtension(VK_KHR_SURFACE_EXTENSION_NAME);
+	
+	// negative viewport
+	info.tryEnableExtension(VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME);
+	if (!info.tryEnableExtension(VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME)) {
+		throw Error_Undefined(Fmt("require extension {} for negative viewport", 
+							  StrView_c_str(VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME)));
+	}
 
 	#if AX_NATIVE_UI_WIN32
-		if (!info.enableExtension(VK_KHR_WIN32_SURFACE_EXTENSION_NAME	)) throw Error_Undefined();
+		info.enableExtension(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 	#elif AX_NATIVE_UI_X11
-		if (!info.enableExtension(VK_KHR_XLIB_SURFACE_EXTENSION_NAME	)) throw Error_Undefined();
+		info.enableExtension(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
 	#elif AX_NATIVE_UI_MACOSX
-		if (!info.enableExtension(VK_MVK_MACOS_SURFACE_EXTENSION_NAME	)) throw Error_Undefined();
-	//	if (!info.enableExtension(VK_EXT_METAL_SURFACE_EXTENSION_NAME	)) throw Error_Undefined();
+		info.enableExtension(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
+		info.enableExtension(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
 	#endif
 
 	// layers
 	#if !AX_NATIVE_UI_MACOSX
-		if (!info.enableLayer("VK_LAYER_KHRONOS_validation")) throw Error_Undefined();
+		info.enableLayer("VK_LAYER_KHRONOS_validation");
 	#endif
 
 	_vkInst.create(info);
