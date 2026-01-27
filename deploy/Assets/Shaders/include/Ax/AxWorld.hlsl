@@ -45,4 +45,25 @@ struct AxDrawCallRootConst {
 	u32   _usedPadding1;
 };
 
+AX_ROOT_CONST_STRUCT(AxDrawCallRootConst, axDrawCallRootConst) 
+#define AX_MATRIX_MVP        axDrawCallRootConst.AX_MATRIX_MVP
+#define AX_MATRIX_M          axDrawCallRootConst.AX_MATRIX_M
+#define AX_OBJECT_ID         axDrawCallRootConst.AX_OBJECT_ID
+#define AX_MESH_CLUSTER_ID   axDrawCallRootConst.AX_MESH_CLUSTER_ID
+
+Vec4f AxVertex_ProjPos(Vec4f inPos) {
+	// return mul(AX_MATRIX_MVP, inPos);
+	return mul(axCamera.viewProjMatrix, mul(AX_MATRIX_M, inPos));
+}
+
+Vec3f AxVertex_WorldPos(Vec4f inPos) {
+	Vec4f wpos = mul(AX_MATRIX_M, inPos);
+	return wpos.xyz / wpos.w;
+}
+
+Vec3f AxVertex_Normal(Vec3f inNormal) {
+	return mul(transpose((Mat3f)AX_MATRIX_MVP), inNormal);
+}
+
+
 #endif // __AxWorld_HLS__

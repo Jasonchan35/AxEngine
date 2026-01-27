@@ -12,7 +12,6 @@ Pass "Pass0" {
 #endif
 
 #include "AxRender.hlsl"
-#define OutputTopology_Triangles	outputtopology("triangle")
 
 #define MAX(x, y) (x > y ? x : y)
 #define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))
@@ -23,12 +22,6 @@ Pass "Pass0" {
 #define MAX_LOD_LEVELS 8
 
 #define MS_GROUP_SIZE ROUNDUP(MAX(MAX_VERTS, MAX_PRIMS), THREADS_PER_WAVE)
-
-struct MS_Input {
-	SEM_sv_dispatchThreadId(uint);
-	SEM_sv_groupThreadId(uint);
-	SEM_sv_groupId(uint);
-};
 
 struct VS_Input {
 	SEM_pos(float4);
@@ -52,15 +45,9 @@ struct Meshlet {
 
 //[RootSignature(ROOT_SIG)]
 [numthreads(MS_GROUP_SIZE, 1, 1)]
-[OutputTopology_Triangles]
+[AX_TOPOLOGY_TRIANGLE]
 void ms_main(
-//	MS_Input i,
-//	SEM_sv_dispatchThreadId(uint),
-//	SEM_sv_groupThreadId(uint),
-//	SEM_sv_groupId(uint),
-    uint dtid : SV_DispatchThreadID,
-    uint gtid : SV_GroupThreadID,
-    uint gid : SV_GroupID,
+	MS_Input mi,
     out vertices VS_Output outVertices[MAX_VERTS],
     out indices  uint3     outTriangles[MAX_PRIMS]
 ) {
@@ -70,14 +57,13 @@ void ms_main(
 
     SetMeshOutputCounts(m.vertCount, m.primCount);
 
-
-    if (gtid < m.primCount) {
-        outTriangles[gtid] = uint3(0,1,2);
+    if (mi.gtid < m.primCount) {
+        outTriangles[mi.gtid] = uint3(0,1,2);
     }
 
-    if (gtid < m.vertCount) {
+    if (mi.gtid < m.vertCount) {
 		VS_Input i;
-		i.pos    = Vec4f(gtid % 2, gtid, (gtid + 1) % 2, 1);
+		i.pos    = Vec4f(mi.gtid % 2, mi.gtid, (mi.gtid + 1) % 2, 1);
 		i.normal = -normalize(Vec3f(1, 1, 0));
 
 		VS_Output o;
@@ -85,7 +71,7 @@ void ms_main(
 		o.sv_pos   = AxVertex_ProjPos(i.pos);
 		o.normal   = AxVertex_Normal(i.normal);
 		o.color0   = Color4f(1, 1, 1, 1);
-		outVertices[gtid] = o;
+		outVertices[mi.gtid] = o;
 	}
 }
 

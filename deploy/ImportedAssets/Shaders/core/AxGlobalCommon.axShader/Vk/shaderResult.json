@@ -5,6 +5,7 @@
         "name": "Pass0", 
         "vertexFunc": "vs_main", 
         "pixelFunc": "ps_main", 
+        "meshFunc": "ms_main", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -31,7 +32,7 @@
   }, 
   "passStages": [{
       "bindless": true, 
-      "stageFlags": "Vertex | Pixel", 
+      "stageFlags": "Vertex | Pixel | Mesh", 
       "inputs": [{
           "semantic": "POSITION", 
           "dataType": "Vec4f"
@@ -39,7 +40,7 @@
       "constBuffers": [{
           "name": "axWorld", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "World", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -68,7 +69,7 @@
         }, {
           "name": "axCamera", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "World", 
           "bindPoint": 1, 
           "bindCount": 1, 
@@ -120,9 +121,9 @@
               "size": 64
             }]
         }, {
-          "name": "gAxDrawCallRootConst", 
+          "name": "axDrawCallRootConst", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "RootConst", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -161,7 +162,7 @@
         }, {
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -196,14 +197,14 @@
       "textures": [{
           "name": "AxBindless_Texture2D", 
           "dataType": "None", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Bindless", 
           "bindPoint": 30000, 
           "bindCount": 10000
         }, {
           "name": "AxBindless_Texture3D", 
           "dataType": "None", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Bindless", 
           "bindPoint": 40000, 
           "bindCount": 1000
@@ -211,7 +212,7 @@
       "samplers": [{
           "name": "AxBindless_SamplerState", 
           "dataType": "None", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Bindless", 
           "bindPoint": 10000, 
           "bindCount": 1000, 
@@ -220,7 +221,7 @@
       "structuredBuffers": [{
           "name": "axLights", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "World", 
           "bindPoint": 30001, 
           "bindCount": 1, 
@@ -234,7 +235,7 @@
         }, {
           "name": "axObjects", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "World", 
           "bindPoint": 30002, 
           "bindCount": 1, 

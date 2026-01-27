@@ -630,44 +630,40 @@
             }
         },
         {
-            "name": "color",
-            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4},
+            "name": "foo",
+            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0},
             "type": {
-                "kind": "vector",
-                "elementCount": 4,
-                "elementType": {
-                    "kind": "scalar",
-                    "scalarType": "float32"
-                }
+                "kind": "scalar",
+                "scalarType": "float32"
             }
         },
         {
-            "name": "AxSamplerState_tex0",
+            "name": "AxSamplerState_foo_tex2d",
+            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "uint32"
+            }
+        },
+        {
+            "name": "AxTexture2D_foo_tex2d",
+            "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "uint32"
+            }
+        },
+        {
+            "name": "AxSamplerState_foo_tex3d",
+            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "uint32"
+            }
+        },
+        {
+            "name": "AxTexture3D_foo_tex3d",
             "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0},
-            "type": {
-                "kind": "scalar",
-                "scalarType": "uint32"
-            }
-        },
-        {
-            "name": "AxTexture2D_tex0",
-            "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0},
-            "type": {
-                "kind": "scalar",
-                "scalarType": "uint32"
-            }
-        },
-        {
-            "name": "AxSamplerState_tex1",
-            "binding": {"kind": "uniform", "offset": 24, "size": 4, "elementStride": 0},
-            "type": {
-                "kind": "scalar",
-                "scalarType": "uint32"
-            }
-        },
-        {
-            "name": "AxTexture2D_tex1",
-            "binding": {"kind": "uniform", "offset": 28, "size": 4, "elementStride": 0},
             "type": {
                 "kind": "scalar",
                 "scalarType": "uint32"
@@ -676,195 +672,107 @@
     ],
     "entryPoints": [
         {
-            "name": "vs_main",
-            "stage": "vertex",
+            "name": "ms_main",
+            "stage": "mesh",
             "parameters": [
                 {
-                    "name": "i",
-                    "stage": "vertex",
-                    "binding": {"kind": "varyingInput", "index": 0, "count": 4},
+                    "name": "mi",
                     "type": {
                         "kind": "struct",
-                        "name": "VS_Input",
+                        "name": "MS_Input",
                         "fields": [
                             {
-                                "name": "pos",
+                                "name": "gid",
                                 "type": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
                                 },
-                                "stage": "vertex",
-                                "binding": {"kind": "varyingInput", "index": 0},
-                                "semanticName": "POSITION"
+                                "semanticName": "SV_GROUPID"
                             },
                             {
-                                "name": "color0",
+                                "name": "gtid",
                                 "type": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
                                 },
-                                "stage": "vertex",
-                                "binding": {"kind": "varyingInput", "index": 1},
-                                "semanticName": "COLOR"
+                                "semanticName": "SV_GROUPTHREADID"
                             },
                             {
-                                "name": "uv0",
+                                "name": "dtid",
                                 "type": {
-                                    "kind": "vector",
-                                    "elementCount": 2,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
                                 },
-                                "stage": "vertex",
-                                "binding": {"kind": "varyingInput", "index": 2},
-                                "semanticName": "TEXCOORD"
-                            },
-                            {
-                                "name": "uv1",
-                                "type": {
-                                    "kind": "vector",
-                                    "elementCount": 2,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "stage": "vertex",
-                                "binding": {"kind": "varyingInput", "index": 3},
-                                "semanticName": "TEXCOORD",
-                                "semanticIndex": 1
+                                "semanticName": "SV_DISPATCHTHREADID"
                             }
                         ]
                     }
+                },
+                {
+                    "name": "outVertices",
+                    "type": {
+                        "kind": "None"
+                    }
+                },
+                {
+                    "name": "outTriangles",
+                    "type": {
+                        "kind": "None"
+                    }
                 }
             ],
-            "result": {
-                "stage": "vertex",
-                "binding": {"kind": "varyingOutput", "index": 0, "count": 3},
-                "type": {
-                    "kind": "struct",
-                    "name": "VS_Output",
-                    "fields": [
-                        {
-                            "name": "sv_pos",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "semanticName": "SV_POSITION"
-                        },
-                        {
-                            "name": "color0",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "stage": "vertex",
-                            "binding": {"kind": "varyingOutput", "index": 0},
-                            "semanticName": "COLOR"
-                        },
-                        {
-                            "name": "uv0",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 2,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "stage": "vertex",
-                            "binding": {"kind": "varyingOutput", "index": 1},
-                            "semanticName": "TEXCOORD"
-                        },
-                        {
-                            "name": "uv1",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 2,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "stage": "vertex",
-                            "binding": {"kind": "varyingOutput", "index": 2},
-                            "semanticName": "TEXCOORD",
-                            "semanticIndex": 1
-                        }
-                    ]
-                }
-            },
             "bindings": [
                 {
                     "name": "AxBindless_SamplerState",
-                    "binding": {"kind": "samplerState", "space": 2, "index": 10000, "used": 0}
+                    "binding": {"kind": "samplerState", "space": 2, "index": 10000, "used": 1}
                 },
                 {
                     "name": "AxBindless_Texture2D",
-                    "binding": {"kind": "shaderResource", "space": 2, "index": 30000, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 2, "index": 30000, "used": 1}
                 },
                 {
                     "name": "AxBindless_Texture3D",
-                    "binding": {"kind": "shaderResource", "space": 2, "index": 40000, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 2, "index": 40000, "used": 1}
                 },
                 {
                     "name": "axWorld",
-                    "binding": {"kind": "constantBuffer", "space": 1, "index": 0, "used": 0}
+                    "binding": {"kind": "constantBuffer", "space": 1, "index": 0, "used": 1}
                 },
                 {
                     "name": "axCamera",
-                    "binding": {"kind": "constantBuffer", "space": 1, "index": 1, "used": 0}
+                    "binding": {"kind": "constantBuffer", "space": 1, "index": 1, "used": 1}
                 },
                 {
                     "name": "axLights",
-                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 30001, "used": 0}
+                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 30001, "used": 1}
                 },
                 {
                     "name": "axObjects",
-                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 30002, "used": 0}
+                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 30002, "used": 1}
                 },
                 {
                     "name": "axDrawCallRootConst",
                     "binding": {"kind": "pushConstantBuffer", "index": 0}
                 },
                 {
-                    "name": "color",
-                    "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
+                    "name": "foo",
+                    "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
                 },
                 {
-                    "name": "AxSamplerState_tex0",
+                    "name": "AxSamplerState_foo_tex2d",
+                    "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                },
+                {
+                    "name": "AxTexture2D_foo_tex2d",
+                    "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
+                },
+                {
+                    "name": "AxSamplerState_foo_tex3d",
+                    "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                },
+                {
+                    "name": "AxTexture3D_foo_tex3d",
                     "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0}
-                },
-                {
-                    "name": "AxTexture2D_tex0",
-                    "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
-                },
-                {
-                    "name": "AxSamplerState_tex1",
-                    "binding": {"kind": "uniform", "offset": 24, "size": 4, "elementStride": 0}
-                },
-                {
-                    "name": "AxTexture2D_tex1",
-                    "binding": {"kind": "uniform", "offset": 28, "size": 4, "elementStride": 0}
                 }
             ]
         }

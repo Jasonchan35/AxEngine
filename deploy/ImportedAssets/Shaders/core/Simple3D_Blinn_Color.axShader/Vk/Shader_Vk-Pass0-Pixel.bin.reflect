@@ -2,7 +2,7 @@
     "parameters": [
         {
             "name": "AxBindless_SamplerState",
-            "binding": {"kind": "samplerState", "space": 3, "index": 10000},
+            "binding": {"kind": "samplerState", "space": 2, "index": 10000},
             "type": {
                 "kind": "array",
                 "elementCount": 1000,
@@ -13,7 +13,7 @@
         },
         {
             "name": "AxBindless_Texture2D",
-            "binding": {"kind": "shaderResource", "space": 3, "index": 30000},
+            "binding": {"kind": "shaderResource", "space": 2, "index": 30000},
             "type": {
                 "kind": "array",
                 "elementCount": 10000,
@@ -33,7 +33,7 @@
         },
         {
             "name": "AxBindless_Texture3D",
-            "binding": {"kind": "shaderResource", "space": 3, "index": 40000},
+            "binding": {"kind": "shaderResource", "space": 2, "index": 40000},
             "type": {
                 "kind": "array",
                 "elementCount": 1000,
@@ -53,7 +53,7 @@
         },
         {
             "name": "axWorld",
-            "binding": {"kind": "constantBuffer", "space": 2, "index": 0},
+            "binding": {"kind": "constantBuffer", "space": 1, "index": 0},
             "type": {
                 "kind": "constantBuffer",
                 "elementType": {
@@ -158,7 +158,7 @@
         },
         {
             "name": "axCamera",
-            "binding": {"kind": "constantBuffer", "space": 2, "index": 1},
+            "binding": {"kind": "constantBuffer", "space": 1, "index": 1},
             "type": {
                 "kind": "constantBuffer",
                 "elementType": {
@@ -411,7 +411,7 @@
         },
         {
             "name": "axLights",
-            "binding": {"kind": "unorderedAccess", "space": 2, "index": 30001},
+            "binding": {"kind": "unorderedAccess", "space": 1, "index": 30001},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
@@ -438,7 +438,7 @@
         },
         {
             "name": "axObjects",
-            "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002},
+            "binding": {"kind": "unorderedAccess", "space": 1, "index": 30002},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
@@ -489,7 +489,7 @@
             }
         },
         {
-            "name": "gAxDrawCallRootConst",
+            "name": "axDrawCallRootConst",
             "binding": {"kind": "pushConstantBuffer", "index": 0},
             "type": {
                 "kind": "constantBuffer",
@@ -774,34 +774,34 @@
             "bindings": [
                 {
                     "name": "AxBindless_SamplerState",
-                    "binding": {"kind": "samplerState", "space": 3, "index": 10000, "used": 0}
+                    "binding": {"kind": "samplerState", "space": 2, "index": 10000, "used": 0}
                 },
                 {
                     "name": "AxBindless_Texture2D",
-                    "binding": {"kind": "shaderResource", "space": 3, "index": 30000, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 2, "index": 30000, "used": 0}
                 },
                 {
                     "name": "AxBindless_Texture3D",
-                    "binding": {"kind": "shaderResource", "space": 3, "index": 40000, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 2, "index": 40000, "used": 0}
                 },
                 {
                     "name": "axWorld",
-                    "binding": {"kind": "constantBuffer", "space": 2, "index": 0, "used": 0}
+                    "binding": {"kind": "constantBuffer", "space": 1, "index": 0, "used": 0}
                 },
                 {
                     "name": "axCamera",
-                    "binding": {"kind": "constantBuffer", "space": 2, "index": 1, "used": 1}
+                    "binding": {"kind": "constantBuffer", "space": 1, "index": 1, "used": 1}
                 },
                 {
                     "name": "axLights",
-                    "binding": {"kind": "unorderedAccess", "space": 2, "index": 30001, "used": 0}
+                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 30001, "used": 0}
                 },
                 {
                     "name": "axObjects",
-                    "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002, "used": 0}
+                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 30002, "used": 0}
                 },
                 {
-                    "name": "gAxDrawCallRootConst",
+                    "name": "axDrawCallRootConst",
                     "binding": {"kind": "pushConstantBuffer", "index": 0}
                 },
                 {

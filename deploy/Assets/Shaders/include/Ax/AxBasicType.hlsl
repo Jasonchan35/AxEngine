@@ -28,17 +28,17 @@ typedef float4		Color4f;
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"
 // HLSL: register space                | DX: "Space"                      |  Vulkan "set"
 #define AX_BindSpace_Default    space0
-#define AX_BindSpace_RootConst  space1
-#define AX_BindSpace_World      space2
-#define AX_BindSpace_Bindless   space3
+#define AX_BindSpace_World      space1
+#define AX_BindSpace_Bindless   space2
+#define AX_BindSpace_RootConst  space3
 
 #if AX_RENDER_VK
-	#define AX_ROOT_CONST_VAR(TYPE, NAME) \
+	#define AX_ROOT_CONST_STRUCT(TYPE, NAME) \
 		[[vk::push_constant]] \
 		ConstantBuffer<TYPE> NAME; \
 	//----
 #else
-	#define AX_ROOT_CONST_VAR(TYPE, NAME) \
+	#define AX_ROOT_CONST_STRUCT(TYPE, NAME) \
 		ConstantBuffer<TYPE> NAME : register(b1, AX_BindSpace_RootConst); \
 	//----
 #endif
@@ -87,11 +87,12 @@ typedef float4		Color4f;
 #define SEM_sv_vertexId(			TYPE)	TYPE	sv_vertexId			: SV_VERTEXID
 #define SEM_sv_primitiveId(			TYPE)	TYPE	sv_primitiveId		: SV_PRIMITIVEID
 #define SEM_sv_instanceId(			TYPE)	TYPE	sv_instanceId		: SV_INSTANCEID
+#define SEM_sv_gsInstanceId(		TYPE)	TYPE	sv_gsInstanceId		: SV_GSINSTANCEID
+
 #define SEM_sv_dispatchThreadId(	TYPE)	TYPE	sv_dispatchThreadId	: SV_DISPATCHTHREADID
 #define SEM_sv_groupId(				TYPE)	TYPE	sv_groupId			: SV_GROUPID
 #define SEM_sv_groupIndex(			TYPE)	TYPE	sv_groupIndex		: SV_GROUPINDEX
 #define SEM_sv_groupThreadId(		TYPE)	TYPE	sv_groupThreadId	: SV_GROUPTHREADID
-#define SEM_sv_gsInstanceId(		TYPE)	TYPE	sv_gsInstanceId		: SV_GSINSTANCEID
 
 #define SEM_color( TYPE)	TYPE	color		: COLOR
 #define SEM_color0(TYPE)	TYPE	color0		: COLOR0
@@ -155,5 +156,14 @@ typedef float4		Color4f;
 #define SEM_uv17(TYPE)		TYPE	uv17	: TEXCOORD17
 #define SEM_uv18(TYPE)		TYPE	uv18	: TEXCOORD18
 #define SEM_uv19(TYPE)		TYPE	uv19	: TEXCOORD19
+
+struct MS_Input {
+	uint gid	: SV_GROUPID;
+	uint gtid	: SV_GROUPTHREADID;
+	uint dtid	: SV_DISPATCHTHREADID;
+};
+
+#define AX_TOPOLOGY_TRIANGLE	outputtopology("triangle")
+
 
 #endif // __AxBasicType_HLSL__

@@ -17,6 +17,7 @@ Pass "Pass0" { // Forward
 
 	VertexFunc = vs_main
 	PixelFunc  = ps_main
+	MeshFunc   = ms_main
 }
 #endif
 
@@ -58,5 +59,20 @@ float4 ps_main(VS_Output i) : SV_Target {
 	float4 o = float4(0,0,0,0);
 	o.x += AX_ConstBuffer_dummy_func();
 	return o;
+}
+
+[numthreads(1, 1, 1)]
+[AX_TOPOLOGY_TRIANGLE]
+void ms_main(
+	MS_Input mi,
+    out vertices VS_Output outVertices[3],
+    out indices  uint3     outTriangles[1]
+) {
+    SetMeshOutputCounts(3, 1);
+	float f = AX_ConstBuffer_dummy_func();
+	outVertices[0].sv_pos = Vec4f(0,0,f,1);
+	outVertices[1].sv_pos = Vec4f(0,0,0,1);
+	outVertices[2].sv_pos = Vec4f(0,0,0,1);
+	outTriangles[0] = uint3(0,1,2);
 }
  

@@ -4,6 +4,7 @@
       "name": "Pass0", 
       "vertexFunc": "vs_main", 
       "pixelFunc": "ps_main", 
+      "meshFunc": "ms_main", 
       "renderState": {
         "cull": "Back", 
         "blend": {
