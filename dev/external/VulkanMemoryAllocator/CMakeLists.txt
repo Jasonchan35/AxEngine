@@ -17,5 +17,7 @@ if(WIN32)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		target_compile_options(${PROJECT_NAME} PRIVATE -Wno-nullability-completeness)
+		target_compile_options(${PROJECT_NAME} PRIVATE 
+			-Werror
+			-Wno-nullability-completeness)
 endif()

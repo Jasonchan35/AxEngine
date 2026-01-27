@@ -9,3 +9,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC src)
 target_sources(${PROJECT_NAME} PRIVATE ${all_files})
 set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "external")
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		target_compile_options(${PROJECT_NAME} PRIVATE 
+			-Werror
+			-Wno-switch)
+endif()
