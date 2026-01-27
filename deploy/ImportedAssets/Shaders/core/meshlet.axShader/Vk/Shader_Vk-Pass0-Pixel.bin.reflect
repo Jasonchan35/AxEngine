@@ -487,47 +487,149 @@
                     ]
                 }
             }
+        },
+        {
+            "name": "color",
+            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 4,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "ambient",
+            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "diffuse",
+            "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "specular",
+            "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "shininess",
+            "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "float32"
+            }
         }
     ],
     "entryPoints": [
         {
-            "name": "as_main",
-            "stage": "amplification",
+            "name": "ps_main",
+            "stage": "fragment",
             "parameters": [
                 {
                     "name": "i",
+                    "stage": "fragment",
+                    "binding": {"kind": "varyingInput", "index": 0, "count": 3},
                     "type": {
                         "kind": "struct",
-                        "name": "AS_Input",
+                        "name": "PS_Input",
                         "fields": [
                             {
-                                "name": "sv_dispatchThreadId",
+                                "name": "sv_pos",
                                 "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
+                                    "kind": "vector",
+                                    "elementCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
                                 },
-                                "semanticName": "SV_DISPATCHTHREADID"
+                                "semanticName": "SV_POSITION"
                             },
                             {
-                                "name": "sv_groupThreadId",
+                                "name": "color0",
                                 "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
+                                    "kind": "vector",
+                                    "elementCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
                                 },
-                                "semanticName": "SV_GROUPTHREADID"
+                                "stage": "fragment",
+                                "binding": {"kind": "varyingInput", "index": 0},
+                                "semanticName": "COLOR"
                             },
                             {
-                                "name": "sv_groupId",
+                                "name": "normal",
                                 "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
+                                    "kind": "vector",
+                                    "elementCount": 3,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
                                 },
-                                "semanticName": "SV_GROUPID"
+                                "stage": "fragment",
+                                "binding": {"kind": "varyingInput", "index": 1},
+                                "semanticName": "NORMAL"
+                            },
+                            {
+                                "name": "worldPos",
+                                "type": {
+                                    "kind": "vector",
+                                    "elementCount": 3,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "float32"
+                                    }
+                                },
+                                "stage": "fragment",
+                                "binding": {"kind": "varyingInput", "index": 2},
+                                "semanticName": "POSITION",
+                                "semanticIndex": 1
                             }
                         ]
                     }
                 }
             ],
+            "result": {
+                "stage": "fragment",
+                "binding": {"kind": "varyingOutput", "index": 0},
+                "semanticName": "SV_TARGET",
+                "type": {
+                    "kind": "vector",
+                    "elementCount": 4,
+                    "elementType": {
+                        "kind": "scalar",
+                        "scalarType": "float32"
+                    }
+                }
+            },
             "bindings": [
                 {
                     "name": "AxBindless_SamplerState",
@@ -547,7 +649,7 @@
                 },
                 {
                     "name": "axCamera",
-                    "binding": {"kind": "constantBuffer", "space": 2, "index": 1, "used": 0}
+                    "binding": {"kind": "constantBuffer", "space": 2, "index": 1, "used": 1}
                 },
                 {
                     "name": "axLights",
@@ -556,6 +658,26 @@
                 {
                     "name": "axObjects",
                     "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002, "used": 0}
+                },
+                {
+                    "name": "color",
+                    "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
+                },
+                {
+                    "name": "ambient",
+                    "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "diffuse",
+                    "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "specular",
+                    "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "shininess",
+                    "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0}
                 }
             ]
         }

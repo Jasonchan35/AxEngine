@@ -35,6 +35,7 @@ VertexSemantic	getShaderSemantic(StrView src) {
 RenderDataType getDataType(const JsonObject& json_type) {
 	auto& json_kind = json_type.memberString("kind");
 	
+	if (json_kind == "None") return RenderDataType::None;
 	if (json_kind == "struct") return RenderDataType::Struct;
 	
 	if (json_kind == "scalar") {

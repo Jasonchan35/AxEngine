@@ -487,6 +487,62 @@
                     ]
                 }
             }
+        },
+        {
+            "name": "color",
+            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 4,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "ambient",
+            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "diffuse",
+            "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "specular",
+            "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "shininess",
+            "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "float32"
+            }
         }
     ],
     "entryPoints": [
@@ -519,66 +575,17 @@
                     }
                 },
                 {
-                    "name": "payload",
+                    "name": "outVertices",
                     "stage": "mesh",
-                    "binding": {"kind": "varyingInput", "index": 0, "count": 58},
+                    "binding": {"kind": "varyingOutput", "index": 0, "count": 2},
                     "type": {
-                        "kind": "struct",
-                        "name": "AS_Payload",
-                        "fields": [
-                            {
-                                "name": "InstanceCounts",
-                                "type": {
-                                    "kind": "array",
-                                    "elementCount": 8,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "uint32"
-                                    }
-                                },
-                                "stage": "mesh",
-                                "binding": {"kind": "varyingInput", "index": 0, "count": 8}
-                            },
-                            {
-                                "name": "GroupOffsets",
-                                "type": {
-                                    "kind": "array",
-                                    "elementCount": 9,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "uint32"
-                                    }
-                                },
-                                "stage": "mesh",
-                                "binding": {"kind": "varyingInput", "index": 8, "count": 9}
-                            },
-                            {
-                                "name": "InstanceList",
-                                "type": {
-                                    "kind": "array",
-                                    "elementCount": 32,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "uint32"
-                                    }
-                                },
-                                "stage": "mesh",
-                                "binding": {"kind": "varyingInput", "index": 17, "count": 32}
-                            },
-                            {
-                                "name": "InstanceOffsets",
-                                "type": {
-                                    "kind": "array",
-                                    "elementCount": 9,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "uint32"
-                                    }
-                                },
-                                "stage": "mesh",
-                                "binding": {"kind": "varyingInput", "index": 49, "count": 9}
-                            }
-                        ]
+                        "kind": "None"
+                    }
+                },
+                {
+                    "name": "outTriangles",
+                    "type": {
+                        "kind": "None"
                     }
                 }
             ],
@@ -610,6 +617,26 @@
                 {
                     "name": "axObjects",
                     "binding": {"kind": "unorderedAccess", "space": 2, "index": 30002, "used": 0}
+                },
+                {
+                    "name": "color",
+                    "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
+                },
+                {
+                    "name": "ambient",
+                    "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "diffuse",
+                    "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "specular",
+                    "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "shininess",
+                    "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0}
                 }
             ]
         }

@@ -57,7 +57,7 @@ PS_Input vs_main(VS_Input i) {
 }
 
 float4 ps_main(PS_Input i) : SV_Target {
-	Vec3f   cameraPos  = Vec3f(0, 0, 0);
+	Vec3f   cameraPos  = axCamera.worldPos;
 	Vec3f   lightPos   = Vec3f(10, 10, 10);
 	Color3f lightColor = Color3f(1,1,1);
 

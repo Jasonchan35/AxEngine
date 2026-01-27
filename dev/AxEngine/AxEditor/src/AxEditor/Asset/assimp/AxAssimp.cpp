@@ -177,7 +177,7 @@ public:
 		if (auto enumerator = editVertices.tryEditNormal0()) {
 			auto dst = enumerator->begin();
 			for (auto& srcValue : Span(srcMesh->mNormals, numVertices)) {
-				*dst = toLengthVec3(toVec3f(srcValue));
+				*dst = convAxis(toVec3f(srcValue));
 				++dst;
 			}
 			if (dst != enumerator->end()) throw Error_Undefined();
@@ -214,11 +214,14 @@ public:
 
 		AX_LOG("importNode {} {}", entity->name(), entity->transform.rotation.eulerDeg());
 		
+		auto* stockObjs = RenderStockObjects::s_instance();
+		
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
 				auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
 				meshRenderer->mesh = *meshObj;
-				meshRenderer->material = RenderStockObjects::s_instance()->materials->Simple3D_Blinn_Color;
+//				meshRenderer->material = stockObjs->materials->meshlet;
+				meshRenderer->material = stockObjs->materials->Simple3D_Blinn_Color;
 			}
 		} 
 

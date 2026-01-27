@@ -10,8 +10,8 @@
       }], 
     "passes": [{
         "name": "Pass0", 
+        "pixelFunc": "ps_main", 
         "meshFunc": "ms_main", 
-        "amplificationFunc": "as_main", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -38,9 +38,38 @@
   }, 
   "passStages": [{
       "bindless": true, 
-      "stageFlags": "Mesh | Amplification", 
+      "stageFlags": "Pixel | Mesh", 
       "inputs": [], 
-      "constBuffers": [], 
+      "constBuffers": [{
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "stride": 64, 
+          "variables": [{
+              "name": "ambient", 
+              "dataType": "Vec3f", 
+              "offset": 16, 
+              "size": 12
+            }, {
+              "name": "diffuse", 
+              "dataType": "Vec3f", 
+              "offset": 32, 
+              "size": 12
+            }, {
+              "name": "specular", 
+              "dataType": "Vec3f", 
+              "offset": 48, 
+              "size": 12
+            }, {
+              "name": "shininess", 
+              "dataType": "f32", 
+              "offset": 60, 
+              "size": 4
+            }]
+        }], 
       "textures": [], 
       "samplers": [], 
       "structuredBuffers": []

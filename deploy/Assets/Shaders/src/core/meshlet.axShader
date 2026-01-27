@@ -5,12 +5,14 @@ Properties {
 }
 
 Pass "Pass0" {
-	AmplificationFunc = as_main
-	MeshFunc          = ms_main
+//	AmplificationFunc = as_main
+	MeshFunc  = ms_main
+	PixelFunc = ps_main
 }
 #endif
 
 #include "Ax/AxWorld.hlsl"
+#define OutputTopology_Triangles	outputtopology("triangle")
 
 #define MAX(x, y) (x > y ? x : y)
 #define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))
@@ -20,43 +22,7 @@ Pass "Pass0" {
 #define MAX_PRIMS 126
 #define MAX_LOD_LEVELS 8
 
-#define AS_GROUP_SIZE THREADS_PER_WAVE
 #define MS_GROUP_SIZE ROUNDUP(MAX(MAX_VERTS, MAX_PRIMS), THREADS_PER_WAVE)
-
-struct CS_Input {
-	SEM_sv_dispatchThreadId(uint);
-};
-
-struct AS_Input {
-	SEM_sv_dispatchThreadId(uint);
-	SEM_sv_groupThreadId(uint);
-	SEM_sv_groupId(uint);
-};
-
-struct AS_Payload {
-    uint InstanceCounts[MAX_LOD_LEVELS];   // The instance count for each LOD level.
-    uint GroupOffsets[MAX_LOD_LEVELS + 1]; // The offset in threadgroups for each LOD level.
-
-    // The list of instance indices after culling. Ordered as:
-    // (list of LOD 0 instance indices), (list of LOD 1 instance indices), ... (list of LOD MAX_LOD_LEVELS-1 instance indices)                                            
-    uint InstanceList[AS_GROUP_SIZE];
-    uint InstanceOffsets[MAX_LOD_LEVELS + 1]; // The offset into the Instance List at which each LOD level begins.
-};
-
-groupshared AS_Payload s_payload;
-
-// [RootSignature(ROOT_SIG)]
-[numthreads(AS_GROUP_SIZE, 1, 1)]
-void as_main(AS_Input i) {
-    uint visibleCount = 1;
-	DispatchMesh(visibleCount, 1, 1, s_payload);
-}
-
-#if AX_RENDER_VK
-	#define OutputTopology_Triangles	outputtopology("triangle")
-#else
-	#define OutputTopology_Triangles	outputtopology("triangle")
-#endif
 
 struct MS_Input {
 	SEM_sv_dispatchThreadId(uint);
@@ -65,8 +31,15 @@ struct MS_Input {
 };
 
 struct VS_Output {
-	SEM_pos(float4);
-	SEM_color0(float4);
+	SEM_pos(Vec4f);
+	SEM_color0(Color4f);
+};
+
+struct Meshlet {
+	uint vertCount;
+	uint vertOffset;
+	uint primCount;
+	uint primOffset;
 };
 
 //[RootSignature(ROOT_SIG)]
@@ -80,10 +53,67 @@ void ms_main(
     uint dtid : SV_DispatchThreadID,
     uint gtid : SV_GroupThreadID,
     uint gid : SV_GroupID,
-    in  payload  AS_Payload payload
-//    out vertices VS_Output outVertices[MAX_VERTS],
-//    out indices  uint3     outTriangles[MAX_PRIMS]
+    out vertices VS_Output outVertices[MAX_VERTS],
+    out indices  uint3     outTriangles[MAX_PRIMS]
 ) {
+	Meshlet m;
+	m.vertCount = 3;
+	m.primCount = 1;
 
+    SetMeshOutputCounts(m.vertCount, m.primCount);
+
+
+    if (gtid < m.primCount) {
+        outTriangles[gtid] = uint3(0,1,2);
+    }
+
+    if (gtid < m.vertCount) {
+		VS_Output srcVert;
+		srcVert.pos   = Vec4f(gtid, gtid % 2, (gtid + 1) % 2, 1);
+
+		srcVert.color0 = Color4f(1, 1, 1, 1);
+        outVertices[gtid] = srcVert;
+    }
 }
+
+
+struct PS_Input {
+	SEM_sv_pos(float4);
+	SEM_color0(float4);
+	SEM_normal(float3);
+	SEM_worldPos(float3);
+};
+
+uniform Color4f color;
+
+uniform Color3f ambient;
+uniform Color3f diffuse;
+uniform Color3f specular;
+uniform float   shininess;
+
+float4 ps_main(PS_Input i) : SV_Target {
+	Vec3f   cameraPos  = axCamera.worldPos;
+	Vec3f   lightPos   = Vec3f(10, 10, 10);
+	Color3f lightColor = Color3f(1,1,1);
+
+	Vec3f lightDir  = normalize(lightPos  - i.worldPos);
+	Vec3f viewDir   = normalize(cameraPos - i.worldPos);
+
+	// ambient
+	Color3f _ambient = lightColor * ambient;
+
+	// diffuse 
+	Vec3f norm       = normalize(i.normal);
+	float diff       = max(dot(norm, lightDir), 0.0);
+	Color3f _diffuse = lightColor * (diff * diffuse);
+
+	// specular
+	Vec3f reflectDir  = reflect(-lightDir, norm);  
+	float spec        = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	Color3f _specular = lightColor * (specular * spec);
+		
+	Color3f o = _ambient + _diffuse + _specular;
+	return Color4f(o, 1);
+}
+
 

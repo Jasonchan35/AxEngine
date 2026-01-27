@@ -78,6 +78,7 @@ RenderStockObjects::Materials::Materials() {
 	Simple3D_Unlit_Texture = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Unlit_Texture.axShader");
 	Simple3D_Blinn_Color   = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Blinn_Color.axShader");
 	Simple3D_Blinn_Texture = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Blinn_Texture.axShader");
+	meshlet                = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/meshlet.axShader");
 }
 
 RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }

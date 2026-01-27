@@ -52,7 +52,8 @@ public:
 	
 	ShaderPass_Dx12(const CreateDesc& desc);
 
-	Pipeline* getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::PsoKey& key);
+	Pipeline* getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
+	Pipeline* getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
 	
 	bool _bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const;
 	void _createRootSignature(Dx12RootParameterList& rootParamList);
@@ -71,6 +72,7 @@ public:
 		func(_psStage, ShaderStageFlags::Pixel);
 		func(_gsStage, ShaderStageFlags::Geometry);
 		func(_csStage, ShaderStageFlags::Compute);
+		func(_msStage, ShaderStageFlags::Mesh);
 	}
 
 	struct Stage {
@@ -81,6 +83,7 @@ public:
 	Stage _psStage;
 	Stage _gsStage;
 	Stage _csStage;
+	Stage _msStage;
 
 	struct RootParamBinding {
 		RootParamBinding(Dx12RootParamType rootParamType_, BindSpace bindSpace_)

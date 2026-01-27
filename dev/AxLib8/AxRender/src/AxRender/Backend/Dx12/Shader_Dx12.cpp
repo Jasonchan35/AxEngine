@@ -160,17 +160,24 @@ void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList)
 	Dx12Util::throwIfError(hr);
 }
 
-auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::PsoKey& key) -> Pipeline* {
+auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
+	Pipeline::PsoKey psoKey;
+	psoKey.vertexLayout  = cmd.vertexLayout;
+	psoKey.primitiveType = cmd.primitiveType;
+	
 	for (auto& pipeline : _pipelineTable) {
-		if (pipeline->key == key) {
+		if (pipeline->key == psoKey) {
 			return pipeline.ptr();
 		}
 	}
-
+	
 	VertexInputLayoutDesc_Dx12 vertexInputLayoutDesc;
-	if (_vsStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
+	if (_vsStage.bytecode.size() <= 0) {
+		AX_ASSERT(false); 
+		return nullptr;
+	}
 
-	if (!vertexInputLayoutDesc.init(*_stageInfo, key.vertexLayout)) {
+	if (!vertexInputLayoutDesc.init(*_stageInfo, psoKey.vertexLayout)) {
 		AX_ASSERT(false);
 		return nullptr;
 	}	
@@ -186,8 +193,10 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 	psoDesc.VS = Dx12Util::getDxBytecode(_vsStage.bytecode);
 	psoDesc.PS = Dx12Util::getDxBytecode(_psStage.bytecode);
 	psoDesc.GS = Dx12Util::getDxBytecode(_gsStage.bytecode);
+//	psoDesc.MS = Dx12Util::getDxBytecode(_msStage.bytecode);
+	
 //-----
-	psoDesc.RasterizerState.FillMode = key.debugWireframe ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;
+	psoDesc.RasterizerState.FillMode = psoKey.debugWireframe ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;
 
 	psoDesc.RasterizerState.FrontCounterClockwise = true;
 	psoDesc.RasterizerState.CullMode              = Dx12Util::getDxCullMode(rs.cull);
@@ -236,7 +245,7 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 
 //-----
 	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = Dx12Util::getDxPrimitiveTopologyType(key.primitiveType);
+	psoDesc.PrimitiveTopologyType = Dx12Util::getDxPrimitiveTopologyType(psoKey.primitiveType);
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.SampleDesc.Count = 1;
 
@@ -257,7 +266,7 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 	}
 	
 	auto& outPipeline = _pipelineTable.emplaceNewObject(AX_NEW);
-	outPipeline->key = key;
+	outPipeline->key = psoKey;
 
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	auto hr = dev->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(outPipeline->pipelineState.ptrForInit()));
@@ -270,23 +279,33 @@ auto ShaderPass_Dx12::getOrAddPipeline(RenderRequest_Dx12* req, const Pipeline::
 	return outPipeline;
 }
 
+auto ShaderPass_Dx12::getOrAddMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
+	return nullptr;
+}
+
 bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const {
 	if (!req) { AX_ASSERT(false); return false; }
 
-	auto* renderPass = req->currentRenderPass_dx12();
-	if (!renderPass) { AX_ASSERT(false); return false; }
+	if (isMeshShader()) {
+		auto* pipeline = ax_const_cast(this)->getOrAddMeshShaderPipeline(req, cmd);
+		if (!pipeline) { AX_ASSERT(false); return false; }
 
-	Pipeline::PsoKey key;
-	key.vertexLayout	= cmd.vertexLayout;
-	key.primitiveType	= cmd.primitiveType;
+		auto& cmdList = req->graphCmdList_dx12();
+		cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
+		cmdList->SetPipelineState(pipeline->pipelineState);
+		
+	} else {
+		auto* renderPass = req->currentRenderPass_dx12();
+		if (!renderPass) { AX_ASSERT(false); return false; }
 
-	auto* pipeline = ax_const_cast(this)->getOrAddPipeline(req, key);
-	if (!pipeline) { AX_ASSERT(false); return false; }
+		auto* pipeline = ax_const_cast(this)->getOrAddPipeline(req, cmd);
+		if (!pipeline) { AX_ASSERT(false); return false; }
 
-	auto& cmdList = req->graphCmdList_dx12();
-	cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
-	cmdList->SetPipelineState(pipeline->pipelineState);
-	
+		auto& cmdList = req->graphCmdList_dx12();
+		cmdList->SetGraphicsRootSignature(ax_const_cast(_rootSignature));
+		cmdList->SetPipelineState(pipeline->pipelineState);
+	}
+
 	return true;
 }
 

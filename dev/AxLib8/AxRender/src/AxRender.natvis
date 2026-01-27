@@ -20,16 +20,19 @@
 
 	<Type Name="ax::Texture2D_Backend">
 		<DisplayString>debugName={_debugName} name={_name} assetPath={_assetPath}</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
 			<Item Name="assetPath">_assetPath</Item>
 			<Item Name="slotId">objectSlot._slotId</Item>
 		</Expand>
+		-->
 	</Type>
 
 	<Type Name="ax::ShaderParamSpace_Backend">
 		<DisplayString>[{_bindSpace}] {*_shaderPass}</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
@@ -37,10 +40,12 @@
 			<Item Name="shaderPass">_shaderPass</Item>
 			<Item Name="assetPath">_shaderPass->_shader->_assetPath</Item>
 		</Expand>
+		-->
 	</Type>
 
 	<Type Name="ax::ShaderPass_Backend">
 		<DisplayString>{_name} {_shader->_assetPath}</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
@@ -48,19 +53,23 @@
 			<Item Name="shader">_shader</Item>
 			<Item Name="assetPath">_shader->_assetPath</Item>
 		</Expand>
+		-->
 	</Type>
 
 	<Type Name="ax::Shader">
 		<DisplayString>{_assetPath}</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
 			<Item Name="assetPath">_assetPath</Item>
 		</Expand>
+		-->
 	</Type>
 
 	<Type Name="ax::MaterialParamSpace_Backend">
 		<DisplayString>BindSpace::{_shaderParamSpace._p->_bindSpace}[{*_materialPass}]</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
@@ -68,10 +77,12 @@
 			<Item Name="paramSpace">_shaderParamSpace._p</Item>
 			<Item Name="materialPass">_materialPass</Item>
 		</Expand>
+		-->
 	</Type>
 
 	<Type Name="ax::MaterialPass_Backend">
 		<DisplayString>MaterialPass-{*_shaderPass}</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
@@ -79,15 +90,18 @@
 			<Item Name="material">_material</Item>
 			<Item Name="shaderPass">_shaderPass</Item>
 		</Expand>
+		-->
 	</Type>
 
 	<Type Name="ax::Material_Backend">
 		<DisplayString>{*_shader_backend._p}</DisplayString>
+		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
 			<Item Name="debugName">_debugName</Item>
 			<Item Name="shader">_shader_backend</Item>
 		</Expand>
+		-->
 	</Type>
 
 

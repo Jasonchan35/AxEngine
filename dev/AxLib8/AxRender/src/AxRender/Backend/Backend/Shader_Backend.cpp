@@ -119,7 +119,7 @@ void ShaderParamSpace_Backend::StructuredBufferParam::create(const Info& info) {
 	_stride = info.stride;
 }
 
-inline void ShaderParamSpace_Backend::ParamBase::create(const Info& info) {
+void ShaderParamSpace_Backend::ParamBase::create(const Info& info) {
 	_name		= NameId::s_make(info.name);
 	_dataType	= info.dataType;
 	_stageFlags = info.stageFlags;
@@ -198,6 +198,8 @@ ShaderPass_Backend::ShaderPass_Backend(const CreateDesc& desc)
 	, _info(desc.info)
 	, _stageInfo(desc.stageInfo)
 {
+	_stageFlags = desc.stageInfo->stageFlags;
+	
 	{ // create BindSpace::Default (Vulkan requires all bindspace)
 		auto bindSpace = BindSpace::Default;
 		ShaderParamSpace_CreateDesc spaceDesc;

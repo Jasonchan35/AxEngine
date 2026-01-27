@@ -274,6 +274,7 @@ public:
 	}
 
 	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
+	bool isMeshShader() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Mesh); }
 
 	const ShaderParamSpace_Backend* getParamSpace(BindSpace bs) const {
 		auto* p = _shaderParamSpaces.tryGetElement(ax_enum_int(bs));
