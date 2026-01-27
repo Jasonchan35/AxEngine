@@ -26,7 +26,7 @@ public:
 	void _genGlobalParam		(ShaderStageInfo& outInfo, const SrcParam& srcParam);
 	void _genConstBuffer		(ShaderStageInfo& outInfo, const SrcParam& srcParam);
 	void _genSampler			(ShaderStageInfo& outInfo, const SrcParam& srcParam);
-	void _genTexture			(ShaderStageInfo& outInfo, const SrcParam& srcParam);
+	void _genTexture			(ShaderStageInfo& outInfo, const SrcParam& srcParam, RenderDataType dataType);
 	void _genStructuredBuffer	(ShaderStageInfo& outInfo, const SrcParam& srcParam);
 
 private:

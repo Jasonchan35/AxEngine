@@ -77,7 +77,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		if (!ownParamSpace) continue;
 		
 		if (bindSpace != BindSpace::RootConst) {
-			for (auto& param : ownParamSpace->_constBuffers) {
+			for (auto& param : ownParamSpace->_constBufferParams) {
 				addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 			}
 		}
@@ -105,7 +105,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		if (!paramSpace) continue;
 
 		if (bindSpace == BindSpace::RootConst) {
-			for (auto& param : paramSpace->_constBuffers) {
+			for (auto& param : paramSpace->_constBufferParams) {
 				//			AX_LOG("--- add RootConst bindPoint={} dataSize={} [{}]", param.bindPoint(), param.dataSize(), paramSpace->debugName());
 				_pipelineRootParamList.addRoot32BitConst(kDefaultShaderVisibility, param.bindPoint(), bindSpace, param.dataSize());
 				_rootParamBindings.emplaceBack(Dx12RootParamType::RootUInt32, bindSpace);

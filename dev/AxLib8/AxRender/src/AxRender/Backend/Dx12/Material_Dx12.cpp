@@ -53,7 +53,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 #if AX_RENDER_BINDLESS
 	if (_shaderParamSpace->bindSpace() == BindSpace::Bindless) {
 		_perFrameData.heapStart_CBV_SRV_UAV.handle = req->_bindlessDescriptors->CBV_SRV_UAV;
-		    _perFrameData.heapStart_Sampler.handle = req->_bindlessDescriptors->Sampler;
+		_perFrameData.heapStart_Sampler.handle = req->_bindlessDescriptors->Sampler;
 		return _perFrameData;
 	}
 #endif
@@ -85,14 +85,13 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		switch (texParam.dataType()) {
 			case RenderDataType::Texture2D: {
 				auto* tex = texParam.texture();
-				if (!tex) tex = req->_fallback->texture2D;
+				if (!tex) tex = req->stockObjects()->fallback->texture2D;
 				
 				auto* tex_dx12 = rttiCastCheck<Texture2D_Dx12>(tex);
 				if (!tex_dx12) throw Error_Undefined();
 				
 				auto srcDesc = ax_const_cast(tex_dx12)->_getUpdatedDescriptor(req);
 				req->_dynamicDescriptors.CBV_SRV_UAV.addDescriptor(srcDesc);
-				_perFrameData.heapStart_CBV_SRV_UAV.bindCount++;
 			} break;
 			default: throw Error_Undefined();
 		}
@@ -101,7 +100,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	//TODO move to static sampler
 	for (auto& samplerParam : _samplerParams) {
 		auto* sampler = samplerParam.sampler();
-		if (!sampler) sampler = req->_fallback->sampler;
+		if (!sampler) sampler = req->stockObjects()->fallback->sampler;
 		
 		auto* sampler_dx12 = rttiCastCheck<Sampler_Dx12>(sampler);
 		if (!sampler_dx12) throw Error_Undefined();
@@ -109,12 +108,8 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		auto& ss = sampler_dx12->samplerState();
 //		AX_LOG("-- addSampler");
 		req->_dynamicDescriptors.Sampler.addSampler(ss);
-		_perFrameData.heapStart_Sampler.bindCount++;
 	}
 
-	auto* shd = shaderParamSpace_dx12();
-	if (shd->_CBV_SRV_UAV_DescTable.size() != _perFrameData.heapStart_CBV_SRV_UAV.bindCount) throw Error_Undefined();
-	if (shd->_samplerDescTable.size()      != _perFrameData.heapStart_Sampler.bindCount    ) throw Error_Undefined();
 #endif
 	return _perFrameData;
 }

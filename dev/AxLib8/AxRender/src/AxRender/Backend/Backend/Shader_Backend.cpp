@@ -37,12 +37,12 @@ void ShaderParamSpace_Backend::_postCreate(ShaderPass_Backend* shdPass) {
 	}
 	
 	Int constBufferIndex = 0;
-	for (auto& param : _constBuffers) {
+	for (auto& param : _constBufferParams) {
 		for (auto& varInfo : param.varInfos()) {
-			auto& dst       = _nameToVarInfo.emplaceBack();
-			dst.name        = varInfo.name();
-			dst.constBufferIndex = constBufferIndex; 
-			dst.varInfo     = &varInfo;
+			auto& dst            = _nameToVarInfo.emplaceBack();
+			dst.name             = varInfo.name();
+			dst.constBufferIndex = constBufferIndex;
+			dst.varInfo          = &varInfo;
 		}
 		
 		++constBufferIndex;
@@ -62,7 +62,8 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 
 	auto& dst = arr.emplaceBack();
 	dst.create(paramInfo);
-
+	
+#if AX_RENDER_BINDLESS
 	if constexpr (std::is_same_v<SamplerParam, T>) {
 		auto str = dst.name().toString();
 		if (auto samplerName = str.extractFromPrefix("AxSamplerState_")) {
@@ -82,16 +83,16 @@ void ShaderParamSpace_Backend::_addParam(IArray<T>& arr, const INFO& paramInfo) 
 
 			} else if (auto tex3dName = str.extractFromPrefix("AxTexture3D_")) {
 				_nameToTexture3D.emplaceBack(Pair_make(NameId::s_make(tex3dName), varInfo.name()));
-
 			}
 		}
 	}
+#endif // #if AX_RENDER_BINDLESS
 }
 
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Texture&          paramInfo) { _addParam(_textureParams,          paramInfo); }
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::Sampler&          paramInfo) { _addParam(_samplerParams,          paramInfo); }
 void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::StructuredBuffer& paramInfo) { _addParam(_structuredBufferParams, paramInfo); }
-void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::ConstBuffer&      paramInfo) { _addParam(_constBuffers,           paramInfo); }
+void ShaderParamSpace_Backend::addParam(const ShaderStageInfo::ConstBuffer&      paramInfo) { _addParam(_constBufferParams,      paramInfo); }
 
 inline void ShaderParamSpace_Backend::SamplerParam::create(const Info& info) {
 	ParamBase::create(info);
@@ -130,7 +131,7 @@ void ShaderParamSpace_Backend::ParamBase::create(const Info& info) {
 void ShaderParamSpace_Backend::setPropDefaultValue(NameId propName, const ShaderPropInfo& propInfo) {
 
 	auto setVariableDefault = [&](auto& value) {
-		for (auto& cb : _constBuffers) {
+		for (auto& cb : _constBufferParams) {
 			if (auto* varInfo = cb.findVarInfo(propName)) {
 				cb.setVariableDefault(*varInfo, value);
 			}

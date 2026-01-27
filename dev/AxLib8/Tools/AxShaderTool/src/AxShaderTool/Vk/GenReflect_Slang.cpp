@@ -205,8 +205,14 @@ void GenReflect_Slang::_genBindings(ShaderStageInfo& outInfo, const JsonValue& j
 		if (*json_elementKind == "samplerState"  ) { _genSampler    (outInfo, srcParam); continue; }
 		if (*json_elementKind == "resource") {
 			auto& json_baseShape = json_elementType->memberString("baseShape");
-			if (json_baseShape == "texture2D"       ) { _genTexture         (outInfo, srcParam); continue; }
-			if (json_baseShape == "texture3D"       ) { _genTexture         (outInfo, srcParam); continue; }
+			if (json_baseShape == "texture2D") {
+				_genTexture(outInfo, srcParam, RenderDataType::Texture2D);
+				continue;
+			}
+			if (json_baseShape == "texture3D") {
+				_genTexture(outInfo, srcParam, RenderDataType::Texture3D);
+				continue;
+			}
 			if (json_baseShape == "structuredBuffer") { _genStructuredBuffer(outInfo, srcParam); continue; }
 			throw Error_Undefined(Fmt("unsupported resource baseShape {}", json_baseShape));
 		}
@@ -265,11 +271,13 @@ void GenReflect_Slang::_genVariables(ShaderStageInfo::BufferBase& dstBuf, const 
 
 void GenReflect_Slang::_genSampler(ShaderStageInfo& outInfo, const SrcParam& srcParam) {
 	auto& dstBuf = outInfo.samplers.emplaceBack();
+	dstBuf.dataType = RenderDataType::SamplerState;
 	_genParamBase(dstBuf, outInfo, srcParam);
 }
 
-void GenReflect_Slang::_genTexture(ShaderStageInfo& outInfo, const SrcParam& srcParam) {
+void GenReflect_Slang::_genTexture(ShaderStageInfo& outInfo, const SrcParam& srcParam, RenderDataType dataType) {
 	auto& dstBuf = outInfo.textures.emplaceBack();
+	dstBuf.dataType = dataType;
 	_genParamBase(dstBuf, outInfo, srcParam);
 }
 

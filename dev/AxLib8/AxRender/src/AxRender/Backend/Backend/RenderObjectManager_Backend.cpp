@@ -72,10 +72,10 @@ void RenderObjectManager_Backend::_postCreate() {
 	_indirectDrawMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/IndirectDraw.axComputeShader");
 	
 	RenderStockObjects::s_create();
-	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();
 
 #if AX_RENDER_BINDLESS
-	auto* bindlessSpace = commonShaderPass->getParamSpace(ShaderParamBindSpace::Bindless);
+	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();
+	auto* bindlessSpace    = commonShaderPass->getParamSpace(ShaderParamBindSpace::Bindless);
 
 	bindless.AxBindless_SamplerState = bindlessSpace->findSamplerParam(AX_NAMEID("AxBindless_SamplerState"));
 	if (!bindless.AxBindless_SamplerState) throw Error_Undefined();

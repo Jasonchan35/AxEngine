@@ -50,7 +50,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 #if !AX_RENDER_BINDLESS
 	for (auto& param : _samplerParams) {
 		auto* sampler = param.sampler();
-		if (!sampler) sampler = req->_fallback->sampler; 
+		if (!sampler) sampler = req->stockObjects()->fallback->sampler; 
 
 		auto* sampler_vk = rttiCastCheck<Sampler_Vk>(sampler);
 		if (!sampler_vk) throw Error_Undefined();
@@ -61,7 +61,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 
 	for (auto& param : _textureParams) {
 		auto* tex = param.texture();
-		if (!tex) tex = req->_fallback->texture2D;
+		if (!tex) tex = req->stockObjects()->fallback->texture2D;
 
 		switch (tex->type()) {
 			case RenderDataType::Texture2D: {

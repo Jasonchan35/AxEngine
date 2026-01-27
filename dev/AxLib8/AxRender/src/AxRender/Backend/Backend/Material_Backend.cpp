@@ -41,7 +41,7 @@ MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 		return;
 	}
 
-	MaterialParamSpace_Backend_cloneParams(_constBufferParams       , _shaderParamSpace->_constBuffers          );
+	MaterialParamSpace_Backend_cloneParams(_constBufferParams       , _shaderParamSpace->_constBufferParams          );
 	MaterialParamSpace_Backend_cloneParams(_structuredBufferParams  , _shaderParamSpace->_structuredBufferParams);
 	MaterialParamSpace_Backend_cloneParams(_samplerParams           , _shaderParamSpace->_samplerParams         );
 	MaterialParamSpace_Backend_cloneParams(_textureParams           , _shaderParamSpace->_textureParams         );

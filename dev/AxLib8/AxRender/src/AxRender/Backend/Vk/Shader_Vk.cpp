@@ -41,12 +41,12 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 
 		AX_VkDescriptorSetLayoutBindings_<64> 	bindings;
 		auto addBinding = [&](const ParamBase& p, VkDescriptorType type) {
-			AX_LOG("-- addBinding name={:26} bindPoint={:6}, bindCount={:6} flags={} type={:16} this={}",
-			           p.name(), p.bindPoint(), p.bindCount(), p.stageFlags(), type, ownParamSpace->debugName());
+//			AX_LOG("-- addBinding name={:26} bindPoint={:6}, bindCount={:6} flags={} type={:16} this={}",
+//			           p.name(), p.bindPoint(), p.bindCount(), p.stageFlags(), type, ownParamSpace->debugName());
 			bindings.addBinding(type, p.bindPoint(), p.bindCount(), p.stageFlags(), bindingFlags);
 		};
 
-		for (auto& param : ownParamSpace->_constBuffers          ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
+		for (auto& param : ownParamSpace->_constBufferParams          ) { addBinding(param, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); }
 		for (auto& param : ownParamSpace->_textureParams         ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ); }
 		for (auto& param : ownParamSpace->_samplerParams         ) { addBinding(param, VK_DESCRIPTOR_TYPE_SAMPLER       ); }
 		for (auto& param : ownParamSpace->_structuredBufferParams) { addBinding(param, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER); }
@@ -55,10 +55,9 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 //		if (bindings.bindings.size() <= 0) continue;
 		
 		ownParamSpace->_descSetLayout_vk.create(dev, bindings, layoutFlags);
-		AX_LOG("---- create Layout {} bindings={} {}",
-		       (void*)ownParamSpace->_descSetLayout_vk.handle(),
-		       bindings.bindings.size(),
-		       ownParamSpace->debugName());
+//		AX_LOG("---- create Layout {} bindings={} {}",
+//		       (void*)ownParamSpace->_descSetLayout_vk.handle(),
+//		       bindings.bindings.size(), ownParamSpace->debugName());
 		_ownDescSetCount++;
 	}
 
@@ -67,7 +66,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		if (!paramSpace) continue;
 
 		if (bindSpace == BindSpace::RootConst) {
-			for (auto& param : paramSpace->_constBuffers) {
+			for (auto& param : paramSpace->_constBufferParams) {
 				auto& dst = pushConsts.emplaceBack();
 				dst.offset = pushConstOffset;
 				dst.size = ax_safe_cast_from(param.dataSize());
@@ -80,7 +79,7 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 		auto* layout = paramSpace->_descSetLayout_vk.handle();
 		if (!layout) continue;
 		
-		AX_LOG("-- add Layout {} {}", (void*)layout, paramSpace->debugName());
+//		AX_LOG("-- add Layout {} {}", (void*)layout, paramSpace->debugName());
 		_allLayouts_vk.emplaceBack(layout);
 	}
 
