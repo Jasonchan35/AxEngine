@@ -115,7 +115,7 @@ bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) {
 	}
 
 	AX_vkCmdBindDescriptorSets(req->graphCmdList_vk(),
-	                           shdPass->isCompute() ? VK_PIPELINE_BIND_POINT_COMPUTE : VK_PIPELINE_BIND_POINT_GRAPHICS,
+	                           shdPass->isComputeShader() ? VK_PIPELINE_BIND_POINT_COMPUTE : VK_PIPELINE_BIND_POINT_GRAPHICS,
 	                           shdPass->pipelineLayout(),
 	                           0,
 	                           allDescSets,

@@ -5,7 +5,7 @@ import :Dx12DescriptorHeap;
 
 namespace  ax {
 
-void Dx12DescriptorHeap::create(InNameId name, Dx12_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc) {
+void Dx12DescriptorHeap::create(InNameId name, AX_ID3D12Device* dev, D3D12_DESCRIPTOR_HEAP_DESC desc) {
 	destroy();
 	_name   = name;
 	_desc   = desc;
@@ -62,7 +62,7 @@ void Dx12DescriptorHeapPool::_onCreateChunk(Dx12DescriptorHeapChunk& outHeapChun
 	outHeapChunk._dev         = _dev;
 }
 
-void Dx12DescriptorHeapPool::_create(InNameId name, Dx12_ID3D12Device* dev, Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
+void Dx12DescriptorHeapPool::_create(InNameId name, AX_ID3D12Device* dev, Int numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type, D3D12_DESCRIPTOR_HEAP_FLAGS flags) {
 //	AX_LOG("Dx12DescriptorHeapPool::create name={:20} size={:8} type={}", name, desc.NumDescriptors, desc.Type);
 	
 	destroy();

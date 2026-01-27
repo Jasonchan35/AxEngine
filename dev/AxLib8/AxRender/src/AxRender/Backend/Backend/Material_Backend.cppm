@@ -272,6 +272,8 @@ public:
 	virtual bool onBindMaterial(class RenderRequest* req, AxDrawCallDesc& cmd) = 0;
 
 	bool isOwnParamSpace(BindSpace s) const { return _shaderPass->isOwnParamSpace(s); }
+	bool isMeshShader() const { return _shaderPass->isMeshShader(); }
+	bool isComputeShader() const { return _shaderPass->isComputeShader(); }
 
 	NameId getPropSamplerName(NameId name) const { auto* shd = shader(); return shd ? shd->getPropSamplerName(name) : NameId(); }
 

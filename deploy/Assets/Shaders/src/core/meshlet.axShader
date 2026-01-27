@@ -77,13 +77,16 @@ void ms_main(
 
     if (gtid < m.vertCount) {
 		VS_Input i;
-		i.pos = Vec4f(gtid, gtid % 2, (gtid + 1) % 2, 1);
+		i.pos    = Vec4f(gtid % 2, gtid, (gtid + 1) % 2, 1);
+		i.normal = -normalize(Vec3f(1, 1, 0));
 
 		VS_Output o;
-		o.sv_pos = ax_project_vertex(i.pos);
-		o.color0 = Color4f(1, 1, 1, 1);
-        outVertices[gtid] = o;
-    }
+		o.worldPos = AxVertex_WorldPos(i.pos);
+		o.sv_pos   = AxVertex_ProjPos(i.pos);
+		o.normal   = AxVertex_Normal(i.normal);
+		o.color0   = Color4f(1, 1, 1, 1);
+		outVertices[gtid] = o;
+	}
 }
 
 uniform Color4f color;

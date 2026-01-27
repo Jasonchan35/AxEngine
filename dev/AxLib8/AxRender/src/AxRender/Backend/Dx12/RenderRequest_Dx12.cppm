@@ -60,7 +60,7 @@ public:
 		_graphCmdList_dx12->SetDescriptorHeaps(ax_safe_cast_from(heaps.size()), heaps.data());
 	}
 	
-	Dx12_ID3D12Device* _d3dDevice = nullptr;
+	AX_ID3D12Device* _d3dDevice = nullptr;
 	
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 };

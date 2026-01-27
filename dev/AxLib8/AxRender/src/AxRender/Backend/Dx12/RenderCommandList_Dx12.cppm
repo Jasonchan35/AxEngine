@@ -29,11 +29,11 @@ public:
 		Dx12Util::throwIfError(hr);	
 	}
 
-	ID3D12GraphicsCommandList* operator->() { return _cmdList_dx12.ptr(); }
-	operator ID3D12GraphicsCommandList*() { return _cmdList_dx12.ptr(); }
+	AX_ID3D12GraphicsCommandList* operator->() { return _cmdList_dx12.ptr(); }
+	operator AX_ID3D12GraphicsCommandList*() { return _cmdList_dx12.ptr(); }
 
-	ComPtr<ID3D12CommandAllocator>		_cmdAllocator_dx12;
-	ComPtr<ID3D12GraphicsCommandList>	_cmdList_dx12;
+	ComPtr<AX_ID3D12CommandAllocator>		_cmdAllocator_dx12;
+	ComPtr<AX_ID3D12GraphicsCommandList>	_cmdList_dx12;
 };
 
 } // namespace

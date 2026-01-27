@@ -138,7 +138,17 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 }
 
 void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
+	auto* mat = rttiCastCheck<Material_Dx12>(drawcall.material);
+	if (!mat) return;
+	auto* matPass = mat->getPass(drawcall.materialPassIndex);
+	if (!matPass) return;
+
 	auto& cmdList = _graphCmdList_dx12;
+	
+	if (matPass->isMeshShader()) {
+		cmdList->DispatchMesh(16, 1, 1); // TODO
+		return;
+	}
 	
 	D3D12_PRIMITIVE_TOPOLOGY topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
 	cmdList->IASetPrimitiveTopology(topology); // already in pso

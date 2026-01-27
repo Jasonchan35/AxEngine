@@ -16,14 +16,14 @@ public:
 	RenderSystem_Dx12(const CreateDesc& desc);
 	virtual ~RenderSystem_Dx12() override;
 
-	static Dx12_ID3D12Device* s_d3dDevice() { auto* t = s_instance(); return t ? t->d3dDevice() : nullptr; }
+	static AX_ID3D12Device* s_d3dDevice() { auto* t = s_instance(); return t ? t->d3dDevice() : nullptr; }
 
-	Dx12_ID3D12Device*		d3dDevice	()	{ return _d3dDevice; }
-	Dx12_IDXGIFactory*		dxgiFactory	()	{ return _dxgiFactory; }
+	AX_ID3D12Device*		d3dDevice	()	{ return _d3dDevice; }
+	AX_IDXGIFactory*		dxgiFactory	()	{ return _dxgiFactory; }
 	D3D12MA::Allocator*		d3dAllocator() { return _d3dAllocator; }
 
 #if _DEBUG
-	Dx12_IDXGIDebug*		dxgiDebug	()	{ return _dxgiDebug; }
+	AX_IDXGIDebug*		dxgiDebug	()	{ return _dxgiDebug; }
 #endif
 
 protected:
@@ -38,13 +38,13 @@ private:
 	void _getHardwareAdapter();
 
 	D3D_FEATURE_LEVEL			_d3dFeatureLevel = static_cast<D3D_FEATURE_LEVEL>(0);
-	ComPtr<Dx12_IDXGIFactory>	_dxgiFactory;
-	ComPtr<Dx12_ID3D12Device>	_d3dDevice;
-	ComPtr<Dx12_IDXGIAdapter>	_dxgiAdapter;
+	ComPtr<AX_IDXGIFactory>	_dxgiFactory;
+	ComPtr<AX_ID3D12Device>	_d3dDevice;
+	ComPtr<AX_IDXGIAdapter>	_dxgiAdapter;
 
 #if _DEBUG
-	ComPtr<Dx12_IDXGIDebug>		_dxgiDebug;
-	ComPtr<Dx12_ID3D12Debug>	_d3dDebug;
+	ComPtr<AX_IDXGIDebug>		_dxgiDebug;
+	ComPtr<AX_ID3D12Debug>	_d3dDebug;
 #endif
 	
 	ComPtr<D3D12MA::Allocator>	_d3dAllocator;

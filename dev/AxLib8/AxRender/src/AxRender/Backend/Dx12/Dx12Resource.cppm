@@ -25,7 +25,7 @@ public:
 	ID3D12Resource*	d3dResource() { return _d3dResource; }
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _d3dResource ? _d3dResource->GetGPUVirtualAddress() : 0; }
 
-	Dx12_ID3DResource** ptrForInit() { return _d3dResource.ptrForInit(); }
+	AX_ID3D12Resource** ptrForInit() { return _d3dResource.ptrForInit(); }
 
 	bool isValid() const { return _d3dResource.ptr() != nullptr; }
 
@@ -50,7 +50,7 @@ protected:
 	void _create(const D3D12_CLEAR_VALUE* clearValue = nullptr);
 	void _reset();
 
-	ComPtr<Dx12_ID3DResource>   _d3dResource;
+	ComPtr<AX_ID3D12Resource>   _d3dResource;
 	ComPtr<D3D12MA::Allocation> _d3d12maAllocation;
 	Int                         _bufferCapacity     = 0;
 	D3D12MA::ALLOCATION_DESC    _allocDesc          = {};
@@ -65,7 +65,7 @@ protected:
 
 class Dx12Resource_ColorBuffer : public Dx12ResourceBase {
 public:
-	void createFromSwapChain(Dx12_IDXGISwapChain* swapChain, UINT backBufIndex);
+	void createFromSwapChain(AX_IDXGISwapChain* swapChain, UINT backBufIndex);
 	void create(Vec2i size, ColorType colorType, const D3D12_CLEAR_VALUE& clearValue);
 };
 
@@ -193,11 +193,11 @@ public:
 
 	void present(UINT SyncInterval, UINT Flags);
 
-	Dx12_IDXGISwapChain* ptr()			{ return _swapChain; }
-	operator Dx12_IDXGISwapChain*()		{ return _swapChain; }
+	AX_IDXGISwapChain* ptr()			{ return _swapChain; }
+	operator AX_IDXGISwapChain*()		{ return _swapChain; }
 	
 private:
-	ComPtr<Dx12_IDXGISwapChain>	_swapChain;
+	ComPtr<AX_IDXGISwapChain>	_swapChain;
 };
 
 struct Dx12DescriptorTable : public NonCopyable {

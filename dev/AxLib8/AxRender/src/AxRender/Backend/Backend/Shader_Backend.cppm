@@ -273,7 +273,7 @@ public:
 		return _isGlobalCommonShader || s == BindSpace::Default;
 	}
 
-	bool isCompute() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
+	bool isComputeShader() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Compute); }
 	bool isMeshShader() const { return ax_bit_has(_stageFlags, ShaderStageFlags::Mesh); }
 
 	const ShaderParamSpace_Backend* getParamSpace(BindSpace bs) const {

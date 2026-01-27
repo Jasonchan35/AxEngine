@@ -132,7 +132,7 @@ void ShaderPass_Dx12::_createRootSignature(Dx12RootParameterList& rootParamList)
 	auto& desc = rootSignatureDesc.Desc_1_0;
 	desc = {};
 
-	if (!isCompute()) {
+	if (!isComputeShader()) {
 		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	}
 
