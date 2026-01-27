@@ -196,14 +196,14 @@
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 
-          "dataType": "None", 
+          "dataType": "Texture2D", 
           "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Bindless", 
           "bindPoint": 30000, 
           "bindCount": 10000
         }, {
           "name": "AxBindless_Texture3D", 
-          "dataType": "None", 
+          "dataType": "Texture3D", 
           "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Bindless", 
           "bindPoint": 40000, 
@@ -211,10 +211,10 @@
         }], 
       "samplers": [{
           "name": "AxBindless_SamplerState", 
-          "dataType": "None", 
+          "dataType": "SamplerState", 
           "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Bindless", 
-          "bindPoint": 10000, 
+          "bindPoint": 11000, 
           "bindCount": 1000, 
           "dynamicSampler": true
         }], 

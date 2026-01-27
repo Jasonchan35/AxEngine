@@ -2,7 +2,7 @@
     "parameters": [
         {
             "name": "AxBindless_SamplerState",
-            "binding": {"kind": "samplerState", "space": 2, "index": 10000},
+            "binding": {"kind": "samplerState", "space": 2, "index": 11000},
             "type": {
                 "kind": "array",
                 "elementCount": 1000,
@@ -732,7 +732,7 @@
             "bindings": [
                 {
                     "name": "AxBindless_SamplerState",
-                    "binding": {"kind": "samplerState", "space": 2, "index": 10000, "used": 1}
+                    "binding": {"kind": "samplerState", "space": 2, "index": 11000, "used": 1}
                 },
                 {
                     "name": "AxBindless_Texture2D",

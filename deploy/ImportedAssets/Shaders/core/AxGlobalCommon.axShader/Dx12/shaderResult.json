@@ -214,7 +214,7 @@
           "dataType": "SamplerState", 
           "stageFlags": "Vertex | Pixel | Mesh", 
           "bindSpace": "Bindless", 
-          "bindPoint": 0, 
+          "bindPoint": 1000, 
           "bindCount": 1000, 
           "dynamicSampler": true
         }], 

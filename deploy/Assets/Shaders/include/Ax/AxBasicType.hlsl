@@ -32,7 +32,7 @@ typedef float4		Color4f;
 #define AX_BindSpace_Bindless   space2
 #define AX_BindSpace_RootConst  space3
 
-#if AX_RENDER_VK
+#ifdef AX_RENDER_VK
 	#define AX_ROOT_CONST_STRUCT(TYPE, NAME) \
 		[[vk::push_constant]] \
 		ConstantBuffer<TYPE> NAME; \
@@ -44,8 +44,8 @@ typedef float4		Color4f;
 #endif
 
 
-#if AX_RENDER_BINDLESS
-	SamplerState AxBindless_SamplerState[1000] : register(s0,     AX_BindSpace_Bindless);
+#ifdef AX_RENDER_BINDLESS
+	SamplerState AxBindless_SamplerState[1000] : register(s1000,  AX_BindSpace_Bindless);
 	Texture2D    AxBindless_Texture2D[10000]   : register(t10000, AX_BindSpace_Bindless);
 	Texture3D    AxBindless_Texture3D[1000]    : register(t20000, AX_BindSpace_Bindless);
 	
@@ -73,6 +73,9 @@ typedef float4		Color4f;
 
 	#define tex2D(NAME, UV) NAME.Sample(AxSamplerState_##NAME, UV)
 	#define tex3D(NAME, UV) NAME.Sample(AxSamplerState_##NAME, UV)
+
+	#define tex2Dlod(NAME, UV, LOD) NAME.SampleLevel(AxSamplerState_##NAME, UV, LOD)
+	#define tex3Dlod(NAME, UV, LOD) NAME.SampleLevel(AxSamplerState_##NAME, UV, LOD)
 
 #endif // else AX_RENDER_BINDLESS
 
