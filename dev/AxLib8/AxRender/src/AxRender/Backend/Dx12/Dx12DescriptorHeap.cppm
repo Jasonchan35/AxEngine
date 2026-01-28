@@ -279,15 +279,17 @@ struct Dx12DescriptorHeapChunk_CBV_SRV_UAV : public Dx12DescriptorHeapChunk {
 		return _create(name, heapPool, size, fullyUsed);
 	}
 	
-	Dx12Descriptor_ConstBuffer setCBV(Int index, const Dx12Resource_GpuBuffer& res) {
+	Dx12Descriptor_ConstBuffer setCBV(Int index, const Dx12Resource_GpuBuffer& res, Int gpuAddressOffset) {
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-		desc.BufferLocation = ax_const_cast(res).gpuAddress();
+		desc.BufferLocation = res.gpuAddress() + gpuAddressOffset;
 		desc.SizeInBytes    = Dx12Util::castUINT(res.bufferSize());
 		auto h = _getHandle<Dx12Descriptor_ConstBuffer>(index);
 		_dev->CreateConstantBufferView(&desc, h.handle.cpu);
 		return h;
 	}
-	Dx12Descriptor_ConstBuffer addCBV(const Dx12Resource_GpuBuffer& res) { return setCBV(_addHandle(), res); }
+	Dx12Descriptor_ConstBuffer addCBV(const Dx12Resource_GpuBuffer& res, Int gpuAddressOffset) {
+		return setCBV(_addHandle(), res, gpuAddressOffset);
+	}
 
 	Dx12Descriptor_SRV setSRV(Int index, const Dx12Resource_GpuBuffer& res, Int first, Int count, Int stride) {
 		D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};

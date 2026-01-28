@@ -12,19 +12,19 @@ namespace ax /*::AxRender*/ {
 class RenderSystem_Dx12;
 
 using AX_IDXGIFactory    = IDXGIFactory6;
-using AX_ID3D12Device    = ID3D12Device9;
 using AX_IDXGIAdapter    = IDXGIAdapter4;
 using AX_IDXGISwapChain  = IDXGISwapChain4;
 
-#if _DEBUG
-	using AX_IDXGIDebug  = IDXGIDebug1;
-	using AX_ID3D12Debug = ID3D12Debug6;
-#endif
-
+using AX_ID3D12Device              = ID3D12Device9;
+using AX_ID3D12Heap                = ID3D12Heap1;
 using AX_ID3D12Resource            = ID3D12Resource2;
 using AX_ID3D12GraphicsCommandList = ID3D12GraphicsCommandList6;
 using AX_ID3D12CommandAllocator    = ID3D12CommandAllocator;
 
+#if _DEBUG
+using AX_IDXGIDebug  = IDXGIDebug1;
+using AX_ID3D12Debug = ID3D12Debug6;
+#endif
 
 struct Dx12Util {
 	Dx12Util() = delete;

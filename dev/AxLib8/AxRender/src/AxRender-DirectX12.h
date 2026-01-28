@@ -2,9 +2,16 @@
 
 #if AX_RENDERER_DX12
 
+#define D3D12MA_USING_DIRECTX_HEADERS 1
+
 #if AX_OS_WINDOWS
-//	#include <d3d12.h>
-	#include "AxRender/Backend/Dx12/DirectX-Headers/directx/d3dx12.h"
+	#if D3D12MA_USING_DIRECTX_HEADERS
+		#include <directx/d3dx12.h>
+		#include <dxguids/dxguids.h>
+
+	#else
+		#include <d3d12.h>
+	#endif
 
 	#include <dxgi1_6.h>
 

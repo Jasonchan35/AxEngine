@@ -45,7 +45,7 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 		req->resourcesToKeep.add(uploadBuf);
 
 		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
-		srcLoc.pResource = uploadBuf->resource().d3dResource();
+		srcLoc.pResource = uploadBuf->d3dResource();
 		srcLoc.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 
 		auto& fp = srcLoc.PlacedFootprint;

@@ -25,8 +25,8 @@ void ImGui_Backend::create() {
 	_ctx = ImGui::CreateContext();
 	if (!_ctx) throw Error_Undefined("ImGui error create context");
 
-	_vertexBuffer.create<Vertex>({8 * Math::MegaBytes, 256 * 1024});
-	 _indexBuffer.create<Index>( {1 * Math::MegaBytes,  64 * 1024});
+	_vertexBuffer.create<Vertex>();
+	 _indexBuffer.create<Index>();
 
 	ImGuiIO& io = ImGui::GetIO();
 

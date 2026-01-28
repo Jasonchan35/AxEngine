@@ -11,10 +11,18 @@ SPtr<GpuBuffer> GpuBuffer::s_new(const MemAllocRequest& req, const CreateDesc& d
 }
 
 GpuBuffer::GpuBuffer(const CreateDesc& desc) {
-	_name       = NameId::s_make(desc.name);
-	_bufferType = desc.bufferType;
-	_bufferSize = desc.bufferSize;
-	_virMemDesc = desc.virMemDesc;
+	_name = NameId::s_make(desc.name);
+	_type = desc.bufferType;
+	_size = desc.bufferSize;
+}
+
+GpuBufferPool::GpuBufferPool(const CreateDesc& desc)
+: _bufferType(desc.bufferType)
+, _maxSize(desc.maxSize)
+, _pageSize(desc.pageSize) 
+{
+	setName(desc.name);
+
 }
 
 SPtr<GpuStructuredBuffer> GpuStructuredBuffer::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
@@ -36,8 +44,7 @@ void DynamicGpuBuffer::create(const CreateDesc& desc) {
 	reset();
 	_name       = desc.name;
 	_bufferType = desc.bufferType;
-	_virMemDesc = desc.virMemDesc;
-	_data.resize(desc.bufferSize);
+	_cpuBuffer.resize(desc.bufferSize);
 }
 
 void DynamicGpuBuffer::destroy() {
@@ -46,7 +53,7 @@ void DynamicGpuBuffer::destroy() {
 }
 
 void DynamicGpuBuffer::reset() {
-	_data.clear();
+	_cpuBuffer.clear();
 	_dirtyRange.reset();
 }
 
@@ -55,23 +62,21 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 	AX_ASSERT(_bufferType != GpuBufferType::None);
 	if (_dirtyRange.size() <= 0 && _gpuBuffer) return _gpuBuffer;
 
-	auto dataSize     = _data.size();
-	auto dataCapacity = _data.capacity();
+	auto dataSize     = _cpuBuffer.size();
+	auto dataCapacity = _cpuBuffer.capacity();
 	auto uploadRange  = _dirtyRange;
 	_dirtyRange.reset();
 
-	if (!_gpuBuffer || _gpuBuffer->bufferSize() < dataCapacity) {
+	if (!_gpuBuffer || _gpuBuffer->size() < dataCapacity) {
 		GpuBuffer_CreateDesc bufferDesc;
 		bufferDesc.bufferType = _bufferType;
-		bufferDesc.bufferSize = _virMemDesc.maxSize ? 0 : dataCapacity;
-		bufferDesc.virMemDesc = _virMemDesc;
+		bufferDesc.bufferSize = dataCapacity;
 
 		_gpuBuffer = GpuBuffer::s_new(AX_NEW, bufferDesc);
 		uploadRange = IntRange(dataSize); // upload all data for new buffer
 	}
 
-	_gpuBuffer->ensureCapacity(req, dataCapacity);
-	req->copyDataToGpuBuffer(_gpuBuffer, _data.slice(uploadRange), uploadRange.start());
+	req->copyDataToGpuBuffer(_gpuBuffer, _cpuBuffer.slice(uploadRange), uploadRange.start());
 	return _gpuBuffer;
 }
 

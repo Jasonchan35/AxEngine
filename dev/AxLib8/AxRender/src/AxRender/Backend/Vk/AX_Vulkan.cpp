@@ -1280,8 +1280,6 @@ void AX_VkDeviceMemory::createForBuffer(AX_VkBuffer& buf) {
 }
 
 void AX_VkDeviceMemory::createForVirtualMemPage(AX_VkBuffer& buf, Int pageSize) {
-	AX_ASSERT(buf.virMemDesc().maxSize > 0);
-	
 	destroy();
 	auto memReq = buf.getMemoryRequirements();
 	memReq.size = pageSize;
@@ -1388,11 +1386,7 @@ void AX_VkDeviceMemory::invalidateMappedMemoryRanges(Span<IntRange> ranges) {
 
 void AX_VkBuffer::destroy() {
 	if (_handle) {
-		if (_virMemDesc.maxSize) {
-			// AX_LOG("-- vkDestroyBuffer {} {}", (void*)_handle);
-			vkDestroyBuffer(*_dev, _handle, AX_VkUtil::allocCallbacks());
-			
-		} else if (_sparseBuffer) {
+		if (_sparseBuffer) {
 			_sparseBuffer->freeSparseMemory(_vmaAllocation, _vmaAllocationInfo);
 			// AX_LOG("-- freeSparseMemory {} {} offset={}", (void*)_handle, (void*)_vmaAllocation, _sparseOffset);
 			_sparseBuffer = nullptr;
@@ -1411,7 +1405,6 @@ void AX_VkBuffer::create(AX_VkDevice&         dev,
                          VkDeviceSize         bufferSize,
                          VkBufferUsageFlags   usage,
                          VmaMemoryUsage       vmaUsage,
-                         GpuVirtualMemoryDesc virMemDesc,
                          AX_VkSparseBuffer*   sparseBuffer) 
 {
 	if (_handle && _dev == &dev && bufferSize == _bufferSize) 
@@ -1422,7 +1415,6 @@ void AX_VkBuffer::create(AX_VkDevice&         dev,
 	_usage        = usage;
 	_vmaUsage     = vmaUsage;
 	_sparseBuffer = sparseBuffer;
-	_virMemDesc   = virMemDesc;
 	
 	bufferSize = Math::max(bufferSize, 64ULL); // ensure not too small
 
@@ -1439,14 +1431,7 @@ void AX_VkBuffer::create(AX_VkDevice&         dev,
 	VmaAllocationCreateInfo allocCreateInfo = {};
 	allocCreateInfo.usage = vmaUsage;
 	
-	if (_virMemDesc.maxSize) {
-		// create virtual address only
-		info.flags = VK_BUFFER_CREATE_SPARSE_BINDING_BIT | VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT;
-		info.size = _virMemDesc.maxSize;
-		auto err = vkCreateBuffer(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
-		AX_VkUtil::throwIfError(err);
-		
-	} else if (sparseBuffer) {
+	if (sparseBuffer) {
 		sparseBuffer->allocateSparseMemory(bufferSize, &_vmaAllocation, &_vmaAllocationInfo, &_sparseOffset);
 		_handle = sparseBuffer->vkBufferHandle();
 //		AX_LOG("-- vkCreateBuffer FromSparse {} {} offset={}", (void*)_handle, (void*)_vmaAllocation, _sparseOffset);
@@ -1470,9 +1455,7 @@ void AX_VkSparseBuffer::create(AX_VkDevice& dev,
 	auto md = _mdata.scopedLock();
 	md->_pageBlockSize = 64 * Math::MegaBytes; // big enough for 64k vertices
 	
-	GpuVirtualMemoryDesc virMemDesc(bufferSize, md->_pageBlockSize);
-	
-	_vkBuf.create(dev, bufferSize, usage, vmaUsage, virMemDesc, nullptr);
+	_vkBuf.create(dev, bufferSize, usage, vmaUsage, nullptr);
 	
 	VmaPoolCreateInfo poolInfo = {};
 	poolInfo.blockSize = md->_pageBlockSize;

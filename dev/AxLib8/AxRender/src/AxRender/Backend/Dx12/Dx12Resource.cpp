@@ -5,6 +5,13 @@ import :RenderSystem_Dx12;
 #if AX_RENDERER_DX12
 
 namespace ax {
+void Dx12ResourceBase::setName(InNameId name) {
+	_name = name;
+	
+	auto hr = _d3dResource->SetName(Fmt(L"{}", name).c_str());
+	Dx12Util::throwIfError(hr);
+}
+
 Dx12ResourceBase::Dx12ResourceBase() {
 	_reset();
 }
@@ -24,19 +31,19 @@ void Dx12ResourceBase::_reset() {
 
 	_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
-	_bufferCapacity = 0;
+	_bufferSize = 0;
 
 	_d3dResource.unref();
 	_d3d12maAllocation.unref();
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
-	if (_virMemDesc.maxSize) {
+	if (_virtualAddressOnly) {
 		auto* dev = RenderSystem_Dx12::s_d3dDevice();
 		auto hr = dev->CreateReservedResource(&_resourceDesc, _resourceState, clearValue, IID_PPV_ARGS(_d3dResource.ptrForInit()));
 		Dx12Util::throwIfError(hr);
 		
-	} else {		
+	} else {
 		auto* sys = RenderSystem_Dx12::s_instance();
 		auto hr = sys->d3dAllocator()->CreateResource(&_allocDesc, &_resourceDesc, _resourceState, clearValue, 
 														_d3d12maAllocation.ptrForInit(), IID_PPV_ARGS(_d3dResource.ptrForInit()));
@@ -48,8 +55,11 @@ void Dx12ResourceBase::destroy() {
 	_reset();
 }
 
-void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, const GpuVirtualMemoryDesc& virMemDesc) {
+void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, bool virtualAddressOnly) {
 	destroy();
+	
+	_bufferType = type;
+	_virtualAddressOnly = virtualAddressOnly;
 
 	Int alignment = 0;
 	switch (type) {
@@ -114,20 +124,13 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, const Gp
 	if (alignment > 0) {
 		bufferSize = Math::alignTo(bufferSize, alignment);
 	}
-	
-	if (virMemDesc.maxSize > 0) {
-		_resourceDesc.Width  = ax_safe_cast_from(virMemDesc.maxSize);
-		AX_ASSERT(bufferSize == 0);
-		bufferSize = 0;
-	} else {
-		_resourceDesc.Width  = ax_safe_cast_from(bufferSize);
-	}
 
-	_bufferCapacity = bufferSize;
-	_virMemDesc     = virMemDesc;
-
+	_bufferSize = bufferSize;
+	_resourceDesc.Width  = ax_safe_cast_from(bufferSize);
 	_resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	_create();
+	
+	_gpuAddress = _d3dResource->GetGPUVirtualAddress();
 }
 
 MutByteSpan Dx12ResourceBase::_mapMemory(IntRange range) {
@@ -151,7 +154,7 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	D3D12_RANGE readRange = {}; // We do not intend to read from this resource on the CPU.
 	UINT8* dst = nullptr;
 
-	if (offset < 0 || offset + data.size() > _bufferCapacity)
+	if (offset < 0 || offset + data.size() > _bufferSize)
 		throw Error_Undefined();
 	
 	auto hr = _d3dResource->Map(0, &readRange, reinterpret_cast<void**>(&dst));
@@ -168,7 +171,7 @@ D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier_Debug(ID3D12GraphicsComm
 	if (_resourceState != newResourceState) {
 		AX_LOG("Dx12Debug: [{}:{}] resourceBarrier {} -> {} - file:{}:{}",
 		       reinterpret_cast<void*>(_d3dResource.ptr()),
-		       _debugName,
+		       _name,
 		       _resourceState,
 		       newResourceState,
 		       FilePath::basename(srcLoc.file(), true), srcLoc.line());

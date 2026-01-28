@@ -18,6 +18,7 @@ UPtr<RenderRequest_Backend> RenderRequest_Backend::s_new(const MemAllocRequest& 
 }
 
 RenderRequest_Backend::RenderRequest_Backend(const CreateDesc& desc) {
+	_name = NameId::s_make(Fmt("RenderRequest#{}", desc.index));
 	_renderSystem         = desc.renderSystem;
 	_renderSystem_backend = desc.renderSystem;
 	_index                = desc.index;
@@ -162,7 +163,7 @@ void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, By
 	uploadBuf->copyData(data);
 
 	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
-	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadBuf->bufferRange(), dstOffset);
+	dstBuffer->copyFromGpuBuffer(this, uploadBuf, IntRange(uploadBuf->size()), dstOffset);
 }
 
 bool RenderRequest_Backend::copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {

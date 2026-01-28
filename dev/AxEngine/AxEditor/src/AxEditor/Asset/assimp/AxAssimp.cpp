@@ -49,7 +49,7 @@ public:
 		}
 		
 		importMetaData(_metadata.setToObject(), scene->mMetaData);
-		AX_LOG("Metadata {}", _metadata);
+//		AX_LOG("Metadata {}", _metadata);
 
 		auto convAxisMat = Mat4f::s_direction(convAxis(Vec3f(1, 0, 0)),
 		                                      convAxis(Vec3f(0, 1, 0)),
@@ -220,9 +220,12 @@ public:
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
 				auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
 				meshRenderer->mesh = *meshObj;
+			
 				meshRenderer->material	= srcMeshIndex % 2 
 										? stockObjs->materials->meshlet 
 										: stockObjs->materials->Simple3D_Blinn_Color;
+				
+				meshRenderer->material	= stockObjs->materials->Simple3D_Blinn_Color; 
 			}
 		} 
 

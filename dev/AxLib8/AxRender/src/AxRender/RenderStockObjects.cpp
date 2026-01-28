@@ -30,7 +30,7 @@ RenderStockObjects::Fallback::Fallback() {
 		image.create(ColorType::RGBAb, Vec2i(4,4));
 		image.fill(Color4b::kMagenta());
 		texture2D = Texture2D::s_new(AX_NEW, image);
-		texture2D->setDebugName("fallback.Texture2D");
+		texture2D->setName("fallback.Texture2D");
 	}
 }
 
@@ -106,7 +106,7 @@ RenderStockObjects::Texture2Ds::Texture2Ds() {
 			image.create(ColorType::RGBAb, Vec2i(4,4));
 			image.fill(color);
 			outTex = Texture2D::s_new(AX_NEW, image);
-			outTex->setDebugName(name);
+			outTex->setName(name);
 		};
 
 		#define E(T,...) createTex(k##T, Color4b::k##T(), "SolidColor-"#T);

@@ -31,7 +31,13 @@ void RenderObjectManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
 }
 
 void RenderObjectManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
-	visit([&](auto& table){ table.scopedLock()->onFrameEnd(req); });
+	visitObjectTable([&](auto& table) -> void {
+		table.scopedLock()->onFrameEnd(req);
+	});
+	
+	visitBufferPools([&](GpuBufferPool_Backend* bufferPool) -> void {
+		if (bufferPool) bufferPool->onGpuUpdatePages(req);
+	});
 }
 
 void RenderObjectManager_Backend::onFileChanged(FileDirWatcher_Result& result) {
@@ -68,6 +74,13 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 }
 
 void RenderObjectManager_Backend::_postCreate() {
+	_bufferPools.vertex = GpuBufferPool_Backend::s_new(AX_NEW, 
+	 	"vertexPool", GpuBufferType::Vertex, 1 * Math::GigaBytes, 64 * 1024); 
+	
+	_bufferPools.index = GpuBufferPool_Backend::s_new(AX_NEW, 
+	 	"indexPool", GpuBufferType::Index, 1 * Math::GigaBytes, 1 * Math::MegaBytes); 
+	
+	//------
 	_globalCommonMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/AxGlobalCommon.axShader");
 	_indirectDrawMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/IndirectDraw.axComputeShader");
 	

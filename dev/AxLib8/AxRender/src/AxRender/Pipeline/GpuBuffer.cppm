@@ -23,6 +23,44 @@ AX_ENUM_CLASS(AX_RENDER_GpuBufferType_ENUM_LIST, GpuBufferType, u8)
 
 class DynamicGpuBuffer;
 
+class GpuBufferPool_CreateDesc : public NonCopyable {
+public:
+	String name;
+	GpuBufferType bufferType = GpuBufferType::None;
+	Int maxSize  = 0;
+	Int pageSize = 64 * 1024;
+	
+	GpuBufferPool_CreateDesc() = default;
+
+	GpuBufferPool_CreateDesc(StrView name_, GpuBufferType bufferType_, Int maxSize_, Int pageSize_) 
+	: name(name_)
+	, bufferType(bufferType_)
+	, maxSize(maxSize_)
+	, pageSize(pageSize_) {}
+};
+
+class GpuBufferPool : public RenderObject {
+	AX_RTTI_INFO(GpuBufferPool, RenderObject)
+public:
+	using CreateDesc = GpuBufferPool_CreateDesc;
+
+	GpuBufferType bufferType() const { return _bufferType; }
+	Int maxSize() const { return _maxSize; }
+	Int pageSize() const { return _pageSize; }
+	
+	AX_INLINE Int calcPageIndex(Int v) const { return Math::alignTo(v, _pageSize) / _pageSize; } 
+	
+protected:
+	GpuBufferPool(const CreateDesc& desc);
+	
+	virtual void onAllocateBlock(GpuBuffer* buf) {}
+	virtual void onFreeBlock(GpuBuffer* buf) {}
+	
+	GpuBufferType _bufferType = GpuBufferType::None;
+	Int _maxSize  = 0; // virtual memory address size
+	Int _pageSize = 0;
+};
+
 class GpuBuffer_CreateDesc : public NonCopyable {
 public:
 	GpuBuffer_CreateDesc() = default;
@@ -38,7 +76,7 @@ public:
 	String        name;
 	GpuBufferType bufferType = GpuBufferType::None;
 	Int           bufferSize = 0;
-	GpuVirtualMemoryDesc virMemDesc;
+	GpuBufferPool* pool = nullptr;
 };
 
 class GpuBuffer : public RenderObject {
@@ -50,29 +88,25 @@ public:
 	static SPtr<GpuBuffer> s_new(const MemAllocRequest& req, StrView name, GpuBufferType type, Int size) {
 		return s_new(req, CreateDesc(name, type, size));
 	}
-	
-	GpuBufferType bufferType() const			{ return _bufferType; }
-	Int           bufferSize() const			{ return _bufferSize; }
-	IntRange      bufferRange() const			{ return IntRange(_bufferSize); }
-	const GpuVirtualMemoryDesc& virMemDesc() const { return _virMemDesc; }
-	
-	bool inBound(IntRange range) const { return IntRange(_bufferSize).contains(range); }
 
-	void ensureCapacity(RenderRequest* req, Int newSize) {
-		if (_bufferSize >= newSize) return;
-		onSetCapacity(req, newSize);
-		AX_ASSERT(_bufferSize >= newSize);
-	}
+	GpuBufferType  type() const { return _type; }
+	Int            offset() const { return _offset; }
+	Int            size() const { return _size; }
 	
+	GpuBufferPool* pool() { return _pool; }  
+	
+	bool inBound(IntRange range) const { return IntRange(_size).contains(range); }
+
 protected:
-	friend class DynamicGpuBuffer;
+	friend class GpuBufferPool_Backend;
+	
 	GpuBuffer(const CreateDesc& desc);
 
-	virtual void onSetCapacity(RenderRequest* req, Int newCapacity) = 0;
-
-	GpuBufferType        _bufferType = GpuBufferType::None;
-	Int                  _bufferSize = 0;
-	GpuVirtualMemoryDesc _virMemDesc;
+	GpuBufferType              _type   = GpuBufferType::None;
+	Int                        _size   = 0;
+	Int                        _offset = 0;
+	GpuBufferPool*             _pool   = nullptr;
+	D3D12MA::VirtualAllocation _virtualAllocation {};
 };
 
 class DynamicGpuBuffer_CreateDesc : public NonCopyable {
@@ -84,7 +118,6 @@ public:
 	String			name;
 	GpuBufferType	bufferType = GpuBufferType::None;
 	Int				bufferSize = 0;
-	GpuVirtualMemoryDesc virMemDesc;
 };
 
 class DynamicGpuBuffer : public NonCopyable {
@@ -96,10 +129,10 @@ public:
 	void destroy();
 	void reset();
 
-	Int dataSize() const { return _data.size(); }
-	Int dataCapacity() const { return _data.capacity();}
+	Int dataSize() const { return _cpuBuffer.size(); }
+	Int dataCapacity() const { return _cpuBuffer.capacity();}
 
-	void ensureDataCapacity(Int s) { _data.ensureCapacity(s); }
+	void ensureDataCapacity(Int s) { _cpuBuffer.ensureCapacity(s); }
 
 	void setData(ByteSpan src, Int offset = 0);
 	void appendData(ByteSpan src);
@@ -107,7 +140,7 @@ public:
 	MutByteSpan extendSize(Int sizeInBytes);
 
 	// remember to markDirty after write
-	MutByteSpan mutSpan() { return _data; }
+	MutByteSpan mutSpan() { return _cpuBuffer; }
 	void markDirty(IntRange range);
 
 	const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
@@ -117,13 +150,12 @@ public:
 private:
 	GpuBuffer*	_getUploadedGpuBuffer(class RenderRequest* req);
 
-	String	_name;
+	String			_name;
 	GpuBufferType	_bufferType = GpuBufferType::None;
 
-	Array<Byte>          _data;
-	IntRange             _dirtyRange = {};
+	Array<Byte>          _cpuBuffer;
 	SPtr<GpuBuffer>      _gpuBuffer;
-	GpuVirtualMemoryDesc _virMemDesc;
+	IntRange             _dirtyRange = {};
 };
 
 inline
@@ -135,12 +167,12 @@ void DynamicGpuBuffer::markDirty(IntRange range) {
 inline
 void DynamicGpuBuffer::setData(ByteSpan src, Int offset) {
 	auto newSize = offset + src.size();
-	if (_data.size() < newSize) {
+	if (_cpuBuffer.size() < newSize) {
 		throw Error_IndexOutOfRange();
 	}
 
 	auto range = Range_StartAndSize(offset, src.size());
-	_data.copyValues(src, offset);
+	_cpuBuffer.copyValues(src, offset);
 	markDirty(range);
 }
 
@@ -153,10 +185,10 @@ void DynamicGpuBuffer::appendData(ByteSpan src) {
 
 inline
 MutByteSpan DynamicGpuBuffer::extendSize(Int sizeInBytes) {
-	auto range = IntRange_StartAndSize(_data.size(), sizeInBytes);
+	auto range = IntRange_StartAndSize(_cpuBuffer.size(), sizeInBytes);
 	markDirty(range);
-	_data.resize(_data.size() + sizeInBytes);
-	return _data.slice(range);
+	_cpuBuffer.resize(_cpuBuffer.size() + sizeInBytes);
+	return _cpuBuffer.slice(range);
 }
 
 class GpuStructuredBuffer_CreateDesc : public NonCopyable {

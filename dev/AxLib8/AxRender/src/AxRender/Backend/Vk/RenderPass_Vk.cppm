@@ -15,7 +15,7 @@ public:
 	RenderPassColorBuffer_Vk(const CreateDesc& desc);
 
 #if AX_RENDER_DEBUG_NAME
-	virtual void onSetDebugName(NameId name) override {
+	virtual void onSetName(NameId name) override {
 		_image.setDebugName(Fmt("{}-image", name));
 		_mem.setDebugName(Fmt("{}-mem",   name));
 		_view.setDebugName(Fmt("{}-view",  name));
@@ -33,7 +33,7 @@ public:
 	RenderPassDepthBuffer_Vk(const CreateDesc& desc);
 
 #if AX_RENDER_DEBUG_NAME
-	virtual void onSetDebugName(NameId name) override {
+	virtual void onSetName(NameId name) override {
 		_image.setDebugName(Fmt("{}-image", name));
 		_mem.setDebugName(Fmt("{}-mem",   name));
 		_view.setDebugName(Fmt("{}-view",  name));

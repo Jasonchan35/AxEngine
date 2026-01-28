@@ -11,19 +11,14 @@ class RenderObject : public RttiObject {
 	AX_RTTI_INFO(RenderObject, RttiObject)
 public:
 
-#if AX_RENDER_DEBUG_NAME
-	void setDebugName(InNameId name) { _debugName = name; onSetDebugName(_debugName); }
-#endif
-
 	NameId  name() const		{ return _name; }
-	NameId	debugName() const	{ return _debugName; }
 
+	void setName(InNameId name) { _name = name; onSetName(name); }
+	
 protected:
+	virtual void onSetName(NameId name) {};
+	
 	NameId	_name;
-	NameId	_debugName;
-#if AX_RENDER_DEBUG_NAME
-	virtual void onSetDebugName(NameId name) {}
-#endif
 };
 
 class RenderRequestBase : public RenderObject {
@@ -262,16 +257,6 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 	AX_RenderDataType_ENUM_LIST_WITHOUT_NONE(E) \
 //-------
 AX_ENUM_CLASS(AX_RenderDataType_ENUM_LIST, RenderDataType, u16);
-
-struct GpuVirtualMemoryDesc {
-	Int maxSize  = 0;
-	Int pageSize = 0;
-	
-	GpuVirtualMemoryDesc() = default;
-	GpuVirtualMemoryDesc(Int maxSize_, Int pageSize_) : maxSize(maxSize_), pageSize(pageSize_) {}
-	
-	Int computePageCount(Int v) const { return Math::alignTo(v, pageSize) / pageSize; }
-};
 
 struct RenderDataTypeInfo {
 	RenderDataType	dataType		= RenderDataType::None;

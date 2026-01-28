@@ -114,7 +114,7 @@ private:
 
 	struct InlineUpload {
 		Int remainSize() const	{ return bufferSize() - usedBytes; }
-		Int bufferSize() const	{ return stagingToGpuBuffer->bufferSize(); }
+		Int bufferSize() const	{ return stagingToGpuBuffer->size(); }
 		void create(RenderRequest_Backend* req);
 
 		void reset() { usedBytes = 0; }

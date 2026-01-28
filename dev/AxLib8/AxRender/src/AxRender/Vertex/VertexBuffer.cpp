@@ -2,7 +2,7 @@ module AxRender;
 
 namespace ax /*::AxRender*/ {
 
-void VertexBuffer::create(VertexLayout vertexLayout, const GpuVirtualMemoryDesc& virMemDesc) {
+void VertexBuffer::create(VertexLayout vertexLayout) {
 	if (!vertexLayout)
 		throw Error_Undefined();
 
@@ -12,11 +12,10 @@ void VertexBuffer::create(VertexLayout vertexLayout, const GpuVirtualMemoryDesc&
 	DynamicGpuBuffer_CreateDesc desc;
 	desc.bufferType = GpuBufferType::Vertex;
 	desc.name		= "VertexBuffer";
-	desc.virMemDesc = virMemDesc;
 	_buffer.create(desc);
 }
 
-void VertexIndexBuffer::create(VertexIndexType indexType, const GpuVirtualMemoryDesc& virMemDesc) {
+void VertexIndexBuffer::create(VertexIndexType indexType) {
 	_indexType = indexType;
 	_indexCount = 0;
 
@@ -26,7 +25,6 @@ void VertexIndexBuffer::create(VertexIndexType indexType, const GpuVirtualMemory
 		DynamicGpuBuffer_CreateDesc desc;
 		desc.bufferType = GpuBufferType::Index;
 		desc.name		= "IndexBuffer";
-		desc.virMemDesc = virMemDesc;
 		_buffer.create(desc);
 	}
 }

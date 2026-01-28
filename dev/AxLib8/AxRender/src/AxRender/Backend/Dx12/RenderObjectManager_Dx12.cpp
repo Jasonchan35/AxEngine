@@ -140,14 +140,12 @@ void RenderObjectManager_Dx12::onUpdateMeshObject(RenderRequest_Backend* req, Ar
 
 		MeshObject_GpuData_Dx12 data = {};
 		if (auto* vb = rttiCastCheck<GpuBuffer_Dx12>(sm.vertexBuffer.getUploadedGpuBuffer(req))) {
-			auto& resource = ax_const_cast(vb)->resource();
-			data.vertexBufferLocation    = resource.gpuAddress();
-			data.vertexBufferSizeInBytes = ax_safe_cast_from(resource.bufferSize());
+			data.vertexBufferLocation    = vb->gpuAddress();
+			data.vertexBufferSizeInBytes = ax_safe_cast_from(vb->size());
 		}
 		if (auto* ib = rttiCastCheck<GpuBuffer_Dx12>(sm.indexBuffer.getUploadedGpuBuffer(req))) {
-			auto& resource = ax_const_cast(ib)->resource();
-			data.indexBufferLocation    = resource.gpuAddress();
-			data.indexBufferSizeInBytes = ax_safe_cast_from(resource.bufferSize());
+			data.indexBufferLocation    = ib->gpuAddress();
+			data.indexBufferSizeInBytes = ax_safe_cast_from(ib->size());
 		}
 	}
 }

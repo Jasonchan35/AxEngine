@@ -14,9 +14,11 @@ namespace ax {
 RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	: Base(desc)
 {
-	AX_LOG("RenderRequest_Dx12 create#{}", desc.index);
+	AX_LOG("create {}", _name);
+	
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	_d3dDevice = dev;
+
 	_uploadCmdList_dx12.create( dev, RenderCommandListType::Direct,  "uploadCmdList" ); // RenderCommandListType::Copy
 	_graphCmdList_dx12.create(  dev, RenderCommandListType::Direct,  "graphCmdList"  );
 	_computeCmdList_dx12.create(dev, RenderCommandListType::Compute, "computeCmdList");
@@ -160,11 +162,11 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 		auto* vb = ax_const_cast(rttiCastCheck<GpuBuffer_Dx12>(drawcall.vertexBuffer));
 		if (!vb) throw Error_Undefined();
 
-		vb->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		vb->resource_dx12()->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 		D3D12_VERTEX_BUFFER_VIEW vbView = {};
-		vbView.BufferLocation = ax_safe_cast_from(vb->resource().gpuAddress());
-		vbView.SizeInBytes    = ax_safe_cast_from(vb->bufferSize());
+		vbView.BufferLocation = ax_safe_cast_from(vb->gpuAddress());
+		vbView.SizeInBytes    = ax_safe_cast_from(vb->size());
 		vbView.StrideInBytes  = ax_safe_cast_from(vertexLayout->strideInBytes);
 		cmdList->IASetVertexBuffers(0, 1, &vbView);
 	}
@@ -179,11 +181,11 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(drawcall.indexBuffer));
 		if (!ib) throw Error_Undefined();
 
-		ib->resource().resourceBarrier(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+		ib->resource_dx12()->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
 		D3D12_INDEX_BUFFER_VIEW ibView = {};
-		ibView.BufferLocation          = Dx12Util::castUINT64(ib->resource().gpuAddress());
-		ibView.SizeInBytes             = Dx12Util::castUINT(ib->bufferSize());
+		ibView.BufferLocation          = ib->gpuAddress();
+		ibView.SizeInBytes             = Dx12Util::castUINT(ib->size());
 		ibView.Format                  = Dx12Util::getDxIndexType(drawcall.indexType);;
 
 		cmdList->IASetIndexBuffer(&ibView);

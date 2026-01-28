@@ -259,10 +259,7 @@ auto ShaderPass_Dx12::getOrAddGraphicsPipeline(RenderRequest_Dx12* req, AxDrawCa
 	}
 	outPipeline->key = psoKey;
 
-	auto shaderName = name().toString();
-	outPipeline->pipelineState->SetPrivateData(WKPDID_D3DDebugObjectName, 
-									ax_safe_cast_from(shaderName.size()), shaderName.c_str());
-	
+	outPipeline->pipelineState->SetName(TempStringW::s_utf(name().toString()).c_str());
 	return outPipeline;
 }
 

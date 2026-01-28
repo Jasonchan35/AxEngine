@@ -58,6 +58,24 @@ public:
 	} bindless;
 #endif
 
+	struct BufferPools {
+		SPtr<GpuBufferPool_Backend>	vertex;
+		SPtr<GpuBufferPool_Backend>	index;
+		
+		GpuBufferPool_Backend*	getPool(GpuBufferType type) {
+			switch (type) {
+				case GpuBufferType::Vertex: return vertex;
+				case GpuBufferType::Index : return index;
+				default: return nullptr;
+			}
+		}
+		void onGpuUpdate(RenderRequest_Backend* req) {
+			vertex->onGpuUpdatePages(req);
+			index->onGpuUpdatePages(req);
+		}
+		
+	} _bufferPools;
+	
 	Material_Backend* globalCommonMaterial() { return _globalCommonMaterial.ptr(); }
 	Material_Backend* indirectDrawMaterial() { return _indirectDrawMaterial.ptr(); }
 	
@@ -66,7 +84,13 @@ protected:
 	virtual void onPostCreate() {}
 
 	template<class FUNC>
-	void visit(FUNC func) {
+	void visitBufferPools(FUNC func) {
+		func(_bufferPools.vertex.ptr());
+		func(_bufferPools.index.ptr());
+	}
+
+	template<class FUNC>
+	void visitObjectTable(FUNC func) {
 		_objectTables.apply([&func](auto&... list) {
 			(func(list),...);
 		});

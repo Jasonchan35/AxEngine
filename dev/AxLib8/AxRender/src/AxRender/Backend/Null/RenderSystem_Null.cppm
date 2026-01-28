@@ -43,12 +43,17 @@ public:
 	RenderObjectManager_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
+class GpuBufferPool_Null : public GpuBufferPool_Backend {
+	AX_RTTI_INFO(GpuBufferPool_Null, GpuBufferPool_Backend)
+public:
+	GpuBufferPool_Null(const CreateDesc& desc) : Base(desc) {}
+};
+
 class GpuBuffer_Null : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_Null, GpuBuffer_Backend)
 public:
 	GpuBuffer_Null(const CreateDesc& desc) : Base(desc) {}
 
-	virtual void		onSetCapacity(RenderRequest* req, Int newCapacity) override {}
 	virtual MutByteSpan	onMapMemory(IntRange range) override { return MutByteSpan(); }
 	virtual void		onUnmapMemory() override {}
 	virtual void		onFlush(IntRange range) override {}

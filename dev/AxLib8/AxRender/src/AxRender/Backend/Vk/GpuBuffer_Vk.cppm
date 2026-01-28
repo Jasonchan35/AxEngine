@@ -9,12 +9,16 @@ export import :RenderRequest_Vk;
 
 export namespace ax /*::AxRender*/ {
 
+class GpuBufferPool_Vk : public GpuBufferPool_Backend {
+	AX_RTTI_INFO(GpuBufferPool_Vk, GpuBufferPool_Backend)
+public:
+	GpuBufferPool_Vk(const CreateDesc& desc) : Base(desc) {}
+};
+
 class GpuBuffer_Vk : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_Vk, GpuBuffer_Backend)
 public:
 	GpuBuffer_Vk(const CreateDesc& desc);
-
-	virtual void		onSetCapacity(RenderRequest* req_, Int newCapacity) override;
 
 	virtual MutByteSpan onMapMemory(IntRange range) override	{ return _vkBuf.mapMemory(range); }
 	virtual void		onUnmapMemory() override				{ return _vkBuf.unmapMemory(); }
@@ -33,26 +37,12 @@ public:
 		VkDescriptorBufferInfo info = {};
 		info.buffer = _vkBuf.handle();
 		info.offset = sparseOffset();
-		info.range  = ax_safe_cast_from(bufferSize());
+		info.range  = ax_safe_cast_from(_size);
 		return info;
 	}
 
 private:
-	struct MemPage {
-		AX_VkDeviceMemory devMem;
-	};
 
-	struct VirtualMemoryBlock {
-		Array<MemPage>  _memPages;
-		
-		VirtualMemoryBlock(const GpuVirtualMemoryDesc& desc) {
-			if (desc.maxSize <= 0) throw Error_Undefined();
-			auto pageCount = desc.computePageCount(desc.maxSize);
-			_memPages.resize(pageCount);
-		}
-	};
-	UPtr<VirtualMemoryBlock>	_virMemBlock;
-	
 	AX_VkBuffer	_vkBuf;
 };
 

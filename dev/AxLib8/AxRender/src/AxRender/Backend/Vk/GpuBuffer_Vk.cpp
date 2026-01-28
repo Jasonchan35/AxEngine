@@ -61,7 +61,7 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 		default: throw Error_Undefined();
 	}
 
-	_vkBuf.create(dev, AX_VkUtil::castVkDeviceSize(desc.bufferSize), usage, vmaUsage, desc.virMemDesc, sparseBuffer);
+	_vkBuf.create(dev, AX_VkUtil::castVkDeviceSize(desc.bufferSize), usage, vmaUsage, sparseBuffer);
 #if AX_RENDER_DEBUG_NAME
 	if (!sparseBuffer) {
 		_vkBuf.setDebugName(desc.name);
@@ -69,53 +69,8 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 #endif
 }
 
-void GpuBuffer_Vk::onSetCapacity(RenderRequest* req_, Int newCapacity) {
-	if (!_virMemBlock) {
-		_virMemBlock = UPtr_new<VirtualMemoryBlock>(AX_NEW, _virMemDesc);
-	}
-	
-	newCapacity = Math::alignTo(newCapacity, _virMemDesc.pageSize);
-	auto oldPageCount = _virMemDesc.computePageCount(_bufferSize);
-	auto newPageCount = _virMemDesc.computePageCount(newCapacity);
-	
-	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
-	auto& cmdQueue = req->renderContext_vk()->graphQueue_vk();
-	
-	auto addedPageCount = newPageCount - oldPageCount;
-	for (Int i = 0; i < addedPageCount; ++i) {
-		Int pageIndex = oldPageCount + i;
-		auto& page = _virMemBlock->_memPages[pageIndex];
-		if (page.devMem) continue;
-
-		page.devMem.createForVirtualMemPage(_vkBuf, _virMemDesc.pageSize);
-
-		VkSparseMemoryBind bind = {};
-		bind.resourceOffset = ax_safe_cast_from(pageIndex * _virMemDesc.pageSize);
-		bind.size           = ax_safe_cast_from(_virMemDesc.pageSize);
-		bind.memory         = page.devMem;
-		bind.memoryOffset   = 0;
-		bind.flags          = 0;
-		
-		VkSparseBufferMemoryBindInfo bufferBindInfo = {};
-		bufferBindInfo.buffer    = _vkBuf;
-		bufferBindInfo.bindCount = 1;
-		bufferBindInfo.pBinds    = &bind;
-
-		VkBindSparseInfo bindInfo = {};
-		bindInfo.sType            = VK_STRUCTURE_TYPE_BIND_SPARSE_INFO;
-		bindInfo.bufferBindCount  = 1;
-		bindInfo.pBufferBinds     = &bufferBindInfo;
-		
-		VkFence fence = VK_NULL_HANDLE;
-		auto err = vkQueueBindSparse(cmdQueue, 1, &bindInfo, fence);
-		AX_VkUtil::throwIfError(err);
-	}
-
-	_bufferSize = newCapacity;
-}
-
 void GpuBuffer_Vk::onFlush(IntRange range) {
-	switch (bufferType()) {
+	switch (_type) {
 		case GpuBufferType::StagingToGpu: {
 			_vkBuf.flushMappedMemoryRanges(range);
 		} break;
@@ -143,7 +98,7 @@ void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, Int
 	auto sizeToCopy = srcRange.size();
 	auto dstRange   = Range_StartAndSize(dstOffset, sizeToCopy);
 
-	if (!bufferRange().contains(dstRange))
+	if (!IntRange(_size).contains(dstRange))
 		throw Error_Undefined();
 
 	VkBufferCopy region = {};

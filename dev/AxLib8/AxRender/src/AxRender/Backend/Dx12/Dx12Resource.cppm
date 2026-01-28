@@ -22,8 +22,7 @@ public:
 
 	void uploadToGpu(Int offset, ByteSpan data);
 
-	ID3D12Resource*	d3dResource() { return _d3dResource; }
-	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() { return _d3dResource ? _d3dResource->GetGPUVirtualAddress() : 0; }
+	AX_ID3D12Resource*	d3dResource() { return _d3dResource; }
 
 	AX_ID3D12Resource** ptrForInit() { return _d3dResource.ptrForInit(); }
 
@@ -39,11 +38,9 @@ public:
 	const D3D12MA::ALLOCATION_DESC&  allocDesc() const { return _allocDesc; }
 	const D3D12_RESOURCE_DESC&	resourceDesc() const { return _resourceDesc; }
 
-	Int bufferSize() const { return _bufferCapacity; }
+	Int bufferSize() const { return _bufferSize; }
 
-#if AX_RENDER_DEBUG_NAME
-	void setDebugName(StrView debugName) { _debugName.setUtf(debugName); _d3dResource->SetName(_debugName.c_str()); }
-#endif
+	void setName(InNameId name);
 
 protected:
 	Dx12ResourceBase();
@@ -52,15 +49,13 @@ protected:
 
 	ComPtr<AX_ID3D12Resource>   _d3dResource;
 	ComPtr<D3D12MA::Allocation> _d3d12maAllocation;
-	Int                         _bufferCapacity     = 0;
-	D3D12MA::ALLOCATION_DESC    _allocDesc          = {};
-	D3D12_RESOURCE_DESC         _resourceDesc       = {};
-	D3D12_RESOURCE_STATES       _resourceState      = D3D12_RESOURCE_STATE_COMMON;
-	GpuVirtualMemoryDesc        _virMemDesc;
-
-#if AX_RENDER_DEBUG_NAME
-	StringW _debugName;
-#endif
+	NameId                      _name;
+	Int                         _bufferSize = 0;
+	bool _virtualAddressOnly = false;
+	
+	D3D12MA::ALLOCATION_DESC    _allocDesc      = {};
+	D3D12_RESOURCE_DESC         _resourceDesc   = {};
+	D3D12_RESOURCE_STATES       _resourceState  = D3D12_RESOURCE_STATE_COMMON;
 };
 
 class Dx12Resource_ColorBuffer : public Dx12ResourceBase {
@@ -76,11 +71,18 @@ public:
 
 class Dx12Resource_GpuBuffer : public Dx12ResourceBase {
 public:
-	void create(GpuBufferType type, Int bufferSize, const GpuVirtualMemoryDesc& virMemDesc);
-	void create(GpuBufferType type, ByteSpan data, const GpuVirtualMemoryDesc& virMemDesc) {
-		create(type, data.sizeInBytes(), virMemDesc);
+	void create(GpuBufferType type, Int bufferSize, bool virtualAddressOnly);
+	void create(GpuBufferType type, ByteSpan data, bool virtualAddressOnly) {
+		create(type, data.sizeInBytes(), virtualAddressOnly);
 		uploadToGpu(0, data);
 	}
+
+	GpuBufferType bufferType() const { return _bufferType; }
+	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() const { return _gpuAddress; }
+	
+private:
+	GpuBufferType _bufferType;
+	D3D12_GPU_VIRTUAL_ADDRESS _gpuAddress = 0;
 };
 
 class Dx12Resource_Texture : public Dx12ResourceBase {

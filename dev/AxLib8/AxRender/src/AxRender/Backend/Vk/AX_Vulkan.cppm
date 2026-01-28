@@ -605,7 +605,6 @@ public:
 	            VkDeviceSize         bufferSize,
 	            VkBufferUsageFlags   usage,
 	            VmaMemoryUsage       vmaUsage,
-	            GpuVirtualMemoryDesc virMemDesc,
 	            AX_VkSparseBuffer*   sparseBuffer);
 
 	void bindSparse(VkQueue queue, VkFence fence);
@@ -638,7 +637,6 @@ public:
 	AX_VkDevice*	device() { return _dev; }
 	
 	VmaMemoryUsage   vmaUsage() { return _vmaUsage; }
-	const GpuVirtualMemoryDesc& virMemDesc() const { return _virMemDesc; }
 
 #if AX_RENDER_DEBUG_NAME
 	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
@@ -654,7 +652,6 @@ private:
 	VmaAllocationInfo    _vmaAllocationInfo = {};
 	AX_VkSparseBuffer*   _sparseBuffer      = nullptr;
 	VkDeviceSize         _sparseOffset      = 0;
-	GpuVirtualMemoryDesc _virMemDesc;
 };
 
 class AX_VkSparseBuffer : public NonCopyable {

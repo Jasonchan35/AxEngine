@@ -6,61 +6,64 @@ import :RenderRequest_Dx12;
 
 namespace  ax {
 
-GpuBuffer_Dx12::GpuBuffer_Dx12(const CreateDesc& desc): Base(desc) {
-	_p.create(desc.bufferType, desc.bufferSize, desc.virMemDesc);
-#if AX_RENDER_DEBUG_NAME
-	_p.setDebugName(desc.name);
-#endif
+GpuBufferPool_Dx12::GpuBufferPool_Dx12(const CreateDesc& desc): Base(desc) {
+	_resource_dx12.create(desc.bufferType, desc.maxSize, true);
+	_resource_dx12.setName(desc.name);
+	_pagePool.create(desc);
 }
 
-void GpuBuffer_Dx12::onSetCapacity(RenderRequest* req_, Int newCapacity) {
-	if (!_virMemBlock) {
-		_virMemBlock = UPtr_new<VirtualMemoryBlock>(AX_NEW, _virMemDesc);
-	}
-	
-	newCapacity = Math::alignTo(newCapacity, _virMemDesc.pageSize);
-	auto oldPageCount = _virMemDesc.computePageCount(_bufferSize);
-	auto newPageCount = _virMemDesc.computePageCount(newCapacity);
-	
-	auto* dev = RenderSystem_Dx12::s_d3dDevice();
+void GpuBufferPool_Dx12::onGpuUpdatePages(RenderRequest_Backend* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 	auto* cmdQueue = req->renderContext_dx12()->graphCmdQueue().queue();
 	
-	auto addedPageCount = newPageCount - oldPageCount;
-	for (Int i = 0; i < addedPageCount; ++i) {
-		Int pageIndex = oldPageCount + i;
-		auto& page = _virMemBlock->_memPages[pageIndex];
-		if (page._d3dHeap) continue;
-		
-		auto& allocDesc = _p.allocDesc();
+	for (auto& pageIndex : _pagePool._pendingCommitPages) {
+		auto& page = _pagePool._pages[pageIndex];
+		Int resourceOffset = ax_safe_cast_from(pageIndex * _pageSize);
 		
 		D3D12_HEAP_DESC heapDesc = {};
-		heapDesc.SizeInBytes = _virMemDesc.pageSize;
+		heapDesc.SizeInBytes = _pageSize;
 		heapDesc.Alignment   = 0;
 		heapDesc.Properties  = {};
-		heapDesc.Properties.Type = allocDesc.HeapType;
-		auto hr = dev->CreateHeap(&heapDesc, IID_PPV_ARGS(page._d3dHeap.ptrForInit()));
+		heapDesc.Properties.Type = _resource_dx12.allocDesc().HeapType;
+		auto hr = req->_d3dDevice->CreateHeap(&heapDesc, IID_PPV_ARGS(page._d3dHeap.ptrForInit()));
 		Dx12Util::throwIfError(hr);
 
 		D3D12_TILED_RESOURCE_COORDINATE coordinate = {};
-		coordinate.X = ax_safe_cast_from(pageIndex * _virMemDesc.pageSize);
-		
+		coordinate.X = ax_safe_cast_from(resourceOffset / kTileSizeInBytes);
+			
 		D3D12_TILE_REGION_SIZE regionSize = {};
-		regionSize.NumTiles = 1;
-		regionSize.Width = ax_safe_cast_from(_virMemDesc.pageSize);
-		
+		regionSize.Width    = ax_safe_cast_from(_pageSize / kTileSizeInBytes);
+		regionSize.Height   = 1;
+		regionSize.Depth    = 1;
+		regionSize.NumTiles = regionSize.Width * regionSize.Height * regionSize.Depth;
+			
 		D3D12_TILE_RANGE_FLAGS tileRangeFlags = D3D12_TILE_RANGE_FLAG_NONE;
-		
+			
 		UINT heapRangeStartOffsets = 0;
-		UINT rangeTileCounts = 1;
-		
-		cmdQueue->UpdateTileMappings(_p, 
+		UINT rangeTileCounts = regionSize.NumTiles;
+			
+		// AX_LOG("--- Dx12 UpdateTileMappings {} {}", _resource_dx12.bufferType(), resourceOffset);
+		cmdQueue->UpdateTileMappings(_resource_dx12.d3dResource(), 
 			1, &coordinate, &regionSize, page._d3dHeap, 
 			1, &tileRangeFlags, &heapRangeStartOffsets, &rangeTileCounts,
 			D3D12_TILE_MAPPING_FLAG_NONE);
 	}
+	
+	_pagePool._pendingCommitPages.clear();
+}
 
-	_bufferSize = newCapacity;
+GpuBuffer_Dx12::GpuBuffer_Dx12(const CreateDesc& desc): Base(desc) {
+	if (_pool) {
+		auto* pool = rttiCastCheck<GpuBufferPool_Dx12>(_pool);
+		_d3dResource.ref(pool->_resource_dx12.d3dResource());
+		_gpuAddress  = pool->_resource_dx12.gpuAddress() + _offset;
+		
+	} else {
+		_p.create(_type, _size, false);
+		_p.setName(desc.name);
+		_d3dResource.ref(_p.d3dResource());
+		_gpuAddress = _p.gpuAddress() + _offset;
+	}
 }
 
 void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) {
@@ -74,18 +77,18 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	auto* req_dx12   = rttiCastCheck<RenderRequest_Dx12>(req);
 	auto& cmdList_dx = req_dx12->_uploadCmdList_dx12._cmdList_dx12;
 
-	auto& srcRes = src_dx12->resource();
-	auto& dstRes = dst_dx12->resource();
+	auto* srcRes = src_dx12->resource_dx12();
+	auto* dstRes = dst_dx12->resource_dx12();
 
 //	auto srcOldState =
-	srcRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	srcRes->resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_SOURCE);
 //	auto dstOldState =
-	dstRes.resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
+	dstRes->resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
-	cmdList_dx->CopyBufferRegion(dstRes,
-	                             ax_safe_cast_from(dstOffset),
-	                             srcRes,
-	                             ax_safe_cast_from(srcRange.start()),
+	cmdList_dx->CopyBufferRegion(dstRes->d3dResource(),
+	                             ax_safe_cast_from(dstOffset + dst_dx12->offset()),
+	                             srcRes->d3dResource(),
+	                             ax_safe_cast_from(srcRange.start() + src_dx12->offset()),
 	                             ax_safe_cast_from(srcRange.size()));
 
 //	srcRes.resourceBarrier(cmdList_dx, srcOldState);
