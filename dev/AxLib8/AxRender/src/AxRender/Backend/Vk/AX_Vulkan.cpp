@@ -1386,37 +1386,65 @@ void AX_VkDeviceMemory::invalidateMappedMemoryRanges(Span<IntRange> ranges) {
 
 void AX_VkBuffer::destroy() {
 	if (_handle) {
-		if (_sparseBuffer) {
-			_sparseBuffer->freeSparseMemory(_vmaAllocation, _vmaAllocationInfo);
-			// AX_LOG("-- freeSparseMemory {} {} offset={}", (void*)_handle, (void*)_vmaAllocation, _sparseOffset);
-			_sparseBuffer = nullptr;
-			
+		if (_virtualAddressOnly) {
+			vkDestroyBuffer(*_dev, _handle, AX_VkUtil::allocCallbacks());
 		} else {
-			// AX_LOG("-- vmaDestroyBuffer {} {}", (void*)_handle, (void*)_vmaAllocation);
 			vmaDestroyBuffer(_dev->vmaAllocator(), _handle, _vmaAllocation);
 		}
-		_handle = VK_NULL_HANDLE;
-		_vmaAllocation = VK_NULL_HANDLE;
-		_dev = nullptr;
-	}
+	} 
+
+	_handle = VK_NULL_HANDLE;
+	_vmaAllocation = VK_NULL_HANDLE;
+	_dev = nullptr;
 }
 
-void AX_VkBuffer::create(AX_VkDevice&         dev,
-                         VkDeviceSize         bufferSize,
-                         VkBufferUsageFlags   usage,
-                         VmaMemoryUsage       vmaUsage,
-                         AX_VkSparseBuffer*   sparseBuffer) 
-{
-	if (_handle && _dev == &dev && bufferSize == _bufferSize) 
-		return;
-
+void AX_VkBuffer::create(AX_VkDevice& dev, GpuBufferType bufferType, Int bufferSize, bool virtualAddressOnly) {
 	destroy();
-	_dev          = &dev;
-	_usage        = usage;
-	_vmaUsage     = vmaUsage;
-	_sparseBuffer = sparseBuffer;
+
+	VkBufferUsageFlags usage        = 0;
+	VmaMemoryUsage     vmaUsage     = VMA_MEMORY_USAGE_AUTO;
+
+	switch (bufferType) {
+		case GpuBufferType::Vertex: {
+			usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+		}break;
+		case GpuBufferType::Index: {
+			usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+		}break;
+		case GpuBufferType::Const: {
+			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+			// memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+		}break;
+		case GpuBufferType::Structured: {
+			usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+			//			memProps = VK_MEMORY_PROPERTY_PROTECTED_BIT; // no CPU access
+			//			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
+			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
+		}break;
+
+			// https://gpuopen.com/learn/vulkan-device-memory/
+		case GpuBufferType::StagingToGpu: {
+			usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+			//			memProps = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+			vmaUsage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+		}break;
+		case GpuBufferType::StagingToCpu: {
+			usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+			// memProps = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+			vmaUsage = VMA_MEMORY_USAGE_GPU_TO_CPU;
+		}break;
+
+		default: throw Error_Undefined();
+	}
 	
-	bufferSize = Math::max(bufferSize, 64ULL); // ensure not too small
+	_dev                = &dev;
+	_usage              = usage;
+	_vmaUsage           = vmaUsage;
+	_virtualAddressOnly = virtualAddressOnly;
 
 	VkBufferCreateInfo info = {};
 	info.sType					= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1431,11 +1459,12 @@ void AX_VkBuffer::create(AX_VkDevice&         dev,
 	VmaAllocationCreateInfo allocCreateInfo = {};
 	allocCreateInfo.usage = vmaUsage;
 	
-	if (sparseBuffer) {
-		sparseBuffer->allocateSparseMemory(bufferSize, &_vmaAllocation, &_vmaAllocationInfo, &_sparseOffset);
-		_handle = sparseBuffer->vkBufferHandle();
-//		AX_LOG("-- vkCreateBuffer FromSparse {} {} offset={}", (void*)_handle, (void*)_vmaAllocation, _sparseOffset);
-
+	if (virtualAddressOnly) {
+		info.flags = VK_BUFFER_CREATE_SPARSE_BINDING_BIT | VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT;
+		info.size  = bufferSize;
+		auto err   = vkCreateBuffer(*_dev, &info, AX_VkUtil::allocCallbacks(), &_handle);
+		AX_VkUtil::throwIfError(err);
+		
 	} else {
 		// create buffer with gpu memory
 		auto err = vmaCreateBuffer(_dev->vmaAllocator(), &info, &allocCreateInfo, &_handle, &_vmaAllocation, &_vmaAllocationInfo);
@@ -1445,174 +1474,6 @@ void AX_VkBuffer::create(AX_VkDevice&         dev,
 	}
 
 	_bufferSize = bufferSize;
-}
-
-void AX_VkSparseBuffer::create(AX_VkDevice& dev,
-	VkDeviceSize bufferSize,
-	VkBufferUsageFlags usage,
-	VmaMemoryUsage vmaUsage) 
-{
-	auto md = _mdata.scopedLock();
-	md->_pageBlockSize = 64 * Math::MegaBytes; // big enough for 64k vertices
-	
-	_vkBuf.create(dev, bufferSize, usage, vmaUsage, nullptr);
-	
-	VmaPoolCreateInfo poolInfo = {};
-	poolInfo.blockSize = md->_pageBlockSize;
-	
-	if (auto opt = dev.findMemoryTypeIndex(_vkBuf.handle(), vmaUsage)) {
-		poolInfo.memoryTypeIndex = ax_safe_cast_from(opt.value());
-	} else {
-		throw Error_Undefined();
-	}
-	
-	auto err = vmaCreatePool(dev.vmaAllocator(), &poolInfo, &md->_memPool);
-	AX_VkUtil::throwIfError(err);
-	
-	VmaVirtualBlockCreateInfo virtualBlockInfo = {};
-	virtualBlockInfo.size = bufferSize;
-	
-	err = vmaCreateVirtualBlock(&virtualBlockInfo, &md->_virtualBlock);
-	AX_VkUtil::throwIfError(err);
-}
-
-void AX_VkSparseBuffer::destroy() {
-	auto* dev = _vkBuf.device();
-	auto md = _mdata.scopedLock();
-	
-	if (md->_memPool) {
-		vmaDestroyPool(dev->vmaAllocator(), md->_memPool);
-		md->_memPool = VK_NULL_HANDLE;
-	}
-
-	md->_pendingBindPages.clear();
-	md->_pendingUnbindPages.clear();
-	
-	if (md->_virtualBlock) {
-		for (auto& page : md->_pageDict.values()) {
-			if (page.vmaVirtualAllocation) {
-				vmaVirtualFree(md->_virtualBlock, page.vmaVirtualAllocation);
-				page.vmaVirtualAllocation = VK_NULL_HANDLE;
-			}
-		}
-		md->_pageDict.clear();
-		vmaDestroyVirtualBlock(md->_virtualBlock);
-		md->_virtualBlock = VK_NULL_HANDLE;
-	}
-
-	_vkBuf.destroy();
-}
-
-void AX_VkSparseBuffer::bindSparse(VkQueue queue, VkFence fence) {
-	auto md = _mdata.scopedLock();
-	if (md->_pendingBindPages.size() <= 0 && md->_pendingUnbindPages.size() <= 0) return;
-
-	Array<VkSparseMemoryBind, 8> sparseMemoryBindList;
-	
-	for (auto& page : md->_pendingBindPages) {
-		auto& bind = sparseMemoryBindList.emplaceBack();
-		bind.resourceOffset = page->offset;
-		bind.size           = page->size;
-		bind.memory         = page->mem;
-		bind.memoryOffset   = 0;
-		bind.flags          = 0;
-	}
-	md->_pendingBindPages.clear();
-
-	for (auto& page : md->_pendingUnbindPages) {
-		auto& bind = sparseMemoryBindList.emplaceBack();
-		bind.resourceOffset = page->offset;
-		bind.size           = page->size;
-		bind.memory         = nullptr; // <--- bind to null
-		bind.memoryOffset   = 0;
-		bind.flags          = 0;
-		
-		md->_pageDict.erase(page->mem);
-	}
-	md->_pendingUnbindPages.clear();
-
-	VkSparseBufferMemoryBindInfo bufferBindInfo = {};
-	bufferBindInfo.buffer    = vkBufferHandle();
-	bufferBindInfo.bindCount = ax_safe_cast_from(sparseMemoryBindList.size());
-	bufferBindInfo.pBinds    = sparseMemoryBindList.data();
-	
-	VkBindSparseInfo bindInfo = {};
-	bindInfo.sType = VK_STRUCTURE_TYPE_BIND_SPARSE_INFO;
-	bindInfo.bufferBindCount = 1;
-	bindInfo.pBufferBinds = &bufferBindInfo;
-
-	auto err = vkQueueBindSparse(queue, 1, &bindInfo, fence);
-	AX_VkUtil::throwIfError(err);
-}
-
-void AX_VkSparseBuffer::allocateSparseMemory(VkDeviceSize       size,
-                                             VmaAllocation*     pAllocation,
-                                             VmaAllocationInfo* pAllocationInfo,
-                                             VkDeviceSize*      pOffset) {
-	// allocate physical memory to sparseBuffer
-	
-	auto* dev = _vkBuf.device();
-	auto md = _mdata.scopedLock();
-	
-	VkMemoryRequirements memReq = {};
-	vkGetBufferMemoryRequirements(*dev, _vkBuf, &memReq);
-	memReq.size = size;
-	memReq.alignment = 64;
-		
-	VmaAllocationCreateInfo allocCreateInfo = {};
-	allocCreateInfo.usage = _vkBuf.vmaUsage();
-	allocCreateInfo.pool = md->_memPool;
-	
-	auto err = vmaAllocateMemory(dev->vmaAllocator(), &memReq, &allocCreateInfo, pAllocation, pAllocationInfo);
-	AX_VkUtil::throwIfError(err);
-	
-	VmaAllocationInfo2 info2;
-	vmaGetAllocationInfo2(dev->vmaAllocator(), *pAllocation, &info2);
-	
-	VkDeviceMemory mem = pAllocationInfo->deviceMemory;
-	Page* page = md->_pageDict.find(mem);
-	if (page) {
-		if (page->refCount == 0) {
-			md->_pendingUnbindPages.eraseIfEquals(page); // need it again, so cancel unbind
-		}
-		page->refCount++;
-		
-	} else {
-		auto& newPage = md->_pageDict.add(mem);
-		page = &newPage;
-		page->mem = mem;
-		page->size = info2.blockSize;
-		
-		VmaVirtualAllocationCreateInfo virtualAllocInfo = {};
-		virtualAllocInfo.size      = page->size;
-		virtualAllocInfo.alignment = page->size;
-		
-		err = vmaVirtualAllocate(md->_virtualBlock, &virtualAllocInfo, &newPage.vmaVirtualAllocation, &newPage.offset);
-		AX_VkUtil::throwIfError(err);
-
-		md->_pendingBindPages.emplaceBack(&newPage);
-	}
-
-	*pOffset = page->offset + pAllocationInfo->offset; 
-}
-
-void AX_VkSparseBuffer::freeSparseMemory(VmaAllocation vmaAllocation, VmaAllocationInfo& vmaAllocationInfo) {
-	auto* dev = _vkBuf.device();
-	auto md = _mdata.scopedLock();
-	
-	auto* page = md->_pageDict.find(vmaAllocationInfo.deviceMemory);
-	if (!page) throw Error_Vulkan("AX_VkSparseBuffer cannot find page");
-	
-	page->refCount--;
-	AX_ASSERT(page->refCount >= 0);
-	if (page->refCount == 0) {
-		md->_pendingUnbindPages.emplaceBack(page);
-		if (page->vmaVirtualAllocation) {
-			vmaVirtualFree(md->_virtualBlock, page->vmaVirtualAllocation);
-			page->vmaVirtualAllocation = VK_NULL_HANDLE;
-		}
-	}
-	vmaFreeMemory(dev->vmaAllocator(), vmaAllocation);
 }
 
 VkMemoryRequirements AX_VkBuffer::getMemoryRequirements() {

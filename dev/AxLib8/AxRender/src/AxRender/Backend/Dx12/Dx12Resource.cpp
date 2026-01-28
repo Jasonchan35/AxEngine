@@ -49,6 +49,8 @@ void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
 														_d3d12maAllocation.ptrForInit(), IID_PPV_ARGS(_d3dResource.ptrForInit()));
 		Dx12Util::throwIfError(hr);
 	}
+	
+	_resourceDesc = _d3dResource->GetDesc();
 }
 
 void Dx12ResourceBase::destroy() {

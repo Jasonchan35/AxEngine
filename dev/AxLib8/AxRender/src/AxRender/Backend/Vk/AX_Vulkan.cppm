@@ -589,8 +589,6 @@ struct HashInt_Handler<VkDeviceMemory> {
 	}
 };
 
-class AX_VkSparseBuffer;
-
 class AX_VkBuffer : public NonCopyable {
 public:
 	const VkBuffer& handle() const { return _handle; }
@@ -601,15 +599,10 @@ public:
 	AX_VkBuffer(AX_VkBuffer && r) noexcept;
 
 	void destroy();
-	void create(AX_VkDevice&         dev,
-	            VkDeviceSize         bufferSize,
-	            VkBufferUsageFlags   usage,
-	            VmaMemoryUsage       vmaUsage,
-	            AX_VkSparseBuffer*   sparseBuffer);
-
-	void bindSparse(VkQueue queue, VkFence fence);
-	AX_VkSparseBuffer* sparseBuffer() { return _sparseBuffer; }
-	VkDeviceSize sparseOffset() const { return _sparseOffset; }
+	void create(AX_VkDevice&  dev,
+	            GpuBufferType bufferType,
+	            Int           bufferSize,
+	            bool          virtualAddressOnly);
 
 	VkMemoryRequirements getMemoryRequirements();
 
@@ -643,70 +636,15 @@ public:
 #endif
 
 private:
-	VkBuffer             _handle            = VK_NULL_HANDLE;
-	AX_VkDevice*         _dev               = nullptr;
-	VkDeviceSize         _bufferSize        = 0;
-	VkBufferUsageFlags   _usage             = 0;
-	VmaMemoryUsage       _vmaUsage          = VMA_MEMORY_USAGE_UNKNOWN;
-	VmaAllocation        _vmaAllocation     = VK_NULL_HANDLE;
-	VmaAllocationInfo    _vmaAllocationInfo = {};
-	AX_VkSparseBuffer*   _sparseBuffer      = nullptr;
-	VkDeviceSize         _sparseOffset      = 0;
+	VkBuffer           _handle             = VK_NULL_HANDLE;
+	AX_VkDevice*       _dev                = nullptr;
+	VkDeviceSize       _bufferSize         = 0;
+	bool               _virtualAddressOnly = false;
+	VkBufferUsageFlags _usage              = 0;
+	VmaMemoryUsage     _vmaUsage           = VMA_MEMORY_USAGE_UNKNOWN;
+	VmaAllocation      _vmaAllocation      = VK_NULL_HANDLE;
+	VmaAllocationInfo  _vmaAllocationInfo  = {};
 };
-
-class AX_VkSparseBuffer : public NonCopyable {
-public:
-	~AX_VkSparseBuffer() { destroy(); }
-	void create(AX_VkDevice&        dev,
-				VkDeviceSize        bufferSize,
-				VkBufferUsageFlags  usage,
-				VmaMemoryUsage      vmaUsage);
-	
-	void destroy();
-	
-	void bindSparse(VkQueue queue, VkFence fence);
-
-	void allocateSparseMemory(VkDeviceSize       size,
-	                          VmaAllocation*     pAllocation,
-	                          VmaAllocationInfo* pAllocationInfo,
-	                          VkDeviceSize*      pSparseOffset);
-	
-	void freeSparseMemory(VmaAllocation vmaAllocation, VmaAllocationInfo& vmaAllocationInfo);
-	
-	VkBuffer vkBufferHandle() { return _vkBuf.handle(); }
-	bool isValid() const { return _vkBuf.handle() != nullptr; }
-
-private:
-
-	AX_VkBuffer _vkBuf;
-	
-	struct Page {
-		Int                  refCount             = 1;
-		VkDeviceMemory       mem                  = VK_NULL_HANDLE;
-		VkDeviceSize         offset               = 0;
-		VkDeviceSize         size                 = 0;
-		VmaVirtualAllocation vmaVirtualAllocation = VK_NULL_HANDLE;
-	};
-	
-	struct MData {
-		VmaPool                   _memPool = VK_NULL_HANDLE;
-		VmaVirtualBlock           _virtualBlock = VK_NULL_HANDLE;
-
-		VkDeviceSize               _pageBlockSize = 0;
-		Dict<VkDeviceMemory, Page> _pageDict;
-		Array<Page*>               _pendingBindPages;
-		Array<Page*>               _pendingUnbindPages;
-	};
-
-	SpinLockProtected<MData> _mdata;
-};
-
-inline void AX_VkBuffer::bindSparse(VkQueue queue, VkFence fence) {
-	if (_sparseBuffer) {
-		_sparseBuffer->bindSparse(queue, fence);
-	}
-}
-
 
 class AX_VkDeviceMemory : public NonCopyable {
 	using This = AX_VkDeviceMemory;

@@ -29,14 +29,16 @@ public:
 	GpuBufferType bufferType = GpuBufferType::None;
 	Int maxSize  = 0;
 	Int pageSize = 64 * 1024;
+	Int alignment = 0;
 	
 	GpuBufferPool_CreateDesc() = default;
 
-	GpuBufferPool_CreateDesc(StrView name_, GpuBufferType bufferType_, Int maxSize_, Int pageSize_) 
+	GpuBufferPool_CreateDesc(StrView name_, GpuBufferType bufferType_, Int maxSize_, Int pageSize_, Int alignment_ = 0) 
 	: name(name_)
 	, bufferType(bufferType_)
 	, maxSize(maxSize_)
-	, pageSize(pageSize_) {}
+	, pageSize(pageSize_) 
+	, alignment(alignment_){}
 };
 
 class GpuBufferPool : public RenderObject {
@@ -57,8 +59,9 @@ protected:
 	virtual void onFreeBlock(GpuBuffer* buf) {}
 	
 	GpuBufferType _bufferType = GpuBufferType::None;
-	Int _maxSize  = 0; // virtual memory address size
-	Int _pageSize = 0;
+	Int _maxSize   = 0; // virtual memory address size
+	Int _pageSize  = 0;
+	Int _alignment = 0;
 };
 
 class GpuBuffer_CreateDesc : public NonCopyable {
@@ -90,7 +93,7 @@ public:
 	}
 
 	GpuBufferType  type() const { return _type; }
-	Int            offset() const { return _offset; }
+	Int            bufferOffset() const { return _bufferOffset; }
 	Int            size() const { return _size; }
 	
 	GpuBufferPool* pool() { return _pool; }  
@@ -104,7 +107,7 @@ protected:
 
 	GpuBufferType              _type   = GpuBufferType::None;
 	Int                        _size   = 0;
-	Int                        _offset = 0;
+	Int                        _bufferOffset = 0;
 	GpuBufferPool*             _pool   = nullptr;
 	D3D12MA::VirtualAllocation _virtualAllocation {};
 };

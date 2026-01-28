@@ -9,6 +9,7 @@ namespace  ax {
 GpuBufferPool_Dx12::GpuBufferPool_Dx12(const CreateDesc& desc): Base(desc) {
 	_resource_dx12.create(desc.bufferType, desc.maxSize, true);
 	_resource_dx12.setName(desc.name);
+	_alignment = _resource_dx12.resourceDesc().Alignment;
 	_pagePool.create(desc);
 }
 
@@ -56,13 +57,13 @@ GpuBuffer_Dx12::GpuBuffer_Dx12(const CreateDesc& desc): Base(desc) {
 	if (_pool) {
 		auto* pool = rttiCastCheck<GpuBufferPool_Dx12>(_pool);
 		_d3dResource.ref(pool->_resource_dx12.d3dResource());
-		_gpuAddress  = pool->_resource_dx12.gpuAddress() + _offset;
+		_gpuAddress  = pool->_resource_dx12.gpuAddress() + _bufferOffset;
 		
 	} else {
-		_p.create(_type, _size, false);
-		_p.setName(desc.name);
-		_d3dResource.ref(_p.d3dResource());
-		_gpuAddress = _p.gpuAddress() + _offset;
+		_resourceWithoutPool.create(_type, _size, false);
+		_resourceWithoutPool.setName(desc.name);
+		_d3dResource.ref(_resourceWithoutPool.d3dResource());
+		_gpuAddress = _resourceWithoutPool.gpuAddress() + _bufferOffset;
 	}
 }
 
@@ -86,9 +87,9 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 	dstRes->resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	cmdList_dx->CopyBufferRegion(dstRes->d3dResource(),
-	                             ax_safe_cast_from(dstOffset + dst_dx12->offset()),
+	                             ax_safe_cast_from(dstOffset + dst_dx12->bufferOffset()),
 	                             srcRes->d3dResource(),
-	                             ax_safe_cast_from(srcRange.start() + src_dx12->offset()),
+	                             ax_safe_cast_from(srcRange.start() + src_dx12->bufferOffset()),
 	                             ax_safe_cast_from(srcRange.size()));
 
 //	srcRes.resourceBarrier(cmdList_dx, srcOldState);

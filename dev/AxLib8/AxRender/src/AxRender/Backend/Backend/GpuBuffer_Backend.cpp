@@ -21,14 +21,15 @@ void GpuBufferPool_Backend::_allocateBlock(GpuBuffer* buf) {
 	AX_ASSERT(buf->_pool == nullptr);
 	
 	D3D12MA::VIRTUAL_ALLOCATION_DESC desc = {};
+	AX_ASSERT(_alignment > 0);
+	desc.Alignment = _alignment;
 	desc.Size = buf->_size;
-	desc.Alignment = _pageSize;
 		
 	UINT64 offset = 0;
 	_virtualBlock->Allocate(&desc, &buf->_virtualAllocation, &offset);
 
 	buf->_pool = this;
-	buf->_offset = ax_safe_cast_from(offset);
+	buf->_bufferOffset = ax_safe_cast_from(offset);
 	
 	onAllocateBlock(buf);
 }
@@ -42,7 +43,7 @@ void GpuBufferPool_Backend::_freeBlock(GpuBuffer* buf) {
 	_virtualBlock->FreeAllocation(buf->_virtualAllocation);
 	buf->_pool = nullptr;
 	buf->_virtualAllocation = {};
-	buf->_offset = 0;
+	buf->_bufferOffset = 0;
 }
 
 SPtr<GpuBuffer_Backend> GpuBuffer_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {

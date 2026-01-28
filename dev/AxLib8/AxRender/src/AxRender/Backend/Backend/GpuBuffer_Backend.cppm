@@ -40,8 +40,8 @@ protected:
 		}
 		
 		void onAllocateBlock(GpuBuffer* buf, Int pageSize) {
-			auto s = buf->_offset / pageSize;
-			auto e = Math::alignTo(buf->_offset + buf->_size, pageSize) / pageSize;
+			auto s = buf->_bufferOffset / pageSize;
+			auto e = Math::alignTo(buf->_bufferOffset + buf->_size, pageSize) / pageSize;
 			for (auto i = s; i < e; ++i) {
 				auto& page = _pages[i];
 				if (!page._commited) {
@@ -53,8 +53,8 @@ protected:
 		}
 		
 		void onFreeBlock(GpuBuffer* buf, Int pageSize) {
-			auto s = buf->_offset / pageSize;
-			auto e = Math::alignTo(buf->_offset + buf->_size, pageSize) / pageSize;
+			auto s = buf->_bufferOffset / pageSize;
+			auto e = Math::alignTo(buf->_bufferOffset + buf->_size, pageSize) / pageSize;
 			for (auto i = s; i < e; ++i) {
 				auto& page = _pages[i];
 				--page._refCount;

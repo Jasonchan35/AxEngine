@@ -58,15 +58,6 @@ void RenderObjectManager_Vk::onPostCreate() {
 	auto* sys  = RenderSystem_Vk::s_instance();
 	auto& dev  = sys->device();
 
-	_sparseVertexBuffer.create(dev, 32 * Math::GigaBytes, 
-						   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-						   VMA_MEMORY_USAGE_GPU_ONLY);
-
-	_sparseIndexBuffer.create(dev, 8 * Math::GigaBytes,
-							  VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-							  VMA_MEMORY_USAGE_GPU_ONLY);
-
-	
 #if AX_RENDER_BINDLESS
 
 	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();

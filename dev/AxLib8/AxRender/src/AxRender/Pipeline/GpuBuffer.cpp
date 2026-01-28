@@ -22,7 +22,6 @@ GpuBufferPool::GpuBufferPool(const CreateDesc& desc)
 , _pageSize(desc.pageSize) 
 {
 	setName(desc.name);
-
 }
 
 SPtr<GpuStructuredBuffer> GpuStructuredBuffer::s_new(const MemAllocRequest& req, const CreateDesc& desc) {

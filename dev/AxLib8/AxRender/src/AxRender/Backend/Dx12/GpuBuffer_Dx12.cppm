@@ -25,8 +25,8 @@ public:
 	
 	virtual void onGpuUpdatePages(RenderRequest_Backend* req_) override;
 
-	PagePool_<Page_Dx12>	_pagePool;
-	Dx12Resource_GpuBuffer	_resource_dx12;
+	PagePool_<Page_Dx12>   _pagePool;
+	Dx12Resource_GpuBuffer _resource_dx12;
 };
 
 class GpuBuffer_Dx12 : public GpuBuffer_Backend {
@@ -35,7 +35,7 @@ public:
 	GpuBuffer_Dx12(const CreateDesc& desc);
 
 	virtual void onUploadToGpu(Int offset, ByteSpan data) final {
-		_p.uploadToGpu(offset, data);
+		_resourceWithoutPool.uploadToGpu(offset, data);
 	}
 
 	ID3D12Resource*	d3dResource() { return _d3dResource; }
@@ -44,19 +44,24 @@ public:
 	Dx12Resource_GpuBuffer* resource_dx12() {
 		if (_pool) {
 			return &rttiCastCheck<GpuBufferPool_Dx12>(_pool)->_resource_dx12;
+		} else {
+			return &_resourceWithoutPool;
 		}
-		return &_p;
 	}
 	
 protected:
-	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _p._mapMemory(range); }
-	virtual void		onUnmapMemory() override				{ return _p._unmapMemory(); }
+	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _getResource_dx12()._mapMemory(range); }
+	virtual void		onUnmapMemory() override				{ return _getResource_dx12()._unmapMemory(); }
 
 	virtual void		onFlush(IntRange range) override { AX_ASSERT_TODO(); }
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override;
 
 private:
-	Dx12Resource_GpuBuffer	_p;
+	Dx12Resource_GpuBuffer& _getResource_dx12() {
+		return _pool ? rttiCastCheck<GpuBufferPool_Dx12>(_pool)->_resource_dx12 : _resourceWithoutPool;
+	}
+	
+	Dx12Resource_GpuBuffer	_resourceWithoutPool;
 	
 // pool
 	ComPtr<AX_ID3D12Resource>	_d3dResource;

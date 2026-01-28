@@ -41,6 +41,8 @@ public:
 	Int bufferSize() const { return _bufferSize; }
 
 	void setName(InNameId name);
+	
+	Int alignment() const { return _resourceDesc.Alignment; }
 
 protected:
 	Dx12ResourceBase();

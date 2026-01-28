@@ -19,10 +19,7 @@ public:
 	RenderObjectManager_Vk(const CreateDesc& desc) : Base(desc) {}
 
 	virtual void onPostCreate() override;
-	
-	AX_VkSparseBuffer	_sparseVertexBuffer;
-	AX_VkSparseBuffer	_sparseIndexBuffer;
-	
+
 #if AX_RENDER_BINDLESS
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) override;
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) override;
