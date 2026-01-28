@@ -39,9 +39,9 @@ protected:
 			AX_LOG("--- Create GpuBufferPool maxSize={} pageSize={} pageCount={}", desc.maxSize, desc.pageSize, pageCount);
 		}
 		
-		void onAllocateBlock(GpuBuffer* buf, Int pageSize) {
-			auto s = buf->_bufferOffset / pageSize;
-			auto e = Math::alignTo(buf->_bufferOffset + buf->_size, pageSize) / pageSize;
+		void commitPageForRange(IntRange rangeInBytes, Int pageSize) {
+			auto s = rangeInBytes.start() / pageSize;
+			auto e = Math::alignTo(rangeInBytes.stop(), pageSize) / pageSize;
 			for (auto i = s; i < e; ++i) {
 				auto& page = _pages[i];
 				if (!page._commited) {
@@ -49,17 +49,25 @@ protected:
 					_pendingCommitPages.emplaceBack(i);
 				}
 				++page._refCount;
-			}			
+			}
 		}
 		
-		void onFreeBlock(GpuBuffer* buf, Int pageSize) {
-			auto s = buf->_bufferOffset / pageSize;
-			auto e = Math::alignTo(buf->_bufferOffset + buf->_size, pageSize) / pageSize;
+		void uncommitPageForRange(IntRange rangeInBytes, Int pageSize) {
+			auto s = rangeInBytes.start() / pageSize;
+			auto e = Math::alignTo(rangeInBytes.stop(), pageSize) / pageSize;
 			for (auto i = s; i < e; ++i) {
 				auto& page = _pages[i];
 				--page._refCount;
 				AX_ASSERT(page._refCount >= 0);
 			}
+		}
+		
+		void onAllocateBlock(GpuBuffer* buf, Int pageSize) {
+			commitPageForRange(IntRange_StartAndSize(buf->_bufferOffset, buf->_size), pageSize);
+		}
+		
+		void onFreeBlock(GpuBuffer* buf, Int pageSize) {
+			uncommitPageForRange(IntRange_StartAndSize(buf->_bufferOffset, buf->_size), pageSize);
 		}
 		
 		Array<Int, 64>	_pendingCommitPages;
