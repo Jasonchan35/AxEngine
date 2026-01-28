@@ -3,5 +3,4 @@
 
 #include "Ax/AxWorld.hlsl"
 
-
 #endif // __AxRender_HLSL__

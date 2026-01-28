@@ -44,9 +44,9 @@ struct VS_Output {
 
 VS_Output vs_main(VS_Input i) {
 	VS_Output o;
-	o.worldPos = AxVertex_WorldPos(i.pos);
-	o.sv_pos   = AxVertex_ProjPos(i.pos);
-	o.normal   = AxVertex_Normal(i.normal);
+	o.worldPos = ax_pos_to_world(i.pos);
+	o.sv_pos   = ax_pos_to_clip(i.pos);
+	o.normal   = ax_normal_to_clip(i.normal);
 	o.color0   = i.color0;
 	return o;
 }

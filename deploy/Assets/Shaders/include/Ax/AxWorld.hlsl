@@ -2,6 +2,7 @@
 #define __AxWorld_HLS__
 
 #include "AxBasicType.hlsl"
+#include "AxMeshlet.hlsl"
 
 struct AxRenderGpuData_World {
 	float	time;
@@ -46,24 +47,21 @@ struct AxDrawCallRootConst {
 };
 
 AX_ROOT_CONST_STRUCT(AxDrawCallRootConst, axDrawCallRootConst) 
-#define AX_MATRIX_MVP        axDrawCallRootConst.AX_MATRIX_MVP
-#define AX_MATRIX_M          axDrawCallRootConst.AX_MATRIX_M
 #define AX_OBJECT_ID         axDrawCallRootConst.AX_OBJECT_ID
 #define AX_MESH_CLUSTER_ID   axDrawCallRootConst.AX_MESH_CLUSTER_ID
+#define AX_MATRIX_M          axDrawCallRootConst.AX_MATRIX_M
+#define AX_MATRIX_MVP        axDrawCallRootConst.AX_MATRIX_MVP
+#define AX_MATRIX_VP         axCamera.viewProjMatrix
 
-Vec4f AxVertex_ProjPos(Vec4f inPos) {
-	// return mul(AX_MATRIX_MVP, inPos);
-	return mul(axCamera.viewProjMatrix, mul(AX_MATRIX_M, inPos));
-}
+Vec3f ax_pos_to_world(Vec4f inPos) { Vec4f t = mul(AX_MATRIX_M, inPos); return t.xyz / t.w; }
+Vec4f ax_pos_to_clip (Vec4f inPos) { return mul(axCamera.viewProjMatrix, mul(AX_MATRIX_M, inPos)); }
 
-Vec3f AxVertex_WorldPos(Vec4f inPos) {
-	Vec4f wpos = mul(AX_MATRIX_M, inPos);
-	return wpos.xyz / wpos.w;
-}
+Vec3f ax_pos_to_world(Vec3f inPos) { return ax_pos_to_world(Vec4f(inPos, 1)); }
+Vec4f ax_pos_to_clip (Vec3f inPos) { return ax_pos_to_clip (Vec4f(inPos, 1)); }
 
-Vec3f AxVertex_Normal(Vec3f inNormal) {
-	return mul(transpose((Mat3f)AX_MATRIX_MVP), inNormal);
-}
+
+Vec3f ax_normal_to_world(Vec3f inNormal) { return mul(transpose((Mat3f)AX_MATRIX_M  ), inNormal); }
+Vec3f ax_normal_to_clip (Vec3f inNormal) { return mul(transpose((Mat3f)AX_MATRIX_MVP), inNormal); }
 
 
 #endif // __AxWorld_HLS__

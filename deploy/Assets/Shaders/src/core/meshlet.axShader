@@ -45,11 +45,11 @@ struct Meshlet {
 
 //[RootSignature(ROOT_SIG)]
 [numthreads(MS_GROUP_SIZE, 1, 1)]
-[AX_TOPOLOGY_TRIANGLE]
+[outputtopology("triangle")]
 void ms_main(
 	MS_Input mi,
-    out vertices VS_Output outVertices[MAX_VERTS],
-    out indices  uint3     outTriangles[MAX_PRIMS]
+    out vertices VS_Output outVert[MAX_VERTS],
+    out indices  uint3     outTri[MAX_PRIMS]
 ) {
 	Meshlet m;
 	m.vertCount = 3;
@@ -58,7 +58,7 @@ void ms_main(
     SetMeshOutputCounts(m.vertCount, m.primCount);
 
     if (mi.gtid < m.primCount) {
-        outTriangles[mi.gtid] = uint3(0,1,2);
+        outTri[mi.gtid] = uint3(0,1,2);
     }
 
     if (mi.gtid < m.vertCount) {
@@ -67,11 +67,11 @@ void ms_main(
 		i.normal = -normalize(Vec3f(1, 1, 0));
 
 		VS_Output o;
-		o.worldPos = AxVertex_WorldPos(i.pos);
-		o.sv_pos   = AxVertex_ProjPos(i.pos);
-		o.normal   = AxVertex_Normal(i.normal);
+		o.worldPos = ax_pos_to_world(i.pos);
+		o.sv_pos   = ax_pos_to_clip(i.pos);
+		o.normal   = ax_normal_to_clip(i.normal);
 		o.color0   = Color4f(1, 1, 1, 1);
-		outVertices[mi.gtid] = o;
+		outVert[mi.gtid] = o;
 	}
 }
 

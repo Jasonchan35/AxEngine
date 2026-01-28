@@ -62,7 +62,7 @@ float4 ps_main(VS_Output i) : SV_Target {
 }
 
 [numthreads(1, 1, 1)]
-[AX_TOPOLOGY_TRIANGLE]
+[outputtopology("triangle")]
 void ms_main(
 	MS_Input mi,
     out vertices VS_Output outVertices[3],

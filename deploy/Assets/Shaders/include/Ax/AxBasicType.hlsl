@@ -166,7 +166,23 @@ struct MS_Input {
 	uint dtid	: SV_DISPATCHTHREADID;
 };
 
-#define AX_TOPOLOGY_TRIANGLE	outputtopology("triangle")
+uint ax_Color4f_to_u32(float4 value) {
+	uint4 uvalue = uint4(value * 255.0 + 0.5);
+	return (uvalue.a << 24) | (uvalue.b << 16) | (uvalue.g << 8) | uvalue.r; 
+}
 
+float4 ax_u32_to_Color4f(uint packed) {
+	uint ri = (packed      ) & 0xff;
+	uint gi = (packed >> 8 ) & 0xff;
+	uint bi = (packed >> 16) & 0xff;
+	uint ai = (packed >> 24);
+	return float4(ri, gi, bi, ai) / 255.0;
+}
+
+float3 ax_unpack_normal_xy(float2 packedNormal) {
+    float2 xy = packedNormal * 2.0 - 1.0;
+    float z = sqrt(saturate(1.0 - dot(xy, xy)));
+    return float3(xy, z);
+}
 
 #endif // __AxBasicType_HLSL__

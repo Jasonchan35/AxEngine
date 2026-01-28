@@ -52,6 +52,124 @@
             }
         },
         {
+            "name": "axMeshlet",
+            "binding": {"kind": "unorderedAccess", "space": 1, "index": 31000},
+            "type": {
+                "kind": "resource",
+                "baseShape": "structuredBuffer",
+                "access": "readWrite",
+                "resultType": {
+                    "kind": "struct",
+                    "name": "AxMeshlet",
+                    "fields": [
+                        {
+                            "name": "vertCount",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "vertOffset",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "primCount",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "primOffset",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "axMeshlet_vertices",
+            "binding": {"kind": "unorderedAccess", "space": 1, "index": 31001},
+            "type": {
+                "kind": "resource",
+                "baseShape": "structuredBuffer",
+                "access": "readWrite",
+                "resultType": {
+                    "kind": "struct",
+                    "name": "AxMeshlet_Vertex",
+                    "fields": [
+                        {
+                            "name": "pos",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 3,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
+                        },
+                        {
+                            "name": "rawColor",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "uv0",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 2,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 16, "size": 8, "elementStride": 4}
+                        },
+                        {
+                            "name": "uv1",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 2,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 24, "size": 8, "elementStride": 4}
+                        },
+                        {
+                            "name": "rawNormal",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 2,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 32, "size": 8, "elementStride": 4}
+                        }
+                    ]
+                }
+            }
+        },
+        {
             "name": "axWorld",
             "binding": {"kind": "constantBuffer", "space": 1, "index": 0},
             "type": {
@@ -741,6 +859,14 @@
                 {
                     "name": "AxBindless_Texture3D",
                     "binding": {"kind": "shaderResource", "space": 2, "index": 40000, "used": 0}
+                },
+                {
+                    "name": "axMeshlet",
+                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 31000, "used": 0}
+                },
+                {
+                    "name": "axMeshlet_vertices",
+                    "binding": {"kind": "unorderedAccess", "space": 1, "index": 31001, "used": 0}
                 },
                 {
                     "name": "axWorld",
