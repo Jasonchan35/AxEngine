@@ -56,6 +56,7 @@ void GpuBufferPool_Dx12::onGpuUpdatePages(RenderRequest_Backend* req_) {
 GpuBuffer_Dx12::GpuBuffer_Dx12(const CreateDesc& desc): Base(desc) {
 	if (_pool) {
 		auto* pool = rttiCastCheck<GpuBufferPool_Dx12>(_pool);
+		pool->_allocateBlock(this);
 		_d3dResource.ref(pool->_resource_dx12.d3dResource());
 		_gpuAddress  = pool->_resource_dx12.gpuAddress() + _bufferOffset;
 		

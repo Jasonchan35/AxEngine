@@ -72,15 +72,6 @@ void GpuBuffer_Backend::flush(IntRange range) {
 }
 
 GpuBuffer_Backend::GpuBuffer_Backend(const CreateDesc& desc): Base(desc) {
-	auto* pool = rttiCastCheck<GpuBufferPool_Backend>(desc.pool);
-	if (!pool) {
-		auto* mgr = RenderObjectManager_Backend::s_instance();
-		pool = mgr->_bufferPools.getPool(desc.bufferType);
-	}
-	
-	if (pool && desc.bufferSize) {
-		pool->_allocateBlock(this);
-	}
 }
 
 GpuBuffer_Backend::~GpuBuffer_Backend() {

@@ -38,6 +38,8 @@ void Dx12ResourceBase::_reset() {
 }
 
 void Dx12ResourceBase::_create(const D3D12_CLEAR_VALUE* clearValue) {
+	AX_ASSERT(_resourceDesc.Width > 0);
+
 	if (_virtualAddressOnly) {
 		auto* dev = RenderSystem_Dx12::s_d3dDevice();
 		auto hr = dev->CreateReservedResource(&_resourceDesc, _resourceState, clearValue, IID_PPV_ARGS(_d3dResource.ptrForInit()));

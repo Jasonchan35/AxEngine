@@ -46,9 +46,12 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_dynamicDescriptors.CBV_SRV_UAV.create(Fmt("dynamic#{}.CBV_SRV_UAV", desc.index), pool.CBV_SRV_UAV, renderReq_CBV_SRV_UAV_Count       , false);
 	    _dynamicDescriptors.Sampler.create(Fmt("dynamic#{}.Sampler"    , desc.index), pool.Sampler,     info.renderRequest.maxSamplerCount, false);
 	
-	indirectDraw.drawArguments = GpuStructuredBuffer::s_new(AX_NEW, "indirectDraw.drawArguments", 
-															AX_SIZEOF(Dx12_IndirectDrawArgument),
-															info.indirectDraw.maxDrawCount);
+	
+	GpuStructuredBuffer_CreateDesc createDesc;
+	createDesc.name   = "indirectDraw.drawArguments";
+	createDesc.stride = AX_SIZEOF(Dx12_IndirectDrawArgument);
+	createDesc.count  = info.indirectDraw.maxDrawCount;
+	indirectDraw.drawArguments = GpuStructuredBuffer::s_new(AX_NEW, createDesc);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {

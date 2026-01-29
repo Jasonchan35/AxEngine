@@ -77,6 +77,7 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 {
 	if (_pool) {
 		auto* pool = rttiCastCheck<GpuBufferPool_Vk>(_pool);
+		pool->_allocateBlock(this);
 		_vkBufHandle = pool->_vkBuf.handle();
  
 	} else {

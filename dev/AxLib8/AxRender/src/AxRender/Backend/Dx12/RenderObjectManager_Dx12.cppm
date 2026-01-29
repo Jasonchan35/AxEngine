@@ -83,7 +83,6 @@ public:
 	} resourceDescriptors;
 
 	virtual void onPostCreate() override;
-	virtual void onUpdateMeshObject(RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list) override;
 	
 	void _createDescriptors();
 

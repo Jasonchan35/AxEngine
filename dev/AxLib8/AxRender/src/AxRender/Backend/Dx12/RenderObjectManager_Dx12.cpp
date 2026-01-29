@@ -34,12 +34,6 @@ void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, A
 void RenderObjectManager_Dx12::onPostCreate() {
 	_createDescriptors();
 	indirectDraw._create();
-	
-	GpuStructuredBuffer_CreateDesc bufDesc = {};
-	bufDesc.name     = "MeshObjects";
-	bufDesc.capacity = 1000000;
-	bufDesc.stride   = AX_SIZEOF(MeshObject_GpuData_Dx12);
-	_gpuData.meshObjects = GpuStructuredBuffer_Backend::s_new(AX_NEW, bufDesc);
 }
 
 void RenderObjectManager_Dx12::IndirectDraw::_create() {
@@ -126,28 +120,5 @@ void RenderObjectManager_Dx12::_createDescriptors() {
 	resourceDescriptors.Texture3D.create("resource.Texture3D", pool.CBV_SRV_UAV, resource_Texture3D_Count);
 }
 
-void RenderObjectManager_Dx12::onUpdateMeshObject(RenderRequest_Backend* req, Array<SPtr<MeshObject_Backend>>& list) {
-	auto dstData = _gpuData.meshObjects;
-	
-	for (auto& obj : list) {
-		if (!obj) continue;
-		auto slotid = obj->objectSlot.slotId();
-		AX_UNUSED(slotid);
-		
-		auto subMeshes = obj->meshData.subMeshes();
-		if (subMeshes.size() <= 0) continue;
-		auto& sm = subMeshes[0];
-
-		MeshObject_GpuData_Dx12 data = {};
-		if (auto* vb = rttiCastCheck<GpuBuffer_Dx12>(sm.vertexBuffer.getUploadedGpuBuffer(req))) {
-			data.vertexBufferLocation    = vb->gpuAddress();
-			data.vertexBufferSizeInBytes = ax_safe_cast_from(vb->size());
-		}
-		if (auto* ib = rttiCastCheck<GpuBuffer_Dx12>(sm.indexBuffer.getUploadedGpuBuffer(req))) {
-			data.indexBufferLocation    = ib->gpuAddress();
-			data.indexBufferSizeInBytes = ax_safe_cast_from(ib->size());
-		}
-	}
-}
 
 } // namespace ax

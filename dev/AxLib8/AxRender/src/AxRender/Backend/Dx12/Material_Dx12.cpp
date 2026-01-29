@@ -79,7 +79,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		auto* structBuf = param.buffer();
 		auto* resource_dx12 = gpuBuf->resource_dx12();
 		resource_dx12->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COMMON);
-		req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(*resource_dx12, 0, structBuf->capacity(), structBuf->stride());
+		req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(*resource_dx12, 0, structBuf->count(), structBuf->stride());
 	}
 
 #if !AX_RENDER_BINDLESS

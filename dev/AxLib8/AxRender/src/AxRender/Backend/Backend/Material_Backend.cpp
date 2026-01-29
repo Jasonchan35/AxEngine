@@ -54,10 +54,14 @@ void MaterialParamSpace_Backend::ConstBufferParam::create(const ShaderParamSpace
 	ParamBase::create(shaderParam);
 
 	_shaderParam = &shaderParam;
-	_dynamicGpuBuffer.create(	"Material_Backend-Dynamic-ConstBuffer",
-								GpuBufferType::Const,
-								_shaderParam->dataSize());
-
+	
+	DynamicGpuBuffer_CreateDesc bufDesc;
+	bufDesc.name = "Material_Backend-Dynamic-ConstBuffer";
+	bufDesc.bufferType = GpuBufferType::Const;
+	bufDesc.bufferSize = _shaderParam->dataSize();
+	bufDesc.pool = RenderObjectManager_Backend::s_instance()->_bufferPools.constBuffer.ptr();
+	
+	_dynamicGpuBuffer.create(bufDesc);
 	_dynamicGpuBuffer.setData(shaderParam.defaultValues());
 }
 

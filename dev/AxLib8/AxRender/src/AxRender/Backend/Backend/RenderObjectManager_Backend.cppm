@@ -61,17 +61,12 @@ public:
 	struct BufferPools {
 		SPtr<GpuBufferPool_Backend>	vertex;
 		SPtr<GpuBufferPool_Backend>	index;
+		SPtr<GpuBufferPool_Backend>	constBuffer;
 		
-		GpuBufferPool_Backend*	getPool(GpuBufferType type) {
-			switch (type) {
-				case GpuBufferType::Vertex: return vertex;
-				case GpuBufferType::Index : return index;
-				default: return nullptr;
-			}
-		}
-		void onGpuUpdate(RenderRequest_Backend* req) {
+		void onGpuUpdatePages(RenderRequest_Backend* req) {
 			vertex->onGpuUpdatePages(req);
 			index->onGpuUpdatePages(req);
+			constBuffer->onGpuUpdatePages(req);
 		}
 		
 	} _bufferPools;
@@ -107,13 +102,6 @@ protected:
 // objects - must after _objectTable
 	SPtr<Material_Backend>	_globalCommonMaterial;
 	SPtr<Material_Backend>	_indirectDrawMaterial;
-	
-	struct GpuData {
-		SPtr<GpuStructuredBuffer_Backend>	meshRenderers;
-		SPtr<GpuStructuredBuffer_Backend>	meshObjects;
-		SPtr<GpuStructuredBuffer_Backend>	cameras;
-		SPtr<GpuStructuredBuffer_Backend>	lights;
-	} _gpuData;
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>

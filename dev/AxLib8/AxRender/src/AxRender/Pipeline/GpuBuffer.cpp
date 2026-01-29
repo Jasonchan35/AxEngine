@@ -29,20 +29,23 @@ SPtr<GpuStructuredBuffer> GpuStructuredBuffer::s_new(const MemAllocRequest& req,
 }
 
 GpuStructuredBuffer::GpuStructuredBuffer(const CreateDesc& desc) {
-	_stride   = desc.stride;
-	_capacity = desc.capacity;
+	_stride = desc.stride;
+	_count  = desc.count;
 	
-	DynamicGpuBuffer_CreateDesc createDesc;
-	createDesc.bufferType = GpuBufferType::Structured;
-	createDesc.name = desc.name;
-	_buffer.create(createDesc);
-	_buffer.ensureDataCapacity(desc.capacity * desc.stride);
+	GpuBuffer_CreateDesc bufDesc;
+	bufDesc.name       = desc.name;
+	bufDesc.bufferType = GpuBufferType::Structured;
+	bufDesc.bufferSize = _stride * _count;
+	bufDesc.pool       = desc.pool;
+
+	_gpuBuffer = GpuBuffer::s_new(AX_NEW, bufDesc);
 }
 
 void DynamicGpuBuffer::create(const CreateDesc& desc) {
 	reset();
 	_name       = desc.name;
 	_bufferType = desc.bufferType;
+	_pool       = desc.pool;
 	_cpuBuffer.resize(desc.bufferSize);
 }
 

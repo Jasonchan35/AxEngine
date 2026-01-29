@@ -1400,6 +1400,10 @@ void AX_VkBuffer::destroy() {
 
 void AX_VkBuffer::create(AX_VkDevice& dev, GpuBufferType bufferType, Int bufferSize, bool virtualAddressOnly) {
 	destroy();
+	
+	if (bufferSize < 16) {
+		bufferSize = 16;
+	}
 
 	VkBufferUsageFlags usage        = 0;
 	VmaMemoryUsage     vmaUsage     = VMA_MEMORY_USAGE_AUTO;
