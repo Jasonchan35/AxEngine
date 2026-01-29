@@ -1,7 +1,11 @@
 #if AX_SHADER_INFO
 
 Properties {
-	Color4f		color = [0, 0, 0.5, 1]
+	Color4f color     = [1, 1, 1, 1]
+    Color3f ambient   = [0.2, 0.2, 0.2]
+    Color3f diffuse   = [0.8, 0.8, 0.8]
+    Color3f specular  = [1, 1, 1]
+    float   shininess = 32	
 }
 
 Pass "Pass0" {
@@ -61,6 +65,7 @@ void ms_main(
 		AxMeshletVert mv = axMeshletVert[meshlet.vertOffset + j];
 		i.pos    = Vec4f(mv.pos, 1);
 		i.normal = mv.normal;
+		i.color0 = mv.color();
 
 		VS_Output o;
 		o.worldPos = ax_pos_to_world(i.pos);

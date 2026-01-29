@@ -80,14 +80,14 @@ void RenderObjectManager_Backend::_postCreate() {
 	RenderStockObjects::s_create();
 	
 //----	
-	_bufferPools.vertex = GpuBufferPool_Backend::s_new(AX_NEW, 
-	 	"pool-vertex", GpuBufferType::Vertex, 1 * Math::GigaBytes, 8 * Math::MegaBytes); 
+//	_bufferPools.vertex = GpuBufferPool_Backend::s_new(AX_NEW, 
+//	 	"pool-vertex", GpuBufferType::Vertex, 1 * Math::GigaBytes, 8 * Math::MegaBytes); 
 	
-	_bufferPools.index = GpuBufferPool_Backend::s_new(AX_NEW, 
-	 	"pool-index", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
+//	_bufferPools.index = GpuBufferPool_Backend::s_new(AX_NEW, 
+//	 	"pool-index", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
 
-	_bufferPools.constBuffer = GpuBufferPool_Backend::s_new(AX_NEW, 
-		"pool-constBuffer", GpuBufferType::Const, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
+//	_bufferPools.constBuffer = GpuBufferPool_Backend::s_new(AX_NEW, 
+//		"pool-constBuffer", GpuBufferType::Const, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
 
 	auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
 	auto* worldParamSpace  = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);

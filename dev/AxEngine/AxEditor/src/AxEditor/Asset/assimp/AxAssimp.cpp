@@ -216,27 +216,31 @@ public:
 		auto dstPrim = dstMesh->meshletPrim->editData<MeshletPrim>(0, numPrim);
 		
 		{ // pos
-			Int i = 0;
+			Int j = 0;
 			for (auto& srcValue : Span(srcMesh->mVertices, numVert)) {
-				dstVert[i].pos = toLengthVec3(toVec3f(srcValue));
-				++i;
+				dstVert[j].pos = toLengthVec3(toVec3f(srcValue));
+				dstVert[j].rawColor = 0xffffffff;
+				dstVert[j].uv0 = {};
+				dstVert[j].uv1 = {};
+				++j;
 			}
 		}
 		
 		if (srcMesh->HasNormals()) {
-			Int i = 0;
+			Int j = 0;
 			for (auto& srcValue : Span(srcMesh->mNormals, numVert)) {
-				dstVert[i].normal = convAxis(toVec3f(srcValue));
-				++i;
+				dstVert[j].normal = convAxis(toVec3f(srcValue));
+				++j;
 			}
 		}
 		
 		{
-			Int i = 0;
+			Int j = 0;
 			for (auto& srcFace : Span(srcMesh->mFaces, srcMesh->mNumFaces)) {
 				if (srcFace.mNumIndices != 3) continue;
 				const auto* src = srcFace.mIndices;
-				dstPrim[i].tri.set(src[0], src[1], src[2]);
+				dstPrim[j].tri.set(src[0], src[1], src[2]);
+				++j;
 			}
 		}
 		

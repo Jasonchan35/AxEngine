@@ -11,7 +11,7 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	if (!mesh) return;
 
 	drawMesh(mesh->meshData, material, materialPass, objectToWorld);
-#if 0
+#if 1
 	AxDrawCallDesc desc;
 	// desc.material = material;
 	desc.material = RenderStockObjects::s_instance()->materials->meshlet;
@@ -19,6 +19,7 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	desc.materialPassIndex = materialPass;
 	desc.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
 	desc.meshObject = mesh;
+	desc.dispatchGroupCount.set(256, 1, 1);
 	drawCall(desc);
 #endif
 }

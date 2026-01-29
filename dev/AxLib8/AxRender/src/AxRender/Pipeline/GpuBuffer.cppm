@@ -253,10 +253,13 @@ public:
 	}
 
 	template<class T>
-	void setValue(Int index, const T& value) {
+	void setValue(Int index, const T& v) { setValues(index, Span(v)); }
+	
+	template<class T>
+	void setValues(Int index, Span<T> span) {
 		if (AX_SIZEOF(T) != _stride) throw Error_Undefined();
-		auto mutSpan = editData<T>(index, 1);
-		mutSpan[0] = value;
+		auto mutSpan = editData<T>(index, span.size());
+		mutSpan.copyValues(span);
 	}
 	
 	Int gpuBufferIndex() const { return _gpuBuffer.gpuBufferOffset() / _stride; }
