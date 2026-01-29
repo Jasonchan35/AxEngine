@@ -23,8 +23,6 @@ public:
 	
 	virtual void onGpuUpdatePages(RenderRequest_Backend* req_) override;
 
-	static Int s_getMinAlignement(GpuBufferType type);
-	
 	PagePool_<Page_Vk>	_pagePool;
 	AX_VkBuffer			_vkBuf;
 };
@@ -33,6 +31,8 @@ class GpuBuffer_Vk : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_Vk, GpuBuffer_Backend)
 public:
 	GpuBuffer_Vk(const CreateDesc& desc);
+
+	static Int s_getMinAlignement(GpuBufferType type);
 
 	virtual MutByteSpan onMapMemory(IntRange range) override	{ return _getVkBuf().mapMemory(range); }
 	virtual void		onUnmapMemory() override				{ return _getVkBuf().unmapMemory(); }

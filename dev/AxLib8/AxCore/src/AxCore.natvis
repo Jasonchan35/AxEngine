@@ -305,4 +305,9 @@
 		<DisplayString                        >[{_name}{_id}]</DisplayString>
 	</Type>
 
+	<!-- ax::Range_<*> -->
+	<Type Name="ax::Range_&lt; * &gt;">
+		<DisplayString>[start={_start} stop={_stop} size={_stop - _start}]</DisplayString>
+	</Type>	
+
 </AutoVisualizer>

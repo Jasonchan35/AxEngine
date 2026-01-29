@@ -59,13 +59,29 @@ void Dx12ResourceBase::destroy() {
 	_reset();
 }
 
+Int Dx12Resource_GpuBuffer::s_getMinAlignement(GpuBufferType type) {
+	switch (type) {
+		case GpuBufferType::Const					: return D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
+		case GpuBufferType::Vertex					: return 64;;
+		case GpuBufferType::Index					: return 16;
+		case GpuBufferType::StagingToGpu			: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
+		case GpuBufferType::StagingToCpu			: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
+		case GpuBufferType::Structured				: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
+		case GpuBufferType::RayTracingShaderRecord	: return D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT;
+		case GpuBufferType::RayTracingInstanceDesc	: return D3D12_RAYTRACING_INSTANCE_DESCS_BYTE_ALIGNMENT;
+		case GpuBufferType::RayTracingScratch		: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
+		case GpuBufferType::RayTracingAccelStruct	: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BYTE_ALIGNMENT;
+		default: return D3D12_SMALL_RESOURCE_PLACEMENT_ALIGNMENT;
+	}
+}
+
 void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, bool virtualAddressOnly) {
 	destroy();
 	
 	_bufferType = type;
 	_virtualAddressOnly = virtualAddressOnly;
 
-	Int alignment = 0;
+	Int alignment = s_getMinAlignement(type);
 	switch (type) {
 		case GpuBufferType::Vertex: {
 			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
@@ -78,7 +94,6 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, bool vir
 		}break;
 
 		case GpuBufferType::Const: {
-			alignment           = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
 			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 		}break;

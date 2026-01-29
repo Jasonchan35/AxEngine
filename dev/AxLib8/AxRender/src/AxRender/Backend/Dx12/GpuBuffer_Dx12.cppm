@@ -37,6 +37,10 @@ public:
 	virtual void onUploadToGpu(Int offset, ByteSpan data) final {
 		_resourceWithoutPool.uploadToGpu(offset, data);
 	}
+	
+	static Int s_getMinAlignement(GpuBufferType type) {
+		return Dx12Resource_GpuBuffer::s_getMinAlignement(type);
+	}
 
 	ID3D12Resource*	d3dResource() { return _d3dResource; }
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() const { return _gpuAddress; }
@@ -50,7 +54,7 @@ public:
 	}
 	
 protected:
-	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _getResource_dx12()._mapMemory(range); }
+	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _getResource_dx12()._mapMemory(range + _bufferOffset); }
 	virtual void		onUnmapMemory() override				{ return _getResource_dx12()._unmapMemory(); }
 
 	virtual void		onFlush(IntRange range) override { AX_ASSERT_TODO(); }

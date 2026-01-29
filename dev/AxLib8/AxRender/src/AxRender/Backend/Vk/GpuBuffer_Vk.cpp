@@ -15,22 +15,8 @@ GpuBufferPool_Vk::GpuBufferPool_Vk(const CreateDesc& desc): Base(desc) {
 	auto& dev = RenderSystem_Vk::s_instance()->device();
 	_vkBuf.create(dev, desc.bufferType, desc.maxSize, true);
 	_vkBuf.setDebugName(desc.name);
-	_alignment = desc.alignment ? desc.alignment : s_getMinAlignement(desc.bufferType);
+	_alignment = desc.alignment ? desc.alignment : GpuBuffer_Vk::s_getMinAlignement(desc.bufferType);
 	_pagePool.create(desc);
-}
-
-Int GpuBufferPool_Vk::s_getMinAlignement(GpuBufferType type) {
-	auto& limits = RenderSystem_Vk::s_instance()->device().physicalDevice()->props().limits;
-
-	switch (type) {
-		case GpuBufferType::Const		: return limits.minUniformBufferOffsetAlignment;
-		case GpuBufferType::Vertex		: return 64;;
-		case GpuBufferType::Index		: return 16;
-		case GpuBufferType::StagingToGpu: return limits.minStorageBufferOffsetAlignment;
-		case GpuBufferType::StagingToCpu: return limits.minStorageBufferOffsetAlignment;
-		case GpuBufferType::Structured	: return limits.minStorageBufferOffsetAlignment;
-		default: return 16;
-	}
 }
 
 void GpuBufferPool_Vk::onGpuUpdatePages(RenderRequest_Backend* req_) {
@@ -85,6 +71,20 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 		_vkBufWithoutPool.create(dev, desc.bufferType, desc.bufferSize, false);
 		_vkBufWithoutPool.setDebugName(desc.name);
 		_vkBufHandle = _vkBufWithoutPool.handle();
+	}
+}
+
+Int GpuBuffer_Vk::s_getMinAlignement(GpuBufferType type) {
+	auto& limits = RenderSystem_Vk::s_instance()->device().physicalDevice()->props().limits;
+
+	switch (type) {
+		case GpuBufferType::Const		: return limits.minUniformBufferOffsetAlignment;
+		case GpuBufferType::Vertex		: return 64;;
+		case GpuBufferType::Index		: return 16;
+		case GpuBufferType::StagingToGpu: return limits.minStorageBufferOffsetAlignment;
+		case GpuBufferType::StagingToCpu: return limits.minStorageBufferOffsetAlignment;
+		case GpuBufferType::Structured	: return limits.minStorageBufferOffsetAlignment;
+		default: return 16;
 	}
 }
 

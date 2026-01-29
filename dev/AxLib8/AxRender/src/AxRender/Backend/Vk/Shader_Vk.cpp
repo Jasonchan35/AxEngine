@@ -16,7 +16,7 @@ namespace ax /*::AxRender*/ {
 ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 : Base(desc)
 {
-	AX_LOG("ShaderPass_Vk create {}", debugName());
+//	AX_LOG("ShaderPass_Vk create {}", debugName());
 	
 	auto* renderSystem = RenderSystem_Vk::s_instance();
 	auto& dev = renderSystem->device();

@@ -117,8 +117,8 @@ template<class T>
 AX_NODISCARD AX_INLINE constexpr Range_<T> Range_StartAndSize(const T& begin, const T& size) noexcept {
 	return Range_<T>::s_startAndSize(begin, size);
 }
-AX_NODISCARD AX_INLINE constexpr IntRange IntRange_StartAndSize(const Int& begin, const Int& end) noexcept {
-	return IntRange::s_startAndSize(begin, end);
+AX_NODISCARD AX_INLINE constexpr IntRange IntRange_StartAndSize(const Int& begin, const Int& size) noexcept {
+	return IntRange::s_startAndSize(begin, size);
 }
 
 } // namespace

@@ -75,14 +75,15 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 
 void RenderObjectManager_Backend::_postCreate() {
 	_bufferPools.vertex = GpuBufferPool_Backend::s_new(AX_NEW, 
-	 	"vertexPool", GpuBufferType::Vertex, 1 * Math::GigaBytes, 8 * Math::MegaBytes); 
+	 	"pool-vertex", GpuBufferType::Vertex, 1 * Math::GigaBytes, 8 * Math::MegaBytes); 
 	
 	_bufferPools.index = GpuBufferPool_Backend::s_new(AX_NEW, 
-	 	"indexPool", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
+	 	"pool-index", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
 
+#if 0 // doesn't work yet, looks like data didn't copy to GPU buffer 
 	_bufferPools.constBuffer = GpuBufferPool_Backend::s_new(AX_NEW, 
-		 "constBuffer", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
-	
+		 "pool-constBuffer", GpuBufferType::Const, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
+#endif
 	//------
 	_globalCommonMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/AxGlobalCommon.axShader");
 	_indirectDrawMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/IndirectDraw.axComputeShader");

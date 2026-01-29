@@ -212,7 +212,7 @@ public:
 			tran.position = toLengthVec3(tran.position);
 		}
 
-		AX_LOG("importNode {} {}", entity->name(), entity->transform.rotation.eulerDeg());
+//		AX_LOG("AxAssimp: importNode {} {}", entity->name(), entity->transform.rotation.eulerDeg());
 		
 		auto* stockObjs = RenderStockObjects::s_instance();
 		

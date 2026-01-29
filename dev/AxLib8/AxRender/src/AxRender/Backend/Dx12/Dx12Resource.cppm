@@ -41,8 +41,6 @@ public:
 	Int bufferSize() const { return _bufferSize; }
 
 	void setName(InNameId name);
-	
-	Int alignment() const { return _resourceDesc.Alignment; }
 
 protected:
 	Dx12ResourceBase();
@@ -78,6 +76,8 @@ public:
 		create(type, data.sizeInBytes(), virtualAddressOnly);
 		uploadToGpu(0, data);
 	}
+	
+	static Int s_getMinAlignement(GpuBufferType type);
 
 	GpuBufferType bufferType() const { return _bufferType; }
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress() const { return _gpuAddress; }

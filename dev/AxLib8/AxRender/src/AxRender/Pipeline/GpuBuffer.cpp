@@ -14,6 +14,7 @@ GpuBuffer::GpuBuffer(const CreateDesc& desc) {
 	_name = NameId::s_make(desc.name);
 	_type = desc.bufferType;
 	_size = desc.bufferSize;
+	_pool = desc.pool;
 }
 
 GpuBufferPool::GpuBufferPool(const CreateDesc& desc)
@@ -73,6 +74,7 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 		GpuBuffer_CreateDesc bufferDesc;
 		bufferDesc.bufferType = _bufferType;
 		bufferDesc.bufferSize = dataCapacity;
+		bufferDesc.pool       = _pool;
 
 		_gpuBuffer = GpuBuffer::s_new(AX_NEW, bufferDesc);
 		uploadRange = IntRange(dataSize); // upload all data for new buffer

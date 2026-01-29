@@ -92,9 +92,10 @@ public:
 		return s_new(req, CreateDesc(name, type, size));
 	}
 
-	GpuBufferType  type() const { return _type; }
-	Int            bufferOffset() const { return _bufferOffset; }
-	Int            size() const { return _size; }
+	GpuBufferType type() const { return _type; }
+	Int           size() const { return _size; }
+	Int           bufferOffset() const { return _bufferOffset; }
+	IntRange      bufferRange() const { return IntRange_StartAndSize(_bufferOffset, _size); }
 	
 	GpuBufferPool* pool() { return _pool; }  
 	

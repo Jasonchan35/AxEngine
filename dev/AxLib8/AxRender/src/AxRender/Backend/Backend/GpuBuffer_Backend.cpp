@@ -18,19 +18,24 @@ GpuBufferPool_Backend::GpuBufferPool_Backend(const CreateDesc& desc): Base(desc)
 }
 
 void GpuBufferPool_Backend::_allocateBlock(GpuBuffer* buf) {
-	AX_ASSERT(buf->_pool == nullptr);
-	
 	D3D12MA::VIRTUAL_ALLOCATION_DESC desc = {};
-	AX_ASSERT(_alignment > 0);
+	if (_alignment <= 0) {
+		throw Error_Undefined("GpuBufferPool _alignment <= 0");
+	}
+	
+	if (_bufferType != buf->_type) {
+		throw Error_Undefined("GpuBufferPool type != GpuBuffer type");
+	}
+	
+	buf->_size = Math::alignTo(buf->_size, _alignment);
+	
 	desc.Alignment = _alignment;
-	desc.Size = buf->_size;
+	desc.Size      = ax_safe_cast_from(buf->_size);
 		
 	UINT64 offset = 0;
 	_virtualBlock->Allocate(&desc, &buf->_virtualAllocation, &offset);
 
-	buf->_pool = this;
 	buf->_bufferOffset = ax_safe_cast_from(offset);
-	
 	onAllocateBlock(buf);
 }
 
@@ -51,7 +56,8 @@ SPtr<GpuBuffer_Backend> GpuBuffer_Backend::s_new(const MemAllocRequest& req, con
 }
 
 void GpuBuffer_Backend::copyData(ByteSpan data, Int offset) {
-	auto map = mapMemory(Range_StartAndSize(offset, data.size()));
+	auto range = IntRange_StartAndSize(offset, data.size());
+	auto map = mapMemory(range);
 	map->copyValues(data);
 }
 

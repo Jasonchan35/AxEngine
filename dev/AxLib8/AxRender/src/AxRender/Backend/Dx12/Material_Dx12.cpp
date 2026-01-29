@@ -69,7 +69,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		//		AX_LOG("-- addCBV");
 		auto* resource_dx12 = gpuBuf->resource_dx12();
 		resource_dx12->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-		req->_dynamicDescriptors.CBV_SRV_UAV.addCBV(*resource_dx12, gpuBuf->bufferOffset());
+		req->_dynamicDescriptors.CBV_SRV_UAV.addCBV(*resource_dx12, gpuBuf->bufferRange());
 	}
 	
 	for (auto& param : _structuredBufferParams) {

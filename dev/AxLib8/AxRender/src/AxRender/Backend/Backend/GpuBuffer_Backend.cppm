@@ -36,7 +36,7 @@ protected:
 		void create(const CreateDesc& desc) {
 			auto pageCount = Math::alignTo(desc.maxSize, desc.pageSize) / desc.pageSize;
 			_pages.resize(pageCount);
-			AX_LOG("--- Create GpuBufferPool maxSize={} pageSize={} pageCount={}", desc.maxSize, desc.pageSize, pageCount);
+//			AX_LOG("--- Create GpuBufferPool maxSize={} pageSize={} pageCount={}", desc.maxSize, desc.pageSize, pageCount);
 		}
 		
 		void commitPageForRange(IntRange rangeInBytes, Int pageSize) {
@@ -93,7 +93,9 @@ public:
 	
 	using ScopedMapMemory = ScopedMemFuncProxy0<MutByteSpan, This, &This::_unmapMemory>;
 	AX_NODISCARD AX_INLINE	ScopedMapMemory mapMemory() { return mapMemory(IntRange(_size)); }
-	AX_NODISCARD AX_INLINE	ScopedMapMemory mapMemory(IntRange range) { return ScopedMapMemory(_mapMemory(range), this); }
+	AX_NODISCARD AX_INLINE	ScopedMapMemory mapMemory(IntRange range) {
+		return ScopedMapMemory(_mapMemory(range), this);
+	}
 
 	void flush(IntRange range);
 
