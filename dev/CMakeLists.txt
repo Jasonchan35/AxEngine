@@ -55,7 +55,7 @@ ax_copy_file_if_newer("${AX_PROJECT_ROOT}/${PROJECT_NAME}.sln.DotSettings" "${CM
 #       +- AxImUI
 
 add_subdirectory(external/imgui)
-add_subdirectory(external/D3D12MemoryAllocator)
+# add_subdirectory(external/D3D12MemoryAllocator)
 add_subdirectory(external/VulkanMemoryAllocator)
 add_subdirectory(external/assimp)
 # add_subdirectory(external/OpenUSD)

@@ -2,24 +2,29 @@
 #define __AxMeshlet_hlsl__
 
 struct AxMeshlet {
-	uint vertCount;
-	uint vertOffset;
-	uint primCount;
-	uint primOffset;
+	u32 vertCount;
+	u32 vertOffset;
+	u32 primCount;
+	u32 primOffset;
 };
-RWStructuredBuffer<AxMeshlet> axMeshlet : register(u1000, AX_BindSpace_World);
+StructuredBuffer<AxMeshlet> axMeshlet : register(t200, AX_BindSpace_World);
 
-struct AxMeshlet_Vertex {
+struct AxMeshletVert {
 	Vec3f   pos;
 	u32     rawColor;
 	Vec2f   uv0;
 	Vec2f   uv1;
-	Vec2f   rawNormal;
+//	Vec2f   rawNormal;
+	Vec3f   normal;
 
 	float4  color() { return ax_u32_to_Color4f(rawColor); }
 };
-RWStructuredBuffer<AxMeshlet_Vertex> axMeshlet_vertices : register(u1001, AX_BindSpace_World);
+StructuredBuffer<AxMeshletVert> axMeshletVert : register(t201, AX_BindSpace_World);
 
+struct AxMeshletPrim {
+	uint3 tri;
+};
+StructuredBuffer<AxMeshletPrim> axMeshletPrim : register(t202, AX_BindSpace_World);
 
 
 #endif //  __AxMeshlet_hlsl__

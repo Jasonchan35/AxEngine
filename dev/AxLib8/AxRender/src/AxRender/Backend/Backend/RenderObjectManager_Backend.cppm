@@ -57,32 +57,40 @@ public:
 		const ShaderParamSpace_Backend::TextureParam*	AxBindless_Texture2D = nullptr;
 	} bindless;
 #endif
+	
+	struct StructuredBufferPoolParam {
+		SPtr<GpuBufferPool_Backend>	pool;
+		void onGpuUpdatePages(RenderRequest_Backend* req) {
+			if (pool) pool->onGpuUpdatePages(req);
+		}
+	};
 
 	struct BufferPools {
 		SPtr<GpuBufferPool_Backend>	vertex;
 		SPtr<GpuBufferPool_Backend>	index;
 		SPtr<GpuBufferPool_Backend>	constBuffer;
 		
-		void onGpuUpdatePages(RenderRequest_Backend* req) {
-			vertex->onGpuUpdatePages(req);
-			index->onGpuUpdatePages(req);
-			constBuffer->onGpuUpdatePages(req);
-		}
+		SPtr<GpuBufferPool_Backend> axMeshlet;
+		SPtr<GpuBufferPool_Backend> axMeshletVert;
+		SPtr<GpuBufferPool_Backend> axMeshletPrim;
 		
+		template<class FUNC>
+		void visit(FUNC func) {
+			func(vertex       );
+			func(index        );
+			func(constBuffer  );
+			func(axMeshlet    );
+			func(axMeshletVert);
+			func(axMeshletPrim);
+		}		
 	} _bufferPools;
-	
+
 	Material_Backend* globalCommonMaterial() { return _globalCommonMaterial.ptr(); }
 	Material_Backend* indirectDrawMaterial() { return _indirectDrawMaterial.ptr(); }
 	
 protected:
 	void _postCreate();
 	virtual void onPostCreate() {}
-
-	template<class FUNC>
-	void visitBufferPools(FUNC func) {
-		func(_bufferPools.vertex.ptr());
-		func(_bufferPools.index.ptr());
-	}
 
 	template<class FUNC>
 	void visitObjectTable(FUNC func) {

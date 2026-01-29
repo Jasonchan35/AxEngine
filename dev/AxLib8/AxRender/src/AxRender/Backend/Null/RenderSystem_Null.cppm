@@ -60,10 +60,10 @@ public:
 	virtual void		onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, IntRange srcRange, Int dstOffset) override {}
 };
 
-class GpuStructuredBuffer_Null : public GpuStructuredBuffer_Backend {
-	AX_RTTI_INFO(GpuStructuredBuffer_Null, GpuStructuredBuffer_Backend)
+class StructuredGpuBuffer_Null : public StructuredGpuBuffer_Backend {
+	AX_RTTI_INFO(StructuredGpuBuffer_Null, StructuredGpuBuffer_Backend)
 public:
-	GpuStructuredBuffer_Null(const CreateDesc& desc) : Base(desc) {}
+	StructuredGpuBuffer_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
 class RenderPassColorBuffer_Null : public RenderPassColorBuffer_Backend {

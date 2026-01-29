@@ -86,8 +86,8 @@ GpuBuffer_Backend::~GpuBuffer_Backend() {
 	}
 }
 
-auto GpuStructuredBuffer_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) -> SPtr<This> {
-	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newGpuStructuredBuffer(req, desc));
+auto StructuredGpuBuffer_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) -> SPtr<This> {
+	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newStructuredGpuBuffer(req, desc));
 }
 
 } // namespace

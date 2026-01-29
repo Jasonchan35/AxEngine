@@ -73,13 +73,23 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	}
 	
 	for (auto& param : _structuredBufferParams) {
-		auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(param.getUploadedGpuBuffer(req)));
-		if (!gpuBuf) continue;
-		// AX_LOG("-- add StructuredBuffer");
-		auto* structBuf = param.buffer();
-		auto* resource_dx12 = gpuBuf->resource_dx12();
-		resource_dx12->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COMMON);
-		req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(*resource_dx12, 0, structBuf->count(), structBuf->stride());
+		if (auto* pool = rttiCastCheck<GpuBufferPool_Dx12>(ax_const_cast(param.bufferPool()))) {
+			auto& resource_dx12 = pool->_resource_dx12;
+			resource_dx12.resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COMMON);
+			Int count = pool->maxSize() / param.stride();
+			req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(resource_dx12, 0, count, param.stride());
+			
+		} else if (auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(param.getUploadedGpuBuffer(req)))) {
+			// AX_LOG("-- add StructuredBuffer");
+			auto* structBuf = param.buffer();
+			auto* resource_dx12 = gpuBuf->resource_dx12();
+			resource_dx12->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_COMMON);
+			AX_ASSERT(param.stride() == structBuf->stride());
+			req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(*resource_dx12, structBuf->gpuBufferIndex(), structBuf->count(), structBuf->stride());
+			
+		} else {
+			// AX_ASSERT(false); // missing param
+		}
 	}
 
 #if !AX_RENDER_BINDLESS

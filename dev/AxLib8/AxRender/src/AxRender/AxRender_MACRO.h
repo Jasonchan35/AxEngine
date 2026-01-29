@@ -50,7 +50,7 @@
 	E(RenderRequest				, API, SUFFIX) \
 	E(GpuBuffer					, API, SUFFIX) \
 	E(GpuBufferPool				, API, SUFFIX) \
-	E(GpuStructuredBuffer		, API, SUFFIX) \
+	E(StructuredGpuBuffer		, API, SUFFIX) \
 	E(MeshObject				, API, SUFFIX) \
 	E(Shader					, API, SUFFIX) \
 	E(ShaderPass				, API, SUFFIX) \
@@ -90,7 +90,7 @@
 #define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \
 	virtual void onSetScissorRect(const Rect2f& rect) IMP; \
-	virtual void onDrawCall(AxDrawCallDesc& drawcall) IMP; \
+	virtual void onDrawCall(AxDrawCallDesc& cmd) IMP; \
 	virtual void onFrameBegin() IMP; \
 	virtual void onFrameEnd() IMP; \
 	virtual void onRenderPassBegin(RenderPass* pass) IMP; \

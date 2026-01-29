@@ -51,7 +51,7 @@ public:
 	bool setParam(NameId name, Sampler*			v);
 	bool setParam(NameId name, Texture2D*		v);
 	
-	bool setParam(NameId name, GpuStructuredBuffer* structBuf);
+	bool setParam(NameId name, StructuredGpuBuffer* structBuf);
 
 protected:
 	Material(const CreateDesc& desc);

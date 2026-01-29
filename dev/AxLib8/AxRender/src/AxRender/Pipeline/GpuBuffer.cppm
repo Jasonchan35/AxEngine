@@ -141,6 +141,8 @@ public:
 	void setData(ByteSpan src, Int offset = 0);
 	void appendData(ByteSpan src);
 	
+	void setSize(Int newSize);
+	
 	MutByteSpan extendSize(Int sizeInBytes);
 
 	// remember to markDirty after write
@@ -150,6 +152,8 @@ public:
 	const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
 		return ax_const_cast(this)->_getUploadedGpuBuffer(req);
 	}
+	
+	Int gpuBufferOffset() const { return _gpuBuffer ? _gpuBuffer->bufferOffset() : 0; }
 	
 private:
 	GpuBuffer*	_getUploadedGpuBuffer(class RenderRequest* req);
@@ -188,43 +192,80 @@ void DynamicGpuBuffer::appendData(ByteSpan src) {
 }
 
 inline
+void DynamicGpuBuffer::setSize(Int newSize) {
+	Int oldSize = _cpuBuffer.size();
+	_cpuBuffer.resize(newSize);
+	
+	if (newSize < oldSize) return;
+	markDirty(IntRange_StartAndSize(oldSize, newSize - oldSize));
+}
+
+inline
 MutByteSpan DynamicGpuBuffer::extendSize(Int sizeInBytes) {
-	auto range = IntRange_StartAndSize(_cpuBuffer.size(), sizeInBytes);
-	markDirty(range);
-	_cpuBuffer.resize(_cpuBuffer.size() + sizeInBytes);
+	Int oldSize = _cpuBuffer.size();
+	setSize(oldSize + sizeInBytes);
+
+	auto range = IntRange_StartAndSize(oldSize, sizeInBytes);
 	return _cpuBuffer.slice(range);
 }
 
-class GpuStructuredBuffer_CreateDesc : public NonCopyable {
+class StructuredGpuBuffer_CreateDesc : public NonCopyable {
 public:
 	String name;
 	Int stride = 0;
-	Int count = 0;
 	GpuBufferPool* pool = nullptr;
 };
 
-class GpuStructuredBuffer : public RenderObject {
-	AX_RTTI_INFO(GpuStructuredBuffer, RenderObject)
+class StructuredGpuBuffer : public RenderObject {
 public:
-	using CreateDesc = GpuStructuredBuffer_CreateDesc;
-	static SPtr<GpuStructuredBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	using CreateDesc = StructuredGpuBuffer_CreateDesc;
 
+	template<class T>
+	static SPtr<StructuredGpuBuffer> s_new(const MemAllocRequest& req, StrView name, GpuBufferPool* pool) {
+		CreateDesc desc;
+		desc.name = name;
+		desc.stride = AX_SIZEOF(T);
+		desc.pool = pool;
+		return s_new(req, desc);
+	}
+	
+	static SPtr<StructuredGpuBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
+	
 	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const {
-		AX_ASSERT_TODO()
-		return nullptr;
+		return _gpuBuffer.getUploadedGpuBuffer(req);
 	}	
 
 	Int stride() const { return _stride; }
-	Int count() const { return _count; }
+	Int count() const { return _gpuBuffer.dataSize() / _stride; }
+	
+	template<class T>
+	MutSpan<T> editData(Int offset, Int size) {
+		if (AX_SIZEOF(T) != _stride) throw Error_Undefined();
+		auto byteRange = IntRange_StartAndSize(offset, size) * AX_SIZEOF(T);
+		
+		if (_gpuBuffer.dataSize() < byteRange.size()) {
+			_gpuBuffer.setSize(byteRange.size());
+		}
+		
+		_gpuBuffer.markDirty(byteRange);
+		auto byteSpan = _gpuBuffer.mutSpan().slice(byteRange);
+		return MutSpan<T>::s_fromMutByteSpan(byteSpan);
+	}
 
 	template<class T>
-	void setValue(Int index, const T& value) { setByteData(index, Span(value).toByteSpan()); }
+	void setValue(Int index, const T& value) {
+		if (AX_SIZEOF(T) != _stride) throw Error_Undefined();
+		auto mutSpan = editData<T>(index, 1);
+		mutSpan[0] = value;
+	}
+	
+	Int gpuBufferIndex() const { return _gpuBuffer.gpuBufferOffset() / _stride; }
 	
 protected:
-	GpuStructuredBuffer(const CreateDesc& desc);
-	SPtr<GpuBuffer> _gpuBuffer;
+	StructuredGpuBuffer(const CreateDesc& desc);
+	
+	DynamicGpuBuffer _gpuBuffer;
 	Int _stride = 0;
-	Int _count = 0;
 };
 
 } // namespace

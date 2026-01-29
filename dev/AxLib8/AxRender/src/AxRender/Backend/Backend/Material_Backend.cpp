@@ -82,7 +82,7 @@ void MaterialParamSpace_Backend::StructuredBufferParam::create(const ShaderParam
 	_shaderParam = &shaderParam;
 }
 
-bool MaterialParamSpace_Backend::setParam(NameId name, GpuStructuredBuffer* v) {
+bool MaterialParamSpace_Backend::setParam(NameId name, StructuredGpuBuffer* v) {
 	if (!_shaderParamSpace) return false;
 	auto* param = _findParam(_structuredBufferParams, name);
 	if (!param) return false;

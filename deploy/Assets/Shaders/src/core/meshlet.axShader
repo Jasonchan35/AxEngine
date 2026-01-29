@@ -36,13 +36,6 @@ struct VS_Output {
 	SEM_worldPos(float3);
 };
 
-struct Meshlet {
-	uint vertCount;
-	uint vertOffset;
-	uint primCount;
-	uint primOffset;
-};
-
 //[RootSignature(ROOT_SIG)]
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("triangle")]
@@ -51,27 +44,30 @@ void ms_main(
     out vertices VS_Output outVert[MAX_VERTS],
     out indices  uint3     outTri[MAX_PRIMS]
 ) {
-	Meshlet m;
-	m.vertCount = 3;
-	m.primCount = 1;
+	u32 j = mi.gtid;
+	AxMeshlet meshlet = axMeshlet[AX_MESHLET_ID];
 
-    SetMeshOutputCounts(m.vertCount, m.primCount);
+    SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
 
-    if (mi.gtid < m.primCount) {
-        outTri[mi.gtid] = uint3(0,1,2);
+    if (j < meshlet.primCount) {
+        outTri[j] = axMeshletPrim[meshlet.primOffset + j].tri;
     }
 
-    if (mi.gtid < m.vertCount) {
+    if (j < meshlet.vertCount) {
 		VS_Input i;
-		i.pos    = Vec4f(mi.gtid % 2, mi.gtid, (mi.gtid + 1) % 2, 1);
-		i.normal = -normalize(Vec3f(1, 1, 0));
+//		i.pos    = Vec4f(t % 2, t, (t + 1) % 2, 1);
+//		i.normal = -normalize(Vec3f(1, 1, 0));
+
+		AxMeshletVert mv = axMeshletVert[meshlet.vertOffset + j];
+		i.pos    = Vec4f(mv.pos, 1);
+		i.normal = mv.normal;
 
 		VS_Output o;
 		o.worldPos = ax_pos_to_world(i.pos);
 		o.sv_pos   = ax_pos_to_clip(i.pos);
 		o.normal   = ax_normal_to_clip(i.normal);
 		o.color0   = Color4f(1, 1, 1, 1);
-		outVert[mi.gtid] = o;
+		outVert[j] = o;
 	}
 }
 

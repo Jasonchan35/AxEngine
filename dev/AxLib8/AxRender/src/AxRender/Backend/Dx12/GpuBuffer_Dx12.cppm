@@ -72,10 +72,10 @@ private:
 	D3D12_GPU_VIRTUAL_ADDRESS	_gpuAddress = 0;
 };
 
-class GpuStructuredBuffer_Dx12 : public GpuStructuredBuffer_Backend {
-	AX_RTTI_INFO(GpuStructuredBuffer_Dx12, GpuStructuredBuffer_Backend)
+class StructuredGpuBuffer_Dx12 : public StructuredGpuBuffer_Backend {
+	AX_RTTI_INFO(StructuredGpuBuffer_Dx12, StructuredGpuBuffer_Backend)
 public:
-	GpuStructuredBuffer_Dx12(const CreateDesc& desc) : Base(desc) {}
+	StructuredGpuBuffer_Dx12(const CreateDesc& desc) : Base(desc) {}
 };
 
 } // namespace

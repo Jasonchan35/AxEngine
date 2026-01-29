@@ -58,10 +58,10 @@ private:
 	VkBuffer	_vkBufHandle = VK_NULL_HANDLE;
 };
 
-class GpuStructuredBuffer_Vk : public GpuStructuredBuffer_Backend {
-	AX_RTTI_INFO(GpuStructuredBuffer_Vk, GpuStructuredBuffer_Backend)
+class StructuredGpuBuffer_Vk : public StructuredGpuBuffer_Backend {
+	AX_RTTI_INFO(StructuredGpuBuffer_Vk, StructuredGpuBuffer_Backend)
 public:
-	GpuStructuredBuffer_Vk(const CreateDesc& desc) : Base(desc) {}
+	StructuredGpuBuffer_Vk(const CreateDesc& desc) : Base(desc) {}
 };
 
 

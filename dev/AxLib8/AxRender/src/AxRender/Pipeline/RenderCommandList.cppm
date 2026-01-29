@@ -13,7 +13,7 @@ struct AxDrawCallRootConst {
 	Mat4f AX_MATRIX_MVP;
 	Mat4f AX_MATRIX_M;
 	u32   AX_OBJECT_ID;
-	u32   AX_MESH_CLUSTER_ID;
+	u32   AX_MESHLET_ID;
 	u32   _usedPadding0;
 	u32   _usedPadding1;
 };
@@ -34,10 +34,9 @@ public:
 	Material*           material          = nullptr;
 	Int                 materialPassIndex = 0;
 	Mat4f               objectToWorld     = Mat4f::s_identity();
+	MeshObject*         meshObject        = nullptr;
+	Vec3u32             dispatchGroupCount{16, 1, 1};
 	
-	// mesh shader
-	Vec3u32				dispatchGroupCount {16,1,1};
-
 	void setSubMesh(RenderRequest* req, RenderSubMesh& sm) {
 		primitiveType = sm.primitiveType();
 		setVertexBuffer(req, sm.vertexBuffer);

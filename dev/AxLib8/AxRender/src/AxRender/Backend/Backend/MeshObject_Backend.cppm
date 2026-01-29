@@ -16,6 +16,8 @@ public:
 	: MeshObject(desc)
 	, objectSlot(this, false) {}
 	
+	virtual void onUploadToGpu(RenderRequest* req);
+	
 	RenderObjectSlot_Backend<This>	objectSlot;
 };
 

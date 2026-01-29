@@ -35,7 +35,7 @@ public:
 	Dx12CpuEvent		_cpuEvent;
 	
 	struct IndirectDraw {
-		SPtr<GpuStructuredBuffer> drawArguments;
+		SPtr<StructuredGpuBuffer> drawArguments;
 	} indirectDraw;
 
 	struct DynamicDescriptors {

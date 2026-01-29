@@ -14,7 +14,7 @@ public:
 	virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) override;
 	
 	Math::Camera3f		_viewportCamera;
-	SPtr<MeshObject>	_axis;
+	 SPtr<MeshObject>	_axis;
 	RenderMesh			_grid;
 	SPtr<Material>		_matSimple3D_Unlit_Color;
 };

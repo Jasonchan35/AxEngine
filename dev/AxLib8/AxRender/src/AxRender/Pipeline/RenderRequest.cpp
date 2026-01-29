@@ -6,15 +6,21 @@ import :MeshObject_Backend;
 
 namespace ax /*::AxRender*/ {
 
-void RenderRequest::drawMesh(MeshObject* mesh_, Material* material, Int materialPass, const Mat4f& objectToWorld) {
-	if (!mesh_) return;
-	
-	auto* mesh = rttiCastCheck<MeshObject_Backend>(mesh_);
-	
-	auto* backend = static_cast<RenderRequest_Backend*>(this);
-	backend->resourcesToKeep.add(mesh);
+void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
+	if (!material) return;
+	if (!mesh) return;
 
 	drawMesh(mesh->meshData, material, materialPass, objectToWorld);
+#if 0
+	AxDrawCallDesc desc;
+	// desc.material = material;
+	desc.material = RenderStockObjects::s_instance()->materials->meshlet;
+	
+	desc.materialPassIndex = materialPass;
+	desc.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
+	desc.meshObject = mesh;
+	drawCall(desc);
+#endif
 }
 
 void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {

@@ -190,13 +190,18 @@ void RenderRequest_Backend::drawUI_backend() {
 
 void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	if (cmd.instanceCount <= 0) { AX_ASSERT(false); return; }
+	
+	_drawCallRootConst.AX_MATRIX_M   = cmd.objectToWorld;
+	_drawCallRootConst.AX_MATRIX_MVP = _cameraData.viewProjMatrix * cmd.objectToWorld;
+	
+	if (auto* meshObject = rttiCastCheck<MeshObject_Backend>(cmd.meshObject)) {
+		resourcesToKeep.add(meshObject);
+		meshObject->_uploadToGpu(this);
+		_drawCallRootConst.AX_MESHLET_ID = ax_safe_cast_from(meshObject->meshlet->gpuBufferIndex()); 
+	}
 
 	auto* material = rttiCastCheck<Material_Backend>(cmd.material);
 	if (!material) { AX_ASSERT(false); return; }
-
-	auto* matPass = material->getPass(cmd.materialPassIndex);
-	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
-
 	resourcesToKeep.add(material);
 
 	if (auto* vertexBuffer = rttiCastCheck<GpuBuffer_Backend>(cmd.vertexBuffer)) {
@@ -206,10 +211,9 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	if (auto* indexBuffer = rttiCastCheck<GpuBuffer_Backend>(cmd.indexBuffer)) {
 		resourcesToKeep.add(indexBuffer);
 	}
-	
-	_drawCallRootConst.AX_MATRIX_M   = cmd.objectToWorld;
-	_drawCallRootConst.AX_MATRIX_MVP = _cameraData.viewProjMatrix * cmd.objectToWorld;
 
+	auto* matPass = material->getPass(cmd.materialPassIndex);
+	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
 	matPass->onBindMaterial(this, cmd);
 	onDrawCall(cmd);
 }

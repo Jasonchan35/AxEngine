@@ -91,19 +91,23 @@ public:
 		BindCount	bindCount() const { return _shaderParam->bindCount(); }
 
 		void create(const ShaderParamSpace_Backend::StructuredBufferParam& shaderParam);
-		const GpuStructuredBuffer* buffer() const { return _buffer; }
+		const StructuredGpuBuffer* buffer() const { return _buffer; }
+		const GpuBufferPool* bufferPool() const { return _bufferPool; }
 		
-		void setBuffer(GpuStructuredBuffer* buf) { _buffer.ref(buf); }
+		void setBuffer(StructuredGpuBuffer* buf) { _buffer.ref(buf); _bufferPool.unref(); }
 		
+		void setBufferPool(GpuBufferPool* pool) { _bufferPool.ref(pool); _buffer.unref(); }
+
 		const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
 			return _buffer ? _buffer->getUploadedGpuBuffer(req) : nullptr;
 		}
 		
 		Int stride() const { return _shaderParam->stride(); }
-	
+
 	private:
 		const ShaderParamSpace_Backend::StructuredBufferParam* _shaderParam = nullptr;
-		SPtr<const GpuStructuredBuffer>	_buffer;
+		SPtr<const StructuredGpuBuffer>	_buffer;
+		SPtr<const GpuBufferPool> _bufferPool;
 	};	
 
 	struct TextureParam : public ParamBase {
@@ -166,7 +170,7 @@ public:
 	bool setParam(NameId name, Sampler*		v);
 	bool setParam(NameId name, Texture2D*	v);
 	
-	bool setParam(NameId name, GpuStructuredBuffer* v);
+	bool setParam(NameId name, StructuredGpuBuffer* v);
 	
 	BindSpace bindSpace() const { return _shaderParamSpace->bindSpace(); }
 

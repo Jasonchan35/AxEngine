@@ -7,7 +7,7 @@ set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "AxLib8")
 
 target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui-docking )
-target_link_libraries(${PROJECT_NAME} PUBLIC D3D12MemoryAllocator VulkanMemoryAllocator)
+target_link_libraries(${PROJECT_NAME} PUBLIC VulkanMemoryAllocator)
 
 #--------------------
 find_package(PNG REQUIRED)

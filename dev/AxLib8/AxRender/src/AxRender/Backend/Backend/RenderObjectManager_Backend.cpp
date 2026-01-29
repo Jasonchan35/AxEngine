@@ -35,7 +35,7 @@ void RenderObjectManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
 		table.scopedLock()->onFrameEnd(req);
 	});
 	
-	visitBufferPools([&](GpuBufferPool_Backend* bufferPool) -> void {
+	_bufferPools.visit([&](GpuBufferPool_Backend* bufferPool) -> void {
 		if (bufferPool) bufferPool->onGpuUpdatePages(req);
 	});
 }
@@ -74,21 +74,38 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 }
 
 void RenderObjectManager_Backend::_postCreate() {
+	//------
+	_globalCommonMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/AxGlobalCommon.axShader");
+	_indirectDrawMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/IndirectDraw.axComputeShader");
+	RenderStockObjects::s_create();
+	
+//----	
 	_bufferPools.vertex = GpuBufferPool_Backend::s_new(AX_NEW, 
 	 	"pool-vertex", GpuBufferType::Vertex, 1 * Math::GigaBytes, 8 * Math::MegaBytes); 
 	
 	_bufferPools.index = GpuBufferPool_Backend::s_new(AX_NEW, 
 	 	"pool-index", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
 
-#if 0 // doesn't work yet, looks like data didn't copy to GPU buffer 
 	_bufferPools.constBuffer = GpuBufferPool_Backend::s_new(AX_NEW, 
-		 "pool-constBuffer", GpuBufferType::Const, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
-#endif
-	//------
-	_globalCommonMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/AxGlobalCommon.axShader");
-	_indirectDrawMaterial = Material_Backend::s_new(AX_NEW, "ImportedAssets/Shaders/core/IndirectDraw.axComputeShader");
+		"pool-constBuffer", GpuBufferType::Const, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
+
+	auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
+	auto* worldParamSpace  = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);
+
 	
-	RenderStockObjects::s_create();
+	auto createPoolParam = [&](SPtr<GpuBufferPool_Backend>& p, StrView name, Int maxSize, Int pageSize) -> void {
+		p = GpuBufferPool_Backend::s_new(AX_NEW, name, GpuBufferType::Structured, maxSize, pageSize);
+		if (auto* param = worldParamSpace->findStructuredBufferParam(NameId::s_make(name))) {
+			param->setBufferPool(p);
+		} else {
+			AX_ASSERT(false);
+		}
+	};
+	
+	createPoolParam(_bufferPools.axMeshlet    , "axMeshlet"    , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_bufferPools.axMeshletVert, "axMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_bufferPools.axMeshletPrim, "axMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	
 
 #if AX_RENDER_BINDLESS
 	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();

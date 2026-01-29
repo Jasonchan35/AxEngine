@@ -124,11 +124,7 @@ public:
 		throw Error_Runtime(Fmt("Unknown aiPrimitiveType type: %d", t));
 	}
 	
-	void importMesh(aiMesh* srcMesh) {
-		auto meshObject = MeshObject_Backend::s_new(AX_NEW);
-		_meshes.emplaceBack(meshObject);
-		auto& meshData = meshObject->meshData;
-
+	void importRenderMesh(aiMesh* srcMesh, RenderMesh& dstMesh) {
 		VertexLayout vertexLayout = Vertex_PosNormalUvColor::s_layout();
 		if (srcMesh->HasNormals()) {
 			switch (srcMesh->GetNumUVChannels()) {
@@ -159,12 +155,12 @@ public:
 		}
 
 		RenderPrimitiveType primType = toPrimType(srcMesh->mPrimitiveTypes);
-		meshData.create(primType, vertexLayout, VertexIndexType::u16);
+		dstMesh.create(primType, vertexLayout, VertexIndexType::u16);
 
 		Int numVertices = srcMesh->mNumVertices;
-		RenderMeshEdit editMesh(meshData);
+		RenderMeshEdit editMesh(dstMesh);
 
-		auto editVertices = meshData.editNewVertices(primType, vertexLayout, VertexIndexType::u16, numVertices);
+		auto editVertices = dstMesh.editNewVertices(primType, vertexLayout, VertexIndexType::u16, numVertices);
 		if (auto enumerator = editVertices.tryEditPosition()) {
 			auto dst = enumerator->begin();
 			for (auto& srcValue : Span(srcMesh->mVertices, numVertices)) {
@@ -197,7 +193,64 @@ public:
 				}
 			} break;
 			default: AX_ASSERT_TODO();
+		}		
+	}
+	
+	void importMeshlet(aiMesh* srcMesh, MeshObject* dstMesh) {
+		RenderPrimitiveType primType = toPrimType(srcMesh->mPrimitiveTypes);
+		if (primType != RenderPrimitiveType::Triangles) {
+			AX_ASSERT_TODO();
+			return;
 		}
+
+		auto* objMgr = RenderObjectManager_Backend::s_instance();
+
+		dstMesh->meshlet     = StructuredGpuBuffer::s_new<Meshlet    >(AX_NEW, "meshlet"    , objMgr->_bufferPools.axMeshlet);
+		dstMesh->meshletVert = StructuredGpuBuffer::s_new<MeshletVert>(AX_NEW, "meshletVert", objMgr->_bufferPools.axMeshletVert);
+		dstMesh->meshletPrim = StructuredGpuBuffer::s_new<MeshletPrim>(AX_NEW, "meshletPrim", objMgr->_bufferPools.axMeshletPrim);
+	
+		u32 numVert = srcMesh->mNumVertices;
+		u32 numPrim = srcMesh->mNumFaces; 
+		
+		auto dstVert = dstMesh->meshletVert->editData<MeshletVert>(0, numVert);
+		auto dstPrim = dstMesh->meshletPrim->editData<MeshletPrim>(0, numPrim);
+		
+		{ // pos
+			Int i = 0;
+			for (auto& srcValue : Span(srcMesh->mVertices, numVert)) {
+				dstVert[i].pos = toLengthVec3(toVec3f(srcValue));
+				++i;
+			}
+		}
+		
+		if (srcMesh->HasNormals()) {
+			Int i = 0;
+			for (auto& srcValue : Span(srcMesh->mNormals, numVert)) {
+				dstVert[i].normal = convAxis(toVec3f(srcValue));
+				++i;
+			}
+		}
+		
+		{
+			Int i = 0;
+			for (auto& srcFace : Span(srcMesh->mFaces, srcMesh->mNumFaces)) {
+				if (srcFace.mNumIndices != 3) continue;
+				const auto* src = srcFace.mIndices;
+				dstPrim[i].tri.set(src[0], src[1], src[2]);
+			}
+		}
+		
+		Meshlet meshlet = {};
+		meshlet.vertCount = numVert;
+		meshlet.primCount = numPrim;
+		dstMesh->meshlet->setValue(0, meshlet);
+	}
+	
+	void importMesh(aiMesh* srcMesh) {
+		auto meshObject = MeshObject_Backend::s_new(AX_NEW);
+		_meshes.emplaceBack(meshObject);
+		importRenderMesh(srcMesh, meshObject->meshData);
+		importMeshlet(srcMesh, meshObject);
 	}
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {
@@ -221,11 +274,12 @@ public:
 				auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
 				meshRenderer->mesh = *meshObj;
 			
-				meshRenderer->material	= srcMeshIndex % 2 
-										? stockObjs->materials->meshlet 
-										: stockObjs->materials->Simple3D_Blinn_Color;
+				// meshRenderer->material	= srcMeshIndex % 2 
+				// 						? stockObjs->materials->meshlet 
+				// 						: stockObjs->materials->Simple3D_Blinn_Color;
 				
 				meshRenderer->material	= stockObjs->materials->Simple3D_Blinn_Color; 
+//				meshRenderer->material	= stockObjs->materials->meshlet; 
 			}
 		} 
 

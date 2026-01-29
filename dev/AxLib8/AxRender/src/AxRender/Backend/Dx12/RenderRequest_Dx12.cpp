@@ -47,11 +47,11 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	    _dynamicDescriptors.Sampler.create(Fmt("dynamic#{}.Sampler"    , desc.index), pool.Sampler,     info.renderRequest.maxSamplerCount, false);
 	
 	
-	GpuStructuredBuffer_CreateDesc createDesc;
+	StructuredGpuBuffer_CreateDesc createDesc;
 	createDesc.name   = "indirectDraw.drawArguments";
 	createDesc.stride = AX_SIZEOF(Dx12_IndirectDrawArgument);
-	createDesc.count  = info.indirectDraw.maxDrawCount;
-	indirectDraw.drawArguments = GpuStructuredBuffer::s_new(AX_NEW, createDesc);
+//	createDesc.count  = info.indirectDraw.maxDrawCount;
+	indirectDraw.drawArguments = StructuredGpuBuffer::s_new(AX_NEW, createDesc);
 }
 
 void RenderRequest_Dx12::onFrameBegin() {

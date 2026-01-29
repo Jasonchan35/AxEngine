@@ -19,7 +19,8 @@ void GenNinja_Dx12::writeNinjaPass(IString&        outStr,
 		outStr.append("    -keepUnusedVariable $\n");
 	}
 
-	outStr.append("    -profile=$param_profile $\n"
+	outStr.append(
+		"    -profile=$param_profile $\n"
 		"    -entry=$param_entry_point $\n"
 		"    -I=\"$AxIncludeDir\" $\n"
 		"    -out=\"$out\" $\n"
@@ -32,6 +33,7 @@ void GenNinja_Dx12::writeNinjaPass(IString&        outStr,
 #endif
 		"    -DAX_RENDER_DX12=1 $\n"
 		"    -WX $\n" // Treat warnings as errors
+		"    -enable-16bit-types $\n"
 		"    -T $param_profile $\n"
 		"    -E $param_entry_point $\n"
 		"    -I \"$AxIncludeDir\" $\n"
