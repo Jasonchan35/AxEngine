@@ -15,8 +15,8 @@ GpuBufferPool_Vk::GpuBufferPool_Vk(const CreateDesc& desc): Base(desc) {
 	auto& dev = RenderSystem_Vk::s_instance()->device();
 	_vkBuf.create(dev, desc.bufferType, desc.maxSize, true);
 	_vkBuf.setDebugName(desc.name);
-	_pagePool.create(desc);
 	_alignment = desc.alignment ? desc.alignment : s_getMinAlignement(desc.bufferType);
+	_pagePool.create(desc);
 }
 
 Int GpuBufferPool_Vk::s_getMinAlignement(GpuBufferType type) {

@@ -33,7 +33,7 @@ class GpuBuffer_Dx12 : public GpuBuffer_Backend {
 	AX_RTTI_INFO(GpuBuffer_Dx12, GpuBuffer_Backend)
 public:
 	GpuBuffer_Dx12(const CreateDesc& desc);
-
+	
 	virtual void onUploadToGpu(Int offset, ByteSpan data) final {
 		_resourceWithoutPool.uploadToGpu(offset, data);
 	}

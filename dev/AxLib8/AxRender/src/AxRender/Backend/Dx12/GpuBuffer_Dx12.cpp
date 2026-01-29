@@ -9,7 +9,7 @@ namespace  ax {
 GpuBufferPool_Dx12::GpuBufferPool_Dx12(const CreateDesc& desc): Base(desc) {
 	_resource_dx12.create(desc.bufferType, desc.maxSize, true);
 	_resource_dx12.setName(desc.name);
-	_alignment = _resource_dx12.resourceDesc().Alignment;
+	_alignment = _resource_dx12.alignment();
 	_pagePool.create(desc);
 }
 
