@@ -271,15 +271,7 @@ public:
 		for (auto& src : srcVertices) {
 			dstMesh->addPoint(toLengthVec3d(toVec3f(src)));
 		}
-		
-		if (srcMesh->HasNormals()) {
-			Int j = 0;
-			for (auto& src : Span(srcMesh->mNormals,  srcMesh->mNumVertices)) {
-				dstMesh->_points[j].normal = toVec3d(convAxis(src));
-				++j;
-			}
-		}
-		
+
 		dstMesh->_faces.ensureCapacity(srcFaces.size());
 		for (auto& srcFace : srcFaces) {
 			Array<Int, 64> fv;
@@ -289,6 +281,24 @@ public:
 			}
 			dstMesh->addFace(fv);
 		}
+
+			
+		if (srcMesh->HasNormals()) {
+			auto srcNormals = Span(srcMesh->mNormals,  srcMesh->mNumVertices);
+			dstMesh->_fvNormals.resize(dstMesh->faceEdges().size());
+			Int k = 0;
+			for (auto& srcFace : srcFaces) {
+				for (Int j = 0; j < srcFace.mNumIndices; ++j) {
+					auto fvIndex = static_cast<Int>(srcFace.mIndices[j]);
+					auto src = srcNormals[fvIndex];
+					dstMesh->_fvNormals[k] = toVec3d(convAxis(src));
+					++k;
+				}
+			}
+		}
+		
+		dstMesh->addColorChannel(Color4f::kWhite());
+		
 		
 		SPtr<MeshObject> meshObject = MeshObject_Backend::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
