@@ -23,6 +23,7 @@ public:
 	static Vec3f   toVec3f  (const aiVector3f&   v) { return Vec3f(v.x, v.y, v.z); }
 	static Vec3d   toVec3d  (const aiVector3f&   v) { return Vec3d::s_cast(toVec3f(v)); }
 	static Vec3d   toVec3d  (const Vec3f&        v) { return Vec3d::s_cast(v); }
+	static Color4f toColor4f(const aiColor4D&    v) { return Color4f(v.r, v.g, v.b, v.a); }
 	static Quat4f  toQuat4f (const aiQuaternion& q) { return Quat4f(q.x, q.y, q.z, q.w); }
 	static Mat4f   toMat4f  (const aiMatrix4x4&  m) {
 		return Mat4f(	m.a1, m.b1, m.c1, m.d1,
@@ -264,11 +265,11 @@ public:
 	void importEditableMesh(aiMesh* srcMesh) {
 		auto& dstMesh = _editableMeshes.emplaceNewObject(AX_NEW);
 		
-		auto srcVertices = Span(srcMesh->mVertices, srcMesh->mNumVertices);
+		Int numVertices = srcMesh->mNumVertices;
 		auto srcFaces    = Span(srcMesh->mFaces,    srcMesh->mNumFaces);
 		
-		dstMesh->_points.ensureCapacity(srcVertices.size());
-		for (auto& src : srcVertices) {
+		dstMesh->_points.ensureCapacity(numVertices);
+		for (auto& src : Span(srcMesh->mVertices, srcMesh->mNumVertices)) {
 			dstMesh->addPoint(toLengthVec3d(toVec3f(src)));
 		}
 
@@ -284,20 +285,33 @@ public:
 
 			
 		if (srcMesh->HasNormals()) {
-			auto srcNormals = Span(srcMesh->mNormals,  srcMesh->mNumVertices);
+			auto srcNormals = Span(srcMesh->mNormals, numVertices);
 			dstMesh->_fvNormals.resize(dstMesh->faceEdges().size());
-			Int k = 0;
+			Int writeIndex = 0;
 			for (auto& srcFace : srcFaces) {
 				for (Int j = 0; j < srcFace.mNumIndices; ++j) {
-					auto fvIndex = static_cast<Int>(srcFace.mIndices[j]);
-					auto src = srcNormals[fvIndex];
-					dstMesh->_fvNormals[k] = toVec3d(convAxis(src));
-					++k;
+					auto vertexIndex = static_cast<Int>(srcFace.mIndices[j]);
+					auto src = srcNormals[vertexIndex];
+					dstMesh->_fvNormals[writeIndex] = toVec3d(convAxis(src));
+					++writeIndex;
 				}
 			}
 		}
 		
-		dstMesh->addColorChannel(Color4f::kWhite());
+		Int numColorChannels = srcMesh->GetNumColorChannels();
+		for (Int chIndex = 0; chIndex < numColorChannels; ++chIndex) {
+			auto& dstChannel = dstMesh->addColorChannel(Color4f::kWhite());
+			auto srcColors = Span(srcMesh->mColors[chIndex], numVertices);
+			Int writeIndex = 0;
+			for (auto& srcFace : srcFaces) {
+				for (Int j = 0; j < srcFace.mNumIndices; ++j) {
+					auto vertexIndex = static_cast<Int>(srcFace.mIndices[j]);
+					auto src = srcColors[vertexIndex];
+					dstChannel.values[writeIndex] = toColor4f(src);
+					++writeIndex;
+				}
+			}
+		}
 		
 		
 		SPtr<MeshObject> meshObject = MeshObject_Backend::s_new(AX_NEW);

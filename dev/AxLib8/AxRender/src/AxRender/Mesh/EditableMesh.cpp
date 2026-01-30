@@ -210,22 +210,25 @@ void EditableMesh::updateFaceVertexNormals(double hardEdgeAngleDeg) {
 	}
 }
 
-void EditableMesh::addColorChannel(const Color & defaultValue) {
-	auto & s = _fvColorChannels.emplaceBack();
-	s.defaultValue = defaultValue;
-	s.values.resize(_faceEdges.size(), defaultValue);
+auto EditableMesh::addColorChannel(const Color & defaultValue) -> ColorChannel& {
+	auto& ch = _fvColorChannels.emplaceBack();
+	ch.defaultValue = defaultValue;
+	ch.values.resize(_faceEdges.size(), defaultValue);
+	return ch;
 }
 
-void EditableMesh::addUvChannel(const Vec2& defaultValue) {
-	auto & s = _fvUVChannels.emplaceBack();
-	s.defaultValue = defaultValue;
-	s.values.resize(_faceEdges.size(), defaultValue);
+auto EditableMesh::addUvChannel(const Vec2& defaultValue) -> UVChannel& {
+	auto& ch = _fvUVChannels.emplaceBack();
+	ch.defaultValue = defaultValue;
+	ch.values.resize(_faceEdges.size(), defaultValue);
+	return ch;
 }
 
-void EditableMesh::addCustomChannel(const Vec4& defaultValue) {
-	auto & s = _fvCustomChannels.emplaceBack();
-	s.defaultValue = defaultValue;
-	s.values.resize(_faceEdges.size(), defaultValue);
+auto EditableMesh::addCustomChannel(const Vec4& defaultValue) -> CustomChannel& {
+	auto& ch = _fvCustomChannels.emplaceBack();
+	ch.defaultValue = defaultValue;
+	ch.values.resize(_faceEdges.size(), defaultValue);
+	return ch;
 }
 
 EditableMesh::EditableMesh() {

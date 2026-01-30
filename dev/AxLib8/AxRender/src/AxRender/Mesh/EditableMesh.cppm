@@ -204,13 +204,13 @@ public:
 	void updateFaceVertexNormals(double hardEdgeAngleDeg);
 
 	Int colorChannelCount() const { return _fvColorChannels.size(); }
-	void addColorChannel(const Color & defaultValue);
+	ColorChannel& addColorChannel(const Color & defaultValue);
 
 	Int uvChannelCount() const { return _fvUVChannels.size(); }
-	void addUvChannel(const Vec2& defaultValue);
+	UVChannel& addUvChannel(const Vec2& defaultValue);
 
 	Int customChannelCount() const { return _fvCustomChannels.size(); }
-	void addCustomChannel(const Vec4& defaultValue);
+	CustomChannel& addCustomChannel(const Vec4& defaultValue);
 
 	using NormalCount = VertexLayout::NormalCount;
 
