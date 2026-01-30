@@ -18,6 +18,7 @@ Pass "Pass0" { // Forward
 	VertexFunc = vs_main
 	PixelFunc  = ps_main
 	MeshFunc   = ms_main
+	AmplificationFunc = as_main
 }
 #endif
 
@@ -65,12 +66,24 @@ float4 ps_main(VS_Output i) : SV_Target {
 	return o;
 }
 
+struct Payload {
+	float unused;
+};
+groupshared Payload s_payload;
+
+[numthreads(1, 1, 1)]
+void as_main(AxDispatchInput dispatch) {
+	s_payload.unused = dummy_func();
+	DispatchMesh(1,1,1, s_payload);
+}
+
 [numthreads(1, 1, 1)]
 [outputtopology("triangle")]
 void ms_main(
-	DispatchInput mi,
-    out vertices VS_Output outVertices[3],
-    out indices  uint3     outTriangles[1]
+	AxDispatchInput dispatch,
+	in payload Payload payload,
+	out vertices VS_Output outVertices[3],
+	out indices  uint3     outTriangles[1]
 ) {
     SetMeshOutputCounts(3, 1);
 	float f = dummy_func();

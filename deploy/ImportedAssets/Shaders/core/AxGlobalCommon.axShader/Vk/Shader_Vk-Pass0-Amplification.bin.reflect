@@ -848,159 +848,78 @@
             }
         },
         {
-            "name": "outDrawArgument",
-            "binding": {"kind": "unorderedAccess", "index": 30000},
+            "name": "foo",
+            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0},
             "type": {
-                "kind": "resource",
-                "baseShape": "structuredBuffer",
-                "access": "readWrite",
-                "resultType": {
-                    "kind": "struct",
-                    "name": "AX_VkIndirectDrawArgment",
-                    "fields": [
-                        {
-                            "name": "drawIndexed",
-                            "type": {
-                                "kind": "struct",
-                                "name": "VkDrawIndexedIndirectCommand",
-                                "fields": [
-                                    {
-                                        "name": "indexCount",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "instanceCount",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "firstIndex",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "vertexOffset",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "int32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "firstInstance",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0}
-                                    }
-                                ]
-                            },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 20, "elementStride": 0}
-                        },
-                        {
-                            "name": "rootConst",
-                            "type": {
-                                "kind": "struct",
-                                "name": "AxDrawCallRootConst",
-                                "fields": [
-                                    {
-                                        "name": "AX_MATRIX_MVP",
-                                        "type": {
-                                            "kind": "matrix",
-                                            "rowCount": 4,
-                                            "columnCount": 4,
-                                            "elementType": {
-                                                "kind": "scalar",
-                                                "scalarType": "float32"
-                                            }
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "AX_MATRIX_M",
-                                        "type": {
-                                            "kind": "matrix",
-                                            "rowCount": 4,
-                                            "columnCount": 4,
-                                            "elementType": {
-                                                "kind": "scalar",
-                                                "scalarType": "float32"
-                                            }
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 64, "size": 64, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "AX_OBJECT_ID",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 128, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "AX_MESH_ID",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "AX_MESHLET_ID",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "_usedPadding0",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 140, "size": 4, "elementStride": 0}
-                                    }
-                                ]
-                            },
-                            "binding": {"kind": "uniform", "offset": 32, "size": 144, "elementStride": 0}
-                        }
-                    ]
-                }
+                "kind": "scalar",
+                "scalarType": "float32"
+            }
+        },
+        {
+            "name": "AxSamplerState_foo_tex2d",
+            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "uint32"
+            }
+        },
+        {
+            "name": "AxTexture2D_foo_tex2d",
+            "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "uint32"
+            }
+        },
+        {
+            "name": "AxSamplerState_foo_tex3d",
+            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "uint32"
+            }
+        },
+        {
+            "name": "AxTexture3D_foo_tex3d",
+            "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "uint32"
             }
         }
     ],
     "entryPoints": [
         {
-            "name": "cs_main",
-            "stage": "compute",
+            "name": "as_main",
+            "stage": "amplification",
             "parameters": [
                 {
-                    "name": "i",
+                    "name": "dispatch",
                     "type": {
                         "kind": "struct",
-                        "name": "CS_Input",
+                        "name": "AxDispatchInput",
                         "fields": [
                             {
-                                "name": "sv_dispatchThreadId",
+                                "name": "gid",
                                 "type": {
-                                    "kind": "vector",
-                                    "elementCount": 3,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "uint32"
-                                    }
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
+                                },
+                                "semanticName": "SV_GROUPID"
+                            },
+                            {
+                                "name": "gtid",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
+                                },
+                                "semanticName": "SV_GROUPTHREADID"
+                            },
+                            {
+                                "name": "dtid",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
                                 },
                                 "semanticName": "SV_DISPATCHTHREADID"
                             }
@@ -1008,59 +927,74 @@
                     }
                 }
             ],
-            "threadGroupSize": [8, 8, 1],
             "bindings": [
                 {
                     "name": "AxBindless_SamplerState",
-                    "binding": {"kind": "samplerState", "space": 2, "index": 11000, "used": 0}
+                    "binding": {"kind": "samplerState", "space": 2, "index": 11000, "used": 1}
                 },
                 {
                     "name": "AxBindless_Texture2D",
-                    "binding": {"kind": "shaderResource", "space": 2, "index": 30000, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 2, "index": 30000, "used": 1}
                 },
                 {
                     "name": "AxBindless_Texture3D",
-                    "binding": {"kind": "shaderResource", "space": 2, "index": 40000, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 2, "index": 40000, "used": 1}
                 },
                 {
                     "name": "axMeshletVert",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20201, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20201, "used": 1}
                 },
                 {
                     "name": "axMeshletPrim",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20202, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20202, "used": 1}
                 },
                 {
                     "name": "axMeshlet",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20203, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20203, "used": 1}
                 },
                 {
                     "name": "axMeshInfo",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20204, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20204, "used": 1}
                 },
                 {
                     "name": "axWorld",
-                    "binding": {"kind": "constantBuffer", "space": 1, "index": 100, "used": 0}
+                    "binding": {"kind": "constantBuffer", "space": 1, "index": 100, "used": 1}
                 },
                 {
                     "name": "axCamera",
-                    "binding": {"kind": "constantBuffer", "space": 1, "index": 101, "used": 0}
+                    "binding": {"kind": "constantBuffer", "space": 1, "index": 101, "used": 1}
                 },
                 {
                     "name": "axLights",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20100, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20100, "used": 1}
                 },
                 {
                     "name": "axObjects",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20101, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20101, "used": 1}
                 },
                 {
                     "name": "axDrawCallRootConst",
                     "binding": {"kind": "pushConstantBuffer", "index": 0}
                 },
                 {
-                    "name": "outDrawArgument",
-                    "binding": {"kind": "unorderedAccess", "index": 30000, "used": 0}
+                    "name": "foo",
+                    "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
+                },
+                {
+                    "name": "AxSamplerState_foo_tex2d",
+                    "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                },
+                {
+                    "name": "AxTexture2D_foo_tex2d",
+                    "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
+                },
+                {
+                    "name": "AxSamplerState_foo_tex3d",
+                    "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                },
+                {
+                    "name": "AxTexture3D_foo_tex3d",
+                    "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0}
                 }
             ]
         }

@@ -43,7 +43,7 @@ struct AxDrawCallRootConst {
 	u32   AX_OBJECT_ID;
 	u32   AX_MESH_ID;
 	u32   AX_MESHLET_ID;
-	u32   _usedPadding1;
+	u32   _usedPadding0;
 };
 
 AX_ROOT_CONST_STRUCT(AxDrawCallRootConst, axDrawCallRootConst) 

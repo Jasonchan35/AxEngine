@@ -6,6 +6,7 @@
         "vertexFunc": "vs_main", 
         "pixelFunc": "ps_main", 
         "meshFunc": "ms_main", 
+        "amplificationFunc": "as_main", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -154,7 +155,7 @@
               "offset": 136, 
               "size": 4
             }, {
-              "name": "_usedPadding1", 
+              "name": "_usedPadding0", 
               "dataType": "u32", 
               "offset": 140, 
               "size": 4

@@ -48,7 +48,7 @@ struct Payload {
 groupshared Payload s_payload;
 
 [numthreads(AS_GROUP_SIZE, 1, 1)]
-void as_main(DispatchInput dispatch) {
+void as_main(AxDispatchInput dispatch) {
 	u32 j = dispatch.gtid;
 	AxMeshInfo meshInfo = axMeshInfo[AX_MESH_ID];
 
@@ -62,16 +62,16 @@ void as_main(DispatchInput dispatch) {
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("triangle")]
 void ms_main(
-	DispatchInput dispatch,
-    in payload Payload payload,
-    out vertices VS_Output outVert[MAX_VERTS],
-    out indices  uint3     outTri[MAX_PRIMS]
+	AxDispatchInput dispatch,
+	in payload Payload payload,
+	out vertices VS_Output outVert[MAX_VERTS],
+	out indices  uint3     outTri[MAX_PRIMS]
 ) {
-	u32 j = dispatch.gtid;
-	AxMeshlet meshlet = axMeshlet[AX_MESHLET_ID];
+	AxMeshlet meshlet = axMeshlet[payload.meshletId[dispatch.gid]];
 
 	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
 
+	u32 j = dispatch.gtid;
 	if (j < meshlet.primCount) {
 		outTri[j] = axMeshletPrim[meshlet.primOffset + j].tri;
 	}

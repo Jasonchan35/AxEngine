@@ -73,11 +73,12 @@ public:
 	
 	template<class FUNC>
 	void _visitStages(FUNC func) {
-		func(_vertexStage  , ShaderStageFlags::Vertex);
-		func(_pixelStage   , ShaderStageFlags::Pixel);
-		func(_geometryStage, ShaderStageFlags::Geometry);
-		func(_computeStage , ShaderStageFlags::Compute);
-		func(_meshStage    , ShaderStageFlags::Mesh);
+		func(_vertexStage       , ShaderStageFlags::Vertex);
+		func(_pixelStage        , ShaderStageFlags::Pixel);
+		func(_geometryStage     , ShaderStageFlags::Geometry);
+		func(_computeStage      , ShaderStageFlags::Compute);
+		func(_meshStage         , ShaderStageFlags::Mesh);
+		func(_amplificationStage, ShaderStageFlags::Amplification);
 	}
 
 	struct Stage {
@@ -89,6 +90,7 @@ public:
 	Stage _geometryStage;
 	Stage _computeStage;
 	Stage _meshStage;
+	Stage _amplificationStage;
 
 	struct RootParamBinding {
 		RootParamBinding(Dx12RootParamType rootParamType_, BindSpace bindSpace_)

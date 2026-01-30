@@ -53,11 +53,15 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 			curMeshlet->primOffset = nextPrimOffset;
 		}
 		
-		auto dstVert = buffers.meshletVert.extendsData(fvCount);
+		auto dstVertices = buffers.meshletVert.extendsData(fvCount);
+		auto srcNormals = face.getNormals(srcMesh);
 		
 		face.getPositions(srcMesh, facePositions);
 		for (Int j = 0; j < fvCount; ++j) {
-			dstVert[j].pos = Vec3f::s_cast(facePositions[j]);
+			auto& dstVert = dstVertices[j];
+			dstVert.pos      = Vec3f::s_cast(facePositions[j]);
+			dstVert.normal   = Vec3f::s_cast(srcNormals[j]);
+			dstVert.rawColor = 0xffffffff;
 		}
 
 		u32 vi = curMeshlet->vertOffset + curMeshlet->vertCount;

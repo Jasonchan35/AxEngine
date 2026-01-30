@@ -5,6 +5,7 @@
       "vertexFunc": "vs_main", 
       "pixelFunc": "ps_main", 
       "meshFunc": "ms_main", 
+      "amplificationFunc": "as_main", 
       "renderState": {
         "cull": "Back", 
         "blend": {

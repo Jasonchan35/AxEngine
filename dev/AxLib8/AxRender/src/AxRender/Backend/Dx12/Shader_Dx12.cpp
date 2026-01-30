@@ -303,9 +303,10 @@ auto ShaderPass_Dx12::_createMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawC
 	
 	D3DX12_MESH_SHADER_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.pRootSignature = _rootSignature.ptr();
-	psoDesc.MS             = Dx12Util::getDxBytecode(_meshStage.bytecode);
-	psoDesc.PS             = Dx12Util::getDxBytecode(_pixelStage.bytecode);
-	
+	psoDesc.PS = Dx12Util::getDxBytecode(_pixelStage.bytecode);
+	psoDesc.MS = Dx12Util::getDxBytecode(_meshStage.bytecode);
+	psoDesc.AS = Dx12Util::getDxBytecode(_amplificationStage.bytecode); 
+
 	_commonPsoDesc(req, psoDesc);
 
 	auto psoStream = CD3DX12_PIPELINE_MESH_STATE_STREAM(psoDesc);
