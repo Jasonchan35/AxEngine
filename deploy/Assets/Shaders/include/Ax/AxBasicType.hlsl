@@ -160,6 +160,43 @@ typedef float4		Color4f;
 #define SEM_uv18(TYPE)		TYPE	uv18	: TEXCOORD18
 #define SEM_uv19(TYPE)		TYPE	uv19	: TEXCOORD19
 
+#define AX_DEBUG_COLOR_TABLE_SIZE 27
+static const float4 axDebugColorTable[AX_DEBUG_COLOR_TABLE_SIZE] = {
+    float4(1.0, 0.0, 0.0, 1), // Red
+    float4(0.0, 1.0, 0.0, 1), // Green
+    float4(1.0, 1.0, 0.0, 1),
+    float4(0.0, 0.0, 1.0, 1),  // Blue
+    float4(1.0, 0.0, 1.0, 1),
+    float4(0.0, 1.0, 1.0, 1),
+    float4(1.0, 1.0, 1.0, 1),
+
+    float4(0.5, 0.0, 0.0, 1),
+    float4(0.0, 0.5, 0.0, 1),
+    float4(0.5, 0.5, 0.0, 1),
+    float4(0.0, 0.0, 0.5, 1),
+    float4(0.5, 0.0, 0.5, 1),
+    float4(0.0, 0.5, 0.5, 1),
+    float4(0.5, 0.5, 0.5, 1),
+
+    float4(1.0, 0.5, 0.0, 1),
+    float4(1.0, 0.0, 0.5, 1),
+    float4(0.0, 1.0, 0.5, 1),
+
+    float4(0.5, 1.0, 0.0, 1),
+    float4(0.5, 0.0, 1.0, 1),
+    float4(0.0, 0.5, 1.0, 1),
+
+    float4(0.5, 0.5, 0.5, 1),
+    float4(1.0, 0.5, 0.5, 1),
+    float4(0.5, 1.0, 0.5, 1),
+    float4(1.0, 1.0, 0.5, 1),
+    float4(0.5, 0.5, 1.0, 1),
+    float4(1.0, 0.5, 1.0, 1),
+    float4(0.5, 1.0, 1.0, 1),
+};
+
+Color4f ax_debug_color(uint i) { return axDebugColorTable[i % AX_DEBUG_COLOR_TABLE_SIZE]; }
+
 struct AxDispatchInput {
 	uint gid	: SV_GROUPID;
 	uint gtid	: SV_GROUPTHREADID;

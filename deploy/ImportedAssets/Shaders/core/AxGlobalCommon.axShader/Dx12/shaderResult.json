@@ -226,7 +226,7 @@
           "bindSpace": "World", 
           "bindPoint": 201, 
           "bindCount": 1, 
-          "stride": 64, 
+          "stride": 60, 
           "variables": [{
               "name": "pos", 
               "dataType": "Vec3f", 
@@ -271,11 +271,6 @@
               "name": "unused3", 
               "dataType": "u32", 
               "offset": 56, 
-              "size": 0
-            }, {
-              "name": "unused4", 
-              "dataType": "u32", 
-              "offset": 60, 
               "size": 0
             }]
         }, {

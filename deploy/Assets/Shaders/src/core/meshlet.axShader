@@ -84,13 +84,15 @@ void ms_main(
 		AxMeshletVert mv = axMeshletVert[meshlet.vertOffset + j];
 		i.pos    = Vec4f(mv.pos, 1);
 		i.normal = mv.normal;
-		i.color0 = mv.color();
+		// i.color0 = mv.color();
+//		i.color0 = ax_debug_color(j);
+		i.color0 = ax_debug_color(dispatch.gid);
 
 		VS_Output o;
 		o.worldPos = ax_pos_to_world(i.pos);
 		o.sv_pos   = ax_pos_to_clip(i.pos);
 		o.normal   = ax_normal_to_clip(i.normal);
-		o.color0   = Color4f(1, 1, 1, 1);
+		o.color0   = i.color0;
 		outVert[j] = o;
 	}
 }
@@ -123,8 +125,9 @@ float4 ps_main(VS_Output i) : SV_Target {
 	float spec        = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	Color3f _specular = lightColor * (specular * spec);
 		
-	Color3f o = _ambient + _diffuse + _specular;
-	return Color4f(o, 1);
+	Color3f lightResult = _ambient + _diffuse + _specular;
+
+	return i.color0 * Color4f(lightResult, 1);
 }
 
 
