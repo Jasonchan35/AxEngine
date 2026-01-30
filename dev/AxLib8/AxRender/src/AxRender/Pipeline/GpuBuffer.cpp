@@ -6,12 +6,16 @@ import :GpuBuffer_Backend;
 
 namespace ax /*::AxRender*/ {
 
+SPtr<GpuBufferPool> GpuBufferPool::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
+	return GpuBufferPool_Backend::s_new(req, desc);
+}
+
 SPtr<GpuBuffer> GpuBuffer::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	return GpuBuffer_Backend::s_new(req, desc);
 }
 
 GpuBuffer::GpuBuffer(const CreateDesc& desc) {
-	_name = NameId::s_make(desc.name);
+	_name = desc.name;
 	_type = desc.bufferType;
 	_size = desc.bufferSize;
 	_pool = desc.pool;
@@ -65,16 +69,19 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 	if (_dirtyRange.size() <= 0 && _gpuBuffer) return _gpuBuffer;
 
 	auto dataSize     = _cpuBuffer.size();
-	auto dataCapacity = _cpuBuffer.capacity();
 	auto uploadRange  = _dirtyRange;
 	_dirtyRange.reset();
 
-	if (!_gpuBuffer || _gpuBuffer->size() < dataCapacity) {
+	if (!_gpuBuffer || _gpuBuffer->size() < dataSize) {
 		GpuBuffer_CreateDesc bufferDesc;
+		bufferDesc.name       = _name;
 		bufferDesc.bufferType = _bufferType;
-		bufferDesc.bufferSize = dataCapacity;
+		bufferDesc.bufferSize = dataSize;
 		bufferDesc.pool       = _pool;
 
+		if (_bufferType == GpuBufferType::Structured) {
+			AX_LOG("--- DynamicGpuBuffer {} create GpuBuffer {}", _name, bufferDesc.bufferSize);
+		}
 		_gpuBuffer = GpuBuffer::s_new(AX_NEW, bufferDesc);
 		uploadRange = IntRange(dataSize); // upload all data for new buffer
 	}

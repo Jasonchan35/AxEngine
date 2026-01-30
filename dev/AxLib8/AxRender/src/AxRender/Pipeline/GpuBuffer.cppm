@@ -25,26 +25,42 @@ class DynamicGpuBuffer;
 
 class GpuBufferPool_CreateDesc : public NonCopyable {
 public:
-	String name;
+	NameId name;
 	GpuBufferType bufferType = GpuBufferType::None;
 	Int maxSize  = 0;
 	Int pageSize = 64 * 1024;
-	Int alignment = 0;
+	Int blockAlignment = 0;
 	
 	GpuBufferPool_CreateDesc() = default;
 
-	GpuBufferPool_CreateDesc(StrView name_, GpuBufferType bufferType_, Int maxSize_, Int pageSize_, Int alignment_ = 0) 
+	GpuBufferPool_CreateDesc(InNameId      name_,
+	                         GpuBufferType bufferType_,
+	                         Int           maxSize_,
+	                         Int           pageSize_,
+	                         Int           blockAlignment_) 
 	: name(name_)
 	, bufferType(bufferType_)
 	, maxSize(maxSize_)
 	, pageSize(pageSize_) 
-	, alignment(alignment_){}
+	, blockAlignment(blockAlignment_) {}
 };
 
 class GpuBufferPool : public RenderObject {
 	AX_RTTI_INFO(GpuBufferPool, RenderObject)
 public:
 	using CreateDesc = GpuBufferPool_CreateDesc;
+	
+	static SPtr<GpuBufferPool> s_new(const MemAllocRequest& mem, const CreateDesc& desc);
+
+	static SPtr<GpuBufferPool> s_new(const MemAllocRequest& mem,
+	                                 InNameId               name,
+	                                 GpuBufferType          bufferType,
+	                                 Int                    maxSize,
+	                                 Int                    pageSize,
+	                                 Int                    blockAlignment)
+	{
+		return s_new(mem, CreateDesc(name, bufferType, maxSize, pageSize, blockAlignment));
+	}
 
 	GpuBufferType bufferType() const { return _bufferType; }
 	Int maxSize() const { return _maxSize; }
@@ -52,6 +68,8 @@ public:
 	
 	AX_INLINE Int calcPageIndex(Int v) const { return Math::alignTo(v, _pageSize) / _pageSize; } 
 	
+	Int blockAlignment() const { return _blockAlignment; }
+
 protected:
 	GpuBufferPool(const CreateDesc& desc);
 	
@@ -61,14 +79,14 @@ protected:
 	GpuBufferType _bufferType = GpuBufferType::None;
 	Int _maxSize   = 0; // virtual memory address size
 	Int _pageSize  = 0;
-	Int _alignment = 0;
+	Int _blockAlignment = 0;
 };
 
 class GpuBuffer_CreateDesc : public NonCopyable {
 public:
 	GpuBuffer_CreateDesc() = default;
 
-	GpuBuffer_CreateDesc(StrView       name_,
+	GpuBuffer_CreateDesc(InNameId      name_,
 	                     GpuBufferType bufferType_,
 	                     Int           bufferSize_)
 		: name(name_)
@@ -76,7 +94,7 @@ public:
 		, bufferSize(bufferSize_)
 	{}
 
-	String        name;
+	NameId        name;
 	GpuBufferType bufferType = GpuBufferType::None;
 	Int           bufferSize = 0;
 	GpuBufferPool* pool = nullptr;
@@ -88,7 +106,7 @@ public:
 	using CreateDesc = GpuBuffer_CreateDesc;
 	
 	static SPtr<GpuBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
-	static SPtr<GpuBuffer> s_new(const MemAllocRequest& req, StrView name, GpuBufferType type, Int size) {
+	static SPtr<GpuBuffer> s_new(const MemAllocRequest& req, InNameId name, GpuBufferType type, Int size) {
 		return s_new(req, CreateDesc(name, type, size));
 	}
 
@@ -116,10 +134,10 @@ protected:
 class DynamicGpuBuffer_CreateDesc : public NonCopyable {
 public:
 	DynamicGpuBuffer_CreateDesc() = default;
-	DynamicGpuBuffer_CreateDesc(StrView name_, GpuBufferType bufferType_, Int bufferSize_, GpuBufferPool* pool_)
+	DynamicGpuBuffer_CreateDesc(InNameId name_, GpuBufferType bufferType_, Int bufferSize_, GpuBufferPool* pool_)
 		: name(name_), bufferType(bufferType_), bufferSize(bufferSize_), pool(pool_) {}
 
-	String			name;
+	NameId			name;
 	GpuBufferType	bufferType = GpuBufferType::None;
 	Int				bufferSize = 0;
 	GpuBufferPool*	pool = nullptr;
@@ -158,7 +176,7 @@ public:
 private:
 	GpuBuffer*	_getUploadedGpuBuffer(class RenderRequest* req);
 
-	String          _name;
+	NameId          _name;
 	GpuBufferType   _bufferType = GpuBufferType::None;
 	GpuBufferPool*  _pool       = nullptr;
 	Array<Byte>     _cpuBuffer;
@@ -211,9 +229,9 @@ MutByteSpan DynamicGpuBuffer::extendSize(Int sizeInBytes) {
 
 class StructuredGpuBuffer_CreateDesc : public NonCopyable {
 public:
-	String name;
-	Int stride = 0;
-	GpuBufferPool* pool = nullptr;
+	NameId         name;
+	Int            stride = 0;
+	GpuBufferPool* pool   = nullptr;
 };
 
 class StructuredGpuBuffer : public RenderObject {
@@ -221,7 +239,7 @@ public:
 	using CreateDesc = StructuredGpuBuffer_CreateDesc;
 
 	template<class T>
-	static SPtr<StructuredGpuBuffer> s_new(const MemAllocRequest& req, StrView name, GpuBufferPool* pool) {
+	static SPtr<StructuredGpuBuffer> s_new(const MemAllocRequest& req, InNameId name, GpuBufferPool* pool) {
 		CreateDesc desc;
 		desc.name = name;
 		desc.stride = AX_SIZEOF(T);
@@ -237,7 +255,7 @@ public:
 
 	Int stride() const { return _stride; }
 	Int count() const { return _gpuBuffer.dataSize() / _stride; }
-	
+
 	template<class T>
 	MutSpan<T> editData(Int offset, Int size) {
 		if (AX_SIZEOF(T) != _stride) throw Error_Undefined();
@@ -270,5 +288,33 @@ protected:
 	DynamicGpuBuffer _gpuBuffer;
 	Int _stride = 0;
 };
+
+template<class T>
+class StructuredGpuBufferPool_ : public NonCopyable {
+public:
+	void create(const MemAllocRequest& req, InNameId name, Int maxSize, Int pageSize) {
+		pool = GpuBufferPool::s_new(req, name, GpuBufferType::Structured, maxSize, pageSize, AX_SIZEOF(T));
+	}
+
+	operator GpuBufferPool* () { return pool.ptr(); }
+	GpuBufferPool* operator->() { return pool.ptr(); }
+	
+	SPtr<GpuBufferPool> pool;
+};
+
+template<class T>
+class StructuredGpuBuffer_ : public NonCopyable {
+public:
+	using Pool = StructuredGpuBufferPool_<T>;
+	
+	void create(const MemAllocRequest& req, InNameId name, Pool& pool) {
+		buffer = StructuredGpuBuffer::s_new<T>(req, name, pool.pool);
+	}
+
+	StructuredGpuBuffer* operator->() { return buffer.ptr(); }
+	
+	SPtr<StructuredGpuBuffer> buffer;
+};
+
 
 } // namespace

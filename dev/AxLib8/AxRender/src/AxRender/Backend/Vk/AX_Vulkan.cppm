@@ -632,7 +632,7 @@ public:
 	VmaMemoryUsage   vmaUsage() { return _vmaUsage; }
 
 #if AX_RENDER_DEBUG_NAME
-	void setDebugName(const String& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
+	void setDebugName(const StrView& name) { if (_dev) _dev->setObjectDebugName(_handle, name); }
 #endif
 
 private:

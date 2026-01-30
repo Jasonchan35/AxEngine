@@ -19,17 +19,17 @@ GpuBufferPool_Backend::GpuBufferPool_Backend(const CreateDesc& desc): Base(desc)
 
 void GpuBufferPool_Backend::_allocateBlock(GpuBuffer* buf) {
 	D3D12MA::VIRTUAL_ALLOCATION_DESC desc = {};
-	if (_alignment <= 0) {
-		throw Error_Undefined("GpuBufferPool _alignment <= 0");
+	if (_blockAlignment <= 0) {
+		throw Error_Undefined("GpuBufferPool _blockAlignment <= 0");
 	}
 	
 	if (_bufferType != buf->_type) {
 		throw Error_Undefined("GpuBufferPool type != GpuBuffer type");
 	}
 	
-	buf->_size = Math::alignTo(buf->_size, _alignment);
+	buf->_size = Math::alignTo(buf->_size, _blockAlignment);
 	
-	desc.Alignment = _alignment;
+	desc.Alignment = _blockAlignment;
 	desc.Size      = ax_safe_cast_from(buf->_size);
 		
 	UINT64 offset = 0;

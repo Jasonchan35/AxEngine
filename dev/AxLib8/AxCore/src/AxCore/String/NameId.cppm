@@ -43,9 +43,9 @@ public:
 		}
 	}
 
-	TempString_<CH> toString() { return Fmt("{}", *this); }
+	TempString_<CH> toString() const { return Fmt("{}", *this); }
 
-	AX_NODISCARD bool hasNoId() const { return _id == kNoId; }
+	AX_NODISCARD bool hasId() const { return _id != kNoId; }
 
 	AX_NODISCARD HashInt onHashInt() const { return HashInt::s_make(_name) ^ HashInt::s_make(_id); }
 	static constexpr Id kNoId = -1;

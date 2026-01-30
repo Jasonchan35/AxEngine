@@ -227,22 +227,22 @@
           "bindCount": 1, 
           "stride": 16, 
           "variables": [{
-              "name": "vertCount", 
+              "name": "vertOffset", 
               "dataType": "u32", 
               "offset": 0, 
               "size": 0
             }, {
-              "name": "vertOffset", 
+              "name": "vertCount", 
               "dataType": "u32", 
               "offset": 4, 
               "size": 0
             }, {
-              "name": "primCount", 
+              "name": "primOffset", 
               "dataType": "u32", 
               "offset": 8, 
               "size": 0
             }, {
-              "name": "primOffset", 
+              "name": "primCount", 
               "dataType": "u32", 
               "offset": 12, 
               "size": 0
@@ -254,7 +254,7 @@
           "bindSpace": "World", 
           "bindPoint": 201, 
           "bindCount": 1, 
-          "stride": 44, 
+          "stride": 64, 
           "variables": [{
               "name": "pos", 
               "dataType": "Vec3f", 
@@ -280,6 +280,31 @@
               "dataType": "Vec3f", 
               "offset": 32, 
               "size": 0
+            }, {
+              "name": "unused0", 
+              "dataType": "u32", 
+              "offset": 44, 
+              "size": 0
+            }, {
+              "name": "unused1", 
+              "dataType": "u32", 
+              "offset": 48, 
+              "size": 0
+            }, {
+              "name": "unused2", 
+              "dataType": "u32", 
+              "offset": 52, 
+              "size": 0
+            }, {
+              "name": "unused3", 
+              "dataType": "u32", 
+              "offset": 56, 
+              "size": 0
+            }, {
+              "name": "unused4", 
+              "dataType": "u32", 
+              "offset": 60, 
+              "size": 0
             }]
         }, {
           "name": "axMeshletPrim", 
@@ -288,11 +313,16 @@
           "bindSpace": "World", 
           "bindPoint": 202, 
           "bindCount": 1, 
-          "stride": 12, 
+          "stride": 16, 
           "variables": [{
               "name": "tri", 
               "dataType": "Vec3u32", 
               "offset": 0, 
+              "size": 0
+            }, {
+              "name": "padding", 
+              "dataType": "u32", 
+              "offset": 12, 
               "size": 0
             }]
         }, {

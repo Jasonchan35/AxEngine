@@ -30,7 +30,7 @@ public:
 
 	D3D12_RESOURCE_STATES resourceState() const { return _resourceState; }
 
-	D3D12_RESOURCE_STATES resourceBarrier_Debug(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newResourceState, const SrcLoc& srcLoc = SrcLoc::s_current());
+	D3D12_RESOURCE_STATES barrier_Debug(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newResourceState, const SrcLoc& srcLoc = SrcLoc::s_current());
 	D3D12_RESOURCE_STATES resourceBarrier(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newResourceState);
 
 	operator ID3D12Resource*() { return _d3dResource; }
@@ -41,6 +41,7 @@ public:
 	Int bufferSize() const { return _bufferSize; }
 
 	void setName(InNameId name);
+	NameId name() const { return _name; }
 
 protected:
 	Dx12ResourceBase();
@@ -76,7 +77,10 @@ public:
 		create(type, data.sizeInBytes(), virtualAddressOnly);
 		uploadToGpu(0, data);
 	}
-	
+
+	static D3D12_RESOURCE_STATES s_createResourceState(GpuBufferType type);
+	static D3D12_RESOURCE_STATES s_defaultResourceState(GpuBufferType type);
+	static D3D12_HEAP_TYPE s_defaultHeapType(GpuBufferType type);
 	static Int s_getMinAlignement(GpuBufferType type);
 
 	GpuBufferType bufferType() const { return _bufferType; }

@@ -9,13 +9,19 @@ export namespace ax /*::AxRender*/ {
 class GpuBufferPool_Backend : public GpuBufferPool {
 	AX_RTTI_INFO(GpuBufferPool_Backend, GpuBufferPool)
 public:
-	static SPtr<GpuBufferPool_Backend> s_new(const MemAllocRequest& mem, const CreateDesc& desc); 
-	static SPtr<GpuBufferPool_Backend> s_new(const MemAllocRequest& mem, StrView name, 
-											 GpuBufferType bufferType, Int maxSize, Int pageSize)
-	{
-		return s_new(mem, CreateDesc(name, bufferType, maxSize, pageSize));
-	}
+	static SPtr<GpuBufferPool_Backend> s_new(const MemAllocRequest& mem, const CreateDesc& desc);
 
+	static SPtr<GpuBufferPool_Backend> s_new(const MemAllocRequest& mem,
+	                                         InNameId               name,
+	                                         GpuBufferType          bufferType,
+	                                         Int                    maxSize,
+	                                         Int                    pageSize,
+	                                         Int                    blockAlignment)
+	{
+		return s_new(mem, CreateDesc(name, bufferType, maxSize, pageSize, blockAlignment));
+	}
+	
+	
 	virtual void onGpuUpdatePages(RenderRequest_Backend* req) {}
 
 	void _allocateBlock(GpuBuffer* buf);

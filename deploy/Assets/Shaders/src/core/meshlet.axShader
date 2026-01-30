@@ -21,8 +21,8 @@ Pass "Pass0" {
 #define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))
 
 #define THREADS_PER_WAVE 32
-#define MAX_VERTS 64
-#define MAX_PRIMS 126
+#define MAX_VERTS 256
+#define MAX_PRIMS 256
 #define MAX_LOD_LEVELS 8
 
 #define MS_GROUP_SIZE ROUNDUP(MAX(MAX_VERTS, MAX_PRIMS), THREADS_PER_WAVE)
@@ -51,13 +51,13 @@ void ms_main(
 	u32 j = mi.gtid;
 	AxMeshlet meshlet = axMeshlet[AX_MESHLET_ID];
 
-    SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
+	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
 
-    if (j < meshlet.primCount) {
-        outTri[j] = axMeshletPrim[meshlet.primOffset + j].tri;
-    }
+	if (j < meshlet.primCount) {
+		outTri[j] = axMeshletPrim[meshlet.primOffset + j].tri;
+	}
 
-    if (j < meshlet.vertCount) {
+	if (j < meshlet.vertCount) {
 		VS_Input i;
 //		i.pos    = Vec4f(t % 2, t, (t + 1) % 2, 1);
 //		i.normal = -normalize(Vec3f(1, 1, 0));

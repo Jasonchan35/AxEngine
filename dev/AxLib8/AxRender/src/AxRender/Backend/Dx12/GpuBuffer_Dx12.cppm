@@ -38,6 +38,12 @@ public:
 		_resourceWithoutPool.uploadToGpu(offset, data);
 	}
 	
+	void updateResourceBarrier(ID3D12GraphicsCommandList* cmdList) {
+		auto state = Dx12Resource_GpuBuffer::s_defaultResourceState(_type);
+		if (_pool) return;
+		_resourceWithoutPool.resourceBarrier(cmdList, state);
+	}
+	
 	static Int s_getMinAlignement(GpuBufferType type) {
 		return Dx12Resource_GpuBuffer::s_getMinAlignement(type);
 	}

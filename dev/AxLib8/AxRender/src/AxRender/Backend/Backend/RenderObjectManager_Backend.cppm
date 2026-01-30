@@ -64,27 +64,33 @@ public:
 			if (pool) pool->onGpuUpdatePages(req);
 		}
 	};
-
+	
 	struct BufferPools {
 		SPtr<GpuBufferPool_Backend>	vertex;
 		SPtr<GpuBufferPool_Backend>	index;
 		SPtr<GpuBufferPool_Backend>	constBuffer;
 		
-		SPtr<GpuBufferPool_Backend> axMeshlet;
-		SPtr<GpuBufferPool_Backend> axMeshletVert;
-		SPtr<GpuBufferPool_Backend> axMeshletPrim;
-		
 		template<class FUNC>
-		void visit(FUNC func) {
+		void visitPools(FUNC func) {
 			func(vertex       );
 			func(index        );
 			func(constBuffer  );
+		}		
+	} _bufferPools;
+
+	struct StructBufferPools {
+		StructuredGpuBufferPool_<AxMeshlet>		axMeshlet;
+		StructuredGpuBufferPool_<AxMeshletVert>	axMeshletVert;
+		StructuredGpuBufferPool_<AxMeshletPrim>	axMeshletPrim;
+		
+		template<class FUNC>
+		void visitPools(FUNC func) {
 			func(axMeshlet    );
 			func(axMeshletVert);
 			func(axMeshletPrim);
 		}		
-	} _bufferPools;
-
+	} _structBufferPools;
+	
 	Material_Backend* globalCommonMaterial() { return _globalCommonMaterial.ptr(); }
 	Material_Backend* indirectDrawMaterial() { return _indirectDrawMaterial.ptr(); }
 	

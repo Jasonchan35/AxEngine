@@ -5,24 +5,26 @@ export import :RenderMesh;
 
 export namespace ax {
 
-struct MeshletVert {
+struct AxMeshletVert {
 	Vec3f   pos;
 	u32     rawColor;
 	Vec2f   uv0;
 	Vec2f   uv1;
 	// Vec2f   rawNormal;
 	Vec3f   normal;
+	u32 unused[5];
 };
 
-struct MeshletPrim {
+struct AxMeshletPrim {
 	Vec3u32	tri;
+	u32 padding;
 };
 
-struct Meshlet {
-	u32 vertCount  = 0;
+struct AxMeshlet {
 	u32 vertOffset = 0;
-	u32 primCount  = 0;
+	u32 vertCount  = 0;
 	u32 primOffset = 0;
+	u32 primCount  = 0;
 };
 
 class MeshObject : public RenderObject {
@@ -35,20 +37,19 @@ public:
 
 	RenderMesh	meshData;
 
-	SPtr<StructuredGpuBuffer> meshlet;
-	SPtr<StructuredGpuBuffer> meshletVert;
-	SPtr<StructuredGpuBuffer> meshletPrim;
+	StructuredGpuBuffer_<AxMeshlet>     meshlet;
+	StructuredGpuBuffer_<AxMeshletVert> meshletVert;
+	StructuredGpuBuffer_<AxMeshletPrim> meshletPrim;
 	
 	AX_INLINE void _uploadToGpu(RenderRequest* req) {
 		if (!_needUploadToGpu) return;
 		_needUploadToGpu = false;
-		onUploadToGpu(req);
+		_doUploadToGpu(req);
 	}
 
 protected:
-	MeshObject(const CreateDesc& desc) : _assetPath(desc.assetPath) {}
-	
-	virtual void onUploadToGpu(RenderRequest* req) {}
+	MeshObject(const CreateDesc& desc);
+	void _doUploadToGpu(RenderRequest* req);
 	
 	bool _needUploadToGpu = true;
 	String	_assetPath;

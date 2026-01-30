@@ -15,9 +15,7 @@ public:
 	MeshObject_Backend(const CreateDesc& desc) 
 	: MeshObject(desc)
 	, objectSlot(this, false) {}
-	
-	virtual void onUploadToGpu(RenderRequest* req);
-	
+
 	RenderObjectSlot_Backend<This>	objectSlot;
 };
 

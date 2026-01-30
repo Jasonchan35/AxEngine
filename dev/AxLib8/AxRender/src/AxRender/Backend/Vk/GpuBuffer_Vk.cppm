@@ -23,6 +23,14 @@ public:
 	
 	virtual void onGpuUpdatePages(RenderRequest_Backend* req_) override;
 
+	VkDescriptorBufferInfo _getUpdatedDescriptorInfo(RenderRequest_Vk* req) const {
+		VkDescriptorBufferInfo info = {};
+		info.buffer = _vkBuf.handle();
+		info.offset = 0;
+		info.range  = ax_safe_cast_from(_maxSize);
+		return info;
+	}
+	
 	PagePool_<Page_Vk>	_pagePool;
 	AX_VkBuffer			_vkBuf;
 };

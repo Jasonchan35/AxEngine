@@ -1424,7 +1424,7 @@ void AX_VkBuffer::create(AX_VkDevice& dev, GpuBufferType bufferType, Int bufferS
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;
 		}break;
 		case GpuBufferType::Structured: {
-			usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+			usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			//			memProps = VK_MEMORY_PROPERTY_PROTECTED_BIT; // no CPU access
 			//			memProps = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // Gpu only
 			vmaUsage = VMA_MEMORY_USAGE_GPU_ONLY;

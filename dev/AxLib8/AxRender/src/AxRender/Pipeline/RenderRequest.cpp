@@ -19,7 +19,6 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	desc.materialPassIndex = materialPass;
 	desc.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
 	desc.meshObject = mesh;
-	desc.dispatchGroupCount.set(256, 1, 1);
 	drawCall(desc);
 #endif
 }

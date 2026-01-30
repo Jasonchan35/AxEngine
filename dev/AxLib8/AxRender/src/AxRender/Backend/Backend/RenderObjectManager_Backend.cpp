@@ -35,8 +35,12 @@ void RenderObjectManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
 		table.scopedLock()->onFrameEnd(req);
 	});
 	
-	_bufferPools.visit([&](GpuBufferPool_Backend* bufferPool) -> void {
+	_bufferPools.visitPools([&](GpuBufferPool_Backend* bufferPool) -> void {
 		if (bufferPool) bufferPool->onGpuUpdatePages(req);
+	});
+	_structBufferPools.visitPools([&](auto& bufferPool) -> void {
+		auto* pool = rttiCastCheck<GpuBufferPool_Backend>(bufferPool.pool.ptr());
+		if (pool) pool->onGpuUpdatePages(req);
 	});
 }
 
@@ -80,32 +84,30 @@ void RenderObjectManager_Backend::_postCreate() {
 	RenderStockObjects::s_create();
 	
 //----	
-//	_bufferPools.vertex = GpuBufferPool_Backend::s_new(AX_NEW, 
-//	 	"pool-vertex", GpuBufferType::Vertex, 1 * Math::GigaBytes, 8 * Math::MegaBytes); 
+	_bufferPools.vertex = GpuBufferPool_Backend::s_new(AX_NEW, 
+	 	"pool-vertex", GpuBufferType::Vertex, 1 * Math::GigaBytes, 8 * Math::MegaBytes, 0); 
 	
-//	_bufferPools.index = GpuBufferPool_Backend::s_new(AX_NEW, 
-//	 	"pool-index", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
+	_bufferPools.index = GpuBufferPool_Backend::s_new(AX_NEW, 
+	 	"pool-index", GpuBufferType::Index, 1 * Math::GigaBytes, 4 * Math::MegaBytes, 0); 
 
-//	_bufferPools.constBuffer = GpuBufferPool_Backend::s_new(AX_NEW, 
-//		"pool-constBuffer", GpuBufferType::Const, 1 * Math::GigaBytes, 4 * Math::MegaBytes); 
+	_bufferPools.constBuffer = GpuBufferPool_Backend::s_new(AX_NEW, 
+		"pool-constBuffer", GpuBufferType::Const, 1 * Math::GigaBytes, 4 * Math::MegaBytes, 0); 
 
 	auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
 	auto* worldParamSpace  = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);
 
-	
-	auto createPoolParam = [&](SPtr<GpuBufferPool_Backend>& p, StrView name, Int maxSize, Int pageSize) -> void {
-		p = GpuBufferPool_Backend::s_new(AX_NEW, name, GpuBufferType::Structured, maxSize, pageSize);
-		if (auto* param = worldParamSpace->findStructuredBufferParam(NameId::s_make(name))) {
-			param->setBufferPool(p);
+	auto createPoolParam = [&](auto& pool, InNameId name, Int maxSize, Int pageSize) -> void {
+		pool.create(AX_NEW, name, maxSize, pageSize);
+		if (auto* param = worldParamSpace->findStructuredBufferParam(name)) {
+			param->setBufferPool(pool);
 		} else {
 			AX_ASSERT(false);
 		}
 	};
 	
-	createPoolParam(_bufferPools.axMeshlet    , "axMeshlet"    , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_bufferPools.axMeshletVert, "axMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_bufferPools.axMeshletPrim, "axMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	
+	createPoolParam(_structBufferPools.axMeshlet    , "axMeshlet"    , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletVert, "axMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletPrim, "axMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 
 #if AX_RENDER_BINDLESS
 	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();

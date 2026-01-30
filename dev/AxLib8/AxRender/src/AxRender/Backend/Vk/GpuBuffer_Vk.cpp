@@ -14,8 +14,8 @@ namespace ax /*::AxRender*/ {
 GpuBufferPool_Vk::GpuBufferPool_Vk(const CreateDesc& desc): Base(desc) {
 	auto& dev = RenderSystem_Vk::s_instance()->device();
 	_vkBuf.create(dev, desc.bufferType, desc.maxSize, true);
-	_vkBuf.setDebugName(desc.name);
-	_alignment = desc.alignment ? desc.alignment : GpuBuffer_Vk::s_getMinAlignement(desc.bufferType);
+	_vkBuf.setDebugName(desc.name.toString());
+	_blockAlignment = desc.blockAlignment ? desc.blockAlignment : GpuBuffer_Vk::s_getMinAlignement(desc.bufferType);
 	_pagePool.create(desc);
 }
 
@@ -69,7 +69,7 @@ GpuBuffer_Vk::GpuBuffer_Vk(const CreateDesc& desc)
 	} else {
 		auto& dev = RenderSystem_Vk::s_instance()->device();
 		_vkBufWithoutPool.create(dev, desc.bufferType, desc.bufferSize, false);
-		_vkBufWithoutPool.setDebugName(desc.name);
+		_vkBufWithoutPool.setDebugName(desc.name.toString());
 		_vkBufHandle = _vkBufWithoutPool.handle();
 	}
 }

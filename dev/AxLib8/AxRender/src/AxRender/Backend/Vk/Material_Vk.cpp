@@ -47,6 +47,19 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 		writeDescSetHelper.addInfo(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, param.bindPoint(), frameData._descSet, 0, info);
 	}
 
+	for (auto& param : _structuredBufferParams) {
+		if (auto* pool = rttiCastCheck<GpuBufferPool_Vk>(param.bufferPool())) {
+			auto info = pool->_getUpdatedDescriptorInfo(req);
+			writeDescSetHelper.addInfo(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), frameData._descSet, 0, info);
+			
+		} else if (auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req))) {
+			auto* structBuf = param.buffer();
+			auto info = gpuBuf->_getUpdatedDescriptorInfo(req);
+			u32 elementIndex = ax_safe_cast_from(structBuf->gpuBufferIndex()); 
+			writeDescSetHelper.addInfo(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), frameData._descSet, elementIndex, info);
+		}
+	}
+	
 #if !AX_RENDER_BINDLESS
 	for (auto& param : _samplerParams) {
 		auto* sampler = param.sampler();

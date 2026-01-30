@@ -177,6 +177,10 @@ bool RenderRequest_Backend::copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, Byt
 	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
 
 	auto uploadRange = IntRange_StartAndSize(_inlineUpload.usedBytes, dataSize);
+	
+	if (dst->type() == GpuBufferType::Structured) {
+		AX_LOG("---InlineBuffer dst=[{}] uploadRange={} dataSize={} dstOffset={}", dst->name(), uploadRange, data.size(), dstOffset);
+	}
 	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadRange, dstOffset);
 
 	_inlineUpload.usedBytes += dataSize;
@@ -197,7 +201,7 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	if (auto* meshObject = rttiCastCheck<MeshObject_Backend>(cmd.meshObject)) {
 		resourcesToKeep.add(meshObject);
 		meshObject->_uploadToGpu(this);
-		_drawCallRootConst.AX_MESHLET_ID = ax_safe_cast_from(meshObject->meshlet->gpuBufferIndex()); 
+		_drawCallRootConst.AX_MESHLET_ID = ax_safe_cast_from(meshObject->meshlet->gpuBufferIndex());
 	}
 
 	auto* material = rttiCastCheck<Material_Backend>(cmd.material);
@@ -225,7 +229,7 @@ void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {
 	if (info.maxBufferSize <= 0) return;
 
 	GpuBuffer_CreateDesc bufDesc;
-	bufDesc.name = Fmt("{}-InlineUpload", req->name());
+	bufDesc.name = FmtName("{}-InlineUpload", req->name());
 	bufDesc.bufferType = GpuBufferType::StagingToGpu;
 	bufDesc.bufferSize = info.maxBufferSize;
 

@@ -20,7 +20,9 @@ public:
 
 	void openFile(StrView filename) {
 		Assimp::Importer importer;
-	
+//		importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, 256); // mesh shader max 256 vertices
+//		importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, 256);  // mesh shader max 256 triangles
+		
 		importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
 
 		// Read the file. The second argument specifies post-processing flags.
@@ -196,24 +198,18 @@ public:
 		}		
 	}
 	
-	void importMeshlet(aiMesh* srcMesh, MeshObject* dstMesh) {
+	void importMeshObject(aiMesh* srcMesh, MeshObject* dstMesh) {
 		RenderPrimitiveType primType = toPrimType(srcMesh->mPrimitiveTypes);
 		if (primType != RenderPrimitiveType::Triangles) {
 			AX_ASSERT_TODO();
 			return;
 		}
 
-		auto* objMgr = RenderObjectManager_Backend::s_instance();
-
-		dstMesh->meshlet     = StructuredGpuBuffer::s_new<Meshlet    >(AX_NEW, "meshlet"    , objMgr->_bufferPools.axMeshlet);
-		dstMesh->meshletVert = StructuredGpuBuffer::s_new<MeshletVert>(AX_NEW, "meshletVert", objMgr->_bufferPools.axMeshletVert);
-		dstMesh->meshletPrim = StructuredGpuBuffer::s_new<MeshletPrim>(AX_NEW, "meshletPrim", objMgr->_bufferPools.axMeshletPrim);
-	
 		u32 numVert = srcMesh->mNumVertices;
 		u32 numPrim = srcMesh->mNumFaces; 
 		
-		auto dstVert = dstMesh->meshletVert->editData<MeshletVert>(0, numVert);
-		auto dstPrim = dstMesh->meshletPrim->editData<MeshletPrim>(0, numPrim);
+		auto dstVert = dstMesh->meshletVert->editData<AxMeshletVert>(0, numVert);
+		auto dstPrim = dstMesh->meshletPrim->editData<AxMeshletPrim>(0, numPrim);
 		
 		{ // pos
 			Int j = 0;
@@ -244,7 +240,7 @@ public:
 			}
 		}
 		
-		Meshlet meshlet = {};
+		AxMeshlet meshlet = {};
 		meshlet.vertCount = numVert;
 		meshlet.primCount = numPrim;
 		dstMesh->meshlet->setValue(0, meshlet);
@@ -254,7 +250,7 @@ public:
 		auto meshObject = MeshObject_Backend::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
 		importRenderMesh(srcMesh, meshObject->meshData);
-		importMeshlet(srcMesh, meshObject);
+		importMeshObject(srcMesh, meshObject);
 	}
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {

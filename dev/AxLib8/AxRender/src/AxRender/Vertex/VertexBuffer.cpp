@@ -11,7 +11,7 @@ void VertexBuffer::create(VertexLayout vertexLayout) {
 
 	DynamicGpuBuffer_CreateDesc desc;
 	desc.bufferType = GpuBufferType::Vertex;
-	desc.name       = "VertexBuffer";
+	desc.name       = AX_NAMEID("VertexBuffer");
 	desc.pool       = RenderObjectManager_Backend::s_instance()->_bufferPools.vertex.ptr();
 	_buffer.create(desc);
 }
@@ -25,7 +25,7 @@ void VertexIndexBuffer::create(VertexIndexType indexType) {
 	} else {
 		DynamicGpuBuffer_CreateDesc desc;
 		desc.bufferType = GpuBufferType::Index;
-		desc.name		= "IndexBuffer";
+		desc.name		= AX_NAMEID("IndexBuffer");
 		desc.pool       = RenderObjectManager_Backend::s_instance()->_bufferPools.index.ptr();
 		_buffer.create(desc);
 	}

@@ -59,10 +59,52 @@ void Dx12ResourceBase::destroy() {
 	_reset();
 }
 
+D3D12_RESOURCE_STATES Dx12Resource_GpuBuffer::s_createResourceState(GpuBufferType type) {
+	switch (type) {
+		case GpuBufferType::Const					: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::Vertex					: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::Index					: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::StagingToCpu			: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::StagingToGpu			: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::Structured				: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::RayTracingShaderRecord	: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::RayTracingInstanceDesc	: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::RayTracingScratch		: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::RayTracingAccelStruct	: return D3D12_RESOURCE_STATE_COMMON;
+		
+		default: throw Error_Undefined();
+	}
+}
+
+D3D12_RESOURCE_STATES Dx12Resource_GpuBuffer::s_defaultResourceState(GpuBufferType type) {
+	switch (type) {
+		case GpuBufferType::Const					: return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+		case GpuBufferType::Vertex					: return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+		case GpuBufferType::Index					: return D3D12_RESOURCE_STATE_INDEX_BUFFER;
+		case GpuBufferType::StagingToCpu			: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::StagingToGpu			: return D3D12_RESOURCE_STATE_GENERIC_READ;
+		case GpuBufferType::Structured				: return D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+		case GpuBufferType::RayTracingShaderRecord	: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::RayTracingInstanceDesc	: return D3D12_RESOURCE_STATE_COMMON;
+		case GpuBufferType::RayTracingScratch		: return D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+		case GpuBufferType::RayTracingAccelStruct	: return D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+		
+		default: throw Error_Undefined();
+	}
+}
+
+D3D12_HEAP_TYPE Dx12Resource_GpuBuffer::s_defaultHeapType(GpuBufferType type) {
+	switch (type) {
+		case GpuBufferType::StagingToGpu			: return D3D12_HEAP_TYPE_UPLOAD;
+		case GpuBufferType::StagingToCpu			: return D3D12_HEAP_TYPE_READBACK;
+		default: return D3D12_HEAP_TYPE_DEFAULT;
+	}	
+}
+
 Int Dx12Resource_GpuBuffer::s_getMinAlignement(GpuBufferType type) {
 	switch (type) {
 		case GpuBufferType::Const					: return D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
-		case GpuBufferType::Vertex					: return 64;;
+		case GpuBufferType::Vertex					: return 64;
 		case GpuBufferType::Index					: return 16;
 		case GpuBufferType::StagingToGpu			: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
 		case GpuBufferType::StagingToCpu			: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
@@ -80,65 +122,9 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, bool vir
 	
 	_bufferType = type;
 	_virtualAddressOnly = virtualAddressOnly;
-
+	_resourceState = s_createResourceState(type);
+	_allocDesc.HeapType = s_defaultHeapType(type);
 	Int alignment = s_getMinAlignement(type);
-	switch (type) {
-		case GpuBufferType::Vertex: {
-			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
-		}break;
-
-		case GpuBufferType::Index: {
-			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
-		}break;
-
-		case GpuBufferType::Const: {
-			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
-		}break;
-
-		case GpuBufferType::StagingToGpu: {
-			_resourceState      = D3D12_RESOURCE_STATE_GENERIC_READ;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_UPLOAD;
-		}break;
-
-		case GpuBufferType::StagingToCpu: {
-			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_READBACK;
-		}break;
-
-		case GpuBufferType::Structured: {
-			_resourceState      = D3D12_RESOURCE_STATE_COMMON; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-			_resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-		}break;
-
-		case GpuBufferType::RayTracingShaderRecord: {
-			alignment           = D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT;
-			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
-		}break;
-
-		case GpuBufferType::RayTracingInstanceDesc: {
-			alignment           = D3D12_RAYTRACING_INSTANCE_DESCS_BYTE_ALIGNMENT;
-			_resourceState      = D3D12_RESOURCE_STATE_COMMON;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
-		}break;
-
-		case GpuBufferType::RayTracingScratch: {
-			_resourceState      = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-			_resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
-		} break;
-
-		case GpuBufferType::RayTracingAccelStruct: {
-			_resourceState      = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-			_resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-			_allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
-		}break;
-
-		default: throw Error_Undefined();
-	}
 
 	if (alignment > 0) {
 		bufferSize = Math::alignTo(bufferSize, alignment);
@@ -183,9 +169,9 @@ void Dx12ResourceBase::uploadToGpu(Int offset, ByteSpan data) {
 	MemUtil::copy(dst + offset, data.data(), data.sizeInBytes());
 }
 
-D3D12_RESOURCE_STATES Dx12ResourceBase::resourceBarrier_Debug(ID3D12GraphicsCommandList* cmdList,
-                                                              D3D12_RESOURCE_STATES      newResourceState,
-                                                              const SrcLoc&              srcLoc
+D3D12_RESOURCE_STATES Dx12ResourceBase::barrier_Debug(ID3D12GraphicsCommandList* cmdList,
+                                                      D3D12_RESOURCE_STATES      newResourceState,
+                                                      const SrcLoc&              srcLoc
 ) {
 	if (_resourceState != newResourceState) {
 		AX_LOG("Dx12Debug: [{}:{}] resourceBarrier {} -> {} - file:{}:{}",

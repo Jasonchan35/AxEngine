@@ -94,9 +94,15 @@ public:
 		const StructuredGpuBuffer* buffer() const { return _buffer; }
 		const GpuBufferPool* bufferPool() const { return _bufferPool; }
 		
-		void setBuffer(StructuredGpuBuffer* buf) { _buffer.ref(buf); _bufferPool.unref(); }
+		void setBuffer(StructuredGpuBuffer* buf) {
+			AX_ASSERT(buf->stride() == stride());
+			_buffer.ref(buf); _bufferPool.unref();
+		}
 		
-		void setBufferPool(GpuBufferPool* pool) { _bufferPool.ref(pool); _buffer.unref(); }
+		void setBufferPool(GpuBufferPool* pool) {
+			AX_ASSERT(pool->blockAlignment() == stride());
+			_bufferPool.ref(pool); _buffer.unref();
+		}
 
 		const GpuBuffer* getUploadedGpuBuffer(class RenderRequest* req) const {
 			return _buffer ? _buffer->getUploadedGpuBuffer(req) : nullptr;

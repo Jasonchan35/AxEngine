@@ -162,6 +162,10 @@ private:
 
 inline
 void RenderRequest_Backend::copyDataToGpuBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
+	if (auto* pool = dst->pool()) {
+		rttiCastCheck<GpuBufferPool_Backend>(pool)->onGpuUpdatePages(this);
+	}
+
 	if (copyDataToGpuBuffer_InlineBuffer(dst, data, dstOffset)) {
 		return;
 	}

@@ -9,12 +9,16 @@ namespace  ax {
 GpuBufferPool_Dx12::GpuBufferPool_Dx12(const CreateDesc& desc): Base(desc) {
 	_resource_dx12.create(desc.bufferType, desc.maxSize, true);
 	_resource_dx12.setName(desc.name);
-	_alignment = GpuBuffer_Dx12::s_getMinAlignement(desc.bufferType);
+	_blockAlignment = desc.blockAlignment ? desc.blockAlignment : GpuBuffer_Dx12::s_getMinAlignement(desc.bufferType);
 	_pagePool.create(desc);
 }
 
 void GpuBufferPool_Dx12::onGpuUpdatePages(RenderRequest_Backend* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
+	
+	auto& cmdList = req->uploadCmdList_dx12();
+	_resource_dx12.resourceBarrier(cmdList, Dx12Resource_GpuBuffer::s_defaultResourceState(_resource_dx12.bufferType()));
+	
 	auto* cmdQueue = req->renderContext_dx12()->graphCmdQueue().queue();
 	
 	for (auto& pageIndex : _pagePool._pendingCommitPages) {
@@ -79,6 +83,7 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 
 	auto* req_dx12   = rttiCastCheck<RenderRequest_Dx12>(req);
 	auto& cmdList_dx = req_dx12->_uploadCmdList_dx12._cmdList_dx12;
+//	auto& cmdList_dx = req_dx12->_graphCmdList_dx12._cmdList_dx12;
 
 	auto* srcRes = src_dx12->resource_dx12();
 	auto* dstRes = dst_dx12->resource_dx12();
@@ -88,14 +93,24 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 //	auto dstOldState =
 	dstRes->resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
+	if (_type == GpuBufferType::Structured) {
+		AX_LOG("------- Dx12 CopyBufferRegion dstBuf={} dstOffset={} bufferSize={} srcBuf={} srcOffset={} size={} MeshletVert={}",
+			   _name,
+			   dstOffset + dst_dx12->_bufferOffset,
+			   dst_dx12->_size,
+			   src->name(),
+			   srcRange.start() + src_dx12->_bufferOffset,
+			   srcRange.size(), AX_SIZEOF(AxMeshletVert));
+	}
+	
 	cmdList_dx->CopyBufferRegion(dstRes->d3dResource(),
 	                             ax_safe_cast_from(dstOffset + dst_dx12->_bufferOffset),
 	                             srcRes->d3dResource(),
 	                             ax_safe_cast_from(srcRange.start() + src_dx12->_bufferOffset),
 	                             ax_safe_cast_from(srcRange.size()));
 
-//	srcRes.resourceBarrier(cmdList_dx, srcOldState);
-//	dstRes.resourceBarrier(cmdList_dx, dstOldState);
+//	srcRes->resourceBarrier(cmdList_dx, srcOldState);
+//	dstRes->resourceBarrier(cmdList_dx, dstOldState);
 }
 
 }

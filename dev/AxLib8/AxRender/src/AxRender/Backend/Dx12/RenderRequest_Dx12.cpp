@@ -48,7 +48,7 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	
 	
 	StructuredGpuBuffer_CreateDesc createDesc;
-	createDesc.name   = "indirectDraw.drawArguments";
+	createDesc.name   = AX_NAMEID("indirectDraw.drawArguments");
 	createDesc.stride = AX_SIZEOF(Dx12_IndirectDrawArgument);
 //	createDesc.count  = info.indirectDraw.maxDrawCount;
 	indirectDraw.drawArguments = StructuredGpuBuffer::s_new(AX_NEW, createDesc);
@@ -83,44 +83,6 @@ void RenderRequest_Dx12::onWaitCompleted() {
 		}
 	}
 }
-
-#if 0
-void RenderRequest_Dx12::_updatedBindlessResources() {
-
-	for (auto& tex_ : updatedBindlessResources.texture2Ds) {
-		auto* tex = rttiCastCheck<Texture2D_Dx12>(tex_.ptr());
-		if (!tex) throw Error_Undefined();
-		tex->_getUpdatedDescriptor(this);
-	}
-
-	for (auto& sampler_ : updatedBindlessResources.samplers) {
-		auto* sampler = rttiCastCheck<Sampler_Dx12>(sampler_.ptr());
-		if (!sampler) throw Error_Undefined();
-/*
-		Int index = sampler->objectSlot.slotId();
-		auto handle = mgr->bindlessHeap_Sampler.getHandle(index);
-
-		auto& ss = sampler->samplerState();
-		D3D12_SAMPLER_DESC desc;
-		desc.Filter           = Dx12Util::getDxSamplerFilter(ss.filter);
-		desc.AddressU         = Dx12Util::getDxSamplerWrap(ss.wrap.u);
-		desc.AddressV         = Dx12Util::getDxSamplerWrap(ss.wrap.v);
-		desc.AddressW         = Dx12Util::getDxSamplerWrap(ss.wrap.w);
-		desc.MipLODBias       = 0;
-		desc.MaxAnisotropy    = 0;
-		desc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
-		desc.BorderColor[0]   = 0;
-		desc.BorderColor[1]   = 0;
-		desc.BorderColor[2]   = 0;
-		desc.BorderColor[3]   = 0;
-		desc.MinLOD           = 0.0f;
-		desc.MaxLOD           = D3D12_FLOAT32_MAX;
-		
-		_d3dDevice->CreateSampler(&desc, handle.cpu);
-		*/
-	}
-}
-#endif
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
 	D3D12_VIEWPORT tmp;
@@ -165,7 +127,7 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 		auto* vb = ax_const_cast(rttiCastCheck<GpuBuffer_Dx12>(drawcall.vertexBuffer));
 		if (!vb) throw Error_Undefined();
 
-		vb->resource_dx12()->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		vb->updateResourceBarrier(cmdList);
 
 		D3D12_VERTEX_BUFFER_VIEW vbView = {};
 		vbView.BufferLocation = ax_safe_cast_from(vb->gpuAddress() + vb->bufferOffset());
@@ -184,7 +146,7 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(drawcall.indexBuffer));
 		if (!ib) throw Error_Undefined();
 
-		ib->resource_dx12()->resourceBarrier(cmdList, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+		ib->updateResourceBarrier(cmdList);
 
 		D3D12_INDEX_BUFFER_VIEW ibView = {};
 		ibView.BufferLocation          = ib->gpuAddress() + ib->bufferOffset();
@@ -220,7 +182,7 @@ void RenderRequest_Dx12::onRenderPassBegin(RenderPass* pass_) {
 	}
 
 	//------
-	auto& cmdList         = _graphCmdList_dx12;
+	auto& cmdList = _graphCmdList_dx12;
 	BOOL  rtSingleHandle = FALSE;
 	cmdList->OMSetRenderTargets(ax_safe_cast_from(rtViews.size()), rtViews.data(), rtSingleHandle, &depthView);
 
