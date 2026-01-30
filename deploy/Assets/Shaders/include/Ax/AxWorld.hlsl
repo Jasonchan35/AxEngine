@@ -41,17 +41,18 @@ struct AxDrawCallRootConst {
 	Mat4f AX_MATRIX_MVP;
 	Mat4f AX_MATRIX_M;
 	u32   AX_OBJECT_ID;
+	u32   AX_MESH_ID;
 	u32   AX_MESHLET_ID;
-	u32   _usedPadding0;
 	u32   _usedPadding1;
 };
 
 AX_ROOT_CONST_STRUCT(AxDrawCallRootConst, axDrawCallRootConst) 
-#define AX_OBJECT_ID         axDrawCallRootConst.AX_OBJECT_ID
-#define AX_MESHLET_ID        axDrawCallRootConst.AX_MESHLET_ID
-#define AX_MATRIX_M          axDrawCallRootConst.AX_MATRIX_M
-#define AX_MATRIX_MVP        axDrawCallRootConst.AX_MATRIX_MVP
-#define AX_MATRIX_VP         axCamera.viewProjMatrix
+#define AX_OBJECT_ID		axDrawCallRootConst.AX_OBJECT_ID
+#define AX_MESH_ID			axDrawCallRootConst.AX_MESH_ID
+#define AX_MESHLET_ID		axDrawCallRootConst.AX_MESHLET_ID
+#define AX_MATRIX_M			axDrawCallRootConst.AX_MATRIX_M
+#define AX_MATRIX_MVP		axDrawCallRootConst.AX_MATRIX_MVP
+#define AX_MATRIX_VP		axCamera.viewProjMatrix
 
 Vec3f ax_pos_to_world(Vec4f inPos) { Vec4f t = mul(AX_MATRIX_M, inPos); return t.xyz / t.w; }
 Vec4f ax_pos_to_clip (Vec4f inPos) { return mul(axCamera.viewProjMatrix, mul(AX_MATRIX_M, inPos)); }

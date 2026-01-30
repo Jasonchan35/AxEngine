@@ -79,12 +79,14 @@ public:
 	} _bufferPools;
 
 	struct StructBufferPools {
+		StructuredGpuBufferPool_<AxMeshInfo>	axMeshInfo;
 		StructuredGpuBufferPool_<AxMeshlet>		axMeshlet;
 		StructuredGpuBufferPool_<AxMeshletVert>	axMeshletVert;
 		StructuredGpuBufferPool_<AxMeshletPrim>	axMeshletPrim;
 		
 		template<class FUNC>
 		void visitPools(FUNC func) {
+			func(axMeshInfo   );
 			func(axMeshlet    );
 			func(axMeshletVert);
 			func(axMeshletPrim);

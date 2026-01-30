@@ -178,12 +178,12 @@
               "offset": 128, 
               "size": 0
             }, {
-              "name": "AX_MESHLET_ID", 
+              "name": "AX_MESH_ID", 
               "dataType": "u32", 
               "offset": 132, 
               "size": 0
             }, {
-              "name": "_usedPadding0", 
+              "name": "AX_MESHLET_ID", 
               "dataType": "u32", 
               "offset": 136, 
               "size": 0
@@ -219,35 +219,6 @@
           "dynamicSampler": true
         }], 
       "structuredBuffers": [{
-          "name": "axMeshlet", 
-          "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
-          "bindSpace": "World", 
-          "bindPoint": 200, 
-          "bindCount": 1, 
-          "stride": 16, 
-          "variables": [{
-              "name": "vertOffset", 
-              "dataType": "u32", 
-              "offset": 0, 
-              "size": 0
-            }, {
-              "name": "vertCount", 
-              "dataType": "u32", 
-              "offset": 4, 
-              "size": 0
-            }, {
-              "name": "primOffset", 
-              "dataType": "u32", 
-              "offset": 8, 
-              "size": 0
-            }, {
-              "name": "primCount", 
-              "dataType": "u32", 
-              "offset": 12, 
-              "size": 0
-            }]
-        }, {
           "name": "axMeshletVert", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh", 
@@ -323,6 +294,54 @@
               "name": "padding", 
               "dataType": "u32", 
               "offset": 12, 
+              "size": 0
+            }]
+        }, {
+          "name": "axMeshlet", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
+          "bindSpace": "World", 
+          "bindPoint": 203, 
+          "bindCount": 1, 
+          "stride": 16, 
+          "variables": [{
+              "name": "vertOffset", 
+              "dataType": "u32", 
+              "offset": 0, 
+              "size": 0
+            }, {
+              "name": "vertCount", 
+              "dataType": "u32", 
+              "offset": 4, 
+              "size": 0
+            }, {
+              "name": "primOffset", 
+              "dataType": "u32", 
+              "offset": 8, 
+              "size": 0
+            }, {
+              "name": "primCount", 
+              "dataType": "u32", 
+              "offset": 12, 
+              "size": 0
+            }]
+        }, {
+          "name": "axMeshInfo", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel | Mesh", 
+          "bindSpace": "World", 
+          "bindPoint": 204, 
+          "bindCount": 1, 
+          "stride": 8, 
+          "variables": [{
+              "name": "meshletOffset", 
+              "dataType": "u32", 
+              "offset": 0, 
+              "size": 0
+            }, {
+              "name": "meshletCount", 
+              "dataType": "u32", 
+              "offset": 4, 
               "size": 0
             }]
         }, {

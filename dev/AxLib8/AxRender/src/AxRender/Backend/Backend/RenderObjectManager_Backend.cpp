@@ -101,10 +101,11 @@ void RenderObjectManager_Backend::_postCreate() {
 		if (auto* param = worldParamSpace->findStructuredBufferParam(name)) {
 			param->setBufferPool(pool);
 		} else {
-			AX_ASSERT(false);
+			throw Error_Undefined(Fmt("Cannot find structured buffer {} in AxGlobalCommon shader", name));
 		}
 	};
 	
+	createPoolParam(_structBufferPools.axMeshInfo   , "axMeshInfo"   , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshlet    , "axMeshlet"    , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshletVert, "axMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshletPrim, "axMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);

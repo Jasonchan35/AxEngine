@@ -234,7 +234,7 @@ auto EditableMesh::addCustomChannel(const Vec4& defaultValue) -> CustomChannel& 
 EditableMesh::EditableMesh() {
 }
 
-void EditableMesh::Face::getPoints(Mesh& mesh, IArray<Point*>& result) {
+void EditableMesh::Face::getPoints(Mesh& mesh, IArray<Point*>& result) const {
 	result.resize(_faceEdgeCount);
 	auto* fv = result.data();
 	auto t = _faceEdgeHead;
@@ -242,6 +242,19 @@ void EditableMesh::Face::getPoints(Mesh& mesh, IArray<Point*>& result) {
 	for (Int i = 0; i < _faceEdgeCount; i++) {
 		auto& fe = mesh.faceEdge(t + i);
 		*fv = &mesh.point(fe._point);
+		fv++;
+	}
+	AX_ASSERT(fv == result.end());
+}
+
+void EditableMesh::Face::getPositions(const Mesh& mesh, IArray<Vec3>& result) const {
+	result.resize(_faceEdgeCount);
+	auto* fv = result.data();
+	auto t = _faceEdgeHead;
+
+	for (Int i = 0; i < _faceEdgeCount; i++) {
+		auto& fe = mesh.faceEdge(t + i);
+		*fv = mesh.point(fe._point).pos;
 		fv++;
 	}
 	AX_ASSERT(fv == result.end());

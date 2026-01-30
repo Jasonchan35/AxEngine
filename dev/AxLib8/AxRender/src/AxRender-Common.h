@@ -13,6 +13,4 @@
 
 #define AX_RENDER_BINDLESS		1
 
-
-
 #include "AXRender/AxRender_MACRO.h"

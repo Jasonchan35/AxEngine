@@ -5,6 +5,8 @@ export import :RenderMesh;
 
 export namespace ax {
 
+class EditableMesh;
+
 struct AxMeshletVert {
 	Vec3f   pos;
 	u32     rawColor;
@@ -27,6 +29,11 @@ struct AxMeshlet {
 	u32 primCount  = 0;
 };
 
+struct AxMeshInfo {
+	u32 meshletOffset = 0;
+	u32 meshletCount  = 0;
+};
+
 class MeshObject : public RenderObject {
 	AX_RTTI_INFO(MeshObject, RenderObject)
 public:
@@ -36,23 +43,36 @@ public:
 	static SPtr<MeshObject>	s_new(const MemAllocRequest& req, const CreateDesc& desc);
 
 	RenderMesh	meshData;
-
-	StructuredGpuBuffer_<AxMeshlet>     meshlet;
-	StructuredGpuBuffer_<AxMeshletVert> meshletVert;
-	StructuredGpuBuffer_<AxMeshletPrim> meshletPrim;
+	
+	void createFromEditableMesh(const EditableMesh& srcMesh);
+	
+	
+	bool isMeshletValid() const { return meshletInfo.size() > 0; }
+	
+	Array<AxMeshlet> meshletInfo;
+	
+	struct Buffers {
+		StructuredGpuBuffer_<AxMeshInfo>    meshInfo;
+		StructuredGpuBuffer_<AxMeshlet>     meshlet;
+		StructuredGpuBuffer_<AxMeshletVert> meshletVert;
+		StructuredGpuBuffer_<AxMeshletPrim> meshletPrim;
+		
+		void create();
+		void _uploadToGpu(MeshObject* meshObj, RenderRequest* req);
+	} buffers;
 	
 	AX_INLINE void _uploadToGpu(RenderRequest* req) {
 		if (!_needUploadToGpu) return;
 		_needUploadToGpu = false;
-		_doUploadToGpu(req);
+		buffers._uploadToGpu(this, req);
 	}
 
+	
 protected:
 	MeshObject(const CreateDesc& desc);
-	void _doUploadToGpu(RenderRequest* req);
-	
-	bool _needUploadToGpu = true;
-	String	_assetPath;
+
+	bool   _needUploadToGpu = true;
+	String _assetPath;
 };
 
 } // namespace

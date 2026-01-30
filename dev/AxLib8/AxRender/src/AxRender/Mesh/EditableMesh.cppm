@@ -121,16 +121,24 @@ public:
 	struct Face : public NonCopyable {
 		Vec3		normal;
 		Vec3		center;
-		Int		pointCount()	{ return _faceEdgeCount; }
-		FaceId		id() const		{ return _id; }
+		Int			pointCount() const { return _faceEdgeCount; }
+		FaceId		id() const { return _id; }
 
-		void				getPoints	(Mesh& mesh, IArray<Point*>& result);
-		MutSpan<Vec3>		getNormals	(Mesh& mesh);
-		MutSpan<Color>		getColors	(Mesh& mesh, Int colorChannelId);
-		MutSpan<Vec2>		getUVs		(Mesh& mesh, Int uvChannelId);
-		MutSpan<Vec4>		getCustoms	(Mesh& mesh, Int customChannelId);
-		MutSpan<FaceEdge>	getFaceEdges(Mesh& mesh);
+		void				getPoints	(Mesh& mesh, IArray<Point*>& result) const;
+		void				getPositions(const Mesh& mesh, IArray<Vec3>& result) const;
+		
+		MutSpan<FaceEdge>	getFaceEdges(Mesh& mesh) const;
+		MutSpan<Vec3>		getNormals	(Mesh& mesh) const;
+		MutSpan<Color>		getColors	(Mesh& mesh, Int colorChannelId) const;
+		MutSpan<Vec2>		getUVs		(Mesh& mesh, Int uvChannelId) const;
+		MutSpan<Vec4>		getCustoms	(Mesh& mesh, Int customChannelId) const;
 
+		Span<FaceEdge>		getFaceEdges(const Mesh& mesh) const { return getFaceEdges(ax_const_cast(mesh)); }
+		Span<Vec3>			getNormals	(const Mesh& mesh) const { return getNormals(ax_const_cast(mesh)); }
+		Span<Color>			getColors	(const Mesh& mesh, Int colorChannelId ) const { return getColors(ax_const_cast(mesh), colorChannelId); }
+		Span<Vec2>			getUVs		(const Mesh& mesh, Int uvChannelId    ) const { return getUVs(ax_const_cast(mesh), uvChannelId); }
+		Span<Vec4>			getCustoms	(const Mesh& mesh, Int customChannelId) const { return getCustoms(ax_const_cast(mesh), customChannelId); }
+		
 	friend class EditableMesh;
 	protected:
 		FaceId			_id   = FaceId::Invalid;
@@ -228,27 +236,27 @@ public:
 };
 
 AX_INLINE
-MutSpan<EditableMesh::Vec3> EditableMesh::Face::getNormals(Mesh& mesh) {
+MutSpan<EditableMesh::Vec3> EditableMesh::Face::getNormals(Mesh& mesh) const {
 	return mesh._fvNormals.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 
 AX_INLINE
-MutSpan<EditableMesh::Color> EditableMesh::Face::getColors(Mesh& mesh, Int colorChannelId) {
+MutSpan<EditableMesh::Color> EditableMesh::Face::getColors(Mesh& mesh, Int colorChannelId) const {
 	return mesh._fvColorChannels[colorChannelId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 
 AX_INLINE
-MutSpan<EditableMesh::Vec2> EditableMesh::Face::getUVs(Mesh& mesh, Int uvChannelId) {
+MutSpan<EditableMesh::Vec2> EditableMesh::Face::getUVs(Mesh& mesh, Int uvChannelId) const {
 	return mesh._fvUVChannels[uvChannelId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 
 AX_INLINE
-MutSpan<EditableMesh::Vec4> EditableMesh::Face::getCustoms(Mesh& mesh, Int customChannelId) {
+MutSpan<EditableMesh::Vec4> EditableMesh::Face::getCustoms(Mesh& mesh, Int customChannelId) const {
 	return mesh._fvCustomChannels[customChannelId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 
 AX_INLINE
-MutSpan<EditableMesh::FaceEdge> EditableMesh::Face::getFaceEdges(Mesh& mesh) {
+MutSpan<EditableMesh::FaceEdge> EditableMesh::Face::getFaceEdges(Mesh& mesh) const {
 	return mesh._faceEdges.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 

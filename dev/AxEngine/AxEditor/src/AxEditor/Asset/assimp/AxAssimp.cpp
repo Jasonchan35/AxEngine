@@ -217,8 +217,8 @@ public:
 		u32 numVert = srcMesh->mNumVertices;
 		u32 numPrim = srcMesh->mNumFaces; 
 		
-		auto dstVert = dstMesh->meshletVert->editData<AxMeshletVert>(0, numVert);
-		auto dstPrim = dstMesh->meshletPrim->editData<AxMeshletPrim>(0, numPrim);
+		auto dstVert = dstMesh->buffers.meshletVert.editData(0, numVert);
+		auto dstPrim = dstMesh->buffers.meshletPrim.editData(0, numPrim);
 		
 		{ // pos
 			Int j = 0;
@@ -252,7 +252,7 @@ public:
 		AxMeshlet meshlet = {};
 		meshlet.vertCount = numVert;
 		meshlet.primCount = numPrim;
-		dstMesh->meshlet->setValue(0, meshlet);
+		dstMesh->buffers.meshlet.setValue(0, meshlet);
 	}
 	
 	void importMesh(aiMesh* srcMesh) {
@@ -322,6 +322,7 @@ public:
 		                                         VertexNormalCount::Normal);
 		
 		RenderMeshEdit(meshObject->meshData).createFromEditableMesh(vertexLayout, *dstMesh);
+		meshObject->createFromEditableMesh(*dstMesh);
 	}
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {

@@ -846,48 +846,103 @@
                     "binding": {"kind": "uniform", "offset": 0, "size": 144, "elementStride": 0}
                 }
             }
+        },
+        {
+            "name": "color",
+            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 4,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "ambient",
+            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "diffuse",
+            "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "specular",
+            "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4},
+            "type": {
+                "kind": "vector",
+                "elementCount": 3,
+                "elementType": {
+                    "kind": "scalar",
+                    "scalarType": "float32"
+                }
+            }
+        },
+        {
+            "name": "shininess",
+            "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0},
+            "type": {
+                "kind": "scalar",
+                "scalarType": "float32"
+            }
         }
     ],
     "entryPoints": [
         {
-            "name": "ps_main",
-            "stage": "fragment",
+            "name": "as_main",
+            "stage": "amplification",
             "parameters": [
                 {
-                    "name": "i",
+                    "name": "dispatch",
                     "type": {
                         "kind": "struct",
-                        "name": "VS_Output",
+                        "name": "DispatchInput",
                         "fields": [
                             {
-                                "name": "sv_pos",
+                                "name": "gid",
                                 "type": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
                                 },
-                                "semanticName": "SV_POSITION"
+                                "semanticName": "SV_GROUPID"
+                            },
+                            {
+                                "name": "gtid",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
+                                },
+                                "semanticName": "SV_GROUPTHREADID"
+                            },
+                            {
+                                "name": "dtid",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
+                                },
+                                "semanticName": "SV_DISPATCHTHREADID"
                             }
                         ]
                     }
                 }
             ],
-            "result": {
-                "stage": "fragment",
-                "binding": {"kind": "varyingOutput", "index": 0},
-                "semanticName": "SV_TARGET",
-                "type": {
-                    "kind": "vector",
-                    "elementCount": 4,
-                    "elementType": {
-                        "kind": "scalar",
-                        "scalarType": "float32"
-                    }
-                }
-            },
             "bindings": [
                 {
                     "name": "AxBindless_SamplerState",
@@ -915,7 +970,7 @@
                 },
                 {
                     "name": "axMeshInfo",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20204, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20204, "used": 1}
                 },
                 {
                     "name": "axWorld",
@@ -936,6 +991,26 @@
                 {
                     "name": "axDrawCallRootConst",
                     "binding": {"kind": "pushConstantBuffer", "index": 0}
+                },
+                {
+                    "name": "color",
+                    "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
+                },
+                {
+                    "name": "ambient",
+                    "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "diffuse",
+                    "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "specular",
+                    "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4}
+                },
+                {
+                    "name": "shininess",
+                    "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0}
                 }
             ]
         }

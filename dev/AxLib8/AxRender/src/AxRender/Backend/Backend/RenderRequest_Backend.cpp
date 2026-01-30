@@ -197,7 +197,8 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	if (auto* meshObject = rttiCastCheck<MeshObject_Backend>(cmd.meshObject)) {
 		resourcesToKeep.add(meshObject);
 		meshObject->_uploadToGpu(this);
-		_drawCallRootConst.AX_MESHLET_ID = ax_safe_cast_from(meshObject->meshlet->gpuBufferIndex());
+		_drawCallRootConst.AX_MESHLET_ID = ax_safe_cast_from(meshObject->buffers.meshlet.buffer->gpuBufferIndex());
+		_drawCallRootConst.AX_MESH_ID    = ax_safe_cast_from(meshObject->buffers.meshInfo.buffer->gpuBufferIndex());
 	}
 
 	auto* material = rttiCastCheck<Material_Backend>(cmd.material);

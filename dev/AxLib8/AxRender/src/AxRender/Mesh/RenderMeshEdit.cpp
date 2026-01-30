@@ -576,7 +576,7 @@ void RenderMeshEdit::createFromEditableMesh(VertexLayout vertexLayout, EditableM
 }
 
 void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh& srcMesh) {
-	Array<EditableMesh::Point*, 64> faceVertices;
+	Array<Vec3d, 64> faceVertices;
 
 	using Index = u16;
 	auto indexType = VertexIndexType_get<Index>;
@@ -588,11 +588,11 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 		auto edit = _mesh.editNewVertices(primType, vertexLayout, indexType, fvCount);
 
 		if (auto enumerator = edit.tryEditPosition()) {
-			face.getPoints(srcMesh, faceVertices);
+			face.getPositions(srcMesh, faceVertices);
 
 			auto dst = enumerator->begin();
 			for (auto& fv : faceVertices) {
-				*dst = Vec3f::s_cast(fv->pos);
+				*dst = Vec3f::s_cast(fv);
 				++dst;
 			}
 			if (dst != enumerator->end()) throw Error_Undefined();

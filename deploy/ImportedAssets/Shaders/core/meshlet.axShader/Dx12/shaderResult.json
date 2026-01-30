@@ -36,6 +36,7 @@
         "name": "Pass0", 
         "pixelFunc": "ps_main", 
         "meshFunc": "ms_main", 
+        "amplificationFunc": "as_main", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -62,7 +63,7 @@
   }, 
   "passStages": [{
       "bindless": true, 
-      "stageFlags": "Pixel | Mesh", 
+      "stageFlags": "Pixel | Mesh | Amplification", 
       "inputs": [], 
       "constBuffers": [{
           "name": "$Globals", 

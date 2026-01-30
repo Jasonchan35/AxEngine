@@ -160,7 +160,7 @@ typedef float4		Color4f;
 #define SEM_uv18(TYPE)		TYPE	uv18	: TEXCOORD18
 #define SEM_uv19(TYPE)		TYPE	uv19	: TEXCOORD19
 
-struct MS_Input {
+struct DispatchInput {
 	uint gid	: SV_GROUPID;
 	uint gtid	: SV_GROUPTHREADID;
 	uint dtid	: SV_DISPATCHTHREADID;

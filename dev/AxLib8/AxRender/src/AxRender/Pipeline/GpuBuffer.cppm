@@ -159,6 +159,7 @@ public:
 	void setData(ByteSpan src, Int offset = 0);
 	void appendData(ByteSpan src);
 	
+	void ensureSize(Int newSize) { _cpuBuffer.ensureSize(newSize); }
 	void setSize(Int newSize);
 	
 	MutByteSpan extendSize(Int sizeInBytes);
@@ -260,11 +261,9 @@ public:
 	MutSpan<T> editData(Int offset, Int size) {
 		if (AX_SIZEOF(T) != _stride) throw Error_Undefined();
 		auto byteRange = IntRange_StartAndSize(offset, size) * AX_SIZEOF(T);
+		auto reqBufferSizeInBytes = byteRange.stop();
 		
-		if (_gpuBuffer.dataSize() < byteRange.size()) {
-			_gpuBuffer.setSize(byteRange.size());
-		}
-		
+		_gpuBuffer.ensureSize(reqBufferSizeInBytes);
 		_gpuBuffer.markDirty(byteRange);
 		auto byteSpan = _gpuBuffer.mutSpan().slice(byteRange);
 		return MutSpan<T>::s_fromMutByteSpan(byteSpan);
@@ -311,8 +310,12 @@ public:
 		buffer = StructuredGpuBuffer::s_new<T>(req, name, pool.pool);
 	}
 
-	StructuredGpuBuffer* operator->() { return buffer.ptr(); }
+	MutSpan<T> editData(Int offset, Int size)	{ return buffer->editData<T>(offset, size); }
+	MutSpan<T> extendsData(Int size)			{ return editData(buffer->count(), size); }
 	
+	void setValue(Int index, const T& v)      	{ return buffer->setValue(index, Span(v)); }
+	void setValues(Int index, Span<T> span)   	{ return buffer->setValues(index, span); }
+
 	SPtr<StructuredGpuBuffer> buffer;
 };
 

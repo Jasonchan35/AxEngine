@@ -1,14 +1,6 @@
 #ifndef __AxMeshlet_hlsl__
 #define __AxMeshlet_hlsl__
 
-struct AxMeshlet {
-	u32 vertOffset;
-	u32 vertCount;
-	u32 primOffset;
-	u32 primCount;
-};
-StructuredBuffer<AxMeshlet> axMeshlet : register(t200, AX_BindSpace_World);
-
 struct AxMeshletVert {
 	Vec3f   pos;
 	u32     rawColor;
@@ -32,5 +24,18 @@ struct AxMeshletPrim {
 };
 StructuredBuffer<AxMeshletPrim> axMeshletPrim : register(t202, AX_BindSpace_World);
 
+struct AxMeshlet {
+	u32 vertOffset;
+	u32 vertCount;
+	u32 primOffset;
+	u32 primCount;
+};
+StructuredBuffer<AxMeshlet> axMeshlet : register(t203, AX_BindSpace_World);
+
+struct AxMeshInfo {
+	u32 meshletOffset;
+	u32 meshletCount;
+};
+StructuredBuffer<AxMeshInfo> axMeshInfo : register(t204, AX_BindSpace_World);
 
 #endif //  __AxMeshlet_hlsl__

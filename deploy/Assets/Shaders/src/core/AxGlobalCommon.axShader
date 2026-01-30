@@ -38,6 +38,7 @@ Sampler_Texture3D(foo_tex3d);
 
 float dummy_func() {
 	return foo
+		+ axMeshInfo[0].meshletOffset
 		+ axMeshlet[0].vertOffset
 		+ axMeshletVert[0].pos.x
 		+ axMeshletPrim[0].tri.x
@@ -67,7 +68,7 @@ float4 ps_main(VS_Output i) : SV_Target {
 [numthreads(1, 1, 1)]
 [outputtopology("triangle")]
 void ms_main(
-	MS_Input mi,
+	DispatchInput mi,
     out vertices VS_Output outVertices[3],
     out indices  uint3     outTriangles[1]
 ) {
@@ -78,4 +79,4 @@ void ms_main(
 	outVertices[2].sv_pos = Vec4f(0,0,0,1);
 	outTriangles[0] = uint3(0,1,2);
 }
- 
+
