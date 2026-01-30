@@ -609,7 +609,7 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 		}
 
 		// color set
-		for (Int i = 0; i < srcMesh.colorSetCount(); i++) {
+		for (Int i = 0; i < srcMesh.colorChannelCount(); i++) {
 			if (auto enumerator = edit.tryEditColor(i)) {
 				auto dst = enumerator->begin();
 				auto src = face.getColors(srcMesh, i);
@@ -622,10 +622,10 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 		}
 
 		// uv set
-		for (Int i = 0; i < srcMesh.uvSetCount(); i++) {
+		for (Int i = 0; i < srcMesh.uvChannelCount(); i++) {
 			if (auto enumerator = edit.tryEditTexCoord(i)) {
 				auto dst = enumerator->begin();
-				auto src = face.getUvs(srcMesh, i);
+				auto src = face.getUVs(srcMesh, i);
 				for (auto& p : src) {
 					*dst = Vec2f::s_cast(p);
 					++dst;
@@ -653,21 +653,21 @@ void RenderMeshEdit::addFromEditableMesh(VertexLayout vertexLayout, EditableMesh
 void RenderMeshEdit::createSphere(VertexLayout vertexLayout, float radius, Int rows, Int columns) {
 	EditableMesh tmp;
 	EditableMeshEdit(tmp).createSphere(radius, rows, columns);
-	tmp.addColorSet(Color4f(1,1,1,1));
+	tmp.addColorChannel(Color4f(1,1,1,1));
 	createFromEditableMesh(vertexLayout, tmp);
 }
 
 void RenderMeshEdit::createCylinder(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool topCap, bool bottomCap) {
 	EditableMesh tmp;
 	EditableMeshEdit(tmp).createCylinder(height, radius, rows, columns, topCap, bottomCap);
-	tmp.addColorSet(Color4f(1,1,1,1));
+	tmp.addColorChannel(Color4f(1,1,1,1));
 	createFromEditableMesh(vertexLayout, tmp);
 }
 
 void RenderMeshEdit::createCone(VertexLayout vertexLayout, float height, float radius, Int rows, Int columns, bool bottomCap) {
 	EditableMesh tmp;
 	EditableMeshEdit(tmp).createCone(height, radius, rows, columns, bottomCap);
-	tmp.addColorSet(Color4f(1,1,1,1));
+	tmp.addColorChannel(Color4f(1,1,1,1));
 	createFromEditableMesh(vertexLayout, tmp);
 }
 

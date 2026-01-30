@@ -58,7 +58,7 @@ RenderStockObjects::Meshes::Meshes() {
 	RenderMeshEdit(Axis->meshData).createAxis(Vertex_PosColor::s_layout());
 
 	//----
-	auto layout = Vertex_PosNormalUvColor::s_layout();
+	auto layout = Vertex_PosColorUvNormal::s_layout();
 
 	Cube = MeshObject::s_new(AX_NEW);
 	RenderMeshEdit(Cube->meshData).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());

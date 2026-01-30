@@ -13,6 +13,15 @@ enum class VertexSemantic : u16;
 //----
 AX_ENUM_CLASS(AX_VertexIndexType_ENUM_LIST, VertexIndexType, u8)
 
+#define AX_VertexLayoutNormalType_ENUM_LIST(E) \
+	E(None,) \
+	E(Normal,) \
+	E(Binormal,) \
+	E(Tangent,) \
+//----
+AX_ENUM_CLASS(AX_VertexLayoutNormalType_ENUM_LIST, VertexNormalCount, u8)
+
+
 template<class T> struct VertexIndexType_get_Struct;
 template<> struct VertexIndexType_get_Struct<u16> { static constexpr VertexIndexType value = VertexIndexType::u16; };
 template<> struct VertexIndexType_get_Struct<u32> { static constexpr VertexIndexType value = VertexIndexType::u32; };
@@ -259,6 +268,9 @@ public:
 
 	explicit operator bool() const { return _desc != nullptr; }
 
+	using NormalCount = VertexNormalCount;
+	static VertexLayout s_make(Int colorCount, Int uvCount, NormalCount normalCount);
+	
 protected:
 	const VertexLayoutDesc* _desc = nullptr;
 };

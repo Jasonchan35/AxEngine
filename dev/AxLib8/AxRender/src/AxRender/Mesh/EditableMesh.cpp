@@ -21,9 +21,9 @@ void EditableMesh::clear() {
 	_faceEdges.clear();
 
 	_fvNormals.clear();
-	_fvUvSets.clear();
-	_fvColorSets.clear();
-	_fvCustomSets.clear();
+	_fvUVChannels.clear();
+	_fvColorChannels.clear();
+	_fvCustomChannels.clear();
 }
 
 EditableMesh::Point& EditableMesh::addPoint(const Vec3& pos) {
@@ -73,15 +73,15 @@ EditableMesh::Face& EditableMesh::addFace(IntSpan pointIndices) {
 
 		_fvNormals.resize(faceVertexCount);
 
-		for (auto& s : _fvColorSets) {
+		for (auto& s : _fvColorChannels) {
 			s.values.resize(faceVertexCount, s.defaultValue);
 		}
 
-		for (auto& s : _fvUvSets) {
+		for (auto& s : _fvUVChannels) {
 			s.values.resize(faceVertexCount, s.defaultValue);
 		}
 
-		for (auto& s : _fvCustomSets) {
+		for (auto& s : _fvCustomChannels) {
 			s.values.resize(faceVertexCount, s.defaultValue);
 		}
 	}
@@ -210,20 +210,20 @@ void EditableMesh::updateFaceVertexNormals(double hardEdgeAngleDeg) {
 	}
 }
 
-void EditableMesh::addColorSet(const Color & defaultValue) {
-	auto & s = _fvColorSets.emplaceBack();
+void EditableMesh::addColorChannel(const Color & defaultValue) {
+	auto & s = _fvColorChannels.emplaceBack();
 	s.defaultValue = defaultValue;
 	s.values.resize(_faceEdges.size(), defaultValue);
 }
 
-void EditableMesh::addUvSet(const Vec2& defaultValue) {
-	auto & s = _fvUvSets.emplaceBack();
+void EditableMesh::addUvChannel(const Vec2& defaultValue) {
+	auto & s = _fvUVChannels.emplaceBack();
 	s.defaultValue = defaultValue;
 	s.values.resize(_faceEdges.size(), defaultValue);
 }
 
-void EditableMesh::addCustomSet(const Vec4& defaultValue) {
-	auto & s = _fvCustomSets.emplaceBack();
+void EditableMesh::addCustomChannel(const Vec4& defaultValue) {
+	auto & s = _fvCustomChannels.emplaceBack();
 	s.defaultValue = defaultValue;
 	s.values.resize(_faceEdges.size(), defaultValue);
 }

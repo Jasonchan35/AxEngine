@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxRender:EditableMesh;
-export import :Common;
+export import :VertexLayout;
 
 export namespace ax {
 
@@ -59,7 +59,7 @@ public:
 
 	friend class EditableMesh;
 	protected:
-		Int		_faceCount = 0;
+		Int			_faceCount = 0;
 		PointId		_id = PointId::Invalid;
 		EdgeId		_edgeHead = EdgeId::Invalid;
 		EdgeId		_edgeTail = EdgeId::Invalid;
@@ -126,9 +126,9 @@ public:
 
 		void				getPoints	(Mesh& mesh, IArray<Point*>& result);
 		MutSpan<Vec3>		getNormals	(Mesh& mesh);
-		MutSpan<Color>		getColors	(Mesh& mesh, Int colorSetId);
-		MutSpan<Vec2>		getUvs		(Mesh& mesh, Int uvSetId);
-		MutSpan<Vec4>		getCustoms	(Mesh& mesh, Int customSetId);
+		MutSpan<Color>		getColors	(Mesh& mesh, Int colorChannelId);
+		MutSpan<Vec2>		getUVs		(Mesh& mesh, Int uvChannelId);
+		MutSpan<Vec4>		getCustoms	(Mesh& mesh, Int customChannelId);
 		MutSpan<FaceEdge>	getFaceEdges(Mesh& mesh);
 
 	friend class EditableMesh;
@@ -140,16 +140,16 @@ public:
 
 	//-----------------------------------------------------------------
 	template<class T>
-	struct FaceVertexSetBase : public NonCopyable {
+	struct FaceVertexChannel : public NonCopyable {
 		T			defaultValue;
 		NameId		name;
 		Array<T>	values;
 	};
-	struct UvSet : public FaceVertexSetBase<Vec2> {
+	struct UVChannel : public FaceVertexChannel<Vec2> {
 	};
-	struct ColorSet : public FaceVertexSetBase<Color> {
+	struct ColorChannel : public FaceVertexChannel<Color> {
 	};
-	struct CustomSet : public FaceVertexSetBase<Vec4> {
+	struct CustomChannel : public FaceVertexChannel<Vec4> {
 	};
 
 	//-----------------------------------------------------------------
@@ -203,26 +203,28 @@ public:
 	void updateFaceNormals();
 	void updateFaceVertexNormals(double hardEdgeAngleDeg);
 
-	Int colorSetCount() const { return _fvColorSets.size(); }
-	void addColorSet(const Color & defaultValue);
+	Int colorChannelCount() const { return _fvColorChannels.size(); }
+	void addColorChannel(const Color & defaultValue);
 
-	Int uvSetCount() const { return _fvUvSets.size(); }
-	void addUvSet(const Vec2& defaultValue);
+	Int uvChannelCount() const { return _fvUVChannels.size(); }
+	void addUvChannel(const Vec2& defaultValue);
 
-	Int customSetCount() const { return _fvCustomSets.size(); }
-	void addCustomSet(const Vec4& defaultValue);
+	Int customChannelCount() const { return _fvCustomChannels.size(); }
+	void addCustomChannel(const Vec4& defaultValue);
+
+	using NormalCount = VertexLayout::NormalCount;
 
 	EditableMesh();
 
-	Array<Face>      _faces;
-	Array<Point>     _points;
-	Array<Edge>      _edges;
-	Array<FaceEdge>  _faceEdges;
-	Array<Vec3>      _fvNormals;
-	Array<ColorSet>  _fvColorSets;
-	Array<UvSet>     _fvUvSets;
-	Array<CustomSet> _fvCustomSets;
-	DisplayOptions   _displayOptions;
+	Array<Face>          _faces;
+	Array<Point>         _points;
+	Array<Edge>          _edges;
+	Array<FaceEdge>      _faceEdges;
+	Array<Vec3>          _fvNormals;
+	Array<ColorChannel>  _fvColorChannels;
+	Array<UVChannel>     _fvUVChannels;
+	Array<CustomChannel> _fvCustomChannels;
+	DisplayOptions       _displayOptions;
 };
 
 AX_INLINE
@@ -231,18 +233,18 @@ MutSpan<EditableMesh::Vec3> EditableMesh::Face::getNormals(Mesh& mesh) {
 }
 
 AX_INLINE
-MutSpan<EditableMesh::Color> EditableMesh::Face::getColors(Mesh& mesh, Int colorSetId) {
-	return mesh._fvColorSets[colorSetId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
+MutSpan<EditableMesh::Color> EditableMesh::Face::getColors(Mesh& mesh, Int colorChannelId) {
+	return mesh._fvColorChannels[colorChannelId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 
 AX_INLINE
-MutSpan<EditableMesh::Vec2> EditableMesh::Face::getUvs(Mesh& mesh, Int uvSetId) {
-	return mesh._fvUvSets[uvSetId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
+MutSpan<EditableMesh::Vec2> EditableMesh::Face::getUVs(Mesh& mesh, Int uvChannelId) {
+	return mesh._fvUVChannels[uvChannelId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 
 AX_INLINE
-MutSpan<EditableMesh::Vec4> EditableMesh::Face::getCustoms(Mesh& mesh, Int customSetId) {
-	return mesh._fvCustomSets[customSetId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
+MutSpan<EditableMesh::Vec4> EditableMesh::Face::getCustoms(Mesh& mesh, Int customChannelId) {
+	return mesh._fvCustomChannels[customChannelId].values.slice(ax_enum_int(_faceEdgeHead), _faceEdgeCount);
 }
 
 AX_INLINE

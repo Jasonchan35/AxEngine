@@ -93,16 +93,6 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 //	auto dstOldState =
 	dstRes->resourceBarrier(cmdList_dx, D3D12_RESOURCE_STATE_COPY_DEST);
 
-	if (_type == GpuBufferType::Structured) {
-		AX_LOG("------- Dx12 CopyBufferRegion dstBuf={} dstOffset={} bufferSize={} srcBuf={} srcOffset={} size={} MeshletVert={}",
-			   _name,
-			   dstOffset + dst_dx12->_bufferOffset,
-			   dst_dx12->_size,
-			   src->name(),
-			   srcRange.start() + src_dx12->_bufferOffset,
-			   srcRange.size(), AX_SIZEOF(AxMeshletVert));
-	}
-	
 	cmdList_dx->CopyBufferRegion(dstRes->d3dResource(),
 	                             ax_safe_cast_from(dstOffset + dst_dx12->_bufferOffset),
 	                             srcRes->d3dResource(),

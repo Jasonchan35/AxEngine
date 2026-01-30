@@ -52,7 +52,10 @@ class RenderMesh : public NonCopyable {
 public:
 	using SubMesh = RenderSubMesh;
 	using PrimType = RenderPrimitiveType;
+	using NormalType = VertexNormalCount;
 
+	static VertexLayout s_simpleVertexLayout(Int uvChannels, NormalType normalType);
+	
 	void clear();
 
 	template<class VERTEX, class INDEX>

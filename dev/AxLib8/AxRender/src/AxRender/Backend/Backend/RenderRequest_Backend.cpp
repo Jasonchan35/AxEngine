@@ -177,10 +177,6 @@ bool RenderRequest_Backend::copyDataToGpuBuffer_InlineBuffer(GpuBuffer* dst, Byt
 	auto* dstBuffer = rttiCastCheck<GpuBuffer_Backend>(dst);
 
 	auto uploadRange = IntRange_StartAndSize(_inlineUpload.usedBytes, dataSize);
-	
-	if (dst->type() == GpuBufferType::Structured) {
-		AX_LOG("---InlineBuffer dst=[{}] uploadRange={} dataSize={} dstOffset={}", dst->name(), uploadRange, data.size(), dstOffset);
-	}
 	dstBuffer->copyFromGpuBuffer(this, uploadBuf, uploadRange, dstOffset);
 
 	_inlineUpload.usedBytes += dataSize;

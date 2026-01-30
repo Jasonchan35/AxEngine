@@ -7,7 +7,7 @@ set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "AxLib8")
 
 target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui-docking )
-target_link_libraries(${PROJECT_NAME} PUBLIC VulkanMemoryAllocator)
+target_link_libraries(${PROJECT_NAME} PUBLIC DirectX-Headers D3D12MemoryAllocator VulkanMemoryAllocator)
 
 #--------------------
 find_package(PNG REQUIRED)
@@ -19,8 +19,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC JPEG::JPEG)
 find_package(Freetype REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC Freetype::Freetype)
 
-find_package(D3D12MemoryAllocator CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE GPUOpen::D3D12MemoryAllocator)
+# find_package(D3D12MemoryAllocator CONFIG REQUIRED)
+# target_link_libraries(${PROJECT_NAME} PRIVATE GPUOpen::D3D12MemoryAllocator)
 
 # find_package(imgui CONFIG REQUIRED)
 # target_link_libraries(${PROJECT_NAME} PUBLIC imgui::imgui)

@@ -15,7 +15,6 @@ public:
 	template<class ELEM> using ElemEnumerator = typename VertexBuffer::ElemEnumerator_<ELEM>;
 	template<class ELEM> using ElemIter       = typename VertexBuffer::ElemEnumerator_<ELEM>::Iter;
 	
-	
 	RenderMeshEdit(RenderMesh& mesh) : _mesh(mesh) {}
 
 	void createRect				(VertexLayout vertexLayout, const Rect2f& rect, const Rect2f& uv, const Color4f& color);

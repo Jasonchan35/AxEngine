@@ -9,4 +9,8 @@ set(ASSIMP_BUILD_DOCS    OFF)
 
 
 add_subdirectory(assimp-master)
-set_target_properties (assimp PROPERTIES FOLDER "external")
+
+set_target_properties (UpdateAssimpLibsDebugSymbolsAndDLLs  PROPERTIES FOLDER "external/assimp")
+set_target_properties (assimp     PROPERTIES FOLDER "external/assimp")
+set_target_properties (unit       PROPERTIES FOLDER "external/assimp")
+set_target_properties (zlibstatic PROPERTIES FOLDER "external/assimp")

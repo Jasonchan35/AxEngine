@@ -76,12 +76,9 @@ GpuBuffer* DynamicGpuBuffer::_getUploadedGpuBuffer(RenderRequest* req_) {
 		GpuBuffer_CreateDesc bufferDesc;
 		bufferDesc.name       = _name;
 		bufferDesc.bufferType = _bufferType;
-		bufferDesc.bufferSize = dataSize;
+		bufferDesc.bufferSize = Math::max(16LL, dataSize); // ensure non-zero
 		bufferDesc.pool       = _pool;
 
-		if (_bufferType == GpuBufferType::Structured) {
-			AX_LOG("--- DynamicGpuBuffer {} create GpuBuffer {}", _name, bufferDesc.bufferSize);
-		}
 		_gpuBuffer = GpuBuffer::s_new(AX_NEW, bufferDesc);
 		uploadRange = IntRange(dataSize); // upload all data for new buffer
 	}

@@ -12,7 +12,8 @@ call _vcpkg\bootstrap-vcpkg.bat
 _vcpkg\vcpkg install libpng:%triplets% --recurse
 _vcpkg\vcpkg install libjpeg-turbo:%triplets% --recurse
 _vcpkg\vcpkg install freetype:%triplets% --recurse
-_vcpkg\vcpkg install d3d12-memory-allocator:%triplets% --recurse
+
+@rem _vcpkg\vcpkg install d3d12-memory-allocator:%triplets% --recurse
 
 @rem _vcpkg\vcpkg install usd[imaging]:%triplets% --recurse
 @rem _vcpkg\vcpkg install assimp:%triplets% --recurse
