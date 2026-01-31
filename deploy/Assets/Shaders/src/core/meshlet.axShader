@@ -49,11 +49,13 @@ groupshared Payload s_payload;
 
 [numthreads(AS_GROUP_SIZE, 1, 1)]
 void as_main(AxDispatchInput dispatch) {
-	u32 j = dispatch.gtid;
+	u32 dtid = dispatch.dtid;
+	u32 gtid = dispatch.gtid;
+
 	AxMeshInfo meshInfo = axMeshInfo[AX_MESH_ID];
 
-	if (j < meshInfo.meshletCount) {
-		s_payload.meshletId[j] = meshInfo.meshletOffset + j;
+	if (dtid < meshInfo.meshletCount) {
+		s_payload.meshletId[gtid] = meshInfo.meshletOffset + dtid;
 	}
 
 	DispatchMesh(meshInfo.meshletCount, 1, 1, s_payload);
@@ -83,25 +85,27 @@ void ms_main(
 	out vertices VS_Output outVert[MAX_VERTS],
 	out indices  uint3     outTri[MAX_PRIMS]
 ) {
-	AxMeshlet meshlet = axMeshlet[payload.meshletId[dispatch.gid]];
+	u32 gid  = dispatch.gid;
+	u32 gtid = dispatch.gtid;
+
+	AxMeshlet meshlet = axMeshlet[payload.meshletId[gid]];
 
 	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
 
-	u32 j = dispatch.gtid;
-	if (j < meshlet.primCount) {
-		outTri[j] = axMeshletPrim[meshlet.primOffset + j].tri;
+	if (gtid < meshlet.primCount) {
+		outTri[gtid] = axMeshletPrim[meshlet.primOffset + gtid].tri;
 	}
 
-	if (j < meshlet.vertCount) {
+	if (gtid < meshlet.vertCount) {
 		VS_Input i;
 //		i.pos    = Vec4f(t % 2, t, (t + 1) % 2, 1);
 //		i.normal = -normalize(Vec3f(1, 1, 0));
 
-		AxMeshletVert mv = axMeshletVert[meshlet.vertOffset + j];
+		AxMeshletVert mv = axMeshletVert[meshlet.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos, 1);
 		i.normal = mv.normal;
 		// i.color0 = mv.color();
-//		i.color0 = ax_debug_color(j);
+//		i.color0 = ax_debug_color(gtid);
 		i.color0 = ax_debug_color(dispatch.gid);
 
 		VS_Output o;
@@ -109,7 +113,7 @@ void ms_main(
 		o.sv_pos   = ax_pos_to_clip(i.pos);
 		o.normal   = ax_normal_to_clip(i.normal);
 		o.color0   = i.color0;
-		outVert[j] = o;
+		outVert[gtid] = o;
 	}
 
 //	outVert[j] = ms_vertex(dispatch, axMeshletVert[meshlet.vertOffset + j]);
