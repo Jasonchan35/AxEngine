@@ -48,10 +48,10 @@ void AxShaderTool_App::genNinja_Shaders(StrView outDir, const Array<String>& fil
 	String outStr;
 	writeNinja_Header(outStr);
 
-	outStr.append(	"rule build_shader\n"
-				// "  command = ninja -C $in -t targets depth 10\n"
-				"  command = ninja --quiet -C $in\n"
-				"\n");
+	outStr.append("rule build_shader\n");
+	outStr.append("  command = ninja");
+	writeNinja_CommandOptions(outStr);
+	outStr.append(" -C $in\n\n");
 
 	for (auto& f : files) {
 		// auto absFilename = FilePath::absPath(f);
@@ -75,15 +75,11 @@ void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
 
 	String outStr;
 	writeNinja_Header(outStr);
-
+	
 	outStr.append("rule build_api_shader\n");
-	if (opt.quiet) {
-		outStr.append("  command = ninja --quiet -C $in\n\n");
-	} else {
-	// outStr.append("  command = ninja -C $in -t targets depth 10\n\n")
-		outStr.append("  command = ninja -C $in\n\n");
-	}
-
+	outStr.append("  command = ninja");
+	writeNinja_CommandOptions(outStr);
+	outStr.append(" -C $in\n\n"); 
 
 	ShaderInfoParser parser;
 	parser.readFile(outDir, filename);
@@ -138,6 +134,13 @@ void AxShaderTool_App::writeNinja_Header(IString& outStr) {
 	writeEnvVar("AxIncludeDir");
 	writeEnvVar("AxShaderTool");
 	outStr.append("\n\n");
+}
+
+void AxShaderTool_App::writeNinja_CommandOptions(IString& outStr) {
+	if (opt.quiet  ) outStr << " --quiet";
+	if (opt.job > 0) outStr << Fmt(" -j {}", opt.job);
+	if (opt.stopOnfailure) outStr << " -k 1";
+//	if (true) outStr << " -t targets depth 10";
 }
 
 void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& info, StrView outDir, StrView filename) {	
@@ -249,6 +252,15 @@ int AxShaderTool_App::onRun() {
 			continue;
 		}
 
+		if (auto v = a.extractFromPrefix("-job=")) {
+			int tmp = 0;
+			if (!v.tryParse(tmp)) {
+				throw Error_Undefined(Fmt("'-job={}' unknown value", v));
+			}
+			opt.job = tmp;
+			continue;
+		}
+		
 		if (a == "-entry=") { // -entry="" <-- value can be empty
 			opt.entry = ""; 
 			continue;

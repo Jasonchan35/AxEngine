@@ -24,6 +24,15 @@ typedef float4x4	Mat4f;
 typedef float3		Color3f;
 typedef float4		Color4f;
 
+typedef uint2		u32x2;
+typedef uint3		u32x3;
+typedef uint4		u32x4;
+
+typedef int2		i32x2;
+typedef int3		i32x3;
+typedef int4		i32x4;
+
+
 // HLSL: resource : register(x, space) | DX: D3D12_SHADER_INPUT_BIND_DESC |  spirv-cross reflection
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"
 // HLSL: register space                | DX: "Space"                      |  Vulkan "set"

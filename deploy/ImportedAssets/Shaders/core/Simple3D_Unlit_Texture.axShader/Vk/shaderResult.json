@@ -71,16 +71,16 @@
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
-          "dataType": "Vec4f"
+          "dataType": "f32x4"
         }, {
           "semantic": "COLOR0", 
-          "dataType": "Vec4f"
+          "dataType": "f32x4"
         }, {
           "semantic": "TEXCOORD0", 
-          "dataType": "Vec2f"
+          "dataType": "f32x2"
         }, {
           "semantic": "TEXCOORD0", 
-          "dataType": "Vec2f"
+          "dataType": "f32x2"
         }], 
       "constBuffers": [{
           "name": "$Globals", 
@@ -92,7 +92,7 @@
           "stride": 32, 
           "variables": [{
               "name": "color", 
-              "dataType": "Vec4f", 
+              "dataType": "f32x4", 
               "offset": 0, 
               "size": 16
             }, {

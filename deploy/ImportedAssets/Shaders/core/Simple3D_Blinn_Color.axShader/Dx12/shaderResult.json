@@ -65,13 +65,13 @@
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
-          "dataType": "Vec4f"
+          "dataType": "f32x4"
         }, {
           "semantic": "COLOR0", 
-          "dataType": "Vec4f"
+          "dataType": "f32x4"
         }, {
           "semantic": "NORMAL0", 
-          "dataType": "Vec3f"
+          "dataType": "f32x3"
         }], 
       "constBuffers": [{
           "name": "$Globals", 
@@ -83,17 +83,17 @@
           "stride": 64, 
           "variables": [{
               "name": "ambient", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 16, 
               "size": 12
             }, {
               "name": "diffuse", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 32, 
               "size": 12
             }, {
               "name": "specular", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 48, 
               "size": 12
             }, {

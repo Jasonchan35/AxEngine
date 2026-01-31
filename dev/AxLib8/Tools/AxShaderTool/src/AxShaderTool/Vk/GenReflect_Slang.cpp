@@ -62,8 +62,8 @@ RenderDataType getDataType(const JsonObject& json_type) {
 		auto  elementCount = json_type.member("elementCount")->asInt64();
 		auto& elementType  = json_type.memberObject("elementType");
 		auto& scalarType   = elementType.memberString("scalarType");
-
-		TempString tmp = Fmt("Vec{}", elementCount);
+		
+		TempString tmp;
 		     if (scalarType == "uint8" ) tmp << "u8";
 		else if (scalarType == "uint16") tmp << "u16";
 		else if (scalarType == "uint32") tmp << "u32";
@@ -74,12 +74,14 @@ RenderDataType getDataType(const JsonObject& json_type) {
 		else if (scalarType == "int32") tmp << "i32";
 		else if (scalarType == "int64") tmp << "i64";
 		
-		else if (scalarType == "float16") tmp << "h";
-		else if (scalarType == "float32") tmp << "f";
-		else if (scalarType == "float64") tmp << "d";
+		else if (scalarType == "float16") tmp << "f16";
+		else if (scalarType == "float32") tmp << "f32";
+		else if (scalarType == "float64") tmp << "f64";
 		else {
 			throw Error_Undefined(Fmt("unsupported Vector scalarType {}", scalarType));
 		}
+
+		tmp << Fmt("x{}", elementCount);
 		
 		RenderDataType dataType;
 		if (!tmp.tryParse(dataType)) {

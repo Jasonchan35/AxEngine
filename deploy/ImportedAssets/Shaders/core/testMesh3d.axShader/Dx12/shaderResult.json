@@ -71,10 +71,10 @@
       "stageFlags": "Vertex | Pixel", 
       "inputs": [{
           "semantic": "POSITION", 
-          "dataType": "Vec4f"
+          "dataType": "f32x4"
         }, {
           "semantic": "TEXCOORD0", 
-          "dataType": "Vec2f"
+          "dataType": "f32x2"
         }], 
       "constBuffers": [], 
       "textures": [], 

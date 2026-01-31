@@ -372,25 +372,17 @@ void GenReflect_Dx12::_compileReflect_inputs(ShaderStageInfo& outInfo, ID3D12Sha
 			throw Error_Undefined();
 		}
 
+		switch (paramDesc.ComponentType) {
+			case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("u32"); break;
+			case D3D_REGISTER_COMPONENT_SINT32:		dataType.append("i32");	break;
+			case D3D_REGISTER_COMPONENT_FLOAT16:	dataType.append("f16"); break;
+			case D3D_REGISTER_COMPONENT_FLOAT32:	dataType.append("f32"); break;
+			case D3D_REGISTER_COMPONENT_FLOAT64:	dataType.append("f64"); break;
+			default: throw Error_Undefined();
+		}
+
 		if (componentCount > 1) {
-			dataType.append(Fmt("Vec{}", componentCount));
-			switch (paramDesc.ComponentType) {
-				case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("u32"); break;
-				case D3D_REGISTER_COMPONENT_SINT32:		dataType.append("i32");	break;
-				case D3D_REGISTER_COMPONENT_FLOAT16:	dataType.append("h");   break;
-				case D3D_REGISTER_COMPONENT_FLOAT32:	dataType.append("f");   break;
-				case D3D_REGISTER_COMPONENT_FLOAT64:	dataType.append("d");   break;
-				default: throw Error_Undefined();
-			}
-		} else {
-			switch (paramDesc.ComponentType) {
-				case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("u32"); break;
-				case D3D_REGISTER_COMPONENT_SINT32:		dataType.append("i32");	break;
-				case D3D_REGISTER_COMPONENT_FLOAT16:	dataType.append("f16"); break;
-				case D3D_REGISTER_COMPONENT_FLOAT32:	dataType.append("f32"); break;
-				case D3D_REGISTER_COMPONENT_FLOAT64:	dataType.append("f64"); break;
-				default: throw Error_Undefined();
-			}
+			dataType << Fmt("x{}", componentCount);
 		}
 		
 		if (!dataType.tryParse(dst.dataType)) {
@@ -420,46 +412,46 @@ RenderDataType GenReflect_Dx12::_getRenderDataType(const D3D12_SHADER_TYPE_DESC&
 			switch (t.Type) {
 				case D3D_SVT_INT: {
 					switch (t.Columns) {
-						case 1: return RenderDataType::Vec1i32;
-						case 2: return RenderDataType::Vec2i32;
-						case 3: return RenderDataType::Vec3i32;
-						case 4: return RenderDataType::Vec4i32;
+						case 1: return RenderDataType::i32x1;
+						case 2: return RenderDataType::i32x2;
+						case 3: return RenderDataType::i32x3;
+						case 4: return RenderDataType::i32x4;
 						default: throw Error_Undefined();
 					}
 				} break;
 				case D3D_SVT_UINT: {
 					switch (t.Columns) {
-						case 1: return RenderDataType::Vec1u32;
-						case 2: return RenderDataType::Vec2u32;
-						case 3: return RenderDataType::Vec3u32;
-						case 4: return RenderDataType::Vec4u32;
+						case 1: return RenderDataType::u32x1;
+						case 2: return RenderDataType::u32x2;
+						case 3: return RenderDataType::u32x3;
+						case 4: return RenderDataType::u32x4;
 						default: throw Error_Undefined();
 					}
 				} break;
 				case D3D_SVT_UINT8: {
 					switch (t.Columns) {
-						case 1: return RenderDataType::Vec1u8;
-						case 2: return RenderDataType::Vec2u8;
-						case 3: return RenderDataType::Vec3u8;
-						case 4: return RenderDataType::Vec4u8;
+						case 1: return RenderDataType::u8x1;
+						case 2: return RenderDataType::u8x2;
+						case 3: return RenderDataType::u8x3;
+						case 4: return RenderDataType::u8x4;
 						default: throw Error_Undefined();
 					}
 				} break;
 				case D3D_SVT_FLOAT: {
 					switch (t.Columns) {
-						case 1: return RenderDataType::Vec1f;
-						case 2: return RenderDataType::Vec2f;
-						case 3: return RenderDataType::Vec3f;
-						case 4: return RenderDataType::Vec4f;
+						case 1: return RenderDataType::f32x1;
+						case 2: return RenderDataType::f32x2;
+						case 3: return RenderDataType::f32x3;
+						case 4: return RenderDataType::f32x4;
 						default: throw Error_Undefined();
 					}
 				} break;
 				case D3D_SVT_DOUBLE: {
 					switch (t.Columns) {
-						case 1: return RenderDataType::Vec1d;
-						case 2: return RenderDataType::Vec2d;
-						case 3: return RenderDataType::Vec3d;
-						case 4: return RenderDataType::Vec4d;
+						case 1: return RenderDataType::f64x1;
+						case 2: return RenderDataType::f64x2;
+						case 3: return RenderDataType::f64x3;
+						case 4: return RenderDataType::f64x4;
 						default: throw Error_Undefined();
 					}
 				} break;
@@ -473,6 +465,12 @@ RenderDataType GenReflect_Dx12::_getRenderDataType(const D3D12_SHADER_TYPE_DESC&
 				switch (t.Type) {
 					case D3D_SVT_FLOAT:  return RenderDataType::Mat4f;
 					case D3D_SVT_DOUBLE: return RenderDataType::Mat4d;
+					default: throw Error_Undefined();
+				}
+			} else if (t.Rows == 4 && t.Columns == 4) {
+				switch (t.Type) {
+					case D3D_SVT_FLOAT:  return RenderDataType::Mat3f;
+					case D3D_SVT_DOUBLE: return RenderDataType::Mat3d;
 					default: throw Error_Undefined();
 				}
 			}

@@ -29,28 +29,28 @@ bool Material_setParam(Material* mtl, NameId name, const V& v) {
 }
 
 bool Material::setParam(NameId name, const i32&		v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec1i32&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec2i32&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec3i32&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec4i32&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const i32x1&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const i32x2&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const i32x3&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const i32x4&	v) { return Material_setParam(this, name, v); }
 
-bool Material::setParam(NameId name, const u32&				v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec1u32&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec2u32&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec3u32&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec4u32&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const u32&		v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const u32x1&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const u32x2&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const u32x3&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const u32x4&	v) { return Material_setParam(this, name, v); }
 
 bool Material::setParam(NameId name, const f32&		v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec1f&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec2f&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec3f&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec4f&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f32x1&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f32x2&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f32x3&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f32x4&	v) { return Material_setParam(this, name, v); }
 
 bool Material::setParam(NameId name, const f64&		v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec1d&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec2d&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec3d&	v) { return Material_setParam(this, name, v); }
-bool Material::setParam(NameId name, const Vec4d&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f64x1&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f64x2&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f64x3&	v) { return Material_setParam(this, name, v); }
+bool Material::setParam(NameId name, const f64x4&	v) { return Material_setParam(this, name, v); }
 
 bool Material::setParam(NameId name, const Color3f&	v) { return Material_setParam(this, name, v); }
 bool Material::setParam(NameId name, const Color4f&	v) { return Material_setParam(this, name, v); }

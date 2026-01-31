@@ -36,7 +36,7 @@
       "stageFlags": "Vertex | Pixel | Mesh", 
       "inputs": [{
           "semantic": "POSITION", 
-          "dataType": "Vec4f"
+          "dataType": "f32x4"
         }], 
       "constBuffers": [{
           "name": "axWorld", 
@@ -58,12 +58,12 @@
               "size": 4
             }, {
               "name": "timeSin", 
-              "dataType": "Vec4f", 
+              "dataType": "f32x4", 
               "offset": 16, 
               "size": 16
             }, {
               "name": "timeSlowSin", 
-              "dataType": "Vec4f", 
+              "dataType": "f32x4", 
               "offset": 32, 
               "size": 16
             }]
@@ -77,17 +77,17 @@
           "stride": 416, 
           "variables": [{
               "name": "worldPos", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 0, 
               "size": 12
             }, {
               "name": "viewportMin", 
-              "dataType": "Vec2f", 
+              "dataType": "f32x2", 
               "offset": 16, 
               "size": 8
             }, {
               "name": "viewportMax", 
-              "dataType": "Vec2f", 
+              "dataType": "f32x2", 
               "offset": 24, 
               "size": 8
             }, {
@@ -226,10 +226,10 @@
           "bindSpace": "World", 
           "bindPoint": 20201, 
           "bindCount": 1, 
-          "stride": 60, 
+          "stride": 64, 
           "variables": [{
               "name": "pos", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 0, 
               "size": 12
             }, {
@@ -239,17 +239,17 @@
               "size": 4
             }, {
               "name": "uv0", 
-              "dataType": "Vec2f", 
+              "dataType": "f32x2", 
               "offset": 16, 
               "size": 8
             }, {
               "name": "uv1", 
-              "dataType": "Vec2f", 
+              "dataType": "f32x2", 
               "offset": 24, 
               "size": 8
             }, {
               "name": "normal", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 32, 
               "size": 12
             }, {
@@ -272,6 +272,11 @@
               "dataType": "u32", 
               "offset": 56, 
               "size": 4
+            }, {
+              "name": "unused4", 
+              "dataType": "u32", 
+              "offset": 60, 
+              "size": 4
             }]
         }, {
           "name": "axMeshletPrim", 
@@ -283,7 +288,7 @@
           "stride": 16, 
           "variables": [{
               "name": "tri", 
-              "dataType": "Vec3u32", 
+              "dataType": "u32x3", 
               "offset": 0, 
               "size": 12
             }, {
@@ -328,7 +333,7 @@
           "bindSpace": "World", 
           "bindPoint": 20204, 
           "bindCount": 1, 
-          "stride": 8, 
+          "stride": 16, 
           "variables": [{
               "name": "meshletOffset", 
               "dataType": "u32", 
@@ -338,6 +343,16 @@
               "name": "meshletCount", 
               "dataType": "u32", 
               "offset": 4, 
+              "size": 4
+            }, {
+              "name": "_usedPadding0", 
+              "dataType": "u32", 
+              "offset": 8, 
+              "size": 4
+            }, {
+              "name": "_usedPadding1", 
+              "dataType": "u32", 
+              "offset": 12, 
               "size": 4
             }]
         }, {
@@ -350,7 +365,7 @@
           "stride": 16, 
           "variables": [{
               "name": "color", 
-              "dataType": "Vec4f", 
+              "dataType": "f32x4", 
               "offset": 0, 
               "size": 16
             }]
@@ -369,12 +384,12 @@
               "size": 64
             }, {
               "name": "aabbMin", 
-              "dataType": "Vec2f", 
+              "dataType": "f32x2", 
               "offset": 64, 
               "size": 8
             }, {
               "name": "aabbMax", 
-              "dataType": "Vec2f", 
+              "dataType": "f32x2", 
               "offset": 72, 
               "size": 8
             }]

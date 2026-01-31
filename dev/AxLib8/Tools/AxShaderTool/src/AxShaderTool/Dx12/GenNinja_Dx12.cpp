@@ -18,7 +18,7 @@ void GenNinja_Dx12::writeNinjaPass(IString&        outStr,
 	if (opt.keepUnusedVariable) {
 		outStr.append("    -keepUnusedVariable $\n");
 	}
-
+	
 	outStr.append(
 		"    -profile=$param_profile $\n"
 		"    -entry=$param_entry_point $\n"

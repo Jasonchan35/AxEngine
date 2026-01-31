@@ -15,6 +15,13 @@ using Mat4d			= Mat4_<f64>;
 using Mat4d_SSE		= Mat4_<f64, VecSimd::SSE>;
 using Mat4d_Basic	= Mat4_<f64, VecSimd::Basic>;
 
+using Mat3f			= Mat3_<f32>;
+using Mat3f_SSE		= Mat3_<f32, VecSimd::SSE>;
+using Mat3f_Basic	= Mat3_<f32, VecSimd::Basic>;
+using Mat3d			= Mat3_<f64>;
+using Mat3d_SSE		= Mat3_<f64, VecSimd::SSE>;
+using Mat3d_Basic	= Mat3_<f64, VecSimd::Basic>;
+
 template<class MAT, class T>
 struct Mat4_NumLimit {
 	using T_NumLimit = NumLimit<T>;

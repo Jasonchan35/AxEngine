@@ -161,31 +161,32 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 //---
 
 #define AX_RenderDataType_Vec_ENUM_LIST(E) \
-	E(Vec1i8,) E(Vec2i8,) E(Vec3i8,) E(Vec4i8,) \
-	E(Vec1u8,) E(Vec2u8,) E(Vec3u8,) E(Vec4u8,) \
+	E(i8x1,) E(i8x2,) E(i8x3,) E(i8x4,) \
+	E(u8x1,) E(u8x2,) E(u8x3,) E(u8x4,) \
 	\
-	E(Vec1i16,) E(Vec2i16,) E(Vec3i16,) E(Vec4i16,) \
-	E(Vec1i32,) E(Vec2i32,) E(Vec3i32,) E(Vec4i32,) \
-	E(Vec1i64,) E(Vec2i64,) E(Vec3i64,) E(Vec4i64,) \
+	E(i16x1,) E(i16x2,) E(i16x3,) E(i16x4,) \
+	E(i32x1,) E(i32x2,) E(i32x3,) E(i32x4,) \
+	E(i64x1,) E(i64x2,) E(i64x3,) E(i64x4,) \
 	\
-	E(Vec1u16,) E(Vec2u16,) E(Vec3u16,) E(Vec4u16,) \
-	E(Vec1u32,) E(Vec2u32,) E(Vec3u32,) E(Vec4u32,) \
-	E(Vec1u64,) E(Vec2u64,) E(Vec3u64,) E(Vec4u64,) \
+	E(u16x1,) E(u16x2,) E(u16x3,) E(u16x4,) \
+	E(u32x1,) E(u32x2,) E(u32x3,) E(u32x4,) \
+	E(u64x1,) E(u64x2,) E(u64x3,) E(u64x4,) \
 	\
-	E(Vec1h,) E(Vec2h,) E(Vec3h,) E(Vec4h,) \
-	E(Vec1f,) E(Vec2f,) E(Vec3f,) E(Vec4f,) \
-	E(Vec1d,) E(Vec2d,) E(Vec3d,) E(Vec4d,) \
+	E(f16x1,) E(f16x2,) E(f16x3,) E(f16x4,) \
+	E(f32x1,) E(f32x2,) E(f32x3,) E(f32x4,) \
+	E(f64x1,) E(f64x2,) E(f64x3,) E(f64x4,) \
 	\
-	E(Vec1snorm8 ,) E(Vec2snorm8 ,) E(Vec3snorm8 ,) E(Vec4snorm8 ,) \
-	E(Vec1snorm16,) E(Vec2snorm16,) E(Vec3snorm16,) E(Vec4snorm16,) \
-	E(Vec1snorm32,) E(Vec2snorm32,) E(Vec3snorm32,) E(Vec4snorm32,) \
+	E(SNorm8x1 ,) E(SNorm8x2 ,) E(SNorm8x3 ,) E(SNorm8x4 ,) \
+	E(SNorm16x1,) E(SNorm16x2,) E(SNorm16x3,) E(SNorm16x4,) \
+	E(SNorm32x1,) E(SNorm32x2,) E(SNorm32x3,) E(SNorm32x4,) \
 	\
-	E(Vec1unorm8 ,) E(Vec2unorm8 ,) E(Vec3unorm8 ,) E(Vec4unorm8 ,) \
-	E(Vec1unorm16,) E(Vec2unorm16,) E(Vec3unorm16,) E(Vec4unorm16,) \
-	E(Vec1unorm32,) E(Vec2unorm32,) E(Vec3unorm32,) E(Vec4unorm32,) \
+	E(UNorm8x1 ,) E(UNorm8x2 ,) E(UNorm8x3 ,) E(UNorm8x4 ,) \
+	E(UNorm16x1,) E(UNorm16x2,) E(UNorm16x3,) E(UNorm16x4,) \
+	E(UNorm32x1,) E(UNorm32x2,) E(UNorm32x3,) E(UNorm32x4,) \
 //---
 
 #define AX_RenderDataType_Mat_ENUM_LIST(E) \
+	E(Mat3f,) E(Mat3d,) \
 	E(Mat4f,) E(Mat4d,) \
 //---
 

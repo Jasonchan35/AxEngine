@@ -19,28 +19,28 @@ public:
 	Shader* shader();
 
 	bool setParam(NameId name, const i32&		v);
-	bool setParam(NameId name, const Vec1i32&	v);	
-	bool setParam(NameId name, const Vec2i32&	v);
-	bool setParam(NameId name, const Vec3i32&	v);
-	bool setParam(NameId name, const Vec4i32&	v);
+	bool setParam(NameId name, const i32x1&		v);
+	bool setParam(NameId name, const i32x2&		v);
+	bool setParam(NameId name, const i32x3&		v);
+	bool setParam(NameId name, const i32x4&		v);
 
 	bool setParam(NameId name, const u32&		v);
-	bool setParam(NameId name, const Vec1u32&	v);
-	bool setParam(NameId name, const Vec2u32&	v);
-	bool setParam(NameId name, const Vec3u32&	v);
-	bool setParam(NameId name, const Vec4u32&	v);
+	bool setParam(NameId name, const u32x1&		v);
+	bool setParam(NameId name, const u32x2&		v);
+	bool setParam(NameId name, const u32x3&		v);
+	bool setParam(NameId name, const u32x4&		v);
 
 	bool setParam(NameId name, const f32&		v);
-	bool setParam(NameId name, const Vec1f& 	v);	
-	bool setParam(NameId name, const Vec2f& 	v);
-	bool setParam(NameId name, const Vec3f& 	v);
-	bool setParam(NameId name, const Vec4f& 	v);
+	bool setParam(NameId name, const f32x1& 	v);
+	bool setParam(NameId name, const f32x2& 	v);
+	bool setParam(NameId name, const f32x3& 	v);
+	bool setParam(NameId name, const f32x4& 	v);
 
 	bool setParam(NameId name, const f64&		v);
-	bool setParam(NameId name, const Vec1d&		v);	
-	bool setParam(NameId name, const Vec2d&		v);
-	bool setParam(NameId name, const Vec3d&		v);
-	bool setParam(NameId name, const Vec4d&		v);
+	bool setParam(NameId name, const f64x1&		v);
+	bool setParam(NameId name, const f64x2&		v);
+	bool setParam(NameId name, const f64x3&		v);
+	bool setParam(NameId name, const f64x4&		v);
 
 	bool setParam(NameId name, const Mat4f&		v);
 	bool setParam(NameId name, const Mat4d&		v);

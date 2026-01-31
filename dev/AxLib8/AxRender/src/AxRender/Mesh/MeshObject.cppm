@@ -18,8 +18,8 @@ struct AxMeshletVert {
 };
 
 struct AxMeshletPrim {
-	Vec3u32	tri;
-	u32 padding;
+	u32x3	tri;
+	u32		padding;
 };
 
 struct AxMeshlet {
@@ -32,6 +32,8 @@ struct AxMeshlet {
 struct AxMeshInfo {
 	u32 meshletOffset = 0;
 	u32 meshletCount  = 0;
+	u32 padding0;
+	u32 padding2;
 };
 
 class MeshObject : public RenderObject {

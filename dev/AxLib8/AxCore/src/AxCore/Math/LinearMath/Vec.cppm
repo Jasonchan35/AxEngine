@@ -69,29 +69,49 @@ template<Int N, class T, VecSimd SIMD> constexpr bool Type_IsVec<Vec_<N,T,SIMD>>
 	using Vec4##SUFFIX			= Vec4_<T>;                   \
 	using Vec4##SUFFIX##_SSE	= Vec4_<T, VecSimd::SSE>;     \
 	using Vec4##SUFFIX##_Basic	= Vec4_<T, VecSimd::Basic>;   \
+//---
+
+#define AX_VecxN_USING(T) \
+	using T##x1			= Vec1_<T>;                   \
+	using T##x1_SSE		= Vec1_<T, VecSimd::SSE>;     \
+	using T##x1_Basic	= Vec1_<T, VecSimd::Basic>;   \
+	using T##x2			= Vec2_<T>;                   \
+	using T##x2_SSE		= Vec2_<T, VecSimd::SSE>;     \
+	using T##x2_Basic	= Vec2_<T, VecSimd::Basic>;   \
+	using T##x3			= Vec3_<T>;                   \
+	using T##x3_SSE		= Vec3_<T, VecSimd::SSE>;     \
+	using T##x3_Basic	= Vec3_<T, VecSimd::Basic>;   \
+	using T##x4			= Vec4_<T>;                   \
+	using T##x4_SSE		= Vec4_<T, VecSimd::SSE>;     \
+	using T##x4_Basic	= Vec4_<T, VecSimd::Basic>;   \
 //----
+
 AX_Vec_USING(Int, i);
 AX_Vec_USING(f16, h);
 AX_Vec_USING(f32, f);
 AX_Vec_USING(f64, d);
 
-AX_Vec_USING(i8,  i8);
-AX_Vec_USING(i16, i16);
-AX_Vec_USING(i32, i32);
-AX_Vec_USING(i64, i64);
+AX_VecxN_USING(i8 );
+AX_VecxN_USING(i16);
+AX_VecxN_USING(i32);
+AX_VecxN_USING(i64);
 
-AX_Vec_USING(u8,  u8);
-AX_Vec_USING(u16, u16);
-AX_Vec_USING(u32, u32);
-AX_Vec_USING(u64, u64);
+AX_VecxN_USING(u8 );
+AX_VecxN_USING(u16);
+AX_VecxN_USING(u32);
+AX_VecxN_USING(u64);
 
-AX_Vec_USING(UNorm8,  unorm8);
-AX_Vec_USING(UNorm16, unorm16);
-AX_Vec_USING(UNorm32, unorm32);
+AX_VecxN_USING(f16);
+AX_VecxN_USING(f32);
+AX_VecxN_USING(f64);
 
-AX_Vec_USING(SNorm8,  snorm8);
-AX_Vec_USING(SNorm16, snorm16);
-AX_Vec_USING(SNorm32, snorm32);
+AX_VecxN_USING(UNorm8 );
+AX_VecxN_USING(UNorm16);
+AX_VecxN_USING(UNorm32);
+
+AX_VecxN_USING(SNorm8 );
+AX_VecxN_USING(SNorm16);
+AX_VecxN_USING(SNorm32);
 
 
 template <Int N, class T, VecSimd SIMD>

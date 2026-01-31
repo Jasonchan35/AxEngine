@@ -75,17 +75,17 @@
           "stride": 64, 
           "variables": [{
               "name": "ambient", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 16, 
               "size": 12
             }, {
               "name": "diffuse", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 32, 
               "size": 12
             }, {
               "name": "specular", 
-              "dataType": "Vec3f", 
+              "dataType": "f32x3", 
               "offset": 48, 
               "size": 12
             }, {

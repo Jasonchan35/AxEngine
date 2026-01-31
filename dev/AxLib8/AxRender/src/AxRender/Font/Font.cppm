@@ -115,12 +115,10 @@ private:
 class FontFace : public RenderObject {
 	AX_RTTI_INFO(FontFace, RenderObject)
 public:
-	NameId name		() const { return _name; }
 	NameId family	() const { return _family; }
 	NameId styleName() const { return _styleName; }
 
 protected:
-	NameId _name;
 	NameId _family;
 	NameId _styleName;
 };

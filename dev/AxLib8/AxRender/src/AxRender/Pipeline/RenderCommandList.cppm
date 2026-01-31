@@ -35,7 +35,7 @@ public:
 	Int                 materialPassIndex = 0;
 	Mat4f               objectToWorld     = Mat4f::s_identity();
 	MeshObject*         meshObject        = nullptr;
-	Vec3u32             dispatchGroupCount{256, 1, 1};
+	u32x3               dispatchGroupCount{256, 1, 1};
 	
 	void setSubMesh(RenderRequest* req, RenderSubMesh& sm) {
 		primitiveType = sm.primitiveType();

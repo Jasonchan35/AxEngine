@@ -23,6 +23,9 @@ struct CmdOptions : public NonCopyable {
 	bool genResultInfo = false;
 	bool keepUnusedVariable = false;
 	bool quiet = false;
+	int  job = 0;
+	bool stopOnfailure = true;
+	
 	StrView file;
 	String out;
 	String entry;
@@ -46,6 +49,7 @@ public:
 	void genNinja_Shader_API		(RenderAPI api, ShaderDeclareInfo& info, StrView outDir, StrView filename);
 
 	void writeNinja_Header			(IString& outStr);
+	void writeNinja_CommandOptions			(IString& outStr);
 	
 	CmdOptions& opt = CmdOptions::s_instance();
 	
