@@ -26,12 +26,12 @@ void GenNinja_Null::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 		outStr.append("\n");
 	};
 	
-	writePass(pass.vertexFunc       , ShaderStageFlags::Vertex       , "vertex"   );
-	writePass(pass.pixelFunc        , ShaderStageFlags::Pixel        , "fragment" );
-	writePass(pass.geometryFunc     , ShaderStageFlags::Geometry     , "geometry" );
-	writePass(pass.computeFunc      , ShaderStageFlags::Compute      , "compute"  );
-	writePass(pass.meshFunc         , ShaderStageFlags::Mesh         , "mesh"     );
-	writePass(pass.amplificationFunc, ShaderStageFlags::Amplification, "task"     );
+	writePass(pass.vertexFunc       , ShaderStageFlags::Vertex       , "vertex"       );
+	writePass(pass.pixelFunc        , ShaderStageFlags::Pixel        , "fragment"     );
+	writePass(pass.geometryFunc     , ShaderStageFlags::Geometry     , "geometry"     );
+	writePass(pass.computeFunc      , ShaderStageFlags::Compute      , "compute"      );
+	writePass(pass.meshFunc         , ShaderStageFlags::Mesh         , "mesh"         );
+	writePass(pass.amplificationFunc, ShaderStageFlags::Amplification, "amplification");
 }
 
 } // namespace

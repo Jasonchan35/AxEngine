@@ -8,12 +8,12 @@ import :GenReflect_Slang;
 namespace ax /*::AxRender*/ {
 
 ShaderStageFlags getShaderStageFlags(StrView s) {
-	if (s == "vertex"  ) return ShaderStageFlags::Vertex;
-	if (s == "fragment") return ShaderStageFlags::Pixel;
-	if (s == "geometry") return ShaderStageFlags::Geometry;
-	if (s == "compute" ) return ShaderStageFlags::Compute;
-	if (s == "mesh"    ) return ShaderStageFlags::Mesh;
-	if (s == "task"    ) return ShaderStageFlags::Amplification;
+	if (s == "vertex"       ) return ShaderStageFlags::Vertex;
+	if (s == "fragment"     ) return ShaderStageFlags::Pixel;
+	if (s == "geometry"     ) return ShaderStageFlags::Geometry;
+	if (s == "compute"      ) return ShaderStageFlags::Compute;
+	if (s == "mesh"         ) return ShaderStageFlags::Mesh;
+	if (s == "amplification") return ShaderStageFlags::Amplification;
 	return ShaderStageFlags::None;
 }
 

@@ -63,12 +63,12 @@
   }, 
   "passStages": [{
       "bindless": true, 
-      "stageFlags": "Pixel | Mesh", 
+      "stageFlags": "Pixel | Mesh | Amplification", 
       "inputs": [], 
       "constBuffers": [{
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Pixel | Mesh", 
+          "stageFlags": "Pixel | Mesh | Amplification", 
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 

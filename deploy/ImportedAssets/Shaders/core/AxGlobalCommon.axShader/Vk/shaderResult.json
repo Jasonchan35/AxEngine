@@ -33,7 +33,7 @@
   }, 
   "passStages": [{
       "bindless": true, 
-      "stageFlags": "Vertex | Pixel | Mesh", 
+      "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
       "inputs": [{
           "semantic": "POSITION", 
           "dataType": "f32x4"
@@ -41,7 +41,7 @@
       "constBuffers": [{
           "name": "axWorld", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 100, 
           "bindCount": 1, 
@@ -70,7 +70,7 @@
         }, {
           "name": "axCamera", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 101, 
           "bindCount": 1, 
@@ -124,7 +124,7 @@
         }, {
           "name": "axDrawCallRootConst", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "RootConst", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -163,7 +163,7 @@
         }, {
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
@@ -198,14 +198,14 @@
       "textures": [{
           "name": "AxBindless_Texture2D", 
           "dataType": "Texture2D", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "Bindless", 
           "bindPoint": 30000, 
           "bindCount": 10000
         }, {
           "name": "AxBindless_Texture3D", 
           "dataType": "Texture3D", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "Bindless", 
           "bindPoint": 40000, 
           "bindCount": 1000
@@ -213,7 +213,7 @@
       "samplers": [{
           "name": "AxBindless_SamplerState", 
           "dataType": "SamplerState", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "Bindless", 
           "bindPoint": 11000, 
           "bindCount": 1000, 
@@ -222,7 +222,7 @@
       "structuredBuffers": [{
           "name": "axMeshletVert", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20201, 
           "bindCount": 1, 
@@ -281,7 +281,7 @@
         }, {
           "name": "axMeshletPrim", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20202, 
           "bindCount": 1, 
@@ -300,7 +300,7 @@
         }, {
           "name": "axMeshlet", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20203, 
           "bindCount": 1, 
@@ -329,7 +329,7 @@
         }, {
           "name": "axMeshInfo", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20204, 
           "bindCount": 1, 
@@ -358,7 +358,7 @@
         }, {
           "name": "axLights", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20100, 
           "bindCount": 1, 
@@ -372,7 +372,7 @@
         }, {
           "name": "axObjects", 
           "dataType": "StructuredBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20101, 
           "bindCount": 1, 
