@@ -27,6 +27,7 @@ public:
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 
 	AX_VkDevice*			_device_vk = nullptr;
+	AX_VkExtProcList*		_extProcList = nullptr;
 
 	RenderCommandList_Vk	_uploadCmdList_vk; // submit earlier than graphCmdList
 	AX_VkSemaphore			_uploadCmdSem_vk;

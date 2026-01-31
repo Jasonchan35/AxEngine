@@ -268,7 +268,7 @@
                             "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "_usedPadding0",
+                            "name": "totalVertCount",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -276,7 +276,7 @@
                             "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "_usedPadding1",
+                            "name": "totalPrimCount",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"

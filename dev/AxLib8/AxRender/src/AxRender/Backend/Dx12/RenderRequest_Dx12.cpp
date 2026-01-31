@@ -104,6 +104,10 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 	_graphCmdList_dx12->RSSetScissorRects(1, &tmp);
 }
 
+void RenderRequest_Dx12::onDispatchMesh(AxDrawCallDesc& cmd, u32x3 groupCount) {
+	_graphCmdList_dx12->DispatchMesh(groupCount.x, groupCount.y, groupCount.z);
+}
+
 void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 	auto* mat = rttiCastCheck<Material_Dx12>(drawcall.material);
 	if (!mat) return;
@@ -111,13 +115,7 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 	if (!matPass) return;
 
 	auto& cmdList = _graphCmdList_dx12;
-	
-	if (matPass->isMeshShader()) {
-		auto& group = drawcall.dispatchGroupCount;
-		cmdList->DispatchMesh(group.x, group.y, group.z);
-		return;
-	}
-	
+
 	D3D12_PRIMITIVE_TOPOLOGY topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
 	cmdList->IASetPrimitiveTopology(topology); // already in pso
 

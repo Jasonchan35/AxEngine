@@ -32,8 +32,8 @@ struct AxMeshlet {
 struct AxMeshInfo {
 	u32 meshletOffset = 0;
 	u32 meshletCount  = 0;
-	u32 padding0;
-	u32 padding2;
+	u32 totalVertCount;
+	u32 totalPrimCount;
 };
 
 class MeshObject : public RenderObject {

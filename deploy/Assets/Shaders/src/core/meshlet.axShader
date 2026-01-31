@@ -59,6 +59,22 @@ void as_main(AxDispatchInput dispatch) {
 	DispatchMesh(meshInfo.meshletCount, 1, 1, s_payload);
 }
 
+VS_Output ms_vertex(AxDispatchInput dispatch, AxMeshletVert mv) {
+	VS_Input i;
+	i.pos    = Vec4f(mv.pos, 1);
+	i.normal = mv.normal;
+	// i.color0 = mv.color();
+	i.color0 = ax_debug_color(dispatch.gid);
+
+	VS_Output o;
+	o.worldPos = ax_pos_to_world(i.pos);
+	o.sv_pos   = ax_pos_to_clip(i.pos);
+	o.normal   = ax_normal_to_clip(i.normal);
+	o.color0   = i.color0;
+
+	return o;
+}
+
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("triangle")]
 void ms_main(
@@ -95,6 +111,16 @@ void ms_main(
 		o.color0   = i.color0;
 		outVert[j] = o;
 	}
+
+//	outVert[j] = ms_vertex(dispatch, axMeshletVert[meshlet.vertOffset + j]);
+
+	// static u32 kVertexPerThread = 1;
+	// for (u32 k = 0; k < kVertexPerThread; ++k) {
+	// 	u32 v = j * kVertexPerThread + k;
+	// 	if (v < meshlet.vertCount) {
+	// 		outVert[v] = ms_vertex(dispatch, axMeshletVert[meshlet.vertOffset + v]);
+	// 	}
+	// }
 }
 
 uniform Color4f color;

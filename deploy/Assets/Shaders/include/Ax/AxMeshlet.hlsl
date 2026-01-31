@@ -19,8 +19,8 @@ struct AxMeshletVert {
 StructuredBuffer<AxMeshletVert> axMeshletVert : register(t201, AX_BindSpace_World);
 
 struct AxMeshletPrim {
-	u32x3 tri;
-	u32 padding;
+	u32x3 	tri;
+	u32 	padding;
 };
 StructuredBuffer<AxMeshletPrim> axMeshletPrim : register(t202, AX_BindSpace_World);
 
@@ -35,8 +35,8 @@ StructuredBuffer<AxMeshlet> axMeshlet : register(t203, AX_BindSpace_World);
 struct AxMeshInfo {
 	u32 meshletOffset;
 	u32 meshletCount;
-	u32 _usedPadding0;
-	u32 _usedPadding1;
+	u32 totalVertCount;
+	u32 totalPrimCount;
 };
 StructuredBuffer<AxMeshInfo> axMeshInfo : register(t204, AX_BindSpace_World);
 

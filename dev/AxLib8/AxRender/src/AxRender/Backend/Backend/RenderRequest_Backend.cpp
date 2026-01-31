@@ -216,7 +216,16 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	auto* matPass = material->getPass(cmd.materialPassIndex);
 	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
 	matPass->onBindMaterial(this, cmd);
-	onDrawCall(cmd);
+	
+	if (auto* mesh = cmd.meshObject) {
+		if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");
+		auto meshletCount = mesh->meshletInfo.size();
+		constexpr Int kThreadPerGroup = 32;
+		Int groupCount = Math::alignTo(meshletCount, kThreadPerGroup) / kThreadPerGroup;
+		onDispatchMesh(cmd, u32x3(ax_safe_cast_from(groupCount), 1, 1));
+	} else {
+		onDrawCall(cmd);
+	}
 }
 
 void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {

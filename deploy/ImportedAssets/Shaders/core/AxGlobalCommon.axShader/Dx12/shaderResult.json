@@ -345,12 +345,12 @@
               "offset": 4, 
               "size": 0
             }, {
-              "name": "_usedPadding0", 
+              "name": "totalVertCount", 
               "dataType": "u32", 
               "offset": 8, 
               "size": 0
             }, {
-              "name": "_usedPadding1", 
+              "name": "totalPrimCount", 
               "dataType": "u32", 
               "offset": 12, 
               "size": 0

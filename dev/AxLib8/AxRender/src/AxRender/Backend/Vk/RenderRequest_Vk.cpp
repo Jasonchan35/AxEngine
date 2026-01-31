@@ -18,7 +18,8 @@ RenderRequest_Vk::RenderRequest_Vk(const CreateDesc& desc)
 	auto* renderSystem = RenderSystem_Vk::s_instance();
 	auto& dev = renderSystem->device();
 	
-	 _device_vk = &renderSystem->device();
+	_device_vk = &renderSystem->device();
+	_extProcList = AX_VkExtProcList::s_instance();
 
 	_completedFence_vk.create(dev, true);
 	_imageAcquiredSemaphore_vk.create(dev);
@@ -142,19 +143,16 @@ void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 	vkCmdSetScissor(_graphCmdList_vk, 0, 1, &rc);
 }
 
+void RenderRequest_Vk::onDispatchMesh(AxDrawCallDesc& cmd, u32x3 groupCount) {
+	_extProcList->vkCmdDrawMeshTasksEXT(_graphCmdList_vk, groupCount.x, groupCount.y, groupCount.z); 
+}
+
 void RenderRequest_Vk::onDrawCall(AxDrawCallDesc& drawcall) {
 	auto* mat = rttiCastCheck<Material_Vk>(drawcall.material);
 	if (!mat) return;
 	auto* matPass = mat->getPass(drawcall.materialPassIndex);
 	if (!matPass) return;
 
-	if (matPass->isMeshShader()) {
-		auto& group = drawcall.dispatchGroupCount;
-		auto* ext = AX_VkExtProcList::s_instance();
-		ext->vkCmdDrawMeshTasksEXT(_graphCmdList_vk, group.x, group.y, group.z); 
-		return;
-	}
-	
 	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(drawcall.vertexBuffer)) {
 		constexpr u32 firstBinding = ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		constexpr u32 bindingCount = 1 ;

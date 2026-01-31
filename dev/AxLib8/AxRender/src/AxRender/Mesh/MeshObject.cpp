@@ -30,13 +30,12 @@ void MeshObject::Buffers::create() {
 
 void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	buffers.create();
-	constexpr Int kMaxVertexCountPerMeshlet = 128; // 32 * 1024;
+	constexpr Int kMaxVertexCountPerMeshlet = 64;
 	
 	meshletInfo.clear();
 	auto* curMeshlet = &meshletInfo.emplaceBack();
 
 	Array<Vec3d, 64> facePositions;
-
 	for (auto& face : srcMesh.faces()) {
 		auto fvCount = static_cast<u32>(face.pointCount());
 		if (fvCount < 3) { AX_ASSERT(false); continue; }
@@ -64,10 +63,11 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 			dstVert.rawColor = 0xffffffff;
 		}
 
-		u32 vi = curMeshlet->vertOffset + curMeshlet->vertCount;
+		u32 viBase = curMeshlet->vertCount;
 		auto dstIdx  = buffers.meshletPrim.extendsData(triCount);
 		for (u32 j = 0; j < triCount; ++j) {
-			dstIdx[j].tri.set(vi, vi + j + 1, vi + j + 2);
+			// triangle fan
+			dstIdx[j].tri = u32x3(0, j+1, j+2) + viBase;
 		}
 
 		curMeshlet->vertCount += fvCount;
@@ -98,8 +98,10 @@ void MeshObject::Buffers::_uploadToGpu(MeshObject* meshObj, RenderRequest* req) 
 	
 	meshlet.buffer->getUploadedGpuBuffer(req);
 
-	outInfo.meshletOffset = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
-	outInfo.meshletCount  = ax_safe_cast_from(meshlet.buffer->count());
+	outInfo.meshletOffset  = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
+	outInfo.meshletCount   = ax_safe_cast_from(meshlet.buffer->count());
+	outInfo.totalVertCount = ax_safe_cast_from(meshletVert.buffer->count());
+	outInfo.totalPrimCount = ax_safe_cast_from(meshletPrim.buffer->count());
 	
 	meshInfo.setValue(0, outInfo);
 	meshInfo.buffer->getUploadedGpuBuffer(req);
