@@ -10,12 +10,13 @@ using RenderSeqId = i64;
 class RenderObject : public RttiObject {
 	AX_RTTI_INFO(RenderObject, RttiObject)
 public:
-	using GpuData = TagNoInit_T;
-
 	NameId  name() const		{ return _name; }
 
 	void setName(InNameId name) { _name = name; onSetName(name); }
-	
+
+	using GpuData = nullptr_t;
+	static constexpr Int s_gpuBufferMaxSize () { return 1 * Math::GigaBytes; }
+	static constexpr Int s_gpuBufferPageSize() { return 4 * Math::MegaBytes; }
 protected:
 	virtual void onSetName(NameId name) {};
 	

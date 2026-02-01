@@ -71,10 +71,10 @@ protected:
 	Dict<ResourceKey, T*>     _keyDict;
 	
 	using GpuData = typename T::GpuData;
-	static constexpr bool kHasGpuData = !Type_IsSame<GpuData, TagNoInit_T>;
+	static constexpr bool kHasGpuData = !Type_IsSame<GpuData, nullptr_t>;
 	
-	StructuredGpuBufferPool_<GpuData>	_gpuDataBufferPool;
-	StructuredGpuBuffer_<GpuData>		_gpuData;
+	StructuredGpuBufferPool_<GpuData>	_gpuBufferPool;
+	StructuredGpuBuffer_<GpuData>		_gpuBuffer;
 
 	struct Frame : public NonCopyable {
 		Array<RenderObjectSlotId> pendingFreeSlots;
@@ -102,11 +102,11 @@ RenderObjectTable_Backend<T>::RenderObjectTable_Backend() {
 	
 	if constexpr (kHasGpuData) {
 		// TODO - get maxSize and pageSize from config file
-		Int maxSize  = 1 * Math::GigaBytes;
-		Int pageSize = 4 * Math::MegaBytes;
-		auto bufName = GpuData::s_name();
-		_gpuDataBufferPool.create(AX_NEW, bufName, maxSize, pageSize);
-		_gpuData.create(AX_NEW, bufName, _gpuDataBufferPool);
+		Int maxSize  = T::s_gpuBufferMaxSize();
+		Int pageSize = T::s_gpuBufferPageSize();
+		auto bufName = T::s_gpuBufferName();
+		_gpuBufferPool.create(AX_NEW, bufName, maxSize, pageSize);
+		_gpuBuffer.create(AX_NEW, bufName, _gpuBufferPool);
 	}
 }
 
@@ -216,8 +216,8 @@ void RenderObjectTable_Backend<T>::onFrameEnd(RenderRequest* req) {
 		
 		if constexpr (kHasGpuData) {
 			if (auto* data = obj->onGetGpuData(req)) {
-				_gpuData.setValue(obj->objectSlot.slotId(), *data);
-				_gpuData.buffer->getUploadedGpuBuffer(req);
+				_gpuBuffer.setValue(obj->objectSlot.slotId(), *data);
+				_gpuBuffer.buffer->getUploadedGpuBuffer(req);
 			}
 		}
 	}

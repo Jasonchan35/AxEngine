@@ -17,13 +17,10 @@ public:
 	, objectSlot(this, false) {}
 
 
-	struct GpuData {
-		static NameId s_name() { return AX_NAMEID("axMeshInfo"); }
-		AxMeshInfo meshInfo;
-	};
-
+	static NameId s_gpuBufferName() { return AX_NAMEID("axMeshInfo"); }
+	struct GpuData { AxMeshInfo meshInfo; };
+	GpuData  _gpuData;
 	GpuData* onGetGpuData(RenderRequest* req);
-	GpuData        _gpuData;
 	
 	RenderObjectSlot_Backend<This>	objectSlot;
 };

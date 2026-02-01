@@ -134,12 +134,12 @@ bool RenderObjectManager_Backend::getOrNewResource(SPtr<T>&               sp,
 		auto newTable = UPtr_new<Table<T>>(AX_NEW);
 		table = newTable.ptr();
 		
-		if (table->_gpuDataBufferPool) {
+		if (table->_gpuBufferPool) {
 			auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
 			auto* worldParamSpace  = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);
-			auto gpuBufName = table->_gpuDataBufferPool->name();
+			auto gpuBufName = table->_gpuBufferPool->name();
 			if (auto* param = worldParamSpace->findStructuredBufferParam(gpuBufName)) {
-				param->setBufferPool(table->_gpuDataBufferPool);
+				param->setBufferPool(table->_gpuBufferPool);
 			} else {
 				throw Error_Undefined(Fmt("Cannot find structured buffer {} in AxGlobalCommon shader", gpuBufName));
 			}
