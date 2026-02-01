@@ -91,9 +91,9 @@ void ms_main(
 		i.color0 = ax_debug_color(gid);
 
 		VS_Output o;
-		o.worldPos = ax_pos_to_world(i.pos);
-		o.sv_pos   = ax_pos_to_clip(i.pos);
-		o.normal   = ax_normal_to_clip(i.normal);
+		o.worldPos = axObjectToWorldPos(i.pos);
+		o.sv_pos   = axObjectToClipPos(i.pos);
+		o.normal   = axObjectToClipNormal(i.normal);
 		o.color0   = i.color0;
 		outVert[gtid] = o;
 	}

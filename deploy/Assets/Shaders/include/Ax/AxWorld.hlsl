@@ -53,15 +53,17 @@ AX_ROOT_CONST_STRUCT(AxDrawCallRootConst, axDrawCallRootConst)
 #define AX_MATRIX_MVP		axDrawCallRootConst.AX_MATRIX_MVP
 #define AX_MATRIX_VP		axCamera.viewProjMatrix
 
-Vec3f ax_pos_to_world(Vec4f inPos) { Vec4f t = mul(AX_MATRIX_M, inPos); return t.xyz / t.w; }
-Vec4f ax_pos_to_clip (Vec4f inPos) { return mul(axCamera.viewProjMatrix, mul(AX_MATRIX_M, inPos)); }
+Vec3f axObjectToWorldPos(Vec4f inPos) { Vec4f t = mul(AX_MATRIX_M, inPos); return t.xyz / t.w; }
+Vec4f axWorldToClipPos  (Vec4f inPos) { return mul(axCamera.viewProjMatrix, inPos); }
+Vec4f axObjectToClipPos (Vec4f inPos) { return mul(axCamera.viewProjMatrix, mul(AX_MATRIX_M, inPos)); }
 
-Vec3f ax_pos_to_world(Vec3f inPos) { return ax_pos_to_world(Vec4f(inPos, 1)); }
-Vec4f ax_pos_to_clip (Vec3f inPos) { return ax_pos_to_clip (Vec4f(inPos, 1)); }
+Vec3f axObjectToWorldPos(Vec3f inPos) { return axObjectToWorldPos(Vec4f(inPos, 1)); }
+Vec4f axWorldToClipPos  (Vec3f inPos) { return axWorldToClipPos  (Vec4f(inPos, 1)); }
+Vec4f axObjectToClipPos (Vec3f inPos) { return axObjectToClipPos (Vec4f(inPos, 1)); }
 
-
-Vec3f ax_normal_to_world(Vec3f inNormal) { return mul(transpose((Mat3f)AX_MATRIX_M  ), inNormal); }
-Vec3f ax_normal_to_clip (Vec3f inNormal) { return mul(transpose((Mat3f)AX_MATRIX_MVP), inNormal); }
+Vec3f axObjectToWorldNormal(Vec3f inNormal) { return mul(transpose((Mat3f)AX_MATRIX_M  ), inNormal); }
+Vec3f axWorldToClipNormal  (Vec3f inNormal) { return mul(transpose((Mat3f)AX_MATRIX_VP ), inNormal); }
+Vec3f axObjectToClipNormal (Vec3f inNormal) { return mul(transpose((Mat3f)AX_MATRIX_MVP), inNormal); }
 
 
 #endif // __AxWorld_HLS__
