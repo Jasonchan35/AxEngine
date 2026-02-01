@@ -30,7 +30,7 @@ void MeshObject::Buffers::create() {
 
 void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	buffers.create();
-	constexpr Int kMaxVertexCountPerMeshlet = 32; // AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT;
+	constexpr Int kMaxVertexCountPerMeshlet = AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT;
 	
 	meshletInfo.clear();
 	auto* curMeshlet = &meshletInfo.emplaceBack();

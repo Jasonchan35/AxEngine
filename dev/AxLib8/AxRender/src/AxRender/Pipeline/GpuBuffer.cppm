@@ -291,7 +291,6 @@ protected:
 template<class T>
 class StructuredGpuBufferPool_ : public NonCopyable {
 public:
-	static_assert(Math::isPow2(AX_SIZEOF(T))); // D3DMA allocator require pow of 2
 	void create(const MemAllocRequest& req, InNameId name, Int maxSize, Int pageSize) {
 		pool = GpuBufferPool::s_new(req, name, GpuBufferType::Structured, maxSize, pageSize, AX_SIZEOF(T));
 	}
