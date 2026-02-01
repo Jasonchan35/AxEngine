@@ -1,7 +1,6 @@
 #ifndef __AxWorld_HLS__
 #define __AxWorld_HLS__
 
-#include "AxBasicType.hlsl"
 #include "AxMeshlet.hlsl"
 
 struct AxRenderGpuData_World {

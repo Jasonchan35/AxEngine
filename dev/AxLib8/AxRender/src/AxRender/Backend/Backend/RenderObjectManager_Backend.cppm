@@ -37,14 +37,14 @@ public:
 	using Table = RenderObjectTable_Backend<T>;
 
 	template<class T>
-	AX_NODISCARD MutexProtected<Table<T>>& getTable() {
+	AX_NODISCARD MutexProtected<Table<T>>& getObjectTable() {
 		using TABLE = MutexProtected<Table<T>>; 
 		return _objectTables.get<TABLE>();
 	}
 
-	auto& table_shader()	{ return getTable<Shader_Backend>(); }
-	auto& table_sampler()	{ return getTable<Sampler_Backend>(); }
-	auto& table_texture2D()	{ return getTable<Texture2D_Backend>(); }
+	auto& table_shader()	{ return getObjectTable<Shader_Backend>(); }
+	auto& table_sampler()	{ return getObjectTable<Sampler_Backend>(); }
+	auto& table_texture2D()	{ return getObjectTable<Texture2D_Backend>(); }
 
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<   Sampler_Backend>>& list) {}
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr< Texture2D_Backend>>& list) {}
@@ -127,7 +127,7 @@ bool RenderObjectManager_Backend::getOrNewResource(SPtr<T>&               sp,
                                                      const RESOURCE_KEY&    key
 ) {
 	if (key) {
-		auto table = getTable<T>().scopedLock();
+		auto table = getObjectTable<T>().scopedLock();
 		if (auto* p = table->findObject(key)) {
 			sp = p;
 			return false;

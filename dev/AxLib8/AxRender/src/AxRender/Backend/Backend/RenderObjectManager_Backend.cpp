@@ -110,6 +110,7 @@ void RenderObjectManager_Backend::_postCreate() {
 	createPoolParam(_structBufferPools.axMeshletVert, "axMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshletPrim, "axMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 
+	
 #if AX_RENDER_BINDLESS
 	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();
 	auto* bindlessSpace    = commonShaderPass->getParamSpace(ShaderParamBindSpace::Bindless);

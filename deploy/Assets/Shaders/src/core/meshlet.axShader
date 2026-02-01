@@ -20,13 +20,9 @@ Pass "Pass0" {
 #define MAX(x, y) (x > y ? x : y)
 #define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))
 
-#define THREADS_PER_WAVE 32
-#define MAX_VERTS 128
-#define MAX_PRIMS 128
-#define MAX_LOD_LEVELS 8
 
-#define AS_GROUP_SIZE THREADS_PER_WAVE
-#define MS_GROUP_SIZE ROUNDUP(MAX(MAX_VERTS, MAX_PRIMS), THREADS_PER_WAVE)
+#define AS_GROUP_SIZE AX_HLSL_THREADS_PER_WAVE
+#define MS_GROUP_SIZE ROUNDUP(MAX(AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT, AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT), AX_HLSL_THREADS_PER_WAVE)
 
 struct VS_Input {
 	SEM_pos(float4);
@@ -75,8 +71,8 @@ void ms_main(
 	SEM_gtid(u32),
 	SEM_dtid(u32),
 	in payload Payload payload,
-	out vertices VS_Output outVert[MAX_VERTS],
-	out indices  uint3     outTri[MAX_PRIMS]
+	out vertices VS_Output outVert[AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT],
+	out indices  uint3     outTri[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
 	AxMeshlet meshlet = axMeshlet[payload.meshletId[gid]];
 
@@ -88,14 +84,10 @@ void ms_main(
 
 	if (gtid < meshlet.vertCount) {
 		VS_Input i;
-//		i.pos    = Vec4f(t % 2, t, (t + 1) % 2, 1);
-//		i.normal = -normalize(Vec3f(1, 1, 0));
 
 		AxMeshletVert mv = axMeshletVert[meshlet.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos, 1);
 		i.normal = mv.normal;
-		// i.color0 = mv.color();
-//		i.color0 = ax_debug_color(gtid);
 		i.color0 = ax_debug_color(gid);
 
 		VS_Output o;
@@ -105,16 +97,6 @@ void ms_main(
 		o.color0   = i.color0;
 		outVert[gtid] = o;
 	}
-
-//	outVert[j] = ms_vertex(dispatch, axMeshletVert[meshlet.vertOffset + j]);
-
-	// static u32 kVertexPerThread = 1;
-	// for (u32 k = 0; k < kVertexPerThread; ++k) {
-	// 	u32 v = j * kVertexPerThread + k;
-	// 	if (v < meshlet.vertCount) {
-	// 		outVert[v] = ms_vertex(dispatch, axMeshletVert[meshlet.vertOffset + v]);
-	// 	}
-	// }
 }
 
 uniform Color4f color;

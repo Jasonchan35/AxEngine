@@ -292,7 +292,7 @@
               "offset": 0, 
               "size": 0
             }, {
-              "name": "padding", 
+              "name": "_unused0", 
               "dataType": "u32", 
               "offset": 12, 
               "size": 0

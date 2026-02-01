@@ -30,10 +30,11 @@ void MeshObject::Buffers::create() {
 
 void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	buffers.create();
-	constexpr Int kMaxVertexCountPerMeshlet = 32;
+	constexpr Int kMaxVertexCountPerMeshlet = 32; // AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT;
 	
 	meshletInfo.clear();
 	auto* curMeshlet = &meshletInfo.emplaceBack();
+	*curMeshlet = {};
 
 	Array<Vec3d, 64> facePositions;
 	for (auto& face : srcMesh.faces()) {
@@ -48,6 +49,7 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 			u32 nextPrimOffset = curMeshlet->primCount + curMeshlet->primOffset;
 			
 			curMeshlet = &meshletInfo.emplaceBack();
+			*curMeshlet = {};
 			curMeshlet->vertOffset = nextVertOffset;
 			curMeshlet->primOffset = nextPrimOffset;
 		}
@@ -77,15 +79,14 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 
 void MeshObject::Buffers::_uploadToGpu(MeshObject* meshObj, RenderRequest* req) {
 	if (!meshObj->isMeshletValid()) return;
-	
+
 	meshletVert.buffer->getUploadedGpuBuffer(req);
 	meshletPrim.buffer->getUploadedGpuBuffer(req);
 
-	AxMeshInfo outInfo;
-	
-	u32 vertOffset    = ax_safe_cast_from(meshletVert.buffer->gpuBufferIndex());
-	u32 primOffset    = ax_safe_cast_from(meshletPrim.buffer->gpuBufferIndex());
+	AxMeshInfo outInfo = {};
 
+	u32  vertOffset  = ax_safe_cast_from(meshletVert.buffer->gpuBufferIndex());
+	u32  primOffset  = ax_safe_cast_from(meshletPrim.buffer->gpuBufferIndex());
 	auto srcMeshlets = meshObj->meshletInfo.span();
 	auto dstMeshlets = meshlet.editData(0, srcMeshlets.size());
 	
@@ -102,7 +103,7 @@ void MeshObject::Buffers::_uploadToGpu(MeshObject* meshObj, RenderRequest* req) 
 	outInfo.meshletCount   = ax_safe_cast_from(meshlet.buffer->count());
 	outInfo.totalVertCount = ax_safe_cast_from(meshletVert.buffer->count());
 	outInfo.totalPrimCount = ax_safe_cast_from(meshletPrim.buffer->count());
-	
+
 	meshInfo.setValue(0, outInfo);
 	meshInfo.buffer->getUploadedGpuBuffer(req);
 }

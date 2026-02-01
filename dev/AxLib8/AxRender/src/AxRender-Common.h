@@ -13,4 +13,6 @@
 
 #define AX_RENDER_BINDLESS		1
 
-#include "AXRender/AxRender_MACRO.h"
+#include "AxRender/AxRender_MACRO.h"
+
+#include "../../../../deploy/Assets/Shaders/include/AxHLSL/AX_HLSL_CPU_MACRO.h"

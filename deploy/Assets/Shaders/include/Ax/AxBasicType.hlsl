@@ -41,6 +41,9 @@ typedef int4		i32x4;
 #define AX_BindSpace_Bindless   space2
 #define AX_BindSpace_RootConst  space3
 
+#include "../AxHLSL/AX_HLSL_CPU_MACRO.h"
+#include "../AxHLSL/AX_HLSL_CPU_STRUCT.h"
+
 #ifdef AX_RENDER_VK
 	#define AX_ROOT_CONST_STRUCT(TYPE, NAME) \
 		[[vk::push_constant]] \

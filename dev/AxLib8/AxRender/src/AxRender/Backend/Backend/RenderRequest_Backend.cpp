@@ -220,8 +220,7 @@ void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
 	if (auto* mesh = cmd.meshObject) {
 		if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");
 		u32 meshletCount = ax_safe_cast_from(mesh->meshletInfo.size());
-		constexpr u32 kThreadPerGroup = 32;
-		u32 groupCount = Math::alignDivTo(meshletCount, kThreadPerGroup);
+		u32 groupCount = Math::alignDivTo(meshletCount, AX_HLSL_THREADS_PER_WAVE);
 		onDispatchMesh(cmd, u32x3(groupCount, 1, 1));
 	} else {
 		onDrawCall(cmd);

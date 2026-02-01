@@ -7,34 +7,6 @@ export namespace ax {
 
 class EditableMesh;
 
-struct AxMeshletVert {
-	Vec3f   pos;
-	u32     rawColor;
-	Vec2f   uv0;
-	Vec2f   uv1;
-	// Vec2f   rawNormal;
-	Vec3f   normal;
-	u32 unused[5];
-};
-
-struct AxMeshletPrim {
-	u32x3	tri;
-	u32		padding;
-};
-
-struct AxMeshlet {
-	u32 vertOffset = 0;
-	u32 vertCount  = 0;
-	u32 primOffset = 0;
-	u32 primCount  = 0;
-};
-
-struct AxMeshInfo {
-	u32 meshletOffset = 0;
-	u32 meshletCount  = 0;
-	u32 totalVertCount;
-	u32 totalPrimCount;
-};
 
 class MeshObject : public RenderObject {
 	AX_RTTI_INFO(MeshObject, RenderObject)
@@ -69,7 +41,6 @@ public:
 		buffers._uploadToGpu(this, req);
 	}
 
-	
 protected:
 	MeshObject(const CreateDesc& desc);
 

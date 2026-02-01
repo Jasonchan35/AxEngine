@@ -184,7 +184,7 @@
                             "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                         },
                         {
-                            "name": "padding",
+                            "name": "_unused0",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"

@@ -4,6 +4,8 @@ export import AxNativeUI;
 
 export namespace ax {
 
+#include "../../../../deploy/Assets/Shaders/include/AxHLSL/AX_HLSL_CPU_STRUCT.h"
+
 struct AxRenderConfig {
 	static constexpr Int kMaxBackBufferCount    = 3;
 	static constexpr Int kMaxRenderRequestCount = 4;

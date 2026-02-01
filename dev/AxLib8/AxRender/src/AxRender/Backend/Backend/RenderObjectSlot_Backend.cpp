@@ -18,7 +18,7 @@ RenderObjectTable_Backend<T>::RenderObjectTable_Backend() {
 template<class T>
 auto RenderObjectTable_Backend<T>::s_get() -> MutexProtected<This>& {
 	auto* mgr = RenderObjectManager_Backend::s_instance();
-	return mgr->getTable<T>();
+	return mgr->getObjectTable<T>();
 }
 
 template<class T>
