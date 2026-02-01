@@ -30,7 +30,7 @@ void MeshObject::Buffers::create() {
 
 void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	buffers.create();
-	constexpr Int kMaxVertexCountPerMeshlet = 64;
+	constexpr Int kMaxVertexCountPerMeshlet = 32;
 	
 	meshletInfo.clear();
 	auto* curMeshlet = &meshletInfo.emplaceBack();

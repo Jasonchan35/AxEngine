@@ -231,4 +231,12 @@ float3 ax_unpack_normal_xy(float2 packedNormal) {
     return float3(xy, z);
 }
 
+uint ax_align_div_to(uint value, uint alignment) {
+	return (value + (alignment - 1)) / alignment; 
+}
+
+uint ax_align_to(uint value, uint alignment) {
+	return (value + (alignment - 1)) / alignment * alignment;
+}
+
 #endif // __AxBasicType_HLSL__

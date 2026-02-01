@@ -56,9 +56,14 @@ void as_main(AxDispatchInput dispatch) {
 
 	if (dtid < meshInfo.meshletCount) {
 		s_payload.meshletId[gtid] = meshInfo.meshletOffset + dtid;
+//		DispatchMesh(0 * gtid, 1, 1, s_payload);
 	}
+	
+	u32 outMeshletCountInThisGroup 	= (dtid / AS_GROUP_SIZE) >= (meshInfo.meshletCount / AS_GROUP_SIZE)
+									? meshInfo.meshletCount % AS_GROUP_SIZE // last group which not aligned to group side
+									: AS_GROUP_SIZE;
 
-	DispatchMesh(meshInfo.meshletCount, 1, 1, s_payload);
+	DispatchMesh(outMeshletCountInThisGroup, 1, 1, s_payload);
 }
 
 VS_Output ms_vertex(AxDispatchInput dispatch, AxMeshletVert mv) {
@@ -106,7 +111,7 @@ void ms_main(
 		i.normal = mv.normal;
 		// i.color0 = mv.color();
 //		i.color0 = ax_debug_color(gtid);
-		i.color0 = ax_debug_color(dispatch.gid);
+		i.color0 = ax_debug_color(gid);
 
 		VS_Output o;
 		o.worldPos = ax_pos_to_world(i.pos);

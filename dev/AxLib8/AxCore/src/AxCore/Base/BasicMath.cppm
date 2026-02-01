@@ -213,23 +213,33 @@ AX_NODISCARD AX_INLINE constexpr u32	nextPow2	( u32 v )	{ v--; v|=v>>1; v|=v>>2;
 AX_NODISCARD AX_INLINE constexpr u64	nextPow2	( u64 v )	{ v--; v|=v>>1; v|=v>>2; v|=v>>4; v|=v>>8; v|=v>>16; v|=v>>32; v++; return v; }
 
 template< class T > AX_NODISCARD AX_INLINE
-constexpr T nextPow2_half(const T& v) {
+constexpr T nextPow2orHalf(const T& v) {
 	auto o = nextPow2(v);
 	auto h = o - (o >> 2);
 	return h >= v ? h : o;
 }
 
+template<class T> requires std::is_unsigned_v<T>
+constexpr T alignDivTo(const T& value, const T& alignment) {
+	return (value + (alignment - 1)) / alignment; 
+}
+
 template<class T>
 AX_NODISCARD AX_INLINE constexpr T alignTo(const T& value, const T& alignment) {
+	AX_ASSERT(alignment > 0);
 	if constexpr (std::is_floating_point_v<T>) {
 		T i = floor(value / alignment) * alignment;
 		if (almostEqual(i, value)) return i;
 		return (value > 0) ? i + alignment : i - alignment;
 
 	} else if constexpr (std::is_unsigned_v<T>) {
+#if 1
+		return (value + (alignment - 1)) / alignment * alignment; 
+#else
 		T remain = value % alignment;
 		if (remain == 0) return value;
 		return value + (alignment - remain);
+#endif
 
 	} else {
 		T abs_a = abs(alignment);

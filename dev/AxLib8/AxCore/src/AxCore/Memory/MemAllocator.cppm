@@ -78,7 +78,7 @@ public:
 	MemAllocResult<T> allocArray(Int reqSize, Int alignment = AX_ALIGNOF(T), const SrcLoc srcLoc = SrcLoc::s_current()) {
 		constexpr Int kMinByteSize = 64;
 		reqSize = Math::max(reqSize, kMinByteSize / AX_SIZEOF(T));
-		reqSize = Math::nextPow2_half(reqSize);
+		reqSize = Math::nextPow2orHalf(reqSize);
 
 		MemAllocRequest req(nullptr, srcLoc);
 		req.dataSize = reqSize * AX_SIZEOF(T);
