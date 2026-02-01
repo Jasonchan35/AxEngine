@@ -17,19 +17,19 @@ SPtr<MeshObject> MeshObject::s_new(const MemAllocRequest& req) {
 }
 
 MeshObject::MeshObject(const CreateDesc& desc)
-: _assetPath(desc.assetPath) {
+: _assetPath(desc.assetPath) 
+{
 }
 
-void MeshObject::Buffers::create() {
+void MeshObject::createBuffers() {
 	auto* objMgr = RenderObjectManager_Backend::s_instance();
-	   meshInfo.create(AX_NEW, "meshInfo"   , objMgr->_structBufferPools.axMeshInfo);
 	    meshlet.create(AX_NEW, "meshlet"    , objMgr->_structBufferPools.axMeshlet);
 	meshletVert.create(AX_NEW, "meshletVert", objMgr->_structBufferPools.axMeshletVert);
 	meshletPrim.create(AX_NEW, "meshletPrim", objMgr->_structBufferPools.axMeshletPrim);
 }
 
 void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
-	buffers.create();
+	createBuffers();
 	constexpr Int kMaxVertexCountPerMeshlet = AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT;
 	
 	meshletInfo.clear();
@@ -54,7 +54,7 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 			curMeshlet->primOffset = nextPrimOffset;
 		}
 		
-		auto dstVertices = buffers.meshletVert.extendsData(fvCount);
+		auto dstVertices = meshletVert.extendsData(fvCount);
 		auto srcNormals = face.getNormals(srcMesh);
 		
 		face.getPositions(srcMesh, facePositions);
@@ -66,7 +66,7 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 		}
 
 		u32 viBase = curMeshlet->vertCount;
-		auto dstIdx  = buffers.meshletPrim.extendsData(triCount);
+		auto dstIdx  = meshletPrim.extendsData(triCount);
 		for (u32 j = 0; j < triCount; ++j) {
 			// triangle fan
 			dstIdx[j].tri = u32x3(0, j+1, j+2) + viBase;
@@ -75,37 +75,8 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 		curMeshlet->vertCount += fvCount;
 		curMeshlet->primCount += triCount;
 	}
-}
-
-void MeshObject::Buffers::_uploadToGpu(MeshObject* meshObj, RenderRequest* req) {
-	if (!meshObj->isMeshletValid()) return;
-
-	meshletVert.buffer->getUploadedGpuBuffer(req);
-	meshletPrim.buffer->getUploadedGpuBuffer(req);
-
-	AxMeshInfo outInfo = {};
-
-	u32  vertOffset  = ax_safe_cast_from(meshletVert.buffer->gpuBufferIndex());
-	u32  primOffset  = ax_safe_cast_from(meshletPrim.buffer->gpuBufferIndex());
-	auto srcMeshlets = meshObj->meshletInfo.span();
-	auto dstMeshlets = meshlet.editData(0, srcMeshlets.size());
 	
-	for (Int i = 0; i < srcMeshlets.size(); ++i) {
-		auto& dst = dstMeshlets[i];
-		dst = srcMeshlets[i];
-		dst.vertOffset += vertOffset;
-		dst.primOffset += primOffset;
-	}
-	
-	meshlet.buffer->getUploadedGpuBuffer(req);
-
-	outInfo.meshletOffset  = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
-	outInfo.meshletCount   = ax_safe_cast_from(meshlet.buffer->count());
-	outInfo.totalVertCount = ax_safe_cast_from(meshletVert.buffer->count());
-	outInfo.totalPrimCount = ax_safe_cast_from(meshletPrim.buffer->count());
-
-	meshInfo.setValue(0, outInfo);
-	meshInfo.buffer->getUploadedGpuBuffer(req);
+	rttiCastCheck<MeshObject_Backend>(this)->objectSlot.markDirty();
 }
 
 } // namespace

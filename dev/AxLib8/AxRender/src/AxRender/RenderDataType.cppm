@@ -10,6 +10,7 @@ using RenderSeqId = i64;
 class RenderObject : public RttiObject {
 	AX_RTTI_INFO(RenderObject, RttiObject)
 public:
+	using GpuData = TagNoInit_T;
 
 	NameId  name() const		{ return _name; }
 

@@ -217,8 +217,8 @@ public:
 		u32 numVert = srcMesh->mNumVertices;
 		u32 numPrim = srcMesh->mNumFaces; 
 		
-		auto dstVert = dstMesh->buffers.meshletVert.editData(0, numVert);
-		auto dstPrim = dstMesh->buffers.meshletPrim.editData(0, numPrim);
+		auto dstVert = dstMesh->meshletVert.editData(0, numVert);
+		auto dstPrim = dstMesh->meshletPrim.editData(0, numPrim);
 		
 		{ // pos
 			Int j = 0;
@@ -252,7 +252,7 @@ public:
 		AxMeshlet meshlet = {};
 		meshlet.vertCount = numVert;
 		meshlet.primCount = numPrim;
-		dstMesh->buffers.meshlet.setValue(0, meshlet);
+		dstMesh->meshlet.setValue(0, meshlet);
 	}
 	
 	void importMesh(aiMesh* srcMesh) {

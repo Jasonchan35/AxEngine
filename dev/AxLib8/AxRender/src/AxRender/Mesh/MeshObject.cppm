@@ -25,26 +25,15 @@ public:
 	
 	Array<AxMeshlet> meshletInfo;
 	
-	struct Buffers {
-		StructuredGpuBuffer_<AxMeshInfo>    meshInfo;
-		StructuredGpuBuffer_<AxMeshlet>     meshlet;
-		StructuredGpuBuffer_<AxMeshletVert> meshletVert;
-		StructuredGpuBuffer_<AxMeshletPrim> meshletPrim;
+	StructuredGpuBuffer_<AxMeshlet>     meshlet;
+	StructuredGpuBuffer_<AxMeshletVert> meshletVert;
+	StructuredGpuBuffer_<AxMeshletPrim> meshletPrim;
 		
-		void create();
-		void _uploadToGpu(MeshObject* meshObj, RenderRequest* req);
-	} buffers;
-	
-	AX_INLINE void _uploadToGpu(RenderRequest* req) {
-		if (!_needUploadToGpu) return;
-		_needUploadToGpu = false;
-		buffers._uploadToGpu(this, req);
-	}
+	void createBuffers();
 
 protected:
 	MeshObject(const CreateDesc& desc);
-
-	bool   _needUploadToGpu = true;
+	
 	String _assetPath;
 };
 

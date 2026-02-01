@@ -31,9 +31,22 @@ void RenderObjectManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
 }
 
 void RenderObjectManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
-	visitObjectTable([&](auto& table) -> void {
-		table.scopedLock()->onFrameEnd(req);
-	});
+	{
+		auto lock = _objectTables.scopedLock();
+		for  (auto& entry : lock->dict.values()) {
+			auto tblLock = entry.scopedLock();
+			auto* tbl = tblLock->ptr();
+			
+			if (auto* samplerTable = rttiCast<Table<Sampler_Backend>>(tbl)) {
+				onUpdateDescriptors(req, samplerTable->_dirtyObjects);
+				
+			} else if (auto* tex2DTable = rttiCast<Table<Texture2D_Backend>>(tbl)) {
+				onUpdateDescriptors(req, tex2DTable->_dirtyObjects);
+			}
+
+			tbl->onFrameEnd(req);
+		}
+	}
 	
 	_bufferPools.visitPools([&](GpuBufferPool_Backend* bufferPool) -> void {
 		if (bufferPool) bufferPool->onGpuUpdatePages(req);
@@ -58,7 +71,7 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 
 	auto imageFileType = ImageFileType_fromFileExt(ext);
 	if (imageFileType != ImageFileType::None) {
-		auto table = table_texture2D().scopedLock();
+		auto table = RenderObjectTable_getLocked<Texture2D_Backend>();
 		if (auto* tex = table->findObject(filename)) {
 			AX_LOG("Hot reload texture {}", filename);
 			tex->hotReloadFile();
@@ -68,7 +81,7 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 
 	if (basenameWithExt == "shaderResult.json") {
 		auto shaderAssetPath = FilePath::dirname_sv(FilePath::dirname_sv(filename));
-		auto table = table_shader().scopedLock();
+		auto table = RenderObjectTable_getLocked<Shader_Backend>();
 		if (auto* shader = table->findObject(shaderAssetPath)) {
 			AX_LOG("Hot reload shader {}", shaderAssetPath);
 			shader->hotReloadFile();
@@ -105,7 +118,6 @@ void RenderObjectManager_Backend::_postCreate() {
 		}
 	};
 	
-	createPoolParam(_structBufferPools.axMeshInfo   , "axMeshInfo"   , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshlet    , "axMeshlet"    , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshletVert, "axMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshletPrim, "axMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
@@ -127,5 +139,10 @@ void RenderObjectManager_Backend::_postCreate() {
 
 	onPostCreate();
 }
+
+MutexProtected<UPtr<IRenderObjectTable_Backend>>& RenderObjectManager_Backend_getTable(Rtti* rtti) {
+	return RenderObjectManager_Backend::s_instance()->getTable(rtti);
+}
+
 
 } // namespace

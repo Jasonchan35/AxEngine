@@ -16,6 +16,15 @@ public:
 	: MeshObject(desc)
 	, objectSlot(this, false) {}
 
+
+	struct GpuData {
+		static NameId s_name() { return AX_NAMEID("axMeshInfo"); }
+		AxMeshInfo meshInfo;
+	};
+
+	GpuData* onGetGpuData(RenderRequest* req);
+	GpuData        _gpuData;
+	
 	RenderObjectSlot_Backend<This>	objectSlot;
 };
 

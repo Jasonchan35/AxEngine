@@ -83,6 +83,11 @@ struct HashInt_Handler<T> {
 	AX_INLINE constexpr static HashInt onHashInt(const T& v) { return HashInt::s_fromInt(static_cast<HashInt::Value>(v)); }
 };
 
+template<class T> requires std::is_pointer_v<T>
+struct HashInt_Handler<T> {
+	AX_INLINE constexpr static HashInt onHashInt(const T& v) { return HashInt::s_fromInt(reinterpret_cast<intptr_t>(v)); }
+};
+
 template<class T>
 struct HashInt_Handler<MutStrLit_<T>> {
 	AX_INLINE constexpr static HashInt onHashInt(const MutStrLit_<T>& obj) { return HashInt::s_make(Span<T>(obj.data(), obj.size())); }

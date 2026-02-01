@@ -38,8 +38,7 @@ public:
 
 					void unlock	()	{ if (_mutex) { _mutex->unlock(); _mutex = nullptr; } }
 
-					void detach	()	{ _mutex = nullptr; }
-
+	AX_NODISCARD	MUTEX* detach()	{ MUTEX* m = _mutex; _mutex = nullptr; return m; }
 	AX_NODISCARD	MUTEX* mutex() { return _mutex; }
 protected:
 
