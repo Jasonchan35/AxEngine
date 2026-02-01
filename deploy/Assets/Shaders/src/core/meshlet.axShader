@@ -48,9 +48,11 @@ struct Payload {
 groupshared Payload s_payload;
 
 [numthreads(AS_GROUP_SIZE, 1, 1)]
-void as_main(AxDispatchInput dispatch) {
-	u32 dtid = dispatch.dtid;
-	u32 gtid = dispatch.gtid;
+void as_main(
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32)
+) {
 
 	AxMeshInfo meshInfo = axMeshInfo[AX_MESH_ID];
 
@@ -59,40 +61,23 @@ void as_main(AxDispatchInput dispatch) {
 //		DispatchMesh(0 * gtid, 1, 1, s_payload);
 	}
 	
-	u32 outMeshletCountInThisGroup 	= (dtid / AS_GROUP_SIZE) >= (meshInfo.meshletCount / AS_GROUP_SIZE)
+	u32 outMeshletCountInThisGroup 	= gid >= (meshInfo.meshletCount / AS_GROUP_SIZE)
 									? meshInfo.meshletCount % AS_GROUP_SIZE // last group which not aligned to group side
 									: AS_GROUP_SIZE;
 
 	DispatchMesh(outMeshletCountInThisGroup, 1, 1, s_payload);
 }
 
-VS_Output ms_vertex(AxDispatchInput dispatch, AxMeshletVert mv) {
-	VS_Input i;
-	i.pos    = Vec4f(mv.pos, 1);
-	i.normal = mv.normal;
-	// i.color0 = mv.color();
-	i.color0 = ax_debug_color(dispatch.gid);
-
-	VS_Output o;
-	o.worldPos = ax_pos_to_world(i.pos);
-	o.sv_pos   = ax_pos_to_clip(i.pos);
-	o.normal   = ax_normal_to_clip(i.normal);
-	o.color0   = i.color0;
-
-	return o;
-}
-
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("triangle")]
 void ms_main(
-	AxDispatchInput dispatch,
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32),
 	in payload Payload payload,
 	out vertices VS_Output outVert[MAX_VERTS],
 	out indices  uint3     outTri[MAX_PRIMS]
 ) {
-	u32 gid  = dispatch.gid;
-	u32 gtid = dispatch.gtid;
-
 	AxMeshlet meshlet = axMeshlet[payload.meshletId[gid]];
 
 	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);

@@ -72,7 +72,11 @@ struct Payload {
 groupshared Payload s_payload;
 
 [numthreads(1, 1, 1)]
-void as_main(AxDispatchInput dispatch) {
+void as_main(
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32)
+) {
 	s_payload.unused = dummy_func();
 	DispatchMesh(1,1,1, s_payload);
 }
@@ -80,7 +84,9 @@ void as_main(AxDispatchInput dispatch) {
 [numthreads(1, 1, 1)]
 [outputtopology("triangle")]
 void ms_main(
-	AxDispatchInput dispatch,
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32),
 	in payload Payload payload,
 	out vertices VS_Output outVertices[3],
 	out indices  uint3     outTriangles[1]

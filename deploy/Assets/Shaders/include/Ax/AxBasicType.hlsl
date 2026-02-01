@@ -106,6 +106,10 @@ typedef int4		i32x4;
 #define SEM_sv_groupIndex(			TYPE)	TYPE	sv_groupIndex		: SV_GROUPINDEX
 #define SEM_sv_groupThreadId(		TYPE)	TYPE	sv_groupThreadId	: SV_GROUPTHREADID
 
+#define SEM_dtid(					TYPE)	TYPE	dtid				: SV_DISPATCHTHREADID
+#define SEM_gid(					TYPE)	TYPE	gid					: SV_GROUPID
+#define SEM_gtid(					TYPE)	TYPE	gtid				: SV_GROUPTHREADID
+
 #define SEM_color( TYPE)	TYPE	color		: COLOR
 #define SEM_color0(TYPE)	TYPE	color0		: COLOR0
 #define SEM_color1(TYPE)	TYPE	color1		: COLOR1
@@ -205,12 +209,6 @@ static const float4 axDebugColorTable[AX_DEBUG_COLOR_TABLE_SIZE] = {
 };
 
 Color4f ax_debug_color(uint i) { return axDebugColorTable[i % AX_DEBUG_COLOR_TABLE_SIZE]; }
-
-struct AxDispatchInput {
-	uint gid	: SV_GROUPID;
-	uint gtid	: SV_GROUPTHREADID;
-	uint dtid	: SV_DISPATCHTHREADID;
-};
 
 uint ax_Color4f_to_u32(float4 value) {
 	uint4 uvalue = uint4(value * 255.0 + 0.5);

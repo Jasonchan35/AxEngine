@@ -910,36 +910,27 @@
             "stage": "mesh",
             "parameters": [
                 {
-                    "name": "dispatch",
+                    "name": "gid",
+                    "semanticName": "SV_GROUPID",
                     "type": {
-                        "kind": "struct",
-                        "name": "AxDispatchInput",
-                        "fields": [
-                            {
-                                "name": "gid",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "semanticName": "SV_GROUPID"
-                            },
-                            {
-                                "name": "gtid",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "semanticName": "SV_GROUPTHREADID"
-                            },
-                            {
-                                "name": "dtid",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "semanticName": "SV_DISPATCHTHREADID"
-                            }
-                        ]
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
+                },
+                {
+                    "name": "gtid",
+                    "semanticName": "SV_GROUPTHREADID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
+                },
+                {
+                    "name": "dtid",
+                    "semanticName": "SV_DISPATCHTHREADID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
                     }
                 },
                 {
