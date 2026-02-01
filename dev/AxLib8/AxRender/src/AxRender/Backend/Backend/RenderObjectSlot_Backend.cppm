@@ -73,8 +73,8 @@ protected:
 	using GpuData = typename T::GpuData;
 	static constexpr bool kHasGpuData = !Type_IsSame<GpuData, TagNoInit_T>;
 	
-	StructuredGpuBuffer_<GpuData>		_gpuData;
 	StructuredGpuBufferPool_<GpuData>	_gpuDataBufferPool;
+	StructuredGpuBuffer_<GpuData>		_gpuData;
 
 	struct Frame : public NonCopyable {
 		Array<RenderObjectSlotId> pendingFreeSlots;
