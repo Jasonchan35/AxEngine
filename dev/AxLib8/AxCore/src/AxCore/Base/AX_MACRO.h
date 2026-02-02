@@ -292,16 +292,32 @@
 	AX_ENUM_ALL_OPERATOR(T) \
 //----
 
+#define AX_ENUM_CLASS_NAMESPACE(LIST, NAMESPACE, T, BASE_TYPE) \
+	AX_ENUM_DECLARE(LIST, T, BASE_TYPE) \
+	AX_ENUM_ALL_OPERATOR(T) \
+	} /* end namespace */\
+	namespace ax { AX_ENUM_STR_UTIL(LIST, NAMESPACE::T) } \
+	namespace NAMESPACE { \
+//----
+
+
 #define AX_ENUM_CLASS(LIST, T, BASE_TYPE) \
 	AX_ENUM_DECLARE(LIST, T, BASE_TYPE) \
 	AX_ENUM_ALL_OPERATOR(T) \
 	AX_ENUM_STR_UTIL(LIST, T) \
 //----
 
-#define AX_ENUM_FLAGS_CLASS(LIST,T, BASE_TYPE) \
+#define AX_ENUM_FLAGS_CLASS(LIST, T, BASE_TYPE) \
 	AX_ENUM_CLASS(LIST, T, BASE_TYPE) \
 	template<> struct Type_IsEnumFlag_T<T> : std::true_type {};
 //------
+
+#define AX_ENUM_FLAGS_CLASS_NAMESPACE(LIST, NAMESPACE, T, BASE_TYPE) \
+	AX_ENUM_CLASS_NAMESPACE(LIST, NAMESPACE, T, BASE_TYPE) \
+	} \
+	namespace ax { template<> struct Type_IsEnumFlag_T<NAMESPACE::T> : std::true_type {}; } \
+	namespace NAMESPACE { \
+//-----
 
 #define AX_NAMEID_FUNC(STR) [](){ static auto name = NameId::s_make(StrView(STR)); return name; }
 #define AX_NAMEID(STR) AX_NAMEID_FUNC(STR)()
