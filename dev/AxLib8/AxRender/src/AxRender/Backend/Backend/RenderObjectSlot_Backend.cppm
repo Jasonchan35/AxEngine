@@ -86,11 +86,11 @@ protected:
 };
 
 template<class T> inline
-MutexProtected<RenderObjectTable_Backend<T>>::ScopedLock RenderObjectTable_getLocked() {
+typename MutexProtected<RenderObjectTable_Backend<T>>::ScopedLock RenderObjectTable_getLocked() {
 	auto lock   = RenderObjectManager_Backend_getTable(rttiOf<T>()).scopedLock();
 	auto* data  = rttiCastCheck<RenderObjectTable_Backend<T>>(lock->ptr());
 	auto* mutex = lock.detach();
-	return MutexProtected<RenderObjectTable_Backend<T>>::ScopedLock(*mutex, data);
+	return typename MutexProtected<RenderObjectTable_Backend<T>>::ScopedLock(*mutex, data);
 }
 
 template<class T>
