@@ -33,18 +33,25 @@ private:
 	T*	_owner  = nullptr;
 };
 
-class IRenderObjectTable : public RttiObject {
-	AX_RTTI_INFO(IRenderObjectTable, RttiObject)
+class RenderObjectTableBase : public RttiObject {
+	AX_RTTI_INFO(RenderObjectTableBase, RttiObject)
 public:
 	virtual void onFrameEnd(class RenderRequest* req) {}
+	Rtti* objRtti() const { return _objRtti; }
+	
+	virtual GpuBufferPool* onGetGpuBufferPool() = 0;
+protected:
+	Rtti* _objRtti = nullptr;
 };
 
-MutexProtected<UPtr<IRenderObjectTable>>& RenderObjectManager_Backend_getTable(Rtti* rtti);
+RenderObjectTableBase* RenderObjectManager_Backend_getTable(Rtti* rtti);
 
 template<class T>
-class RenderObjectTable : public IRenderObjectTable {
-	AX_RTTI_INFO(RenderObjectTable, IRenderObjectTable)
+class RenderObjectTable : public RenderObjectTableBase {
+	AX_RTTI_INFO(RenderObjectTable, RenderObjectTableBase)
 public:
+	static This* s_instance();
+
 	using Handle = RenderObjectSlot<T>;
 	using ResourceKey = typename T::ResourceKey;
 	static constexpr bool kHasResourceKey = !Type_IsSame<ResourceKey, TagNoInit_T>;
@@ -64,7 +71,7 @@ public:
 
 	virtual void onFrameEnd(class RenderRequest* req) override;
 
-	GpuBufferPool* gpuBufferPool() { return _gpuBufferPool; }
+	virtual GpuBufferPool* onGetGpuBufferPool() override { return _gpuBufferPool; }
 	
 protected:
 	friend class RenderObjectManager_Backend;
@@ -88,27 +95,22 @@ protected:
 	Int _currentFrameIndex = 0;
 };
 
-void RenderObjectTable_init(IRenderObjectTable* table, GpuBufferPool* pool);
+void RenderObjectManager_Backend_addTable(RenderObjectTableBase* table);
 
 template<class T> inline
-typename MutexProtected<RenderObjectTable<T>>::ScopedLock RenderObjectTable_getLocked() {
-	auto lock   = RenderObjectManager_Backend_getTable(rttiOf<T>()).scopedLock();
-	using Table = RenderObjectTable<T>; 
-	Table* table = rttiCastCheck<Table>(lock->ptr());
-	if (!table) {
-		auto uptr = UPtr_new<Table>(AX_NEW);
-		table = uptr.ptr();
-		RenderObjectTable_init(table, table->gpuBufferPool());
-		*lock.data() = std::move(uptr);
+RenderObjectTable<T>* RenderObjectTable<T>::s_instance() {
+	auto* tableBase = RenderObjectManager_Backend_getTable(rttiOf<T>());
+	if (!tableBase) {
+		auto newTable = SPtr_new<RenderObjectTable<T>>(AX_NEW);
+		RenderObjectManager_Backend_addTable(newTable);
+		tableBase = newTable.ptr();
 	}
-	
-	auto* data  = rttiCastCheck<RenderObjectTable<T>>(lock->ptr());
-	auto* mutex = lock.detach();
-	return typename MutexProtected<RenderObjectTable<T>>::ScopedLock(*mutex, data);
+	return rttiCastCheck<RenderObjectTable<T>>(tableBase);
 }
 
 template<class T>
 RenderObjectTable<T>::RenderObjectTable() {
+	_objRtti = rttiOf<T>();
 	auto frameCount = RenderSystem::s_instance()->renderRequestCount();
 	if (frameCount < 1) throw Error_Undefined();
 	_frames.resize(frameCount);
@@ -126,20 +128,20 @@ RenderObjectTable<T>::RenderObjectTable() {
 
 template<class T>
 RenderObjectSlot<T>::RenderObjectSlot(T* owner, bool isFallbackDefault): _owner(owner) {
-	auto lock = RenderObjectTable_getLocked<T>();
-	lock->add(_owner, isFallbackDefault);
+	auto* table = Table::s_instance();
+	table->add(_owner, isFallbackDefault);
 }
 
 template<class T>
 RenderObjectSlot<T>::~RenderObjectSlot() {
-	auto lock = RenderObjectTable_getLocked<T>();
-	lock->remove(_owner); 
+	auto* table = Table::s_instance();
+	table->remove(_owner); 
 }
 
 template<class T>
 void RenderObjectSlot<T>::markDirty() {
-	auto lock = RenderObjectTable_getLocked<T>();
-	lock->markDirty(_owner);
+	auto* table = Table::s_instance();
+	table->markDirty(_owner);
 }
 
 template<class T>

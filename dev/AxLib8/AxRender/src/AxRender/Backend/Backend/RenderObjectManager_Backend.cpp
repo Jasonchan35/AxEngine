@@ -33,14 +33,11 @@ void RenderObjectManager_Backend::onFrameBegin(RenderRequest_Backend* req) {
 void RenderObjectManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
 	{
 		auto lock = _objectTables.scopedLock();
-		for  (auto& entry : lock->dict.values()) {
-			auto tblLock = entry.scopedLock();
-			auto* tbl = tblLock->ptr();
-			
-			if (auto* samplerTable = rttiCast<Table<Sampler_Backend>>(tbl)) {
+		for  (auto& tbl : lock->dict.values()) {
+			if (auto* samplerTable = rttiCast<RenderObjectTable<Sampler_Backend>>(tbl.ptr())) {
 				onUpdateDescriptors(req, samplerTable->_dirtyObjects);
 				
-			} else if (auto* tex2DTable = rttiCast<Table<Texture2D_Backend>>(tbl)) {
+			} else if (auto* tex2DTable = rttiCast<RenderObjectTable<Texture2D_Backend>>(tbl.ptr())) {
 				onUpdateDescriptors(req, tex2DTable->_dirtyObjects);
 			}
 
@@ -71,7 +68,7 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 
 	auto imageFileType = ImageFileType_fromFileExt(ext);
 	if (imageFileType != ImageFileType::None) {
-		auto table = RenderObjectTable_getLocked<Texture2D_Backend>();
+		auto table = RenderObjectTable<Texture2D_Backend>::s_instance();
 		if (auto* tex = table->findObject(filename)) {
 			AX_LOG("Hot reload texture {}", filename);
 			tex->hotReloadFile();
@@ -81,7 +78,7 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 
 	if (basenameWithExt == "shaderResult.json") {
 		auto shaderAssetPath = FilePath::dirname_sv(FilePath::dirname_sv(filename));
-		auto table = RenderObjectTable_getLocked<Shader_Backend>();
+		auto table = RenderObjectTable<Shader_Backend>::s_instance();
 		if (auto* shader = table->findObject(shaderAssetPath)) {
 			AX_LOG("Hot reload shader {}", shaderAssetPath);
 			shader->hotReloadFile();
@@ -140,12 +137,13 @@ void RenderObjectManager_Backend::_postCreate() {
 	onPostCreate();
 }
 
-MutexProtected<UPtr<IRenderObjectTable>>& RenderObjectManager_Backend_getTable(Rtti* rtti) {
+RenderObjectTableBase* RenderObjectManager_Backend_getTable(Rtti* rtti) {
 	return RenderObjectManager_Backend::s_instance()->getTable(rtti);
 }
 
-void RenderObjectTable_init(IRenderObjectTable* table, GpuBufferPool* pool) {
-	if (pool) {
+void RenderObjectManager_Backend_addTable(RenderObjectTableBase* table) {
+	RenderObjectManager_Backend::s_instance()->addTable(table);
+	if (auto* pool = table->onGetGpuBufferPool()) {
 		auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
 		auto* worldParamSpace    = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);
 		auto  gpuBufName         = pool->name();
