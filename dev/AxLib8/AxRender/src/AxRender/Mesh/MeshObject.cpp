@@ -42,16 +42,16 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 		if (fvCount < 3) { AX_ASSERT(false); continue; }
 		u32 triCount = fvCount - 2;
 		
-		if (curMeshlet->vertCount + fvCount > kMaxVertexCountPerMeshlet) {
+		if (curMeshlet->draw.vertCount + fvCount > kMaxVertexCountPerMeshlet) {
 			if (fvCount > kMaxVertexCountPerMeshlet) throw Error_Undefined(Fmt("Face vertex count > kMaxVertexCountPerMeshlet"));
 			
-			u32 nextVertOffset = curMeshlet->vertCount + curMeshlet->vertOffset;
-			u32 nextPrimOffset = curMeshlet->primCount + curMeshlet->primOffset;
+			u32 nextVertOffset = curMeshlet->draw.vertCount + curMeshlet->draw.vertOffset;
+			u32 nextPrimOffset = curMeshlet->draw.primCount + curMeshlet->draw.primOffset;
 			
 			curMeshlet = &meshletInfo.emplaceBack();
 			*curMeshlet = {};
-			curMeshlet->vertOffset = nextVertOffset;
-			curMeshlet->primOffset = nextPrimOffset;
+			curMeshlet->draw.vertOffset = nextVertOffset;
+			curMeshlet->draw.primOffset = nextPrimOffset;
 		}
 		
 		auto dstVertices = meshletVert.extendsData(fvCount);
@@ -65,15 +65,15 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 			dstVert.rawColor = 0xffffffff;
 		}
 
-		u32 viBase = curMeshlet->vertCount;
+		u32 viBase = curMeshlet->draw.vertCount;
 		auto dstIdx  = meshletPrim.extendsData(triCount);
 		for (u32 j = 0; j < triCount; ++j) {
 			// triangle fan
 			dstIdx[j].tri = u32x3(0, j+1, j+2) + viBase;
 		}
 
-		curMeshlet->vertCount += fvCount;
-		curMeshlet->primCount += triCount;
+		curMeshlet->draw.vertCount += fvCount;
+		curMeshlet->draw.primCount += triCount;
 	}
 	
 	rttiCastCheck<MeshObject_Backend>(this)->objectSlot.markDirty();

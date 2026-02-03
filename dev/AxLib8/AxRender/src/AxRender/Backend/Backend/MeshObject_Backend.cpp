@@ -20,8 +20,8 @@ MeshObject_Backend::GpuData* MeshObject_Backend::onGetGpuData(RenderRequest* req
 	for (Int i = 0; i < srcMeshlets.size(); ++i) {
 		auto& dst = dstMeshlets[i];
 		dst = srcMeshlets[i];
-		dst.vertOffset += vertOffset;
-		dst.primOffset += primOffset;
+		dst.draw.vertOffset += vertOffset;
+		dst.draw.primOffset += primOffset;
 	}
 	
 	meshlet.buffer->getUploadedGpuBuffer(req);

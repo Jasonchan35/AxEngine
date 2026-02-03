@@ -250,8 +250,8 @@ public:
 		}
 		
 		AxMeshlet meshlet = {};
-		meshlet.vertCount = numVert;
-		meshlet.primCount = numPrim;
+		meshlet.draw.vertCount = numVert;
+		meshlet.draw.primCount = numPrim;
 		dstMesh->meshlet.setValue(0, meshlet);
 	}
 	
