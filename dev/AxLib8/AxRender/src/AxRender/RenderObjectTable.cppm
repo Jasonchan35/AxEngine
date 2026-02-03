@@ -21,7 +21,7 @@ public:
 	AX_INLINE RenderObjectSlotId slotId() const { return _slotId; }
 	AX_INLINE T*	 owner() { return _owner; }
 
-	RenderObjectSlot(T* owner, bool isFallbackDefault);
+	RenderObjectSlot(T* owner, bool isFallbackDefault = false);
 	~RenderObjectSlot();
 	void markDirty();
 
@@ -47,6 +47,7 @@ class RenderObjectTable : public IRenderObjectTable {
 public:
 	using Handle = RenderObjectSlot<T>;
 	using ResourceKey = typename T::ResourceKey;
+	static constexpr bool kHasResourceKey = !Type_IsSame<ResourceKey, TagNoInit_T>;
 
 	void add(T* obj, bool isFallbackDefault);
 	void remove(T* obj);
@@ -63,11 +64,13 @@ public:
 
 	virtual void onFrameEnd(class RenderRequest* req) override;
 
+	GpuBufferPool* gpuBufferPool() { return _gpuBufferPool; }
+	
 protected:
 	friend class RenderObjectManager_Backend;
 	Array<T*>                 _slots;
 	Array<RenderObjectSlotId> _freeSlots;
-	Array<SPtr<T>>            _dirtyObjects;
+	Array<T*>                 _dirtyObjects;
 	Dict<ResourceKey, T*>     _keyDict;
 	
 	using GpuData = typename T::GpuData;
@@ -85,9 +88,20 @@ protected:
 	Int _currentFrameIndex = 0;
 };
 
+void RenderObjectTable_init(IRenderObjectTable* table, GpuBufferPool* pool);
+
 template<class T> inline
 typename MutexProtected<RenderObjectTable<T>>::ScopedLock RenderObjectTable_getLocked() {
 	auto lock   = RenderObjectManager_Backend_getTable(rttiOf<T>()).scopedLock();
+	using Table = RenderObjectTable<T>; 
+	Table* table = rttiCastCheck<Table>(lock->ptr());
+	if (!table) {
+		auto uptr = UPtr_new<Table>(AX_NEW);
+		table = uptr.ptr();
+		RenderObjectTable_init(table, table->gpuBufferPool());
+		*lock.data() = std::move(uptr);
+	}
+	
 	auto* data  = rttiCastCheck<RenderObjectTable<T>>(lock->ptr());
 	auto* mutex = lock.detach();
 	return typename MutexProtected<RenderObjectTable<T>>::ScopedLock(*mutex, data);
@@ -132,7 +146,9 @@ template<class T>
 void RenderObjectTable<T>::add(T* obj, bool isFallbackDefault) {
 	if (!obj) return;
 
-	if (auto& key = obj->resourceKey()) { _keyDict.add(key, obj); }
+	if constexpr (kHasResourceKey) {
+		if (auto& key = obj->resourceKey()) { _keyDict.add(key, obj); }
+	}
 
 	auto& handle = obj->objectSlot;
 	if (handle) {
@@ -178,9 +194,11 @@ template<class T>
 void RenderObjectTable<T>::remove(T* obj) {
 	if (!obj) return;
 
-	if (auto& key = obj->resourceKey()) {
-		AX_ASSERT(obj == *_keyDict.find(key));
-		_keyDict.erase(key);
+	if constexpr (kHasResourceKey) {
+		if (auto& key = obj->resourceKey()) {
+			AX_ASSERT(obj == *_keyDict.find(key));
+			_keyDict.erase(key);
+		}
 	}
 
 	auto& handle = obj->objectSlot;

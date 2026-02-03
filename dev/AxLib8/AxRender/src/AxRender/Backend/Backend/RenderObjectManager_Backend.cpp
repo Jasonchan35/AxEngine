@@ -118,9 +118,9 @@ void RenderObjectManager_Backend::_postCreate() {
 		}
 	};
 	
-	createPoolParam(_structBufferPools.axMeshlet    , "axMeshlet"    , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axMeshletVert, "axMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axMeshletPrim, "axMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshlet    , "axGpuMeshlet"    , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletVert, "axGpuMeshletVert", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletPrim, "axGpuMeshletPrim", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 
 	
 #if AX_RENDER_BINDLESS
@@ -142,6 +142,19 @@ void RenderObjectManager_Backend::_postCreate() {
 
 MutexProtected<UPtr<IRenderObjectTable>>& RenderObjectManager_Backend_getTable(Rtti* rtti) {
 	return RenderObjectManager_Backend::s_instance()->getTable(rtti);
+}
+
+void RenderObjectTable_init(IRenderObjectTable* table, GpuBufferPool* pool) {
+	if (pool) {
+		auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
+		auto* worldParamSpace    = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);
+		auto  gpuBufName         = pool->name();
+		if (auto* param = worldParamSpace->findStructuredBufferParam(gpuBufName)) {
+			param->setBufferPool(pool);
+		} else {
+			throw Error_Undefined(Fmt("Cannot find structured buffer {} in AxGlobalCommon shader", gpuBufName));
+		}
+	}	
 }
 
 

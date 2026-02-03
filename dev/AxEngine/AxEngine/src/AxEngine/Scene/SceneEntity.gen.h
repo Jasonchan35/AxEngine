@@ -41,7 +41,7 @@
 
 
 //--- Type AxEngine::MeshRendererSystem ----------
-#define AX_GENERATED_BODY_LINE133() \
+#define AX_GENERATED_BODY_LINE132() \
 	AX_RTTI_INFO(MeshRendererSystem, Object) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\

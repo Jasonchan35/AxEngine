@@ -61,6 +61,10 @@ void MeshRendererSystem::onRender(RenderRequest* req) {
 		auto& objectToWorld = comp->entity()->worldMatrix();
 		
 		auto& mr = comp->renderer;
+		
+		mr.objectSlot.markDirty();
+		mr._gpuData.worldMatrix = objectToWorld;
+		
 		if (!mr.mesh || !mr.material) return;
 		req->drawMesh(mr.mesh, mr.material, 0, objectToWorld);
 	}

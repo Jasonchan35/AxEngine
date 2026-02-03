@@ -1,44 +1,46 @@
 #ifndef __AX_HLSL_CPU_STRUCT_h__
 #define __AX_HLSL_CPU_STRUCT_h__
 
-struct AxMeshletDraw {
+struct AxGpuMeshletDraw {
 	u32 vertOffset;
 	u32 vertCount;
 	u32 primOffset;
 	u32 primCount;
 };
 
-struct AxMeshlet {
-	AxMeshletDraw draw;
+struct AxGpuMeshlet {
+	AxGpuMeshletDraw draw;
 	// AABB
 };
 
-
-struct AxMeshletVert {
+struct AxGpuMeshletVert {
 	Vec3f   pos;
 	u32     rawColor;
 	Vec2f   uv0;
 	Vec2f   uv1;
 //	Vec2f   rawNormal;
 	Vec3f   normal;
-	u32 unused0;
-	u32 unused1;
-	u32 unused2;
-	u32 unused3;
-	u32 unused4;
+	u32 _padding[5];
 };
 
-struct AxMeshletPrim {
+struct AxGpuMeshletPrim {
 	u32x3 	tri;
-	u32 	_unused0;
+	u32 	_padding[1];
 };
 
 
-struct AxMeshInfo {
+struct AxGpuMeshObject {
 	u32 meshletOffset;
 	u32 meshletCount;
 	u32 totalVertCount;
 	u32 totalPrimCount;
+};
+
+struct AxGpuMeshObjectRenderer {
+	Mat4f	worldMatrix;
+	u32 	meshObjectId;
+	u32 	materialId;
+	u32 	_padding[16-2];
 };
 
 #endif // __AX_HLSL_CPU_STRUCT_h__

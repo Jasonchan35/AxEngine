@@ -240,7 +240,8 @@ bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(NameId name, cons
 template<class V> inline
 bool MaterialParamSpace_Backend::ConstBufferParam::setVariable(const VarInfo* varInfo, const V& value) {
 	if (!varInfo) return false;
-	if (varInfo->dataType() != RenderDataType_get<V>) throw Error_Undefined();
+	auto& varType = varInfo->varType();
+	if (varType.dataType != RenderDataType_get<V>) throw Error_Undefined();
 	auto range = varInfo->assignValueToBuffer(_dynamicGpuBuffer.mutSpan(), value);
 	_dynamicGpuBuffer.markDirty(range);
 	return true;

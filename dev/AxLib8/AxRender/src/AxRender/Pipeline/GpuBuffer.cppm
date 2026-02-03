@@ -303,8 +303,9 @@ public:
 template<class T>
 class StructuredGpuBuffer_ : public NonCopyable {
 public:
-	using Pool = StructuredGpuBufferPool_<T>;
+	static_assert(Math::isPow2(AX_SIZEOF(T))); // Virtual allocator needs pow2
 	
+	using Pool = StructuredGpuBufferPool_<T>;
 	void create(const MemAllocRequest& req, InNameId name, Pool& pool) {
 		buffer = StructuredGpuBuffer::s_new<T>(req, name, pool.pool);
 	}

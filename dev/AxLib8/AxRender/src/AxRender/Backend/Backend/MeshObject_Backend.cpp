@@ -26,16 +26,11 @@ MeshObject_Backend::GpuData* MeshObject_Backend::onGetGpuData(RenderRequest* req
 	
 	meshlet.buffer->getUploadedGpuBuffer(req);
 
-	AxMeshInfo outInfo = {};
-	outInfo.meshletOffset  = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
-	outInfo.meshletCount   = ax_safe_cast_from(meshlet.buffer->count());
-	outInfo.totalVertCount = ax_safe_cast_from(meshletVert.buffer->count());
-	outInfo.totalPrimCount = ax_safe_cast_from(meshletPrim.buffer->count());
-
-	//	meshInfo.setValue(0, outInfo);
-	//	meshInfo.buffer->getUploadedGpuBuffer(req);
-	_gpuData.meshInfo = outInfo;
-	return &_gpuData;
+	_gpuMeshObject.meshletOffset  = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
+	_gpuMeshObject.meshletCount   = ax_safe_cast_from(meshlet.buffer->count());
+	_gpuMeshObject.totalVertCount = ax_safe_cast_from(meshletVert.buffer->count());
+	_gpuMeshObject.totalPrimCount = ax_safe_cast_from(meshletPrim.buffer->count());
+	return &_gpuMeshObject;
 }
 
 } // namespace

@@ -52,14 +52,14 @@
             }
         },
         {
-            "name": "axMeshletVert",
+            "name": "axGpuMeshletVert",
             "binding": {"kind": "shaderResource", "space": 1, "index": 20201},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
                 "resultType": {
                     "kind": "struct",
-                    "name": "AxMeshletVert",
+                    "name": "AxGpuMeshletVert",
                     "fields": [
                         {
                             "name": "pos",
@@ -118,58 +118,31 @@
                             "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4}
                         },
                         {
-                            "name": "unused0",
+                            "name": "_padding",
                             "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
+                                "kind": "array",
+                                "elementCount": 5,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
+                                },
+                                "uniformStride": 4
                             },
-                            "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "unused1",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 48, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "unused2",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 52, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "unused3",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 56, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "unused4",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 44, "size": 20, "elementStride": 4}
                         }
                     ]
                 }
             }
         },
         {
-            "name": "axMeshletPrim",
+            "name": "axGpuMeshletPrim",
             "binding": {"kind": "shaderResource", "space": 1, "index": 20202},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
                 "resultType": {
                     "kind": "struct",
-                    "name": "AxMeshletPrim",
+                    "name": "AxGpuMeshletPrim",
                     "fields": [
                         {
                             "name": "tri",
@@ -184,32 +157,37 @@
                             "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                         },
                         {
-                            "name": "_unused0",
+                            "name": "_padding",
                             "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
+                                "kind": "array",
+                                "elementCount": 1,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
+                                },
+                                "uniformStride": 4
                             },
-                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 4}
                         }
                     ]
                 }
             }
         },
         {
-            "name": "axMeshlet",
+            "name": "axGpuMeshlet",
             "binding": {"kind": "shaderResource", "space": 1, "index": 20203},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
                 "resultType": {
                     "kind": "struct",
-                    "name": "AxMeshlet",
+                    "name": "AxGpuMeshlet",
                     "fields": [
                         {
                             "name": "draw",
                             "type": {
                                 "kind": "struct",
-                                "name": "AxMeshletDraw",
+                                "name": "AxGpuMeshletDraw",
                                 "fields": [
                                     {
                                         "name": "vertOffset",
@@ -252,14 +230,14 @@
             }
         },
         {
-            "name": "axMeshInfo",
+            "name": "axGpuMeshObject",
             "binding": {"kind": "shaderResource", "space": 1, "index": 20204},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
                 "resultType": {
                     "kind": "struct",
-                    "name": "AxMeshInfo",
+                    "name": "AxGpuMeshObject",
                     "fields": [
                         {
                             "name": "meshletOffset",
@@ -292,6 +270,62 @@
                                 "scalarType": "uint32"
                             },
                             "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "axGpuMeshObjectRenderer",
+            "binding": {"kind": "shaderResource", "space": 1, "index": 20205},
+            "type": {
+                "kind": "resource",
+                "baseShape": "structuredBuffer",
+                "resultType": {
+                    "kind": "struct",
+                    "name": "AxGpuMeshObjectRenderer",
+                    "fields": [
+                        {
+                            "name": "worldMatrix",
+                            "type": {
+                                "kind": "matrix",
+                                "rowCount": 4,
+                                "columnCount": 4,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
+                        },
+                        {
+                            "name": "meshObjectId",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 64, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "materialId",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 68, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "_padding",
+                            "type": {
+                                "kind": "array",
+                                "elementCount": 14,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "uint32"
+                                },
+                                "uniformStride": 4
+                            },
+                            "binding": {"kind": "uniform", "offset": 72, "size": 56, "elementStride": 4}
                         }
                     ]
                 }
@@ -1017,20 +1051,24 @@
                     "binding": {"kind": "shaderResource", "space": 2, "index": 40000, "used": 0}
                 },
                 {
-                    "name": "axMeshletVert",
+                    "name": "axGpuMeshletVert",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20201, "used": 0}
                 },
                 {
-                    "name": "axMeshletPrim",
+                    "name": "axGpuMeshletPrim",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20202, "used": 0}
                 },
                 {
-                    "name": "axMeshlet",
+                    "name": "axGpuMeshlet",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20203, "used": 0}
                 },
                 {
-                    "name": "axMeshInfo",
+                    "name": "axGpuMeshObject",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20204, "used": 0}
+                },
+                {
+                    "name": "axGpuMeshObjectRenderer",
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20205, "used": 0}
                 },
                 {
                     "name": "axWorld",

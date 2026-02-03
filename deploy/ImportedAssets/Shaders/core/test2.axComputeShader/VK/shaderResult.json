@@ -50,29 +50,44 @@
           "stride": 32, 
           "variables": [{
               "name": "testDouble", 
-              "dataType": "f64", 
+              "varType": {
+                "dataType": "f64", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 8
+              "sizeInBytes": 8
             }, {
               "name": "testDouble2", 
-              "dataType": "f64", 
+              "varType": {
+                "dataType": "f64", 
+                "elementCount": 0
+              }, 
               "offset": 8, 
-              "size": 8
+              "sizeInBytes": 8
             }, {
               "name": "packDouble0", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 16, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "packDouble1", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 20, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "packDouble", 
-              "dataType": "u32x2", 
+              "varType": {
+                "dataType": "u32x2", 
+                "elementCount": 0
+              }, 
               "offset": 24, 
-              "size": 8
+              "sizeInBytes": 8
             }]
         }], 
       "textures": [], 
@@ -87,14 +102,20 @@
           "stride": 16, 
           "variables": [{
               "name": "color", 
-              "dataType": "f32x3", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
               "name": "foo", 
-              "dataType": "f32", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
               "offset": 12, 
-              "size": 4
+              "sizeInBytes": 4
             }]
         }]
     }]

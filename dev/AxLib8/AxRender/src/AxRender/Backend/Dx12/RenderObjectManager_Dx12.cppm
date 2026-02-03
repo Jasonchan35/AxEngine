@@ -93,8 +93,8 @@ public:
 	} indirectDraw;
 	
 #if AX_RENDER_BINDLESS
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend  >>& list) override;
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) override;
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler_Backend  *>& list) override;
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D_Backend*>& list) override;
 	
 	struct BindlessDescriptors : public NonCopyable {
 		Dx12DescriptorHandle	CBV_SRV_UAV;

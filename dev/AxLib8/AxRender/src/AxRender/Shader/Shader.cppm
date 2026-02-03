@@ -41,23 +41,24 @@ public:
 		}
 	};
 	Array<Input>		inputs;
-
+		using VarType = ShaderVariableType;
+		
 	struct Variable {
-		String			name;
-		RenderDataType	dataType = RenderDataType::None;
-		Int				offset = 0;
-		Int				size   = 0;
+		String	name;
+		VarType	varType;
+		Int		offset = 0;
+		Int		sizeInBytes = 0;
 
 		constexpr bool operator==(const Variable& r) {
-			return offset == r.offset && dataType == r.dataType;
+			return offset == r.offset && varType == r.varType;
 		}
 
 		template<class SE>
 		void onJsonIO(SE & se) {
 			AX_JSON_IO(se, name);
-			AX_JSON_IO(se, dataType);
+			AX_JSON_IO(se, varType);
 			AX_JSON_IO(se, offset);
-			AX_JSON_IO(se, size);
+			AX_JSON_IO(se, sizeInBytes);
 		}
 	};
 

@@ -48,24 +48,36 @@
           "stride": 48, 
           "variables": [{
               "name": "time", 
-              "dataType": "f32", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "deltaTime", 
-              "dataType": "f32", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
               "offset": 4, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "timeSin", 
-              "dataType": "f32x4", 
+              "varType": {
+                "dataType": "f32x4", 
+                "elementCount": 0
+              }, 
               "offset": 16, 
-              "size": 16
+              "sizeInBytes": 16
             }, {
               "name": "timeSlowSin", 
-              "dataType": "f32x4", 
+              "varType": {
+                "dataType": "f32x4", 
+                "elementCount": 0
+              }, 
               "offset": 32, 
-              "size": 16
+              "sizeInBytes": 16
             }]
         }, {
           "name": "axCamera", 
@@ -77,49 +89,76 @@
           "stride": 416, 
           "variables": [{
               "name": "worldPos", 
-              "dataType": "f32x3", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
               "name": "viewportMin", 
-              "dataType": "f32x2", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
               "offset": 16, 
-              "size": 8
+              "sizeInBytes": 8
             }, {
               "name": "viewportMax", 
-              "dataType": "f32x2", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
               "offset": 24, 
-              "size": 8
+              "sizeInBytes": 8
             }, {
               "name": "projMatrix", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 32, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "projMatrixInv", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 96, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "viewMatrix", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 160, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "viewMatrixInv", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 224, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "viewProjMatrix", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 288, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "viewProjMatrixInv", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 352, 
-              "size": 64
+              "sizeInBytes": 64
             }]
         }, {
           "name": "axDrawCallRootConst", 
@@ -131,34 +170,52 @@
           "stride": 144, 
           "variables": [{
               "name": "AX_MATRIX_MVP", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "AX_MATRIX_M", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 64, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "AX_OBJECT_ID", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 128, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AX_MESH_ID", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 132, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AX_MESHLET_ID", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 136, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "_usedPadding0", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 140, 
-              "size": 4
+              "sizeInBytes": 4
             }]
         }, {
           "name": "$Globals", 
@@ -170,29 +227,44 @@
           "stride": 20, 
           "variables": [{
               "name": "foo", 
-              "dataType": "f32", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AxSamplerState_foo_tex2d", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 4, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AxTexture2D_foo_tex2d", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 8, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AxSamplerState_foo_tex3d", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 12, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AxTexture3D_foo_tex3d", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 16, 
-              "size": 4
+              "sizeInBytes": 4
             }]
         }], 
       "textures": [{
@@ -220,7 +292,7 @@
           "dynamicSampler": true
         }], 
       "structuredBuffers": [{
-          "name": "axMeshletVert", 
+          "name": "axGpuMeshletVert", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
@@ -229,57 +301,55 @@
           "stride": 64, 
           "variables": [{
               "name": "pos", 
-              "dataType": "f32x3", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
               "name": "rawColor", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 12, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "uv0", 
-              "dataType": "f32x2", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
               "offset": 16, 
-              "size": 8
+              "sizeInBytes": 8
             }, {
               "name": "uv1", 
-              "dataType": "f32x2", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
               "offset": 24, 
-              "size": 8
+              "sizeInBytes": 8
             }, {
               "name": "normal", 
-              "dataType": "f32x3", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
               "offset": 32, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
-              "name": "unused0", 
-              "dataType": "u32", 
+              "name": "_padding", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 5
+              }, 
               "offset": 44, 
-              "size": 4
-            }, {
-              "name": "unused1", 
-              "dataType": "u32", 
-              "offset": 48, 
-              "size": 4
-            }, {
-              "name": "unused2", 
-              "dataType": "u32", 
-              "offset": 52, 
-              "size": 4
-            }, {
-              "name": "unused3", 
-              "dataType": "u32", 
-              "offset": 56, 
-              "size": 4
-            }, {
-              "name": "unused4", 
-              "dataType": "u32", 
-              "offset": 60, 
-              "size": 4
+              "sizeInBytes": 20
             }]
         }, {
-          "name": "axMeshletPrim", 
+          "name": "axGpuMeshletPrim", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
@@ -288,17 +358,23 @@
           "stride": 16, 
           "variables": [{
               "name": "tri", 
-              "dataType": "u32x3", 
+              "varType": {
+                "dataType": "u32x3", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
-              "name": "_unused0", 
-              "dataType": "u32", 
+              "name": "_padding", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 1
+              }, 
               "offset": 12, 
-              "size": 4
+              "sizeInBytes": 4
             }]
         }, {
-          "name": "axMeshlet", 
+          "name": "axGpuMeshlet", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
@@ -307,12 +383,15 @@
           "stride": 16, 
           "variables": [{
               "name": "draw", 
-              "dataType": "Struct", 
+              "varType": {
+                "dataType": "Struct", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 16
+              "sizeInBytes": 16
             }]
         }, {
-          "name": "axMeshInfo", 
+          "name": "axGpuMeshObject", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
@@ -321,24 +400,77 @@
           "stride": 16, 
           "variables": [{
               "name": "meshletOffset", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "meshletCount", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 4, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "totalVertCount", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 8, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "totalPrimCount", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 12, 
-              "size": 4
+              "sizeInBytes": 4
+            }]
+        }, {
+          "name": "axGpuMeshObjectRenderer", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
+          "bindSpace": "World", 
+          "bindPoint": 20205, 
+          "bindCount": 1, 
+          "stride": 128, 
+          "variables": [{
+              "name": "worldMatrix", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
+              "offset": 0, 
+              "sizeInBytes": 64
+            }, {
+              "name": "meshObjectId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 64, 
+              "sizeInBytes": 4
+            }, {
+              "name": "materialId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 68, 
+              "sizeInBytes": 4
+            }, {
+              "name": "_padding", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 14
+              }, 
+              "offset": 72, 
+              "sizeInBytes": 56
             }]
         }, {
           "name": "axLights", 
@@ -350,9 +482,12 @@
           "stride": 16, 
           "variables": [{
               "name": "color", 
-              "dataType": "f32x4", 
+              "varType": {
+                "dataType": "f32x4", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 16
+              "sizeInBytes": 16
             }]
         }, {
           "name": "axObjects", 
@@ -364,19 +499,28 @@
           "stride": 80, 
           "variables": [{
               "name": "worldMatrix", 
-              "dataType": "Mat4f", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 64
+              "sizeInBytes": 64
             }, {
               "name": "aabbMin", 
-              "dataType": "f32x2", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
               "offset": 64, 
-              "size": 8
+              "sizeInBytes": 8
             }, {
               "name": "aabbMax", 
-              "dataType": "f32x2", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
               "offset": 72, 
-              "size": 8
+              "sizeInBytes": 8
             }]
         }]
     }]

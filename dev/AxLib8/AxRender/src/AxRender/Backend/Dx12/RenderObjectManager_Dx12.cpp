@@ -7,25 +7,24 @@ namespace ax {
 
 #if AX_RENDER_BINDLESS
 
-template<class T>
+template<class T, class T_BASE>
 struct RenderObjectManager_Dx12_onUpdateDescriptors {
-	using T_Backend = typename T::_TYPE_INFO_Base;
-	static void run(RenderRequest_Backend* req_, Array<SPtr<T_Backend>>& list) {
+	static void run(RenderRequest_Backend* req_, Array<T_BASE*>& list) {
 		auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 		for (auto& obj_ : list) {
-			auto* obj = rttiCastCheck<T>(obj_.ptr());
+			auto* obj = rttiCastCheck<T>(obj_);
 			if (!obj) continue;
 			obj->_getUpdatedDescriptor(req);
 		}
 	}
 };
 
-void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend>>& list) {
-	RenderObjectManager_Dx12_onUpdateDescriptors<Sampler_Dx12>::run(req, list);
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler_Backend*>& list) {
+	RenderObjectManager_Dx12_onUpdateDescriptors<Sampler_Dx12, Sampler_Backend>::run(req, list);
 }
 
-void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {
-	RenderObjectManager_Dx12_onUpdateDescriptors<Texture2D_Dx12>::run(req, list);
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D_Backend*>& list) {
+	RenderObjectManager_Dx12_onUpdateDescriptors<Texture2D_Dx12, Texture2D_Backend>::run(req, list);
 }
 
 #endif // #if AX_RENDER_BINDLESS

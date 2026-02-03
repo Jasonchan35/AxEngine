@@ -124,7 +124,6 @@ public:
 	virtual ~MeshRendererComponent() override;
 
 	MeshObjectRenderer renderer;
-	
 	Int _systemSlotId = 0;
 };
 

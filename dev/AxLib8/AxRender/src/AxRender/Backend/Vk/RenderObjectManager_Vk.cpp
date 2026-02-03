@@ -16,10 +16,10 @@ struct RenderObjectManager_Vk_onUpdateDescriptors {
 	using BindPoint = ShaderParamBindPoint;
 
 	static void run(RenderObjectManager_Vk* mgr,
-	                RenderRequest_Backend*    req_,
-	                Array<SPtr<T_Backend>>&   list,
-	                VkDescriptorType          descType,
-	                BindPoint                 bindPoint
+	                RenderRequest_Backend*  req_,
+	                Array<T_Backend*>&      list,
+	                VkDescriptorType        descType,
+	                BindPoint               bindPoint
 	) {
 		auto* req       = rttiCastCheck<RenderRequest_Vk>(req_);
 		auto  helper    = req->_writeDescSetHelper.scopeStart();
@@ -28,7 +28,7 @@ struct RenderObjectManager_Vk_onUpdateDescriptors {
 //		AX_LOG("onUpdateDescriptors descType={} size={} -------", descType, list.size());
 		
 		for (auto& obj_ : list) {
-			auto* obj = rttiCastCheck<T>(obj_.ptr());
+			auto* obj = rttiCastCheck<T>(obj_);
 			if (!obj) continue;
 			auto slotId = obj->objectSlot.slotId();
 			auto info   = obj->_getUpdatedDescriptorInfo(req);
@@ -41,13 +41,13 @@ struct RenderObjectManager_Vk_onUpdateDescriptors {
 	}
 };
 
-void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler_Backend>>& list) {
+void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler_Backend*>& list) {
 	auto  bindPoint = bindless.AxBindless_SamplerState->bindPoint();
 	auto  descType  = VK_DESCRIPTOR_TYPE_SAMPLER;
 	RenderObjectManager_Vk_onUpdateDescriptors<Sampler_Vk>::run(this, req, list, descType, bindPoint);
 }
 
-void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D_Backend>>& list) {
+void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D_Backend*>& list) {
 	auto  bindPoint = bindless.AxBindless_Texture2D->bindPoint();
 	auto  descType  = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 	RenderObjectManager_Vk_onUpdateDescriptors<Texture2D_Vk>::run(this, req, list, descType, bindPoint);

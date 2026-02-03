@@ -53,14 +53,20 @@
           "stride": 176, 
           "variables": [{
               "name": "drawIndexed", 
-              "dataType": "Struct", 
+              "varType": {
+                "dataType": "Struct", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 20
+              "sizeInBytes": 20
             }, {
               "name": "rootConst", 
-              "dataType": "Struct", 
+              "varType": {
+                "dataType": "Struct", 
+                "elementCount": 0
+              }, 
               "offset": 32, 
-              "size": 144
+              "sizeInBytes": 144
             }]
         }]
     }]

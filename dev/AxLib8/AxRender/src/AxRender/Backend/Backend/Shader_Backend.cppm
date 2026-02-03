@@ -26,29 +26,30 @@ public:
 	
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	
+	using VarType = ShaderVariableType;
 	struct VarInfo {
 		VarInfo() = default;
 		VarInfo(const ShaderStageInfo::Variable& r)
 			: _name(NameId::s_make(r.name))
 			, _offset(r.offset)
-			, _size(r.size)
-			, _dataType(r.dataType)
+			, _sizeInBytes(r.sizeInBytes)
+			, _varType(r.varType)
 		{}
 
-		NameId         name() const { return _name; }
-		Int            offset() const { return _offset; }
-		Int            size() const { return _size; }
-		RenderDataType dataType() const { return _dataType; }
+		NameId  name() const { return _name; }
+		Int     offset() const { return _offset; }
+		Int     sizeInBytes() const { return _sizeInBytes; }
+		const VarType& varType() const { return _varType; }
 
 		template<class V> IntRange assignValueToBuffer(MutByteSpan buf, const V& value) const;
 
 	private:
 		template<class V> IntRange _assignValueToBuffer(MutByteSpan buf, const V& value) const;
 		
-		NameId         _name;
-		Int            _offset   = 0;
-		Int            _size     = 0;
-		RenderDataType _dataType = RenderDataType::None;
+		NameId   _name;
+		Int      _offset   = 0;
+		Int      _sizeInBytes = 0;
+		VarType  _varType;
 	};
 
 	using ParamIndex = u32;
@@ -202,8 +203,8 @@ protected:
 template<class V> inline
 IntRange ShaderParamSpace_Backend::VarInfo::_assignValueToBuffer(MutByteSpan buf, const V& value) const {
 	auto srcDataType = RenderDataType_get<V>;
-	if (_dataType != srcDataType)
-		throw Error_Undefined(Fmt("Shader: assign variable type mismatch, from '{}' to '{}'", srcDataType, _dataType));
+	if (_varType.dataType != srcDataType)
+		throw Error_Undefined(Fmt("Shader: assign variable type mismatch, from '{}' to '{}'", srcDataType, _varType));
 
 	IntRange range = IntRange_StartAndSize(_offset, AX_SIZEOF(value));
 

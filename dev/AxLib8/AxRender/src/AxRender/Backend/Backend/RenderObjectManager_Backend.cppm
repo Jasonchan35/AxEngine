@@ -35,19 +35,20 @@ public:
 	void hotReloadFile(StrView filename);
 
 	using ITable = IRenderObjectTable;
-	
-	template<class T>
-	using Table = RenderObjectTable<T>;
-	
-	template<class T>
-	using Table_ScopedLock = Table<T>::Table_ScopedLock;
+	template<class T> using Table = RenderObjectTable<T>;
+	template<class T> using Table_ScopedLock = typename MutexProtected<Table<T>>::ScopedLock;
 	
 	AX_NODISCARD MutexProtected<UPtr<ITable>>& getTable(Rtti* rtti) {
 		return _objectTables.scopedLock()->getEntry(rtti);
 	}
 	
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<   Sampler_Backend>>& list) {}
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr< Texture2D_Backend>>& list) {}
+	template<class T>
+	AX_NODISCARD Table_ScopedLock<T> getOrAddLockedTable() {
+		return _objectTables.scopedLock()->getOrAddLockedTable<T>();
+	}
+	
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<  Sampler_Backend*>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D_Backend*>& list) {}
 
 #if AX_RENDER_BINDLESS
 	struct Bindless {
@@ -78,9 +79,9 @@ public:
 	} _bufferPools;
 
 	struct StructBufferPools {
-		StructuredGpuBufferPool_<AxMeshlet>		axMeshlet;
-		StructuredGpuBufferPool_<AxMeshletVert>	axMeshletVert;
-		StructuredGpuBufferPool_<AxMeshletPrim>	axMeshletPrim;
+		StructuredGpuBufferPool_<AxGpuMeshlet>		axMeshlet;
+		StructuredGpuBufferPool_<AxGpuMeshletVert>	axMeshletVert;
+		StructuredGpuBufferPool_<AxGpuMeshletPrim>	axMeshletPrim;
 		
 		template<class FUNC>
 		void visitPools(FUNC func) {
@@ -100,19 +101,10 @@ protected:
 	struct ObjectTables {
 		Dict<Rtti*, MutexProtected<UPtr<ITable>>> dict;
 
-		AX_NODISCARD MutexProtected<UPtr<ITable>>& getEntry(Rtti* rtti) {
-			auto* entry = dict.find(rtti);
-			if (!entry) {
-				entry = &dict.add(rtti);
-			}
-			return *entry;
-		}
-		
+		AX_NODISCARD MutexProtected<UPtr<ITable>>& getEntry(Rtti* rtti);
+
 		template<class T>
-		AX_NODISCARD Table_ScopedLock<T> getLockedTable() {
-			auto lockTable = getEntry(rttiOf<T>()).scopedLock();
-			return Table_ScopedLock<T>(lockTable.detach(), lockTable.data());
-		}
+		AX_NODISCARD Table_ScopedLock<T> getOrAddLockedTable();
 	};
 	
 	MutexProtected<ObjectTables> _objectTables;
@@ -128,27 +120,7 @@ bool RenderObjectManager_Backend::getOrNewResource(SPtr<T>&               sp,
                                                      const CREATE_DESC&     desc,
                                                      const RESOURCE_KEY&    key
 ) {
-	auto* rtti = rttiOf<T>();
-	auto lock = getTable(rtti).scopedLock();
-	Table<T>* table = rttiCastCheck<Table<T>>(lock->ptr());
-	if (!table) {
-		auto newTable = UPtr_new<Table<T>>(AX_NEW);
-		table = newTable.ptr();
-		
-		if (table->_gpuBufferPool) {
-			auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
-			auto* worldParamSpace  = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);
-			auto gpuBufName = table->_gpuBufferPool->name();
-			if (auto* param = worldParamSpace->findStructuredBufferParam(gpuBufName)) {
-				param->setBufferPool(table->_gpuBufferPool);
-			} else {
-				throw Error_Undefined(Fmt("Cannot find structured buffer {} in AxGlobalCommon shader", gpuBufName));
-			}
-		}
-		
-		lock->ref(newTable.detach());
-	}
-	
+	auto table = getOrAddLockedTable<T>();
 	if (key) {
 		if (auto* p = table->findObject(key)) {
 			sp = p;
@@ -160,6 +132,38 @@ bool RenderObjectManager_Backend::getOrNewResource(SPtr<T>&               sp,
 	RenderSystem_Backend::s_instance()->_newObject(u, req, desc);
 	sp = SPtr_fromUPtr(std::move(u));
 	return true;
+}
+ 
+auto RenderObjectManager_Backend::ObjectTables::getEntry(Rtti* rtti) -> MutexProtected<UPtr<ITable>>& {
+	auto* entry = dict.find(rtti);
+	if (!entry) {
+		entry = &dict.add(rtti);
+	}
+	return *entry;
+}
+
+template<class T>
+auto RenderObjectManager_Backend::ObjectTables::getOrAddLockedTable() -> Table_ScopedLock<T> {
+	auto  lockTable = getEntry(rttiOf<T>()).scopedLock();
+	Table<T>* table = rttiCastCheck<Table<T>>(lockTable->ptr());
+	if (!table) {
+		auto uptr = UPtr_new<Table<T>>(AX_NEW);
+		table = uptr.ptr();
+		if (table->_gpuBufferPool) {
+			auto* commonMaterialPass = MaterialPass_Backend::s_globalCommonMaterialPass();
+			auto* worldParamSpace    = commonMaterialPass->getOwnParamSpace(ShaderParamBindSpace::World);
+			auto  gpuBufName         = table->_gpuBufferPool->name();
+			if (auto* param = worldParamSpace->findStructuredBufferParam(gpuBufName)) {
+				param->setBufferPool(table->_gpuBufferPool);
+			} else {
+				throw Error_Undefined(Fmt("Cannot find structured buffer {} in AxGlobalCommon shader", gpuBufName));
+			}
+		}
+		*lockTable.data() = std::move(uptr);
+	}
+			
+	Mutex* mutex = lockTable.detach();
+	return Table_ScopedLock<T>(*mutex, table);
 }
 
 } // namespace

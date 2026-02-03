@@ -7,7 +7,7 @@ import :GenReflect_Slang;
 
 namespace ax /*::AxRender*/ {
 
-ShaderStageFlags getShaderStageFlags(StrView s) {
+ShaderStageFlags GenReflect_Slang::_getShaderStageFlags(StrView s) {
 	if (s == "vertex"       ) return ShaderStageFlags::Vertex;
 	if (s == "fragment"     ) return ShaderStageFlags::Pixel;
 	if (s == "geometry"     ) return ShaderStageFlags::Geometry;
@@ -17,7 +17,7 @@ ShaderStageFlags getShaderStageFlags(StrView s) {
 	return ShaderStageFlags::None;
 }
 
-VertexSemantic	getShaderSemantic(StrView src) {
+VertexSemantic	GenReflect_Slang::_getShaderSemantic(StrView src) {
 	VertexSemantic o;
 	
 	if (src == "COLOR"   ) return VertexSemantic::COLOR0;
@@ -32,7 +32,7 @@ VertexSemantic	getShaderSemantic(StrView src) {
 	return o;
 }
 
-RenderDataType getDataType(const JsonObject& json_type) {
+RenderDataType GenReflect_Slang::_getRenderDataType(const JsonObject& json_type) {
 	auto& json_kind = json_type.memberString("kind");
 	
 	if (json_kind == "None") return RenderDataType::None;
@@ -55,7 +55,6 @@ RenderDataType getDataType(const JsonObject& json_type) {
 		if (scalarType == "float64" ) return RenderDataType::f64;
 
 		throw Error_Undefined(Fmt("unsupported scalarType {}", scalarType));
-		
 	}
 	
 	if (json_kind == "vector") {
@@ -122,6 +121,20 @@ RenderDataType getDataType(const JsonObject& json_type) {
 	return RenderDataType::None;
 }
 
+ShaderVariableType GenReflect_Slang::_getShaderVariableType(const JsonObject& json_type) {
+	ShaderVariableType o;
+	auto& json_kind = json_type.memberString("kind");
+		
+	if (json_kind == "array") {
+		o.elementCount = ax_safe_cast_from(json_type.member("elementCount")->asInt64());
+		o.dataType     = _getRenderDataType(json_type.memberObject("elementType"));
+		return o;
+	} else {
+		o.dataType     = _getRenderDataType(json_type);
+	}
+	return o;
+}
+
 void GenReflect_Slang::generate(StrView outFilename, StrView filename, RenderAPI api) {
 	JsonValue json_root;
 	JsonIO::readFile(filename, json_root);
@@ -131,7 +144,7 @@ void GenReflect_Slang::generate(StrView outFilename, StrView filename, RenderAPI
 	auto& json_entryPoint = json_entryPoints[0];
 	
 	ShaderStageInfo outInfo;
-	outInfo.stageFlags = getShaderStageFlags(json_entryPoint.member("stage")->asString());
+	outInfo.stageFlags = _getShaderStageFlags(json_entryPoint.member("stage")->asString());
 
 	_globalConstBuffer.name = "$Globals";
 	_globalConstBuffer.dataType = RenderDataType::ConstBuffer;
@@ -146,7 +159,7 @@ void GenReflect_Slang::generate(StrView outFilename, StrView filename, RenderAPI
 	if (_globalConstBuffer.variables) {
 		_globalConstBuffer.stride = 0; 
 		for (auto& v : _globalConstBuffer.variables) {
-			Math::max_itself(_globalConstBuffer.stride, v.offset + v.size); 
+			Math::max_itself(_globalConstBuffer.stride, v.offset + v.sizeInBytes); 
 		} 
 		outInfo.constBuffers.emplaceBack(_globalConstBuffer);
 	}
@@ -171,9 +184,9 @@ void GenReflect_Slang::_genVertexInputs(ShaderStageInfo& outInfo, const JsonValu
 	for (auto& json_field : *json_pFields) {
 		auto& dst = outInfo.inputs.emplaceBack();
 		if (auto* json_semanticName = json_field.findMember("semanticName")) {
-			dst.semantic = getShaderSemantic(json_semanticName->asString());
+			dst.semantic = _getShaderSemantic(json_semanticName->asString());
 		}
-		dst.dataType = getDataType(json_field.member("type")->asObject());
+		dst.dataType = _getRenderDataType(json_field.member("type")->asObject());
 	}
 }
 
@@ -249,10 +262,10 @@ void GenReflect_Slang::_genGlobalParam(ShaderStageInfo& outInfo, const SrcParam&
 	auto& dstVar = _globalConstBuffer.variables.emplaceBack();
 	auto& json_field_binding = srcParam.parameter->memberObject("binding");
 	
-	dstVar.name     = srcParam.parameter->memberString("name");
-	dstVar.dataType = getDataType(srcParam.parameter->memberObject("type"));
-	dstVar.offset   = ax_safe_cast_from(json_field_binding.member("offset")->asInt64());
-	dstVar.size     = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
+	dstVar.name        = srcParam.parameter->memberString("name");
+	dstVar.varType     = _getShaderVariableType(srcParam.parameter->memberObject("type"));
+	dstVar.offset      = ax_safe_cast_from(json_field_binding.member("offset")->asInt64());
+	dstVar.sizeInBytes = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
 }
 
 void GenReflect_Slang::_genVariables(ShaderStageInfo::BufferBase& dstBuf, const JsonArray& json_fields) {
@@ -262,12 +275,12 @@ void GenReflect_Slang::_genVariables(ShaderStageInfo::BufferBase& dstBuf, const 
 		auto& dstVar = dstBuf.variables.emplaceBack();
 		auto& json_field_binding = json_field.memberObject("binding");
 		
-		dstVar.name     = json_field.memberString("name");
-		dstVar.dataType = getDataType(json_field.memberObject("type"));
-		dstVar.offset   = ax_safe_cast_from(json_field_binding.member("offset")->asInt64());
-		dstVar.size     = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
+		dstVar.name        = json_field.memberString("name");
+		dstVar.varType     = _getShaderVariableType(json_field.memberObject("type"));
+		dstVar.offset      = ax_safe_cast_from(json_field_binding.member("offset")->asInt64());
+		dstVar.sizeInBytes = ax_safe_cast_from(json_field_binding.member("size")->asInt64());
 		
-		Math::max_itself(dstBuf.stride, dstVar.offset + dstVar.size);
+		Math::max_itself(dstBuf.stride, dstVar.offset + dstVar.sizeInBytes);
 	}
 }
 

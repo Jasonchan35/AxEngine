@@ -485,6 +485,13 @@ RenderDataType GenReflect_Dx12::_getRenderDataType(const D3D12_SHADER_TYPE_DESC&
 	throw Error_Undefined();
 }
 
+ShaderVariableType GenReflect_Dx12::_getShaderVariableType(const D3D12_SHADER_TYPE_DESC& t) {
+	ShaderVariableType o;
+	o.elementCount = ax_safe_cast_from(t.Elements);
+	o.dataType     = _getRenderDataType(t);
+	return o;
+}
+
 void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& outInfo,
                                                  ID3D12ShaderReflection*      reflect,
                                                  ID3D12ShaderReflectionConstantBuffer* cb) 
@@ -519,9 +526,9 @@ void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& ou
 				auto& outVar  = outInfo.variables.emplaceBack();
 				outVar.name   = StrView_c_str(memberName);
 				outVar.offset = ax_safe_cast_from(memberTypeDesc.Offset);
-
-				outVar.dataType = _getRenderDataType(memberTypeDesc);
-				if (outVar.dataType == RenderDataType::None) {
+				
+				outVar.varType = _getShaderVariableType(memberTypeDesc);
+				if (outVar.varType.dataType == RenderDataType::None) {
 					throw Error_Undefined();
 				}
 			}
@@ -545,14 +552,13 @@ void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& ou
 			if (0 == (varDesc.uFlags & D3D_SVF_USED)) continue;
 		}
 
-		auto& outVar  = outInfo.variables.emplaceBack();
-		outVar.name   = StrView_c_str(varDesc.Name);
-		outVar.offset = ax_safe_cast_from(varDesc.StartOffset);
-		outVar.size   = ax_safe_cast_from(varDesc.Size);
+		auto& outVar       = outInfo.variables.emplaceBack();
+		outVar.name        = StrView_c_str(varDesc.Name);
+		outVar.offset      = ax_safe_cast_from(varDesc.StartOffset);
+		outVar.sizeInBytes = ax_safe_cast_from(varDesc.Size);
+		outVar.varType     = _getShaderVariableType(varType);
 
-		outVar.dataType = _getRenderDataType(varType);
-
-		if (outVar.dataType == RenderDataType::None) {
+		if (outVar.varType.dataType == RenderDataType::None) {
 			throw Error_Undefined();
 		}
 	}	

@@ -23,14 +23,14 @@ MeshObject::MeshObject(const CreateDesc& desc)
 
 void MeshObject::createBuffers() {
 	auto* objMgr = RenderObjectManager_Backend::s_instance();
-	    meshlet.create(AX_NEW, "meshlet"    , objMgr->_structBufferPools.axMeshlet);
-	meshletVert.create(AX_NEW, "meshletVert", objMgr->_structBufferPools.axMeshletVert);
-	meshletPrim.create(AX_NEW, "meshletPrim", objMgr->_structBufferPools.axMeshletPrim);
+	    meshlet.create(AX_NEW, "axGpuMeshlet"    , objMgr->_structBufferPools.axMeshlet);
+	meshletVert.create(AX_NEW, "axGpuMeshletVert", objMgr->_structBufferPools.axMeshletVert);
+	meshletPrim.create(AX_NEW, "axGpuMeshletPrim", objMgr->_structBufferPools.axMeshletPrim);
 }
 
 void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	createBuffers();
-	constexpr Int kMaxVertexCountPerMeshlet = AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT;
+	constexpr Int kMaxVertexCountPerMeshlet = AX_HLSL_MESH_SHADER_MAX_VERT_COUNT;
 	
 	meshletInfo.clear();
 	auto* curMeshlet = &meshletInfo.emplaceBack();

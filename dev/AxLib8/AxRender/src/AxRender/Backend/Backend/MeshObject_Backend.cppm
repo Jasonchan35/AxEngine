@@ -17,9 +17,9 @@ public:
 	, objectSlot(this, false) {}
 
 
-	static NameId s_gpuBufferName() { return AX_NAMEID("axMeshInfo"); }
-	struct GpuData { AxMeshInfo meshInfo; };
-	GpuData  _gpuData;
+	static NameId s_gpuBufferName() { return AX_NAMEID("axGpuMeshObject"); }
+	using GpuData = AxGpuMeshObject;
+	AxGpuMeshObject  _gpuMeshObject;
 	GpuData* onGetGpuData(RenderRequest* req);
 	
 	RenderObjectSlot<This>	objectSlot;

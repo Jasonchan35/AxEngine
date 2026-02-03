@@ -34,6 +34,11 @@ private:
 	
 	void _genParamBase (ShaderStageInfo::ParamBase & dstParam, const ShaderStageInfo& info, const SrcParam& srcParam);
 	void _genVariables (ShaderStageInfo::BufferBase& dstBuf, const JsonArray& json_fields);
+	
+	ShaderStageFlags	_getShaderStageFlags(StrView s);
+	VertexSemantic		_getShaderSemantic(StrView src);
+	RenderDataType		_getRenderDataType(const JsonObject& json_type);
+	ShaderVariableType	_getShaderVariableType(const JsonObject& json_type);
 };
 
 } // namespace

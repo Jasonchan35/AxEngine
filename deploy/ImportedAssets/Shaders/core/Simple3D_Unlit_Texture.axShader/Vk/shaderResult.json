@@ -92,29 +92,44 @@
           "stride": 32, 
           "variables": [{
               "name": "color", 
-              "dataType": "f32x4", 
+              "varType": {
+                "dataType": "f32x4", 
+                "elementCount": 0
+              }, 
               "offset": 0, 
-              "size": 16
+              "sizeInBytes": 16
             }, {
               "name": "AxSamplerState_tex0", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 16, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AxTexture2D_tex0", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 20, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AxSamplerState_tex1", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 24, 
-              "size": 4
+              "sizeInBytes": 4
             }, {
               "name": "AxTexture2D_tex1", 
-              "dataType": "u32", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
               "offset": 28, 
-              "size": 4
+              "sizeInBytes": 4
             }]
         }], 
       "textures": [], 

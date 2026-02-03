@@ -83,24 +83,36 @@
           "stride": 64, 
           "variables": [{
               "name": "ambient", 
-              "dataType": "f32x3", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
               "offset": 16, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
               "name": "diffuse", 
-              "dataType": "f32x3", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
               "offset": 32, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
               "name": "specular", 
-              "dataType": "f32x3", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
               "offset": 48, 
-              "size": 12
+              "sizeInBytes": 12
             }, {
               "name": "shininess", 
-              "dataType": "f32", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
               "offset": 60, 
-              "size": 4
+              "sizeInBytes": 4
             }]
         }], 
       "textures": [], 

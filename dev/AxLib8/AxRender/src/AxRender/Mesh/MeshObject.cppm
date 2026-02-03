@@ -24,11 +24,10 @@ public:
 	
 	bool isMeshletValid() const { return meshletInfo.size() > 0; }
 	
-	Array<AxMeshlet> meshletInfo;
-	
-	StructuredGpuBuffer_<AxMeshlet>     meshlet;
-	StructuredGpuBuffer_<AxMeshletVert> meshletVert;
-	StructuredGpuBuffer_<AxMeshletPrim> meshletPrim;
+	Array<AxGpuMeshlet> meshletInfo;
+	StructuredGpuBuffer_<AxGpuMeshlet>     meshlet;
+	StructuredGpuBuffer_<AxGpuMeshletVert> meshletVert;
+	StructuredGpuBuffer_<AxGpuMeshletPrim> meshletPrim;
 		
 	void createBuffers();
 
@@ -40,11 +39,26 @@ protected:
 
 class MeshObjectRenderer_CreateDesc {};
 
-class MeshObjectRenderer : public NonCopyable {
+class MeshObjectRenderer : public RttiObject {
+	AX_RTTI_INFO(MeshObjectRenderer, NoBaseClass)
 public:
-	Mat4f				worldMatrix;
+	using ResourceKey = TagNoInit_T;
+
 	SPtr<MeshObject>	mesh;
 	SPtr<Material>		material;
+
+	MeshObjectRenderer() : objectSlot(this) {}
+	
+	static constexpr Int s_gpuBufferMaxSize()  { return RenderObject::s_gpuBufferMaxSize(); }
+	static constexpr Int s_gpuBufferPageSize() { return RenderObject::s_gpuBufferPageSize(); }
+	static NameId s_gpuBufferName() { return AX_NAMEID("axGpuMeshObjectRenderer"); }
+	
+	using GpuData = AxGpuMeshObjectRenderer;
+	GpuData _gpuData;
+	const GpuData* onGetGpuData(RenderRequest* req) { return &_gpuData; }
+	
+	RenderObjectSlot<MeshObjectRenderer>	objectSlot;
+
 };
 
 } // namespace

@@ -261,13 +261,27 @@ AX_ENUM_CLASS(AX_RenderBufferLoadOp_ENUM_LIST, RenderBufferLoadOp, u8)
 //-------
 AX_ENUM_CLASS(AX_RenderDataType_ENUM_LIST, RenderDataType, u16);
 
-struct RenderDataTypeInfo {
-	RenderDataType	dataType		= RenderDataType::None;
-	i16				elementCount	= 0;
-	Int				sizeInBytes		= 0;
-
-	explicit operator bool() const { return dataType != RenderDataType::None; }
-	const RenderDataTypeInfo& s_get(RenderDataType t);
+struct ShaderVariableType {
+	RenderDataType	dataType = RenderDataType::None;
+	i16 elementCount = 0;
+		
+	bool isArray() const { return elementCount > 0; }
+	bool operator==(const ShaderVariableType&) const = default;
+		
+	template<class CH>
+	void onFormat(Format_<CH>& fmt) const {
+		if (elementCount > 1) {
+			fmt << Fmt("{}[{}]", dataType, elementCount);
+		} else {
+			fmt << dataType;
+		}
+	}
+		
+	template<class SE>
+	void onJsonIO(SE & se) {
+		AX_JSON_IO(se, dataType);
+		AX_JSON_IO(se, elementCount);
+	}		
 };
 
 class RenderPassColorAttachmentDesc {

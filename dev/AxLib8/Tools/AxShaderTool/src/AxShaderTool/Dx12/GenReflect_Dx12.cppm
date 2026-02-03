@@ -55,7 +55,8 @@ private:
 
 	void _compileReflect_BufferBase(ShaderStageInfo::BufferBase& outInfo, ID3D12ShaderReflection* reflect, ID3D12ShaderReflectionConstantBuffer* cb);
 	
-	RenderDataType _getRenderDataType(const D3D12_SHADER_TYPE_DESC & t);
+	RenderDataType		_getRenderDataType(const D3D12_SHADER_TYPE_DESC & t);
+	ShaderVariableType	_getShaderVariableType(const D3D12_SHADER_TYPE_DESC & t);
 	
 	class IncludeHandler;
 	
