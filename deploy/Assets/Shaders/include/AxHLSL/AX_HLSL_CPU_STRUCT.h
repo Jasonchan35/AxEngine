@@ -1,12 +1,18 @@
 #ifndef __AX_HLSL_CPU_STRUCT_h__
 #define __AX_HLSL_CPU_STRUCT_h__
 
-struct AxMeshlet {
+struct AxMeshletDraw {
 	u32 vertOffset;
 	u32 vertCount;
 	u32 primOffset;
 	u32 primCount;
 };
+
+struct AxMeshlet {
+	AxMeshletDraw draw;
+	// AABB
+};
+
 
 struct AxMeshletVert {
 	Vec3f   pos;

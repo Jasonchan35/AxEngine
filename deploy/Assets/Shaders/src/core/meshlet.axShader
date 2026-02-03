@@ -38,7 +38,8 @@ struct VS_Output {
 };
 
 struct Payload {
-	u32 meshletId[AS_GROUP_SIZE];
+//	u32 meshletId[AS_GROUP_SIZE];
+	AxMeshletDraw meshlet[AS_GROUP_SIZE];
 };
 
 groupshared Payload s_payload;
@@ -53,8 +54,8 @@ void as_main(
 	AxMeshInfo meshInfo = axMeshInfo[AX_MESH_ID];
 
 	if (dtid < meshInfo.meshletCount) {
-		s_payload.meshletId[gtid] = meshInfo.meshletOffset + dtid;
-//		DispatchMesh(0 * gtid, 1, 1, s_payload);
+//		s_payload.meshletId[gtid] = meshInfo.meshletOffset + dtid;
+		s_payload.meshlet[gtid] = axMeshlet[meshInfo.meshletOffset + dtid].draw;
 	}
 	
 	u32 outMeshletCountInThisGroup 	= gid >= (meshInfo.meshletCount / AS_GROUP_SIZE)
@@ -74,7 +75,8 @@ void ms_main(
 	out vertices VS_Output outVert[AX_HLSL_MESH_SHADER_MAX_VERTEX_COUNT],
 	out indices  uint3     outTri[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
-	AxMeshlet meshlet = axMeshlet[payload.meshletId[gid]];
+//	AxMeshlet meshlet = axMeshlet[payload.meshletId[gid]];
+	AxMeshletDraw meshlet = payload.meshlet[gid];
 
 	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
 

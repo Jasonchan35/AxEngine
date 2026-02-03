@@ -306,24 +306,9 @@
           "bindCount": 1, 
           "stride": 16, 
           "variables": [{
-              "name": "vertOffset", 
-              "dataType": "u32", 
+              "name": "draw", 
+              "dataType": "Struct", 
               "offset": 0, 
-              "size": 0
-            }, {
-              "name": "vertCount", 
-              "dataType": "u32", 
-              "offset": 4, 
-              "size": 0
-            }, {
-              "name": "primOffset", 
-              "dataType": "u32", 
-              "offset": 8, 
-              "size": 0
-            }, {
-              "name": "primCount", 
-              "dataType": "u32", 
-              "offset": 12, 
               "size": 0
             }]
         }, {

@@ -306,25 +306,10 @@
           "bindCount": 1, 
           "stride": 16, 
           "variables": [{
-              "name": "vertOffset", 
-              "dataType": "u32", 
+              "name": "draw", 
+              "dataType": "Struct", 
               "offset": 0, 
-              "size": 4
-            }, {
-              "name": "vertCount", 
-              "dataType": "u32", 
-              "offset": 4, 
-              "size": 4
-            }, {
-              "name": "primOffset", 
-              "dataType": "u32", 
-              "offset": 8, 
-              "size": 4
-            }, {
-              "name": "primCount", 
-              "dataType": "u32", 
-              "offset": 12, 
-              "size": 4
+              "size": 16
             }]
         }, {
           "name": "axMeshInfo", 

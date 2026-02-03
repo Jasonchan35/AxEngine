@@ -40,7 +40,7 @@ Sampler_Texture3D(foo_tex3d);
 float dummy_func() {
 	return foo
 		+ axMeshInfo[0].meshletOffset
-		+ axMeshlet[0].vertOffset
+		+ axMeshlet[0].draw.vertOffset
 		+ axMeshletVert[0].pos.x
 		+ axMeshletPrim[0].tri.x
 		+ tex2Dlod(foo_tex2d, float2(0,0), 0).x

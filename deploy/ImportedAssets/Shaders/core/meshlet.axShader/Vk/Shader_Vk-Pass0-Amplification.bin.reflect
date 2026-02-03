@@ -206,36 +206,46 @@
                     "name": "AxMeshlet",
                     "fields": [
                         {
-                            "name": "vertOffset",
+                            "name": "draw",
                             "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
+                                "kind": "struct",
+                                "name": "AxMeshletDraw",
+                                "fields": [
+                                    {
+                                        "name": "vertOffset",
+                                        "type": {
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
+                                        },
+                                        "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
+                                    },
+                                    {
+                                        "name": "vertCount",
+                                        "type": {
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
+                                        },
+                                        "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                                    },
+                                    {
+                                        "name": "primOffset",
+                                        "type": {
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
+                                        },
+                                        "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
+                                    },
+                                    {
+                                        "name": "primCount",
+                                        "type": {
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
+                                        },
+                                        "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                                    }
+                                ]
                             },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "vertCount",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "primOffset",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "primCount",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 0}
                         }
                     ]
                 }
@@ -973,7 +983,7 @@
                 },
                 {
                     "name": "axMeshlet",
-                    "binding": {"kind": "shaderResource", "space": 1, "index": 20203, "used": 0}
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20203, "used": 1}
                 },
                 {
                     "name": "axMeshInfo",
