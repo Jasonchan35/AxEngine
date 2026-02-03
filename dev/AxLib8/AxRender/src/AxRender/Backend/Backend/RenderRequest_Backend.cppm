@@ -1,6 +1,6 @@
 module;
 export module AxRender:RenderRequest_Backend;
-export import :Renderer;
+export import :RenderSystem;
 export import :RenderRequest;
 export import :RenderContext_Backend;
 export import :RenderObjectManager_Backend;

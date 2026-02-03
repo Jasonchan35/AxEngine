@@ -2,7 +2,7 @@ module;
 
 module AxRender;
 import :ImGui_Backend;
-import :Renderer;
+import :RenderSystem;
 import :RenderContext;
 
 namespace ax /*::AxRender*/ {

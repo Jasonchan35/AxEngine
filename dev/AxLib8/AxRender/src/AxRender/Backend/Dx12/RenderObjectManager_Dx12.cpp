@@ -1,7 +1,6 @@
 ﻿module AxRender;
 import :RenderObjectManager_Dx12;
 import :Texture_Dx12;
-import :MeshObject_Dx12;
 import :GpuBuffer_Dx12;
 
 namespace ax {

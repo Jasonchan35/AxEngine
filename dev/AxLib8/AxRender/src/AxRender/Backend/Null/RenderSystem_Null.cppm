@@ -21,7 +21,7 @@ public:
 	RenderSystem_Null(const CreateDesc& desc) : Base(desc) {}
 	virtual ~RenderSystem_Null() override { destroy(); }
 
-	AX_RenderSystem_FunctionInterfaces(Null, override)
+	AX_RenderObject_LIST(AX_RenderSystem_NewObject, Null,  override)
 };
 
 class RenderContext_Null : public RenderContext_Backend {
@@ -152,12 +152,6 @@ public:
 	virtual UPtr<MaterialPass_Backend>	onNewPass(const MaterialPass_CreateDesc& desc) override {
 		return UPtr_new<MaterialPass_Null>(AX_NEW, desc);
 	}
-};
-
-class MeshObject_Null : public MeshObject_Backend {
-	AX_RTTI_INFO(MeshObject_Null, MeshObject_Backend)
-public:
-	MeshObject_Null(const CreateDesc& desc) : Base(desc) {}
 };
 
 } // namespace

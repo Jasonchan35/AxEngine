@@ -1,6 +1,6 @@
 module;
 export module AxRender:GpuBuffer;
-export import :Renderer;
+export import :RenderSystem;
 export import :Texture;
 
 export namespace ax /*::AxRender*/ {

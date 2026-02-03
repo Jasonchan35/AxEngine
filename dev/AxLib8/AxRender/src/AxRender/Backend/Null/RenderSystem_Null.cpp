@@ -5,6 +5,6 @@ import :RenderSystem_Null;
 
 namespace ax /*::AxRender*/ {
 
-AX_RenderSystem_FunctionBodies(Null)
+AX_RenderObject_LIST(AX_RenderSystem_NewObjectImp, Null, override)
 
 } // namespace

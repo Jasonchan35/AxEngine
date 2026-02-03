@@ -8,6 +8,8 @@ import :RenderObjectManager_Backend;
 
 namespace ax /*::AxRender*/ {
 
+AX_RenderObject_BackendOnly_LIST(AX_RenderSystem_NewObjectImp, Backend, override)
+
 struct RenderSystem_Backend::PrivateData {
 	Array<UPtr<RenderRequest_Backend>>	renderRequests;
 };

@@ -18,11 +18,11 @@ AxEngine::SceneWorld::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 
-AxEngine::CMeshRenderer::MutRttiInit::MutRttiInit() {
+AxEngine::MeshRendererComponent::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 
-AxEngine::CMeshRendererSystem::MutRttiInit::MutRttiInit() {
+AxEngine::MeshRendererSystem::MutRttiInit::MutRttiInit() {
 	ownFields.ensureCapacity(0);
 }; 
 

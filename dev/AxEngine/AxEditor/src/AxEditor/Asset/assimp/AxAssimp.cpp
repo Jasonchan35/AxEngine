@@ -343,7 +343,7 @@ public:
 		
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
-				auto* meshRenderer = entity->addComponent<CMeshRenderer>(AX_NEW);
+				auto* meshRenderer = entity->addComponent<MeshRendererComponent>(AX_NEW);
 				meshRenderer->mesh = *meshObj;
 			
 				// meshRenderer->material	= srcMeshIndex % 2 

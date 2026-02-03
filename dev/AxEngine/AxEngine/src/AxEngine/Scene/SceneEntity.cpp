@@ -30,32 +30,32 @@ SceneWorld::SceneWorld() {
 	_root.ref(SceneEntity::s_new(AX_NEW, nullptr, "root"));
 }
 
-CMeshRenderer::CMeshRenderer() {
-	auto* sys = CMeshRendererSystem::s_instance(true);
+MeshRendererComponent::MeshRendererComponent() {
+	auto* sys = MeshRendererSystem::s_instance(true);
 	_systemSlotId = sys->_componentList.size();
 	sys->_componentList.emplaceBack(this);
 }
 
-CMeshRenderer::~CMeshRenderer() {
-	auto* sys = CMeshRendererSystem::s_instance(true);
+MeshRendererComponent::~MeshRendererComponent() {
+	auto* sys = MeshRendererSystem::s_instance(true);
 	auto& slot = sys->_componentList[_systemSlotId];
 	AX_ASSERT(slot == this);
 	sys->_componentList.eraseAt_Unordered(_systemSlotId);
 	slot->_systemSlotId = _systemSlotId;
 }
 
-CMeshRendererSystem* CMeshRendererSystem::s_instance(bool createIfNone) {
+MeshRendererSystem* MeshRendererSystem::s_instance(bool createIfNone) {
 	SceneWorld* world = SceneWorld_instance;
 	if (!world) return nullptr;
 
 	if (!world->_meshRendererSystem && createIfNone) {
-		world->_meshRendererSystem = UPtr_new<CMeshRendererSystem>(AX_NEW);
+		world->_meshRendererSystem = UPtr_new<MeshRendererSystem>(AX_NEW);
 	}
 
 	return world->_meshRendererSystem.ptr();
 }
 
-void CMeshRendererSystem::onRender(RenderRequest* req) {
+void MeshRendererSystem::onRender(RenderRequest* req) {
 	for (auto* comp : _componentList) {
 		if (!comp) continue;
 		auto& objectToWorld = comp->entity()->worldMatrix();

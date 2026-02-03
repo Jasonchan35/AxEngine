@@ -31,18 +31,18 @@
 //------
 
 
-//--- Type AxEngine::CMeshRenderer ----------
+//--- Type AxEngine::MeshRendererComponent ----------
 #define AX_GENERATED_BODY_LINE121() \
-	AX_RTTI_INFO(CMeshRenderer, SceneComponent) \
+	AX_RTTI_INFO(MeshRendererComponent, SceneComponent) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
 	}; \
 //------
 
 
-//--- Type AxEngine::CMeshRendererSystem ----------
+//--- Type AxEngine::MeshRendererSystem ----------
 #define AX_GENERATED_BODY_LINE134() \
-	AX_RTTI_INFO(CMeshRendererSystem, Object) \
+	AX_RTTI_INFO(MeshRendererSystem, Object) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
 	}; \

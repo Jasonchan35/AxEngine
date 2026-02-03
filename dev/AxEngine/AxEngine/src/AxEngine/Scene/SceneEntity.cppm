@@ -99,7 +99,7 @@ private:
 	Mat4f _worldMatrix;
 };
 
-class CMeshRendererSystem;
+class MeshRendererSystem;
 
 AX_CLASS()
 class SceneWorld : public Object {
@@ -110,18 +110,18 @@ public:
 	SceneWorld();
 	SceneEntity* root() { return _root.ptr(); }
 
-	UPtr<CMeshRendererSystem> _meshRendererSystem;
+	UPtr<MeshRendererSystem> _meshRendererSystem;
 	
 private:
 	SPtr<SceneEntity> _root;
 };
 
 AX_CLASS()
-class CMeshRenderer : public SceneComponent {
+class MeshRendererComponent : public SceneComponent {
 	AX_GENERATED_BODY()
 public:	
-	CMeshRenderer();
-	virtual ~CMeshRenderer() override;
+	MeshRendererComponent();
+	virtual ~MeshRendererComponent() override;
 	
 	SPtr<MeshObject> mesh;
 	SPtr<Material> material;
@@ -130,16 +130,16 @@ public:
 };
 
 AX_CLASS()
-class CMeshRendererSystem : public Object {
+class MeshRendererSystem : public Object {
 	AX_GENERATED_BODY()
 public:
-	static CMeshRendererSystem* s_instance(bool createIfNone);
+	static MeshRendererSystem* s_instance(bool createIfNone);
 	
 	void onRender(RenderRequest* req);
 	
 protected:
-	friend class CMeshRenderer;
-	Array<CMeshRenderer*> _componentList;
+	friend class MeshRendererComponent;
+	Array<MeshRendererComponent*> _componentList;
 };
 
 } // namespace

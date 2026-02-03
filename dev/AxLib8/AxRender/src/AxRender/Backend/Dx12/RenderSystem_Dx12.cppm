@@ -27,7 +27,7 @@ public:
 #endif
 
 protected:
-	AX_RenderSystem_FunctionInterfaces(Dx12, override)
+	AX_RenderObject_LIST(AX_RenderSystem_NewObject, Dx12, override)
 	
 	virtual void onGetMemoryInfo(MemoryInfo& info) override;
 

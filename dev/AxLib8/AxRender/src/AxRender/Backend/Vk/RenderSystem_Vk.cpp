@@ -11,11 +11,10 @@ import :RenderObjectManager_Vk;
 import :RenderPass_Vk;
 import :RenderRequest_Vk;
 import :Material_Vk;
-import :MeshObject_Vk;
 
 namespace ax /*::AxRender*/ {
 
-AX_RenderSystem_FunctionBodies(Vk)
+AX_RenderObject_LIST(AX_RenderSystem_NewObjectImp, Vk, override)
 
 RenderSystem_Vk::RenderSystem_Vk(const CreateDesc& desc)
 : Base(desc)
@@ -68,7 +67,7 @@ RenderSystem_Vk::RenderSystem_Vk(const CreateDesc& desc)
 	_device.create(*phyDev);
 
 #if AX_RENDER_DEBUG_NAME
-	_device.setDebugName("Renderer-Device");
+	_device.setDebugName("RenderSystem-Device");
 #endif
 }
 

@@ -1,7 +1,7 @@
 module;
 
 export module AxRender:RenderSystem_Backend;
-export import :Renderer;
+export import :RenderSystem;
 
 export namespace ax /*::AxRender*/ {
 
@@ -17,7 +17,8 @@ public:
 	RenderSystem_Backend(const CreateDesc& desc);
 	virtual ~RenderSystem_Backend() override;
 
-	AX_RenderSystem_FunctionInterfaces(AX_EMPTY, =0)
+	AX_RenderObject_LIST(AX_RenderSystem_NewObject, AX_EMPTY, =0)
+	AX_RenderObject_BackendOnly_LIST(AX_RenderSystem_NewObject, AX_EMPTY, AX_EMPTY)
 
 	RenderRequest_Backend*		nextRenderRequest();
 	

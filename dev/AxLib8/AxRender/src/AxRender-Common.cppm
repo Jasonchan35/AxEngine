@@ -18,4 +18,5 @@ struct AxRenderConfig {
 
 export namespace ax /*::AxRender*/ {
 	AX_RenderObject_LIST(AX_RenderObject_ForwardDeclare, AX_EMPTY, AX_EMPTY);
+	AX_RenderObject_BackendOnly_LIST(AX_RenderObject_ForwardDeclare, AX_EMPTY, AX_EMPTY);
 }

@@ -10,11 +10,10 @@ import :RenderObjectManager_Dx12;
 import :RenderPass_Dx12;
 import :RenderRequest_Dx12;
 import :Material_Dx12;
-import :MeshObject_Dx12;
 
 namespace ax {
 
-AX_RenderSystem_FunctionBodies(Dx12);
+AX_RenderObject_LIST(AX_RenderSystem_NewObjectImp, Dx12, override)
 
 RenderSystem_Dx12::RenderSystem_Dx12(const CreateDesc& desc)
 	: Base(desc)

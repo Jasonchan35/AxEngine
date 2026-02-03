@@ -51,7 +51,6 @@
 	E(GpuBuffer					, API, SUFFIX) \
 	E(GpuBufferPool				, API, SUFFIX) \
 	E(StructuredGpuBuffer		, API, SUFFIX) \
-	E(MeshObject				, API, SUFFIX) \
 	E(Shader					, API, SUFFIX) \
 	E(ShaderPass				, API, SUFFIX) \
 	E(ShaderParamSpace			, API, SUFFIX) \
@@ -62,6 +61,10 @@
 	E(Texture2D					, API, SUFFIX) \
 /*	E(Texture3D					, API, SUFFIX) */ \
 /*	E(TextureCube				, API, SUFFIX) */ \
+//----
+
+#define AX_RenderObject_BackendOnly_LIST(E, API, SUFFIX) \
+	E(MeshObject				, API, SUFFIX) \
 //----
 
 #define AX_RenderObject_ForwardDeclare(OBJ, ...)	\
@@ -84,8 +87,8 @@
 	} \
 //----
 
-#define AX_RenderSystem_FunctionInterfaces(API, SUFFIX)		AX_RenderObject_LIST(AX_RenderSystem_NewObject,    API,  SUFFIX)
-#define AX_RenderSystem_FunctionBodies(API)					AX_RenderObject_LIST(AX_RenderSystem_NewObjectImp, API, override)
+// #define AX_RenderSystem_FunctionInterfaces(API, SUFFIX)		AX_RenderObject_LIST(AX_RenderSystem_NewObject,    API,  SUFFIX)
+// #define AX_RenderSystem_FunctionBodies(API)					AX_RenderObject_LIST(AX_RenderSystem_NewObjectImp, API, override)
 
 #define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \
