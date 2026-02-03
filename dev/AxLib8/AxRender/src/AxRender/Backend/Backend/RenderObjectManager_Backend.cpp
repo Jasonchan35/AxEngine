@@ -34,10 +34,10 @@ void RenderObjectManager_Backend::onFrameEnd(RenderRequest_Backend* req) {
 	{
 		auto lock = _objectTables.scopedLock();
 		for  (auto& tbl : lock->dict.values()) {
-			if (auto* samplerTable = rttiCast<RenderObjectTable<Sampler_Backend>>(tbl.ptr())) {
+			if (auto* samplerTable = rttiCast<RenderObjectTable<Sampler>>(tbl.ptr())) {
 				onUpdateDescriptors(req, samplerTable->_dirtyObjects);
 				
-			} else if (auto* tex2DTable = rttiCast<RenderObjectTable<Texture2D_Backend>>(tbl.ptr())) {
+			} else if (auto* tex2DTable = rttiCast<RenderObjectTable<Texture2D>>(tbl.ptr())) {
 				onUpdateDescriptors(req, tex2DTable->_dirtyObjects);
 			}
 
@@ -68,20 +68,20 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 
 	auto imageFileType = ImageFileType_fromFileExt(ext);
 	if (imageFileType != ImageFileType::None) {
-		auto table = RenderObjectTable<Texture2D_Backend>::s_instance();
+		auto table = Texture2D::ObjectSlot::Table::s_instance();
 		if (auto* tex = table->findObject(filename)) {
 			AX_LOG("Hot reload texture {}", filename);
-			tex->hotReloadFile();
+			rttiCastCheck<Texture2D_Backend>(tex)->hotReloadFile();
 		}
 		return;
 	}
 
 	if (basenameWithExt == "shaderResult.json") {
 		auto shaderAssetPath = FilePath::dirname_sv(FilePath::dirname_sv(filename));
-		auto table = RenderObjectTable<Shader_Backend>::s_instance();
+		auto table = Shader::ObjectSlot::Table::s_instance();
 		if (auto* shader = table->findObject(shaderAssetPath)) {
 			AX_LOG("Hot reload shader {}", shaderAssetPath);
-			shader->hotReloadFile();
+			rttiCastCheck<Shader_Backend>(shader)->hotReloadFile();
 		}
 		return;
 	}

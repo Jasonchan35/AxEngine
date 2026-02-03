@@ -313,8 +313,6 @@ protected:
 class Shader_Backend : public Shader {
 	AX_RTTI_INFO(Shader_Backend, Shader)
 public:
-	RenderObjectSlot<This>	objectSlot;
-
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView assetPath);
 
@@ -347,7 +345,7 @@ public:
 	TempString debugName() const;
 
 protected:
-	Shader_Backend(const CreateDesc& desc);
+	Shader_Backend(const CreateDesc& desc) : Base(desc) {}
 	
 	void _create(const CreateDesc& desc) { onCreate(desc); }
 	virtual void onCreate(const CreateDesc& desc) { onLoadFile(); }

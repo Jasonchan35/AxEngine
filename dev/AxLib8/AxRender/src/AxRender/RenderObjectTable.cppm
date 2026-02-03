@@ -24,7 +24,7 @@ public:
 	RenderObjectSlot(T* owner, bool isFallbackDefault = false);
 	~RenderObjectSlot();
 	void markDirty();
-
+	
 	friend class RenderObjectTable<T>;
 protected:
 	RenderObjectSlotId _slotId = RenderObjectSlotId_None;

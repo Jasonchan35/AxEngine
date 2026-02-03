@@ -7,7 +7,6 @@ export import :RenderObjectManager_Backend;
 export import :RenderPass_Backend;
 export import :RenderRequest_Backend;
 export import :Texture_Backend;
-export import :MeshObject_Backend;
 export import :Material_Backend;
 export import :ImageIO;
 

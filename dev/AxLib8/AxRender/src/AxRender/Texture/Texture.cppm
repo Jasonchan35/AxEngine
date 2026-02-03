@@ -132,11 +132,13 @@ public:
 	}
 
 	const SamplerState&	samplerState() const { return _samplerState; }
-
 protected:
-	Sampler(const CreateDesc& desc) : _samplerState(desc.samplerState) {}
-
+	Sampler(const CreateDesc& desc) : _samplerState(desc.samplerState), objectSlot(this) {}
 	SamplerState	_samplerState;
+	
+public:
+	using ObjectSlot = RenderObjectSlot<This>; 
+	ObjectSlot	objectSlot;
 };
 
 class Texture : public RenderObject {
@@ -179,15 +181,18 @@ public:
 
 	const ImageInfo& info() const { return _info; }
 
+
 friend class Texture2D_ImageIO_Reader;
 protected:
+	Texture2D(const CreateDesc& desc)
+	: Base(RenderDataType::Texture2D)
+	, _info(desc.imageInfo)
+	, objectSlot(this) { _assetPath = desc.assetPath; }
 
-	Texture2D(const CreateDesc& desc): Base(RenderDataType::Texture2D), _info(desc.imageInfo) {
-		_assetPath = desc.assetPath;
-	}
-
-	
 	ImageInfo	_info;
+public:
+	using ObjectSlot = RenderObjectSlot<This>; 
+	ObjectSlot	objectSlot;
 };
 
 class Texture3D_CreateDesc : NonCopyable {

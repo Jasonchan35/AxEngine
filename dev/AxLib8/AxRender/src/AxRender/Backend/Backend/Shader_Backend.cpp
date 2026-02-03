@@ -277,7 +277,7 @@ void ShaderPass_Backend::_createParamSpaces() {
 
 SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<Shader_Backend> o;
-	if (RenderObjectManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
+	if (RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.assetPath))
 		o->_create(desc);
 	return o;
 }
@@ -287,11 +287,6 @@ SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, StrView a
 	desc.assetPath = assetPath;
 	return s_new(req, desc);
 }
-
-Shader_Backend::Shader_Backend(const CreateDesc& desc)
-: Base(desc)
-, objectSlot(this, desc.isFallbackDefault)
-{}
 
 void Shader_Backend::onLoadFile() {
 	auto* renderSystem = RenderSystem::s_instance();

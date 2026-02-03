@@ -7,7 +7,6 @@ export import :RenderObjectManager_Backend;
 export import :RenderPass_Backend;
 export import :GpuBuffer_Backend;
 export import :Material_Backend;
-export import :MeshObject_Backend;
 
 export namespace ax /*::AxRender*/ {
 

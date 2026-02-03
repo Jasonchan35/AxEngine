@@ -39,16 +39,16 @@ struct RenderObjectManager_Vk_onUpdateDescriptors {
 	}
 };
 
-void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler_Backend*>& list) {
+void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler*>& list) {
 	auto  bindPoint = bindless.AxBindless_SamplerState->bindPoint();
 	auto  descType  = VK_DESCRIPTOR_TYPE_SAMPLER;
-	RenderObjectManager_Vk_onUpdateDescriptors<Sampler_Vk, Sampler_Backend>::run(this, req, list, descType, bindPoint);
+	RenderObjectManager_Vk_onUpdateDescriptors<Sampler_Vk, Sampler>::run(this, req, list, descType, bindPoint);
 }
 
-void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D_Backend*>& list) {
+void RenderObjectManager_Vk::onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D*>& list) {
 	auto  bindPoint = bindless.AxBindless_Texture2D->bindPoint();
 	auto  descType  = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-	RenderObjectManager_Vk_onUpdateDescriptors<Texture2D_Vk, Texture2D_Backend>::run(this, req, list, descType, bindPoint);
+	RenderObjectManager_Vk_onUpdateDescriptors<Texture2D_Vk, Texture2D>::run(this, req, list, descType, bindPoint);
 }
 #endif
 

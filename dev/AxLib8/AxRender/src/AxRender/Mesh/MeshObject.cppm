@@ -8,7 +8,6 @@ export namespace ax {
 
 class EditableMesh;
 
-
 class MeshObject : public RenderObject {
 	AX_RTTI_INFO(MeshObject, RenderObject)
 public:
@@ -30,11 +29,23 @@ public:
 	StructuredGpuBuffer_<AxGpuMeshletPrim> meshletPrim;
 		
 	void createBuffers();
+	
+	using ResourceKey = String;
+	const ResourceKey& resourceKey() const { return _assetPath; }
 
+	static NameId s_gpuBufferName() { return AX_NAMEID("axGpuMeshObject"); }
+	using GpuData = AxGpuMeshObject;
+	const GpuData* onGetGpuData(RenderRequest* req);
+	
 protected:
+	String          _assetPath;
+	AxGpuMeshObject _gpuData;
+	
 	MeshObject(const CreateDesc& desc);
 	
-	String _assetPath;
+public:
+	using ObjectSlot = RenderObjectSlot<This>; 
+	ObjectSlot      objectSlot;
 };
 
 class MeshObjectRenderer_CreateDesc {};
@@ -55,10 +66,14 @@ public:
 	
 	using GpuData = AxGpuMeshObjectRenderer;
 	GpuData _gpuData;
-	const GpuData* onGetGpuData(RenderRequest* req) { return &_gpuData; }
+	const GpuData* onGetGpuData(RenderRequest* req) {
+		_gpuData.meshObjectId = mesh ? mesh->objectSlot.slotId() : 0;
+		return &_gpuData;
+	}
 	
-	RenderObjectSlot<MeshObjectRenderer>	objectSlot;
-
+public:
+	using ObjectSlot = RenderObjectSlot<This>;
+	ObjectSlot objectSlot;
 };
 
 } // namespace

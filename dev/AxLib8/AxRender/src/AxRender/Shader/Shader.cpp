@@ -37,7 +37,8 @@ SPtr<Shader> Shader::s_new(const MemAllocRequest& req, StrView assetPath) {
 }
 
 Shader::Shader(const CreateDesc& desc) 
-: _assetPath(desc.assetPath)
+	: _assetPath(desc.assetPath)
+	, objectSlot(this)
 {
 }
 

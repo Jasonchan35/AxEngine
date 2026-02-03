@@ -1,5 +1,5 @@
 module AxRender;
-import :MeshObject_Backend;
+import :MeshObject;
 import :RenderObjectManager_Backend;
 import :EditableMesh;
 
@@ -7,7 +7,7 @@ namespace ax {
 
 SPtr<MeshObject> MeshObject::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<MeshObject_Backend> o;
-	RenderObjectManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath);
+	RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.assetPath);
 	return o;
 }
 
@@ -17,8 +17,35 @@ SPtr<MeshObject> MeshObject::s_new(const MemAllocRequest& req) {
 }
 
 MeshObject::MeshObject(const CreateDesc& desc)
-: _assetPath(desc.assetPath) 
-{
+	: _assetPath(desc.assetPath)
+	, objectSlot(this)
+{}
+
+auto MeshObject::onGetGpuData(RenderRequest* req) -> const GpuData*{
+	if (meshletInfo.size() <= 0) return nullptr;
+		
+	meshletVert.buffer->getUploadedGpuBuffer(req);
+	meshletPrim.buffer->getUploadedGpuBuffer(req);
+
+	u32  vertOffset  = ax_safe_cast_from(meshletVert.buffer->gpuBufferIndex());
+	u32  primOffset  = ax_safe_cast_from(meshletPrim.buffer->gpuBufferIndex());
+	auto srcMeshlets = meshletInfo.span();
+	auto dstMeshlets = meshlet.editData(0, srcMeshlets.size());
+	
+	for (Int i = 0; i < srcMeshlets.size(); ++i) {
+		auto& dst = dstMeshlets[i];
+		dst = srcMeshlets[i];
+		dst.draw.vertOffset += vertOffset;
+		dst.draw.primOffset += primOffset;
+	}
+	
+	meshlet.buffer->getUploadedGpuBuffer(req);
+
+	_gpuData.meshletOffset  = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
+	_gpuData.meshletCount   = ax_safe_cast_from(meshlet.buffer->count());
+	_gpuData.totalVertCount = ax_safe_cast_from(meshletVert.buffer->count());
+	_gpuData.totalPrimCount = ax_safe_cast_from(meshletPrim.buffer->count());
+	return &_gpuData;
 }
 
 void MeshObject::createBuffers() {
@@ -76,7 +103,7 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 		curMeshlet->draw.primCount += triCount;
 	}
 	
-	rttiCastCheck<MeshObject_Backend>(this)->objectSlot.markDirty();
+	objectSlot.markDirty();
 }
 
 } // namespace

@@ -19,12 +19,12 @@ struct RenderObjectManager_Dx12_onUpdateDescriptors {
 	}
 };
 
-void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler_Backend*>& list) {
-	RenderObjectManager_Dx12_onUpdateDescriptors<Sampler_Dx12, Sampler_Backend>::run(req, list);
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler*>& list) {
+	RenderObjectManager_Dx12_onUpdateDescriptors<Sampler_Dx12, Sampler>::run(req, list);
 }
 
-void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D_Backend*>& list) {
-	RenderObjectManager_Dx12_onUpdateDescriptors<Texture2D_Dx12, Texture2D_Backend>::run(req, list);
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D*>& list) {
+	RenderObjectManager_Dx12_onUpdateDescriptors<Texture2D_Dx12, Texture2D>::run(req, list);
 }
 
 #endif // #if AX_RENDER_BINDLESS

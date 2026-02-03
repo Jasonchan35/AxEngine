@@ -3,11 +3,17 @@ module;
 export module AxRender:RenderObjectManager_Backend;
 export import :RenderSystem_Backend;
 export import :Material_Backend;
-export import :MeshObject_Backend;
 export import :GpuBuffer_Backend;
 export import :RenderObjectTable;
+export import :MeshObject;
 
 export namespace ax /*::AxRender*/ {
+
+class MeshObject_Backend : public MeshObject {
+	AX_RTTI_INFO(MeshObject_Backend, MeshObject)
+public:
+	MeshObject_Backend(const CreateDesc& desc) : Base(desc) {}
+};
 
 class RenderObjectManager_CreateDesc {
 public:
@@ -28,13 +34,13 @@ public:
 	void onFrameEnd(RenderRequest_Backend* req);
 
 	template<class T, class CREATE_DESC = typename T::CreateDesc, class RESOURCE_KEY = typename T::ResourceKey>
-	bool getOrNewResource(SPtr<T> & sp, const MemAllocRequest& req, const CREATE_DESC& desc, const RESOURCE_KEY& key);
+	bool getOrNewObject(SPtr<T> & sp, const MemAllocRequest& req, const CREATE_DESC& desc, const RESOURCE_KEY& key);
 
 	void onFileChanged(FileDirWatcher_Result& result);
 	void hotReloadFile(StrView filename);
 
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<  Sampler_Backend*>& list) {}
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D_Backend*>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<  Sampler*>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D*>& list) {}
 
 #if AX_RENDER_BINDLESS
 	struct Bindless {
@@ -105,15 +111,15 @@ protected:
 };
 
 template<class T, class CREATE_DESC, class RESOURCE_KEY>
-bool RenderObjectManager_Backend::getOrNewResource(SPtr<T>&               sp,
+bool RenderObjectManager_Backend::getOrNewObject(SPtr<T>&                 sp,
                                                    const MemAllocRequest& req,
                                                    const CREATE_DESC&     desc,
                                                    const RESOURCE_KEY&    key
 ) {
 	if (key) {
-		auto table = RenderObjectTable<T>::s_instance();
+		auto table = T::ObjectSlot::Table::s_instance();
 		if (auto* p = table->findObject(key)) {
-			sp = p;
+			sp = rttiCastCheck<T>(p);
 			return false; // return exists one
 		}
 	}

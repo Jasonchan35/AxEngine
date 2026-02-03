@@ -7,14 +7,14 @@ namespace ax /*::AxRender*/ {
 
 SPtr<Sampler> Sampler_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<Sampler_Backend> o;
-	if (RenderObjectManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.samplerState))
+	if (RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.samplerState))
 		o->_create(desc);
 	return o;
 }
 
 SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	SPtr<Texture2D_Backend> o;
-	if (RenderObjectManager_Backend::s_instance()->getOrNewResource(o, req, desc, desc.assetPath))
+	if (RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.assetPath))
 		o->_create(desc);
 	return o;
 }

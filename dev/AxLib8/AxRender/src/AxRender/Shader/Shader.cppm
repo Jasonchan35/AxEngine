@@ -289,8 +289,11 @@ public:
 
 	const String& assetPath() const { return _assetPath; }
 protected:
-
 	String		_assetPath;
+public:
+	using ObjectSlot = RenderObjectSlot<This>; 
+	ObjectSlot objectSlot;
+	
 };
 
 } // namespace 

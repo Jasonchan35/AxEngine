@@ -2,7 +2,7 @@ module AxRender;
 import :RenderContext;
 import :RenderMesh;
 import :RenderRequest_Backend;
-import :MeshObject_Backend;
+import :MeshObject;
 
 namespace ax /*::AxRender*/ {
 
