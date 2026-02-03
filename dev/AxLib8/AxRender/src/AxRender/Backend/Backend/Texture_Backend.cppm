@@ -2,7 +2,7 @@ module;
 export module AxRender:Texture_Backend;
 export import :ImageIO;
 export import :Texture;
-export import :RenderObjectSlot_Backend;
+export import :RenderObjectTable;
 
 export namespace ax /*::AxRender*/ {
 
@@ -11,7 +11,7 @@ class Sampler_Backend : public  Sampler {
 public:
 	static SPtr<Sampler> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 
-	RenderObjectSlot_Backend<This>	objectSlot;
+	RenderObjectSlot<This>	objectSlot;
 
 protected:
 	Sampler_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this, desc.isFallbackDefault) {}
@@ -31,7 +31,7 @@ public:
 	void hotReloadFile();
 	void hotCreateFromImage(const ImageInfo& info, ByteSpan pixelData);
 
-	RenderObjectSlot_Backend<This>	objectSlot;
+	RenderObjectSlot<This>	objectSlot;
 
 protected:
 	Texture2D_Backend(const CreateDesc& desc) : Base(desc), objectSlot(this, desc.isFallbackDefault) {}

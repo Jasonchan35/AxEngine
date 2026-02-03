@@ -60,8 +60,9 @@ void MeshRendererSystem::onRender(RenderRequest* req) {
 		if (!comp) continue;
 		auto& objectToWorld = comp->entity()->worldMatrix();
 		
-		if (!comp->mesh || !comp->material) return;
-		req->drawMesh(comp->mesh, comp->material, 0, objectToWorld);
+		auto& mr = comp->renderer;
+		if (!mr.mesh || !mr.material) return;
+		req->drawMesh(mr.mesh, mr.material, 0, objectToWorld);
 	}
 }; 
 

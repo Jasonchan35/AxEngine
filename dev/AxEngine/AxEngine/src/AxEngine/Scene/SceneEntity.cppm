@@ -122,11 +122,10 @@ class MeshRendererComponent : public SceneComponent {
 public:	
 	MeshRendererComponent();
 	virtual ~MeshRendererComponent() override;
+
+	MeshObjectRenderer renderer;
 	
-	SPtr<MeshObject> mesh;
-	SPtr<Material> material;
-	
-	Int _systemSlotId;
+	Int _systemSlotId = 0;
 };
 
 AX_CLASS()

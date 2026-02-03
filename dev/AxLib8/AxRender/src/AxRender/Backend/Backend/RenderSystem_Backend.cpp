@@ -5,6 +5,7 @@ import :RenderStockObjects;
 import :RenderRequest_Backend;
 import :RenderContext_Backend;
 import :RenderObjectManager_Backend;
+import :MeshObject_Backend;
 
 namespace ax /*::AxRender*/ {
 

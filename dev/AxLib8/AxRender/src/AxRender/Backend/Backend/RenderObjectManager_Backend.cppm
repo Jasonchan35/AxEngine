@@ -5,6 +5,7 @@ export import :RenderSystem_Backend;
 export import :Material_Backend;
 export import :MeshObject_Backend;
 export import :GpuBuffer_Backend;
+export import :RenderObjectTable;
 
 export namespace ax /*::AxRender*/ {
 
@@ -33,10 +34,10 @@ public:
 
 	void hotReloadFile(StrView filename);
 
-	using ITable = IRenderObjectTable_Backend;
+	using ITable = IRenderObjectTable;
 	
 	template<class T>
-	using Table = RenderObjectTable_Backend<T>;
+	using Table = RenderObjectTable<T>;
 	
 	template<class T>
 	using Table_ScopedLock = Table<T>::Table_ScopedLock;

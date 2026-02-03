@@ -80,9 +80,10 @@ void EditorApp::_createDemoScene() {
 		auto entity = SceneEntity::s_new(AX_NEW, nullptr, Fmt("test_{}", i));
 		entity->transform.position = Vec3f(static_cast<f32>(i) * 2.0f, 0, 0);
 
-		auto* meshRenderer     = entity->addComponent<MeshRendererComponent>(AX_NEW);
-		meshRenderer->mesh     = stockObjs->meshes->Cube;
-		meshRenderer->material = stockObjs->materials->Simple3D_Unlit_Color;
+		auto* comp  = entity->addComponent<MeshRendererComponent>(AX_NEW);
+		auto& mr    = comp->renderer;
+		mr.mesh     = stockObjs->meshes->Cube;
+		mr.material = stockObjs->materials->Simple3D_Unlit_Color;
 		
 		for (Int j = 0; j < 3; ++j) {
 			SceneEntity::s_new(AX_NEW, entity, Fmt("child_{}.{}", i, j));

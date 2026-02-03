@@ -2,7 +2,7 @@ module;
 
 export module AxRender:MeshObject_Backend;
 import :MeshObject;
-import :RenderObjectSlot_Backend;
+import :RenderObjectTable;
 
 export namespace ax {
 
@@ -22,7 +22,7 @@ public:
 	GpuData  _gpuData;
 	GpuData* onGetGpuData(RenderRequest* req);
 	
-	RenderObjectSlot_Backend<This>	objectSlot;
+	RenderObjectSlot<This>	objectSlot;
 };
 
 }// namespace

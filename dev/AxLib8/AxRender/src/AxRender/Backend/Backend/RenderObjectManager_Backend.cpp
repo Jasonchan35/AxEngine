@@ -140,7 +140,7 @@ void RenderObjectManager_Backend::_postCreate() {
 	onPostCreate();
 }
 
-MutexProtected<UPtr<IRenderObjectTable_Backend>>& RenderObjectManager_Backend_getTable(Rtti* rtti) {
+MutexProtected<UPtr<IRenderObjectTable>>& RenderObjectManager_Backend_getTable(Rtti* rtti) {
 	return RenderObjectManager_Backend::s_instance()->getTable(rtti);
 }
 

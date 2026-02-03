@@ -4,7 +4,6 @@ export module AxRender:RenderMeshEdit;
 export import :RenderMesh;
 export import :EditableMesh;
 export import :Font;
-export import :RenderObjectManager_Backend;
 
 export namespace ax {
 

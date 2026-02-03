@@ -69,7 +69,6 @@
 
 #define AX_RenderObject_ForwardDeclare(OBJ, ...)	\
 	class OBJ; \
-	class OBJ ## _Backend; \
 	class OBJ ## _CreateDesc; \
 //---
 
@@ -86,9 +85,6 @@
 		outObj = UPtr_new<OBJ##_##API>(req, desc); \
 	} \
 //----
-
-// #define AX_RenderSystem_FunctionInterfaces(API, SUFFIX)		AX_RenderObject_LIST(AX_RenderSystem_NewObject,    API,  SUFFIX)
-// #define AX_RenderSystem_FunctionBodies(API)					AX_RenderObject_LIST(AX_RenderSystem_NewObjectImp, API, override)
 
 #define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \

@@ -256,7 +256,7 @@ public:
 	}
 	
 	void importMesh(aiMesh* srcMesh) {
-		auto meshObject = MeshObject_Backend::s_new(AX_NEW);
+		auto meshObject = MeshObject::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
 		importRenderMesh(srcMesh, meshObject->meshData);
 		importMeshObject(srcMesh, meshObject);
@@ -314,7 +314,7 @@ public:
 		}
 		
 		
-		SPtr<MeshObject> meshObject = MeshObject_Backend::s_new(AX_NEW);
+		SPtr<MeshObject> meshObject = MeshObject::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
 
 		auto vertexLayout = VertexLayout::s_make(Math::max(1LL, dstMesh->colorChannelCount()),
@@ -344,14 +344,8 @@ public:
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
 				auto* meshRenderer = entity->addComponent<MeshRendererComponent>(AX_NEW);
-				meshRenderer->mesh = *meshObj;
-			
-				// meshRenderer->material	= srcMeshIndex % 2 
-				// 						? stockObjs->materials->meshlet 
-				// 						: stockObjs->materials->Simple3D_Blinn_Color;
-				
-				meshRenderer->material	= stockObjs->materials->Simple3D_Blinn_Color; 
-//				meshRenderer->material	= stockObjs->materials->meshlet; 
+				meshRenderer->renderer.mesh = *meshObj;
+				meshRenderer->renderer.material	= stockObjs->materials->Simple3D_Blinn_Color; 
 			}
 		} 
 

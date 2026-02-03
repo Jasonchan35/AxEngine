@@ -5,7 +5,12 @@ export import :RenderSystem;
 
 export namespace ax /*::AxRender*/ {
 
-class RenderRequest_Backend;
+#define AX_RenderObject_ForwardDeclareBackend(OBJ, ...)	\
+	class OBJ ## _Backend; \
+//---
+
+AX_RenderObject_LIST(AX_RenderObject_ForwardDeclareBackend, AX_EMPTY, AX_EMPTY);
+AX_RenderObject_BackendOnly_LIST(AX_RenderObject_ForwardDeclareBackend, AX_EMPTY, AX_EMPTY);
 
 template<class T> class BindlessTable;
 

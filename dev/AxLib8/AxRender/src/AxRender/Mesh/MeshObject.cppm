@@ -2,6 +2,7 @@ module;
 
 export module AxRender:MeshObject;
 export import :RenderMesh;
+export import :Material;
 
 export namespace ax {
 
@@ -35,6 +36,15 @@ protected:
 	MeshObject(const CreateDesc& desc);
 	
 	String _assetPath;
+};
+
+class MeshObjectRenderer_CreateDesc {};
+
+class MeshObjectRenderer : public NonCopyable {
+public:
+	Mat4f				worldMatrix;
+	SPtr<MeshObject>	mesh;
+	SPtr<Material>		material;
 };
 
 } // namespace

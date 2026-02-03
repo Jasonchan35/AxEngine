@@ -1,4 +1,5 @@
 module AxRender;
+import :RenderObjectManager_Backend;
 
 namespace ax /*::AxRender*/ {
 

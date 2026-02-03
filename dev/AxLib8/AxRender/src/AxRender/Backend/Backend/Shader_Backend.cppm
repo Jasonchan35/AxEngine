@@ -1,6 +1,6 @@
 module;
 export module AxRender:Shader_Backend;
-export import :RenderObjectSlot_Backend;
+export import :RenderObjectTable;
 export import :Shader;
 
 export namespace ax /*::AxRender*/ {
@@ -312,7 +312,7 @@ protected:
 class Shader_Backend : public Shader {
 	AX_RTTI_INFO(Shader_Backend, Shader)
 public:
-	RenderObjectSlot_Backend<This>	objectSlot;
+	RenderObjectSlot<This>	objectSlot;
 
 	static SPtr<This> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView assetPath);

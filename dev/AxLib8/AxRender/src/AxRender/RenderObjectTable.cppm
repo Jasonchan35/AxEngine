@@ -1,19 +1,19 @@
 module;
-export module AxRender:RenderObjectSlot_Backend;
-export import :Texture;
+export module AxRender:RenderObjectTable;
+export import :RenderSystem;
 export import :GpuBuffer;
 
 export namespace ax /*::AxRender*/ {
 
-template<class T> class RenderObjectTable_Backend;
+template<class T> class RenderObjectTable;
 
 using RenderObjectSlotId = u32;
 RenderObjectSlotId RenderObjectSlotId_None = u32_max;
 
 template<class T>
-class RenderObjectSlot_Backend : public NonCopyable {
+class RenderObjectSlot : public NonCopyable {
 public:
-	using Table = RenderObjectTable_Backend<T>;
+	using Table = RenderObjectTable<T>;
 	using ResourceKey = typename T::ResourceKey;
 
 	explicit operator bool() const { return _slotId != RenderObjectSlotId_None; }
@@ -21,11 +21,11 @@ public:
 	AX_INLINE RenderObjectSlotId slotId() const { return _slotId; }
 	AX_INLINE T*	 owner() { return _owner; }
 
-	RenderObjectSlot_Backend(T* owner, bool isFallbackDefault);
-	~RenderObjectSlot_Backend();
+	RenderObjectSlot(T* owner, bool isFallbackDefault);
+	~RenderObjectSlot();
 	void markDirty();
 
-	friend class RenderObjectTable_Backend<T>;
+	friend class RenderObjectTable<T>;
 protected:
 	RenderObjectSlotId _slotId = RenderObjectSlotId_None;
 	bool _dirty = false;
@@ -33,19 +33,19 @@ private:
 	T*	_owner  = nullptr;
 };
 
-class IRenderObjectTable_Backend : public RttiObject {
-	AX_RTTI_INFO(IRenderObjectTable_Backend, RttiObject)
+class IRenderObjectTable : public RttiObject {
+	AX_RTTI_INFO(IRenderObjectTable, RttiObject)
 public:
 	virtual void onFrameEnd(class RenderRequest* req) {}
 };
 
-MutexProtected<UPtr<IRenderObjectTable_Backend>>& RenderObjectManager_Backend_getTable(Rtti* rtti);
+MutexProtected<UPtr<IRenderObjectTable>>& RenderObjectManager_Backend_getTable(Rtti* rtti);
 
 template<class T>
-class RenderObjectTable_Backend : public IRenderObjectTable_Backend {
-	AX_RTTI_INFO(RenderObjectTable_Backend, IRenderObjectTable_Backend)
+class RenderObjectTable : public IRenderObjectTable {
+	AX_RTTI_INFO(RenderObjectTable, IRenderObjectTable)
 public:
-	using Handle = RenderObjectSlot_Backend<T>;
+	using Handle = RenderObjectSlot<T>;
 	using ResourceKey = typename T::ResourceKey;
 
 	void add(T* obj, bool isFallbackDefault);
@@ -59,7 +59,7 @@ public:
 
 	Int count() const { return _slots.size() - _freeSlots.size(); }
 
-	RenderObjectTable_Backend();
+	RenderObjectTable();
 
 	virtual void onFrameEnd(class RenderRequest* req) override;
 
@@ -86,15 +86,15 @@ protected:
 };
 
 template<class T> inline
-typename MutexProtected<RenderObjectTable_Backend<T>>::ScopedLock RenderObjectTable_getLocked() {
+typename MutexProtected<RenderObjectTable<T>>::ScopedLock RenderObjectTable_getLocked() {
 	auto lock   = RenderObjectManager_Backend_getTable(rttiOf<T>()).scopedLock();
-	auto* data  = rttiCastCheck<RenderObjectTable_Backend<T>>(lock->ptr());
+	auto* data  = rttiCastCheck<RenderObjectTable<T>>(lock->ptr());
 	auto* mutex = lock.detach();
-	return typename MutexProtected<RenderObjectTable_Backend<T>>::ScopedLock(*mutex, data);
+	return typename MutexProtected<RenderObjectTable<T>>::ScopedLock(*mutex, data);
 }
 
 template<class T>
-RenderObjectTable_Backend<T>::RenderObjectTable_Backend() {
+RenderObjectTable<T>::RenderObjectTable() {
 	auto frameCount = RenderSystem::s_instance()->renderRequestCount();
 	if (frameCount < 1) throw Error_Undefined();
 	_frames.resize(frameCount);
@@ -111,25 +111,25 @@ RenderObjectTable_Backend<T>::RenderObjectTable_Backend() {
 }
 
 template<class T>
-RenderObjectSlot_Backend<T>::RenderObjectSlot_Backend(T* owner, bool isFallbackDefault): _owner(owner) {
+RenderObjectSlot<T>::RenderObjectSlot(T* owner, bool isFallbackDefault): _owner(owner) {
 	auto lock = RenderObjectTable_getLocked<T>();
 	lock->add(_owner, isFallbackDefault);
 }
 
 template<class T>
-RenderObjectSlot_Backend<T>::~RenderObjectSlot_Backend() {
+RenderObjectSlot<T>::~RenderObjectSlot() {
 	auto lock = RenderObjectTable_getLocked<T>();
 	lock->remove(_owner); 
 }
 
 template<class T>
-void RenderObjectSlot_Backend<T>::markDirty() {
+void RenderObjectSlot<T>::markDirty() {
 	auto lock = RenderObjectTable_getLocked<T>();
 	lock->markDirty(_owner);
 }
 
 template<class T>
-void RenderObjectTable_Backend<T>::add(T* obj, bool isFallbackDefault) {
+void RenderObjectTable<T>::add(T* obj, bool isFallbackDefault) {
 	if (!obj) return;
 
 	if (auto& key = obj->resourceKey()) { _keyDict.add(key, obj); }
@@ -163,7 +163,7 @@ void RenderObjectTable_Backend<T>::add(T* obj, bool isFallbackDefault) {
 }
 
 template<class T>
-void RenderObjectTable_Backend<T>::markDirty(T* obj) {
+void RenderObjectTable<T>::markDirty(T* obj) {
 	if (!obj) { AX_ASSERT(false); return; }
 	auto& handle = obj->objectSlot;
 	auto slotId = handle._slotId;
@@ -175,7 +175,7 @@ void RenderObjectTable_Backend<T>::markDirty(T* obj) {
 }
 
 template<class T>
-void RenderObjectTable_Backend<T>::remove(T* obj) {
+void RenderObjectTable<T>::remove(T* obj) {
 	if (!obj) return;
 
 	if (auto& key = obj->resourceKey()) {
@@ -201,7 +201,7 @@ void RenderObjectTable_Backend<T>::remove(T* obj) {
 }
 
 template<class T>
-void RenderObjectTable_Backend<T>::onFrameEnd(RenderRequest* req) {
+void RenderObjectTable<T>::onFrameEnd(RenderRequest* req) {
 	_currentFrameIndex = (_currentFrameIndex + 1) % _frames.size();
 	auto& curFrame	   = currentFrame();
 
