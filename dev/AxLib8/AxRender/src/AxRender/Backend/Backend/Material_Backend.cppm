@@ -101,7 +101,7 @@ public:
 		}
 		
 		void setBufferPool(GpuBufferPool* pool) {
-			AX_ASSERT(pool->blockAlignment() == stride());
+			AX_ASSERT(Math::isAlignedTo(stride(), pool->blockAlignment()));
 			_bufferPool.ref(pool); _buffer.unref();
 		}
 

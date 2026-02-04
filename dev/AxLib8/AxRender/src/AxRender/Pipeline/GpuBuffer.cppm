@@ -290,8 +290,8 @@ protected:
 template<class T>
 class StructuredGpuBufferPool_ : public NonCopyable {
 public:
-	void create(const MemAllocRequest& req, InNameId name, Int maxSize, Int pageSize) {
-		pool = GpuBufferPool::s_new(req, name, GpuBufferType::Structured, maxSize, pageSize, AX_SIZEOF(T));
+	void create(const MemAllocRequest& req, InNameId name, Int maxSize, Int pageSize, Int alignment = 16) {
+		pool = GpuBufferPool::s_new(req, name, GpuBufferType::Structured, maxSize, pageSize, alignment);
 	}
 
 	operator GpuBufferPool* () { return pool.ptr(); }
@@ -303,8 +303,6 @@ public:
 template<class T>
 class StructuredGpuBuffer_ : public NonCopyable {
 public:
-	static_assert(Math::isPow2(AX_SIZEOF(T))); // Virtual allocator needs pow2
-	
 	using Pool = StructuredGpuBufferPool_<T>;
 	void create(const MemAllocRequest& req, InNameId name, Pool& pool) {
 		buffer = StructuredGpuBuffer::s_new<T>(req, name, pool.pool);

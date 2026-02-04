@@ -2,6 +2,7 @@
 #define __AX_HLSL_CPU_STRUCT_h__
 
 // HLSL alignment is 16
+
 struct AxVertexShaderDrawRootConst {
 	Mat4f worldMatrix;
 };
@@ -10,7 +11,8 @@ struct AxMeshShaderDrawRootConst {
 	Mat4f worldMatrix;
 	u32   meshId;
 	u32   meshRendererId;
-	u32x4 _usedPadding[3];
+	u32   _padding0;
+	u32   _padding1;
 };
 
 struct AxGpuMeshletDraw {
@@ -28,11 +30,13 @@ struct AxGpuMeshlet {
 struct AxGpuMeshletVert {
 	Vec3f   pos;
 	u32     rawColor;
+
 	Vec2f   uv0;
 	Vec2f   uv1;
 //	Vec2f   rawNormal;
+
 	Vec3f   normal;
-	u32 _padding[5];
+	u32     _padding;
 };
 
 struct AxGpuMeshletPrim {
@@ -54,14 +58,13 @@ struct AxGpuMeshObjectRenderer {
 	u32 	materialId;
 	u32     _padding0;
 	u32     _padding1;
-	u32x4 	_padding[3];
 };
 
 #ifdef AX_RENDER_DX12
 struct AxIndirectDrawWorld_Dx12 {
 	AxMeshShaderDrawRootConst 	rootConst;
 	D3D12_DISPATCH_ARGUMENTS	args;
-	u32x4 	_padding[7];
+	u32 _padding0;
 };
 
 struct AxIndirectDrawWorldRootConst_Dx12 {
