@@ -7,7 +7,7 @@ import :GpuBuffer_Dx12;
 import :RenderObjectManager_Dx12;
 import :Texture_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace ax {
 
@@ -46,11 +46,6 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_dynamicDescriptors.CBV_SRV_UAV.create(Fmt("dynamic#{}.CBV_SRV_UAV", desc.index), pool.CBV_SRV_UAV, renderReq_CBV_SRV_UAV_Count       , false);
 	    _dynamicDescriptors.Sampler.create(Fmt("dynamic#{}.Sampler"    , desc.index), pool.Sampler,     info.renderRequest.maxSamplerCount, false);
 	
-#if 0
-	auto name = NameId::s_make("indirectDraw");
-	indirectDraw.drawArgumentsPool.create(AX_NEW, name, 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	indirectDraw.drawArguments.create(AX_NEW, name, indirectDraw.drawArgumentsPool);
-#endif
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
@@ -83,16 +78,25 @@ void RenderRequest_Dx12::onWaitCompleted() {
 	}
 }
 
-void RenderRequest_Dx12::onIndirectMeshShader() {
-//	_In_  ID3D12CommandSignature *pCommandSignature,
-//	_In_  UINT MaxCommandCount,
-//	_In_  ID3D12Resource *pArgumentBuffer,
-//	_In_  UINT64 ArgumentBufferOffset,
-//	_In_opt_  ID3D12Resource *pCountBuffer,
-//	_In_  UINT64 CountBufferOffset) = 0;
-	
-//	_graphCmdList_dx12->ExecuteIndirect()
+void RenderRequest_Dx12::IndirectDraw::create() {
+	auto name = NameId::s_make("indirectDraw");
+	drawArgumentsPool.create(AX_NEW, name, 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	drawArguments.create(AX_NEW, name, drawArgumentsPool);
+}
+
+void RenderRequest_Dx12::IndirectDraw::draw(RenderRequest_Dx12* req) {
+	auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(drawArguments.buffer->getUploadedGpuBuffer(req));
+	auto* mgr = RenderObjectManager_Dx12::s_instance();
+	req->_graphCmdList_dx12->ExecuteIndirect(mgr->indirectDraw._commandSignature,
+	                                         1000,
+	                                         ax_const_cast(gpuBuf)->d3dResource(), 
+	                                         0, nullptr, 0);
 //	this->indirectDraw.drawArguments
+	
+}
+
+void RenderRequest_Dx12::onDrawWorld() {
+//	indirectDraw.draw(this); // TODO
 }
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
@@ -231,4 +235,4 @@ void RenderRequest_Dx12::onRenderPassEnd(RenderPass* pass_) {
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

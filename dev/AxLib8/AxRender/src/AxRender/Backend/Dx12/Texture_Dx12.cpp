@@ -2,7 +2,7 @@ module AxRender;
 import :Texture_Dx12;
 import :GpuBuffer_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace ax {
 
@@ -91,4 +91,4 @@ Dx12Descriptor_Texture2D Texture2D_Dx12::_getUpdatedDescriptor(RenderRequest_Dx1
 
 } // namespace
 
-#endif //AX_RENDERER_DX12
+#endif //AX_RENDER_DX12

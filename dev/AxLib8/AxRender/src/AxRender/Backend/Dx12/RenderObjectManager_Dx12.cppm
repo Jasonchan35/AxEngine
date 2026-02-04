@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxRender:RenderObjectManager_Dx12;
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 export import :Dx12DescriptorHeap;
 export import :RenderObjectManager_Backend;
@@ -104,4 +104,4 @@ public:
 };
 
 } // namespace
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

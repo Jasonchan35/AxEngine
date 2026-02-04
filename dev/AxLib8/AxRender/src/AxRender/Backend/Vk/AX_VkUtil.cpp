@@ -2,7 +2,7 @@ module;
 
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 import :AX_VkUtil;
 
 namespace ax /*::AxRender*/ {
@@ -100,4 +100,4 @@ void AX_VkAllocatorCallbacks::s_freeNotification(
 ) {}
 
 } // namespace ax /*::AxRender*/
-#endif // #if AX_RENDERER_VK
+#endif // #if AX_RENDER_VK

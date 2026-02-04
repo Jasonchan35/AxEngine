@@ -1,7 +1,7 @@
 module AxRender;
 import :Dx12DescriptorHeap;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace  ax {
 
@@ -77,5 +77,5 @@ void Dx12DescriptorHeapPool::_create(InNameId name, AX_ID3D12Device* dev, Int nu
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12
 

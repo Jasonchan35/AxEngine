@@ -11,13 +11,13 @@ struct CmdOptions : public NonCopyable {
 	static CmdOptions& s_instance();
 	
 	bool genNinja = false;
-#if AX_RENDERER_NULL
+#if AX_RENDER_NULL
 	bool genReflect_Null = false;
 #endif		
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 	bool genReflect_Vk = false;
 #endif
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 	bool genReflect_Dx12 = false;
 #endif		
 	bool genResultInfo = false;

@@ -35,17 +35,18 @@ void RenderObjectManager_Dx12::onPostCreate() {
 }
 
 void RenderObjectManager_Dx12::IndirectDraw::_create() {
-#if 0
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	
-	Int RootConstSizeInBytes = AX_SIZEOF(Dx12_IndirectDrawMeshObject::rootConst);
+	using RootConst = AxIndirectDrawWorldRootConst_Dx12;
+	
+	Int rootConstSizeInBytes = AX_SIZEOF(RootConst);
 	
 	Dx12RootParameterList rootParamList;
 
 	UINT rootConstParamIndex = rootParamList.addRoot32BitConst(D3D12_SHADER_VISIBILITY_VERTEX,
 	                                                           BindPoint::Zero,
 	                                                           BindSpace::World,
-	                                                           RootConstSizeInBytes);
+	                                                           rootConstSizeInBytes);
 
 //	rootParamList.addRootSRV(D3D12_SHADER_VISIBILITY_VERTEX, static_cast<BindPoint>(0), BindSpace::Object);
 	rootParamList.createRootSignature(_rootSignature);
@@ -56,7 +57,7 @@ void RenderObjectManager_Dx12::IndirectDraw::_create() {
 		dst.Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT;
 		dst.Constant.RootParameterIndex = rootConstParamIndex;
 		dst.Constant.DestOffsetIn32BitValues = 0;
-		dst.Constant.Num32BitValuesToSet = Dx12Util::castUINT(RootConstSizeInBytes / 4);
+		dst.Constant.Num32BitValuesToSet = Dx12Util::castUINT(rootConstSizeInBytes / 4);
 	}
 	
 	{
@@ -65,7 +66,7 @@ void RenderObjectManager_Dx12::IndirectDraw::_create() {
 	}
 
 	D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = {};
-	commandSignatureDesc.ByteStride       = sizeof(AxIndirectDrawArgument_Dx12);
+	commandSignatureDesc.ByteStride       = sizeof(RootConst);
 	commandSignatureDesc.NumArgumentDescs = ax_safe_cast_from(argumentDescList.size());
 	commandSignatureDesc.pArgumentDescs   = argumentDescList.data();
 
@@ -73,7 +74,6 @@ void RenderObjectManager_Dx12::IndirectDraw::_create() {
 	                                      _rootSignature,
 	                                      IID_PPV_ARGS(_commandSignature.ptrForInit()));
 	Dx12Util::throwIfError(hr);
-#endif
 }
 
 void RenderObjectManager_Dx12::_createDescriptors() {

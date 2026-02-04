@@ -1,6 +1,6 @@
 ﻿module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 import :RenderCommandList_Vk;
 import :RenderContext_Vk;
@@ -24,4 +24,4 @@ void RenderCommandList_Vk::commandEnd() {
 }
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

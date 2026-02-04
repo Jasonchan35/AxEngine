@@ -1,7 +1,7 @@
 module;
 
 export module AxRender:RenderSystem_Dx12;
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 export import :Dx12Util;
 export import :RenderSystem_Backend;
@@ -52,4 +52,4 @@ private:
 
 } // namespace ax {
 
-#endif // AX_RENDERER_DX12
+#endif // AX_RENDER_DX12

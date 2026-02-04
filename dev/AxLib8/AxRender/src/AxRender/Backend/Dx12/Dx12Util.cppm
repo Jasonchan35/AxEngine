@@ -2,7 +2,7 @@
 
 export module AxRender:Dx12Util;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 export import :Shader;
 export import :Texture;
 export import :RenderCommandList;
@@ -430,4 +430,4 @@ public:
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

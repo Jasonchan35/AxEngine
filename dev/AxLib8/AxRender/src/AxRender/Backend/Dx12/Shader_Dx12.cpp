@@ -4,7 +4,7 @@ module AxRender;
 import :Shader_Dx12;
 import :RenderSystem_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace ax {
 
@@ -345,4 +345,4 @@ bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, const PsoKey& psoKe
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

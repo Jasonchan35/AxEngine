@@ -2,7 +2,7 @@ module AxRender;
 import :Dx12Resource;
 import :RenderSystem_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace ax {
 void Dx12ResourceBase::setName(InNameId name) {
@@ -308,4 +308,4 @@ void Dx12RootParameterList::createRootSignature(ComPtr<ID3D12RootSignature> &out
 
 } // namespace
 
-#endif //#if AX_RENDERER_DX12
+#endif //#if AX_RENDER_DX12

@@ -1,7 +1,7 @@
 module;
 
 export module AxRender:Texture_Dx12;
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 export import :Dx12Resource;
 export import :Texture_Backend;
@@ -40,4 +40,4 @@ private:
 
 } // namespace
 
-#endif //AX_RENDERER_DX12
+#endif //AX_RENDER_DX12

@@ -2,7 +2,7 @@
 
 export module AxRender:AX_Vulkan;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :AX_VkUtil;
 
 export namespace ax /*::AxRender*/ {
@@ -983,4 +983,4 @@ protected:
 
 } // namespace ax /*::AxRender*/
 
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

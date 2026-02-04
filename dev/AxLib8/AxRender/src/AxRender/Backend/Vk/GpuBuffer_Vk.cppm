@@ -2,7 +2,7 @@ module;
 
 export module AxRender:GpuBuffer_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :AX_Vulkan;
 export import :GpuBuffer_Backend;
 export import :RenderRequest_Vk;
@@ -76,4 +76,4 @@ public:
 
 } // namespace
 
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

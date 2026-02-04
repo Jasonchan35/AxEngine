@@ -6,12 +6,12 @@
 	#include "AxCore-OS_Windows.h"
 #endif
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 	#include "AxRender-Vulkan.h"
 	#include "spirv_reflect.h"
 #endif
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 	#if AX_OS_WINDOWS
 		using AX_WinBOOL = BOOL;
 		#include <dxcapi.h> // from Windows SDK - require this for signed shader

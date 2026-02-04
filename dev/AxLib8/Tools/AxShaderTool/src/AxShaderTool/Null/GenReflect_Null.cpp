@@ -1,6 +1,6 @@
 module;
 
-#if !AX_RENDERER_NULL
+#if !AX_RENDER_NULL
 module AxShaderTool;
 #else
 

@@ -2,7 +2,7 @@
 
 export module AxRender:AX_VkUtil;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :Shader;
 export import :Texture;
 
@@ -450,4 +450,4 @@ constexpr StrLit ax_enum_entry_strlit(const VkDescriptorType& v) {
 
 } // namespace ax /*::AxRender*/
 
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

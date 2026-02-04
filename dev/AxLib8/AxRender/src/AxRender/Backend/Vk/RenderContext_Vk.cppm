@@ -2,7 +2,7 @@
 
 export module AxRender:RenderContext_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :RenderContext_Backend;
 export import :RenderCommandList_Vk;
 export import :RenderPass_Vk;
@@ -111,4 +111,4 @@ public:
 
 } // namespace 
 
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

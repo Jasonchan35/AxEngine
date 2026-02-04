@@ -1,7 +1,7 @@
 ﻿module;
 
 export module AxRender:RenderObjectManager_Vk;
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 export import :RenderObjectManager_Backend;
 export import :RenderSystem_Backend;
@@ -32,4 +32,4 @@ public:
 
 }
 
-#endif // #if AX_RENDERER_VK
+#endif // #if AX_RENDER_VK

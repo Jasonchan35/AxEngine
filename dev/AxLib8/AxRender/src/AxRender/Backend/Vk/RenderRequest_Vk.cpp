@@ -1,6 +1,6 @@
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 import :RenderRequest_Vk;
 import :RenderSystem_Vk;
@@ -183,4 +183,4 @@ void RenderRequest_Vk::onVertexShaderDraw(AxVertexShaderDraw& draw) {
 
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

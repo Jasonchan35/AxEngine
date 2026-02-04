@@ -1,6 +1,6 @@
 ﻿module AxRender;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 import :RenderCommandList_Dx12;
 import :RenderPass_Dx12;
@@ -29,5 +29,5 @@ void RenderCommandList_Dx12::create(ID3D12Device* dev, RenderCommandListType typ
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12
  

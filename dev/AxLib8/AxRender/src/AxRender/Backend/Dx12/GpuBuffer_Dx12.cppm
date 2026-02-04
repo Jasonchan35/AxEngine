@@ -4,7 +4,7 @@ export module AxRender:GpuBuffer_Dx12;
 import :Dx12Resource;
 import :GpuBuffer_Backend;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 import :RenderSystem_Backend;
 

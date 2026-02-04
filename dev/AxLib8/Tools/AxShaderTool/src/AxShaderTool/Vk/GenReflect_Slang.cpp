@@ -1,6 +1,6 @@
 ﻿module;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 module AxShaderTool;
 import :GenReflect_Slang;

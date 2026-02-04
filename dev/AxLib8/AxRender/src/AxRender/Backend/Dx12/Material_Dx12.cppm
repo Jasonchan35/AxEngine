@@ -3,7 +3,7 @@ module;
 export module AxRender:Material_Dx12;
 export import :Material_Backend;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 export import :Dx12DescriptorHeap;
 export import :RenderSystem_Backend;
@@ -88,4 +88,4 @@ public:
 
 } // namespace
 
-#endif //#if AX_RENDERER_DX12
+#endif //#if AX_RENDER_DX12

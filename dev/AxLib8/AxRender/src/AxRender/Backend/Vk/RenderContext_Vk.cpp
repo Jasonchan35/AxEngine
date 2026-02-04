@@ -1,6 +1,6 @@
 ﻿module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 import :RenderContext_Vk;
 import :RenderRequest;
 import :RenderSystem_Vk;
@@ -360,4 +360,4 @@ RenderContext_Vk_Win32::~RenderContext_Vk_Win32() {
 #endif
 
 } // namespace 
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

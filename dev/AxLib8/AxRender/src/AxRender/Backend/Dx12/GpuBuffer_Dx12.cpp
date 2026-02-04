@@ -2,7 +2,7 @@ module AxRender;
 import :GpuBuffer_Dx12;
 import :RenderRequest_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace  ax {
 
@@ -105,4 +105,4 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 
 }
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

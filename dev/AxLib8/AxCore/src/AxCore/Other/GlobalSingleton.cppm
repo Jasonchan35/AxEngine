@@ -31,7 +31,7 @@ public:
 
 private:
 	AX_VC_WARNING_PUSH_AND_DISABLE(4324) //  Warning C4324 : structure was padded due to alignment specifier
-	AX_ALIGNAS(T) Byte _buffer[AX_SIZEOF(T)];
+	AX_MIN_ALIGNAS(T) Byte _buffer[AX_SIZEOF(T)];
 	AX_VC_WARNING_POP()
 	
 	bool _initialized = false;

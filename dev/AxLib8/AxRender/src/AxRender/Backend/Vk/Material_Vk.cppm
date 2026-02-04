@@ -2,7 +2,7 @@ module;
 
 export module AxRender:Material_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :AX_Vulkan;
 export import :Material_Backend;
 export import :Shader_Vk;
@@ -70,4 +70,4 @@ private:
 };
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

@@ -1,6 +1,6 @@
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 import :Shader_Vk;
 import :RenderSystem_Vk;
@@ -366,4 +366,4 @@ bool VertexInputLayoutDesc_Vk::init(const ShaderStageInfo& info, VertexLayout ve
 }
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

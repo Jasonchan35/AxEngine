@@ -1,6 +1,6 @@
 module;
 
-#if !AX_RENDERER_VK
+#if !AX_RENDER_VK
 export module AxShaderTool:GenNinja_Vk;
 #else
 
@@ -17,4 +17,4 @@ public:
 
 } // namespace
 
-#endif // #if AX_RENDERER_VK
+#endif // #if AX_RENDER_VK

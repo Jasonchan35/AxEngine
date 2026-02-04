@@ -1,6 +1,6 @@
 module AxShaderTool;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 import :GenNinja_Dx12;
 
 namespace ax {
@@ -85,4 +85,4 @@ void GenNinja_Dx12::writeNinjaPass(IString&        outStr,
 }
 
 } // namespace
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

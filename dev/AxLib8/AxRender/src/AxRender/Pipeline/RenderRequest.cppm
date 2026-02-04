@@ -49,7 +49,7 @@ public:
 	void drawMesh(RenderMesh&    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
 	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
 
-	void indirectMeshShader();
+	void drawWorld();
 	
 	void drawTexture(Texture2D* tex) {}
 

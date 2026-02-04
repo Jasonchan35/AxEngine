@@ -16,7 +16,7 @@
 #define AX_ALIGNOF(...) ::ax::ax_consteval_Int(alignof(__VA_ARGS__))
 
 #define AX_MIN_ALIGNMENT 16
-#define AX_ALIGNAS(T)   alignas(alignof(T) > AX_MIN_ALIGNMENT ? alignof(T) : AX_MIN_ALIGNMENT)  
+#define AX_MIN_ALIGNAS(T)   alignas(alignof(T) > AX_MIN_ALIGNMENT ? alignof(T) : AX_MIN_ALIGNMENT)
 
 #define AX_FILE		__FILE__
 #define AX_LINE		static_cast<::ax::Int>(__LINE__)

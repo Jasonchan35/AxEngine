@@ -4,7 +4,7 @@ export module AxRender:RenderPass_Dx12;
 export import :Dx12DescriptorHeap;
 export import :RenderPass_Backend;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 import :RenderSystem_Backend;
 
@@ -50,4 +50,4 @@ public:
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

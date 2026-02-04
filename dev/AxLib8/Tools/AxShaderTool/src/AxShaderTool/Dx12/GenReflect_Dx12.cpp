@@ -1,6 +1,6 @@
 module AxShaderTool;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 import :GenReflect_Dx12;
 
@@ -692,5 +692,5 @@ void GenReflect_Dx12::_compileReflect_samplers(ShaderStageInfo& outInfo, ID3D12S
 
 } //namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12
 

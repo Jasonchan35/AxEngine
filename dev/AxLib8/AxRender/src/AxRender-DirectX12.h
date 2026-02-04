@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 #define D3D12MA_USING_DIRECTX_HEADERS 1
 

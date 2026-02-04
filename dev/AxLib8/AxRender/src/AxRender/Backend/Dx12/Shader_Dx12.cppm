@@ -3,7 +3,7 @@ module;
 export module AxRender:Shader_Dx12;
 import :Dx12Util;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 export import :Shader_Backend;
 export import :RenderSystem_Backend;
@@ -121,4 +121,4 @@ public:
 
 } //  namespace
 
-#endif //AX_RENDERER_DX12
+#endif //AX_RENDER_DX12

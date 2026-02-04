@@ -1,5 +1,5 @@
 module;
-#if !AX_RENDERER_DX12
+#if !AX_RENDER_DX12
 export module AxShaderTool:GenReflect_Dx12;
 #else
 	#if AX_OS_WINDOWS
@@ -81,4 +81,4 @@ private:
 
 } // namespace 
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

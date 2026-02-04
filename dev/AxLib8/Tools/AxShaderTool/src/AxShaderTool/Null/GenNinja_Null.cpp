@@ -1,6 +1,6 @@
 module AxShaderTool;
 
-#if AX_RENDERER_NULL
+#if AX_RENDER_NULL
 
 import :GenNinja_Null;
 
@@ -36,4 +36,4 @@ void GenNinja_Null::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileL
 
 } // namespace
 
-#endif // #if AX_RENDERER_NULL
+#endif // #if AX_RENDER_NULL

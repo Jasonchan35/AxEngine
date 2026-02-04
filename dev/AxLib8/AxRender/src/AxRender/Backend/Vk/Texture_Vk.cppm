@@ -2,7 +2,7 @@ module;
 
 export module AxRender:Texture_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :AX_Vulkan;
 export import :Texture_Backend;
 export import :GpuBuffer_Backend;
@@ -44,4 +44,4 @@ private:
 };
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

@@ -56,6 +56,8 @@ MeshRendererSystem* MeshRendererSystem::s_instance(bool createIfNone) {
 }
 
 void MeshRendererSystem::onRender(RenderRequest* req) {
+	req->drawWorld();
+	
 	for (auto* comp : _componentList) {
 		if (!comp) continue;
 		auto& objectToWorld = comp->entity()->worldMatrix();
@@ -68,7 +70,6 @@ void MeshRendererSystem::onRender(RenderRequest* req) {
 		if (!mr.mesh || !mr.material) return;
 		req->drawMesh(mr.mesh, mr.material, 0, objectToWorld);
 	}
-	
 }; 
 
 }

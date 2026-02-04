@@ -2,7 +2,7 @@ module;
 
 export module AxRender:RenderPass_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :AX_Vulkan;
 export import :RenderPass_Backend;
 
@@ -57,4 +57,4 @@ public:
 
 } // namespace
 
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

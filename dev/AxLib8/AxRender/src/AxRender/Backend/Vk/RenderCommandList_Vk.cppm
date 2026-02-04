@@ -2,7 +2,7 @@
 
 export module AxRender:RenderCommandList_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :AX_Vulkan;
 export import :RenderCommandList_Backend;
 export import :RenderSystem_Backend;
@@ -42,4 +42,4 @@ protected:
 
 }
 
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

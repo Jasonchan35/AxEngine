@@ -19,7 +19,7 @@ protected:
 	AX_INLINE constexpr	const 	T*	inlineBufPtr() const { return ax_const_cast(this)->inlineBufPtr(); }
 private:
 	AX_VC_WARNING_PUSH_AND_DISABLE(4324) //  Warning C4324 : structure was padded due to alignment specifier
-	AX_ALIGNAS(T) Byte _inlineBuf[AX_SIZEOF(T) * BUF_SIZE];
+	AX_MIN_ALIGNAS(T) Byte _inlineBuf[AX_SIZEOF(T) * BUF_SIZE];
 	AX_VC_WARNING_POP()
 };
 

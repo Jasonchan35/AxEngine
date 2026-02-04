@@ -1,6 +1,6 @@
 ﻿module AxRender;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 import :RenderPass_Dx12;
 import :RenderContext_Dx12;
 import :RenderRequest_Dx12;
@@ -90,4 +90,4 @@ void RenderPass_Dx12::colorBuf0_resourceBarrier(RenderRequest* req_, D3D12_RESOU
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

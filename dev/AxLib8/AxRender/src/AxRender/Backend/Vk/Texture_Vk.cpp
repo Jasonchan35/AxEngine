@@ -1,6 +1,6 @@
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 import :Texture_Vk;
 import :RenderContext_Vk;
@@ -94,4 +94,4 @@ VkDescriptorImageInfo Texture2D_Vk::_getUpdatedDescriptorInfo(RenderRequest_Vk* 
 }
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

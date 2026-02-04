@@ -2,7 +2,7 @@
 import :Dx12Util;
 import :RenderSystem_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace ax {
 
@@ -26,4 +26,4 @@ void Dx12Util::reportError(HRESULT hr) {
 
 } // namespace
 
-#endif // #if AX_RENDERER_DX12
+#endif // #if AX_RENDER_DX12

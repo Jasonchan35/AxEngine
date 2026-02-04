@@ -93,13 +93,13 @@ void AxShaderTool_App::genNinja_Shader(StrView outDir, StrView filename) {
 		genNinja_Shader_API(api, parser.info, outDir, filename);
 	};
 
-#if AX_RENDERER_NULL
+#if AX_RENDER_NULL
 	func(RenderAPI::Null);
 #endif
-#if AX_RENDERER_VK	
+#if AX_RENDER_VK	
 	func(RenderAPI::Vk);
 #endif
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 	func(RenderAPI::Dx12);
 #endif
 
@@ -156,13 +156,13 @@ void AxShaderTool_App::genNinja_Shader_API(RenderAPI api, ShaderDeclareInfo& inf
 	outStr.append("\n#---------- API -----------------\n");
 	for (auto& pass : info.passes) {
 		switch (api) {
-#if AX_RENDERER_NULL
+#if AX_RENDER_NULL
 			case RenderAPI::Null:   GenNinja_Null().writeNinjaPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 			case RenderAPI::Vk:		GenNinja_Vk().writeNinjaPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 			case RenderAPI::Dx12:	GenNinja_Dx12().writeNinjaPass(outStr, depFileList, pass, absSourceFilename); break;
 #endif
 			default: break;
@@ -210,13 +210,13 @@ int AxShaderTool_App::onRun() {
 		if (a == "-genNinja"			) { opt.genNinja			= true; continue; }
 		if (a == "-genResultInfo"		) { opt.genResultInfo		= true; continue; }
 		if (a == "-keepUnusedVariable"	) { opt.keepUnusedVariable	= true; continue; }
-#if AX_RENDERER_NULL
+#if AX_RENDER_NULL
 		if (a == "-genReflect_Null"		) { opt.genReflect_Null		= true; continue; }
 #endif
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 		if (a == "-genReflect_Vk"		) { opt.genReflect_Vk		= true; continue; }
 #endif
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 		if (a == "-genReflect_Dx12"		) { opt.genReflect_Dx12		= true; continue; }
 #endif		
 
@@ -289,19 +289,19 @@ int AxShaderTool_App::onRun() {
 	if (opt.genNinja) {
 		genNinja_Shader(opt.out, opt.file);
 
-#if AX_RENDERER_NULL
+#if AX_RENDER_NULL
 	} else if (opt.genReflect_Null) {
 		GenReflect_Null c;
 		c.generate(opt.out, opt.file, RenderAPI::Null);
 #endif
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 	} else if (opt.genReflect_Vk) {
 		GenReflect_Slang c;
 		c.generate(opt.out, opt.file, RenderAPI::Vk);
 #endif
 
-#if AX_RENDERER_DX12		
+#if AX_RENDER_DX12		
 	} else if (opt.genReflect_Dx12) {
 		GenReflect_Dx12 c;
 		c.compile(opt.out, opt.file, opt.profile, opt.entry, opt.include_dirs, opt.keepUnusedVariable);

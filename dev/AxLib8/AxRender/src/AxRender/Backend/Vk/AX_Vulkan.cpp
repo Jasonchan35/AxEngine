@@ -2,7 +2,7 @@ module;
 
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 import :AX_Vulkan;
 
 namespace ax /*::AxRender*/ {
@@ -2024,4 +2024,4 @@ void AX_VkSampler::create(AX_VkDevice& dev, const VkSamplerCreateInfo& info) {
 }
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

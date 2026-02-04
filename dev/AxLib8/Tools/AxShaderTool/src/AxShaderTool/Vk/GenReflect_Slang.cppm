@@ -1,6 +1,6 @@
 ﻿module;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 export module AxShaderTool:GenReflect_Slang;
 export import :GenNinja_Vk;

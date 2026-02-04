@@ -4,7 +4,7 @@ export module AxRender:Dx12DescriptorHeap;
 import :Dx12Resource;
 import :RenderSystem_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 import :RenderSystem_Backend;
 

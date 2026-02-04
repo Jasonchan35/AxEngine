@@ -2,7 +2,7 @@ module;
 
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 import :Material_Vk;
 import :RenderSystem_Vk;
 import :RenderRequest_Vk;
@@ -155,4 +155,4 @@ MaterialPass_Vk::MaterialPass_Vk(const CreateDesc& desc)
 
 
 } // namespace ax /*::AxRender*/
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

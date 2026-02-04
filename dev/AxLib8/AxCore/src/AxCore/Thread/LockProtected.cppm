@@ -46,7 +46,7 @@ protected:
 	Mutex	_mutex;
 	Data*	_data = nullptr;
 	AX_VC_WARNING_PUSH_AND_DISABLE(4324) //  Warning C4324 : structure was padded due to alignment specifier
-	AX_ALIGNAS(Data) Byte	_dataBuffer[AX_SIZEOF(Data)];
+	AX_MIN_ALIGNAS(Data) Byte	_dataBuffer[AX_SIZEOF(Data)];
 	AX_VC_WARNING_POP()
 };
 

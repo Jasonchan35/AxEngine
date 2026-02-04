@@ -92,8 +92,8 @@ public:
 	
 	void drawMeshRenderer_backend(MeshObjectRenderer* mr);
 	
-	void indirectMeshShader_backend() { onIndirectMeshShader(); }
-	virtual void onIndirectMeshShader() {}
+	void drawWorld_backend() { onDrawWorld(); }
+	virtual void onDrawWorld() {}
 	
 	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
 	void setScissorRect_backend(const Rect2f& rect);

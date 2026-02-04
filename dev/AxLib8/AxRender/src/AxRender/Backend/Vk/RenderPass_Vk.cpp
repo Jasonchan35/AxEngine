@@ -1,6 +1,6 @@
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 import :RenderPass_Vk;
 import :RenderSystem_Vk;
@@ -204,4 +204,4 @@ RenderPass_Vk::RenderPass_Vk(const CreateDesc& desc)
 }
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

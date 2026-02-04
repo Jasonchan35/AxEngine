@@ -2,7 +2,7 @@ module;
 
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 import :GpuBuffer_Vk;
 import :RenderSystem_Vk;
 import :RenderContext_Vk;
@@ -126,4 +126,4 @@ void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, Int
 }
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

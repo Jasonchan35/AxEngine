@@ -2,7 +2,7 @@ module;
 
 export module AxRender:RenderRequest_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 export import :Dx12Resource;
 export import :RenderSystem_Backend;
 export import :RenderRequest_Backend;
@@ -33,13 +33,14 @@ public:
 
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
-	
-#if 0
+
 	struct IndirectDraw {
-		StructuredGpuBufferPool_<Dx12_IndirectDrawMeshObject> drawArgumentsPool; 
-		StructuredGpuBuffer_<Dx12_IndirectDrawMeshObject> drawArguments; 
+		StructuredGpuBufferPool_<AxIndirectDrawWorld_Dx12> drawArgumentsPool; 
+		StructuredGpuBuffer_<AxIndirectDrawWorld_Dx12> drawArguments;
+		
+		void create();
+		void draw(RenderRequest_Dx12* req);
 	} indirectDraw;
-#endif
 
 	struct DynamicDescriptors {
 		Dx12DescriptorHeapChunk_ColorBuffer ColorBuffer;
@@ -65,11 +66,11 @@ public:
 	
 	AX_ID3D12Device* _d3dDevice = nullptr;
 
-	virtual void onIndirectMeshShader() override;
+	virtual void onDrawWorld() override;
 	
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 };
 
 } // namespace
 
-#endif //AX_RENDERER_DX12
+#endif //AX_RENDER_DX12

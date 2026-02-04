@@ -2,7 +2,7 @@ module;
 
 module AxRender;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 import :RenderSystem_Vk;
 import :GpuBuffer_Vk;
 import :Material_Vk;
@@ -148,4 +148,4 @@ VkBool32 VKAPI_PTR RenderSystem_Vk::s_debugReport(
 }
 
 } // namespace ax::AxRenderer
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

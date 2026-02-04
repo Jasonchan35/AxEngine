@@ -2,7 +2,7 @@ module AxRender;
 import :RenderContext_Dx12;
 import :RenderRequest_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 namespace ax {
 
@@ -269,4 +269,4 @@ void RenderContext_Dx12::_createWindow(const CreateDesc& desc) {
 
 } // namespace
 
-#endif //AX_RENDERER_DX12
+#endif //AX_RENDER_DX12

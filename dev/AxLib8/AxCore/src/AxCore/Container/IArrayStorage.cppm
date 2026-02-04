@@ -59,7 +59,7 @@ protected:
 	struct SmallStorage_Dummy {
 		SmallStorage smallStorage;
 		AX_VC_WARNING_PUSH_AND_DISABLE(4324) // structure was padded due to alignment specifier
-		AX_ALIGNAS(T) u8 data[1];
+		AX_MIN_ALIGNAS(T) u8 data[1];
 		AX_VC_WARNING_POP()
 	};
 	
@@ -95,7 +95,7 @@ protected:
 		constexpr void setAllocDataPtr(T* data, Int cap) noexcept;
 	};
 
-	AX_ALIGNAS(T) Storage _storage;
+	AX_MIN_ALIGNAS(T) Storage _storage;
 
 private:
 	constexpr void _storageEnsureCapacity_Impl(Int reqCapacity);

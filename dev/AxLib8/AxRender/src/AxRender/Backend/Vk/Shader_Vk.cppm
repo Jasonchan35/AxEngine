@@ -2,7 +2,7 @@ module;
 
 export module AxRender:Shader_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :AX_Vulkan;
 export import :RenderRequest_Vk;
 export import :Shader_Backend;
@@ -109,4 +109,4 @@ public:
 };
 
 } // namespace
-#endif // AX_RENDERER_VK
+#endif // AX_RENDER_VK

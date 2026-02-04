@@ -4,7 +4,7 @@ import :Texture_Dx12;
 import :GpuBuffer_Dx12;
 import :RenderObjectManager_Dx12;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 // Descriptors in System
 // - Resource Descriptors Per Resource Type (CPU Write / GPU Read)
 //      - access by resource slot Id
@@ -208,4 +208,4 @@ void MaterialPass_Dx12::onSetShader() {
 
 } // namespace
 
-#endif //AX_RENDERER_DX12
+#endif //AX_RENDER_DX12

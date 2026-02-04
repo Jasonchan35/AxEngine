@@ -1,6 +1,6 @@
 module;
 
-#if AX_RENDERER_DX12
+#if AX_RENDER_DX12
 
 #include "spirv_reflect.h"
 

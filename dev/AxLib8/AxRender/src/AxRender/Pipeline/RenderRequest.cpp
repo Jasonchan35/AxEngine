@@ -51,8 +51,8 @@ void RenderRequest::drawSubMesh(RenderSubMesh& subMesh, Material* material, Int 
 	vertexShaderDraw(draw);
 }
 
-void RenderRequest::indirectMeshShader() {
-	static_cast<RenderRequest_Backend*>(this)->indirectMeshShader_backend();
+void RenderRequest::drawWorld() {
+	static_cast<RenderRequest_Backend*>(this)->drawWorld_backend();
 }
 
 void RenderRequest::meshShaderDraw(AxMeshShaderDraw& draw) {

@@ -2,7 +2,7 @@
 
 export module AxRender:RenderSystem_Vk;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 export import :RenderSystem_Backend;
 export import :AX_Vulkan;
 

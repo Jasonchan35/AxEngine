@@ -1,6 +1,6 @@
 module AxShaderTool;
 
-#if AX_RENDERER_VK
+#if AX_RENDER_VK
 
 import :GenNinja_Vk;
 
@@ -115,4 +115,4 @@ void GenNinja_Vk::writeNinjaPass(IString& outStr, IArray<String>& outJsonFileLis
 
 } // namespace
 
-#endif // #if AX_RENDERER_VK
+#endif // #if AX_RENDER_VK
