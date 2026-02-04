@@ -44,8 +44,8 @@ typedef int4		i32x4;
 #include "AxBase_Dx12.hlsl"
 #include "AxBase_Vk.hlsl"
 
-#include "../AxHLSL/AX_HLSL_CPU_MACRO.h"
-#include "../AxHLSL/AX_HLSL_CPU_STRUCT.h"
+#include "../../../../dev/AxLib8/AxRender/src/AxRender/HLSL/AX_HLSL_CPU_MACRO.h"
+#include "../../../../dev/AxLib8/AxRender/src/AxRender/HLSL/AX_HLSL_CPU_STRUCT.h"
 
 #ifdef AX_RENDER_VK
 	#define AX_ROOT_CONST_STRUCT(TYPE, NAME) \

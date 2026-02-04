@@ -328,7 +328,7 @@
               "name": "_padding", 
               "varType": {
                 "dataType": "u32", 
-                "elementCount": 1
+                "elementCount": 0
               }, 
               "offset": 12, 
               "sizeInBytes": 4
@@ -424,13 +424,29 @@
               "offset": 68, 
               "sizeInBytes": 4
             }, {
-              "name": "_padding", 
+              "name": "_padding0", 
               "varType": {
                 "dataType": "u32", 
-                "elementCount": 14
+                "elementCount": 0
               }, 
               "offset": 72, 
-              "sizeInBytes": 56
+              "sizeInBytes": 4
+            }, {
+              "name": "_padding1", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 76, 
+              "sizeInBytes": 4
+            }, {
+              "name": "_padding", 
+              "varType": {
+                "dataType": "u32x4", 
+                "elementCount": 3
+              }, 
+              "offset": 80, 
+              "sizeInBytes": 48
             }]
         }, {
           "name": "axLights", 

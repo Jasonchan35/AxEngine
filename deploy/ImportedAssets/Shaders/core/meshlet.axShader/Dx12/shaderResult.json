@@ -131,6 +131,14 @@
               "offset": 64, 
               "sizeInBytes": 0
             }, {
+              "name": "meshRendererId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 68, 
+              "sizeInBytes": 0
+            }, {
               "name": "_usedPadding", 
               "varType": {
                 "dataType": "u32x4", 

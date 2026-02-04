@@ -3,7 +3,12 @@
 		{
 			"name": "Assets",
 			"path": "."
-		}, {
+		}, 
+		{
+			"name": "AxRender/HLSL",
+			"path": "../../../dev/AxLib8/AxRender/src/AxRender/HLSL"
+		}, 
+		{
 			"name": "ImportedAssets",
 			"path": "../../ImportedAssets"
 		}		

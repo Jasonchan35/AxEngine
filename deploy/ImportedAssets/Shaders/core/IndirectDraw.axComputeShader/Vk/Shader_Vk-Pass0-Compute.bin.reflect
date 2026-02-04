@@ -159,15 +159,10 @@
                         {
                             "name": "_padding",
                             "type": {
-                                "kind": "array",
-                                "elementCount": 1,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "uniformStride": 4
+                                "kind": "scalar",
+                                "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 4}
+                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
                         }
                     ]
                 }
@@ -315,17 +310,37 @@
                             "binding": {"kind": "uniform", "offset": 68, "size": 4, "elementStride": 0}
                         },
                         {
+                            "name": "_padding0",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 72, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "_padding1",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 76, "size": 4, "elementStride": 0}
+                        },
+                        {
                             "name": "_padding",
                             "type": {
                                 "kind": "array",
-                                "elementCount": 14,
+                                "elementCount": 3,
                                 "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
+                                    "kind": "vector",
+                                    "elementCount": 4,
+                                    "elementType": {
+                                        "kind": "scalar",
+                                        "scalarType": "uint32"
+                                    }
                                 },
-                                "uniformStride": 4
+                                "uniformStride": 16
                             },
-                            "binding": {"kind": "uniform", "offset": 72, "size": 56, "elementStride": 4}
+                            "binding": {"kind": "uniform", "offset": 80, "size": 48, "elementStride": 16}
                         }
                     ]
                 }
@@ -853,6 +868,14 @@
                                             "scalarType": "uint32"
                                         },
                                         "binding": {"kind": "uniform", "offset": 64, "size": 4, "elementStride": 0}
+                                    },
+                                    {
+                                        "name": "meshRendererId",
+                                        "type": {
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
+                                        },
+                                        "binding": {"kind": "uniform", "offset": 68, "size": 4, "elementStride": 0}
                                     },
                                     {
                                         "name": "_usedPadding",
