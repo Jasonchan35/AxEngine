@@ -72,7 +72,7 @@
           "bindSpace": "RootConst", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "stride": 128, 
+          "stride": 80, 
           "variables": [{
               "name": "worldMatrix", 
               "varType": {
@@ -98,13 +98,21 @@
               "offset": 68, 
               "sizeInBytes": 4
             }, {
-              "name": "_usedPadding", 
+              "name": "_padding0", 
               "varType": {
-                "dataType": "u32x4", 
-                "elementCount": 3
+                "dataType": "u32", 
+                "elementCount": 0
               }, 
-              "offset": 80, 
-              "sizeInBytes": 48
+              "offset": 72, 
+              "sizeInBytes": 4
+            }, {
+              "name": "_padding1", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 76, 
+              "sizeInBytes": 4
             }]
         }, {
           "name": "$Globals", 

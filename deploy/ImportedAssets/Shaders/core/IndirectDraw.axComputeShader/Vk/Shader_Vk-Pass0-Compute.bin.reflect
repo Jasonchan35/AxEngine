@@ -120,15 +120,10 @@
                         {
                             "name": "_padding",
                             "type": {
-                                "kind": "array",
-                                "elementCount": 5,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "uniformStride": 4
+                                "kind": "scalar",
+                                "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 44, "size": 20, "elementStride": 4}
+                            "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0}
                         }
                     ]
                 }
@@ -324,23 +319,6 @@
                                 "scalarType": "uint32"
                             },
                             "binding": {"kind": "uniform", "offset": 76, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "_padding",
-                            "type": {
-                                "kind": "array",
-                                "elementCount": 3,
-                                "elementType": {
-                                    "kind": "vector",
-                                    "elementCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "uint32"
-                                    }
-                                },
-                                "uniformStride": 16
-                            },
-                            "binding": {"kind": "uniform", "offset": 80, "size": 48, "elementStride": 16}
                         }
                     ]
                 }
@@ -878,25 +856,24 @@
                                         "binding": {"kind": "uniform", "offset": 68, "size": 4, "elementStride": 0}
                                     },
                                     {
-                                        "name": "_usedPadding",
+                                        "name": "_padding0",
                                         "type": {
-                                            "kind": "array",
-                                            "elementCount": 3,
-                                            "elementType": {
-                                                "kind": "vector",
-                                                "elementCount": 4,
-                                                "elementType": {
-                                                    "kind": "scalar",
-                                                    "scalarType": "uint32"
-                                                }
-                                            },
-                                            "uniformStride": 16
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
                                         },
-                                        "binding": {"kind": "uniform", "offset": 80, "size": 48, "elementStride": 16}
+                                        "binding": {"kind": "uniform", "offset": 72, "size": 4, "elementStride": 0}
+                                    },
+                                    {
+                                        "name": "_padding1",
+                                        "type": {
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
+                                        },
+                                        "binding": {"kind": "uniform", "offset": 76, "size": 4, "elementStride": 0}
                                     }
                                 ]
                             },
-                            "binding": {"kind": "uniform", "offset": 32, "size": 128, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 32, "size": 80, "elementStride": 0}
                         }
                     ]
                 }
