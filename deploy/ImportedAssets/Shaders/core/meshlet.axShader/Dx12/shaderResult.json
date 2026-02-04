@@ -106,6 +106,39 @@
               "offset": 60, 
               "sizeInBytes": 4
             }]
+        }, {
+          "name": "axMeshShaderDrawRootConst", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Mesh | Amplification", 
+          "bindSpace": "RootConst", 
+          "bindPoint": 1, 
+          "bindCount": 1, 
+          "stride": 128, 
+          "variables": [{
+              "name": "worldMatrix", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
+              "offset": 0, 
+              "sizeInBytes": 0
+            }, {
+              "name": "meshId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 64, 
+              "sizeInBytes": 0
+            }, {
+              "name": "_usedPadding", 
+              "varType": {
+                "dataType": "u32x4", 
+                "elementCount": 3
+              }, 
+              "offset": 80, 
+              "sizeInBytes": 0
+            }]
         }], 
       "textures": [], 
       "samplers": [], 

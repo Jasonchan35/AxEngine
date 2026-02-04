@@ -94,15 +94,10 @@ ShaderPass_Vk::ShaderPass_Vk(const CreateDesc& desc)
 	_pipelineLayout.create(dev, _allLayouts_vk, pushConsts);
 }
 
-auto ShaderPass_Vk::getOrAddGraphicsPipeline(class RenderRequest_Vk* req, AxDrawCallDesc& cmd) -> Pipeline* {
+auto ShaderPass_Vk::_getOrAddGraphicsPipeline(class RenderRequest_Vk* req, const PsoKey& psoKey) -> Pipeline* {
 	auto* renderPass = req->currentRenderPass_vk();
 	if (!renderPass) { AX_ASSERT(false); return nullptr; }
 	
-	PsoKey psoKey;
-	psoKey.vertexLayout  = cmd.vertexLayout;
-	psoKey.primitiveType = cmd.primitiveType;
-	psoKey.renderPass    = renderPass->_renderPass_vk;
-
 	// TODO pick compatible key.renderPass instead
 	// TODO lookup compatible renderPass instead
 	
@@ -112,7 +107,7 @@ auto ShaderPass_Vk::getOrAddGraphicsPipeline(class RenderRequest_Vk* req, AxDraw
 		}
 	}
 
-	auto& outPipeline = _pipelineTable.emplaceBack(_createGraphicsPipeline(req, cmd, psoKey));
+	auto& outPipeline = _pipelineTable.emplaceBack(_createGraphicsPipeline(req, psoKey));
 	outPipeline->key = psoKey;
 	
 	auto shaderName = name().toString();
@@ -121,7 +116,7 @@ auto ShaderPass_Vk::getOrAddGraphicsPipeline(class RenderRequest_Vk* req, AxDraw
 	return outPipeline;
 }
 
-auto ShaderPass_Vk::_createGraphicsPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd, PsoKey& psoKey)-> UPtr<Pipeline> {
+auto ShaderPass_Vk::_createGraphicsPipeline(RenderRequest_Vk* req, const PsoKey& psoKey)-> UPtr<Pipeline> {
 	auto outPipeline = UPtr_new<Pipeline>(AX_NEW);
 
 	auto& dev = RenderSystem_Vk::s_instance()->device();
@@ -300,10 +295,27 @@ auto ShaderPass_Vk::_createGraphicsPipeline(RenderRequest_Vk* req, AxDrawCallDes
 	return outPipeline;
 }
 
-bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd) const {
-	if (!req) { AX_ASSERT(false); return false; }
+bool ShaderPass_Vk::bindPipeline(RenderRequest_Vk* req, AxVertexShaderDraw& draw) const {
+	auto* renderPass = req->currentRenderPass_vk();
+	if (!renderPass) { AX_ASSERT(false); return false; }
+	PsoKey psoKey;
+	psoKey.vertexLayout  = draw.vertexLayout;
+	psoKey.primitiveType = draw.primitiveType;
+	psoKey.renderPass    = renderPass->_renderPass_vk;
+	return _bindPipeline(req, psoKey);
+}
 
-	auto* pipeline = ax_const_cast(this)->getOrAddGraphicsPipeline(req, cmd);
+bool ShaderPass_Vk::bindPipeline(RenderRequest_Vk* req, AxMeshShaderDraw& draw) const {
+	auto* renderPass = req->currentRenderPass_vk();
+	if (!renderPass) { AX_ASSERT(false); return false; }
+	PsoKey psoKey;
+	psoKey.primitiveType = RenderPrimitiveType::Triangles;
+	psoKey.renderPass    = renderPass->_renderPass_vk;
+	return _bindPipeline(req, psoKey);
+}
+
+bool ShaderPass_Vk::_bindPipeline(RenderRequest_Vk* req, const PsoKey& psoKey) const {
+	auto* pipeline = ax_const_cast(this)->_getOrAddGraphicsPipeline(req, psoKey);
 	if (!pipeline) { AX_ASSERT(false); return false; }
 	
 	auto& graphCmdList = req->graphCmdList_vk();

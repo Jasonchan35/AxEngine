@@ -68,6 +68,7 @@ void MeshRendererSystem::onRender(RenderRequest* req) {
 		if (!mr.mesh || !mr.material) return;
 		req->drawMesh(mr.mesh, mr.material, 0, objectToWorld);
 	}
+	
 }; 
 
 }

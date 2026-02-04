@@ -1,6 +1,16 @@
 #ifndef __AX_HLSL_CPU_STRUCT_h__
 #define __AX_HLSL_CPU_STRUCT_h__
 
+struct AxVertexShaderDrawRootConst {
+	Mat4f worldMatrix;
+};
+
+struct AxMeshShaderDrawRootConst {
+	Mat4f worldMatrix;
+	u32   meshId;
+	u32x4 _usedPadding[3];
+};
+
 struct AxGpuMeshletDraw {
 	u32 vertOffset;
 	u32 vertCount;
@@ -42,5 +52,12 @@ struct AxGpuMeshObjectRenderer {
 	u32 	materialId;
 	u32 	_padding[16-2];
 };
+
+// #ifdef AX_RENDER_DX12
+// struct AxIndirectDrawArgument_Dx12 {
+// 	D3D12_DISPATCH_ARGUMENTS	args;
+// 	AxMeshShaderDrawRootConst 	rootConst;
+// };
+// #endif
 
 #endif // __AX_HLSL_CPU_STRUCT_h__

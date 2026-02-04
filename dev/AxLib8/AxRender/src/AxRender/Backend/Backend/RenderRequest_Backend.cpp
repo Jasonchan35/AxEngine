@@ -188,42 +188,54 @@ void RenderRequest_Backend::drawUI_backend() {
 	renderContext_backend()->imgui.onDrawUI(this);
 }
 
-void RenderRequest_Backend::drawCall_backend(AxDrawCallDesc& cmd) {
-	if (cmd.instanceCount <= 0) { AX_ASSERT(false); return; }
+void RenderRequest_Backend::vertexShaderDraw_backend(AxVertexShaderDraw& draw) {
+	if (draw.instanceCount <= 0) { AX_ASSERT(false); return; }
 	
-	_drawCallRootConst.AX_MATRIX_M   = cmd.objectToWorld;
-	_drawCallRootConst.AX_MATRIX_MVP = _cameraData.viewProjMatrix * cmd.objectToWorld;
-	
-	if (auto* meshObject = rttiCastCheck<MeshObject_Backend>(cmd.meshObject)) {
-		resourcesToKeep.add(meshObject);
-//		_drawCallRootConst.AX_MESHLET_ID = ax_safe_cast_from(meshObject->meshlet.buffer->gpuBufferIndex());
-		_drawCallRootConst.AX_MESH_ID    = meshObject->objectSlot.slotId();
-	}
-
-	auto* material = rttiCastCheck<Material_Backend>(cmd.material);
+	auto* material = rttiCastCheck<Material_Backend>(draw.material);
 	if (!material) { AX_ASSERT(false); return; }
 	resourcesToKeep.add(material);
 
-	if (auto* vertexBuffer = rttiCastCheck<GpuBuffer_Backend>(cmd.vertexBuffer)) {
+	if (auto* vertexBuffer = rttiCastCheck<GpuBuffer_Backend>(draw.vertexBuffer)) {
 		resourcesToKeep.add(vertexBuffer);
 	}
 
-	if (auto* indexBuffer = rttiCastCheck<GpuBuffer_Backend>(cmd.indexBuffer)) {
+	if (auto* indexBuffer = rttiCastCheck<GpuBuffer_Backend>(draw.indexBuffer)) {
 		resourcesToKeep.add(indexBuffer);
 	}
 
-	auto* matPass = material->getPass(cmd.materialPassIndex);
+	auto* matPass = material->getPass(draw.materialPassIndex);
 	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
-	matPass->onBindMaterial(this, cmd);
 	
-	if (auto* mesh = cmd.meshObject) {
-		if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");
-		u32 meshletCount = ax_safe_cast_from(mesh->meshletInfo.size());
-		u32 groupCount = Math::alignDivTo(meshletCount, AX_HLSL_THREADS_PER_WAVE);
-		onDispatchMesh(cmd, u32x3(groupCount, 1, 1));
-	} else {
-		onDrawCall(cmd);
-	}
+	AxVertexShaderDrawRootConst rootConst;
+	rootConst.worldMatrix = draw.objectToWorld;
+	matPass->onBindMaterial(this, draw, &rootConst);
+	
+	onVertexShaderDraw(draw);
+}
+
+void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
+	auto* meshObject = rttiCastCheck<MeshObject_Backend>(draw.meshObject);
+	resourcesToKeep.add(meshObject);
+	
+	auto* material = rttiCastCheck<Material_Backend>(draw.material);
+	if (!material) { AX_ASSERT(false); return; }
+	resourcesToKeep.add(material);
+
+	auto* matPass = material->getPass(draw.materialPassIndex);
+	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
+	
+	AxMeshShaderDrawRootConst rootConst;
+	rootConst.worldMatrix = draw.objectToWorld;
+	rootConst.meshId      = meshObject->objectSlot.slotId();
+	matPass->onBindMaterial(this, draw, &rootConst);
+	
+	if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");
+	onMeshShaderDraw(draw);
+}
+
+void RenderRequest_Backend::drawMeshRenderer_backend(MeshObjectRenderer* mr) {
+	if (!mr) return;
+//	_meshShaderDrawRootConst.AX_MESH_RENDERER_ID = mr->objectSlot.slotId();
 }
 
 void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {

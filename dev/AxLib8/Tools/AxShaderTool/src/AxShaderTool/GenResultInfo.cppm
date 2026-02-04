@@ -9,6 +9,7 @@ class GenResultInfo : public NonCopyable {
 public:
 	using ConstBuffer = ShaderStageInfo::ConstBuffer;
 	using Variables   = ShaderStageInfo::Variable;
+	using BindSpace   = ShaderParamBindSpace;
 	
 	void run(StrView outFilename, StrView filename, RenderAPI api);
 

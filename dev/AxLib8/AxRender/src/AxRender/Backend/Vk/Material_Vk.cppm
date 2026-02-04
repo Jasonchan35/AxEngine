@@ -40,8 +40,11 @@ public:
 
 	const ShaderPass_Vk* shaderPass_vk() const { return rttiCastCheck<ShaderPass_Vk>(shaderPass()); }
 
-	virtual bool onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) override;
+	virtual bool onBindMaterial(RenderRequest* req, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) override;
+	virtual bool onBindMaterial(RenderRequest* req, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) override;
 
+	bool _onBindMaterial(RenderRequest_Vk* req, ByteSpan rootConstData);
+	
 	const MaterialParamSpace_Vk* getParamSpace_vk(BindSpace bs) const {
 		return rttiCastCheck<MaterialParamSpace_Vk>(getParamSpace(bs));
 	}

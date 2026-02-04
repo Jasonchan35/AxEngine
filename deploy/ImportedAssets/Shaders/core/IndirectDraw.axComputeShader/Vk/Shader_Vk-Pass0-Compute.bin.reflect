@@ -767,147 +767,6 @@
             }
         },
         {
-            "name": "axDrawCallRootConst",
-            "binding": {"kind": "pushConstantBuffer", "index": 0},
-            "type": {
-                "kind": "constantBuffer",
-                "elementType": {
-                    "kind": "struct",
-                    "name": "AxDrawCallRootConst",
-                    "fields": [
-                        {
-                            "name": "AX_MATRIX_MVP",
-                            "type": {
-                                "kind": "matrix",
-                                "rowCount": 4,
-                                "columnCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
-                        },
-                        {
-                            "name": "AX_MATRIX_M",
-                            "type": {
-                                "kind": "matrix",
-                                "rowCount": 4,
-                                "columnCount": 4,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 64, "size": 64, "elementStride": 0}
-                        },
-                        {
-                            "name": "AX_OBJECT_ID",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 128, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "AX_MESH_ID",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "AX_MESHLET_ID",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "_usedPadding0",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 140, "size": 4, "elementStride": 0}
-                        }
-                    ]
-                },
-                "containerVarLayout": {
-                    "binding": {"kind": "pushConstantBuffer", "index": 0}
-                },
-                "elementVarLayout": {
-                    "type": {
-                        "kind": "struct",
-                        "name": "AxDrawCallRootConst",
-                        "fields": [
-                            {
-                                "name": "AX_MATRIX_MVP",
-                                "type": {
-                                    "kind": "matrix",
-                                    "rowCount": 4,
-                                    "columnCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
-                            },
-                            {
-                                "name": "AX_MATRIX_M",
-                                "type": {
-                                    "kind": "matrix",
-                                    "rowCount": 4,
-                                    "columnCount": 4,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "float32"
-                                    }
-                                },
-                                "binding": {"kind": "uniform", "offset": 64, "size": 64, "elementStride": 0}
-                            },
-                            {
-                                "name": "AX_OBJECT_ID",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 128, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "AX_MESH_ID",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "AX_MESHLET_ID",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "_usedPadding0",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "uint32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 140, "size": 4, "elementStride": 0}
-                            }
-                        ]
-                    },
-                    "binding": {"kind": "uniform", "offset": 0, "size": 144, "elementStride": 0}
-                }
-            }
-        },
-        {
             "name": "outDrawArgument",
             "binding": {"kind": "unorderedAccess", "index": 30000},
             "type": {
@@ -972,10 +831,10 @@
                             "name": "rootConst",
                             "type": {
                                 "kind": "struct",
-                                "name": "AxDrawCallRootConst",
+                                "name": "AxMeshShaderDrawRootConst",
                                 "fields": [
                                     {
-                                        "name": "AX_MATRIX_MVP",
+                                        "name": "worldMatrix",
                                         "type": {
                                             "kind": "matrix",
                                             "rowCount": 4,
@@ -988,53 +847,33 @@
                                         "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
                                     },
                                     {
-                                        "name": "AX_MATRIX_M",
+                                        "name": "meshId",
                                         "type": {
-                                            "kind": "matrix",
-                                            "rowCount": 4,
-                                            "columnCount": 4,
+                                            "kind": "scalar",
+                                            "scalarType": "uint32"
+                                        },
+                                        "binding": {"kind": "uniform", "offset": 64, "size": 4, "elementStride": 0}
+                                    },
+                                    {
+                                        "name": "_usedPadding",
+                                        "type": {
+                                            "kind": "array",
+                                            "elementCount": 3,
                                             "elementType": {
-                                                "kind": "scalar",
-                                                "scalarType": "float32"
-                                            }
+                                                "kind": "vector",
+                                                "elementCount": 4,
+                                                "elementType": {
+                                                    "kind": "scalar",
+                                                    "scalarType": "uint32"
+                                                }
+                                            },
+                                            "uniformStride": 16
                                         },
-                                        "binding": {"kind": "uniform", "offset": 64, "size": 64, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "AX_OBJECT_ID",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 128, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "AX_MESH_ID",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 132, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "AX_MESHLET_ID",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 136, "size": 4, "elementStride": 0}
-                                    },
-                                    {
-                                        "name": "_usedPadding0",
-                                        "type": {
-                                            "kind": "scalar",
-                                            "scalarType": "uint32"
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 140, "size": 4, "elementStride": 0}
+                                        "binding": {"kind": "uniform", "offset": 80, "size": 48, "elementStride": 16}
                                     }
                                 ]
                             },
-                            "binding": {"kind": "uniform", "offset": 32, "size": 144, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 32, "size": 128, "elementStride": 0}
                         }
                     ]
                 }
@@ -1047,24 +886,27 @@
             "stage": "compute",
             "parameters": [
                 {
-                    "name": "i",
+                    "name": "gid",
+                    "semanticName": "SV_GROUPID",
                     "type": {
-                        "kind": "struct",
-                        "name": "CS_Input",
-                        "fields": [
-                            {
-                                "name": "sv_dispatchThreadId",
-                                "type": {
-                                    "kind": "vector",
-                                    "elementCount": 3,
-                                    "elementType": {
-                                        "kind": "scalar",
-                                        "scalarType": "uint32"
-                                    }
-                                },
-                                "semanticName": "SV_DISPATCHTHREADID"
-                            }
-                        ]
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
+                },
+                {
+                    "name": "gtid",
+                    "semanticName": "SV_GROUPTHREADID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
+                },
+                {
+                    "name": "dtid",
+                    "semanticName": "SV_DISPATCHTHREADID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
                     }
                 }
             ],
@@ -1117,10 +959,6 @@
                 {
                     "name": "axObjects",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20101, "used": 0}
-                },
-                {
-                    "name": "axDrawCallRootConst",
-                    "binding": {"kind": "pushConstantBuffer", "index": 0}
                 },
                 {
                     "name": "outDrawArgument",

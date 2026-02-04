@@ -6,23 +6,31 @@ import :MeshObject;
 
 namespace ax /*::AxRender*/ {
 
+void RenderRequest::drawMeshRenderer(MeshObjectRenderer* mr) {
+	static_cast<RenderRequest_Backend*>(this)->drawMeshRenderer_backend(mr);
+}
+
 void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!material) return;
 	if (!mesh) return;
-
 	drawMesh(mesh->meshData, material, materialPass, objectToWorld);
+	
 #if 1
 	if (!mesh->isMeshletValid()) return;
 
-	AxDrawCallDesc desc;
+	AxMeshShaderDraw draw;
 	// desc.material = material;
-	desc.material = RenderStockObjects::s_instance()->materials->meshlet;
+	draw.material = RenderStockObjects::s_instance()->materials->meshlet;
 	
-	desc.materialPassIndex = materialPass;
-	desc.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
-	desc.meshObject = mesh;
-
-	drawCall(desc);
+	draw.materialPassIndex = materialPass;
+	draw.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
+	draw.meshObject = mesh;
+	
+	u32 meshletCount = ax_safe_cast_from(draw.meshObject->meshletInfo.size());
+	u32 groupCount = Math::alignDivTo(meshletCount, AX_HLSL_THREADS_PER_WAVE);
+	draw.groupCount = u32x3(groupCount, 1, 1);
+	
+	meshShaderDraw(draw);
 #endif
 }
 
@@ -35,16 +43,24 @@ void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialP
 void RenderRequest::drawSubMesh(RenderSubMesh& subMesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!material) return;
 
-	AxDrawCallDesc desc;
-	desc.material = material;
-	desc.materialPassIndex = materialPass;
-	desc.objectToWorld = objectToWorld;
-	desc.setSubMesh(this, subMesh);
-	drawCall(desc);
+	AxVertexShaderDraw draw;
+	draw.material = material;
+	draw.materialPassIndex = materialPass;
+	draw.objectToWorld = objectToWorld;
+	draw.setSubMesh(this, subMesh);
+	vertexShaderDraw(draw);
 }
 
-void RenderRequest::drawCall(AxDrawCallDesc& cmd) {
-	static_cast<RenderRequest_Backend*>(this)->drawCall_backend(cmd);
+void RenderRequest::indirectMeshShader() {
+	static_cast<RenderRequest_Backend*>(this)->indirectMeshShader_backend();
+}
+
+void RenderRequest::meshShaderDraw(AxMeshShaderDraw& draw) {
+	static_cast<RenderRequest_Backend*>(this)->meshShaderDraw_backend(draw);
+}
+
+void RenderRequest::vertexShaderDraw(AxVertexShaderDraw& draw) {
+	static_cast<RenderRequest_Backend*>(this)->vertexShaderDraw_backend(draw);
 }
 
 void RenderRequest::setViewport(const Rect2f& rect, float minDepth, float maxDepth) {

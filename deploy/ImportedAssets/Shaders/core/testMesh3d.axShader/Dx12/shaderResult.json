@@ -76,7 +76,24 @@
           "semantic": "TEXCOORD0", 
           "dataType": "f32x2"
         }], 
-      "constBuffers": [], 
+      "constBuffers": [{
+          "name": "axVertexShaderDrawRootConst", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex", 
+          "bindSpace": "RootConst", 
+          "bindPoint": 1, 
+          "bindCount": 1, 
+          "stride": 64, 
+          "variables": [{
+              "name": "worldMatrix", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
+              "offset": 0, 
+              "sizeInBytes": 0
+            }]
+        }], 
       "textures": [], 
       "samplers": [], 
       "structuredBuffers": []

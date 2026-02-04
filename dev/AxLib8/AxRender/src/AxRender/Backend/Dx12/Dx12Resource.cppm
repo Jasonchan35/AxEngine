@@ -334,13 +334,6 @@ struct Dx12RootParameterList {
 private:
 };
 
-struct Dx12_IndirectDrawArgument {
-	// D3D12_GPU_VIRTUAL_ADDRESS    argumentDataSrv;
-	D3D12_DRAW_INDEXED_ARGUMENTS	drawIndexed;
-	AxDrawCallRootConst				rootConst;
-};
-
-
 } // namespace
 
 #endif //AX_RENDERER_DX12

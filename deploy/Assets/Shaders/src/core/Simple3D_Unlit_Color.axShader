@@ -14,7 +14,7 @@ Pass "Pass0" { // Forward
 }
 #endif
 
-#include "AxRender.hlsl"
+#include "AxVertexShaderDraw.hlsl"
 
 uniform Color4f color;
 
@@ -30,7 +30,7 @@ struct VS_Output {
 
 VS_Output vs_main(VS_Input i) {
 	VS_Output o;
-	o.sv_pos = mul(AX_MATRIX_MVP, i.pos);
+	o.sv_pos = axObjectToClipPos(i.pos);
 	o.color0 = i.color0;
 	return o;
 }

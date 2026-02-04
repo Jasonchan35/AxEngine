@@ -240,11 +240,7 @@ void ShaderPass_Dx12::_commonPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc)
 	}
 }
 
-auto ShaderPass_Dx12::getOrAddGraphicsPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) -> Pipeline* {
-	PsoKey psoKey;
-	psoKey.vertexLayout  = cmd.vertexLayout;
-	psoKey.primitiveType = cmd.primitiveType;
-	
+auto ShaderPass_Dx12::_getOrAddGraphicsPipeline(RenderRequest_Dx12* req, const PsoKey& psoKey) -> Pipeline* {
 	for (auto& pipeline : _pipelineTable) {
 		if (pipeline->key == psoKey) {
 			return pipeline.ptr();
@@ -253,9 +249,9 @@ auto ShaderPass_Dx12::getOrAddGraphicsPipeline(RenderRequest_Dx12* req, AxDrawCa
 	
 	Pipeline* outPipeline = nullptr;
 	if (isMeshShader()) {
-		outPipeline = _createMeshShaderPipeline(req, cmd, psoKey);
+		outPipeline = _createMeshShaderPipeline(req, psoKey);
 	} else {
-		outPipeline = _createVertexShaderPipeline(req, cmd, psoKey);
+		outPipeline = _createVertexShaderPipeline(req, psoKey);
 	}
 	outPipeline->key = psoKey;
 
@@ -263,7 +259,7 @@ auto ShaderPass_Dx12::getOrAddGraphicsPipeline(RenderRequest_Dx12* req, AxDrawCa
 	return outPipeline;
 }
 
-auto ShaderPass_Dx12::_createVertexShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& psoKey) 
+auto ShaderPass_Dx12::_createVertexShaderPipeline(RenderRequest_Dx12* req, const PsoKey& psoKey) 
 -> Pipeline*
 {
 	if (_vertexStage.bytecode.size() <= 0) { AX_ASSERT(false);  return nullptr; }
@@ -295,7 +291,7 @@ auto ShaderPass_Dx12::_createVertexShaderPipeline(RenderRequest_Dx12* req, AxDra
 	return outPipeline;
 }
 
-auto ShaderPass_Dx12::_createMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& psoKey) 
+auto ShaderPass_Dx12::_createMeshShaderPipeline(RenderRequest_Dx12* req, const PsoKey& posKey) 
 -> Pipeline*
 {
 	if ( _meshStage.bytecode.size() <= 0) { AX_ASSERT(false); return nullptr; }
@@ -324,10 +320,20 @@ auto ShaderPass_Dx12::_createMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawC
 	return outPipeline;
 }
 
-bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const {
-	if (!req) { AX_ASSERT(false); return false; }
-	
-	auto* pipeline = ax_const_cast(this)->getOrAddGraphicsPipeline(req, cmd);
+bool ShaderPass_Dx12::bindPipeline(RenderRequest_Dx12* req, AxVertexShaderDraw& draw) const {
+	ShaderPass_Dx12::PsoKey psoKey;
+	psoKey.vertexLayout  = draw.vertexLayout;
+	psoKey.primitiveType = draw.primitiveType;
+	return _bindPipeline(req, psoKey);
+}
+
+bool ShaderPass_Dx12::bindPipeline(RenderRequest_Dx12* req, AxMeshShaderDraw& draw) const {
+	ShaderPass_Dx12::PsoKey psoKey;
+	return _bindPipeline(req, psoKey);
+}
+
+bool ShaderPass_Dx12::_bindPipeline(RenderRequest_Dx12* req, const PsoKey& psoKey) const {
+	auto* pipeline = ax_const_cast(this)->_getOrAddGraphicsPipeline(req, psoKey);
 	if (!pipeline) { AX_ASSERT(false); return false; }
 
 	auto& cmdList = req->graphCmdList_dx12();

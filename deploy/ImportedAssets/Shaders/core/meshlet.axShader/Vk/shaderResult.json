@@ -66,6 +66,39 @@
       "stageFlags": "Pixel | Mesh | Amplification", 
       "inputs": [], 
       "constBuffers": [{
+          "name": "axMeshShaderDrawRootConst", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Pixel | Mesh | Amplification", 
+          "bindSpace": "RootConst", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "stride": 128, 
+          "variables": [{
+              "name": "worldMatrix", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
+              "offset": 0, 
+              "sizeInBytes": 64
+            }, {
+              "name": "meshId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 64, 
+              "sizeInBytes": 4
+            }, {
+              "name": "_usedPadding", 
+              "varType": {
+                "dataType": "u32x4", 
+                "elementCount": 3
+              }, 
+              "offset": 80, 
+              "sizeInBytes": 48
+            }]
+        }, {
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Pixel | Mesh | Amplification", 

@@ -41,6 +41,9 @@ typedef int4		i32x4;
 #define AX_BindSpace_Bindless   space2
 #define AX_BindSpace_RootConst  space3
 
+#include "AxBase_Dx12.hlsl"
+#include "AxBase_Vk.hlsl"
+
 #include "../AxHLSL/AX_HLSL_CPU_MACRO.h"
 #include "../AxHLSL/AX_HLSL_CPU_STRUCT.h"
 

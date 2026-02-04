@@ -37,7 +37,7 @@ struct D3D12_DRAW_INDEXED_ARGUMENTS {
 
 struct Dx12_IndirectDrawArgument {
 	D3D12_DRAW_INDEXED_ARGUMENTS	drawIndexed;
-	AxDrawCallRootConst 			rootConst;
+	AxMeshShaderDrawRootConst 		rootConst;
 };
 RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> outDrawArgument : register(u0);
 
@@ -55,7 +55,7 @@ struct VkDrawIndexedIndirectCommand {
 
 struct AX_VkIndirectDrawArgment {
 	VkDrawIndexedIndirectCommand	drawIndexed;
-	AxDrawCallRootConst 			rootConst;
+	AxMeshShaderDrawRootConst 		rootConst;
 };
 RWStructuredBuffer<AX_VkIndirectDrawArgment> outDrawArgument : register(u0);
 
@@ -63,6 +63,10 @@ RWStructuredBuffer<AX_VkIndirectDrawArgment> outDrawArgument : register(u0);
 
 
 [numthreads(8, 8, 1)]
-void cs_main(CS_Input i) {
+void cs_main(
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32)
+) {
 }
 

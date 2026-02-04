@@ -98,14 +98,29 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 	writeDescSetHelper.updateToDevice(dev);
 }
 
-bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) {
+bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
-	if (!req) { AX_ASSERT(false); return false; }
-
 	auto* shdPass = shaderPass_vk();
 	if (!shdPass) { AX_ASSERT(false); return false; }
+	if (!shdPass->bindPipeline(req, draw)) return false;
+	
+	ByteSpan rootConstData = rootConst ? Span(*rootConst).toByteSpan() : ByteSpan();
+	return _onBindMaterial(req, rootConstData);
+}
 
-	if (!shdPass->_bindPipeline(req, cmd)) return false;
+bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) {
+	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
+	auto* shdPass = shaderPass_vk();
+	if (!shdPass) { AX_ASSERT(false); return false; }
+	if (!shdPass->bindPipeline(req, draw)) return false;
+	
+	ByteSpan rootConstData = rootConst ? Span(*rootConst).toByteSpan() : ByteSpan();
+	return _onBindMaterial(req, rootConstData);
+}
+
+
+bool MaterialPass_Vk::_onBindMaterial(RenderRequest_Vk* req, ByteSpan rootConstData) {
+	auto* shdPass = shaderPass_vk();
 
 	Array<VkDescriptorSet, BindSpace_COUNT>  allDescSets;
 
@@ -114,10 +129,6 @@ bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) {
 		if (!paramSpace) continue;
 		
 		if (bindSpace == BindSpace::RootConst) {
-			auto tt = AX_SIZEOF(AxDrawCallRootConst);
-			AX_UNUSED(tt);
-			
-			auto rootConstData = req->drawCallRootConstData();
 			vkCmdPushConstants(req->graphCmdList_vk(), shdPass->pipelineLayout(),
 				VK_SHADER_STAGE_ALL, 0, ax_safe_cast_from(rootConstData.sizeInBytes()), rootConstData.data());
 			continue;

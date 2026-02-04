@@ -50,7 +50,7 @@
           "bindSpace": "Default", 
           "bindPoint": 30000, 
           "bindCount": 1, 
-          "stride": 176, 
+          "stride": 160, 
           "variables": [{
               "name": "drawIndexed", 
               "varType": {
@@ -66,7 +66,7 @@
                 "elementCount": 0
               }, 
               "offset": 32, 
-              "sizeInBytes": 144
+              "sizeInBytes": 128
             }]
         }]
     }]

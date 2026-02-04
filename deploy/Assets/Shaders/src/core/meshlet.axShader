@@ -15,7 +15,7 @@ Pass "Pass0" {
 }
 #endif
 
-#include "AxRender.hlsl"
+#include "AxMeshShaderDraw.hlsl"
 
 #define MAX(x, y) (x > y ? x : y)
 #define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))

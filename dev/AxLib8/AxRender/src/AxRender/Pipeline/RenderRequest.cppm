@@ -44,10 +44,13 @@ class RenderRequest : public RenderRequestBase {
 public:
 	using BindSpace = ShaderParamBindSpace;
 
-	void drawMesh(   MeshObject*    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
-	void drawMesh(   RenderMesh&    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
+	void drawMeshRenderer(MeshObjectRenderer* mr);
+	void drawMesh(MeshObject*    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
+	void drawMesh(RenderMesh&    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
 	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
 
+	void indirectMeshShader();
+	
 	void drawTexture(Texture2D* tex) {}
 
 	Texture2D*		getTexture(RenderGraph_Output* v) { return nullptr; }
@@ -60,7 +63,8 @@ public:
 
 	AX_NODISCARD	ScissorRectScope	scissorRectScope()	{ return ScissorRectScope(this); }
 
-	void drawCall(AxDrawCallDesc& cmd);
+	void vertexShaderDraw(AxVertexShaderDraw& draw);
+	void meshShaderDraw(AxMeshShaderDraw& draw);
 
 	f64	uptime() const { return _uptime; }
 

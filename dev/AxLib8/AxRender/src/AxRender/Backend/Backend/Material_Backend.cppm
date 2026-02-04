@@ -36,7 +36,8 @@ export namespace ax /*::AxRender*/ {
 
 class MaterialPass_Backend;
 class Material_Backend;
-class AxDrawCallDesc;
+class AxVertexShaderDraw;
+class AxMeshShaderDraw;
 
 class MaterialParamSpace_CreateDesc : public NonCopyable {
 public:
@@ -280,7 +281,8 @@ public:
 	const ShaderPass_Backend*	shaderPass() const { return _shaderPass; }
 	const Shader_Backend*		shader() const;
 
-	virtual bool onBindMaterial(class RenderRequest* req, AxDrawCallDesc& cmd) = 0;
+	virtual bool onBindMaterial(RenderRequest* req, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) = 0;
+	virtual bool onBindMaterial(RenderRequest* req, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) = 0;
 
 	bool isOwnParamSpace(BindSpace s) const { return _shaderPass->isOwnParamSpace(s); }
 	bool isMeshShader() const { return _shaderPass->isMeshShader(); }

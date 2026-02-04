@@ -58,9 +58,9 @@ struct RenderMemoryInfo {
 //-----
 AX_ENUM_CLASS(AX_ShaderParamBindSpace_ENUM_LIST, ShaderParamBindSpace, u16);
 
-constexpr bool ShaderParamBindSpace_isCommon(ShaderParamBindSpace t) {
-	using BS = ShaderParamBindSpace;
-	return t == BS::World || t == BS::Bindless;
+constexpr bool ShaderParamBindSpace_isGlobalCommon(ShaderParamBindSpace t) {
+	using BindSpace = ShaderParamBindSpace;
+	return t == BindSpace::World || t == BindSpace::Bindless;
 }
 
 // HLSL: "shader register", DX Reflection: BindPoint, Vulkan: "binding"

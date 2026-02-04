@@ -87,7 +87,13 @@ public:
 	Int index() const { return _index; }
 
 	void drawUI_backend();
-	void drawCall_backend(AxDrawCallDesc& cmd);
+	void vertexShaderDraw_backend(AxVertexShaderDraw& draw);
+	void meshShaderDraw_backend(AxMeshShaderDraw& draw);
+	
+	void drawMeshRenderer_backend(MeshObjectRenderer* mr);
+	
+	void indirectMeshShader_backend() { onIndirectMeshShader(); }
+	virtual void onIndirectMeshShader() {}
 	
 	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
 	void setScissorRect_backend(const Rect2f& rect);
@@ -95,11 +101,9 @@ public:
 	void setCamera_backend(const Math::Camera3f& camera);
 	
 	MaterialPass_Backend*	globalCommonMaterialPass()	{ return _globalCommonMaterialPass; };
-	ByteSpan	drawCallRootConstData() const { return Span(_drawCallRootConst).toByteSpan(); }
-	
+
 protected:
 	AX_RenderRequest_Backend_FunctionInterfaces(=0)
-	AxDrawCallRootConst _drawCallRootConst;
 
 	RenderSystem_Backend*        _renderSystem_backend = nullptr;
 	RenderObjectManager_Backend* _objectManager        = nullptr;

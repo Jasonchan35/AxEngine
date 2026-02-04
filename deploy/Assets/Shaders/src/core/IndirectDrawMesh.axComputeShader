@@ -1,0 +1,29 @@
+#if AX_SHADER_INFO
+
+Properties {}
+
+Pass "Pass0" {
+	ComputeFunc = cs_main
+}
+#endif
+
+#include "Ax/AxWorld.hlsl"
+
+struct D3D12_DISPATCH_MESH_ARGUMENTS {
+    u32 ThreadGroupCountX;
+    u32 ThreadGroupCountY;
+    u32 ThreadGroupCountZ;
+};
+
+AppendStructuredBuffer<D3D12_DISPATCH_MESH_ARGUMENTS> dispatchMeshArgs;
+
+[numthreads(AX_HLSL_THREADS_PER_WAVE, 1, 1)]
+void cs_main(	
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32)
+) {
+//	D3D12_DISPATCH_MESH_ARGUMENTS v;
+//	dispatchMeshArgs.Append(v);
+}
+

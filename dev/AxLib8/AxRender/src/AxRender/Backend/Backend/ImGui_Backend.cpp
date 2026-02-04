@@ -187,21 +187,21 @@ void ImGui_Backend::onDrawUI(RenderRequest* req) {
 
 			req->setScissorRect({a, b - a});
 
-			AxDrawCallDesc drawcall;
+			AxVertexShaderDraw draw;
 
-			drawcall.material		   = _material;
-			drawcall.materialPassIndex = 0;
-			drawcall.primitiveType	   = RenderPrimitiveType::Triangles;
-			drawcall.vertexLayout	   = vertexLayout;
-			drawcall.vertexBuffer	   = vertexGpuBuffer;
-			drawcall.vertexStart	   = vertexStart + srcCmdBuf.VtxOffset;
-			drawcall.vertexCount	   = 0;
-			drawcall.indexType		   = VertexIndexType_get<Index>;
-			drawcall.indexBuffer	   = indexGpuBuffer;
-			drawcall.indexCount		   = srcCmdBuf.ElemCount;
-			drawcall.indexStart		   = indexStart + srcCmdBuf.IdxOffset;
+			draw.material		   = _material;
+			draw.materialPassIndex = 0;
+			draw.primitiveType	   = RenderPrimitiveType::Triangles;
+			draw.vertexLayout	   = vertexLayout;
+			draw.vertexBuffer	   = vertexGpuBuffer;
+			draw.vertexStart	   = vertexStart + srcCmdBuf.VtxOffset;
+			draw.vertexCount	   = 0;
+			draw.indexType		   = VertexIndexType_get<Index>;
+			draw.indexBuffer	   = indexGpuBuffer;
+			draw.indexCount		   = srcCmdBuf.ElemCount;
+			draw.indexStart		   = indexStart + srcCmdBuf.IdxOffset;
 
-			req->drawCall(drawcall);
+			req->vertexShaderDraw(draw);
 		}
 
 		vertexStart += srcCmd->VtxBuffer.Size;

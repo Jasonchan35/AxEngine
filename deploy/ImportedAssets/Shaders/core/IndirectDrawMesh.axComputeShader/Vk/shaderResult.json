@@ -1,0 +1,74 @@
+{
+  "declare": {
+    "isGlobalCommonShader": false, 
+    "passes": [{
+        "name": "Pass0", 
+        "computeFunc": "cs_main", 
+        "renderState": {
+          "cull": "Back", 
+          "blend": {
+            "rgb": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "alpha": {
+              "op": "Disable", 
+              "srcFactor": "One", 
+              "dstFactor": "OneMinusSrcAlpha"
+            }, 
+            "constColor": [1, 1, 1, 1]
+          }, 
+          "depthTest": {
+            "op": "Greater", 
+            "writeMask": true
+          }, 
+          "antialiasedLine": false, 
+          "wireframe": false
+        }
+      }]
+  }, 
+  "passStages": [{
+      "bindless": true, 
+      "stageFlags": "Compute", 
+      "csWorkgroupSize": [1, 1, 1], 
+      "inputs": [], 
+      "constBuffers": [], 
+      "textures": [], 
+      "samplers": [], 
+      "structuredBuffers": [{
+          "name": "dispatchMeshArgs", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Compute", 
+          "bindSpace": "Default", 
+          "bindPoint": 30000, 
+          "bindCount": 1, 
+          "stride": 12, 
+          "variables": [{
+              "name": "ThreadGroupCountX", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 0, 
+              "sizeInBytes": 4
+            }, {
+              "name": "ThreadGroupCountY", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 4, 
+              "sizeInBytes": 4
+            }, {
+              "name": "ThreadGroupCountZ", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 8, 
+              "sizeInBytes": 4
+            }]
+        }]
+    }]
+}

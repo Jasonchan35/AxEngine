@@ -57,9 +57,9 @@ void GenResultInfo::_mergeVariables(IArray<Variables>& dstArray, Span<Variables>
 	for (auto& src : srcSpan) {
 		auto f = dstArray.find_([&](const auto& e){ return e.name == src.name; });
 		if (f) {
-			if (f->varType     != src.varType) throw Error_Runtime(Fmt("variable'{}' dataType mismatch", src.name));
-			if (f->offset      != src.offset ) throw Error_Runtime(Fmt("variable'{}' offset mismatch", src.name));
-			if (f->sizeInBytes != src.sizeInBytes   ) throw Error_Runtime(Fmt("variable'{}' sizeInBytes mismatch", src.name));
+			if (f->varType     != src.varType    ) throw Error_Runtime(Fmt("variable'{}' dataType mismatch", src.name));
+			if (f->offset      != src.offset     ) throw Error_Runtime(Fmt("variable'{}' offset mismatch", src.name));
+			if (f->sizeInBytes != src.sizeInBytes) throw Error_Runtime(Fmt("variable'{}' sizeInBytes mismatch", src.name));
 			continue;
 		}
 		dstArray.emplaceBack(src);
@@ -71,7 +71,7 @@ void GenResultInfo::_mergeParam(IArray<T>& dstArray, Span<T> srcSpan) {
 	for (auto& src : srcSpan) {
 
 		if (!_resultInfo.declare.isGlobalCommonShader) {
-			if (src.bindSpace != ShaderParamBindSpace::Default) continue;
+			if (ShaderParamBindSpace_isGlobalCommon(src.bindSpace)) continue;
 		}
 
 		auto* dst = _findParam(dstArray.span(), src.name);

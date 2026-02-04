@@ -77,6 +77,23 @@
           "dataType": "f32x4"
         }], 
       "constBuffers": [{
+          "name": "axVertexShaderDrawRootConst", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Vertex | Pixel", 
+          "bindSpace": "RootConst", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "stride": 64, 
+          "variables": [{
+              "name": "worldMatrix", 
+              "varType": {
+                "dataType": "Mat4f", 
+                "elementCount": 0
+              }, 
+              "offset": 0, 
+              "sizeInBytes": 64
+            }]
+        }, {
           "name": "$Globals", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel", 

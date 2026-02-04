@@ -9,16 +9,16 @@ export import :RenderMesh;
 
 export namespace ax /*::AxRender*/ {
 
-struct AxDrawCallRootConst {
-	Mat4f AX_MATRIX_MVP;
-	Mat4f AX_MATRIX_M;
-	u32   AX_OBJECT_ID;
-	u32   AX_MESH_ID;
-	u32   AX_MESHLET_ID;
-	u32   _usedPadding0;
+class AxMeshShaderDraw : public NonCopyable {
+public:
+	Material*   material          = nullptr;
+	Int         materialPassIndex = 0;
+	Mat4f       objectToWorld     = Mat4f::s_identity();
+	MeshObject* meshObject        = nullptr;
+	u32x3       groupCount{1, 1, 1};
 };
 
-class AxDrawCallDesc : public NonCopyable {
+class AxVertexShaderDraw : public NonCopyable {
 public:
 	RenderPrimitiveType primitiveType     = RenderPrimitiveType::Triangles;
 	VertexIndexType     indexType         = VertexIndexType::None;
@@ -34,8 +34,6 @@ public:
 	Material*           material          = nullptr;
 	Int                 materialPassIndex = 0;
 	Mat4f               objectToWorld     = Mat4f::s_identity();
-	MeshObject*         meshObject        = nullptr;
-	u32x3               dispatchGroupCount{256, 1, 1};
 	
 	void setSubMesh(RenderRequest* req, RenderSubMesh& sm) {
 		primitiveType = sm.primitiveType();

@@ -89,8 +89,8 @@
 #define AX_RenderRequest_Backend_FunctionInterfaces(IMP) \
 	virtual void onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) IMP; \
 	virtual void onSetScissorRect(const Rect2f& rect) IMP; \
-	virtual void onDrawCall(AxDrawCallDesc& cmd) IMP; \
-	virtual void onDispatchMesh(AxDrawCallDesc& cmd, u32x3 groupCount) IMP; \
+	virtual void onVertexShaderDraw(AxVertexShaderDraw& draw) IMP; \
+	virtual void onMeshShaderDraw(AxMeshShaderDraw& draw) IMP; \
 	virtual void onFrameBegin() IMP; \
 	virtual void onFrameEnd() IMP; \
 	virtual void onRenderPassBegin(RenderPass* pass) IMP; \

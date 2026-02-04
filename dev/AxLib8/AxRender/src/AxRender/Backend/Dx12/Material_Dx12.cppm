@@ -65,8 +65,12 @@ public:
 	MaterialParamSpace_Dx12* getOwnParamSpace_dx12(BindSpace bs) {
 		return rttiCastCheck<MaterialParamSpace_Dx12>(getOwnParamSpace(bs));
 	}	
+
+	virtual bool onBindMaterial(RenderRequest* req, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) override;
+	virtual bool onBindMaterial(RenderRequest* req, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) override;
 	
-	virtual bool onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) override;
+	bool _onBindMaterial(RenderRequest_Dx12* req, ByteSpan rootConstData);
+	
 	virtual void onSetShader() override;
 };
 

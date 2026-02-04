@@ -34,9 +34,12 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 	
+#if 0
 	struct IndirectDraw {
-		SPtr<StructuredGpuBuffer> drawArguments;
+		StructuredGpuBufferPool_<Dx12_IndirectDrawMeshObject> drawArgumentsPool; 
+		StructuredGpuBuffer_<Dx12_IndirectDrawMeshObject> drawArguments; 
 	} indirectDraw;
+#endif
 
 	struct DynamicDescriptors {
 		Dx12DescriptorHeapChunk_ColorBuffer ColorBuffer;
@@ -61,6 +64,8 @@ public:
 	}
 	
 	AX_ID3D12Device* _d3dDevice = nullptr;
+
+	virtual void onIndirectMeshShader() override;
 	
 	AX_RenderRequest_Backend_FunctionInterfaces(override)
 };

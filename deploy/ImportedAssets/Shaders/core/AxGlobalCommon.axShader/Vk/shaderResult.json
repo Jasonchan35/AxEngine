@@ -161,61 +161,21 @@
               "sizeInBytes": 64
             }]
         }, {
-          "name": "axDrawCallRootConst", 
+          "name": "axVertexShaderDrawRootConst", 
           "dataType": "ConstBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "RootConst", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "stride": 144, 
+          "stride": 64, 
           "variables": [{
-              "name": "AX_MATRIX_MVP", 
+              "name": "worldMatrix", 
               "varType": {
                 "dataType": "Mat4f", 
                 "elementCount": 0
               }, 
               "offset": 0, 
               "sizeInBytes": 64
-            }, {
-              "name": "AX_MATRIX_M", 
-              "varType": {
-                "dataType": "Mat4f", 
-                "elementCount": 0
-              }, 
-              "offset": 64, 
-              "sizeInBytes": 64
-            }, {
-              "name": "AX_OBJECT_ID", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 128, 
-              "sizeInBytes": 4
-            }, {
-              "name": "AX_MESH_ID", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 132, 
-              "sizeInBytes": 4
-            }, {
-              "name": "AX_MESHLET_ID", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 136, 
-              "sizeInBytes": 4
-            }, {
-              "name": "_usedPadding0", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 140, 
-              "sizeInBytes": 4
             }]
         }, {
           "name": "$Globals", 

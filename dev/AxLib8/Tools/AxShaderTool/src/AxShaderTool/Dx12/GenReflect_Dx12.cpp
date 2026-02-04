@@ -508,9 +508,13 @@ void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& ou
 		D3D12_SHADER_TYPE_DESC typeDesc;
 		hr = cbv->GetType()->GetDesc(&typeDesc);
 		throwIfError(hr);
-
+		
 		if (typeDesc.Class == D3D_SVC_STRUCT) {
 			auto* varType = cbv->GetType();
+			D3D12_SHADER_VARIABLE_DESC varDesc;
+			cbv->GetDesc(&varDesc);
+			// outInfo.stride = varDesc.Size;
+		
 			D3D12_SHADER_TYPE_DESC varTypeDesc;
 			hr = varType->GetDesc(&varTypeDesc);
 			throwIfError(hr);
@@ -522,7 +526,7 @@ void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& ou
 				D3D12_SHADER_TYPE_DESC memberTypeDesc;
 				hr = memberType->GetDesc(&memberTypeDesc);
 				throwIfError(hr);
-			
+				
 				auto& outVar  = outInfo.variables.emplaceBack();
 				outVar.name   = StrView_c_str(memberName);
 				outVar.offset = ax_safe_cast_from(memberTypeDesc.Offset);

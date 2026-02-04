@@ -56,12 +56,9 @@ public:
 
 	template<class PSO_DESC> void _commonPsoDesc(RenderRequest_Dx12* req, PSO_DESC& psoDesc);
 	
-	Pipeline* getOrAddGraphicsPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd);
-	Pipeline* _createVertexShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& posKey);
-	Pipeline* _createMeshShaderPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd, PsoKey& posKey);
 	
-	bool _bindPipeline(RenderRequest_Dx12* req, AxDrawCallDesc& cmd) const;
-	void _createRootSignature(Dx12RootParameterList& rootParamList);
+	bool bindPipeline(RenderRequest_Dx12* req, AxVertexShaderDraw& draw) const;
+	bool bindPipeline(RenderRequest_Dx12* req, AxMeshShaderDraw& draw) const;
 
 	const ShaderParamSpace_Dx12* getParamSpace_dx12(BindSpace s) const {
 		return rttiCastCheck<ShaderParamSpace_Dx12>(getParamSpace(s));
@@ -104,6 +101,12 @@ public:
 	Dx12RootParameterList       _pipelineRootParamList;
 	Array<UPtr<Pipeline>, 4>    _pipelineTable;
 	ComPtr<ID3D12RootSignature> _rootSignature;
+private:
+	Pipeline* _getOrAddGraphicsPipeline(RenderRequest_Dx12* req, const PsoKey& psoKey);
+	Pipeline* _createVertexShaderPipeline(RenderRequest_Dx12* req, const PsoKey& posKey);
+	Pipeline* _createMeshShaderPipeline(RenderRequest_Dx12* req, const PsoKey& posKey);
+	bool      _bindPipeline(RenderRequest_Dx12* req, const PsoKey& psoKey) const;
+	void      _createRootSignature(Dx12RootParameterList& rootParamList);
 };
 
 class Shader_Dx12 : public Shader_Backend {

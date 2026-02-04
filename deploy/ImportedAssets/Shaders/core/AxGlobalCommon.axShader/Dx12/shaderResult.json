@@ -209,63 +209,6 @@
               "offset": 352, 
               "sizeInBytes": 0
             }]
-        }, {
-          "name": "axDrawCallRootConst", 
-          "dataType": "ConstBuffer", 
-          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
-          "bindSpace": "RootConst", 
-          "bindPoint": 1, 
-          "bindCount": 1, 
-          "stride": 144, 
-          "variables": [{
-              "name": "AX_MATRIX_MVP", 
-              "varType": {
-                "dataType": "Mat4f", 
-                "elementCount": 0
-              }, 
-              "offset": 0, 
-              "sizeInBytes": 0
-            }, {
-              "name": "AX_MATRIX_M", 
-              "varType": {
-                "dataType": "Mat4f", 
-                "elementCount": 0
-              }, 
-              "offset": 64, 
-              "sizeInBytes": 0
-            }, {
-              "name": "AX_OBJECT_ID", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 128, 
-              "sizeInBytes": 0
-            }, {
-              "name": "AX_MESH_ID", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 132, 
-              "sizeInBytes": 0
-            }, {
-              "name": "AX_MESHLET_ID", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 136, 
-              "sizeInBytes": 0
-            }, {
-              "name": "_usedPadding0", 
-              "varType": {
-                "dataType": "u32", 
-                "elementCount": 0
-              }, 
-              "offset": 140, 
-              "sizeInBytes": 0
-            }]
         }], 
       "textures": [{
           "name": "AxBindless_Texture2D", 

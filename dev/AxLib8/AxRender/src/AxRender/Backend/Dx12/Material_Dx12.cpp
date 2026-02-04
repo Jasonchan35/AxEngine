@@ -125,19 +125,38 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	return _perFrameData;
 }
 
-bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd) {
+bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
-	auto& cmdList = req->_graphCmdList_dx12;
 
 	auto* shdPass = shaderPass_dx12();
 	if (!shdPass) { AX_ASSERT(false); return false; }
 
 	// SetDescriptorHeaps must be called to bind a sampler descriptor before setting a root signature
-	if (!shdPass->_bindPipeline(req, cmd)) return false;
+	if (!shdPass->bindPipeline(req, draw)) return false;
+	
+	ByteSpan rootConstData = rootConst ? Span(*rootConst).toByteSpan() : ByteSpan();
+	return _onBindMaterial(req, rootConstData);
+}
 
+bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) {
+	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
+
+	auto* shdPass = shaderPass_dx12();
+	if (!shdPass) { AX_ASSERT(false); return false; }
+
+	// SetDescriptorHeaps must be called to bind a sampler descriptor before setting a root signature
+	if (!shdPass->bindPipeline(req, draw)) return false;
+	
+	ByteSpan rootConstData = rootConst ? Span(*rootConst).toByteSpan() : ByteSpan();
+	return _onBindMaterial(req, rootConstData);
+}
+
+bool MaterialPass_Dx12::_onBindMaterial(RenderRequest_Dx12* req, ByteSpan rootConstData) {
 	//---- SetGraphicsRootDescriptorTable ----
 
 	// AX_LOG("--- Material Pass [{}]-------", debugName());
+	auto& cmdList = req->_graphCmdList_dx12;
+	auto* shdPass = shaderPass_dx12();
 
 	FixedArray<const MaterialParamSpace_Dx12::PerFrameData*, BindSpace_COUNT> updatedParamSpaceData;
 	
@@ -154,7 +173,6 @@ bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxDrawCallDesc& cmd)
 		
 		switch (rp.rootParamType) {
 			case Dx12RootParamType::RootUInt32: {
-				auto rootConstData = req->drawCallRootConstData();
 				cmdList->SetGraphicsRoot32BitConstants(rootParamIndex,
 				                                       ax_safe_cast_from(rootConstData.sizeInBytes() / 4),
 				                                       rootConstData.data(),

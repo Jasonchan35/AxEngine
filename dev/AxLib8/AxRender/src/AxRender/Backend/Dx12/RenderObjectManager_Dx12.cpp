@@ -31,13 +31,14 @@ void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, A
 
 void RenderObjectManager_Dx12::onPostCreate() {
 	_createDescriptors();
-	indirectDraw._create();
+//	indirectDraw._create();
 }
 
 void RenderObjectManager_Dx12::IndirectDraw::_create() {
+#if 0
 	auto* dev = RenderSystem_Dx12::s_d3dDevice();
 	
-	Int RootConstSizeInBytes = sizeof(Dx12_IndirectDrawArgument::rootConst);
+	Int RootConstSizeInBytes = AX_SIZEOF(Dx12_IndirectDrawMeshObject::rootConst);
 	
 	Dx12RootParameterList rootParamList;
 
@@ -64,7 +65,7 @@ void RenderObjectManager_Dx12::IndirectDraw::_create() {
 	}
 
 	D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = {};
-	commandSignatureDesc.ByteStride       = sizeof(Dx12_IndirectDrawArgument);
+	commandSignatureDesc.ByteStride       = sizeof(AxIndirectDrawArgument_Dx12);
 	commandSignatureDesc.NumArgumentDescs = ax_safe_cast_from(argumentDescList.size());
 	commandSignatureDesc.pArgumentDescs   = argumentDescList.data();
 
@@ -72,7 +73,7 @@ void RenderObjectManager_Dx12::IndirectDraw::_create() {
 	                                      _rootSignature,
 	                                      IID_PPV_ARGS(_commandSignature.ptrForInit()));
 	Dx12Util::throwIfError(hr);
-
+#endif
 }
 
 void RenderObjectManager_Dx12::_createDescriptors() {

@@ -20,7 +20,7 @@ Pass "Pass0" { // Forward
 }
 #endif
 
-#include "AxRender.hlsl"
+#include "AxVertexShaderDraw.hlsl"
 
 uniform Color4f color;
 

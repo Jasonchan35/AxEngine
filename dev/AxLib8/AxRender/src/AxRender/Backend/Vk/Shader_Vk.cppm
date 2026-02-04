@@ -51,10 +51,8 @@ public:
 
 	ShaderPass_Vk(const CreateDesc& desc);
 
-	Pipeline*		getOrAddGraphicsPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd);
-	UPtr<Pipeline>	_createGraphicsPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd, PsoKey& psoKey);
-	
-	bool _bindPipeline(RenderRequest_Vk* req, AxDrawCallDesc& cmd) const;
+	bool bindPipeline(RenderRequest_Vk* req, AxVertexShaderDraw& draw) const;
+	bool bindPipeline(RenderRequest_Vk* req, AxMeshShaderDraw& cmd) const;
 
 	const AX_VkPipelineLayout& pipelineLayout() const { return _pipelineLayout; }
 
@@ -73,6 +71,11 @@ private:
 	AX_VkPipelineLayout			_pipelineLayout;
 	Array<UPtr<Pipeline>, 4>	_pipelineTable;
 
+	Pipeline*		_getOrAddGraphicsPipeline(RenderRequest_Vk* req, const PsoKey& psoKey);
+	UPtr<Pipeline>	_createGraphicsPipeline(RenderRequest_Vk* req, const PsoKey& psoKey);
+	bool			_bindPipeline(RenderRequest_Vk* req, const PsoKey& psoKey) const;
+	
+	
 	template<class FUNC>
 	void _visitStages(FUNC func) {
 		func(_vertexStage       , ShaderStageFlags::Vertex);

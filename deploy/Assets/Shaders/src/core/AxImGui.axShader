@@ -21,7 +21,7 @@ Pass "Pass0" {
 }
 #endif
 
-#include "AxRender.hlsl"
+#include "AxVertexShaderDraw.hlsl"
  
 struct VS_Input {
 	SEM_pos(float2);

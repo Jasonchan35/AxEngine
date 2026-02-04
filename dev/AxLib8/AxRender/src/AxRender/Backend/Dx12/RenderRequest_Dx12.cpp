@@ -46,12 +46,11 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_dynamicDescriptors.CBV_SRV_UAV.create(Fmt("dynamic#{}.CBV_SRV_UAV", desc.index), pool.CBV_SRV_UAV, renderReq_CBV_SRV_UAV_Count       , false);
 	    _dynamicDescriptors.Sampler.create(Fmt("dynamic#{}.Sampler"    , desc.index), pool.Sampler,     info.renderRequest.maxSamplerCount, false);
 	
-	
-	StructuredGpuBuffer_CreateDesc createDesc;
-	createDesc.name   = AX_NAMEID("indirectDraw.drawArguments");
-	createDesc.stride = AX_SIZEOF(Dx12_IndirectDrawArgument);
-//	createDesc.count  = info.indirectDraw.maxDrawCount;
-	indirectDraw.drawArguments = StructuredGpuBuffer::s_new(AX_NEW, createDesc);
+#if 0
+	auto name = NameId::s_make("indirectDraw");
+	indirectDraw.drawArgumentsPool.create(AX_NEW, name, 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	indirectDraw.drawArguments.create(AX_NEW, name, indirectDraw.drawArgumentsPool);
+#endif
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
@@ -84,6 +83,18 @@ void RenderRequest_Dx12::onWaitCompleted() {
 	}
 }
 
+void RenderRequest_Dx12::onIndirectMeshShader() {
+//	_In_  ID3D12CommandSignature *pCommandSignature,
+//	_In_  UINT MaxCommandCount,
+//	_In_  ID3D12Resource *pArgumentBuffer,
+//	_In_  UINT64 ArgumentBufferOffset,
+//	_In_opt_  ID3D12Resource *pCountBuffer,
+//	_In_  UINT64 CountBufferOffset) = 0;
+	
+//	_graphCmdList_dx12->ExecuteIndirect()
+//	this->indirectDraw.drawArguments
+}
+
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {
 	D3D12_VIEWPORT tmp;
 	tmp.TopLeftX = rect.x;
@@ -104,25 +115,25 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 	_graphCmdList_dx12->RSSetScissorRects(1, &tmp);
 }
 
-void RenderRequest_Dx12::onDispatchMesh(AxDrawCallDesc& cmd, u32x3 groupCount) {
-	_graphCmdList_dx12->DispatchMesh(groupCount.x, groupCount.y, groupCount.z);
+void RenderRequest_Dx12::onMeshShaderDraw(AxMeshShaderDraw& draw) {
+	_graphCmdList_dx12->DispatchMesh(draw.groupCount.x, draw.groupCount.y, draw.groupCount.z);
 }
 
-void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
-	auto* mat = rttiCastCheck<Material_Dx12>(drawcall.material);
+void RenderRequest_Dx12::onVertexShaderDraw(AxVertexShaderDraw& draw) {
+	auto* mat = rttiCastCheck<Material_Dx12>(draw.material);
 	if (!mat) return;
-	auto* matPass = mat->getPass(drawcall.materialPassIndex);
+	auto* matPass = mat->getPass(draw.materialPassIndex);
 	if (!matPass) return;
 
 	auto& cmdList = _graphCmdList_dx12;
 
-	D3D12_PRIMITIVE_TOPOLOGY topology  = Dx12Util::getDxPrimitiveTopology(drawcall.primitiveType);
+	D3D12_PRIMITIVE_TOPOLOGY topology  = Dx12Util::getDxPrimitiveTopology(draw.primitiveType);
 	cmdList->IASetPrimitiveTopology(topology); // already in pso
 
 	{ // bind vertex buffer
-		auto vertexLayout = drawcall.vertexLayout;
+		auto vertexLayout = draw.vertexLayout;
 
-		auto* vb = ax_const_cast(rttiCastCheck<GpuBuffer_Dx12>(drawcall.vertexBuffer));
+		auto* vb = ax_const_cast(rttiCastCheck<GpuBuffer_Dx12>(draw.vertexBuffer));
 		if (!vb) throw Error_Undefined();
 
 		vb->updateResourceBarrier(cmdList);
@@ -134,14 +145,14 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 		cmdList->IASetVertexBuffers(0, 1, &vbView);
 	}
 	
-	if (drawcall.indexType == VertexIndexType::None) {
-		cmdList->DrawInstanced(Dx12Util::castUINT(drawcall.vertexCount),
-		                       ax_safe_cast_from(drawcall.instanceCount),
-		                       ax_safe_cast_from(drawcall.vertexStart),
-		                       ax_safe_cast_from(drawcall.instanceStart));
+	if (draw.indexType == VertexIndexType::None) {
+		cmdList->DrawInstanced(Dx12Util::castUINT(draw.vertexCount),
+		                       ax_safe_cast_from(draw.instanceCount),
+		                       ax_safe_cast_from(draw.vertexStart),
+		                       ax_safe_cast_from(draw.instanceStart));
 		
 	} else {
-		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(drawcall.indexBuffer));
+		auto* ib = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(draw.indexBuffer));
 		if (!ib) throw Error_Undefined();
 
 		ib->updateResourceBarrier(cmdList);
@@ -149,14 +160,14 @@ void RenderRequest_Dx12::onDrawCall(AxDrawCallDesc& drawcall) {
 		D3D12_INDEX_BUFFER_VIEW ibView = {};
 		ibView.BufferLocation          = ib->gpuAddress() + ib->bufferOffset();
 		ibView.SizeInBytes             = Dx12Util::castUINT(ib->size());
-		ibView.Format                  = Dx12Util::getDxIndexType(drawcall.indexType);;
+		ibView.Format                  = Dx12Util::getDxIndexType(draw.indexType);;
 
 		cmdList->IASetIndexBuffer(&ibView);
-		cmdList->DrawIndexedInstanced(Dx12Util::castUINT(drawcall.indexCount),
-		                              ax_safe_cast_from(drawcall.instanceCount),
-		                              ax_safe_cast_from(drawcall.indexStart),
-		                              ax_safe_cast_from(drawcall.vertexStart),
-		                              ax_safe_cast_from(drawcall.instanceStart));
+		cmdList->DrawIndexedInstanced(Dx12Util::castUINT(draw.indexCount),
+		                              ax_safe_cast_from(draw.instanceCount),
+		                              ax_safe_cast_from(draw.indexStart),
+		                              ax_safe_cast_from(draw.vertexStart),
+		                              ax_safe_cast_from(draw.instanceStart));
 	}
 }
 
