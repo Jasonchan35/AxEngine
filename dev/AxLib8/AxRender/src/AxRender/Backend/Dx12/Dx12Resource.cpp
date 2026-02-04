@@ -59,28 +59,12 @@ void Dx12ResourceBase::destroy() {
 	_reset();
 }
 
-D3D12_RESOURCE_STATES Dx12Resource_GpuBuffer::s_createResourceState(GpuBufferType type) {
-	switch (type) {
-		case GpuBufferType::Const					: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::Vertex					: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::Index					: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::StagingToCpu			: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::StagingToGpu			: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::Structured				: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::RayTracingShaderRecord	: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::RayTracingInstanceDesc	: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::RayTracingScratch		: return D3D12_RESOURCE_STATE_COMMON;
-		case GpuBufferType::RayTracingAccelStruct	: return D3D12_RESOURCE_STATE_COMMON;
-		
-		default: throw Error_Undefined();
-	}
-}
-
 D3D12_RESOURCE_STATES Dx12Resource_GpuBuffer::s_defaultResourceState(GpuBufferType type) {
 	switch (type) {
 		case GpuBufferType::Const					: return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 		case GpuBufferType::Vertex					: return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 		case GpuBufferType::Index					: return D3D12_RESOURCE_STATE_INDEX_BUFFER;
+		case GpuBufferType::IndirectArgument		: return D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT;
 		case GpuBufferType::StagingToCpu			: return D3D12_RESOURCE_STATE_COMMON;
 		case GpuBufferType::StagingToGpu			: return D3D12_RESOURCE_STATE_GENERIC_READ;
 		case GpuBufferType::Structured				: return D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
@@ -106,6 +90,7 @@ Int Dx12Resource_GpuBuffer::s_getMinAlignement(GpuBufferType type) {
 		case GpuBufferType::Const					: return D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 		case GpuBufferType::Vertex					: return 64;
 		case GpuBufferType::Index					: return 16;
+		case GpuBufferType::IndirectArgument		: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
 		case GpuBufferType::StagingToGpu			: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
 		case GpuBufferType::StagingToCpu			: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
 		case GpuBufferType::Structured				: return D3D12_RAW_UAV_SRV_BYTE_ALIGNMENT;
@@ -122,7 +107,7 @@ void Dx12Resource_GpuBuffer::create(GpuBufferType type, Int bufferSize, bool vir
 	
 	_bufferType = type;
 	_virtualAddressOnly = virtualAddressOnly;
-	_resourceState = s_createResourceState(type);
+	_resourceState = D3D12_RESOURCE_STATE_COMMON;
 	_allocDesc.HeapType = s_defaultHeapType(type);
 	Int alignment = s_getMinAlignement(type);
 

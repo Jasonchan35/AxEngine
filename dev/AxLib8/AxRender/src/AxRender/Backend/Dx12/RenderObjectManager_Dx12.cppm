@@ -6,6 +6,7 @@ export module AxRender:RenderObjectManager_Dx12;
 export import :Dx12DescriptorHeap;
 export import :RenderObjectManager_Backend;
 export import :RenderSystem_Backend;
+export import :RenderIndirectExecute_Dx12;
 
 namespace ax {
 
@@ -81,17 +82,13 @@ public:
 		ResourceDescriptorHeap_CBV_SRV_UAV	Texture3D;
 		ResourceDescriptorHeap_Sampler		Sampler;
 	} resourceDescriptors;
-
+	
 	virtual void onPostCreate() override;
 	
 	void _createDescriptors();
-
-	struct IndirectDraw {
-		ComPtr<ID3D12RootSignature>    _rootSignature;
-		ComPtr<ID3D12CommandSignature> _commandSignature;
-		void _create();
-	} indirectDraw;
 	
+	StructuredGpuBufferPool_<AxMeshShaderIndirectDrawArgs_Dx12> _meshShaderIndirectDrawArgsBufferPool;
+
 #if AX_RENDER_BINDLESS
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler*>& list) override;
 	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D*>& list) override;

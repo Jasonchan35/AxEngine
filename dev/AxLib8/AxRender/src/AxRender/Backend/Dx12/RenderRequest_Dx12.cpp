@@ -46,6 +46,8 @@ RenderRequest_Dx12::RenderRequest_Dx12(const CreateDesc& desc)
 	_dynamicDescriptors.CBV_SRV_UAV.create(Fmt("dynamic#{}.CBV_SRV_UAV", desc.index), pool.CBV_SRV_UAV, renderReq_CBV_SRV_UAV_Count       , false);
 	    _dynamicDescriptors.Sampler.create(Fmt("dynamic#{}.Sampler"    , desc.index), pool.Sampler,     info.renderRequest.maxSamplerCount, false);
 	
+	auto* stockObjs = RenderStockObjects::s_instance();
+	_indirectMeshShaderDraw.create(stockObjs->materials->meshlet->shader());
 }
 
 void RenderRequest_Dx12::onFrameBegin() {
@@ -78,25 +80,29 @@ void RenderRequest_Dx12::onWaitCompleted() {
 	}
 }
 
-void RenderRequest_Dx12::IndirectDraw::create() {
-	auto name = NameId::s_make("indirectDraw");
-	drawArgumentsPool.create(AX_NEW, name, 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	drawArguments.create(AX_NEW, name, drawArgumentsPool);
-}
-
-void RenderRequest_Dx12::IndirectDraw::draw(RenderRequest_Dx12* req) {
-	auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(drawArguments.buffer->getUploadedGpuBuffer(req));
-	auto* mgr = RenderObjectManager_Dx12::s_instance();
-	req->_graphCmdList_dx12->ExecuteIndirect(mgr->indirectDraw._commandSignature,
-	                                         1000,
-	                                         ax_const_cast(gpuBuf)->d3dResource(), 
-	                                         0, nullptr, 0);
-//	this->indirectDraw.drawArguments
-	
-}
-
 void RenderRequest_Dx12::onDrawWorld() {
-//	indirectDraw.draw(this); // TODO
+	auto& drawArgsBuffer = _indirectMeshShaderDraw._drawArgsBuffer;
+	auto drawArgs = drawArgsBuffer.editData(0, 9);
+	
+	for (int i = 0; i < drawArgs.size(); i++) {
+		auto& cmd = drawArgs[i];
+		cmd.setGroupCount(1,1,1);
+		cmd.rootConst.worldMatrix = Mat4f::s_translate(static_cast<f32>(i) * 2, 0, -8);
+		cmd.rootConst.meshId = 6 + i;
+	}
+
+	//	auto* mtl = rttiCastCheck<Material_Dx12>(mgr->indirectDrawMaterial());
+	auto* mtl = rttiCastCheck<Material_Dx12>(RenderStockObjects::s_instance()->materials->meshlet.ptr());
+	
+	AxMeshShaderDraw draw = {};
+	mtl->getPass(0)->onBindMaterial(this, draw, nullptr);
+	auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(drawArgsBuffer.buffer->getUploadedGpuBuffer(this));
+
+	_graphCmdList_dx12->ExecuteIndirect(_indirectMeshShaderDraw._commandSignature,
+										ax_safe_cast_from(drawArgs.size()),
+										ax_const_cast(gpuBuf)->d3dResource(), gpuBuf->bufferOffset(), 
+										nullptr, 0);
+
 }
 
 void RenderRequest_Dx12::onSetViewport(const Rect2f& rect, float minDepth, float maxDepth) {

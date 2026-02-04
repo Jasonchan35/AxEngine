@@ -5,13 +5,14 @@ export import :RenderDataType;
 export namespace ax /*::AxRender*/ {
 
 #define AX_RENDER_GpuBufferType_ENUM_LIST(E) \
-	E(None,			) \
-	E(Vertex,		) \
-	E(Index,		) \
-	E(Const,		) \
-	E(Structured,	) \
-	E(StagingToGpu,	) \
-	E(StagingToCpu,	) \
+	E(None				,) \
+	E(Vertex			,) \
+	E(Index				,) \
+	E(Const				,) \
+	E(Structured		,) \
+	E(StagingToGpu		,) \
+	E(StagingToCpu		,) \
+	E(IndirectArgument	,) \
 	\
 	E(RayTracingShaderRecord,) \
 	E(RayTracingScratch,) \
@@ -229,9 +230,10 @@ MutByteSpan DynamicGpuBuffer::extendSize(Int sizeInBytes) {
 
 class StructuredGpuBuffer_CreateDesc : public NonCopyable {
 public:
+	GpuBufferType  bufferType = GpuBufferType::Structured;
 	NameId         name;
-	Int            stride = 0;
-	GpuBufferPool* pool   = nullptr;
+	Int            stride     = 0;
+	GpuBufferPool* pool       = nullptr;
 };
 
 class StructuredGpuBuffer : public RenderObject {
@@ -240,10 +242,16 @@ public:
 
 	template<class T>
 	static SPtr<StructuredGpuBuffer> s_new(const MemAllocRequest& req, InNameId name, GpuBufferPool* pool) {
+		return s_new<T>(req, GpuBufferType::Structured, name, pool);
+	}
+
+	template<class T>
+	static SPtr<StructuredGpuBuffer> s_new(const MemAllocRequest& req, GpuBufferType bufferType, InNameId name, GpuBufferPool* pool) {
 		CreateDesc desc;
-		desc.name = name;
-		desc.stride = AX_SIZEOF(T);
-		desc.pool = pool;
+		desc.bufferType = bufferType;
+		desc.name       = name;
+		desc.stride     = AX_SIZEOF(T);
+		desc.pool       = pool;
 		return s_new(req, desc);
 	}
 	
@@ -291,9 +299,13 @@ template<class T>
 class StructuredGpuBufferPool_ : public NonCopyable {
 public:
 	void create(const MemAllocRequest& req, InNameId name, Int maxSize, Int pageSize, Int alignment = 16) {
-		pool = GpuBufferPool::s_new(req, name, GpuBufferType::Structured, maxSize, pageSize, alignment);
+		create(req, GpuBufferType::Structured, name, maxSize, pageSize, alignment);
 	}
 
+	void create(const MemAllocRequest& req, GpuBufferType bufferType, InNameId name, Int maxSize, Int pageSize, Int alignment = 16) {
+		pool = GpuBufferPool::s_new(req, name, bufferType, maxSize, pageSize, alignment);
+	}
+	
 	operator GpuBufferPool* () { return pool.ptr(); }
 	GpuBufferPool* operator->() { return pool.ptr(); }
 	
@@ -305,9 +317,13 @@ class StructuredGpuBuffer_ : public NonCopyable {
 public:
 	using Pool = StructuredGpuBufferPool_<T>;
 	void create(const MemAllocRequest& req, InNameId name, Pool& pool) {
-		buffer = StructuredGpuBuffer::s_new<T>(req, name, pool.pool);
+		create(req, GpuBufferType::Structured, name, pool);
 	}
 
+	void create(const MemAllocRequest& req, GpuBufferType bufferType, InNameId name, Pool& pool) {
+		buffer = StructuredGpuBuffer::s_new<T>(req, bufferType, name, pool.pool);
+	}
+	
 	MutSpan<T> editData(Int offset, Int size)	{ return buffer->editData<T>(offset, size); }
 	MutSpan<T> extendsData(Int size)			{ return editData(buffer->count(), size); }
 	

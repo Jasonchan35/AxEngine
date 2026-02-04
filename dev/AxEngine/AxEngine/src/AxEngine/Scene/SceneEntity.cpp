@@ -56,7 +56,7 @@ MeshRendererSystem* MeshRendererSystem::s_instance(bool createIfNone) {
 }
 
 void MeshRendererSystem::onRender(RenderRequest* req) {
-	req->drawWorld();
+	req->drawWorld(); // indirect draw
 	
 	for (auto* comp : _componentList) {
 		if (!comp) continue;

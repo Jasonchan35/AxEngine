@@ -38,7 +38,7 @@ StructuredGpuBuffer::StructuredGpuBuffer(const CreateDesc& desc) {
 	
 	DynamicGpuBuffer_CreateDesc bufDesc;
 	bufDesc.name       = desc.name;
-	bufDesc.bufferType = GpuBufferType::Structured;
+	bufDesc.bufferType = desc.bufferType;
 	bufDesc.bufferSize = 0;
 	bufDesc.pool       = desc.pool;
 

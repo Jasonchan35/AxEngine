@@ -97,6 +97,10 @@ public:
 		BindSpace         bindSpace     = BindSpace::Invalid;
 	};
 
+	BindPoint _rootConstBindPoint      = BindPoint::Zero;
+	Int       _rootConstSizeInBytes    = 0;
+	UINT      _rootConstRootParamIndex = 0;
+	
 	Array<RootParamBinding, 16> _rootParamBindings;
 	Dx12RootParameterList       _pipelineRootParamList;
 	Array<UPtr<Pipeline>, 4>    _pipelineTable;

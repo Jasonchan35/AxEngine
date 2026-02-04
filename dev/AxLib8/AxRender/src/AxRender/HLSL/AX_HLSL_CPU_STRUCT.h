@@ -60,18 +60,4 @@ struct AxGpuMeshObjectRenderer {
 	u32     _padding1;
 };
 
-#ifdef AX_RENDER_DX12
-struct AxIndirectDrawWorld_Dx12 {
-	AxMeshShaderDrawRootConst 	rootConst;
-	D3D12_DISPATCH_ARGUMENTS	args;
-	u32 _padding0;
-};
-
-struct AxIndirectDrawWorldRootConst_Dx12 {
-	u32 worldId;
-}; 
-
-#endif
-
-
 #endif // __AX_HLSL_CPU_STRUCT_h__

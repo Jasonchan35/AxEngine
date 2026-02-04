@@ -10,6 +10,7 @@ export import :RenderCommandList_Dx12;
 export import :RenderPass_Dx12;
 export import :RenderContext_Dx12;
 export import :RenderObjectManager_Dx12;
+export import :RenderIndirectExecute_Dx12;
 
 namespace ax {
 
@@ -34,14 +35,6 @@ public:
 	Dx12Fence			_fence;
 	Dx12CpuEvent		_cpuEvent;
 
-	struct IndirectDraw {
-		StructuredGpuBufferPool_<AxIndirectDrawWorld_Dx12> drawArgumentsPool; 
-		StructuredGpuBuffer_<AxIndirectDrawWorld_Dx12> drawArguments;
-		
-		void create();
-		void draw(RenderRequest_Dx12* req);
-	} indirectDraw;
-
 	struct DynamicDescriptors {
 		Dx12DescriptorHeapChunk_ColorBuffer ColorBuffer;
 		Dx12DescriptorHeapChunk_DepthBuffer DepthBuffer;
@@ -63,6 +56,8 @@ public:
 	void setDescriptorHeaps(Span<ID3D12DescriptorHeap*> heaps) {
 		_graphCmdList_dx12->SetDescriptorHeaps(ax_safe_cast_from(heaps.size()), heaps.data());
 	}
+	
+	RenderIndirectExecute_Dx12 _indirectMeshShaderDraw;
 	
 	AX_ID3D12Device* _d3dDevice = nullptr;
 

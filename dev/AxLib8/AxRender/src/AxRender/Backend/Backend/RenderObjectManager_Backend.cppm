@@ -74,7 +74,7 @@ public:
 		StructuredGpuBufferPool_<AxGpuMeshlet>		axMeshlet;
 		StructuredGpuBufferPool_<AxGpuMeshletVert>	axMeshletVert;
 		StructuredGpuBufferPool_<AxGpuMeshletPrim>	axMeshletPrim;
-		
+
 		template<class FUNC>
 		void visitPools(FUNC func) {
 			func(axMeshlet    );

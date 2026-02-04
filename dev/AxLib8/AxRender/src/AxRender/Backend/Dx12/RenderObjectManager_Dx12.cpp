@@ -31,49 +31,12 @@ void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, A
 
 void RenderObjectManager_Dx12::onPostCreate() {
 	_createDescriptors();
-//	indirectDraw._create();
-}
 
-void RenderObjectManager_Dx12::IndirectDraw::_create() {
-	auto* dev = RenderSystem_Dx12::s_d3dDevice();
-	
-	using RootConst = AxIndirectDrawWorldRootConst_Dx12;
-	
-	Int rootConstSizeInBytes = AX_SIZEOF(RootConst);
-	
-	Dx12RootParameterList rootParamList;
-
-	UINT rootConstParamIndex = rootParamList.addRoot32BitConst(D3D12_SHADER_VISIBILITY_VERTEX,
-	                                                           BindPoint::Zero,
-	                                                           BindSpace::World,
-	                                                           rootConstSizeInBytes);
-
-//	rootParamList.addRootSRV(D3D12_SHADER_VISIBILITY_VERTEX, static_cast<BindPoint>(0), BindSpace::Object);
-	rootParamList.createRootSignature(_rootSignature);
-	
-	Array<D3D12_INDIRECT_ARGUMENT_DESC, 4> argumentDescList;
-	{
-		auto& dst = argumentDescList.emplaceBack();
-		dst.Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT;
-		dst.Constant.RootParameterIndex = rootConstParamIndex;
-		dst.Constant.DestOffsetIn32BitValues = 0;
-		dst.Constant.Num32BitValuesToSet = Dx12Util::castUINT(rootConstSizeInBytes / 4);
-	}
-	
-	{
-		auto& dst = argumentDescList.emplaceBack();
-		dst.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW;
-	}
-
-	D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = {};
-	commandSignatureDesc.ByteStride       = sizeof(RootConst);
-	commandSignatureDesc.NumArgumentDescs = ax_safe_cast_from(argumentDescList.size());
-	commandSignatureDesc.pArgumentDescs   = argumentDescList.data();
-
-	auto hr = dev->CreateCommandSignature(&commandSignatureDesc,
-	                                      _rootSignature,
-	                                      IID_PPV_ARGS(_commandSignature.ptrForInit()));
-	Dx12Util::throwIfError(hr);
+	_meshShaderIndirectDrawArgsBufferPool.create(AX_NEW,
+	                                             GpuBufferType::IndirectArgument,
+	                                             "pool-meshShaderIndirectDrawArgs",
+	                                             100 * Math::MegaBytes,
+	                                             4 * Math::MegaBytes);
 }
 
 void RenderObjectManager_Dx12::_createDescriptors() {

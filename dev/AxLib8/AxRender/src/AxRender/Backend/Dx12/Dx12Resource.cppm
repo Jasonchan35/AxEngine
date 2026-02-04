@@ -78,7 +78,6 @@ public:
 		uploadToGpu(0, data);
 	}
 
-	static D3D12_RESOURCE_STATES s_createResourceState(GpuBufferType type);
 	static D3D12_RESOURCE_STATES s_defaultResourceState(GpuBufferType type);
 	static D3D12_HEAP_TYPE s_defaultHeapType(GpuBufferType type);
 	static Int s_getMinAlignement(GpuBufferType type);

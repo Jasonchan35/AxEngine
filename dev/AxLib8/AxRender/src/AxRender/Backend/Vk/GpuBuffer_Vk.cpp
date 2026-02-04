@@ -78,12 +78,13 @@ Int GpuBuffer_Vk::s_getMinAlignement(GpuBufferType type) {
 	auto& limits = RenderSystem_Vk::s_instance()->device().physicalDevice()->props().limits;
 
 	switch (type) {
-		case GpuBufferType::Const		: return limits.minUniformBufferOffsetAlignment;
-		case GpuBufferType::Vertex		: return 64;;
-		case GpuBufferType::Index		: return 16;
-		case GpuBufferType::StagingToGpu: return limits.minStorageBufferOffsetAlignment;
-		case GpuBufferType::StagingToCpu: return limits.minStorageBufferOffsetAlignment;
-		case GpuBufferType::Structured	: return limits.minStorageBufferOffsetAlignment;
+		case GpuBufferType::Const			: return limits.minUniformBufferOffsetAlignment;
+		case GpuBufferType::Vertex			: return 64;;
+		case GpuBufferType::Index			: return 16;
+		case GpuBufferType::IndirectArgument: return limits.minStorageBufferOffsetAlignment;
+		case GpuBufferType::StagingToGpu	: return limits.minStorageBufferOffsetAlignment;
+		case GpuBufferType::StagingToCpu	: return limits.minStorageBufferOffsetAlignment;
+		case GpuBufferType::Structured		: return limits.minStorageBufferOffsetAlignment;
 		default: return 16;
 	}
 }
