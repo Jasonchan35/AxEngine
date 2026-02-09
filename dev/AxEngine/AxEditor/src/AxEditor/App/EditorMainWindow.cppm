@@ -54,8 +54,6 @@ protected:
 	ImUIGizmoOperation	_opMode  = ImUIGizmoOperation::Translate;
 	ImUIGizmoSpace		_opSpace = ImUIGizmoSpace::World;
 	bool _gizmoIsUsing = false;
-	Mat4f _gizmoDeltaMatrix;
-	Mat4f _gizmoWorldMatrix;
 	Mat4f _gizmoStartWorldMatrix;
 };
 

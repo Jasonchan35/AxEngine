@@ -85,6 +85,7 @@ void ImGui_Backend::onBeginRender(Vec2i frameSize) {
 
 	ImGui::NewFrame();
 	
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::BeginFrame();
 }

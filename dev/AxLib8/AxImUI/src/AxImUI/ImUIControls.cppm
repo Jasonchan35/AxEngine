@@ -48,9 +48,11 @@ void ImUINewLine();
 
 bool ImUIGizmoIsUsing();
 
-bool ImUIGizmo(	const Mat4f& viewMatrix, const Mat4f& projMatrix,
-				ImUIGizmoOperation op, ImUIGizmoSpace space,
-				Mat4f& objMatrix, Mat4f& deltaMatrix, const Vec3f* snap);
+bool ImUIGizmoManipulate(	const Mat4f& viewMatrix, const Mat4f& projMatrix,
+							ImUIGizmoOperation op, ImUIGizmoSpace space, const Vec3f* snap, 
+							Mat4f& objMatrix,
+							BBox3f& bbox,
+							Mat4f* outDeltaMatrix = nullptr);
 
 void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);
 

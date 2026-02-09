@@ -20,23 +20,35 @@ void ImUINewLine() {
 	ImGui::NewLine();
 }
 
-bool ImUIGizmo(const Mat4f& viewMatrix, const Mat4f& projMatrix,
-               ImUIGizmoOperation op,
-               ImUIGizmoSpace space,
-               Mat4f& objMatrix,
-               Mat4f& deltaMatrix,
-               const Vec3f* snap) 
+bool ImUIGizmoManipulate(const Mat4f&       viewMatrix,
+                         const Mat4f&       projMatrix,
+                         ImUIGizmoOperation op,
+                         ImUIGizmoSpace     space,
+                         const Vec3f*       snap,
+                         Mat4f&             objMatrix,
+                         BBox3f&            bbox,
+                         Mat4f*             outDeltaMatrix)
 {
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-
+	float localBounds[6];
+	localBounds[0] = bbox.min.x;
+	localBounds[1] = bbox.min.y;
+	localBounds[2] = bbox.min.z;
+	localBounds[3] = bbox.max.x;
+	localBounds[4] = bbox.max.y;
+	localBounds[5] = bbox.max.z;
+	
+	const float* pSnap = snap ? snap->e : nullptr;
+	bool opIsBounds = op == ImUIGizmoOperation::Bounds;
+	
 	bool ret = ImGuizmo::Manipulate(viewMatrix.e,
 									projMatrix.e,
 									static_cast<ImGuizmo::OPERATION>(op),
 									static_cast<ImGuizmo::MODE>(space),
 									objMatrix.e,
-									deltaMatrix.e,
-									snap ? snap->e : nullptr);
+									outDeltaMatrix ? outDeltaMatrix->e : nullptr,
+									opIsBounds ? nullptr : pSnap, 
+									opIsBounds ? localBounds : nullptr, 
+									opIsBounds ? pSnap : nullptr);
 	return ret;
 }
 

@@ -55,7 +55,10 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 			case UIKeyCode::Q: _opMode = Op::None;      break;
 			case UIKeyCode::W: _opMode = Op::Translate; break;
 			case UIKeyCode::E: _opMode = Op::Rotate;    break;
-			case UIKeyCode::R: _opMode = Op::Scale;     break;
+			case UIKeyCode::R: {
+				_opMode = _opMode == Op::Scale ? Op::Bounds : Op::Scale;
+			} break;
+			case UIKeyCode::T: _opMode = Op::Universal; break;
 		}
 	}
 }
@@ -126,30 +129,32 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	auto* entity = rttiCast<SceneEntity>(obj.ptr());
 	if (!entity) return;
 
-	_gizmoDeltaMatrix = Mat4f::s_identity();
-	
+	Mat4f deltaMatrix = Mat4f::s_identity();
+	Mat4f worldMatrix = entity->worldMatrix();
+
 	{
 		bool b =  ImUIGizmoIsUsing();
-		if (b == _gizmoIsUsing) {
+		if (b != _gizmoIsUsing) {
 			if (!_gizmoIsUsing) {
-				_gizmoWorldMatrix = entity->worldMatrix();
-			}
-		} else {
-			if (_gizmoIsUsing) {
-					
-			} else {
-				_gizmoStartWorldMatrix = _gizmoWorldMatrix;
+				_gizmoStartWorldMatrix = worldMatrix;
 			}
 		}
 		_gizmoIsUsing = b;
 	}
+	
+	Vec3f* snap = nullptr;
+	switch (_opMode) {
+		case ImUIGizmoOperation::Translate: if (_enableTranslateSnap) { snap = &_translateSnap; } break;
+		case ImUIGizmoOperation::Rotate   : if (_enableRotateSnap   ) { snap = &_rotateSnap;    } break;
+		case ImUIGizmoOperation::Scale    : if (_enableScaleSnap    ) { snap = &_scaleSnap;     } break;
+		default: break;
+	}
 
-	if (ImUIGizmo(	viewMatrix, projMatrix, _opMode, _opSpace,
-					_gizmoWorldMatrix, _gizmoDeltaMatrix,
-					_enableTranslateSnap ? &_translateSnap : nullptr)) 
-	{
-		_gizmoWorldMatrix *= _gizmoDeltaMatrix;
-		entity->setWorldMatrix(_gizmoWorldMatrix);
+	BBox3f bbox(Vec3f(0,0,0), Vec3f(1,1,1));
+	
+	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _opMode, _opSpace, snap, worldMatrix, bbox)) {
+		auto m = worldMatrix;
+		entity->setWorldMatrix(m);
 	}
 }
 
