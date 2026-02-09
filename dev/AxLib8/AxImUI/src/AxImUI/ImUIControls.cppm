@@ -46,11 +46,13 @@ enum class ImUIGizmoSpace { Local, World };
 void ImUISameLine();
 void ImUINewLine();
 
-bool ImUIGizmo(RenderRequest* req,
-	ImUIGizmoOperation op, ImUIGizmoSpace space,
-	Mat4f& objMatrix, Mat4f& deltaMatrix, const Vec3f* snap);
-
 bool ImUIGizmoIsUsing();
+
+bool ImUIGizmo(	const Mat4f& viewMatrix, const Mat4f& projMatrix,
+				ImUIGizmoOperation op, ImUIGizmoSpace space,
+				Mat4f& objMatrix, Mat4f& deltaMatrix, const Vec3f* snap);
+
+void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);
 
 bool ImUIButton(ZStrView label, Vec2f size);
 bool ImUIRadioButton(ZStrView label, bool active);

@@ -95,6 +95,17 @@ void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
 }
 
 void EditorMainWindow::_drawGizmo(RenderRequest* req) {
+	auto& cam = req->cameraData();
+	auto viewMatrix = cam.viewMatrix;
+	auto projMatrix = cam.projMatrix;
+	float ViewManipulateOffset = 20;
+	float ViewManipulateSize = 120;
+	ImUIGizmoViewManipulate(viewMatrix,
+	                        Rect2f(req->viewport().w - ViewManipulateSize - ViewManipulateOffset,
+	                               ViewManipulateOffset,
+	                               ViewManipulateSize,
+	                               ViewManipulateSize));
+	
 	{
 		ImUIPanel	panel("Gizmo");
 		{
@@ -115,12 +126,15 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	auto* entity = rttiCast<SceneEntity>(obj.ptr());
 	if (!entity) return;
 
-	_gizmoWorldMatrix = entity->worldMatrix();
 	_gizmoDeltaMatrix = Mat4f::s_identity();
 	
 	{
 		bool b =  ImUIGizmoIsUsing();
-		if (b != _gizmoIsUsing) {
+		if (b == _gizmoIsUsing) {
+			if (!_gizmoIsUsing) {
+				_gizmoWorldMatrix = entity->worldMatrix();
+			}
+		} else {
 			if (_gizmoIsUsing) {
 					
 			} else {
@@ -130,7 +144,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		_gizmoIsUsing = b;
 	}
 
-	if (ImUIGizmo(	req, _opMode, _opSpace,
+	if (ImUIGizmo(	viewMatrix, projMatrix, _opMode, _opSpace,
 					_gizmoWorldMatrix, _gizmoDeltaMatrix,
 					_enableTranslateSnap ? &_translateSnap : nullptr)) 
 	{

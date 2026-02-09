@@ -20,7 +20,7 @@ void ImUINewLine() {
 	ImGui::NewLine();
 }
 
-bool ImUIGizmo(RenderRequest* req,
+bool ImUIGizmo(const Mat4f& viewMatrix, const Mat4f& projMatrix,
                ImUIGizmoOperation op,
                ImUIGizmoSpace space,
                Mat4f& objMatrix,
@@ -30,15 +30,22 @@ bool ImUIGizmo(RenderRequest* req,
 	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-	auto& cam = req->cameraData();
-	bool ret = ImGuizmo::Manipulate(cam.viewMatrix.e,
-									cam.projMatrix.e,
+	bool ret = ImGuizmo::Manipulate(viewMatrix.e,
+									projMatrix.e,
 									static_cast<ImGuizmo::OPERATION>(op),
 									static_cast<ImGuizmo::MODE>(space),
 									objMatrix.e,
 									deltaMatrix.e,
 									snap ? snap->e : nullptr);
 	return ret;
+}
+
+void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect) {
+	float distance = 50;
+	ImVec2 pos(rect.x, rect.y);
+	ImVec2 size(rect.w, rect.h);
+	ImU32 color = 0x00000000;
+	ImGuizmo::ViewManipulate(viewMatrix.e, distance, pos, size, color);
 }
 
 bool ImUIGizmoIsUsing() {
