@@ -7,6 +7,7 @@ ax_add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "AxLib8_Tools")
 
 target_link_libraries(${PROJECT_NAME} PUBLIC AxRender)
+target_link_libraries(${PROJECT_NAME} PRIVATE DirectX-Headers D3D12MemoryAllocator VulkanMemoryAllocator)
 
 if(WIN32)
 	set(vulkan_sdk_path $ENV{VK_SDK_PATH})

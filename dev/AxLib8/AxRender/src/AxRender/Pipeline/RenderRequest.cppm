@@ -89,7 +89,7 @@ public:
 	
 	void setCamera(const Math::Camera3f& camera);
 	const AxRenderGpuData_Camera&	cameraData() const { return _cameraData; }
-	
+
 protected:
 	RenderSystem*       _renderSystem       = nullptr;
 	RenderContext*      _renderContext      = nullptr;

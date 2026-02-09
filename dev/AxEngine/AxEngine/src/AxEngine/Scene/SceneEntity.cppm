@@ -56,36 +56,27 @@ public:
 	Int componentCount() const { return _components.size(); }
 	SceneComponent* componentAt(Int index) { return _components[index].ptr(); }
 
-	struct Transform {
-		Vec3f  position = Vec3f::s_zero();
-		Quat4f rotation = Quat4f::s_identity();
-		Vec3f  scale    = Vec3f::s_one();
-		
-		void setTRS(const Vec3f& position_, const Quat4f& rotation_, const Vec3f& scale_) {
-			position = position_;
-			rotation = rotation_;
-			scale    = scale_;
-		};
-		
-		void setLocalMatrix(const Mat4f& mat) { mat.getTRS(position, rotation, scale); }
-		const Mat4f& localMatrix() {
-			_localMatrix.setTRS(position, rotation, scale);
-			return _localMatrix;
-		}
-	private:
-		Mat4f _localMatrix;
+	Vec3f  position = Vec3f::s_zero();
+	Quat4f rotation = Quat4f::s_identity();
+	Vec3f  scale    = Vec3f::s_one();
+
+	void setTRS(const Vec3f& position_, const Quat4f& rotation_, const Vec3f& scale_) {
+		position = position_;
+		rotation = rotation_;
+		scale    = scale_;
 	};
+		
+	void setLocalMatrix(const Mat4f& mat) { mat.getTRS(position, rotation, scale); }
 	
-	Transform transform;
-	
-	const Mat4f& worldMatrix() {
-		// TODO dirty _worldMatrix
-		_worldMatrix = transform.localMatrix();
-		if (_parent) _worldMatrix *= _parent->worldMatrix();
-		return _worldMatrix;
+	const Mat4f& localMatrix() {
+		_localMatrix.setTRS(position, rotation, scale);
+		return _localMatrix;
 	}
-	
-		  SceneEntity* parent()       { return _parent; }
+
+	void setWorldMatrix(const Mat4f& mat);
+	const Mat4f& worldMatrix();
+
+	SceneEntity* parent()       { return _parent; }
 	const SceneEntity* parent() const { return _parent; }
 	
 protected:
@@ -97,6 +88,7 @@ private:
 	Array<SPtr<SceneEntity>> _children;
 	SceneEntity* _parent = nullptr;
 	Mat4f _worldMatrix;
+	Mat4f _localMatrix;
 };
 
 class MeshRendererSystem;

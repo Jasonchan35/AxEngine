@@ -22,7 +22,7 @@ EditorMainWindow::EditorMainWindow() {
 	}
 
 	_renderGraph.newObject(AX_NEW);
-	_renderGraph->win = this;
+	_renderGraph->_owner = this;
 	setRenderGraph(_renderGraph);
 	setSize({1920, 1080});
 }
@@ -49,40 +49,94 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 }
 
 void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
-	
+	if (ev.type == UIKeyEventType::Down) {
+		using Op = ImUIGizmoOperation;
+		switch (ev.key) {
+			case UIKeyCode::Q: _opMode = Op::None;      break;
+			case UIKeyCode::W: _opMode = Op::Translate; break;
+			case UIKeyCode::E: _opMode = Op::Rotate;    break;
+			case UIKeyCode::R: _opMode = Op::Scale;     break;
+		}
+	}
 }
 
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	Base::onBackBufferPass(req, inputs);
-	
-	if constexpr (true) {
-		ProjectionDesc projDesc = projectionDesc();
-		
-		auto& cam = _viewportCamera;
-		ImUIPanel	panel("camera");
-		ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
-		ImUILabelText("rotation"      , Fmt("{}", cam.rotation.eulerDeg()));
-		ImUILabelText("distance"      , Fmt("{}", cam.distance));
-		ImUILabelText("eye"           , Fmt("{}", cam.eye()));
-		ImUILabelText("aim"           , Fmt("{}", cam.aim));
-		ImUILabelText("up"            , Fmt("{}", cam.up()));
-		ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix(projDesc)));
-		ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix(projDesc)));
-		ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix(projDesc)));
+	_owner->_cameraDebugPanel(req);
+	_owner->_drawGizmo(req);
+	_owner->_sceneOutlinerUIPanel.render(req);
+	_owner->_inspectorUIPanel.render(req);
+}
 
-		if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
-			AX_TOGGLE_BOOL(projDesc.isReverseZ);
-			setProjectionDesc(projDesc);
-		}
-		
-		if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {160, 40})) {
-			AX_TOGGLE_BOOL(projDesc.isRightHanded);
-			setProjectionDesc(projDesc);
+void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
+	ProjectionDesc projDesc = _renderGraph->projectionDesc();
+	
+	auto& cam = _renderGraph->_viewportCamera;
+	ImUIPanel	panel("camera");
+	ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
+	ImUILabelText("rotation"      , Fmt("{}", cam.rotation.eulerDeg()));
+	ImUILabelText("distance"      , Fmt("{}", cam.distance));
+	ImUILabelText("eye"           , Fmt("{}", cam.eye()));
+	ImUILabelText("aim"           , Fmt("{}", cam.aim));
+	ImUILabelText("up"            , Fmt("{}", cam.up()));
+	ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix(projDesc)));
+	ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix(projDesc)));
+	ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix(projDesc)));
+
+	if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
+		AX_TOGGLE_BOOL(projDesc.isReverseZ);
+		_renderGraph->setProjectionDesc(projDesc);
+	}
+	
+	if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {160, 40})) {
+		AX_TOGGLE_BOOL(projDesc.isRightHanded);
+		_renderGraph->setProjectionDesc(projDesc);
+	}
+}
+
+void EditorMainWindow::_drawGizmo(RenderRequest* req) {
+	{
+		ImUIPanel	panel("Gizmo");
+		{
+			ImUISameLine();
+			if (ImUIRadioButton("Local", _opSpace == ImUIGizmoSpace::Local)) {
+				_opSpace = ImUIGizmoSpace::Local;
+			}
+			
+			ImUISameLine();
+			if (ImUIRadioButton("World", _opSpace == ImUIGizmoSpace::World)) {
+				_opSpace = ImUIGizmoSpace::World;
+			}
 		}
 	}
+	
+	auto obj = ObjectManager::s_instance()->selection.lastSelectedObject();
+	if (!obj) return;
+	auto* entity = rttiCast<SceneEntity>(obj.ptr());
+	if (!entity) return;
 
-	win->_sceneOutlinerUIPanel.render(req);
-	win->_inspectorUIPanel.render(req);
+	_gizmoWorldMatrix = entity->worldMatrix();
+	_gizmoDeltaMatrix = Mat4f::s_identity();
+	
+	{
+		bool b =  ImUIGizmoIsUsing();
+		if (b != _gizmoIsUsing) {
+			if (_gizmoIsUsing) {
+					
+			} else {
+				_gizmoStartWorldMatrix = _gizmoWorldMatrix;
+			}
+		}
+		_gizmoIsUsing = b;
+	}
+
+	if (ImUIGizmo(	req, _opMode, _opSpace,
+					_gizmoWorldMatrix, _gizmoDeltaMatrix,
+					_enableTranslateSnap ? &_translateSnap : nullptr)) 
+	{
+		_gizmoWorldMatrix *= _gizmoDeltaMatrix;
+		entity->setWorldMatrix(_gizmoWorldMatrix);
+	}
 }
 
 } //namespace

@@ -40,4 +40,9 @@ void ObjectManager::Selection::getSelection(IArray<SPtr<Object>> & outList) {
 	}
 }
 
+SPtr<Object> ObjectManager::Selection::lastSelectedObject() {
+	if (_selectedList.size() <= 0) return nullptr;
+	return _selectedList.back().getSPtr();
+}
+
 } // namespace

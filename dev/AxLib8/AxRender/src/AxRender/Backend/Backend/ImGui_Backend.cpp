@@ -84,6 +84,9 @@ void ImGui_Backend::onBeginRender(Vec2i frameSize) {
 	}
 
 	ImGui::NewFrame();
+	
+	ImGuizmo::SetOrthographic(false);
+	ImGuizmo::BeginFrame();
 }
 
 void ImGui_Backend::onEndRender() {

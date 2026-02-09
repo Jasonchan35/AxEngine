@@ -31,6 +31,7 @@ public:
 	union {
 		SimdData	_simd;
 		struct { T x, y, z, w; };
+		T e[N];
 	};
 
 	using Vec2 = Vec2_<T, SIMD>;

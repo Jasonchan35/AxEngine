@@ -46,6 +46,7 @@ public:
 		void deselectAll();
 		
 		void getSelection(IArray<SPtr<Object>> & outList);
+		SPtr<Object> lastSelectedObject();
 		
 	private:
 		Array<WPtr<Object>> _selectedList;

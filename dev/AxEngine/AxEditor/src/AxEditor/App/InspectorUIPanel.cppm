@@ -8,7 +8,6 @@ namespace AxEditor {
 class InspectorUIPanel : public NonCopyable {
 public:
 	void render(RenderRequest* req);
-	
 };
 
 } // namespace 

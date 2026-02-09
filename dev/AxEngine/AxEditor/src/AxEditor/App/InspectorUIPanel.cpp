@@ -8,23 +8,19 @@ namespace AxEditor {
 void InspectorUIPanel::render(RenderRequest* req) {
 	ImUIPanel	outliner("Inspector");
 	
-	Array<SPtr<Object>, 64> objects;
-	ObjectManager::s_instance()->selection.getSelection(objects);
-
-	if (objects.size() <= 0) {
+	auto obj = ObjectManager::s_instance()->selection.lastSelectedObject();
+	if (!obj) {
 		ImUILabelText("object", "-- no selection --");
 		return;
 	}
 	
-	auto* obj = objects.back().ptr();
-
 	ImUILabelText("name", obj->name());
 
-	
-	if (auto* entity = rttiCast<SceneEntity>(obj)) {
-		ImUILabelText("position", Fmt("{}", entity->transform.position));
-		ImUILabelText("rotation", Fmt("{}", entity->transform.rotation.eulerDeg()));
-		ImUILabelText("scale"   , Fmt("{}", entity->transform.scale   ));
+	if (auto* entity = rttiCast<SceneEntity>(obj.ptr())) {
+		ImUIInputFloat3("Position", entity->position);
+		ImUIInputFloat3("Rotation", entity->rotation);
+		ImUIInputFloat4("Quat"    , entity->rotation);
+		ImUIInputFloat3("Scale"   , entity->scale);
 		
 		Int componentCount = entity->componentCount();
 		{

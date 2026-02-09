@@ -1,11 +1,12 @@
-set(PROJECT_NAME imgui-docking)
+set(PROJECT_NAME ImGuizmo)
 message("==== ${PROJECT_NAME} ====")
 project(${PROJECT_NAME})
 
 add_library(${PROJECT_NAME} STATIC)
 file(GLOB_RECURSE all_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*.*")
 
-target_include_directories(${PROJECT_NAME} PUBLIC src/imgui-docking)
+target_include_directories(${PROJECT_NAME} PUBLIC src/ImGuizmo)
 target_sources(${PROJECT_NAME} PRIVATE ${all_files})
+target_link_libraries(${PROJECT_NAME} PUBLIC imgui-docking)
 set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "external")
 

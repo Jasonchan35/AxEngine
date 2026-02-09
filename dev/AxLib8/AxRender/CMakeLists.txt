@@ -6,8 +6,8 @@ ax_add_library(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "AxLib8")
 
 target_link_libraries(${PROJECT_NAME} PUBLIC AxNativeUI)
-target_link_libraries(${PROJECT_NAME} PUBLIC imgui-docking )
-target_link_libraries(${PROJECT_NAME} PUBLIC DirectX-Headers D3D12MemoryAllocator VulkanMemoryAllocator)
+target_link_libraries(${PROJECT_NAME} PUBLIC imgui-docking ImGuizmo)
+target_link_libraries(${PROJECT_NAME} PRIVATE DirectX-Headers D3D12MemoryAllocator VulkanMemoryAllocator)
 
 #--------------------
 find_package(PNG REQUIRED)

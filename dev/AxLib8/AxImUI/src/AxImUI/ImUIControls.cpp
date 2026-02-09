@@ -12,12 +12,66 @@ namespace ax::ImUI {
 
 namespace ax {
 
+void ImUISameLine() {
+	ImGui::SameLine();
+}
+
+void ImUINewLine() {
+	ImGui::NewLine();
+}
+
+bool ImUIGizmo(RenderRequest* req,
+               ImUIGizmoOperation op,
+               ImUIGizmoSpace space,
+               Mat4f& objMatrix,
+               Mat4f& deltaMatrix,
+               const Vec3f* snap) 
+{
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+	auto& cam = req->cameraData();
+	bool ret = ImGuizmo::Manipulate(cam.viewMatrix.e,
+									cam.projMatrix.e,
+									static_cast<ImGuizmo::OPERATION>(op),
+									static_cast<ImGuizmo::MODE>(space),
+									objMatrix.e,
+									deltaMatrix.e,
+									snap ? snap->e : nullptr);
+	return ret;
+}
+
+bool ImUIGizmoIsUsing() {
+	return ImGuizmo::IsUsing();
+}
+
 bool ImUIButton(ZStrView label, Vec2f size) {
 	return ::ImGui::Button(label.c_str(), ImVec2(size.x, size.y));
 }
 
+bool ImUIRadioButton(ZStrView label, bool active) {
+	return ::ImGui::RadioButton(label.c_str(), active);
+}
+
 void ImUILabelText(ZStrView label, ZStrView text) {
 	return ::ImGui::LabelText(label.c_str(), "%s", text.c_str());
+}
+
+bool ImUIInputFloat3(ZStrView label, Vec3f& value) {
+	return ImGui::InputFloat3(label.c_str(), value.e, "%g", ImGuiInputTextFlags_None);
+}
+
+bool ImUIInputFloat3(ZStrView label, Quat4f& value) {
+	Vec3f euler = value.eulerDeg();
+	if (ImUIInputFloat3(label, euler)) {
+		value.setEulerDeg(euler);
+		return true;
+	}
+	return false;
+}
+
+bool ImUIInputFloat4(ZStrView label, Quat4f& value) {
+	return ImGui::InputFloat4(label.c_str(), value.e, "%g", ImGuiInputTextFlags_None);
 }
 
 bool ImUIDragFloat(ZStrView label, float* v, float v_speed, float v_min, float v_max) {

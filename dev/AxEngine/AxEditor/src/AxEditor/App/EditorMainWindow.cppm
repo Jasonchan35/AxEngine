@@ -25,9 +25,10 @@ protected:
 	struct MyRenderGraph : public EngineRenderGraph {
 		AX_RTTI_INFO(MyRenderGraph, EngineRenderGraph)
 	public:
-		class EditorMainWindow* win = nullptr;
+		class EditorMainWindow* _owner = nullptr;
 		
 		virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) override;
+		
 	};
 
 	SceneOutlinerUIPanel _sceneOutlinerUIPanel;
@@ -35,6 +36,27 @@ protected:
 	
 	SPtr<MyRenderGraph>	_renderGraph;
 	SceneWorld	_sceneWorld;
+
+	void _cameraDebugPanel(RenderRequest* req);
+	void _drawGizmo(RenderRequest* req);
+	
+	enum class OpMode { None, Translate, Rotate, Scale };
+	enum class OpSpace { Local, World };
+
+	Vec3f _translateSnap = Vec3f::s_all(1);
+	Vec3f _rotateSnap = Vec3f::s_all(5);
+	Vec3f _scaleSnap  = Vec3f::s_all(0.1f);
+	
+	bool _enableTranslateSnap = false;
+	bool _enableRotateSnap = false;
+	bool _enableScaleSnap = false;
+	
+	ImUIGizmoOperation	_opMode  = ImUIGizmoOperation::Translate;
+	ImUIGizmoSpace		_opSpace = ImUIGizmoSpace::World;
+	bool _gizmoIsUsing = false;
+	Mat4f _gizmoDeltaMatrix;
+	Mat4f _gizmoWorldMatrix;
+	Mat4f _gizmoStartWorldMatrix;
 };
 
 } //namespace

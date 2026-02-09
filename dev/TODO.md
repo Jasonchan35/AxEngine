@@ -1,4 +1,6 @@
-- Mega vertex buffer
+- Meshlet
+	- camera frustum AABB culling
+	- camera angle - cone culling
 
 - GPU Indirect Draw
 	- compute shader object culling

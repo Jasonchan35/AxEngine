@@ -70,6 +70,21 @@ void MeshRendererSystem::onRender(RenderRequest* req) {
 		if (!mr.mesh || !mr.material) return;
 		req->drawMesh(mr.mesh, mr.material, 0, objectToWorld);
 	}
-}; 
+}
+
+void SceneEntity::setWorldMatrix(const Mat4f& mat) {
+	if (_parent) {
+		setLocalMatrix(mat * _parent->worldMatrix().inverse());
+	} else {
+		setLocalMatrix(mat);
+	}
+}
+
+const Mat4f& SceneEntity::worldMatrix() {
+	// TODO dirty _worldMatrix
+	_worldMatrix = localMatrix();
+	if (_parent) _worldMatrix *= _parent->worldMatrix();
+	return _worldMatrix;
+}
 
 }

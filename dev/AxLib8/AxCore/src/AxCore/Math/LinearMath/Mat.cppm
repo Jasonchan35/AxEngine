@@ -244,8 +244,11 @@ public:
 	
 	AX_NODISCARD constexpr Vec3 position() const { return cw.xyz(); }
 				 constexpr void setPosition(const Vec3& pos) { cw.x = pos.x; cw.y = pos.y; cw.z = pos.z; }
+	
+	AX_NODISCARD constexpr Vec3  scale() const;
+	AX_NODISCARD constexpr Quat4 rotation() const;
 
-	constexpr void getTRS(Vec3& pos, Quat4& quat, Vec3& scale) const;
+	constexpr void getTRS(Vec3& outPos, Quat4& outQuat, Vec3& outScale) const;
 	constexpr void setTRS(const Vec3& pos, const Quat4& quat, const Vec3& scale) { *this = s_TRS(pos, quat, scale); } 
 };
 
@@ -325,20 +328,34 @@ auto Mat_<4, 4, T, SIMD>::mulNormal(const Vec3& v) const -> Vec3 {
 }
 
 template<class T, VecSimd SIMD>
-constexpr void Mat_<4, 4, T, SIMD>::getTRS(Vec3& pos, Quat4& quat, Vec3& scale) const {
-	pos = cw.xyz();
+constexpr typename Mat_<4, 4, T, SIMD>::Vec3 Mat_<4, 4, T, SIMD>::scale() const {
+	Vec3 scale;
 	scale.x = row(0).xyz().length();
 	scale.y = row(1).xyz().length();
 	scale.z = row(2).xyz().length();
-	
-	if (determinant() < 0) { scale = -scale; }
+	return scale;
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Mat_<4, 4, T, SIMD>::Quat4 Mat_<4, 4, T, SIMD>::rotation() const {
+	Vec3 pos, scale;
+	Quat4 quat;
+	getTRS(pos, quat, scale);
+	return quat;
+}
+
+template<class T, VecSimd SIMD>
+constexpr void Mat_<4, 4, T, SIMD>::getTRS(Vec3& outPos, Quat4& outQuat, Vec3& outScale) const {
+	outPos = cw.xyz();
+	outScale = scale();
+	if (determinant() < 0) { outScale = -outScale; }
 	
 	// remove scale
-	Mat4 mat(Math::safeDiv(cx.xyz0(), scale.x),
-			 Math::safeDiv(cy.xyz0(), scale.y),
-			 Math::safeDiv(cz.xyz0(), scale.z),
+	Mat4 mat(Math::safeDiv(cx.xyz0(), outScale.x),
+			 Math::safeDiv(cy.xyz0(), outScale.y),
+			 Math::safeDiv(cz.xyz0(), outScale.z),
 			 Vec4(0,0,0,1));
-	quat = mat.toQuat();
+	outQuat = mat.toQuat();
 }
 
 template<class T, VecSimd SIMD>

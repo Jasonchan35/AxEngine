@@ -327,14 +327,12 @@ public:
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {
 		auto entity = SceneEntity::s_new(AX_NEW, parent, toStrView(srcNode->mName));
-		
-		auto& tran = entity->transform;
 		auto localMat = toMat4f(srcNode->mTransformation);
-		tran.setLocalMatrix(localMat);
+		entity->setLocalMatrix(localMat);
 		if (!parent) {
-			tran.rotation *= _constAxisRot;
+			entity->rotation *= _constAxisRot;
 		} else {
-			tran.position = toLengthVec3f(tran.position);
+			entity->position = toLengthVec3f(entity->position);
 		}
 
 //		AX_LOG("AxAssimp: importNode {} {}", entity->name(), entity->transform.rotation.eulerDeg());
