@@ -21,6 +21,13 @@ void InspectorUIPanel::render(RenderRequest* req) {
 		ImUIInputFloat3("Rotation", entity->rotation);
 		ImUIInputFloat4("Quat"    , entity->rotation);
 		ImUIInputFloat3("Scale"   , entity->scale);
+
+		if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
+			if (auto* mesh = meshRenderer->renderer.mesh.ptr()) {
+				ImUIInputFloat3("Bounds min", mesh->bounds().min);
+				ImUIInputFloat3("Bounds max", mesh->bounds().max);
+			}
+		}
 		
 		Int componentCount = entity->componentCount();
 		{

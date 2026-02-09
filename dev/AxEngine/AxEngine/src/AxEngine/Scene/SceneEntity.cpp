@@ -74,7 +74,7 @@ void MeshRendererSystem::onRender(RenderRequest* req) {
 
 void SceneEntity::setWorldMatrix(const Mat4f& mat) {
 	if (_parent) {
-		setLocalMatrix(mat * _parent->worldMatrix().inverse());
+		setLocalMatrix(_parent->worldMatrix().inverse() * mat);
 	} else {
 		setLocalMatrix(mat);
 	}
@@ -82,8 +82,7 @@ void SceneEntity::setWorldMatrix(const Mat4f& mat) {
 
 const Mat4f& SceneEntity::worldMatrix() {
 	// TODO dirty _worldMatrix
-	_worldMatrix = localMatrix();
-	if (_parent) _worldMatrix *= _parent->worldMatrix();
+	_worldMatrix = _parent ? _parent->worldMatrix() * localMatrix() : localMatrix();
 	return _worldMatrix;
 }
 

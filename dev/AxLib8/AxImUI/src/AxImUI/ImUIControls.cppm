@@ -50,8 +50,8 @@ bool ImUIGizmoIsUsing();
 
 bool ImUIGizmoManipulate(	const Mat4f& viewMatrix, const Mat4f& projMatrix,
 							ImUIGizmoOperation op, ImUIGizmoSpace space, const Vec3f* snap, 
+							const BBox3f& bounds,
 							Mat4f& objMatrix,
-							BBox3f& bbox,
 							Mat4f* outDeltaMatrix = nullptr);
 
 void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);

@@ -50,6 +50,7 @@ struct AxGpuMeshObject {
 	u32 meshletCount;
 	u32 totalVertCount;
 	u32 totalPrimCount;
+	BBox3f bounds;
 };
 
 struct AxGpuMeshObjectRenderer {

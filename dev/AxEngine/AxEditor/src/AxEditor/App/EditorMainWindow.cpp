@@ -150,9 +150,15 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		default: break;
 	}
 
-	BBox3f bbox(Vec3f(0,0,0), Vec3f(1,1,1));
+	BBox3f bounds = BBox3f::s_empty();
+	if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
+		if (auto* mesh = meshRenderer->renderer.mesh.ptr()) {
+			bounds = mesh->bounds();
+		}
+	}
 	
-	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _opMode, _opSpace, snap, worldMatrix, bbox)) {
+	
+	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _opMode, _opSpace, snap, bounds, worldMatrix)) {
 		auto m = worldMatrix;
 		entity->setWorldMatrix(m);
 	}

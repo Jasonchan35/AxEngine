@@ -416,6 +416,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr bool operator==(  const This& vec) const { return _simd == vec._simd; }
 	AX_NODISCARD AX_INLINE constexpr bool almostZero(T epsilon = Math::epsilon_<T>()) const { return _simd.almostZero(epsilon); }
 
+	AX_NODISCARD AX_INLINE constexpr bool hasAnyNegative() const { return _simd.hasAnyNegative(); }
+	
 	AX_NODISCARD AX_INLINE constexpr This min(const This& vec) const { return _simd.min(vec._simd); }
 	AX_NODISCARD AX_INLINE constexpr This max(const This& vec) const { return _simd.max(vec._simd); }
 

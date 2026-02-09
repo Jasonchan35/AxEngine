@@ -18,8 +18,10 @@ SPtr<MeshObject> MeshObject::s_new(const MemAllocRequest& req) {
 
 MeshObject::MeshObject(const CreateDesc& desc)
 	: _assetPath(desc.assetPath)
-	, objectSlot(this)
-{}
+	, objectSlot(this) 
+{
+	_gpuData.bounds = BBox3f::s_empty();
+}
 
 auto MeshObject::onGetGpuData(RenderRequest* req) -> const GpuData*{
 	if (meshletInfo.size() <= 0) return nullptr;
@@ -62,6 +64,12 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	meshletInfo.clear();
 	auto* curMeshlet = &meshletInfo.emplaceBack();
 	*curMeshlet = {};
+	
+	BBox3f bounds = BBox3f::s_empty();
+	for (auto& pt : srcMesh.points()) {
+		bounds.includePoint(Vec3f::s_cast(pt.pos));
+	}
+	_gpuData.bounds = bounds;
 
 	Array<Vec3d, 64> facePositions;
 	for (auto& face : srcMesh.faces()) {

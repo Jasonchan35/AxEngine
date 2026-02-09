@@ -25,20 +25,22 @@ bool ImUIGizmoManipulate(const Mat4f&       viewMatrix,
                          ImUIGizmoOperation op,
                          ImUIGizmoSpace     space,
                          const Vec3f*       snap,
+                         const BBox3f&      bounds,
                          Mat4f&             objMatrix,
-                         BBox3f&            bbox,
                          Mat4f*             outDeltaMatrix)
 {
-	float localBounds[6];
-	localBounds[0] = bbox.min.x;
-	localBounds[1] = bbox.min.y;
-	localBounds[2] = bbox.min.z;
-	localBounds[3] = bbox.max.x;
-	localBounds[4] = bbox.max.y;
-	localBounds[5] = bbox.max.z;
-	
 	const float* pSnap = snap ? snap->e : nullptr;
 	bool opIsBounds = op == ImUIGizmoOperation::Bounds;
+	
+	float localBounds[6];
+	localBounds[0] = bounds.min.x;
+	localBounds[1] = bounds.min.y;
+	localBounds[2] = bounds.min.z;
+	localBounds[3] = bounds.max.x;
+	localBounds[4] = bounds.max.y;
+	localBounds[5] = bounds.max.z;
+	
+	bool hasLocalBounds = opIsBounds && bounds.isValid();
 	
 	bool ret = ImGuizmo::Manipulate(viewMatrix.e,
 									projMatrix.e,
@@ -47,7 +49,7 @@ bool ImUIGizmoManipulate(const Mat4f&       viewMatrix,
 									objMatrix.e,
 									outDeltaMatrix ? outDeltaMatrix->e : nullptr,
 									opIsBounds ? nullptr : pSnap, 
-									opIsBounds ? localBounds : nullptr, 
+									hasLocalBounds ? localBounds : nullptr, 
 									opIsBounds ? pSnap : nullptr);
 	return ret;
 }

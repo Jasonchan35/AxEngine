@@ -19,8 +19,7 @@ public:
 	RenderMesh	meshData;
 	
 	void createFromEditableMesh(const EditableMesh& srcMesh);
-	
-	
+
 	bool isMeshletValid() const { return meshletInfo.size() > 0; }
 	
 	Array<AxGpuMeshlet> meshletInfo;
@@ -29,6 +28,8 @@ public:
 	StructuredGpuBuffer_<AxGpuMeshletPrim> meshletPrim;
 		
 	void createBuffers();
+	
+	BBox3f& bounds() { return _gpuData.bounds; }
 	
 	using ResourceKey = String;
 	const ResourceKey& resourceKey() const { return _assetPath; }

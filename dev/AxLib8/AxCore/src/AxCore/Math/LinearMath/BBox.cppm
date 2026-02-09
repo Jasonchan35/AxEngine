@@ -47,10 +47,11 @@ public:
 	AX_INLINE constexpr BBox_() = default;
 //	AX_INLINE constexpr BBox_(Tag::All_, const T& v) : min(Tag::All, v), max(Tag::All, v) {}
 	AX_INLINE constexpr BBox_(const Vec& min_, const Vec& max_) : min(min_), max(max_) {}
-	AX_INLINE constexpr bool isValid() { return (max - min).isAllPositive(); }
+	AX_INLINE constexpr bool isValid() const { return !(max - min).hasAnyNegative(); }
 
 	AX_INLINE static constexpr This s_all (const T& v)	{ return This(Vec::s_all(v), Vec::s_all(v)); }
 	AX_INLINE static constexpr This s_zero()			{ return This(Vec::s_zero(), Vec::s_zero()); }
+	AX_INLINE static constexpr This s_empty()			{ return This(Vec::s_all(1), Vec::s_all(-1)); }
 	
 	constexpr void includePoint(const Vec& pt);
 

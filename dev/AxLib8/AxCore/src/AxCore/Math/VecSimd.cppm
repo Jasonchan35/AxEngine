@@ -134,6 +134,13 @@ public:
 		return true;
 	}
 
+	AX_NODISCARD AX_INLINE bool hasAnyNegative() const {
+		for (Int i = 0; i < N; ++i) {
+			if (e[i] < 0) return true;
+		}
+		return false;
+	}
+
 	template<VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE bool exactlyEqual(VecSimd_Data_<N, T, R_SIMD> vec) const {
 		for (Int i = 0; i < N; ++i) {

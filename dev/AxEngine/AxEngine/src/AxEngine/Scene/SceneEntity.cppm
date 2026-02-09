@@ -47,6 +47,15 @@ public:
 		return comp;
 	}
 	
+	template<class COMP>
+	COMP* getComponent() {
+		for (auto& comp : _components) {
+			if (auto* c = rttiCastCheck<COMP>(comp.ptr()))
+				return c;
+		}
+		return nullptr;
+	}
+	
 	SceneWorld* world() { return _world; }
 	
 	Int childCount() const { return _children.size(); }
