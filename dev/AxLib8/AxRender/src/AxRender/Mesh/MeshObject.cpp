@@ -120,45 +120,37 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 void MeshObject::createFromEditableMesh2(const EditableMesh& srcMesh) {
 	createBuffers();
 	
-	std::vector<ClusterGenerator::Vertex> vertices;
-	std::vector<u32> indices;
+	Array<AxGpuMeshletVert> vertices;
+	Array<u32> indices;
 	
-//	auto dstVertSpan = meshletVert.editData(0, srcMesh.points().size());
-//	Int j = 0;
-	vertices.reserve(srcMesh.points().size());
+	vertices.ensureCapacity(srcMesh.points().size());
 	for (auto& pt : srcMesh.points()) {
-		auto& v = vertices.emplace_back();
-		auto pos    = Vec3f::s_cast(pt.pos);
-		auto normal = Vec3f::s_cast(pt.normal);
-		v.px = pos.x;
-		v.py = pos.y;
-		v.pz = pos.z;
-		v.nx = normal.x;
-		v.ny = normal.y;
-		v.nz = normal.z;
-/*		
-		auto& dstVert = dstVertSpan[j]; 
-		dstVert.pos    = pos;
-		dstVert.normal = normal;
-		dstVert.rawColor = 0xFFFFFFFF;
-		++j;
-		*/
+		auto& v = vertices.emplaceBack();
+		v.pos    = Vec3f::s_cast(pt.pos);
+		v.normal = Vec3f::s_cast(pt.normal);
 	}
 
-	indices.reserve(srcMesh.faces().size() * 3);
+	indices.ensureCapacity(srcMesh.faces().size() * 3);
 	for (auto& face : srcMesh.faces()) {
 		auto faceEdges = face.getFaceEdges(srcMesh);
 		auto triCount = faceEdges.size() - 2;
 		for (Int i = 0; i < triCount; ++i) {
-			indices.emplace_back(static_cast<u32>(faceEdges[0  ].pointId()));
-			indices.emplace_back(static_cast<u32>(faceEdges[i+1].pointId()));
-			indices.emplace_back(static_cast<u32>(faceEdges[i+2].pointId()));
+			indices.emplaceBack(static_cast<u32>(faceEdges[0  ].pointId()));
+			indices.emplaceBack(static_cast<u32>(faceEdges[i+1].pointId()));
+			indices.emplaceBack(static_cast<u32>(faceEdges[i+2].pointId()));
 		}
 	}
 	
 	ClusterGenerator gen;
 	gen.nanite(*this, vertices, indices);
 	
+	objectSlot.markDirty();
+}
+
+void MeshObject::create(Span<AxGpuMeshletVert> vertices, Span<u32> indices) {
+	createBuffers();
+	ClusterGenerator gen;
+	gen.nanite(*this, vertices, indices);
 	objectSlot.markDirty();
 }
 

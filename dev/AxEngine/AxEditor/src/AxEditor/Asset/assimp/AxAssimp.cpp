@@ -85,7 +85,7 @@ public:
 		for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 			aiMesh* srcMesh = scene->mMeshes[i];
 //			importMesh(srcMesh);
-			importEditableMesh(srcMesh);
+			importMeshCluster(srcMesh);
 		}
 		
 		// importNode(scene->mRootNode, nullptr);
@@ -261,6 +261,38 @@ public:
 		importRenderMesh(srcMesh, meshObject->meshData);
 		importMeshObject(srcMesh, meshObject);
 	}
+
+	void importMeshCluster(aiMesh* srcMesh) {
+		Int numVertices = srcMesh->mNumVertices;
+		auto srcVertices = Span(srcMesh->mVertices, srcMesh->mNumVertices);
+		auto srcNormals  = Span(srcMesh->mNormals, numVertices);
+		auto srcFaces    = Span(srcMesh->mFaces,    srcMesh->mNumFaces);
+		
+		Array<AxGpuMeshletVert> vertices;
+		vertices.ensureCapacity(numVertices);
+		for (Int i = 0; i < numVertices; ++i) {
+			auto& dst = vertices.emplaceBack();
+			dst.pos = toLengthVec3f(toVec3f(srcVertices[i]));
+			if (srcMesh->HasNormals()) {
+				dst.normal = convAxis(srcNormals[i]);
+			}
+		}
+		
+		Array<u32> indices;
+		for (auto& srcFace : srcFaces) {
+			if (srcFace.mNumIndices != 3) {
+				AX_ASSERT(false);
+				continue;
+			}
+			for (Int j = 0; j < 3; ++j) {
+				indices.emplaceBack(srcFace.mIndices[j]);
+			}
+		}
+		
+		SPtr<MeshObject> meshObject = MeshObject::s_new(AX_NEW);
+		meshObject->create(vertices, indices);
+		_meshes.emplaceBack(meshObject);
+	}
 	
 	void importEditableMesh(aiMesh* srcMesh) {
 		auto& dstMesh = _editableMeshes.emplaceNewObject(AX_NEW);
@@ -283,7 +315,6 @@ public:
 			dstMesh->addFace(fv);
 		}
 
-			
 		if (srcMesh->HasNormals()) {
 			auto srcNormals = Span(srcMesh->mNormals, numVertices);
 			dstMesh->_fvNormals.resize(dstMesh->faceEdges().size());
@@ -313,6 +344,8 @@ public:
 			}
 		}
 		
+		
+		dstMesh->updateFaceNormals();
 		
 		SPtr<MeshObject> meshObject = MeshObject::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);

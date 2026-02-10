@@ -36,12 +36,11 @@ struct AxGpuMeshletVert {
 	Vec3f   pos;
 	u32     rawColor;
 
-	Vec2f   uv0;
-	Vec2f   uv1;
-//	Vec2f   rawNormal;
-
 	Vec3f   normal;
 	u32     _padding;
+
+	Vec2f   uv0;
+	Vec2f   uv1;
 };
 
 struct AxGpuMeshletPrim {

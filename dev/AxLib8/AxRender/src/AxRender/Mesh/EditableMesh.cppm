@@ -148,7 +148,7 @@ public:
 		
 		FaceId			_id   = FaceId::Invalid;
 		FaceEdgeId		_faceEdgeHead = FaceEdgeId::Invalid;
-		Int			_faceEdgeCount;
+		Int				_faceEdgeCount;
 	};
 
 	//-----------------------------------------------------------------

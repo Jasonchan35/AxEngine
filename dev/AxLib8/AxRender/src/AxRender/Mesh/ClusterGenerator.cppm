@@ -5,19 +5,15 @@ module;
 
 export module AxRender:ClusterGenerator;
 import :MeshObject;
+import :EditableMesh;
 
 export namespace ax {
 
 class ClusterGenerator {
 public:
-	
+	using Box = BBox3f;
 
-	struct Vertex
-	{
-		float px, py, pz;
-		float nx, ny, nz;
-		float tx, ty;
-	};
+	using Vertex = AxGpuMeshletVert;
 
 	struct Mesh
 	{
@@ -31,10 +27,11 @@ public:
 		char data[sizeof(Vertex) * 3];
 	};
 	
-	static float boundsError(const clodBounds& bounds, float camera_x, float camera_y, float camera_z, float camera_proj, float camera_znear)
+	static float boundsError(const clodBounds& bounds, const Vec3f& cameraPos, float camera_proj, float camera_znear)
 	{
-		float dx = bounds.center[0] - camera_x, dy = bounds.center[1] - camera_y, dz = bounds.center[2] - camera_z;
-		float d = sqrtf(dx * dx + dy * dy + dz * dz) - bounds.radius;
+		Vec3f c(bounds.center[0], bounds.center[1], bounds.center[2]);
+		auto delta = c - cameraPos;
+		float d = delta.length() - bounds.radius;
 		return bounds.error / (d > camera_znear ? d : camera_znear) * (camera_proj * 0.5f);
 	}
 	
@@ -147,37 +144,19 @@ public:
 		return int(result);
 	}
 
-	struct Box
-	{
-		float min[3];
-		float max[3];
-	};
-
-	static const Box kDummyBox() {
-		return Box{{FLT_MAX, FLT_MAX, FLT_MAX}, 
-				{-FLT_MAX, -FLT_MAX, -FLT_MAX}};
-	}
-
-	static void mergeBox(Box& box, const Box& other)
-	{
-		for (int k = 0; k < 3; ++k)
-		{
-			box.min[k] = other.min[k] < box.min[k] ? other.min[k] : box.min[k];
-			box.max[k] = other.max[k] > box.max[k] ? other.max[k] : box.max[k];
-		}
-	}
-
 	static inline float surface(const Box& box)
 	{
-		float sx = box.max[0] - box.min[0], sy = box.max[1] - box.min[1], sz = box.max[2] - box.min[2];
-		return sx * sy + sx * sz + sy * sz;
+		auto s = box.size();
+		return s.x * s.y 
+			 + s.y * s.z
+			 + s.z * s.x; 
 	}
 
 	static float sahCost(const Box* boxes, unsigned int* order, unsigned int* temp, size_t count)
 	{
 		Box total = boxes[order[0]];
 		for (size_t i = 1; i < count; ++i)
-			mergeBox(total, boxes[order[i]]);
+			total.merge(boxes[order[i]]);
 
 		int best_axis = -1;
 		int best_bin = -1;
@@ -190,32 +169,33 @@ public:
 			Box bins[kBins];
 			unsigned int counts[kBins] = {};
 
-			float extent = total.max[axis] - total.min[axis];
+			float extent = total.max.e[axis] - total.min.e[axis];
 			if (extent <= 0.f)
 				continue;
 
 			for (int i = 0; i < kBins; ++i)
-				bins[i] = kDummyBox();
+				bins[i] = Box::s_empty();
 
 			for (size_t i = 0; i < count; ++i)
 			{
 				unsigned int index = order[i];
-				float p = (boxes[index].min[axis] + boxes[index].max[axis]) * 0.5f;
-				int bin = int((p - total.min[axis]) / extent * (kBins - 1) + 0.5f);
+				float p = (boxes[index].min.e[axis] + boxes[index].max.e[axis]) * 0.5f;
+				int bin = int((p - total.min.e[axis]) / extent * (kBins - 1) + 0.5f);
 				assert(bin >= 0 && bin < kBins);
 
-				mergeBox(bins[bin], boxes[index]);
+				bins[bin].merge(boxes[index]);
 				counts[bin]++;
 			}
 
-			Box laccum = kDummyBox(), raccum = kDummyBox();
+			Box laccum = Box::s_empty();
+			Box raccum = Box::s_empty();
 			size_t lcount = 0, rcount = 0;
 			float costs[kBins] = {};
 
 			for (int i = 0; i < kBins - 1; ++i)
 			{
-				mergeBox(laccum, bins[i]);
-				mergeBox(raccum, bins[kBins - 1 - i]);
+				laccum.merge(bins[i]);
+				raccum.merge(bins[kBins - 1 - i]);
 
 				lcount += counts[i];
 				costs[i] += lcount ? surface(laccum) * static_cast<float>(lcount) : 0.f;
@@ -235,15 +215,15 @@ public:
 		if (best_axis == -1)
 			return surface(total) * float(count);
 
-		float best_extent = total.max[best_axis] - total.min[best_axis];
+		float best_extent = total.max.e[best_axis] - total.min.e[best_axis];
 
 		size_t offset0 = 0, offset1 = count;
 
 		for (size_t i = 0; i < count; ++i)
 		{
 			unsigned int index = order[i];
-			float p = (boxes[index].min[best_axis] + boxes[index].max[best_axis]) * 0.5f;
-			int bin = int((p - total.min[best_axis]) / best_extent * (kBins - 1) + 0.5f);
+			float p = (boxes[index].min.e[best_axis] + boxes[index].max.e[best_axis]) * 0.5f;
+			int bin = int((p - total.min.e[best_axis]) / best_extent * (kBins - 1) + 0.5f);
 			assert(bin >= 0 && bin < kBins);
 
 			if (bin <= best_bin)
@@ -273,7 +253,7 @@ public:
 		return sahCost(boxes, &order[0], &temp[0], count);
 	}
 
-	static float sahOverhead(const std::vector<std::vector<unsigned int> >& clusters, const std::vector<Vertex>& vertices)
+	static float sahOverhead(const std::vector<std::vector<unsigned int> >& clusters, Span<Vertex> vertices)
 	{
 		std::vector<Box> all_tris, cluster_tris, cluster_boxes;
 
@@ -286,21 +266,19 @@ public:
 
 			cluster_tris.clear();
 
-			Box cluster_box = kDummyBox();
+			Box cluster_box = Box::s_empty();
 
 			for (size_t k = 0; k < clusters[i].size(); k += 3)
 			{
-				Box box = kDummyBox();
+				Box box = Box::s_empty();
 
 				for (int v = 0; v < 3; ++v)
 				{
 					const Vertex& vertex = vertices[clusters[i][k + v]];
-
-					Box p = {{vertex.px, vertex.py, vertex.pz}, {vertex.px, vertex.py, vertex.pz}};
-					mergeBox(box, p);
+					box.includePoint(vertex.pos);
 				}
 
-				mergeBox(cluster_box, box);
+				cluster_box.merge(box);
 
 				all_tris.push_back(box);
 				cluster_tris.push_back(box);
@@ -320,7 +298,7 @@ public:
 	}
 	
 
-	void dumpObj(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, bool recomputeNormals = false)
+	void dumpObj(Span<Vertex> vertices, Span<u32> indices, bool recomputeNormals = false)
 	{
 		std::vector<float> normals;
 
@@ -328,34 +306,31 @@ public:
 		{
 			normals.resize(vertices.size() * 3);
 
-			for (size_t i = 0; i < indices.size(); i += 3)
+			for (Int i = 0; i < indices.size(); i += 3)
 			{
 				unsigned int a = indices[i], b = indices[i + 1], c = indices[i + 2];
 
 				const Vertex& va = vertices[a];
 				const Vertex& vb = vertices[b];
 				const Vertex& vc = vertices[c];
-
-				float nx = (vb.py - va.py) * (vc.pz - va.pz) - (vb.pz - va.pz) * (vc.py - va.py);
-				float ny = (vb.pz - va.pz) * (vc.px - va.px) - (vb.px - va.px) * (vc.pz - va.pz);
-				float nz = (vb.px - va.px) * (vc.py - va.py) - (vb.py - va.py) * (vc.px - va.px);
+				auto nl = (vb.pos - va.pos).cross(vc.pos - va.pos);
 
 				for (int k = 0; k < 3; ++k)
 				{
 					unsigned int index = indices[i + k];
 
-					normals[index * 3 + 0] += nx;
-					normals[index * 3 + 1] += ny;
-					normals[index * 3 + 2] += nz;
+					normals[index * 3 + 0] += nl.x;
+					normals[index * 3 + 1] += nl.y;
+					normals[index * 3 + 2] += nl.z;
 				}
 			}
 		}
 
-		for (size_t i = 0; i < vertices.size(); ++i)
+		for (Int i = 0; i < vertices.size(); ++i)
 		{
 			const Vertex& v = vertices[i];
 
-			float nx = v.nx, ny = v.ny, nz = v.nz;
+			float nx = v.normal.x, ny = v.normal.y, nz = v.normal.z;
 
 			if (recomputeNormals)
 			{
@@ -371,11 +346,11 @@ public:
 				nz *= s;
 			}
 
-			fprintf(stderr, "v %f %f %f\n", v.px, v.py, v.pz);
+			fprintf(stderr, "v %f %f %f\n", v.pos.x, v.pos.y, v.pos.z);
 			fprintf(stderr, "vn %f %f %f\n", nx, ny, nz);
 		}
 
-		for (size_t i = 0; i < indices.size(); i += 3)
+		for (Int i = 0; i < indices.size(); i += 3)
 		{
 			unsigned int a = indices[i], b = indices[i + 1], c = indices[i + 2];
 
@@ -395,7 +370,7 @@ public:
 		}
 	}	
 	
-	void nanite(MeshObject& outMesh, const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices)
+	void nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u32> indices)
 	{
 	#ifdef _MSC_VER
 		static const char* dump = NULL; // tired of C4996
@@ -419,9 +394,9 @@ public:
 		mesh.indices = indices.data();
 		mesh.index_count = indices.size();
 		mesh.vertex_count = vertices.size();
-		mesh.vertex_positions = &vertices[0].px;
+		mesh.vertex_positions = vertices[0].pos.data();
 		mesh.vertex_positions_stride = sizeof(Vertex);
-		mesh.vertex_attributes = &vertices[0].nx;
+		mesh.vertex_attributes = vertices[0].normal.data();
 		mesh.vertex_attributes_stride = sizeof(Vertex);
 		mesh.attribute_weights = attribute_weights;
 		mesh.attribute_count = sizeof(attribute_weights) / sizeof(attribute_weights[0]);
@@ -452,12 +427,10 @@ public:
 		int cut_level = dump ? atoi(dump) : -2;
 
 		// for testing purposes, we can compute a DAG cut from a given viewpoint and dump it as an OBJ
-		float maxx = 0.f, maxy = 0.f, maxz = 0.f;
-		for (size_t i = 0; i < vertices.size(); ++i)
+		Vec3f maxV(0,0,0);
+		for (Int i = 0; i < vertices.size(); ++i)
 		{
-			maxx = std::max(maxx, vertices[i].px * 2);
-			maxy = std::max(maxy, vertices[i].py * 2);
-			maxz = std::max(maxz, vertices[i].pz * 2);
+			maxV = Math::max(maxV, vertices[i].pos * 2);
 		}
 
 		float threshold = 2e-3f; // 2 pixels at 1080p
@@ -495,9 +468,7 @@ public:
 					auto& newVi = outVertIndexDict.add(index);
 					auto& srcVert = vertices[index];
 					newVi = ax_safe_cast_from(outVertArray.size());
-
-					auto& dstVert = outVertArray.emplaceBack();
-					dstVert.pos = Vec3f(srcVert.px, srcVert.py, srcVert.pz);
+					outVertArray.emplaceBack(srcVert);
 					return newVi;
 				};
 				
@@ -537,7 +508,9 @@ public:
 					cut.push_back(std::vector<unsigned int>(cluster.indices, cluster.indices + cluster.index_count));
 
 				// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
-				if (cut_level == -1 && (cluster.refined < 0 || boundsError(groups[cluster.refined], maxx, maxy, maxz, proj, znear) <= threshold) && boundsError(group.simplified, maxx, maxy, maxz, proj, znear) > threshold)
+				if (cut_level == -1 
+					&& (cluster.refined < 0 || boundsError(groups[cluster.refined], maxV, proj, znear) <= threshold) 
+					&& boundsError(group.simplified, maxV, proj, znear) > threshold)
 					cut.push_back(std::vector<unsigned int>(cluster.indices, cluster.indices + cluster.index_count));
 			}
 
@@ -549,7 +522,7 @@ public:
 
 		// for cluster connectivity analysis and boundary statistics, we need a position-only remap that maps vertices with the same position to the same index
 		std::vector<unsigned int> remap(vertices.size());
-		meshopt_generatePositionRemap(&remap[0], &vertices[0].px, vertices.size(), sizeof(Vertex));
+		meshopt_generatePositionRemap(&remap[0], vertices[0].pos.data(), vertices.size(), sizeof(Vertex));
 
 		std::vector<int> used(vertices.size());
 
@@ -597,7 +570,7 @@ public:
 			else
 				printf("cut (error %.3f): %d triangles\n", threshold, int(cut_tris));
 
-			dumpObj(vertices, std::vector<unsigned int>());
+			dumpObj(vertices, Span<u32>());
 
 			for (auto& cluster : cut)
 				dumpObj("cluster", cluster);

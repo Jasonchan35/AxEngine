@@ -20,6 +20,8 @@ public:
 	
 	void createFromEditableMesh(const EditableMesh& srcMesh);
 	void createFromEditableMesh2(const EditableMesh& srcMesh);
+	
+	void create(Span<AxGpuMeshletVert> vertices, Span<u32> indices);
 
 	bool isMeshletValid() const { return meshletInfo.size() > 0; }
 	
