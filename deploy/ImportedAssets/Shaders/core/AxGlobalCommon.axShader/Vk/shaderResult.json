@@ -276,28 +276,12 @@
               "offset": 12, 
               "sizeInBytes": 4
             }, {
-              "name": "uv0", 
-              "varType": {
-                "dataType": "f32x2", 
-                "elementCount": 0
-              }, 
-              "offset": 16, 
-              "sizeInBytes": 8
-            }, {
-              "name": "uv1", 
-              "varType": {
-                "dataType": "f32x2", 
-                "elementCount": 0
-              }, 
-              "offset": 24, 
-              "sizeInBytes": 8
-            }, {
               "name": "normal", 
               "varType": {
                 "dataType": "f32x3", 
                 "elementCount": 0
               }, 
-              "offset": 32, 
+              "offset": 16, 
               "sizeInBytes": 12
             }, {
               "name": "_padding", 
@@ -305,8 +289,24 @@
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 44, 
+              "offset": 28, 
               "sizeInBytes": 4
+            }, {
+              "name": "uv0", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
+              "offset": 32, 
+              "sizeInBytes": 8
+            }, {
+              "name": "uv1", 
+              "varType": {
+                "dataType": "f32x2", 
+                "elementCount": 0
+              }, 
+              "offset": 40, 
+              "sizeInBytes": 8
             }]
         }, {
           "name": "axGpuMeshletPrim", 
@@ -351,13 +351,13 @@
               "sizeInBytes": 32
             }]
         }, {
-          "name": "axGpuMeshObject", 
+          "name": "axGpuMeshLodGroup", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20204, 
           "bindCount": 1, 
-          "stride": 56, 
+          "stride": 16, 
           "variables": [{
               "name": "meshletOffset", 
               "varType": {
@@ -390,16 +390,57 @@
               }, 
               "offset": 12, 
               "sizeInBytes": 4
-            }, {
+            }]
+        }, {
+          "name": "axGpuMeshObject", 
+          "dataType": "StructuredBuffer", 
+          "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
+          "bindSpace": "World", 
+          "bindPoint": 20205, 
+          "bindCount": 1, 
+          "stride": 56, 
+          "variables": [{
               "name": "bounds", 
               "varType": {
                 "dataType": "Struct", 
                 "elementCount": 0
               }, 
-              "offset": 16, 
+              "offset": 0, 
               "sizeInBytes": 32
             }, {
-              "name": "_padding0", 
+              "name": "vertOffset", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 32, 
+              "sizeInBytes": 4
+            }, {
+              "name": "primOffset", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 36, 
+              "sizeInBytes": 4
+            }, {
+              "name": "meshletOffset", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 40, 
+              "sizeInBytes": 4
+            }, {
+              "name": "meshletCount", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 44, 
+              "sizeInBytes": 4
+            }, {
+              "name": "lodGroupOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -407,7 +448,7 @@
               "offset": 48, 
               "sizeInBytes": 4
             }, {
-              "name": "_padding1", 
+              "name": "lodGroupCount", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -420,7 +461,7 @@
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
-          "bindPoint": 20205, 
+          "bindPoint": 20206, 
           "bindCount": 1, 
           "stride": 80, 
           "variables": [{

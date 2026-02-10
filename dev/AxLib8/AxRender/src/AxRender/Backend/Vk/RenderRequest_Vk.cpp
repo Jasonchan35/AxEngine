@@ -144,7 +144,8 @@ void RenderRequest_Vk::onSetScissorRect(const Rect2f& rect) {
 }
 
 void RenderRequest_Vk::onMeshShaderDraw(AxMeshShaderDraw& draw) {
-	_extProcList->vkCmdDrawMeshTasksEXT(_graphCmdList_vk, draw.groupCount.x, draw.groupCount.y, draw.groupCount.z); 
+	auto& c = draw.dispatchGroupCount;
+	_extProcList->vkCmdDrawMeshTasksEXT(_graphCmdList_vk, c.x, c.y, c.z); 
 }
 
 void RenderRequest_Vk::onVertexShaderDraw(AxVertexShaderDraw& draw) {

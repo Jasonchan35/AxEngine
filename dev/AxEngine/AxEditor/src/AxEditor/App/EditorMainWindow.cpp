@@ -122,6 +122,9 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 				_opSpace = ImUIGizmoSpace::World;
 			}
 		}
+		
+		ImUIDragInt("LodBias", &_lodBias, 0.1f, -10, 10);
+		req->lodBias = _lodBias;
 	}
 	
 	auto obj = ObjectManager::s_instance()->selection.lastSelectedObject();

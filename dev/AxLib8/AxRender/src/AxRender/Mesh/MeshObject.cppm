@@ -19,20 +19,16 @@ public:
 	RenderMesh	meshData;
 	
 	void createFromEditableMesh(const EditableMesh& srcMesh);
-	void createFromEditableMesh2(const EditableMesh& srcMesh);
-	
 	void create(Span<AxGpuMeshletVert> vertices, Span<u32> indices);
 
-	bool isMeshletValid() const { return meshletInfo.size() > 0; }
-	
-	Array<AxGpuMeshlet> meshletInfo;
-	StructuredGpuBuffer_<AxGpuMeshlet>     meshlet;
-	StructuredGpuBuffer_<AxGpuMeshletVert> meshletVert;
-	StructuredGpuBuffer_<AxGpuMeshletPrim> meshletPrim;
+	StructuredGpuBuffer_<AxGpuMeshLodGroup> meshLodGroup;
+	StructuredGpuBuffer_<AxGpuMeshlet>      meshlet;
+	StructuredGpuBuffer_<AxGpuMeshletVert>  meshletVert;
+	StructuredGpuBuffer_<AxGpuMeshletPrim>  meshletPrim;
 		
 	void createBuffers();
-	
-	BBox3f& bounds() { return _gpuData.bounds; }
+
+	BBox3f& bounds() { return _meshObjectInfo.bounds; }
 	
 	using ResourceKey = String;
 	const ResourceKey& resourceKey() const { return _assetPath; }
@@ -43,7 +39,7 @@ public:
 	
 protected:
 	String          _assetPath;
-	AxGpuMeshObject _gpuData;
+	AxGpuMeshObject _meshObjectInfo = {};
 	
 	MeshObject(const CreateDesc& desc);
 	

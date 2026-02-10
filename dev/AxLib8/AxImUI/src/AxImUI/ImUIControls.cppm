@@ -72,6 +72,13 @@ bool ImUIDragFloat(
 		float v_min = f32_min,
 		float v_max = f32_max);
 
+bool ImUIDragInt(
+		ZStrView label, 
+		Int* v, 
+		float v_speed = 0.1f, 
+		Int v_min = i32_min,
+		Int v_max = i32_max);
+
 float ImUIInputFloat(ZStrView label, float* v);
 
 class ImUIPanel : public NonCopyable {

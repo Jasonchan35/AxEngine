@@ -264,8 +264,8 @@ public:
 
 	void importMeshCluster(aiMesh* srcMesh) {
 		Int numVertices = srcMesh->mNumVertices;
-		auto srcVertices = Span(srcMesh->mVertices, srcMesh->mNumVertices);
-		auto srcNormals  = Span(srcMesh->mNormals, numVertices);
+		auto srcVertices = Span(srcMesh->mVertices, numVertices);
+		auto srcNormals  = Span(srcMesh->mNormals,  numVertices);
 		auto srcFaces    = Span(srcMesh->mFaces,    srcMesh->mNumFaces);
 		
 		Array<AxGpuMeshletVert> vertices;
@@ -355,7 +355,7 @@ public:
 		                                         VertexNormalCount::Normal);
 		
 		RenderMeshEdit(meshObject->meshData).createFromEditableMesh(vertexLayout, *dstMesh);
-		meshObject->createFromEditableMesh2(*dstMesh);
+		meshObject->createFromEditableMesh(*dstMesh);
 	}
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {

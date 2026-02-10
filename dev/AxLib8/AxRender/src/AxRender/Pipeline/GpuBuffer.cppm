@@ -164,6 +164,8 @@ public:
 	
 	MutByteSpan extendSize(Int sizeInBytes);
 
+	ByteSpan    span() const { return _cpuBuffer; }
+	
 	// remember to markDirty after write
 	MutByteSpan mutSpan() { return _cpuBuffer; }
 	void markDirty(IntRange range);
@@ -258,21 +260,29 @@ public:
 	static SPtr<StructuredGpuBuffer> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	
 	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const {
-		return _gpuBuffer.getUploadedGpuBuffer(req);
+		return _buffer.getUploadedGpuBuffer(req);
 	}	
 
 	Int stride() const { return _stride; }
-	Int count() const { return _gpuBuffer.dataSize() / _stride; }
+	Int count() const { return _buffer.dataSize() / _stride; }
 
+	template<class T>
+	Span<T> readData(Int offset, Int size) const {
+		if (AX_SIZEOF(T) != _stride) throw Error_Undefined();
+		auto byteRange = IntRange_StartAndSize(offset, size) * AX_SIZEOF(T);
+		auto byteSpan = _buffer.span().slice(byteRange);
+		return Span<T>::s_fromByteSpan(byteSpan);
+	}
+	
 	template<class T>
 	MutSpan<T> editData(Int offset, Int size) {
 		if (AX_SIZEOF(T) != _stride) throw Error_Undefined();
 		auto byteRange = IntRange_StartAndSize(offset, size) * AX_SIZEOF(T);
 		auto reqBufferSizeInBytes = byteRange.stop();
 		
-		_gpuBuffer.ensureSize(reqBufferSizeInBytes);
-		_gpuBuffer.markDirty(byteRange);
-		auto byteSpan = _gpuBuffer.mutSpan().slice(byteRange);
+		_buffer.ensureSize(reqBufferSizeInBytes);
+		_buffer.markDirty(byteRange);
+		auto byteSpan = _buffer.mutSpan().slice(byteRange);
 		return MutSpan<T>::s_fromMutByteSpan(byteSpan);
 	}
 
@@ -286,12 +296,12 @@ public:
 		mutSpan.copyValues(span);
 	}
 	
-	Int gpuBufferIndex() const { return _gpuBuffer.gpuBufferOffset() / _stride; }
+	Int gpuBufferIndex() const { return _buffer.gpuBufferOffset() / _stride; }
 	
 protected:
 	StructuredGpuBuffer(const CreateDesc& desc);
 	
-	DynamicGpuBuffer _gpuBuffer;
+	DynamicGpuBuffer _buffer;
 	Int _stride = 0;
 };
 
@@ -324,11 +334,13 @@ public:
 		buffer = StructuredGpuBuffer::s_new<T>(req, bufferType, name, pool.pool);
 	}
 	
-	MutSpan<T> editData(Int offset, Int size)	{ return buffer->editData<T>(offset, size); }
-	MutSpan<T> extendsData(Int size)			{ return editData(buffer->count(), size); }
+	Span<T>    readData() const						{ return readData(0, count()); }
+	Span<T>    readData(Int offset, Int size) const	{ return buffer->readData<T>(offset, size); }
+	MutSpan<T> editData(Int offset, Int size)		{ return buffer->editData<T>(offset, size); }
+	MutSpan<T> extendsData(Int size)				{ return editData(buffer->count(), size); }
 	
-	void setValue(Int index, const T& v)      	{ return buffer->setValue(index, Span(v)); }
-	void setValues(Int index, Span<T> span)   	{ return buffer->setValues(index, span); }
+	void setValue(Int index, const T& v)			{ return buffer->setValue(index, Span(v)); }
+	void setValues(Int index, Span<T> span)			{ return buffer->setValues(index, span); }
 	
 	void appendValues(Span<T> span) { extendsData(span.size()).copyValues(span); }
 

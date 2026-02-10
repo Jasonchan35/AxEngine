@@ -55,6 +55,8 @@ protected:
 	ImUIGizmoSpace		_opSpace = ImUIGizmoSpace::Local;
 	bool _gizmoIsUsing = false;
 	Mat4f _gizmoStartWorldMatrix;
+	
+	Int _lodBias = 0;
 };
 
 } //namespace

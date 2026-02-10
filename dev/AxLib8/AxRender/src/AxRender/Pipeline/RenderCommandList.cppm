@@ -15,7 +15,8 @@ public:
 	Int         materialPassIndex = 0;
 	Mat4f       objectToWorld     = Mat4f::s_identity();
 	MeshObject* meshObject        = nullptr;
-	u32x3       groupCount{1, 1, 1};
+	Int         lodGroupId        = -1;
+	u32x3       dispatchGroupCount{1, 1, 1};
 };
 
 class AxVertexShaderDraw : public NonCopyable {

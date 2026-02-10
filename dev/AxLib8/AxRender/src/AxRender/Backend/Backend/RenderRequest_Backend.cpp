@@ -224,9 +224,11 @@ void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
 	auto* matPass = material->getPass(draw.materialPassIndex);
 	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
 	
+	auto lodGroupSpan = meshObject->meshLodGroup.readData();
+	
 	AxMeshShaderDrawRootConst rootConst;
-	rootConst.worldMatrix = draw.objectToWorld;
-	rootConst.meshId      = meshObject->objectSlot.slotId();
+	rootConst.worldMatrix    = draw.objectToWorld;
+	rootConst.meshLodGroupId = ax_safe_cast_from(draw.lodGroupId + meshObject->meshLodGroup.buffer->gpuBufferIndex());
 	matPass->onBindMaterial(this, draw, &rootConst);
 	
 	if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");

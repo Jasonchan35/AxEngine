@@ -79,7 +79,7 @@ public:
 	}
 
 	struct Stage {
-		FileMemMap bytecode;
+		ByteArray bytecode;
 	};
 
 	Stage _vertexStage;

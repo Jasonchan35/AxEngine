@@ -82,6 +82,26 @@
                             "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
                         },
                         {
+                            "name": "normal",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 3,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
+                        },
+                        {
+                            "name": "_padding",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 28, "size": 4, "elementStride": 0}
+                        },
+                        {
                             "name": "uv0",
                             "type": {
                                 "kind": "vector",
@@ -91,7 +111,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 16, "size": 8, "elementStride": 4}
+                            "binding": {"kind": "uniform", "offset": 32, "size": 8, "elementStride": 4}
                         },
                         {
                             "name": "uv1",
@@ -103,27 +123,7 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 24, "size": 8, "elementStride": 4}
-                        },
-                        {
-                            "name": "normal",
-                            "type": {
-                                "kind": "vector",
-                                "elementCount": 3,
-                                "elementType": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                }
-                            },
-                            "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4}
-                        },
-                        {
-                            "name": "_padding",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 40, "size": 8, "elementStride": 4}
                         }
                     ]
                 }
@@ -212,7 +212,7 @@
                                         "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
                                     },
                                     {
-                                        "name": "lod",
+                                        "name": "meshObjectId",
                                         "type": {
                                             "kind": "scalar",
                                             "scalarType": "uint32"
@@ -220,7 +220,7 @@
                                         "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0}
                                     },
                                     {
-                                        "name": "_padding0",
+                                        "name": "lod",
                                         "type": {
                                             "kind": "scalar",
                                             "scalarType": "uint32"
@@ -228,7 +228,7 @@
                                         "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
                                     },
                                     {
-                                        "name": "_padding1",
+                                        "name": "refined",
                                         "type": {
                                             "kind": "scalar",
                                             "scalarType": "uint32"
@@ -252,14 +252,14 @@
             }
         },
         {
-            "name": "axGpuMeshObject",
+            "name": "axGpuMeshLodGroup",
             "binding": {"kind": "shaderResource", "space": 1, "index": 20204},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
                 "resultType": {
                     "kind": "struct",
-                    "name": "AxGpuMeshObject",
+                    "name": "AxGpuMeshLodGroup",
                     "fields": [
                         {
                             "name": "meshletOffset",
@@ -292,7 +292,21 @@
                                 "scalarType": "uint32"
                             },
                             "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
-                        },
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "axGpuMeshObject",
+            "binding": {"kind": "shaderResource", "space": 1, "index": 20205},
+            "type": {
+                "kind": "resource",
+                "baseShape": "structuredBuffer",
+                "resultType": {
+                    "kind": "struct",
+                    "name": "AxGpuMeshObject",
+                    "fields": [
                         {
                             "name": "bounds",
                             "type": {
@@ -325,10 +339,42 @@
                                     }
                                 ]
                             },
-                            "binding": {"kind": "uniform", "offset": 16, "size": 32, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 0, "size": 32, "elementStride": 0}
                         },
                         {
-                            "name": "_padding0",
+                            "name": "vertOffset",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 32, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "primOffset",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 36, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "meshletOffset",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 40, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "meshletCount",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "lodGroupOffset",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -336,7 +382,7 @@
                             "binding": {"kind": "uniform", "offset": 48, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "_padding1",
+                            "name": "lodGroupCount",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -349,7 +395,7 @@
         },
         {
             "name": "axGpuMeshObjectRenderer",
-            "binding": {"kind": "shaderResource", "space": 1, "index": 20205},
+            "binding": {"kind": "shaderResource", "space": 1, "index": 20206},
             "type": {
                 "kind": "resource",
                 "baseShape": "structuredBuffer",
@@ -864,7 +910,7 @@
                             "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
                         },
                         {
-                            "name": "meshId",
+                            "name": "meshLodGroupId",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -919,7 +965,7 @@
                                 "binding": {"kind": "uniform", "offset": 0, "size": 64, "elementStride": 0}
                             },
                             {
-                                "name": "meshId",
+                                "name": "meshLodGroupId",
                                 "type": {
                                     "kind": "scalar",
                                     "scalarType": "uint32"
@@ -1096,7 +1142,7 @@
                                                 "binding": {"kind": "varyingInput", "index": 3}
                                             },
                                             {
-                                                "name": "lod",
+                                                "name": "meshObjectId",
                                                 "type": {
                                                     "kind": "scalar",
                                                     "scalarType": "uint32"
@@ -1105,7 +1151,7 @@
                                                 "binding": {"kind": "varyingInput", "index": 4}
                                             },
                                             {
-                                                "name": "_padding0",
+                                                "name": "lod",
                                                 "type": {
                                                     "kind": "scalar",
                                                     "scalarType": "uint32"
@@ -1114,7 +1160,7 @@
                                                 "binding": {"kind": "varyingInput", "index": 5}
                                             },
                                             {
-                                                "name": "_padding1",
+                                                "name": "refined",
                                                 "type": {
                                                     "kind": "scalar",
                                                     "scalarType": "uint32"
@@ -1181,12 +1227,16 @@
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20203, "used": 0}
                 },
                 {
-                    "name": "axGpuMeshObject",
+                    "name": "axGpuMeshLodGroup",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20204, "used": 0}
                 },
                 {
-                    "name": "axGpuMeshObjectRenderer",
+                    "name": "axGpuMeshObject",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20205, "used": 0}
+                },
+                {
+                    "name": "axGpuMeshObjectRenderer",
+                    "binding": {"kind": "shaderResource", "space": 1, "index": 20206, "used": 0}
                 },
                 {
                     "name": "axWorld",

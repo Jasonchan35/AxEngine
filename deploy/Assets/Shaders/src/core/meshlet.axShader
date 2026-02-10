@@ -50,14 +50,15 @@ void as_main(
 	SEM_gtid(u32),
 	SEM_dtid(u32)
 ) {
-	AxGpuMeshObject meshObj = axGpuMeshObject[AX_MESH_ID];
+//	AxGpuMeshObject meshObj = axGpuMeshObject[AX_MESH_ID];
+	AxGpuMeshLodGroup logGroup = axGpuMeshLodGroup[AX_MESH_LOD_GROUP_ID];
 
-	if (dtid < meshObj.meshletCount) {
-		s_payload.meshlet[gtid] = axGpuMeshlet[meshObj.meshletOffset + dtid].draw;
+	if (dtid < logGroup.meshletCount) {
+		s_payload.meshlet[gtid] = axGpuMeshlet[logGroup.meshletOffset + dtid].draw;
 	}
 	
-	u32 outMeshletCountInThisGroup 	= gid >= (meshObj.meshletCount / AS_GROUP_SIZE)
-									? meshObj.meshletCount % AS_GROUP_SIZE // last group which not aligned to group side
+	u32 outMeshletCountInThisGroup 	= gid >= (logGroup.meshletCount / AS_GROUP_SIZE)
+									? logGroup.meshletCount % AS_GROUP_SIZE // last group which not aligned to group side
 									: AS_GROUP_SIZE;
 
 	DispatchMesh(outMeshletCountInThisGroup, 1, 1, s_payload);
@@ -85,7 +86,8 @@ void ms_main(
 		VS_Input i;
 
 		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
-		i.pos    = Vec4f(mv.pos + Vec3f(0, meshlet.lod, 0), 1);
+//		i.pos    = Vec4f(mv.pos + Vec3f(0, meshlet.lod * 2, 0), 1);
+		i.pos    = Vec4f(mv.pos, 1);
 		i.normal = mv.normal;
 		i.color0 = ax_debug_color(gid);
 

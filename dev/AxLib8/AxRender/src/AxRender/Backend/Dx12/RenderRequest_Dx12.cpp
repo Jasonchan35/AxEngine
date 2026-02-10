@@ -81,6 +81,8 @@ void RenderRequest_Dx12::onWaitCompleted() {
 }
 
 void RenderRequest_Dx12::onDrawWorld() {
+	return; // TODO
+	
 	auto& drawArgsBuffer = _indirectMeshShaderDraw._drawArgsBuffer;
 	auto drawArgs = drawArgsBuffer.editData(0, 9);
 	
@@ -88,7 +90,7 @@ void RenderRequest_Dx12::onDrawWorld() {
 		auto& cmd = drawArgs[i];
 		cmd.setGroupCount(1,1,1);
 		cmd.rootConst.worldMatrix = Mat4f::s_translate(static_cast<f32>(i) * 2, 0, -8);
-		cmd.rootConst.meshId = 6 + i;
+		cmd.rootConst.meshLodGroupId = 6 + i;
 	}
 
 	//	auto* mtl = rttiCastCheck<Material_Dx12>(mgr->indirectDrawMaterial());
@@ -126,7 +128,8 @@ void RenderRequest_Dx12::onSetScissorRect(const Rect2f& rect) {
 }
 
 void RenderRequest_Dx12::onMeshShaderDraw(AxMeshShaderDraw& draw) {
-	_graphCmdList_dx12->DispatchMesh(draw.groupCount.x, draw.groupCount.y, draw.groupCount.z);
+	auto& c = draw.dispatchGroupCount;
+	_graphCmdList_dx12->DispatchMesh(c.x, c.y, c.z);
 }
 
 void RenderRequest_Dx12::onVertexShaderDraw(AxVertexShaderDraw& draw) {

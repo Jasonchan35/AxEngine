@@ -124,7 +124,7 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {
 		if (!desc.info->getFuncName(stageFlags)) return;
 		auto filename = Fmt("{}/Dx12/Shader_Dx12-{}-{}.bin", shader()->assetPath(), _name, stageFlags);
-		stage.bytecode.openFile(filename);
+		File::readBytes(filename, stage.bytecode);
 	};
 
 	_visitStages(loadStage);

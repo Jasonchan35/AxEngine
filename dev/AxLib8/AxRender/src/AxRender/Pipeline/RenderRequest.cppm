@@ -90,6 +90,8 @@ public:
 	void setCamera(const Math::Camera3f& camera);
 	const AxRenderGpuData_Camera&	cameraData() const { return _cameraData; }
 
+	Int lodBias = 0;
+	
 protected:
 	RenderSystem*       _renderSystem       = nullptr;
 	RenderContext*      _renderContext      = nullptr;

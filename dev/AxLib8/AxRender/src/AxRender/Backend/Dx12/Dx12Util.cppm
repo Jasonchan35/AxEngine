@@ -59,7 +59,12 @@ struct Dx12Util {
 	static constexpr D3D12_COMMAND_LIST_TYPE getDxCommandListType(RenderCommandListType type);
 
 	static D3D12_SHADER_BYTECODE getDxBytecode(ByteSpan span) {
-		return {.pShaderBytecode = span.data(), .BytecodeLength = ax_safe_cast_from(span.sizeInBytes())};
+		D3D12_SHADER_BYTECODE o = {};
+		if (span.size()) {
+			o.pShaderBytecode = span.data();
+			o.BytecodeLength  = ax_safe_cast_from(span.sizeInBytes());
+		}
+		return o;
 	} 
 	
 	static constexpr StrView	errorToStrView(ID3DBlob* blob);

@@ -23,46 +23,59 @@ MeshObject::MeshObject(const CreateDesc& desc)
 	: _assetPath(desc.assetPath)
 	, objectSlot(this) 
 {
-	_gpuData.bounds = BBox3f::s_empty();
+	_meshObjectInfo.bounds = BBox3f::s_empty();
 }
 
-auto MeshObject::onGetGpuData(RenderRequest* req) -> const GpuData*{
-	if (meshletInfo.size() <= 0) return nullptr;
-		
-	meshletVert.buffer->getUploadedGpuBuffer(req);
-	meshletPrim.buffer->getUploadedGpuBuffer(req);
-
-	u32  vertOffset  = ax_safe_cast_from(meshletVert.buffer->gpuBufferIndex());
-	u32  primOffset  = ax_safe_cast_from(meshletPrim.buffer->gpuBufferIndex());
-	auto srcMeshlets = meshletInfo.span();
-	auto dstMeshlets = meshlet.editData(0, srcMeshlets.size());
+auto MeshObject::onGetGpuData(RenderRequest* req) -> const GpuData* {
+	_meshObjectInfo.lodGroupCount = ax_safe_cast_from(meshLodGroup.count());
+	_meshObjectInfo.meshletCount  = ax_safe_cast_from(meshlet.count());
 	
-	for (Int i = 0; i < srcMeshlets.size(); ++i) {
-		auto& dst = dstMeshlets[i];
-		dst = srcMeshlets[i];
-		dst.draw.vertOffset += vertOffset;
-		dst.draw.primOffset += primOffset;
+	if (_meshObjectInfo.lodGroupCount <= 0) return nullptr;
+
+	 meshletVert.buffer->getUploadedGpuBuffer(req);
+	 meshletPrim.buffer->getUploadedGpuBuffer(req);
+
+	u32  newVertOffset = ax_safe_cast_from(meshletVert.buffer->gpuBufferIndex());
+	u32  oldVertOffset = _meshObjectInfo.vertOffset;
+
+	u32  newPrimOffset = ax_safe_cast_from(meshletPrim.buffer->gpuBufferIndex());
+	u32  oldPrimOffset = _meshObjectInfo.primOffset;
+	
+	for (AxGpuMeshlet& dst : meshlet.editData(0, _meshObjectInfo.meshletCount)) {
+		dst.draw.vertOffset += newVertOffset - oldVertOffset;
+		dst.draw.primOffset += newPrimOffset - oldPrimOffset;
 	}
+	_meshObjectInfo.vertOffset = newVertOffset;
+	_meshObjectInfo.primOffset = oldVertOffset;
 	
 	meshlet.buffer->getUploadedGpuBuffer(req);
-
-	_gpuData.meshletOffset  = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
-	_gpuData.meshletCount   = ax_safe_cast_from(meshlet.buffer->count());
-	_gpuData.totalVertCount = ax_safe_cast_from(meshletVert.buffer->count());
-	_gpuData.totalPrimCount = ax_safe_cast_from(meshletPrim.buffer->count());
-	return &_gpuData;
+	u32 newMeshletOffset = ax_safe_cast_from(meshlet.buffer->gpuBufferIndex());
+	u32 oldMeshletOffset = _meshObjectInfo.meshletOffset;
+	
+	for (AxGpuMeshLodGroup& dst : meshLodGroup.editData(0, _meshObjectInfo.lodGroupCount)) {
+		dst.meshletOffset += newMeshletOffset - oldMeshletOffset;
+	}
+	_meshObjectInfo.meshletOffset = newMeshletOffset;
+	meshLodGroup.buffer->getUploadedGpuBuffer(req);
+	
+	return &_meshObjectInfo;
 }
 
 void MeshObject::createBuffers() {
+	_meshObjectInfo = {};
+	
 	auto* objMgr = RenderObjectManager_Backend::s_instance();
-	    meshlet.create(AX_NEW, "axGpuMeshlet"    , objMgr->_structBufferPools.axMeshlet);
-	meshletVert.create(AX_NEW, "axGpuMeshletVert", objMgr->_structBufferPools.axMeshletVert);
-	meshletPrim.create(AX_NEW, "axGpuMeshletPrim", objMgr->_structBufferPools.axMeshletPrim);
+	meshLodGroup.create(AX_NEW, "axGpuMeshLodGroup", objMgr->_structBufferPools.axMeshLodGroup);
+	     meshlet.create(AX_NEW, "axGpuMeshlet"     , objMgr->_structBufferPools.axMeshlet);
+	 meshletVert.create(AX_NEW, "axGpuMeshletVert" , objMgr->_structBufferPools.axMeshletVert);
+	 meshletPrim.create(AX_NEW, "axGpuMeshletPrim" , objMgr->_structBufferPools.axMeshletPrim);
 }
 
 void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	createBuffers();
 	constexpr Int kMaxVertexCountPerMeshlet = AX_HLSL_MESH_SHADER_MAX_VERT_COUNT;
+	
+	Array<AxGpuMeshlet> meshletInfo;
 	
 	meshletInfo.clear();
 	auto* curMeshlet = &meshletInfo.emplaceBack();
@@ -72,7 +85,7 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 	for (auto& pt : srcMesh.points()) {
 		bounds.includePoint(Vec3f::s_cast(pt.pos));
 	}
-	_gpuData.bounds = bounds;
+	_meshObjectInfo.bounds = bounds;
 
 	Array<Vec3d, 64> facePositions;
 	for (auto& face : srcMesh.faces()) {
@@ -114,35 +127,12 @@ void MeshObject::createFromEditableMesh(const EditableMesh& srcMesh) {
 		curMeshlet->draw.primCount += triCount;
 	}
 	
-	objectSlot.markDirty();
-}
-
-void MeshObject::createFromEditableMesh2(const EditableMesh& srcMesh) {
-	createBuffers();
+	meshlet.appendValues(meshletInfo);
 	
-	Array<AxGpuMeshletVert> vertices;
-	Array<u32> indices;
-	
-	vertices.ensureCapacity(srcMesh.points().size());
-	for (auto& pt : srcMesh.points()) {
-		auto& v = vertices.emplaceBack();
-		v.pos    = Vec3f::s_cast(pt.pos);
-		v.normal = Vec3f::s_cast(pt.normal);
-	}
-
-	indices.ensureCapacity(srcMesh.faces().size() * 3);
-	for (auto& face : srcMesh.faces()) {
-		auto faceEdges = face.getFaceEdges(srcMesh);
-		auto triCount = faceEdges.size() - 2;
-		for (Int i = 0; i < triCount; ++i) {
-			indices.emplaceBack(static_cast<u32>(faceEdges[0  ].pointId()));
-			indices.emplaceBack(static_cast<u32>(faceEdges[i+1].pointId()));
-			indices.emplaceBack(static_cast<u32>(faceEdges[i+2].pointId()));
-		}
-	}
-	
-	ClusterGenerator gen;
-	gen.nanite(*this, vertices, indices);
+	AxGpuMeshLodGroup lodGroup = {};
+	lodGroup.meshletOffset = 0;
+	lodGroup.meshletCount  = ax_safe_cast_from(meshletInfo.size());
+	meshLodGroup.appendValues(lodGroup);
 	
 	objectSlot.markDirty();
 }

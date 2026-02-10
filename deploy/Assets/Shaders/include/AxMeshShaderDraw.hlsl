@@ -4,9 +4,9 @@
 #include "Ax/AxWorld.hlsl"
 
 AX_ROOT_CONST_STRUCT(AxMeshShaderDrawRootConst, axMeshShaderDrawRootConst) 
-#define AX_MATRIX_M			axMeshShaderDrawRootConst.worldMatrix
-#define AX_MESH_ID			axMeshShaderDrawRootConst.meshId
-#define AX_MATRIX_VP		axCamera.viewProjMatrix
+#define AX_MATRIX_M				axMeshShaderDrawRootConst.worldMatrix
+#define AX_MESH_LOD_GROUP_ID	axMeshShaderDrawRootConst.meshLodGroupId
+#define AX_MATRIX_VP			axCamera.viewProjMatrix
 
 Vec3f axObjectToWorldPos(Vec4f inPos) { return mul(AX_MATRIX_M,  inPos).xyz; }
 Vec4f axWorldToClipPos  (Vec4f inPos) { return mul(AX_MATRIX_VP, inPos); }

@@ -82,7 +82,7 @@
               "offset": 0, 
               "sizeInBytes": 64
             }, {
-              "name": "meshId", 
+              "name": "meshLodGroupId", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0

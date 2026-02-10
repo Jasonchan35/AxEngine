@@ -96,16 +96,29 @@ bool ImUIInputFloat4(ZStrView label, Quat4f& value) {
 }
 
 bool ImUIDragFloat(ZStrView label, float* v, float v_speed, float v_min, float v_max) {
-	return ::ImGui::DragFloat(label.c_str(),
+	return ImGui::DragFloat(label.c_str(),
 	                          v,
 	                          v_speed,
 	                          v_min,
 	                          v_max,
-	                          ImUI::showMixedValue ? ImUI::mixedValueFormat : ImUI::floatFormat);
+	                          ImUI::showMixedValue ? ImUI::mixedValueFormat : ImUI::floatFormat, 
+	                          ImGuiSliderFlags_AlwaysClamp);
+}
+
+bool ImUIDragInt(ZStrView label, Int* v, float v_speed, Int v_min, Int v_max) {
+	int tmpV   = ax_safe_cast_from(*v);
+	int tmpMin = ax_safe_cast_from(v_min);
+	int tmpMax = ax_safe_cast_from(v_max);
+	
+	if (ImGui::DragInt(label.c_str(), &tmpV, v_speed, tmpMin, tmpMax, "%d", ImGuiSliderFlags_AlwaysClamp)) {
+		*v = tmpV;
+		return true;
+	}
+	return false;
 }
 
 float ImUIInputFloat(ZStrView label, float* v) {
-	return ::ImGui::InputFloat(label.c_str(),
+	return ImGui::InputFloat(label.c_str(),
 	                           v,
 	                           0,
 	                           0,
