@@ -19,6 +19,7 @@ public:
 	RenderMesh	meshData;
 	
 	void createFromEditableMesh(const EditableMesh& srcMesh);
+	void createFromEditableMesh2(const EditableMesh& srcMesh);
 
 	bool isMeshletValid() const { return meshletInfo.size() > 0; }
 	

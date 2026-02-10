@@ -54,6 +54,13 @@ public:
 	AX_INLINE static constexpr This s_empty()			{ return This(Vec::s_all(1), Vec::s_all(-1)); }
 	
 	constexpr void includePoint(const Vec& pt);
+	
+	constexpr void merge(const This& v) {
+		includePoint(v.min);
+		includePoint(v.max);
+	}
+	
+	constexpr Vec size() const { return max - min; }
 
 	constexpr void getCornerPoints(FixedArray<Vec, Math::pow_<N>(2)>& outPoints) const;
 };
