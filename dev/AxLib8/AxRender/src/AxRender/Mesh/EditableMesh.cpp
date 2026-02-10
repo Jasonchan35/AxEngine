@@ -94,8 +94,8 @@ EditableMesh::Face& EditableMesh::addFace(IntSpan pointIndices) {
 		auto faceEdgeId = faceEdgeBaseId + i;
 		fe._id = faceEdgeId;
 		fe._next = faceEdgeBaseId + (i + 1) % n;
-		fe._face = faceId;
-		fe._point = vi0;
+		fe._faceId = faceId;
+		fe._pointId = vi0;
 
 		auto& point0 = point(vi0);
 		auto& point1 = point(vi1);
@@ -160,8 +160,8 @@ void EditableMesh::updateFaceNormals() {
 		//------
 		auto faceEdges = face.getFaceEdges(*this);
 		for (auto& fe : faceEdges) {
-			point(fe._point).normal += face.normal;
-			edge(fe._edge).normal += face.normal;
+			point(fe._pointId).normal += face.normal;
+			edge(fe._edgeId).normal += face.normal;
 		}
 	}
 
@@ -183,8 +183,8 @@ void EditableMesh::updateFaceVertexNormals(double hardEdgeAngleDeg) {
 	}
 
 	for (auto& e : _edges) {
-		auto& f0 = face(faceEdge(e._faceEdgeHead)._face);
-		auto& f1 = face(faceEdge(e._faceEdgeTail)._face);
+		auto& f0 = face(faceEdge(e._faceEdgeHead)._faceId);
+		auto& f1 = face(faceEdge(e._faceEdgeTail)._faceId);
 		e.softEdge = Math::abs(f0.normal.dot(f1.normal)) > cosAngle;
 	}
 
@@ -195,13 +195,13 @@ void EditableMesh::updateFaceVertexNormals(double hardEdgeAngleDeg) {
 
 		for (auto& fe0 : faceEdges) {
 			auto& fe1 = faceEdge(fe0._next);
-			auto& e0 = edge(fe0._edge);
-			auto& e1 = edge(fe1._edge);
+			auto& e0 = edge(fe0._edgeId);
+			auto& e1 = edge(fe1._edgeId);
 
 			if (e0.softEdge && e1.softEdge) {
-				*outN = point(fe0._point).normal;
+				*outN = point(fe0._pointId).normal;
 			}else{
-				*outN = face(fe0._face).normal;
+				*outN = face(fe0._faceId).normal;
 			}
 			outN++;
 		}
@@ -241,10 +241,15 @@ void EditableMesh::Face::getPoints(Mesh& mesh, IArray<Point*>& result) const {
 
 	for (Int i = 0; i < _faceEdgeCount; i++) {
 		auto& fe = mesh.faceEdge(t + i);
-		*fv = &mesh.point(fe._point);
+		*fv = &mesh.point(fe._pointId);
 		fv++;
 	}
 	AX_ASSERT(fv == result.end());
+}
+
+void EditableMesh::Face::getPoints(const Mesh& mesh, IArray<const Point*>& result) const {
+	auto* pResult = reinterpret_cast<IArray<Point*>*>(&result);
+	getPoints(ax_const_cast(mesh), *pResult);
 }
 
 void EditableMesh::Face::getPositions(const Mesh& mesh, IArray<Vec3>& result) const {
@@ -254,7 +259,7 @@ void EditableMesh::Face::getPositions(const Mesh& mesh, IArray<Vec3>& result) co
 
 	for (Int i = 0; i < _faceEdgeCount; i++) {
 		auto& fe = mesh.faceEdge(t + i);
-		*fv = mesh.point(fe._point).pos;
+		*fv = mesh.point(fe._pointId).pos;
 		fv++;
 	}
 	AX_ASSERT(fv == result.end());
@@ -262,7 +267,7 @@ void EditableMesh::Face::getPositions(const Mesh& mesh, IArray<Vec3>& result) co
 
 void EditableMesh::Edge::addFaceEdge(Mesh& mesh, FaceEdge& fe) {
 	AX_ASSERT(_id != EdgeId::Invalid);
-	fe._edge = _id;
+	fe._edgeId = _id;
 	if (_faceEdgeHead == FaceEdgeId::Invalid) {
 		_faceEdgeHead = fe._id;
 		_faceEdgeTail = fe._id;

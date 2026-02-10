@@ -322,7 +322,7 @@ public:
 		                                         VertexNormalCount::Normal);
 		
 		RenderMeshEdit(meshObject->meshData).createFromEditableMesh(vertexLayout, *dstMesh);
-		meshObject->createFromEditableMesh(*dstMesh);
+		meshObject->createFromEditableMesh2(*dstMesh);
 	}
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {

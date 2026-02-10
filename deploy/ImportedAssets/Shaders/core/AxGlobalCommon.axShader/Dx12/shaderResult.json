@@ -323,7 +323,7 @@
           "bindSpace": "World", 
           "bindPoint": 203, 
           "bindCount": 1, 
-          "stride": 16, 
+          "stride": 32, 
           "variables": [{
               "name": "draw", 
               "varType": {
@@ -340,7 +340,7 @@
           "bindSpace": "World", 
           "bindPoint": 204, 
           "bindCount": 1, 
-          "stride": 16, 
+          "stride": 48, 
           "variables": [{
               "name": "meshletOffset", 
               "varType": {
@@ -372,6 +372,30 @@
                 "elementCount": 0
               }, 
               "offset": 12, 
+              "sizeInBytes": 0
+            }, {
+              "name": "bounds", 
+              "varType": {
+                "dataType": "Struct", 
+                "elementCount": 0
+              }, 
+              "offset": 16, 
+              "sizeInBytes": 0
+            }, {
+              "name": "_padding0", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 40, 
+              "sizeInBytes": 0
+            }, {
+              "name": "_padding1", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 44, 
               "sizeInBytes": 0
             }]
         }, {

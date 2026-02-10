@@ -329,7 +329,11 @@ public:
 	
 	void setValue(Int index, const T& v)      	{ return buffer->setValue(index, Span(v)); }
 	void setValues(Int index, Span<T> span)   	{ return buffer->setValues(index, span); }
+	
+	void appendValues(Span<T> span) { extendsData(span.size()).copyValues(span); }
 
+	Int count() const { return buffer ? buffer->count() : 0; }
+	
 	SPtr<StructuredGpuBuffer> buffer;
 };
 

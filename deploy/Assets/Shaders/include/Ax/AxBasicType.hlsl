@@ -32,6 +32,11 @@ typedef int2		i32x2;
 typedef int3		i32x3;
 typedef int4		i32x4;
 
+struct BBox3f {
+	Vec3f min;
+	Vec3f max;
+};
+
 
 // HLSL: resource : register(x, space) | DX: D3D12_SHADER_INPUT_BIND_DESC |  spirv-cross reflection
 // HLSL: shader register               | DX: "BindPoint"                  |  Vulkan "binding"

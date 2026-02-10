@@ -340,7 +340,7 @@
           "bindSpace": "World", 
           "bindPoint": 20203, 
           "bindCount": 1, 
-          "stride": 16, 
+          "stride": 32, 
           "variables": [{
               "name": "draw", 
               "varType": {
@@ -348,7 +348,7 @@
                 "elementCount": 0
               }, 
               "offset": 0, 
-              "sizeInBytes": 16
+              "sizeInBytes": 32
             }]
         }, {
           "name": "axGpuMeshObject", 
@@ -357,7 +357,7 @@
           "bindSpace": "World", 
           "bindPoint": 20204, 
           "bindCount": 1, 
-          "stride": 16, 
+          "stride": 56, 
           "variables": [{
               "name": "meshletOffset", 
               "varType": {
@@ -389,6 +389,30 @@
                 "elementCount": 0
               }, 
               "offset": 12, 
+              "sizeInBytes": 4
+            }, {
+              "name": "bounds", 
+              "varType": {
+                "dataType": "Struct", 
+                "elementCount": 0
+              }, 
+              "offset": 16, 
+              "sizeInBytes": 32
+            }, {
+              "name": "_padding0", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 48, 
+              "sizeInBytes": 4
+            }, {
+              "name": "_padding1", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 52, 
               "sizeInBytes": 4
             }]
         }, {

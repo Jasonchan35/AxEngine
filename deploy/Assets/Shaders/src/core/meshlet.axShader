@@ -85,7 +85,7 @@ void ms_main(
 		VS_Input i;
 
 		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
-		i.pos    = Vec4f(mv.pos, 1);
+		i.pos    = Vec4f(mv.pos + Vec3f(0, meshlet.lod, 0), 1);
 		i.normal = mv.normal;
 		i.color0 = ax_debug_color(gid);
 

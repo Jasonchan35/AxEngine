@@ -60,6 +60,7 @@ add_subdirectory(external/DirectX-Headers)
 add_subdirectory(external/D3D12MemoryAllocator)
 add_subdirectory(external/VulkanMemoryAllocator)
 add_subdirectory(external/assimp)
+add_subdirectory(external/meshoptimizer)
 # add_subdirectory(external/OpenUSD)
 
 add_subdirectory(AxLib8/AxCore)

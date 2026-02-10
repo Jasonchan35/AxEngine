@@ -19,8 +19,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC JPEG::JPEG)
 find_package(Freetype REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC Freetype::Freetype)
 
-find_package(meshoptimizer REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE meshoptimizer::meshoptimizer)
+# find_package(meshoptimizer REQUIRED)
+# target_link_libraries(${PROJECT_NAME} PRIVATE meshoptimizer::meshoptimizer)
+target_link_libraries(${PROJECT_NAME} PRIVATE meshoptimizer)
 
 
 

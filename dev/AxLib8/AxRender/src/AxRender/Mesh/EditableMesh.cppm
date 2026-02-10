@@ -106,13 +106,16 @@ public:
 		Vec3&		normal	(Mesh& mesh);
 		Edge&		edge	(Mesh& mesh);
 		FaceEdgeId	id		() const { return _id; }
+		PointId		pointId () const { return _pointId; }
+		EdgeId		edgeId () const { return _edgeId; }
+		FaceId		faceId () const { return _faceId; }
 
 	friend class EditableMesh;
 	protected:
 		FaceEdgeId		_id			= FaceEdgeId::Invalid;
-		PointId			_point		= PointId::Invalid;
-		EdgeId			_edge		= EdgeId::Invalid;
-		FaceId			_face		= FaceId::Invalid;
+		PointId			_pointId	= PointId::Invalid;
+		EdgeId			_edgeId		= EdgeId::Invalid;
+		FaceId			_faceId		= FaceId::Invalid;
 		FaceEdgeId		_next		= FaceEdgeId::Invalid;
 		FaceEdgeId		_adjacent	= FaceEdgeId::Invalid; //FaceEdge shared by the same edge
 	};
@@ -125,6 +128,7 @@ public:
 		FaceId		id() const { return _id; }
 
 		void				getPoints	(Mesh& mesh, IArray<Point*>& result) const;
+		void				getPoints	(const Mesh& mesh, IArray<const Point*>& result) const;
 		void				getPositions(const Mesh& mesh, IArray<Vec3>& result) const;
 		
 		MutSpan<FaceEdge>	getFaceEdges(Mesh& mesh) const;
@@ -141,6 +145,7 @@ public:
 		
 	friend class EditableMesh;
 	protected:
+		
 		FaceId			_id   = FaceId::Invalid;
 		FaceEdgeId		_faceEdgeHead = FaceEdgeId::Invalid;
 		Int			_faceEdgeCount;
@@ -285,7 +290,7 @@ EditableMesh::EdgeId& EditableMesh::Edge::next(PointId p) {
 
 AX_INLINE
 EditableMesh::Point& EditableMesh::FaceEdge::point(Mesh& mesh) {
-	return mesh.point(_point);
+	return mesh.point(_pointId);
 }
 
 AX_INLINE
@@ -295,7 +300,7 @@ EditableMesh::Vec3& EditableMesh::FaceEdge::normal(Mesh& mesh) {
 
 AX_INLINE
 EditableMesh::Edge& EditableMesh::FaceEdge::edge(Mesh& mesh) {
-	return mesh.edge(_edge);
+	return mesh.edge(_edgeId);
 }
 
 template<class CH> inline

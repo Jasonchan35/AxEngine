@@ -20,6 +20,11 @@ struct AxGpuMeshletDraw {
 	u32 vertCount;
 	u32 primOffset;
 	u32 primCount;
+	
+	u32 lod;
+	u32 _padding0;
+	u32 _padding1;
+	u32 _padding2;
 };
 
 struct AxGpuMeshlet {
@@ -51,6 +56,8 @@ struct AxGpuMeshObject {
 	u32 totalVertCount;
 	u32 totalPrimCount;
 	BBox3f bounds;
+	u32 _padding0;
+	u32 _padding1;
 };
 
 struct AxGpuMeshObjectRenderer {
