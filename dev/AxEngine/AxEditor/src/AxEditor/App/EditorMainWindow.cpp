@@ -159,8 +159,31 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	
 	
 	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _opMode, _opSpace, snap, bounds, worldMatrix)) {
-		auto m = worldMatrix;
-		entity->setWorldMatrix(m);
+	#if 1
+		entity->setWorldMatrix(worldMatrix);
+	#else
+		auto* parent = entity->parent();
+		auto wm = Mat4d::s_cast(worldMatrix);
+		
+		auto localMatrix = parent ? Mat4d::s_cast(parent->worldMatrix()).inverse() * wm : wm;
+		
+		Vec3d  position;
+		Quat4d rotation;
+		Vec3d  scale;
+		localMatrix.getTRS(position, rotation, scale);
+		
+		rotation = rotation.normalize();
+		
+		switch (_opMode) {
+			case ImUIGizmoOperation::Translate: entity->position = Vec3f::s_cast(position);  break;
+			case ImUIGizmoOperation::Rotate   : entity->rotation = Quat4f::s_cast(rotation); break;
+			case ImUIGizmoOperation::Bounds: AX_FALLTHROUGH
+			case ImUIGizmoOperation::Scale: {
+				entity->scale    = Vec3f::s_cast(scale);
+			} break;
+			default: break;
+		}		
+#endif	
 	}
 }
 

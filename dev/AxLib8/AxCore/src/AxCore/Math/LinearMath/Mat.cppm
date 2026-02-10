@@ -330,9 +330,9 @@ auto Mat_<4, 4, T, SIMD>::mulNormal(const Vec3& v) const -> Vec3 {
 template<class T, VecSimd SIMD>
 constexpr typename Mat_<4, 4, T, SIMD>::Vec3 Mat_<4, 4, T, SIMD>::scale() const {
 	Vec3 scale;
-	scale.x = row(0).xyz().length();
-	scale.y = row(1).xyz().length();
-	scale.z = row(2).xyz().length();
+	scale.x = cx.xyz().length();
+	scale.y = cy.xyz().length();
+	scale.z = cz.xyz().length();
 	return scale;
 }
 
@@ -789,17 +789,17 @@ constexpr typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_TRS(const Ve
 	
 	Mat4 mat;
 	mat.cx.x = scale.x * (T(1) - T(2) * (y * y + z * z));
-	mat.cx.y = scale.y * (T(2) * (x * y - z * w));
-	mat.cx.z = scale.z * (T(2) * (x * z + y * w));
+	mat.cx.y = scale.x * (T(2) * (x * y - z * w));
+	mat.cx.z = scale.x * (T(2) * (x * z + y * w));
 	mat.cx.w = 0;
 
-	mat.cy.x = scale.x * (T(2) * (x * y + z * w));
+	mat.cy.x = scale.y * (T(2) * (x * y + z * w));
 	mat.cy.y = scale.y * (T(1) - T(2) * (x * x + z * z));
-	mat.cy.z = scale.z * (T(2) * (y * z - x * w));
+	mat.cy.z = scale.y * (T(2) * (y * z - x * w));
 	mat.cy.w = 0;
 
-	mat.cz.x = scale.x * (T(2) * (x * z - y * w));
-	mat.cz.y = scale.y * (T(2) * (y * z + x * w));
+	mat.cz.x = scale.z * (T(2) * (x * z - y * w));
+	mat.cz.y = scale.z * (T(2) * (y * z + x * w));
 	mat.cz.z = scale.z * (T(1) - T(2) * (x * x + y * y));
 	mat.cz.w = 0;
 
@@ -816,17 +816,17 @@ auto Mat_<4,4,T,SIMD>::s_TRS_rad(const Vec3 & translate, const Vec3 & rotate, co
 
 	Mat4 mat;
 	mat.cx.x = scale.x * (c.y * c.z);
-	mat.cx.y = scale.y * (c.y * s.z);
-	mat.cx.z = scale.z * (-s.y);
+	mat.cx.y = scale.x * (c.y * s.z);
+	mat.cx.z = scale.x * (-s.y);
 	mat.cx.w = 0;
 
-	mat.cy.x = scale.x * (s.x * s.y * c.z - c.x * s.z);
+	mat.cy.x = scale.y * (s.x * s.y * c.z - c.x * s.z);
 	mat.cy.y = scale.y * (c.x * c.z + s.x * s.y * s.z);
-	mat.cy.z = scale.z * (s.x * c.y);
+	mat.cy.z = scale.y * (s.x * c.y);
 	mat.cy.w = 0;
 
-	mat.cz.x = scale.x * (s.x * s.z + c.x * s.y * c.z);
-	mat.cz.y = scale.y * (c.x * s.y * s.z - s.x * c.z);
+	mat.cz.x = scale.z * (s.x * s.z + c.x * s.y * c.z);
+	mat.cz.y = scale.z * (c.x * s.y * s.z - s.x * c.z);
 	mat.cz.z = scale.z * (c.x * c.y);
 	mat.cz.w = 0;
 

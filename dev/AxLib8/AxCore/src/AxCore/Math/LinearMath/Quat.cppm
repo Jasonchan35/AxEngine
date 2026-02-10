@@ -189,7 +189,7 @@ auto Quat_<4, T, SIMD>::normalize() const -> This {
 		return *this;
 	} else {
 		T invMag = Math::rsqrt_fast(magSq);
-		return *this * invMag;
+		return _simd * invMag;
 	}
 }
 
