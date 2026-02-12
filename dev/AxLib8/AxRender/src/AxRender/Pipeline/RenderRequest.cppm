@@ -32,7 +32,6 @@ class RenderRequest : public RenderRequestBase {
 public:
 	using BindSpace = ShaderParamBindSpace;
 
-	void drawMeshRenderer(MeshObjectRenderer* mr);
 	void drawMesh(MeshObject*    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
 	void drawMesh(RenderMesh&    mesh,    Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());
 	void drawSubMesh(RenderSubMesh& subMesh, Material*	material, Int materialPass = 0, const Mat4f& objectToWorld = Mat4f::s_identity());

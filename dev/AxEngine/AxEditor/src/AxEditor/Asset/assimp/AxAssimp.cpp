@@ -217,8 +217,8 @@ public:
 		u32 numVert = srcMesh->mNumVertices;
 		u32 numPrim = srcMesh->mNumFaces; 
 		
-		auto dstVert = dstMesh->meshletVertBuffer.editData(0, numVert);
-		auto dstPrim = dstMesh->meshletPrimBuffer.editData(0, numPrim);
+		auto dstVert = dstMesh->meshlet.vertBuffer.editData(0, numVert);
+		auto dstPrim = dstMesh->meshlet.primBuffer.editData(0, numPrim);
 		
 		{ // pos
 			Int j = 0;
@@ -249,16 +249,16 @@ public:
 			}
 		}
 		
-		AxGpuMeshlet meshlet = {};
-		meshlet.vertCount = numVert;
-		meshlet.primCount = numPrim;
-		dstMesh->meshletBuffer.setValue(0, meshlet);
+		AxGpuMeshletCluster dstCluster = {};
+		dstCluster.vertCount = numVert;
+		dstCluster.primCount = numPrim;
+		dstMesh->meshlet.clusterBuffer.setValue(0, dstCluster);
 	}
 	
 	void importMesh(aiMesh* srcMesh) {
 		auto meshObject = MeshObject::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
-		importRenderMesh(srcMesh, meshObject->meshData);
+		importRenderMesh(srcMesh, meshObject->renderMesh);
 		importMeshObject(srcMesh, meshObject);
 	}
 
@@ -290,7 +290,7 @@ public:
 		}
 		
 		SPtr<MeshObject> meshObject = MeshObject::s_new(AX_NEW);
-		meshObject->create(vertices, indices);
+		meshObject->createMeshlet(vertices, indices);
 		_meshes.emplaceBack(meshObject);
 	}
 	
@@ -354,8 +354,7 @@ public:
 		                                         dstMesh->uvChannelCount(),
 		                                         VertexNormalCount::Normal);
 		
-		RenderMeshEdit(meshObject->meshData).createFromEditableMesh(vertexLayout, *dstMesh);
-		meshObject->createFromEditableMesh(*dstMesh);
+		RenderMeshEdit(meshObject->renderMesh).createFromEditableMesh(vertexLayout, *dstMesh);
 	}
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {

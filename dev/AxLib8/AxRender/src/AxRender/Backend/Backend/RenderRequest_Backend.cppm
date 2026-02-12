@@ -90,8 +90,6 @@ public:
 	void vertexShaderDraw_backend(AxVertexShaderDraw& draw);
 	void meshShaderDraw_backend(AxMeshShaderDraw& draw);
 	
-	void drawMeshRenderer_backend(MeshObjectRenderer* mr);
-	
 	void drawWorld_backend() { onDrawWorld(); }
 	virtual void onDrawWorld() {}
 	

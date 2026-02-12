@@ -11,16 +11,12 @@ RenderRequest::RenderRequest()
 , _debugData({}) 
 {}
 
-void RenderRequest::drawMeshRenderer(MeshObjectRenderer* mr) {
-	static_cast<RenderRequest_Backend*>(this)->drawMeshRenderer_backend(mr);
-}
-
 void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!material) return;
 	if (!mesh) return;
 	
-	if (mesh->meshletBuffer.count() <= 0) {
-		drawMesh(mesh->meshData, material, materialPass, objectToWorld);
+	if (mesh->meshlet.clusterBuffer.count() <= 0) {
+		drawMesh(mesh->renderMesh, material, materialPass, objectToWorld);
 		return;
 	}
 	
@@ -31,8 +27,8 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	draw.objectToWorld = objectToWorld; // * Mat4f::s_translate(0, 3, 0);
 	draw.meshObject = mesh;
 	
-	u32 meshletCount        = ax_safe_cast_from(mesh->meshletBuffer.count());
-	u32 dispatchGroupCount  = Math::alignDivTo(meshletCount, AX_HLSL_THREADS_PER_WAVE);
+	u32 clusterCount        = ax_safe_cast_from(mesh->meshlet.clusterBuffer.count());
+	u32 dispatchGroupCount  = Math::alignDivTo(clusterCount, AX_HLSL_THREADS_PER_WAVE);
 	draw.dispatchGroupCount = u32x3(dispatchGroupCount, 1, 1);
 	draw.lodGroupId         = 0;
 	

@@ -141,7 +141,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			ImUICheckBoxArray_Item<i32> list_[] = {
 				{.name = "None"    , .value = AxGpuDebugColorCode_None               },
 				{.name = "Tri"     , .value = AxGpuDebugColorCode_Tri                },
-				{.name = "Meshlet" , .value = AxGpuDebugColorCode_Meshlet            },
+				{.name = "Cluster" , .value = AxGpuDebugColorCode_MeshletCluster     },
 				{.name = "Group"   , .value = AxGpuDebugColorCode_MeshletGroup       },
 				{.name = "Refine"  , .value = AxGpuDebugColorCode_MeshletRefinedGroup},
 				{.name = "Lod"     , .value = AxGpuDebugColorCode_MeshletLod         },

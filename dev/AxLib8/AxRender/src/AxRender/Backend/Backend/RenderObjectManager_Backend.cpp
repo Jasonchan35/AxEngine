@@ -115,10 +115,10 @@ void RenderObjectManager_Backend::_postCreate() {
 		}
 	};
 	
-	createPoolParam(_structBufferPools.axMeshletGroup, "axGpuMeshletGroup", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axMeshlet     , "axGpuMeshlet"     , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axMeshletVert , "axGpuMeshletVert" , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axMeshletPrim , "axGpuMeshletPrim" , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletGroup  , "axGpuMeshletGroup"  , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletCluster, "axGpuMeshletCluster", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletVert   , "axGpuMeshletVert"   , 3 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletPrim   , "axGpuMeshletPrim"   , 2 * Math::GigaBytes, 4 * Math::MegaBytes);
 
 	
 #if AX_RENDER_BINDLESS

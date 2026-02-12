@@ -56,12 +56,10 @@ struct AxVertexShaderDrawRootConst {
 struct AxMeshShaderDrawRootConst {
 	Mat4f worldMatrix;
 	u32   meshObjectId;
-	u32   meshletGroupOffset;
-	u32   meshletGroupCount;
 	u32   meshRendererId;
 };
 
-struct AxGpuMeshlet {
+struct AxGpuMeshletCluster {
 	u32 vertOffset;
 	u32 vertCount;
 	u32 primOffset;
@@ -90,8 +88,8 @@ struct AxGpuMeshletPrim {
 };
 
 struct AxGpuMeshletGroup {
-	u32   meshletOffset;
-	u32   meshletCount;
+	u32   clusterOffset;
+	u32   clusterCount;
 	float clusterError;
 	float radius;
 	Vec3f center;
@@ -106,8 +104,8 @@ struct AxGpuMeshObject {
 
 	u32   meshletGroupOffset;
 	u32   meshletGroupCount;
-	u32   meshletOffset;
-	u32   meshletCount;
+	u32   meshletClusterOffset;
+	u32   meshletClusterCount;
 };
 
 struct AxGpuMeshObjectRenderer {

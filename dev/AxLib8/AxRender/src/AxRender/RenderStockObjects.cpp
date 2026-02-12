@@ -55,22 +55,22 @@ RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
 
 RenderStockObjects::Meshes::Meshes() {
 	Axis = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(Axis->meshData).createAxis(Vertex_PosColor::s_layout());
+	RenderMeshEdit(Axis->renderMesh).createAxis(Vertex_PosColor::s_layout());
 
 	//----
 	auto layout = Vertex_PosColorUvNormal::s_layout();
 
 	Cube = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(Cube->meshData).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
+	RenderMeshEdit(Cube->renderMesh).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
 	
 	Sphere = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(Sphere->meshData).createSphere(layout, 1, 32, 32);
+	RenderMeshEdit(Sphere->renderMesh).createSphere(layout, 1, 32, 32);
 	
 	Cone = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(Cone->meshData).createCone(layout, 1, 1, 2, 32, true);
+	RenderMeshEdit(Cone->renderMesh).createCone(layout, 1, 1, 2, 32, true);
 	
 	Cylinder = MeshObject::s_new(AX_NEW);
-	RenderMeshEdit(Cylinder->meshData).createCylinder(layout, 1, 1, 2, 32, true, true);
+	RenderMeshEdit(Cylinder->renderMesh).createCylinder(layout, 1, 1, 2, 32, true, true);
 }
 
 RenderStockObjects::Materials::Materials() {

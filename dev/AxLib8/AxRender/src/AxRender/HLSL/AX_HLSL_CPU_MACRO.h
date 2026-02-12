@@ -14,7 +14,7 @@
 
 #define AxGpuDebugColorCode_None                0
 #define AxGpuDebugColorCode_Tri                 1
-#define AxGpuDebugColorCode_Meshlet             2
+#define AxGpuDebugColorCode_MeshletCluster      2
 #define AxGpuDebugColorCode_MeshletGroup        3
 #define AxGpuDebugColorCode_MeshletRefinedGroup 4
 #define AxGpuDebugColorCode_MeshletLod          5

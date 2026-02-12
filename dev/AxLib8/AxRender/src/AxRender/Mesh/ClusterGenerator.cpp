@@ -346,20 +346,20 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 								getLocalVertIndex(srcIndices[2]));
 			}
 
-			AxGpuMeshlet outMeshlet;
-			outMeshlet.meshObjectId   = outMesh.objectSlot.slotId();
-			outMeshlet.groupId        = ax_safe_cast_from(groups.size());
-			outMeshlet.refinedGroupId = cluster.refined;
-			outMeshlet.lod            = group.depth;
+			AxGpuMeshletCluster outCluster;
+			outCluster.meshObjectId   = outMesh.objectSlot.slotId();
+			outCluster.groupId        = ax_safe_cast_from(groups.size());
+			outCluster.refinedGroupId = cluster.refined;
+			outCluster.lod            = group.depth;
 			
-			outMeshlet.primOffset     = ax_safe_cast_from(outMesh.meshletPrimBuffer.count());
-			outMeshlet.vertOffset     = ax_safe_cast_from(outMesh.meshletVertBuffer.count());
-			outMeshlet.primCount      = ax_safe_cast_from(outPrimArray.size());
-			outMeshlet.vertCount      = ax_safe_cast_from(outVertArray.size());
+			outCluster.primOffset     = ax_safe_cast_from(outMesh.meshlet.primBuffer.count());
+			outCluster.vertOffset     = ax_safe_cast_from(outMesh.meshlet.vertBuffer.count());
+			outCluster.primCount      = ax_safe_cast_from(outPrimArray.size());
+			outCluster.vertCount      = ax_safe_cast_from(outVertArray.size());
 			
-			outMesh.meshletPrimBuffer.appendValues(outPrimArray);
-			outMesh.meshletVertBuffer.appendValues(outVertArray);
-			outMesh.meshletBuffer.appendValues(outMeshlet);
+			outMesh.meshlet.primBuffer.appendValues(outPrimArray);
+			outMesh.meshlet.vertBuffer.appendValues(outVertArray);
+			outMesh.meshlet.clusterBuffer.appendValues(outCluster);
 
 //-------------
 			level.triangles += cluster.index_count / 3;
@@ -390,9 +390,9 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			dst.center = Vec3f(group.simplified.center[0], group.simplified.center[1], group.simplified.center[2]);
 			dst.clusterError = group.simplified.error;
 			dst.radius       = group.simplified.radius;
-			dst.meshletCount = ax_safe_cast_from(cluster_count);
+			dst.clusterCount = ax_safe_cast_from(cluster_count);
 			dst.meshObjectId = outMesh.objectSlot.slotId();
-			outMesh.meshletGroupBuffer.appendValues(dst);
+			outMesh.meshlet.groupBuffer.appendValues(dst);
 		}
 		
 		groups.push_back(group.simplified);

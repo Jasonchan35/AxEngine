@@ -71,15 +71,15 @@ public:
 	} _bufferPools;
 
 	struct StructBufferPools {
-		StructuredGpuBufferPool_<AxGpuMeshletGroup>	axMeshletGroup;
-		StructuredGpuBufferPool_<AxGpuMeshlet>		axMeshlet;
-		StructuredGpuBufferPool_<AxGpuMeshletVert>	axMeshletVert;
-		StructuredGpuBufferPool_<AxGpuMeshletPrim>	axMeshletPrim;
+		StructuredGpuBufferPool_<AxGpuMeshletGroup>		axMeshletGroup;
+		StructuredGpuBufferPool_<AxGpuMeshletCluster>	axMeshletCluster;
+		StructuredGpuBufferPool_<AxGpuMeshletVert>		axMeshletVert;
+		StructuredGpuBufferPool_<AxGpuMeshletPrim>		axMeshletPrim;
 
 		template<class FUNC>
 		void visitPools(FUNC func) {
 			func(axMeshletGroup);
-			func(axMeshlet    );
+			func(axMeshletCluster);
 			func(axMeshletVert);
 			func(axMeshletPrim);
 		}		

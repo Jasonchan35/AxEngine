@@ -25,7 +25,7 @@ Vec3f axObjectToClipNormal (Vec3f inNormal) { return axWorldToClipNormal(axObjec
 
 struct Payload {
 	u32 meshObjectId;
-	u32 meshletCount;
+	u32 clusterCount;
 	u32 meshletIds[AS_GROUP_SIZE];
 };
 
@@ -72,23 +72,23 @@ void axMeshlet_AmplificationMain(
 		s_payload.meshObjectId = AX_MESH_OBJECT_ID;
 	}
 
-	u32 meshletOffset = meshObject.meshletOffset;
-	u32 meshletCount  = meshObject.meshletCount;
+	u32 clusterOffset = meshObject.meshletClusterOffset;
+	u32 clusterCount  = meshObject.meshletClusterCount;
 	u32 groupOffset   = meshObject.meshletGroupOffset;
 
 	bool visibleResult = false;
 
-	if (dtid < meshletCount) {
-		u32 meshletId = meshletOffset + dtid;
-		AxGpuMeshlet meshlet = axGpuMeshlet[meshletId];
+	if (dtid < clusterCount) {
+		u32 clusterId = clusterOffset + dtid;
+		AxGpuMeshletCluster cluster = axGpuMeshletCluster[clusterId];
 
 		Vec3f camPos           = axCamera.worldPos;
 		float camTanFov        = tan(radians(axCamera.fieldOfView * 0.5)) * 2.0;
 		float maxErrorInPixels = axCamera.maxMeshletErrorInPixels;
 
 		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
-		bool lodMatch = (meshlet.refinedGroupId < 0 || boundsError(axGpuMeshletGroup[groupOffset + meshlet.refinedGroupId]) <= maxErrorInPixels) 
-					 && (                              boundsError(axGpuMeshletGroup[groupOffset + meshlet.groupId       ]) >  maxErrorInPixels);
+		bool lodMatch = (cluster.refinedGroupId < 0 || boundsError(axGpuMeshletGroup[groupOffset + cluster.refinedGroupId]) <= maxErrorInPixels) 
+					 && (                              boundsError(axGpuMeshletGroup[groupOffset + cluster.groupId       ]) >  maxErrorInPixels);
 
 		bool insideFrustum = true;
 		bool coneCulling   = true; 
@@ -101,7 +101,7 @@ void axMeshlet_AmplificationMain(
 
 		if (visibleResult) {
 			uint outIndex = WavePrefixCountBits(visibleResult);
-			s_payload.meshletIds[outIndex] = meshletId;
+			s_payload.meshletIds[outIndex] = clusterId;
 		}
 	}
 
@@ -121,34 +121,34 @@ void axMeshlet_MeshMain(
 	out indices    u32x3         outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
 	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
-	u32 meshletId = payload.meshletIds[gid];
-	AxGpuMeshlet meshlet = axGpuMeshlet[meshletId];
+	u32 clusterId = payload.meshletIds[gid];
+	AxGpuMeshletCluster cluster = axGpuMeshletCluster[clusterId];
 
-	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
+	SetMeshOutputCounts(cluster.vertCount, cluster.primCount);
 
-	if (gtid < meshlet.primCount) {
-		outPrim[gtid] = axGpuMeshletPrim[meshlet.primOffset + gtid].tri;
+	if (gtid < cluster.primCount) {
+		outPrim[gtid] = axGpuMeshletPrim[cluster.primOffset + gtid].tri;
 		outPrimId[gtid].primitiveId = gtid;
 	}
 
-	if (gtid < meshlet.vertCount) {
+	if (gtid < cluster.vertCount) {
 		VS_Input i;
 
-		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
+		AxGpuMeshletVert mv = axGpuMeshletVert[cluster.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos, 1);
 
 		if (axDebug.showAllLodDistance > 0) {
-			i.pos = Vec4f(mv.pos + ax_debug_lod_offset(meshlet.lod), 1); // debug
+			i.pos = Vec4f(mv.pos + ax_debug_lod_offset(cluster.lod), 1); // debug
 		}
 
 		i.color0 = float4(1,1,1,1);
 		i.normal = mv.normal;
 
 		switch (axDebug.debugColorCode) {
-			case AxGpuDebugColorCode_Meshlet:             i.color0 = ax_debug_color(meshletId             ); break;
-			case AxGpuDebugColorCode_MeshletGroup:        i.color0 = ax_debug_color(meshlet.groupId       ); break;
-			case AxGpuDebugColorCode_MeshletRefinedGroup: i.color0 = ax_debug_color(meshlet.refinedGroupId); break;
-			case AxGpuDebugColorCode_MeshletLod:          i.color0 = ax_debug_color(meshlet.lod           ); break;
+			case AxGpuDebugColorCode_MeshletCluster:      i.color0 = ax_debug_color(clusterId             ); break;
+			case AxGpuDebugColorCode_MeshletGroup:        i.color0 = ax_debug_color(cluster.groupId       ); break;
+			case AxGpuDebugColorCode_MeshletRefinedGroup: i.color0 = ax_debug_color(cluster.refinedGroupId); break;
+			case AxGpuDebugColorCode_MeshletLod:          i.color0 = ax_debug_color(cluster.lod           ); break;
 		}
 
 		VS_Output o;

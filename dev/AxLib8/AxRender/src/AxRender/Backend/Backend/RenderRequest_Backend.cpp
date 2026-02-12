@@ -237,17 +237,10 @@ void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
 	AxMeshShaderDrawRootConst rootConst;
 	rootConst.worldMatrix        = draw.objectToWorld;
 	rootConst.meshObjectId       = ax_safe_cast_from(meshObject->objectSlot.slotId());
-	rootConst.meshletGroupOffset = ax_safe_cast_from(meshObject->meshletGroupBuffer.gpuBufferOffset());
-	rootConst.meshletGroupCount  = ax_safe_cast_from(meshObject->meshletGroupBuffer.count());
 	matPass->onBindMaterial(this, draw, &rootConst);
 	
 	if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");
 	onMeshShaderDraw(draw);
-}
-
-void RenderRequest_Backend::drawMeshRenderer_backend(MeshObjectRenderer* mr) {
-	if (!mr) return;
-//	_meshShaderDrawRootConst.AX_MESH_RENDERER_ID = mr->objectSlot.slotId();
 }
 
 void RenderRequest_Backend::InlineUpload::create(RenderRequest_Backend* req) {

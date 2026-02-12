@@ -29,12 +29,12 @@ void ms_main(
 	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
 	u32 meshletId = payload.meshletIds[gid];
-	AxGpuMeshlet meshlet = axGpuMeshlet[meshletId];
+	AxGpuMeshletCluster cluster = axGpuMeshletCluster[meshletId];
 
-	SetMeshOutputCounts(meshlet.primCount * 2, meshlet.primCount);
+	SetMeshOutputCounts(cluster.primCount * 2, cluster.primCount);
 
-	if (gtid < meshlet.primCount) {
-		u32x3 tri = axGpuMeshletPrim[meshlet.primOffset + gtid].tri;
+	if (gtid < cluster.primCount) {
+		u32x3 tri = axGpuMeshletPrim[cluster.primOffset + gtid].tri;
 		
 		u32 vi = gtid * 2;
 
@@ -44,8 +44,8 @@ void ms_main(
 	// vertex	
 		VS_Input i;
 
-		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
-		i.pos    = Vec4f(mv.pos + ax_debug_lod_offset(meshlet.lod), 1);
+		AxGpuMeshletVert mv = axGpuMeshletVert[cluster.vertOffset + gtid];
+		i.pos    = Vec4f(mv.pos + ax_debug_lod_offset(cluster.lod), 1);
 		i.normal = mv.normal;
 		i.color0 = float4(1,1,1,1);
 
