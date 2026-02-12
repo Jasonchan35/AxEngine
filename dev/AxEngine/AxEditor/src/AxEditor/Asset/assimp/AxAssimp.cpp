@@ -84,8 +84,7 @@ public:
 		
 		for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 			aiMesh* srcMesh = scene->mMeshes[i];
-//			importMesh(srcMesh);
-			importMeshCluster(srcMesh);
+			importMesh(srcMesh);
 		}
 		
 		// importNode(scene->mRootNode, nullptr);
@@ -159,11 +158,13 @@ public:
 		return VertexNormalCount::None;
 	}
 	
-	void importRenderMesh(aiMesh* srcMesh, RenderMesh& dstMesh) {
+	void importRenderMesh(aiMesh* srcMesh, RenderMesh& dstMesh, VertexLayout vertexLayout) {
 		auto normalCount = getNormalCount(srcMesh);
-		VertexLayout vertexLayout = VertexLayout::s_make(ax_safe_cast_from(srcMesh->GetNumColorChannels()),
-		                                                 ax_safe_cast_from(srcMesh->GetNumColorChannels()),
-		                                                 normalCount);
+		if (!vertexLayout) {
+			vertexLayout = VertexLayout::s_make(ax_safe_cast_from(srcMesh->GetNumColorChannels()),
+												ax_safe_cast_from(srcMesh->GetNumUVChannels()),
+												normalCount);
+		}
 		
 		RenderPrimitiveType primType = toPrimType(srcMesh->mPrimitiveTypes);
 		dstMesh.create(primType, vertexLayout, VertexIndexType::u16);
@@ -206,63 +207,16 @@ public:
 			default: AX_ASSERT_TODO();
 		}		
 	}
-	
-	void importMeshObject(aiMesh* srcMesh, MeshObject* dstMesh) {
-		RenderPrimitiveType primType = toPrimType(srcMesh->mPrimitiveTypes);
-		if (primType != RenderPrimitiveType::Triangles) {
-			AX_ASSERT_TODO();
-			return;
-		}
 
-		u32 numVert = srcMesh->mNumVertices;
-		u32 numPrim = srcMesh->mNumFaces; 
-		
-		auto dstVert = dstMesh->meshlet.vertBuffer.editData(0, numVert);
-		auto dstPrim = dstMesh->meshlet.primBuffer.editData(0, numPrim);
-		
-		{ // pos
-			Int j = 0;
-			for (auto& srcValue : Span(srcMesh->mVertices, numVert)) {
-				dstVert[j].pos = toLengthVec3f(toVec3f(srcValue));
-				dstVert[j].rawColor = 0xffffffff;
-				dstVert[j].uv0 = {};
-				dstVert[j].uv1 = {};
-				++j;
-			}
-		}
-		
-		if (srcMesh->HasNormals()) {
-			Int j = 0;
-			for (auto& srcValue : Span(srcMesh->mNormals, numVert)) {
-				dstVert[j].normal = convAxis(srcValue);
-				++j;
-			}
-		}
-		
-		{
-			Int j = 0;
-			for (auto& srcFace : Span(srcMesh->mFaces, srcMesh->mNumFaces)) {
-				if (srcFace.mNumIndices != 3) continue;
-				const auto* src = srcFace.mIndices;
-				dstPrim[j].tri.set(src[0], src[1], src[2]);
-				++j;
-			}
-		}
-		
-		AxGpuMeshletCluster dstCluster = {};
-		dstCluster.vertCount = numVert;
-		dstCluster.primCount = numPrim;
-		dstMesh->meshlet.clusterBuffer.setValue(0, dstCluster);
-	}
-	
 	void importMesh(aiMesh* srcMesh) {
 		auto meshObject = MeshObject::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
-		importRenderMesh(srcMesh, meshObject->renderMesh);
-		importMeshObject(srcMesh, meshObject);
+		// importRenderMesh(srcMesh, meshObject->renderMesh, Vertex_PosColorUv2Normal::s_layout());
+		importEditableMesh(srcMesh, meshObject);
+		importMeshlet(srcMesh, meshObject);
 	}
 
-	void importMeshCluster(aiMesh* srcMesh) {
+	void importMeshlet(aiMesh* srcMesh, MeshObject* dstMesh) {
 		Int numVertices = srcMesh->mNumVertices;
 		auto srcVertices = Span(srcMesh->mVertices, numVertices);
 		auto srcNormals  = Span(srcMesh->mNormals,  numVertices);
@@ -289,12 +243,10 @@ public:
 			}
 		}
 		
-		SPtr<MeshObject> meshObject = MeshObject::s_new(AX_NEW);
-		meshObject->createMeshlet(vertices, indices);
-		_meshes.emplaceBack(meshObject);
+		dstMesh->createMeshlet(vertices, indices);
 	}
 	
-	void importEditableMesh(aiMesh* srcMesh) {
+	void importEditableMesh(aiMesh* srcMesh, MeshObject* meshObject) {
 		auto& dstMesh = _editableMeshes.emplaceNewObject(AX_NEW);
 		
 		Int numVertices = srcMesh->mNumVertices;
@@ -343,16 +295,15 @@ public:
 				}
 			}
 		}
-		
-		
-		dstMesh->updateFaceNormals();
-		
-		SPtr<MeshObject> meshObject = MeshObject::s_new(AX_NEW);
-		_meshes.emplaceBack(meshObject);
 
+		dstMesh->updateFaceNormals();
+#if 1
+		auto vertexLayout = Vertex_PosColorUv2Normal::s_layout();
+#else
 		auto vertexLayout = VertexLayout::s_make(Math::max(1LL, dstMesh->colorChannelCount()),
 		                                         dstMesh->uvChannelCount(),
 		                                         VertexNormalCount::Normal);
+#endif
 		
 		RenderMeshEdit(meshObject->renderMesh).createFromEditableMesh(vertexLayout, *dstMesh);
 	}
@@ -377,7 +328,7 @@ public:
 				meshRenderer->renderer.mesh = *meshObj;
 				meshRenderer->renderer.material	= stockObjs->materials->Simple3D_Blinn_Color; 
 			}
-		} 
+		}
 
 		entity->ensureChildrenCapacity(srcNode->mNumChildren);
 		for (auto* srcChild : Span(srcNode->mChildren, srcNode->mNumChildren)) {

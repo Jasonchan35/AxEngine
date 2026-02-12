@@ -3,15 +3,36 @@
   "export_opt_axis_forward": "-Z",
   "export_opt_axis_up": "Y",
   "export_collection": "JX_EXPORT",
+  "opt_reset_object_transform": false,
   "sourceFile": "W:/Jason/github/AxEngine/deploy/Assets/Scenes/test/test.blend",
   "objects": {
-    "Cone": {
+    "Cube": {
       "type": "MESH",
-      "parent": "Sphere",
+      "parent": "",
       "world_location": [
-        -2.9735779762268066,
         0.0,
+        3.768798828125,
         0.0
+      ],
+      "world_rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "world_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "materialSlots": []
+    },
+    "Point": {
+      "type": "LIGHT",
+      "parent": "",
+      "world_location": [
+        0.0,
+        0.0,
+        0.9032146334648132
       ],
       "world_rotation": [
         0.0,
@@ -45,12 +66,12 @@
       ],
       "materialSlots": []
     },
-    "Cube": {
+    "Cone": {
       "type": "MESH",
-      "parent": "",
+      "parent": "Sphere",
       "world_location": [
+        -2.9735779762268066,
         0.0,
-        3.768798828125,
         0.0
       ],
       "world_rotation": [

@@ -14,20 +14,19 @@ RenderRequest::RenderRequest()
 void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!material) return;
 	if (!mesh) return;
+
+	drawMesh(mesh->renderMesh, material, materialPass, objectToWorld);
 	
-	if (mesh->meshlet.clusterBuffer.count() <= 0) {
-		drawMesh(mesh->renderMesh, material, materialPass, objectToWorld);
-		return;
-	}
-	
+	u32 clusterCount = ax_safe_cast_from(mesh->meshlet.clusterBuffer.count());
+	if (clusterCount <= 0) return;
+
 	auto* stockObjs = RenderStockObjects::s_instance();
 	AxMeshShaderDraw draw;
 	draw.material = stockObjs->materials->meshlet;
 	draw.materialPassIndex = materialPass;
-	draw.objectToWorld = objectToWorld; // * Mat4f::s_translate(0, 3, 0);
+	draw.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
 	draw.meshObject = mesh;
 	
-	u32 clusterCount        = ax_safe_cast_from(mesh->meshlet.clusterBuffer.count());
 	u32 dispatchGroupCount  = Math::alignDivTo(clusterCount, AX_HLSL_THREADS_PER_WAVE);
 	draw.dispatchGroupCount = u32x3(dispatchGroupCount, 1, 1);
 	draw.lodGroupId         = 0;
