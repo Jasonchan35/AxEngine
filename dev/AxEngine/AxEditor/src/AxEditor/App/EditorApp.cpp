@@ -98,7 +98,7 @@ void EditorApp::_testLoadOpenUsd() {
 
 void EditorApp::_testLoadFbx() {
 	AxAssimp assimp;
-	assimp.openFile("ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx");
+	assimp.openFile("ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx");
 }
 
 } //namespace

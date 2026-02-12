@@ -6,6 +6,11 @@ import :MeshObject;
 
 namespace ax /*::AxRender*/ {
 
+RenderRequest::RenderRequest() 
+: _cameraData({})
+, _debugData({}) 
+{}
+
 void RenderRequest::drawMeshRenderer(MeshObjectRenderer* mr) {
 	static_cast<RenderRequest_Backend*>(this)->drawMeshRenderer_backend(mr);
 }
@@ -19,8 +24,9 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 		return;
 	}
 	
+	auto* stockObjs = RenderStockObjects::s_instance();
 	AxMeshShaderDraw draw;
-	draw.material = RenderStockObjects::s_instance()->materials->meshlet;
+	draw.material = stockObjs->materials->meshlet;
 	draw.materialPassIndex = materialPass;
 	draw.objectToWorld = objectToWorld; // * Mat4f::s_translate(0, 3, 0);
 	draw.meshObject = mesh;
@@ -30,6 +36,10 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	draw.dispatchGroupCount = u32x3(dispatchGroupCount, 1, 1);
 	draw.lodGroupId         = 0;
 	
+	meshShaderDraw(draw);
+
+	// draw normals
+	draw.material = stockObjs->materials->meshlet_normal;
 	meshShaderDraw(draw);
 }
 
@@ -72,6 +82,10 @@ void RenderRequest::setScissorRect(const Rect2f& rect) {
 
 void RenderRequest::setCamera(const Math::Camera3f& camera) {
 	static_cast<RenderRequest_Backend*>(this)->setCamera_backend(camera);
+}
+
+void RenderRequest::setDebugData(const AxRenderGpuData_Debug& debugData) {
+	static_cast<RenderRequest_Backend*>(this)->setDebugData_backend(debugData);
 }
 
 

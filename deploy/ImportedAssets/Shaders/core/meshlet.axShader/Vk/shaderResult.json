@@ -35,8 +35,8 @@
     "passes": [{
         "name": "Pass0", 
         "pixelFunc": "ps_main", 
-        "meshFunc": "ms_main", 
-        "amplificationFunc": "as_main", 
+        "meshFunc": "axMeshlet_MeshMain", 
+        "amplificationFunc": "axMeshlet_AmplificationMain", 
         "renderState": {
           "cull": "Back", 
           "blend": {
@@ -121,22 +121,14 @@
           "bindSpace": "Default", 
           "bindPoint": 0, 
           "bindCount": 1, 
-          "stride": 64, 
+          "stride": 48, 
           "variables": [{
-              "name": "color", 
-              "varType": {
-                "dataType": "f32x4", 
-                "elementCount": 0
-              }, 
-              "offset": 0, 
-              "sizeInBytes": 16
-            }, {
               "name": "ambient", 
               "varType": {
                 "dataType": "f32x3", 
                 "elementCount": 0
               }, 
-              "offset": 16, 
+              "offset": 0, 
               "sizeInBytes": 12
             }, {
               "name": "diffuse", 
@@ -144,7 +136,7 @@
                 "dataType": "f32x3", 
                 "elementCount": 0
               }, 
-              "offset": 32, 
+              "offset": 16, 
               "sizeInBytes": 12
             }, {
               "name": "specular", 
@@ -152,7 +144,7 @@
                 "dataType": "f32x3", 
                 "elementCount": 0
               }, 
-              "offset": 48, 
+              "offset": 32, 
               "sizeInBytes": 12
             }, {
               "name": "shininess", 
@@ -160,7 +152,7 @@
                 "dataType": "f32", 
                 "elementCount": 0
               }, 
-              "offset": 60, 
+              "offset": 44, 
               "sizeInBytes": 4
             }]
         }], 

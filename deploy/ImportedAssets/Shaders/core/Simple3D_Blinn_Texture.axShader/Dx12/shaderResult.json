@@ -75,6 +75,9 @@
         }, {
           "semantic": "COLOR0", 
           "dataType": "f32x4"
+        }, {
+          "semantic": "NORMAL0", 
+          "dataType": "f32x3"
         }], 
       "constBuffers": [{
           "name": "axVertexShaderDrawRootConst", 
@@ -92,6 +95,47 @@
               }, 
               "offset": 0, 
               "sizeInBytes": 0
+            }]
+        }, {
+          "name": "$Globals", 
+          "dataType": "ConstBuffer", 
+          "stageFlags": "Pixel", 
+          "bindSpace": "Default", 
+          "bindPoint": 0, 
+          "bindCount": 1, 
+          "stride": 64, 
+          "variables": [{
+              "name": "ambient", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
+              "offset": 16, 
+              "sizeInBytes": 12
+            }, {
+              "name": "diffuse", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
+              "offset": 32, 
+              "sizeInBytes": 12
+            }, {
+              "name": "specular", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
+              "offset": 48, 
+              "sizeInBytes": 12
+            }, {
+              "name": "shininess", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 60, 
+              "sizeInBytes": 4
             }]
         }], 
       "textures": [], 

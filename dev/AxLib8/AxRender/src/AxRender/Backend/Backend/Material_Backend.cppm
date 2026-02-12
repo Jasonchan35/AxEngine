@@ -202,6 +202,7 @@ public:
 
 	ConstBufferParam* constBuffer_globals() { return _constBuffer_globals; }
 	ConstBufferParam* constBuffer_camera () { return _constBuffer_camera ; }
+	ConstBufferParam* constBuffer_debug  () { return _constBuffer_debug  ; }
 	
 protected:
 	friend class MaterialPass_Backend;
@@ -210,6 +211,7 @@ protected:
 	
 	ConstBufferParam* _constBuffer_globals = nullptr;
 	ConstBufferParam* _constBuffer_camera  = nullptr;
+	ConstBufferParam* _constBuffer_debug   = nullptr;
 
 	template<class T> T* _findParam(IArray<T>& arr, NameId name) {
 		return arr.find_([&name](const T& e) { return e.name() == name; });

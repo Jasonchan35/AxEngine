@@ -3,6 +3,13 @@
 
 // HLSL alignment is 16
 
+struct AxRenderGpuData_Debug {
+	float drawNormalLength;
+	float _padding0;
+	float _padding1;
+	float _padding2;
+};
+
 struct AxRenderGpuData_World {
 	float	time;
 	float	deltaTime;
@@ -11,7 +18,8 @@ struct AxRenderGpuData_World {
 };
 
 struct AxRenderGpuData_Light {
-	Color4f	color;
+	Color3f	color;
+	Vec3f   worldPos;
 };
 
 struct AxRenderGpuData_Object {

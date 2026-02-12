@@ -891,6 +891,95 @@
             }
         },
         {
+            "name": "axDebug",
+            "binding": {"kind": "constantBuffer", "space": 1, "index": 102},
+            "type": {
+                "kind": "constantBuffer",
+                "elementType": {
+                    "kind": "struct",
+                    "name": "AxRenderGpuData_Debug",
+                    "fields": [
+                        {
+                            "name": "drawNormalLength",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "_padding0",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "_padding1",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "_padding2",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                        }
+                    ]
+                },
+                "containerVarLayout": {
+                    "binding": {"kind": "constantBuffer", "index": 0}
+                },
+                "elementVarLayout": {
+                    "type": {
+                        "kind": "struct",
+                        "name": "AxRenderGpuData_Debug",
+                        "fields": [
+                            {
+                                "name": "drawNormalLength",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "_padding0",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "_padding1",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "_padding2",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                            }
+                        ]
+                    },
+                    "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 0}
+                }
+            }
+        },
+        {
             "name": "axLights",
             "binding": {"kind": "shaderResource", "space": 1, "index": 20100},
             "type": {
@@ -904,13 +993,25 @@
                             "name": "color",
                             "type": {
                                 "kind": "vector",
-                                "elementCount": 4,
+                                "elementCount": 3,
                                 "elementType": {
                                     "kind": "scalar",
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
+                            "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
+                        },
+                        {
+                            "name": "worldPos",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 3,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
                         }
                     ]
                 }
@@ -1019,20 +1120,8 @@
             }
         },
         {
-            "name": "color",
-            "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4},
-            "type": {
-                "kind": "vector",
-                "elementCount": 4,
-                "elementType": {
-                    "kind": "scalar",
-                    "scalarType": "float32"
-                }
-            }
-        },
-        {
             "name": "ambient",
-            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4},
+            "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4},
             "type": {
                 "kind": "vector",
                 "elementCount": 3,
@@ -1044,7 +1133,7 @@
         },
         {
             "name": "diffuse",
-            "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4},
+            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4},
             "type": {
                 "kind": "vector",
                 "elementCount": 3,
@@ -1056,7 +1145,7 @@
         },
         {
             "name": "specular",
-            "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4},
+            "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4},
             "type": {
                 "kind": "vector",
                 "elementCount": 3,
@@ -1068,7 +1157,7 @@
         },
         {
             "name": "shininess",
-            "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0},
+            "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0},
             "type": {
                 "kind": "scalar",
                 "scalarType": "float32"
@@ -1145,6 +1234,14 @@
                             }
                         ]
                     }
+                },
+                {
+                    "name": "sv_primitiveId",
+                    "semanticName": "SV_PRIMITIVEID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
                 }
             ],
             "result": {
@@ -1206,6 +1303,10 @@
                     "binding": {"kind": "constantBuffer", "space": 1, "index": 101, "used": 1}
                 },
                 {
+                    "name": "axDebug",
+                    "binding": {"kind": "constantBuffer", "space": 1, "index": 102, "used": 0}
+                },
+                {
                     "name": "axLights",
                     "binding": {"kind": "shaderResource", "space": 1, "index": 20100, "used": 0}
                 },
@@ -1218,24 +1319,20 @@
                     "binding": {"kind": "pushConstantBuffer", "index": 0}
                 },
                 {
-                    "name": "color",
-                    "binding": {"kind": "uniform", "offset": 0, "size": 16, "elementStride": 4}
-                },
-                {
                     "name": "ambient",
-                    "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
+                    "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                 },
                 {
                     "name": "diffuse",
-                    "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4}
+                    "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
                 },
                 {
                     "name": "specular",
-                    "binding": {"kind": "uniform", "offset": 48, "size": 12, "elementStride": 4}
+                    "binding": {"kind": "uniform", "offset": 32, "size": 12, "elementStride": 4}
                 },
                 {
                     "name": "shininess",
-                    "binding": {"kind": "uniform", "offset": 60, "size": 4, "elementStride": 0}
+                    "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0}
                 }
             ]
         }

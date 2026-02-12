@@ -78,10 +78,14 @@ public:
 	void setCamera(const Math::Camera3f& camera);
 	const AxRenderGpuData_Camera&	cameraData() const { return _cameraData; }
 
+	void setDebugData(const AxRenderGpuData_Debug& debugData);
+	
 	Int lodBias = 0;
 	float maxMeshletErrorInPixels = 1;
 	
 protected:
+	RenderRequest();
+	
 	RenderSystem*       _renderSystem       = nullptr;
 	RenderContext*      _renderContext      = nullptr;
 	const RenderGraph*  _renderGraph        = nullptr;
@@ -94,6 +98,7 @@ protected:
 	Rect2f              _viewportRect{0, 0, 0, 0};
 
 	AxRenderGpuData_Camera _cameraData;
+	AxRenderGpuData_Debug  _debugData;
 };
 
 inline

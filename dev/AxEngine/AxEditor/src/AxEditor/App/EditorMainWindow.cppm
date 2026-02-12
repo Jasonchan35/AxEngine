@@ -58,6 +58,8 @@ protected:
 	
 	Int _lodBias = 0;
 	float _maxMeshletErrorInPixels = 2.0f;
+	
+	AxRenderGpuData_Debug _gpuDebugData;
 };
 
 } //namespace

@@ -1,0 +1,71 @@
+#if AX_SHADER_INFO
+
+Properties {
+	Color4f color     = [1, 1, 1, 1]
+    Color3f ambient   = [0.2, 0.2, 0.2]
+    Color3f diffuse   = [0.8, 0.8, 0.8]
+    Color3f specular  = [1, 1, 1]
+    float   shininess = 32	
+}
+
+Pass "Pass0" {
+	AmplificationFunc = axMeshlet_AmplificationMain
+	MeshFunc          = ms_main
+	PixelFunc         = ps_main
+}
+#endif
+
+#include "AxMeshShaderDraw.hlsl"
+
+[numthreads(MS_GROUP_SIZE, 1, 1)]
+[outputtopology("line")]
+void ms_main(
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32),
+	in payload Payload payload,
+	out vertices   VS_Output     outVert[AX_HLSL_MESH_SHADER_MAX_VERT_COUNT],
+	out indices    u32x2         outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
+	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
+) {
+	PayloadMeshlet meshlet = payload.meshlet[gid];
+	SetMeshOutputCounts(meshlet.primCount * 2, meshlet.primCount);
+
+	if (gtid < meshlet.primCount) {
+		u32x3 tri = axGpuMeshletPrim[meshlet.primOffset + gtid].tri;
+		
+		u32 vi = gtid * 2;
+
+		outPrim[gtid] = u32x2(vi, vi + 1);
+		outPrimId[gtid].primitiveId = gtid;
+
+	// vertex	
+		VS_Input i;
+
+		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
+		i.pos    = Vec4f(mv.pos, 1);
+		i.normal = mv.normal;
+
+		VS_Output o;
+		o.worldPos = axObjectToWorldPos(i.pos);
+		o.sv_pos   = axObjectToClipPos(i.pos);
+		o.normal   = axObjectToClipNormal(i.normal);
+		o.color0   = i.color0;
+
+		outVert[gtid * 2] = o;
+
+		float normalLength = axDebug.drawNormalLength;
+		o.sv_pos   = axObjectToClipPos(i.pos + Vec4f(i.normal * normalLength, 0));
+		outVert[gtid * 2 + 1] = o;
+	}
+}
+
+
+float4 ps_main(
+	VS_Output i,
+	SEM_sv_primitiveId(uint)
+) : SV_Target {
+	return float4(0,1,0,1);
+}
+
+

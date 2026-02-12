@@ -248,4 +248,7 @@ uint ax_align_to(uint value, uint alignment) {
 	return (value + (alignment - 1)) / alignment * alignment;
 }
 
+
+
+
 #endif // __AxBasicType_HLSL__

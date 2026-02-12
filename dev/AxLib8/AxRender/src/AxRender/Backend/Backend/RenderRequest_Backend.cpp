@@ -147,6 +147,22 @@ void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
 	cb->getUploadedGpuBuffer(this);
 }
 
+void RenderRequest_Backend::setDebugData_backend(const AxRenderGpuData_Debug& debugData) {
+	_debugData = debugData;
+	
+	auto* matPass = MaterialPass_Backend::s_globalCommonMaterialPass();
+	if (!matPass) { AX_ASSERT(false); return; }
+	auto* paramSpace = matPass->getOwnParamSpace(BindSpace::World);
+	if (!paramSpace) { AX_ASSERT(false); return; }
+	
+	auto* cb = paramSpace->constBuffer_debug();
+	if (!cb) { AX_ASSERT(false); return; }
+
+	cb->setData(_debugData);
+	// force update to GPU
+	cb->getUploadedGpuBuffer(this);
+}
+
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {
 	auto uploadBuf = GpuBuffer_Backend::s_new(AX_NEW,
 											  Fmt("{}-upload", _name),

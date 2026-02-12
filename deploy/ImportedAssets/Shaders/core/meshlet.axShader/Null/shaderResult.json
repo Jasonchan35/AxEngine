@@ -35,8 +35,8 @@
     "passes": [{
         "name": "Pass0", 
         "pixelFunc": "ps_main", 
-        "meshFunc": "ms_main", 
-        "amplificationFunc": "as_main", 
+        "meshFunc": "axMeshlet_MeshMain", 
+        "amplificationFunc": "axMeshlet_AmplificationMain", 
         "renderState": {
           "cull": "Back", 
           "blend": {

@@ -111,6 +111,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	auto projMatrix = cam.projMatrix;
 	float ViewManipulateOffset = 20;
 	float ViewManipulateSize = 120;
+	
 	ImUIGizmoViewManipulate(viewMatrix,
 	                        Rect2f(req->viewport().w - ViewManipulateSize - ViewManipulateOffset,
 	                               ViewManipulateOffset,
@@ -135,7 +136,11 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
 		ImUIDragInt("LodBias", &_lodBias, 0.1f, -10, 10);
 		req->lodBias = _lodBias;
+		
+		ImUIDragFloat("Normal Length", &_gpuDebugData.drawNormalLength, 0.1f, 0, 10);
 	}
+	
+	req->setDebugData(_gpuDebugData);
 	
 	auto obj = ObjectManager::s_instance()->selection.lastSelectedObject();
 	if (!obj) return;

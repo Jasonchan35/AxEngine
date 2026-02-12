@@ -48,6 +48,7 @@ MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 	
 	_constBuffer_globals = findConstBufferParam(AX_NAMEID("$Globals"));
 	_constBuffer_camera  = findConstBufferParam(AX_NAMEID("axCamera"));
+	_constBuffer_debug   = findConstBufferParam(AX_NAMEID("axDebug"));
 }
 
 void MaterialParamSpace_Backend::ConstBufferParam::create(const ShaderParamSpace_Backend::ConstBufferParam& shaderParam) {

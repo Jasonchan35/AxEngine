@@ -67,6 +67,7 @@ public:
 		SPtr<Material>	Simple3D_Blinn_Color;
 		SPtr<Material>	Simple3D_Blinn_Texture;
 		SPtr<Material>	meshlet;
+		SPtr<Material>	meshlet_normal;
 	};
 	UPtr<Materials>	materials;
 	

@@ -36,22 +36,45 @@ uniform Color4f color;
 struct VS_Input {
 	SEM_pos(float4);
 	SEM_color0(float4);
+	SEM_normal(float3);
 };
 
 struct VS_Output {
 	SEM_sv_pos(float4);
 	SEM_color0(float4);
+	SEM_normal(float3);
+	SEM_worldPos(float3);
 };
 
 VS_Output vs_main(VS_Input i) {
 	VS_Output o;
-	o.sv_pos = axObjectToClipPos(i.pos);
-	o.color0 = i.color0;
+	o.sv_pos   = axObjectToClipPos(i.pos);
+	o.worldPos = axObjectToWorldPos(i.pos);
+	o.normal   = axObjectToClipNormal(i.normal);
+	o.color0   = i.color0;
 	return o;
 }
 
-float4 ps_main(VS_Output i) : SV_Target {
-	float4 o = i.color0;
-	return o;
+uniform Color3f ambient;
+uniform Color3f diffuse;
+uniform Color3f specular;
+uniform float   shininess;
+
+float4 ps_main(
+	VS_Output i,
+	SEM_sv_primitiveId(uint)
+) : SV_Target {
+	AxRenderGpuData_Light light;
+	light.worldPos = Vec3f(10, 10, 10);
+	light.color    = Color3f(1,1,1);
+
+	Vec3f worldPos    = i.worldPos;
+	Vec3f worldNormal = normalize(i.normal); 
+
+	Color3f lightResult = axLight_Blinn(light, worldPos, worldNormal,
+										ambient, diffuse, specular, shininess);
+
+//	i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
+	return i.color0 * Color4f(lightResult, 1);
 }
 

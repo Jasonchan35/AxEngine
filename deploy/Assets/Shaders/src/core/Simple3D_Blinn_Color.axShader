@@ -22,13 +22,6 @@ Pass "Pass0" { // Forward
 
 #include "AxVertexShaderDraw.hlsl"
 
-uniform Color4f color;
-
-uniform Color3f ambient;
-uniform Color3f diffuse;
-uniform Color3f specular;
-uniform float   shininess;
-
 struct VS_Input {
 	SEM_pos(float4);
 	SEM_color0(float4);
@@ -44,35 +37,34 @@ struct VS_Output {
 
 VS_Output vs_main(VS_Input i) {
 	VS_Output o;
-	o.worldPos = axObjectToWorldPos(i.pos);
 	o.sv_pos   = axObjectToClipPos(i.pos);
+	o.worldPos = axObjectToWorldPos(i.pos);
 	o.normal   = axObjectToClipNormal(i.normal);
 	o.color0   = i.color0;
 	return o;
 }
 
-float4 ps_main(VS_Output i) : SV_Target {
-	Vec3f   cameraPos  = axCamera.worldPos;
-	Vec3f   lightPos   = Vec3f(10, 10, 10);
-	Color3f lightColor = Color3f(1,1,1);
+uniform Color3f ambient;
+uniform Color3f diffuse;
+uniform Color3f specular;
+uniform float   shininess;
 
-	Vec3f lightDir  = normalize(lightPos  - i.worldPos);
-	Vec3f viewDir   = normalize(cameraPos - i.worldPos);
+float4 ps_main(
+	VS_Output i,
+	SEM_sv_primitiveId(uint)
+) : SV_Target {
+	AxRenderGpuData_Light light;
+	light.worldPos = Vec3f(10, 10, 10);
+	light.color    = Color3f(1,1,1);
 
-	// ambient
-	Color3f _ambient = lightColor * ambient;
+	Vec3f worldPos    = i.worldPos;
+	Vec3f worldNormal = normalize(i.normal); 
 
-	// diffuse 
-	Vec3f norm       = normalize(i.normal);
-	float diff       = max(dot(norm, lightDir), 0.0);
-	Color3f _diffuse = lightColor * (diff * diffuse);
+	Color3f lightResult = axLight_Blinn(light, worldPos, worldNormal,
+										ambient, diffuse, specular, shininess);
 
-	// specular
-	Vec3f reflectDir  = reflect(-lightDir, norm);  
-	float spec        = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	Color3f _specular = lightColor * (specular * spec);
-		
-	Color3f o = _ambient + _diffuse + _specular;
-	return Color4f(o, 1);
+
+//	i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
+	return i.color0 * Color4f(lightResult, 1);	
 }
 
