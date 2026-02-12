@@ -1,4 +1,5 @@
 /build_bin
+/ImportedAssets/Shaders
 /**/build.ninja
 /**/.ninja_log
 /**/*.d
