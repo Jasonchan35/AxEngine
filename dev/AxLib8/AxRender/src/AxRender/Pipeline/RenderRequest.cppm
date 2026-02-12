@@ -79,7 +79,7 @@ public:
 	const AxRenderGpuData_Camera&	cameraData() const { return _cameraData; }
 
 	Int lodBias = 0;
-	float maxMeshletErrorThreshold = 1;
+	float maxMeshletErrorInPixels = 1;
 	
 protected:
 	RenderSystem*       _renderSystem       = nullptr;

@@ -120,7 +120,7 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 }
 
 void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
-	_cameraData.maxMeshletErrorThreshold = maxMeshletErrorThreshold;
+	_cameraData.maxMeshletErrorInPixels  = maxMeshletErrorInPixels;
 	_cameraData.fieldOfView              = camera.fieldOfView;
 	_cameraData.nearClip                 = camera.nearClip;
 	_cameraData.farClip                  = camera.farClip;

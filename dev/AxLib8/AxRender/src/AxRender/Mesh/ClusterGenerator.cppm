@@ -89,8 +89,8 @@ public:
 
 	static float sahOverhead(const std::vector<std::vector<unsigned int> >& clusters, Span<Vertex> vertices);
 
-	void dumpObj(Span<Vertex> vertices, Span<u32> indices, bool recomputeNormals = false);
-	void dumpObj(const char* section, const std::vector<unsigned int>& indices);
+	void dumpWaveFrontObjFile(Span<Vertex> vertices, Span<u32> indices, bool recomputeNormals = false);
+	void dumpWaveFrontObjFile(const char* section, const std::vector<unsigned int>& indices);
 
 	void nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u32> indices);
 };

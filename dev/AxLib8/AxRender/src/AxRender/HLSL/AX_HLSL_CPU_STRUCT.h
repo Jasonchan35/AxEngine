@@ -26,7 +26,7 @@ struct AxRenderGpuData_Camera {
 
 	float   nearClip;
 	float   farClip;
-	float   maxMeshletErrorThreshold;
+	float   maxMeshletErrorInPixels;
 	float   _padding0;
 	
 	Vec2f	viewportMin;
@@ -57,11 +57,11 @@ struct AxGpuMeshlet {
 	u32 vertCount;
 	u32 primOffset;
 	u32 primCount;
-	
-	u32 meshObjectId;
+
 	u32 groupId;
 	i32 refinedGroupId;
-	u32 lod;
+	u32 meshObjectId; // debug
+	u32 lod;  // debug
 };
 
 struct AxGpuMeshletVert {
@@ -81,34 +81,32 @@ struct AxGpuMeshletPrim {
 };
 
 struct AxGpuMeshletGroup {
-	u32 meshletOffset;
-	u32 meshletCount;
-	float  clusterError;
-	float  radius;
-	Vec3f  center;
-	u32    _padding0;
+	u32   meshletOffset;
+	u32   meshletCount;
+	float clusterError;
+	float radius;
+	Vec3f center;
+	u32   meshObjectId; // debug
 };
 
 struct AxGpuMeshObject {
 	Vec3f boundsMin;
-	u32   meshletGroupOffset;
-	
+	u32   vertOffset;
 	Vec3f boundsMax;
+	u32   primOffset;
+
+	u32   meshletGroupOffset;
 	u32   meshletGroupCount;
-	
-	u32 meshletOffset;
-	u32 meshletCount;
-	
-	u32 vertOffset;
-	u32 primOffset;
+	u32   meshletOffset;
+	u32   meshletCount;
 };
 
 struct AxGpuMeshObjectRenderer {
-	Mat4f	worldMatrix;
-	u32 	meshObjectId;
-	u32 	materialId;
-	u32     _padding0;
-	u32     _padding1;
+	Mat4f worldMatrix;
+	u32   meshObjectId;
+	u32   materialId;
+	u32   _padding0;
+	u32   _padding1;
 };
 
 #endif // __AX_HLSL_CPU_STRUCT_h__

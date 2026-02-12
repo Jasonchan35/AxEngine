@@ -391,6 +391,7 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			dst.clusterError = group.simplified.error;
 			dst.radius       = group.simplified.radius;
 			dst.meshletCount = ax_safe_cast_from(cluster_count);
+			dst.meshObjectId = outMesh.objectSlot.slotId();
 			outMesh.meshletGroupBuffer.appendValues(dst);
 		}
 		
@@ -450,14 +451,14 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 		else
 			printf("cut (error %.3f): %d triangles\n", threshold, int(cut_tris));
 
-		dumpObj(vertices, Span<u32>());
+		dumpWaveFrontObjFile(vertices, Span<u32>());
 
 		for (auto& cluster : cut)
-			dumpObj("cluster", cluster);
+			dumpWaveFrontObjFile("cluster", cluster);
 	}
 }
 	
-void ClusterGenerator::dumpObj(Span<Vertex> vertices, Span<u32> indices, bool recomputeNormals)
+void ClusterGenerator::dumpWaveFrontObjFile(Span<Vertex> vertices, Span<u32> indices, bool recomputeNormals)
 {
 	std::vector<float> normals;
 
@@ -517,7 +518,7 @@ void ClusterGenerator::dumpObj(Span<Vertex> vertices, Span<u32> indices, bool re
 	}
 }
 
-void ClusterGenerator::dumpObj(const char* section, const std::vector<unsigned int>& indices)
+void ClusterGenerator::dumpWaveFrontObjFile(const char* section, const std::vector<unsigned int>& indices)
 {
 	fprintf(stderr, "o %s\n", section);
 

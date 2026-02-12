@@ -35,12 +35,19 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 	auto& cam = _renderGraph->_viewportCamera;
 	switch (ev.type) {
 		case UIMouseEventType::Move: {
-			if (ev.pressedButtons == UIMouseEventButton::Right) {
-				cam.orbit(ev.deltaPos.yx() * Vec2f(1,-1) * 0.005f);
-			} else if (ev.pressedButtons == UIMouseEventButton::Middle) {
-				cam.move(ev.deltaPos * 0.02f);
+			if (ax_bit_has(ev.modifier, UIEventModifierKey::Atl)) {
+				if (ev.pressedButtons == UIMouseEventButton::Left) {
+					cam.orbit(ev.deltaPos.yx() * Vec2f(1,-1) * 0.005f);
+					
+				} else if (ev.pressedButtons == UIMouseEventButton::Middle) {
+					cam.move(ev.deltaPos * 0.01f);
+					
+				} else if (ev.pressedButtons == UIMouseEventButton::Right) {
+					cam.dolly(ev.deltaPos.y * 0.015f);
+				}
 			}
 		} break;
+			
 		case UIMouseEventType::Wheel: {
 			cam.dolly(ev.wheelDelta.y * -0.015f);
 		} break;
@@ -124,8 +131,8 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUIDragFloat("maxMeshletErrorThreshold", &_maxMeshletErrorThreshold, 0.001f, 0, 1);
-		req->maxMeshletErrorThreshold = _maxMeshletErrorThreshold;
+		ImUIDragFloat("maxMeshletErrorInPixels", &_maxMeshletErrorInPixels, 0.2f, 0, 10);
+		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
 		ImUIDragInt("LodBias", &_lodBias, 0.1f, -10, 10);
 		req->lodBias = _lodBias;
 	}

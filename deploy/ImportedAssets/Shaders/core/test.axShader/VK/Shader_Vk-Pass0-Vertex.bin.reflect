@@ -206,7 +206,7 @@
                             "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "meshObjectId",
+                            "name": "groupId",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -214,18 +214,18 @@
                             "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "groupId",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "uint32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
-                        },
-                        {
                             "name": "refinedGroupId",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "int32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "meshObjectId",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "uint32"
                             },
                             "binding": {"kind": "uniform", "offset": 24, "size": 4, "elementStride": 0}
                         },
@@ -296,7 +296,7 @@
                             "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
                         },
                         {
-                            "name": "_padding0",
+                            "name": "meshObjectId",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -330,7 +330,7 @@
                             "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                         },
                         {
-                            "name": "meshletGroupOffset",
+                            "name": "vertOffset",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -350,7 +350,7 @@
                             "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
                         },
                         {
-                            "name": "meshletGroupCount",
+                            "name": "primOffset",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -358,7 +358,7 @@
                             "binding": {"kind": "uniform", "offset": 28, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "meshletOffset",
+                            "name": "meshletGroupOffset",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -366,7 +366,7 @@
                             "binding": {"kind": "uniform", "offset": 32, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "meshletCount",
+                            "name": "meshletGroupCount",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -374,7 +374,7 @@
                             "binding": {"kind": "uniform", "offset": 36, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "vertOffset",
+                            "name": "meshletOffset",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -382,7 +382,7 @@
                             "binding": {"kind": "uniform", "offset": 40, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "primOffset",
+                            "name": "meshletCount",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "uint32"
@@ -603,7 +603,7 @@
                             "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
                         },
                         {
-                            "name": "maxMeshletErrorThreshold",
+                            "name": "maxMeshletErrorInPixels",
                             "type": {
                                 "kind": "scalar",
                                 "scalarType": "float32"
@@ -767,7 +767,7 @@
                                 "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
                             },
                             {
-                                "name": "maxMeshletErrorThreshold",
+                                "name": "maxMeshletErrorInPixels",
                                 "type": {
                                     "kind": "scalar",
                                     "scalarType": "float32"

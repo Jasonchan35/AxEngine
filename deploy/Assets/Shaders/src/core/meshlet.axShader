@@ -59,7 +59,8 @@ static float boundsError(AxGpuMeshletGroup group) {
 	float camProj = 1.f / tan( radians(axCamera.fieldOfView * 0.5));
 	float camDistance = distance(axObjectToWorldPos(group.center), axCamera.worldPos);
 	float d = camDistance - group.radius;
-	return group.clusterError / (d > axCamera.nearClip ? d : axCamera.nearClip) * (camProj * 0.5f);
+	float viewportH = axCamera.viewportMax.y - axCamera.viewportMin.y;
+	return viewportH * group.clusterError / (d > axCamera.nearClip ? d : axCamera.nearClip) * (camProj * 0.5f);
 }
 
 [numthreads(AS_GROUP_SIZE, 1, 1)]
@@ -84,14 +85,13 @@ void as_main(
 		u32 meshletId = meshletOffset + dtid;
 		AxGpuMeshlet meshlet = axGpuMeshlet[meshletId];
 
-		Vec3f camPos            = axCamera.worldPos;
-		float viewportH         = axCamera.viewportMax.y - axCamera.viewportMin.y;
-		float camTanFov         = tan(radians(axCamera.fieldOfView * 0.5)) * 2.0;
-		float maxErrorThreshold = axCamera.maxMeshletErrorThreshold;
+		Vec3f camPos           = axCamera.worldPos;
+		float camTanFov        = tan(radians(axCamera.fieldOfView * 0.5)) * 2.0;
+		float maxErrorInPixels = axCamera.maxMeshletErrorInPixels;
 
 		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
-		bool lodMatch = (meshlet.refinedGroupId < 0 || boundsError(axGpuMeshletGroup[groupOffset + meshlet.refinedGroupId]) <= maxErrorThreshold) 
-					 && (                              boundsError(axGpuMeshletGroup[groupOffset + meshlet.groupId       ]) >  maxErrorThreshold);
+		bool lodMatch = (meshlet.refinedGroupId < 0 || boundsError(axGpuMeshletGroup[groupOffset + meshlet.refinedGroupId]) <= maxErrorInPixels) 
+					 && (                              boundsError(axGpuMeshletGroup[groupOffset + meshlet.groupId       ]) >  maxErrorInPixels);
 
 		bool insideFrustum = true;
 		bool coneCulling   = true; 
@@ -148,8 +148,8 @@ void ms_main(
 //		i.pos    = Vec4f(mv.pos + Vec3f(meshlet.lod * 2.2, 0, 0), 1); // debug
 
 		i.normal = mv.normal;
-//		i.color0 = ax_debug_color(meshlet.lod);
-		i.color0 = ax_debug_color(gid);
+//		i.color0 = ax_debug_color(meshlet.lod); // debug
+		i.color0 = ax_debug_color(gid); // debug clusters
 
 		VS_Output o;
 		o.worldPos = axObjectToWorldPos(i.pos);
@@ -196,7 +196,7 @@ float4 ps_main(
 		
 	Color3f lightResult = _ambient + _diffuse + _specular;
 
-	i.color0 = ax_debug_color(sv_primitiveId);
+	i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
 
 	return i.color0 * Color4f(lightResult, 1);
 }

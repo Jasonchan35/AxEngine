@@ -169,7 +169,7 @@
               "offset": 20, 
               "sizeInBytes": 0
             }, {
-              "name": "maxMeshletErrorThreshold", 
+              "name": "maxMeshletErrorInPixels", 
               "varType": {
                 "dataType": "f32", 
                 "elementCount": 0
@@ -397,7 +397,7 @@
               "offset": 12, 
               "sizeInBytes": 0
             }, {
-              "name": "meshObjectId", 
+              "name": "groupId", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -405,17 +405,17 @@
               "offset": 16, 
               "sizeInBytes": 0
             }, {
-              "name": "groupId", 
+              "name": "refinedGroupId", 
               "varType": {
-                "dataType": "u32", 
+                "dataType": "i32", 
                 "elementCount": 0
               }, 
               "offset": 20, 
               "sizeInBytes": 0
             }, {
-              "name": "refinedGroupId", 
+              "name": "meshObjectId", 
               "varType": {
-                "dataType": "i32", 
+                "dataType": "u32", 
                 "elementCount": 0
               }, 
               "offset": 24, 
@@ -478,7 +478,7 @@
               "offset": 16, 
               "sizeInBytes": 0
             }, {
-              "name": "_padding0", 
+              "name": "meshObjectId", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -503,7 +503,7 @@
               "offset": 0, 
               "sizeInBytes": 0
             }, {
-              "name": "meshletGroupOffset", 
+              "name": "vertOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -519,7 +519,7 @@
               "offset": 16, 
               "sizeInBytes": 0
             }, {
-              "name": "meshletGroupCount", 
+              "name": "primOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -527,7 +527,7 @@
               "offset": 28, 
               "sizeInBytes": 0
             }, {
-              "name": "meshletOffset", 
+              "name": "meshletGroupOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -535,7 +535,7 @@
               "offset": 32, 
               "sizeInBytes": 0
             }, {
-              "name": "meshletCount", 
+              "name": "meshletGroupCount", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -543,7 +543,7 @@
               "offset": 36, 
               "sizeInBytes": 0
             }, {
-              "name": "vertOffset", 
+              "name": "meshletOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -551,7 +551,7 @@
               "offset": 40, 
               "sizeInBytes": 0
             }, {
-              "name": "primOffset", 
+              "name": "meshletCount", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
