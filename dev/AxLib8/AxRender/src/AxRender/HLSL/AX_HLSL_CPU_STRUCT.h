@@ -57,6 +57,8 @@ struct AxMeshShaderDrawRootConst {
 	Mat4f worldMatrix;
 	u32   meshObjectId;
 	u32   meshRendererId;
+	u32   _padding0;
+	u32   _padding1;
 };
 
 struct AxGpuMeshletCluster {
