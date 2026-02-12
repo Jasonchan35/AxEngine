@@ -55,7 +55,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 		} else if (auto* gpuBuf = rttiCastCheck<GpuBuffer_Vk>(param.getUploadedGpuBuffer(req))) {
 			auto* structBuf = param.buffer();
 			auto info = gpuBuf->_getUpdatedDescriptorInfo(req);
-			u32 elementIndex = ax_safe_cast_from(structBuf->gpuBufferIndex()); 
+			u32 elementIndex = ax_safe_cast_from(structBuf->gpuBufferOffset()); 
 			writeDescSetHelper.addInfo(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, param.bindPoint(), frameData._descSet, elementIndex, info);
 		}
 	}

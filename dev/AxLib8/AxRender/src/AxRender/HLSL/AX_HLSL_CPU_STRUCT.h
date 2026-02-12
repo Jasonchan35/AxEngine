@@ -21,13 +21,17 @@ struct AxRenderGpuData_Object {
 };
 
 struct AxRenderGpuData_Camera {
+	Vec3f	worldPos;
 	float   fieldOfView; // vertical
-	float   maxMeshletErrorThreshold;
+
 	float   nearClip;
 	float   farClip;
-	Vec3f	worldPos;
+	float   maxMeshletErrorThreshold;
+	float   _padding0;
+	
 	Vec2f	viewportMin;
 	Vec2f	viewportMax;
+	
 	Mat4f	projMatrix;
 	Mat4f	projMatrixInv;
 	Mat4f	viewMatrix;
@@ -56,7 +60,7 @@ struct AxGpuMeshlet {
 	
 	u32 meshObjectId;
 	u32 groupId;
-	u32 refinedGroupId;
+	i32 refinedGroupId;
 	u32 lod;
 };
 
@@ -86,10 +90,11 @@ struct AxGpuMeshletGroup {
 };
 
 struct AxGpuMeshObject {
-	BBox3f bounds;
-
-	u32 meshletGroupOffset;
-	u32 meshletGroupCount;
+	Vec3f boundsMin;
+	u32   meshletGroupOffset;
+	
+	Vec3f boundsMax;
+	u32   meshletGroupCount;
 	
 	u32 meshletOffset;
 	u32 meshletCount;

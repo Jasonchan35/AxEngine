@@ -229,13 +229,16 @@ float ClusterGenerator::sahOverhead(const std::vector<std::vector<unsigned int>>
 
 void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u32> indices)
 {
-#ifdef _MSC_VER
-	static const char* dump = NULL; // tired of C4996
+	static const char* dump = NULL;
 	static const char* clrt = NULL;
-#else
-	static const char* dump = getenv("DUMP");
-	static const char* clrt = getenv("CLRT");
-#endif
+
+// #ifdef _MSC_VER
+// 	static const char* dump = NULL; // tired of C4996
+// 	static const char* clrt = NULL;
+// #else
+// 	static const char* dump = getenv("DUMP");
+// 	static const char* clrt = getenv("CLRT");
+// #endif
 
 	clodConfig config = clodDefaultConfig(AX_HLSL_MESH_SHADER_MAX_VERT_COUNT);
 
@@ -294,6 +297,8 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 	float fovy = 60.f;
 	float znear = 1e-2f;
 	float proj = 1.f / tanf(fovy * 3.1415926f / 180.f * 0.5f);
+	
+	BBox3f meshBounds = BBox3f::s_empty();
 
 	clodBuild(config, mesh, [&](clodGroup group, const clodCluster* clusters, size_t cluster_count) -> int { // clang-format!
 		if (stats.size() <= size_t(group.depth))
@@ -326,6 +331,8 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 				auto& srcVert = vertices[index];
 				newVi = ax_safe_cast_from(outVertArray.size());
 				outVertArray.emplaceBack(srcVert);
+				
+				meshBounds.includePoint(srcVert.pos);
 				return newVi;
 			};
 			
@@ -383,12 +390,15 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			dst.center = Vec3f(group.simplified.center[0], group.simplified.center[1], group.simplified.center[2]);
 			dst.clusterError = group.simplified.error;
 			dst.radius       = group.simplified.radius;
+			dst.meshletCount = ax_safe_cast_from(cluster_count);
 			outMesh.meshletGroupBuffer.appendValues(dst);
 		}
 		
 		groups.push_back(group.simplified);
 		return int(groups.size() - 1);
 	});
+	
+	outMesh.setBounds(meshBounds);
 	
 	// for cluster connectivity analysis and boundary statistics, we need a position-only remap that maps vertices with the same position to the same index
 	std::vector<unsigned int> remap(vertices.size());

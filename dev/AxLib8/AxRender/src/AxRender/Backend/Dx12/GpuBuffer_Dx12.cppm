@@ -60,7 +60,7 @@ public:
 	}
 	
 protected:
-	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _getResource_dx12()._mapMemory(range + _bufferOffset); }
+	virtual MutByteSpan	onMapMemory(IntRange range) override	{ return _getResource_dx12()._mapMemory(range + _bufferOffsetInBytes); }
 	virtual void		onUnmapMemory() override				{ return _getResource_dx12()._unmapMemory(); }
 
 	virtual void		onFlush(IntRange range) override { AX_ASSERT_TODO(); }

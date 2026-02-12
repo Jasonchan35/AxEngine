@@ -69,11 +69,11 @@ protected:
 		}
 		
 		void onAllocateBlock(GpuBuffer* buf, Int pageSize) {
-			commitPageForRange(IntRange_StartAndSize(buf->_bufferOffset, buf->_size), pageSize);
+			commitPageForRange(IntRange_StartAndSize(buf->_bufferOffsetInBytes, buf->_size), pageSize);
 		}
 		
 		void onFreeBlock(GpuBuffer* buf, Int pageSize) {
-			uncommitPageForRange(IntRange_StartAndSize(buf->_bufferOffset, buf->_size), pageSize);
+			uncommitPageForRange(IntRange_StartAndSize(buf->_bufferOffsetInBytes, buf->_size), pageSize);
 		}
 		
 		Array<Int, 64>	_pendingCommitPages;

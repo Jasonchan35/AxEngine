@@ -157,7 +157,7 @@ void RenderRequest_Vk::onVertexShaderDraw(AxVertexShaderDraw& draw) {
 	if (auto* vb = rttiCastCheck<GpuBuffer_Vk>(draw.vertexBuffer)) {
 		constexpr u32 firstBinding = ax_enum_int(ShaderParamBindPoint::BindVertexBuffer);
 		constexpr u32 bindingCount = 1 ;
-		VkDeviceSize offset = vb->bufferOffset();
+		VkDeviceSize offset = vb->bufferOffsetInBytes();
 		vkCmdBindVertexBuffers(_graphCmdList_vk, firstBinding, bindingCount, &vb->vkBufHandle(), &offset);
 	}
 
@@ -171,7 +171,7 @@ void RenderRequest_Vk::onVertexShaderDraw(AxVertexShaderDraw& draw) {
 	} else {
 		auto* ib = rttiCastCheck<GpuBuffer_Vk>(draw.indexBuffer);
 		if (!ib) throw Error_Undefined();
-		VkDeviceSize offset = ib->bufferOffset();
+		VkDeviceSize offset = ib->bufferOffsetInBytes();
 		vkCmdBindIndexBuffer(_graphCmdList_vk, ib->vkBufHandle(), offset, AX_VkUtil::getVkIndexType(draw.indexType));
 		vkCmdDrawIndexed(_graphCmdList_vk,
 		                 ax_safe_cast_from(draw.indexCount),

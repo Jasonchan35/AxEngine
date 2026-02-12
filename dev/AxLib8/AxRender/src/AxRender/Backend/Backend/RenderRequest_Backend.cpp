@@ -221,7 +221,7 @@ void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
 	AxMeshShaderDrawRootConst rootConst;
 	rootConst.worldMatrix        = draw.objectToWorld;
 	rootConst.meshObjectId       = ax_safe_cast_from(meshObject->objectSlot.slotId());
-	rootConst.meshletGroupOffset = ax_safe_cast_from(meshObject->meshletGroupBuffer.gpuBufferIndex());
+	rootConst.meshletGroupOffset = ax_safe_cast_from(meshObject->meshletGroupBuffer.gpuBufferOffset());
 	rootConst.meshletGroupCount  = ax_safe_cast_from(meshObject->meshletGroupBuffer.count());
 	matPass->onBindMaterial(this, draw, &rootConst);
 	

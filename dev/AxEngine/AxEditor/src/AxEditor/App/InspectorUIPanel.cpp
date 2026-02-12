@@ -24,8 +24,9 @@ void InspectorUIPanel::render(RenderRequest* req) {
 
 		if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
 			if (auto* mesh = meshRenderer->renderer.mesh.ptr()) {
-				ImUIInputFloat3("Bounds min", mesh->bounds().min);
-				ImUIInputFloat3("Bounds max", mesh->bounds().max);
+				auto bounds = mesh->bounds();
+				ImUIInputFloat3("Bounds min", bounds.min);
+				ImUIInputFloat3("Bounds max", bounds.max);
 			}
 		}
 		

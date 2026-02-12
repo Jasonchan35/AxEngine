@@ -84,7 +84,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 			auto* resource_dx12 = gpuBuf->resource_dx12();
 			gpuBuf->updateResourceBarrier(cmdList);
 			AX_ASSERT(param.stride() == structBuf->stride());
-			req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(*resource_dx12, structBuf->gpuBufferIndex(), structBuf->count(), structBuf->stride());
+			req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(*resource_dx12, structBuf->gpuBufferOffset(), structBuf->count(), structBuf->stride());
 			
 		} else {
 			// AX_ASSERT(false); // missing param

@@ -24,8 +24,6 @@ Pass "Pass0" {
 #define AS_GROUP_SIZE AX_HLSL_THREADS_PER_WAVE
 #define MS_GROUP_SIZE ROUNDUP(MAX(AX_HLSL_MESH_SHADER_MAX_VERT_COUNT, AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT), AX_HLSL_THREADS_PER_WAVE)
 
-#define PAYLOAD_MAX_MESHLET_COUNT 128
-
 struct VS_Input {
 	SEM_pos(float4);
 	SEM_color0(float4);
@@ -37,6 +35,7 @@ struct VS_Output {
 	SEM_color0(float4);
 	SEM_normal(float3);
 	SEM_worldPos(float3);
+	SEM_uv0(float2);
 };
 
 struct PayloadMeshlet {
@@ -51,7 +50,7 @@ struct PayloadMeshlet {
 struct Payload {
 	u32 meshObjectId;
 	u32 meshletCount;
-	PayloadMeshlet meshlet[PAYLOAD_MAX_MESHLET_COUNT];
+	PayloadMeshlet meshlet[AS_GROUP_SIZE];
 };
 
 groupshared Payload s_payload;
@@ -98,6 +97,8 @@ void as_main(
 		bool coneCulling   = true; 
 
 		visibleResult = lodMatch && coneCulling && insideFrustum;
+//		visibleResult = true; // debug
+
 		if (visibleResult) {
 			PayloadMeshlet outMeshlet;
 			outMeshlet.meshletId  = meshletId;
@@ -143,8 +144,9 @@ void ms_main(
 		VS_Input i;
 
 		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
-//		i.pos    = Vec4f(mv.pos, 1);
-		i.pos    = Vec4f(mv.pos + Vec3f(meshlet.lod * 2.2, 0, 0), 1);
+		i.pos    = Vec4f(mv.pos, 1);
+//		i.pos    = Vec4f(mv.pos + Vec3f(meshlet.lod * 2.2, 0, 0), 1); // debug
+
 		i.normal = mv.normal;
 //		i.color0 = ax_debug_color(meshlet.lod);
 		i.color0 = ax_debug_color(gid);
@@ -154,6 +156,8 @@ void ms_main(
 		o.sv_pos   = axObjectToClipPos(i.pos);
 		o.normal   = axObjectToClipNormal(i.normal);
 		o.color0   = i.color0;
+		o.uv0.x    = meshlet.lod; // debug
+		o.uv0.y    = meshlet.meshletId; // debug
 
 		outVert[gtid] = o;
 	}

@@ -225,7 +225,7 @@
                             "name": "refinedGroupId",
                             "type": {
                                 "kind": "scalar",
-                                "scalarType": "uint32"
+                                "scalarType": "int32"
                             },
                             "binding": {"kind": "uniform", "offset": 24, "size": 4, "elementStride": 0}
                         },
@@ -318,38 +318,16 @@
                     "name": "AxGpuMeshObject",
                     "fields": [
                         {
-                            "name": "bounds",
+                            "name": "boundsMin",
                             "type": {
-                                "kind": "struct",
-                                "name": "BBox3f",
-                                "fields": [
-                                    {
-                                        "name": "min",
-                                        "type": {
-                                            "kind": "vector",
-                                            "elementCount": 3,
-                                            "elementType": {
-                                                "kind": "scalar",
-                                                "scalarType": "float32"
-                                            }
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
-                                    },
-                                    {
-                                        "name": "max",
-                                        "type": {
-                                            "kind": "vector",
-                                            "elementCount": 3,
-                                            "elementType": {
-                                                "kind": "scalar",
-                                                "scalarType": "float32"
-                                            }
-                                        },
-                                        "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
-                                    }
-                                ]
+                                "kind": "vector",
+                                "elementCount": 3,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
                             },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 32, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
                         },
                         {
                             "name": "meshletGroupOffset",
@@ -357,7 +335,19 @@
                                 "kind": "scalar",
                                 "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 32, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "boundsMax",
+                            "type": {
+                                "kind": "vector",
+                                "elementCount": 3,
+                                "elementType": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                }
+                            },
+                            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
                         },
                         {
                             "name": "meshletGroupCount",
@@ -365,7 +355,7 @@
                                 "kind": "scalar",
                                 "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 36, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 28, "size": 4, "elementStride": 0}
                         },
                         {
                             "name": "meshletOffset",
@@ -373,7 +363,7 @@
                                 "kind": "scalar",
                                 "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 40, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 32, "size": 4, "elementStride": 0}
                         },
                         {
                             "name": "meshletCount",
@@ -381,7 +371,7 @@
                                 "kind": "scalar",
                                 "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 36, "size": 4, "elementStride": 0}
                         },
                         {
                             "name": "vertOffset",
@@ -389,7 +379,7 @@
                                 "kind": "scalar",
                                 "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 48, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 40, "size": 4, "elementStride": 0}
                         },
                         {
                             "name": "primOffset",
@@ -397,7 +387,7 @@
                                 "kind": "scalar",
                                 "scalarType": "uint32"
                             },
-                            "binding": {"kind": "uniform", "offset": 52, "size": 4, "elementStride": 0}
+                            "binding": {"kind": "uniform", "offset": 44, "size": 4, "elementStride": 0}
                         }
                     ]
                 }
@@ -577,38 +567,6 @@
                     "name": "AxRenderGpuData_Camera",
                     "fields": [
                         {
-                            "name": "fieldOfView",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "float32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "maxMeshletErrorThreshold",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "float32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "nearClip",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "float32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
-                        },
-                        {
-                            "name": "farClip",
-                            "type": {
-                                "kind": "scalar",
-                                "scalarType": "float32"
-                            },
-                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
-                        },
-                        {
                             "name": "worldPos",
                             "type": {
                                 "kind": "vector",
@@ -618,7 +576,47 @@
                                     "scalarType": "float32"
                                 }
                             },
-                            "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
+                            "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
+                        },
+                        {
+                            "name": "fieldOfView",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "nearClip",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "farClip",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "maxMeshletErrorThreshold",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 24, "size": 4, "elementStride": 0}
+                        },
+                        {
+                            "name": "_padding0",
+                            "type": {
+                                "kind": "scalar",
+                                "scalarType": "float32"
+                            },
+                            "binding": {"kind": "uniform", "offset": 28, "size": 4, "elementStride": 0}
                         },
                         {
                             "name": "viewportMin",
@@ -733,38 +731,6 @@
                         "name": "AxRenderGpuData_Camera",
                         "fields": [
                             {
-                                "name": "fieldOfView",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 0, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "maxMeshletErrorThreshold",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 4, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "nearClip",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 8, "size": 4, "elementStride": 0}
-                            },
-                            {
-                                "name": "farClip",
-                                "type": {
-                                    "kind": "scalar",
-                                    "scalarType": "float32"
-                                },
-                                "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
-                            },
-                            {
                                 "name": "worldPos",
                                 "type": {
                                     "kind": "vector",
@@ -774,7 +740,47 @@
                                         "scalarType": "float32"
                                     }
                                 },
-                                "binding": {"kind": "uniform", "offset": 16, "size": 12, "elementStride": 4}
+                                "binding": {"kind": "uniform", "offset": 0, "size": 12, "elementStride": 4}
+                            },
+                            {
+                                "name": "fieldOfView",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 12, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "nearClip",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 16, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "farClip",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 20, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "maxMeshletErrorThreshold",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 24, "size": 4, "elementStride": 0}
+                            },
+                            {
+                                "name": "_padding0",
+                                "type": {
+                                    "kind": "scalar",
+                                    "scalarType": "float32"
+                                },
+                                "binding": {"kind": "uniform", "offset": 28, "size": 4, "elementStride": 0}
                             },
                             {
                                 "name": "viewportMin",

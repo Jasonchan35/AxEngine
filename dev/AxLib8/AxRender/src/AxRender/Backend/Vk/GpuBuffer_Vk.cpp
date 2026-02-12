@@ -119,8 +119,8 @@ void GpuBuffer_Vk::onCopyFromGpuBuffer(RenderRequest* req_, GpuBuffer* src_, Int
 		throw Error_Undefined();
 
 	VkBufferCopy region = {};
-	region.dstOffset = AX_VkUtil::castUInt32(dstOffset + _bufferOffset);
-	region.srcOffset = AX_VkUtil::castUInt32(srcOffset + src->bufferOffset());
+	region.dstOffset = AX_VkUtil::castUInt32(dstOffset + _bufferOffsetInBytes);
+	region.srcOffset = AX_VkUtil::castUInt32(srcOffset + src->_bufferOffsetInBytes);
 	region.size      = AX_VkUtil::castUInt32(sizeToCopy);
 	
 	vkCmdCopyBuffer(req->_uploadCmdList_vk, src->vkBufHandle(), _vkBufHandle, 1, &region);

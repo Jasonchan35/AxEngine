@@ -88,31 +88,15 @@
           "bindCount": 1, 
           "stride": 432, 
           "variables": [{
-              "name": "fieldOfView", 
+              "name": "worldPos", 
               "varType": {
-                "dataType": "f32", 
+                "dataType": "f32x3", 
                 "elementCount": 0
               }, 
               "offset": 0, 
-              "sizeInBytes": 4
+              "sizeInBytes": 12
             }, {
-              "name": "maxMeshletErrorThreshold", 
-              "varType": {
-                "dataType": "f32", 
-                "elementCount": 0
-              }, 
-              "offset": 4, 
-              "sizeInBytes": 4
-            }, {
-              "name": "nearClip", 
-              "varType": {
-                "dataType": "f32", 
-                "elementCount": 0
-              }, 
-              "offset": 8, 
-              "sizeInBytes": 4
-            }, {
-              "name": "farClip", 
+              "name": "fieldOfView", 
               "varType": {
                 "dataType": "f32", 
                 "elementCount": 0
@@ -120,13 +104,37 @@
               "offset": 12, 
               "sizeInBytes": 4
             }, {
-              "name": "worldPos", 
+              "name": "nearClip", 
               "varType": {
-                "dataType": "f32x3", 
+                "dataType": "f32", 
                 "elementCount": 0
               }, 
               "offset": 16, 
-              "sizeInBytes": 12
+              "sizeInBytes": 4
+            }, {
+              "name": "farClip", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 20, 
+              "sizeInBytes": 4
+            }, {
+              "name": "maxMeshletErrorThreshold", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 24, 
+              "sizeInBytes": 4
+            }, {
+              "name": "_padding0", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 28, 
+              "sizeInBytes": 4
             }, {
               "name": "viewportMin", 
               "varType": {
@@ -424,7 +432,7 @@
             }, {
               "name": "refinedGroupId", 
               "varType": {
-                "dataType": "u32", 
+                "dataType": "i32", 
                 "elementCount": 0
               }, 
               "offset": 24, 
@@ -502,30 +510,38 @@
           "bindSpace": "World", 
           "bindPoint": 20205, 
           "bindCount": 1, 
-          "stride": 56, 
+          "stride": 48, 
           "variables": [{
-              "name": "bounds", 
+              "name": "boundsMin", 
               "varType": {
-                "dataType": "Struct", 
+                "dataType": "f32x3", 
                 "elementCount": 0
               }, 
               "offset": 0, 
-              "sizeInBytes": 32
+              "sizeInBytes": 12
             }, {
               "name": "meshletGroupOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 32, 
+              "offset": 12, 
               "sizeInBytes": 4
+            }, {
+              "name": "boundsMax", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
+              "offset": 16, 
+              "sizeInBytes": 12
             }, {
               "name": "meshletGroupCount", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 36, 
+              "offset": 28, 
               "sizeInBytes": 4
             }, {
               "name": "meshletOffset", 
@@ -533,7 +549,7 @@
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 40, 
+              "offset": 32, 
               "sizeInBytes": 4
             }, {
               "name": "meshletCount", 
@@ -541,7 +557,7 @@
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 44, 
+              "offset": 36, 
               "sizeInBytes": 4
             }, {
               "name": "vertOffset", 
@@ -549,7 +565,7 @@
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 48, 
+              "offset": 40, 
               "sizeInBytes": 4
             }, {
               "name": "primOffset", 
@@ -557,7 +573,7 @@
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 52, 
+              "offset": 44, 
               "sizeInBytes": 4
             }]
         }, {

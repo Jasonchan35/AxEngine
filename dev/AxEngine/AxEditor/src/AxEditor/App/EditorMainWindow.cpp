@@ -76,6 +76,7 @@ void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
 	
 	auto& cam = _renderGraph->_viewportCamera;
 	ImUIPanel	panel("camera");
+	ImUIDragFloat("fieldOfView"   , &cam.fieldOfView, 0.1f, 5, 180);
 	ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
 	ImUILabelText("rotation"      , Fmt("{}", cam.rotation.eulerDeg()));
 	ImUILabelText("distance"      , Fmt("{}", cam.distance));

@@ -102,7 +102,7 @@ void RenderRequest_Dx12::onDrawWorld() {
 
 	_graphCmdList_dx12->ExecuteIndirect(_indirectMeshShaderDraw._commandSignature,
 										ax_safe_cast_from(drawArgs.size()),
-										ax_const_cast(gpuBuf)->d3dResource(), gpuBuf->bufferOffset(), 
+										ax_const_cast(gpuBuf)->d3dResource(), gpuBuf->bufferOffsetInBytes(), 
 										nullptr, 0);
 
 }
@@ -152,7 +152,7 @@ void RenderRequest_Dx12::onVertexShaderDraw(AxVertexShaderDraw& draw) {
 		vb->updateResourceBarrier(cmdList);
 
 		D3D12_VERTEX_BUFFER_VIEW vbView = {};
-		vbView.BufferLocation = ax_safe_cast_from(vb->gpuAddress() + vb->bufferOffset());
+		vbView.BufferLocation = ax_safe_cast_from(vb->gpuAddress() + vb->bufferOffsetInBytes());
 		vbView.SizeInBytes    = ax_safe_cast_from(vb->size());
 		vbView.StrideInBytes  = ax_safe_cast_from(vertexLayout->strideInBytes);
 		cmdList->IASetVertexBuffers(0, 1, &vbView);
@@ -171,7 +171,7 @@ void RenderRequest_Dx12::onVertexShaderDraw(AxVertexShaderDraw& draw) {
 		ib->updateResourceBarrier(cmdList);
 
 		D3D12_INDEX_BUFFER_VIEW ibView = {};
-		ibView.BufferLocation          = ib->gpuAddress() + ib->bufferOffset();
+		ibView.BufferLocation          = ib->gpuAddress() + ib->bufferOffsetInBytes();
 		ibView.SizeInBytes             = Dx12Util::castUINT(ib->size());
 		ibView.Format                  = Dx12Util::getDxIndexType(draw.indexType);;
 

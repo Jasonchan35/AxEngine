@@ -112,8 +112,8 @@ public:
 
 	GpuBufferType type() const { return _type; }
 	Int           size() const { return _size; }
-	Int           bufferOffset() const { return _bufferOffset; }
-	IntRange      bufferRange() const { return IntRange_StartAndSize(_bufferOffset, _size); }
+	Int           bufferOffsetInBytes() const { return _bufferOffsetInBytes; }
+	IntRange      bufferRange() const { return IntRange_StartAndSize(_bufferOffsetInBytes, _size); }
 	
 	GpuBufferPool* pool() { return _pool; }  
 	
@@ -126,7 +126,7 @@ protected:
 
 	GpuBufferType              _type   = GpuBufferType::None;
 	Int                        _size   = 0;
-	Int                        _bufferOffset = 0;
+	Int                        _bufferOffsetInBytes = 0;
 	GpuBufferPool*             _pool   = nullptr;
 	D3D12MA::VirtualAllocation _virtualAllocation {};
 };
@@ -174,7 +174,7 @@ public:
 		return ax_const_cast(this)->_getUploadedGpuBuffer(req);
 	}
 	
-	Int gpuBufferOffset() const { return _gpuBuffer ? _gpuBuffer->bufferOffset() : 0; }
+	Int gpuBufferOffsetInBytes() const { return _gpuBuffer ? _gpuBuffer->bufferOffsetInBytes() : 0; }
 	
 private:
 	GpuBuffer*	_getUploadedGpuBuffer(class RenderRequest* req);
@@ -262,6 +262,11 @@ public:
 	AX_INLINE const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const {
 		return _buffer.getUploadedGpuBuffer(req);
 	}	
+	
+	AX_INLINE Int uploadAndGetOffset(RenderRequest* req) const {
+		_buffer.getUploadedGpuBuffer(req);
+		return gpuBufferOffset();
+	}
 
 	Int stride() const { return _stride; }
 	Int count() const { return _buffer.dataSize() / _stride; }
@@ -296,7 +301,7 @@ public:
 		mutSpan.copyValues(span);
 	}
 	
-	Int gpuBufferIndex() const { return _buffer.gpuBufferOffset() / _stride; }
+	Int gpuBufferOffset() const { return _buffer.gpuBufferOffsetInBytes() / _stride; }
 	
 protected:
 	StructuredGpuBuffer(const CreateDesc& desc);
@@ -346,8 +351,10 @@ public:
 
 	Int count() const { return _buffer ? _buffer->count() : 0; }
 	
-	Int gpuBufferIndex() const { return _buffer ? _buffer->gpuBufferIndex() : 0; }
+	Int gpuBufferOffset() const { return _buffer ? _buffer->gpuBufferOffset() : 0; }
 	const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const { return _buffer ? _buffer->getUploadedGpuBuffer(req) : nullptr; }
+
+	AX_INLINE Int uploadAndGetOffset(RenderRequest* req) const { return _buffer ? _buffer->uploadAndGetOffset(req) : 0;  }
 	
 private:
 	SPtr<StructuredGpuBuffer> _buffer;

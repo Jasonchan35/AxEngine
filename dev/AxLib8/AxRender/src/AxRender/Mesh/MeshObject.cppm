@@ -28,7 +28,8 @@ public:
 		
 	void createBuffers();
 
-	BBox3f& bounds() { return _meshObjectInfo.bounds; }
+	void setBounds(const BBox3f& v) { _bounds = v; objectSlot.markDirty(); }
+	const BBox3f& bounds() const { return _bounds; }
 	
 	using ResourceKey = String;
 	const ResourceKey& resourceKey() const { return _assetPath; }
@@ -38,8 +39,9 @@ public:
 	const GpuData* onGetGpuData(RenderRequest* req);
 	
 protected:
-	String          _assetPath;
-	AxGpuMeshObject _meshObjectInfo = {};
+	String  _assetPath;
+	BBox3f  _bounds = BBox3f::s_empty();
+	GpuData _gpuData = {};
 	
 	MeshObject(const CreateDesc& desc);
 	

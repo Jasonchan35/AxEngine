@@ -53,7 +53,7 @@ public:
 	VkDescriptorBufferInfo _getUpdatedDescriptorInfo(RenderRequest_Vk* req) const {
 		VkDescriptorBufferInfo info = {};
 		info.buffer = _vkBufHandle;
-		info.offset = _bufferOffset;
+		info.offset = _bufferOffsetInBytes;
 		info.range  = ax_safe_cast_from(_size);
 		return info;
 	}
