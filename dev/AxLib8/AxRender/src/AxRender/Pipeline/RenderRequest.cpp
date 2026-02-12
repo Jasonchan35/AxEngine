@@ -13,35 +13,22 @@ void RenderRequest::drawMeshRenderer(MeshObjectRenderer* mr) {
 void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {
 	if (!material) return;
 	if (!mesh) return;
-	drawMesh(mesh->meshData, material, materialPass, objectToWorld);
 	
-	if (mesh->meshletBuffer.count() <= 0) return;
+	if (mesh->meshletBuffer.count() <= 0) {
+		drawMesh(mesh->meshData, material, materialPass, objectToWorld);
+		return;
+	}
+	
 	AxMeshShaderDraw draw;
 	draw.material = RenderStockObjects::s_instance()->materials->meshlet;
 	draw.materialPassIndex = materialPass;
-	draw.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
+	draw.objectToWorld = objectToWorld; // * Mat4f::s_translate(0, 3, 0);
 	draw.meshObject = mesh;
 	
-#if 0
-	auto lodGroupSpan = draw.meshObject->meshletGroupBuffer.readData();
-	Int reqLodGroup = lodBias;
-	Int lodGroupId = Math::clamp(reqLodGroup, 0LL, lodGroupSpan.size() - 1);
-	auto& lodGroup = lodGroupSpan[lodGroupId];
-	u32 meshletCount = ax_safe_cast_from(lodGroup.meshletCount);
-	
-	u32 dispatchGroupCount = Math::alignDivTo(meshletCount, AX_HLSL_THREADS_PER_WAVE);
-	draw.dispatchGroupCount = u32x3(dispatchGroupCount, 1, 1);
-	draw.lodGroupId = lodGroupId;
-	
-#else
-
 	u32 meshletCount        = ax_safe_cast_from(mesh->meshletBuffer.count());
 	u32 dispatchGroupCount  = Math::alignDivTo(meshletCount, AX_HLSL_THREADS_PER_WAVE);
 	draw.dispatchGroupCount = u32x3(dispatchGroupCount, 1, 1);
 	draw.lodGroupId         = 0;
-	
-#endif
-	
 	
 	meshShaderDraw(draw);
 }

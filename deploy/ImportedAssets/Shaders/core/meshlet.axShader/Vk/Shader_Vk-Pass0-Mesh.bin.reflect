@@ -1273,6 +1273,12 @@
                     "type": {
                         "kind": "None"
                     }
+                },
+                {
+                    "name": "outPrimId",
+                    "type": {
+                        "kind": "None"
+                    }
                 }
             ],
             "bindings": [

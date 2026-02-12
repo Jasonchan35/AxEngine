@@ -123,7 +123,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUIDragFloat("maxMeshletErrorThreshold", &_maxMeshletErrorThreshold, 0.01f, 0, 100);
+		ImUIDragFloat("maxMeshletErrorThreshold", &_maxMeshletErrorThreshold, 0.001f, 0, 1);
 		req->maxMeshletErrorThreshold = _maxMeshletErrorThreshold;
 		ImUIDragInt("LodBias", &_lodBias, 0.1f, -10, 10);
 		req->lodBias = _lodBias;

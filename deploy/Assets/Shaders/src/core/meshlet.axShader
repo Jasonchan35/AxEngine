@@ -88,7 +88,7 @@ void as_main(
 		Vec3f camPos            = axCamera.worldPos;
 		float viewportH         = axCamera.viewportMax.y - axCamera.viewportMin.y;
 		float camTanFov         = tan(radians(axCamera.fieldOfView * 0.5)) * 2.0;
-		float maxErrorThreshold = axCamera.maxMeshletErrorThreshold * 0.000001;
+		float maxErrorThreshold = axCamera.maxMeshletErrorThreshold;
 
 		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
 		bool lodMatch = (meshlet.refinedGroupId < 0 || boundsError(axGpuMeshletGroup[groupOffset + meshlet.refinedGroupId]) <= maxErrorThreshold) 
@@ -116,6 +116,10 @@ void as_main(
 	DispatchMesh(visibleResultCount, 1, 1, s_payload);
 }
 
+struct PrimId_Out {
+	uint primitiveID : SV_PrimitiveID;
+};
+
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("triangle")]
 void ms_main(
@@ -123,22 +127,24 @@ void ms_main(
 	SEM_gtid(u32),
 	SEM_dtid(u32),
 	in payload Payload payload,
-	out vertices VS_Output outVert[AX_HLSL_MESH_SHADER_MAX_VERT_COUNT],
-	out indices  uint3     outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
+	out vertices   VS_Output  outVert[AX_HLSL_MESH_SHADER_MAX_VERT_COUNT],
+	out indices    uint3      outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
+	out primitives PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
 	PayloadMeshlet meshlet = payload.meshlet[gid];
 	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
 
 	if (gtid < meshlet.primCount) {
 		outPrim[gtid] = axGpuMeshletPrim[meshlet.primOffset + gtid].tri;
+		outPrimId[gtid].primitiveID = gtid;
 	}
 
 	if (gtid < meshlet.vertCount) {
 		VS_Input i;
 
 		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
-		i.pos    = Vec4f(mv.pos, 1);
-//		i.pos    = Vec4f(mv.pos + Vec3f(meshlet.lod * 2.2, 0, 0), 1);
+//		i.pos    = Vec4f(mv.pos, 1);
+		i.pos    = Vec4f(mv.pos + Vec3f(meshlet.lod * 2.2, 0, 0), 1);
 		i.normal = mv.normal;
 //		i.color0 = ax_debug_color(meshlet.lod);
 		i.color0 = ax_debug_color(gid);
@@ -148,6 +154,7 @@ void ms_main(
 		o.sv_pos   = axObjectToClipPos(i.pos);
 		o.normal   = axObjectToClipNormal(i.normal);
 		o.color0   = i.color0;
+
 		outVert[gtid] = o;
 	}
 }
@@ -159,7 +166,10 @@ uniform Color3f diffuse;
 uniform Color3f specular;
 uniform float   shininess;
 
-float4 ps_main(VS_Output i) : SV_Target {
+float4 ps_main(
+	VS_Output i,
+	SEM_sv_primitiveId(uint)
+) : SV_Target {
 	Vec3f   cameraPos  = axCamera.worldPos;
 	Vec3f   lightPos   = Vec3f(10, 10, 10);
 	Color3f lightColor = Color3f(1,1,1);
@@ -181,6 +191,8 @@ float4 ps_main(VS_Output i) : SV_Target {
 	Color3f _specular = lightColor * (specular * spec);
 		
 	Color3f lightResult = _ambient + _diffuse + _specular;
+
+	i.color0 = ax_debug_color(sv_primitiveId);
 
 	return i.color0 * Color4f(lightResult, 1);
 }

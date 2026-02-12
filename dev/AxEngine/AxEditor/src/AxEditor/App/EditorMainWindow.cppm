@@ -57,7 +57,7 @@ protected:
 	Mat4f _gizmoStartWorldMatrix;
 	
 	Int _lodBias = 0;
-	float _maxMeshletErrorThreshold = 1;
+	float _maxMeshletErrorThreshold = 0.001f;
 };
 
 } //namespace

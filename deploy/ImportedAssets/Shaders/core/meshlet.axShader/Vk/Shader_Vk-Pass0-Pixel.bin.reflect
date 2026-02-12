@@ -1203,6 +1203,14 @@
                             }
                         ]
                     }
+                },
+                {
+                    "name": "sv_primitiveId",
+                    "semanticName": "SV_PRIMITIVEID",
+                    "type": {
+                        "kind": "scalar",
+                        "scalarType": "uint32"
+                    }
                 }
             ],
             "result": {
