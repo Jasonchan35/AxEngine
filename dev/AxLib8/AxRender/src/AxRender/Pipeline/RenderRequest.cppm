@@ -56,13 +56,19 @@ public:
 	f64	uptime() const { return _uptime; }
 
 	struct Statistics {
-		bool	show = false;
-		Int		drawcalls = 0;
-		Int		drawTriangles = 0;
-		Int		drawLines = 0;
-		Int		drawPoints = 0;
-		Int		vertexCount = 0;
-		Int		uploadBytes = 0;
+		bool show                     = false;
+		Int  drawcalls                = 0;
+		Int  drawTriangles            = 0;
+		Int  drawLines                = 0;
+		Int  drawPoints               = 0;
+		Int  vertexCount              = 0;
+		Int  uploadBytes              = 0;
+		
+		GpuBufferPool::Statistics  meshObject;
+		GpuBufferPool::Statistics  meshletVert;
+		GpuBufferPool::Statistics  meshletPrim;
+		GpuBufferPool::Statistics  meshletCluster;
+		GpuBufferPool::Statistics  meshletGroup;
 	};
 	Statistics statistics;
 

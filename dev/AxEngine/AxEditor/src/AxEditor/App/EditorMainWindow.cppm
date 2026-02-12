@@ -39,6 +39,7 @@ protected:
 
 	void _cameraDebugPanel(RenderRequest* req);
 	void _drawGizmo(RenderRequest* req);
+	void _statisticsPanel(RenderRequest* req);
 	
 	enum class OpMode { None, Translate, Rotate, Scale };
 	enum class OpSpace { Local, World };
@@ -60,5 +61,6 @@ protected:
 	
 	AxRenderGpuData_Debug _gpuDebugData;
 };
+
 
 } //namespace

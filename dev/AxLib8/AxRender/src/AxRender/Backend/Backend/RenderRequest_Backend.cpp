@@ -73,6 +73,12 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_backBufferRenderPass = backBufferRenderPass;
 	_uptime               = _renderSystem_backend->getCurrentUptime().seconds_f64();
 	_objectManager        = RenderObjectManager_Backend::s_instance();
+
+	auto& pools = _objectManager->_structBufferPools;
+	statistics.meshletCluster = pools.axMeshletCluster.getStatistics();
+	statistics.meshletGroup   = pools.axMeshletGroup.getStatistics();
+	statistics.meshletPrim    = pools.axMeshletPrim.getStatistics();
+	statistics.meshletVert    = pools.axMeshletVert.getStatistics(); 
 	onFrameBegin();
 }
 

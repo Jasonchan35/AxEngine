@@ -30,6 +30,8 @@ public:
 protected:
 	GpuBufferPool_Backend(const CreateDesc& desc);
 	
+	virtual Statistics getStatistics() const override;
+	
 	inline void _throwIfError(HRESULT hr) { if (hr < 0) throw Error_Undefined(); }
 	
 	struct Page {

@@ -76,9 +76,29 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	Base::onBackBufferPass(req, inputs);
 	_owner->_cameraDebugPanel(req);
+	_owner->_statisticsPanel(req);
 	_owner->_drawGizmo(req);
 	_owner->_sceneOutlinerUIPanel.render(req);
 	_owner->_inspectorUIPanel.render(req);
+}
+
+void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
+	ImUIPanel	panel("statistics");
+	ImUIText("Meshlet:");
+	
+	auto func = [](StrView name, const GpuBufferPool::Statistics& src)-> void {
+		ImUIText(Fmt("  {} ({:8} / {:2} / {:4}MB)",
+		             name,
+		             src.elementCount,
+		             src.allocationCount,
+		             src.sizeInBytes / Math::MegaBytes));
+	};
+	
+	auto& stat = req->statistics;
+	func("Cluster", stat.meshletCluster);
+	func("Group  ", stat.meshletGroup);
+	func("Vert   ", stat.meshletVert);
+	func("Prim   ", stat.meshletPrim);
 }
 
 void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {

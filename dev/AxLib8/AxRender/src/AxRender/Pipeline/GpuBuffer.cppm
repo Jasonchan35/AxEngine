@@ -70,6 +70,14 @@ public:
 	
 	Int blockAlignment() const { return _blockAlignment; }
 
+	struct Statistics {
+		Int sizeInBytes = 0;
+		Int allocationCount = 0;
+		Int elementCount = 0;
+	};
+	
+	virtual Statistics getStatistics() const { return {}; }
+
 protected:
 	GpuBufferPool(const CreateDesc& desc);
 	
@@ -323,6 +331,14 @@ public:
 	
 	operator GpuBufferPool* () { return pool.ptr(); }
 	GpuBufferPool* operator->() { return pool.ptr(); }
+	
+	using Statistics = GpuBufferPool::Statistics; 
+	Statistics getStatistics() const {
+		Statistics o;
+		if (pool) { o = pool->getStatistics(); }
+		o.elementCount = o.sizeInBytes / AX_SIZEOF(T);
+		return o;
+	}
 	
 	SPtr<GpuBufferPool> pool;
 };

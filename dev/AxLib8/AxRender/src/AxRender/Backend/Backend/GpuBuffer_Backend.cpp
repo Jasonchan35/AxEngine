@@ -17,6 +17,16 @@ GpuBufferPool_Backend::GpuBufferPool_Backend(const CreateDesc& desc): Base(desc)
 	_throwIfError(hr);
 }
 
+GpuBufferPool::Statistics GpuBufferPool_Backend::getStatistics() const {
+	Statistics o;
+	D3D12MA::Statistics src;
+	_virtualBlock.ptr()->GetStatistics(&src);
+	
+	o.allocationCount = ax_safe_cast_from(src.AllocationCount);
+	o.sizeInBytes     = ax_safe_cast_from(src.AllocationBytes);
+	return o;
+}
+
 void GpuBufferPool_Backend::_allocateBlock(GpuBuffer* buf) {
 	D3D12MA::VIRTUAL_ALLOCATION_DESC desc = {};
 	if (_blockAlignment <= 0) {
