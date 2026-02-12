@@ -80,7 +80,6 @@ public:
 
 	void setDebugData(const AxRenderGpuData_Debug& debugData);
 	
-	Int lodBias = 0;
 	float maxMeshletErrorInPixels = 1;
 	
 protected:

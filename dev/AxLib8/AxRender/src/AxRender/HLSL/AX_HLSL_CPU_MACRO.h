@@ -12,5 +12,11 @@
 #define AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT	126U
 #define AX_HLSL_THREADS_PER_WAVE			32U
 
+#define AxGpuDebugColorCode_None                0
+#define AxGpuDebugColorCode_Tri                 1
+#define AxGpuDebugColorCode_Meshlet             2
+#define AxGpuDebugColorCode_MeshletGroup        3
+#define AxGpuDebugColorCode_MeshletRefinedGroup 4
+#define AxGpuDebugColorCode_MeshletLod          5
 
 #endif // __AX_HLSL_CPU_COMMON_h__

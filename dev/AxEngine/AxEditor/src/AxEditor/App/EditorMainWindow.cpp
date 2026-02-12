@@ -7,6 +7,9 @@ import :EditorApp;
 namespace AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
+	_gpuDebugData = {};
+	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
+	
 	auto* renderSystem = RenderSystem::s_instance();
 	auto  title    = Fmt("AxEditor - {}{}, MT: {}, VSync: {}",
 	                     renderSystem->api(),
@@ -134,10 +137,21 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		
 		ImUIDragFloat("maxMeshletErrorInPixels", &_maxMeshletErrorInPixels, 0.2f, 0, 10);
 		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
-		ImUIDragInt("LodBias", &_lodBias, 0.1f, -10, 10);
-		req->lodBias = _lodBias;
+		{
+			ImUICheckBoxArray_Item<i32> list_[] = {
+				{.name = "None"    , .value = AxGpuDebugColorCode_None               },
+				{.name = "Tri"     , .value = AxGpuDebugColorCode_Tri                },
+				{.name = "Meshlet" , .value = AxGpuDebugColorCode_Meshlet            },
+				{.name = "Group"   , .value = AxGpuDebugColorCode_MeshletGroup       },
+				{.name = "Refine"  , .value = AxGpuDebugColorCode_MeshletRefinedGroup},
+				{.name = "Lod"     , .value = AxGpuDebugColorCode_MeshletLod         },
+			};
+			auto list = Span(list_);
+			ImUICheckBoxArray("debugColorCode", _gpuDebugData.debugColorCode, list);
+		}
 		
-		ImUIDragFloat("Normal Length", &_gpuDebugData.drawNormalLength, 0.1f, 0, 10);
+		ImUIDragFloat("showAllLodDistance", &_gpuDebugData.showAllLodDistance, 0.1f, 0, 10);
+		ImUIDragFloat("Normal Length",      &_gpuDebugData.drawNormalLength, 0.01f, 0, 4);
 	}
 	
 	req->setDebugData(_gpuDebugData);

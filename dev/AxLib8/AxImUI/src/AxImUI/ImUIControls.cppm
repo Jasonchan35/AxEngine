@@ -59,6 +59,16 @@ void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);
 bool ImUIButton(ZStrView label, Vec2f size);
 bool ImUIRadioButton(ZStrView label, bool active);
 
+bool ImUICheckBox(ZStrView label, bool& b);
+
+template<class T>
+struct ImUICheckBoxArray_Item {
+	ZStrView name;
+	T value;
+};
+
+void ImUIText(ZStrView text);
+
 void ImUILabelText(ZStrView label, ZStrView text);
 
 bool ImUIInputFloat3(ZStrView label, Vec3f& value);
@@ -72,14 +82,62 @@ bool ImUIDragFloat(
 		float v_min = f32_min,
 		float v_max = f32_max);
 
+template<class T> requires !std::is_same_v<T, f32> 
+inline bool ImUIDragFloat(ZStrView label, T* v, float v_speed, T v_min, T v_max) {
+	f32 tmpV   = ax_safe_cast_from(*v);
+	f32 tmpMin = ax_safe_cast_from(v_min);
+	f32 tmpMax = ax_safe_cast_from(v_max);
+	
+	if (ImUIDragFloat(label, &tmpV, v_speed, tmpMin, tmpMax)) {
+		*v = tmpV;
+		return true;
+	}
+	return false;
+}
+
+
 bool ImUIDragInt(
 		ZStrView label, 
-		Int* v, 
+		i32* v, 
 		float v_speed = 0.1f, 
-		Int v_min = i32_min,
-		Int v_max = i32_max);
+		i32 v_min = i32_min,
+		i32 v_max = i32_max);
+
+template<class T> requires !std::is_same_v<T, i32> 
+inline bool ImUIDragInt(ZStrView label, T* v, float v_speed, T v_min, T v_max) {
+	int tmpV   = ax_safe_cast_from(*v);
+	int tmpMin = ax_safe_cast_from(v_min);
+	int tmpMax = ax_safe_cast_from(v_max);
+	
+	if (ImUIDragInt(label, &tmpV, v_speed, tmpMin, tmpMax)) {
+		*v = tmpV;
+		return true;
+	}
+	return false;
+}
 
 float ImUIInputFloat(ZStrView label, float* v);
+
+template<class T> inline
+bool ImUICheckBoxArray(ZStrView label, T& value, Span<ImUICheckBoxArray_Item<T>> list) {
+	ImUIText(label);
+	bool changed = false;
+	int i = 0;
+	for (auto& s : list) {
+		bool v = value == s.value;
+		if (i > 0) {
+			ImUISameLine();
+		}
+		if (ImUICheckBox(s.name, v)) {
+			value = s.value;
+			changed = true;
+		}
+		
+		i++;
+	}
+	return changed;
+}
+
 
 class ImUIPanel : public NonCopyable {
 public:

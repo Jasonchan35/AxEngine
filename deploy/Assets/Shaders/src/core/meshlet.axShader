@@ -27,7 +27,7 @@ float4 ps_main(
 	SEM_sv_primitiveId(uint)
 ) : SV_Target {
 	AxRenderGpuData_Light light;
-	light.worldPos = Vec3f(10, 10, 10);
+	light.worldPos = Vec3f(10, 10, -10);
 	light.color    = Color3f(1,1,1);
 
 	Vec3f worldPos    = i.worldPos;
@@ -36,7 +36,9 @@ float4 ps_main(
 	Color3f lightResult = axLight_Blinn(light, worldPos, worldNormal,
 										ambient, diffuse, specular, shininess);
 
-	i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
+	if (axDebug.debugColorCode == AxGpuDebugColorCode_Tri) {
+		i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
+	}
 	return i.color0 * Color4f(lightResult, 1);
 }
 

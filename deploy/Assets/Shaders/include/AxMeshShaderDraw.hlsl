@@ -23,19 +23,10 @@ Vec3f axObjectToClipNormal (Vec3f inNormal) { return axWorldToClipNormal(axObjec
 #define AS_GROUP_SIZE AX_HLSL_THREADS_PER_WAVE
 #define MS_GROUP_SIZE ROUNDUP(MAX(AX_HLSL_MESH_SHADER_MAX_VERT_COUNT, AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT), AX_HLSL_THREADS_PER_WAVE)
 
-struct PayloadMeshlet {
-	u32 meshletId;
-	u32 vertOffset;
-	u32 vertCount;
-	u32 primOffset;
-	u32 primCount;
-	u32 lod;
-};
-
 struct Payload {
 	u32 meshObjectId;
 	u32 meshletCount;
-	PayloadMeshlet meshlet[AS_GROUP_SIZE];
+	u32 meshletIds[AS_GROUP_SIZE];
 };
 
 groupshared Payload s_payload;
@@ -103,19 +94,14 @@ void axMeshlet_AmplificationMain(
 		bool coneCulling   = true; 
 
 		visibleResult = lodMatch && coneCulling && insideFrustum;
-//		visibleResult = true; // debug
+
+		if (axDebug.showAllLodDistance > 0) {
+			visibleResult = true;
+		}
 
 		if (visibleResult) {
-			PayloadMeshlet outMeshlet;
-			outMeshlet.meshletId  = meshletId;
-			outMeshlet.vertCount  = meshlet.vertCount;
-			outMeshlet.vertOffset = meshlet.vertOffset;
-			outMeshlet.primCount  = meshlet.primCount;
-			outMeshlet.primOffset = meshlet.primOffset;
-			outMeshlet.lod        = meshlet.lod;
-
 			uint outIndex = WavePrefixCountBits(visibleResult);
-			s_payload.meshlet[outIndex] = outMeshlet;
+			s_payload.meshletIds[outIndex] = meshletId;
 		}
 	}
 
@@ -135,7 +121,9 @@ void axMeshlet_MeshMain(
 	out indices    u32x3         outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
 	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
-	PayloadMeshlet meshlet = payload.meshlet[gid];
+	u32 meshletId = payload.meshletIds[gid];
+	AxGpuMeshlet meshlet = axGpuMeshlet[meshletId];
+
 	SetMeshOutputCounts(meshlet.vertCount, meshlet.primCount);
 
 	if (gtid < meshlet.primCount) {
@@ -148,19 +136,26 @@ void axMeshlet_MeshMain(
 
 		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos, 1);
-//		i.pos    = Vec4f(mv.pos + Vec3f(meshlet.lod * 2.2, 0, 0), 1); // debug
 
+		if (axDebug.showAllLodDistance > 0) {
+			i.pos = Vec4f(mv.pos + ax_debug_lod_offset(meshlet.lod), 1); // debug
+		}
+
+		i.color0 = float4(1,1,1,1);
 		i.normal = mv.normal;
-//		i.color0 = ax_debug_color(meshlet.lod); // debug
-		i.color0 = ax_debug_color(gid); // debug clusters
+
+		switch (axDebug.debugColorCode) {
+			case AxGpuDebugColorCode_Meshlet:             i.color0 = ax_debug_color(meshletId             ); break;
+			case AxGpuDebugColorCode_MeshletGroup:        i.color0 = ax_debug_color(meshlet.groupId       ); break;
+			case AxGpuDebugColorCode_MeshletRefinedGroup: i.color0 = ax_debug_color(meshlet.refinedGroupId); break;
+			case AxGpuDebugColorCode_MeshletLod:          i.color0 = ax_debug_color(meshlet.lod           ); break;
+		}
 
 		VS_Output o;
 		o.worldPos = axObjectToWorldPos(i.pos);
 		o.sv_pos   = axObjectToClipPos(i.pos);
 		o.normal   = axObjectToClipNormal(i.normal);
 		o.color0   = i.color0;
-		o.uv0.x    = meshlet.lod; // debug
-		o.uv0.y    = meshlet.meshletId; // debug
 
 		outVert[gtid] = o;
 	}

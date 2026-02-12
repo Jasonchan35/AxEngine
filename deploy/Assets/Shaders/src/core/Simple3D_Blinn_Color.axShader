@@ -54,7 +54,7 @@ float4 ps_main(
 	SEM_sv_primitiveId(uint)
 ) : SV_Target {
 	AxRenderGpuData_Light light;
-	light.worldPos = Vec3f(10, 10, 10);
+	light.worldPos = Vec3f(10, 10, -10);
 	light.color    = Color3f(1,1,1);
 
 	Vec3f worldPos    = i.worldPos;

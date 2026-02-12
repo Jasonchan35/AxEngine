@@ -37,10 +37,11 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	draw.lodGroupId         = 0;
 	
 	meshShaderDraw(draw);
-
-	// draw normals
-	draw.material = stockObjs->materials->meshlet_normal;
-	meshShaderDraw(draw);
+	
+	if (_debugData.drawNormalLength > 0) {
+		draw.material = stockObjs->materials->meshlet_normal;
+		meshShaderDraw(draw);
+	}
 }
 
 void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {

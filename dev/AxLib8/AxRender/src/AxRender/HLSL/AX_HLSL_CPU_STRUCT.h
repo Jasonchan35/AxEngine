@@ -5,9 +5,10 @@
 
 struct AxRenderGpuData_Debug {
 	float drawNormalLength;
+	i32   debugColorCode; // AxGpuDebugColorCode_None
+	float showAllLodDistance;
 	float _padding0;
 	float _padding1;
-	float _padding2;
 };
 
 struct AxRenderGpuData_World {

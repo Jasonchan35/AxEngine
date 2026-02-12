@@ -74,6 +74,14 @@ bool ImUIRadioButton(ZStrView label, bool active) {
 	return ::ImGui::RadioButton(label.c_str(), active);
 }
 
+bool ImUICheckBox(ZStrView label, bool& v) {
+	return ::ImGui::Checkbox(label.c_str(), &v);
+}
+
+void ImUIText(ZStrView text) {
+	::ImGui::Text("%s", text.c_str());
+}
+
 void ImUILabelText(ZStrView label, ZStrView text) {
 	return ::ImGui::LabelText(label.c_str(), "%s", text.c_str());
 }
@@ -105,16 +113,8 @@ bool ImUIDragFloat(ZStrView label, float* v, float v_speed, float v_min, float v
 	                          ImGuiSliderFlags_AlwaysClamp);
 }
 
-bool ImUIDragInt(ZStrView label, Int* v, float v_speed, Int v_min, Int v_max) {
-	int tmpV   = ax_safe_cast_from(*v);
-	int tmpMin = ax_safe_cast_from(v_min);
-	int tmpMax = ax_safe_cast_from(v_max);
-	
-	if (ImGui::DragInt(label.c_str(), &tmpV, v_speed, tmpMin, tmpMax, "%d", ImGuiSliderFlags_AlwaysClamp)) {
-		*v = tmpV;
-		return true;
-	}
-	return false;
+bool ImUIDragInt(ZStrView label, i32* v, float v_speed, i32 v_min, i32 v_max) {
+	return ImGui::DragInt(label.c_str(), v, v_speed, v_min, v_max, "%d", ImGuiSliderFlags_AlwaysClamp);
 }
 
 float ImUIInputFloat(ZStrView label, float* v) {

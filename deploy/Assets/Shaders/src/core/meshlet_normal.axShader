@@ -24,11 +24,13 @@ void ms_main(
 	SEM_gtid(u32),
 	SEM_dtid(u32),
 	in payload Payload payload,
-	out vertices   VS_Output     outVert[AX_HLSL_MESH_SHADER_MAX_VERT_COUNT],
+	out vertices   VS_Output     outVert[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT * 2],
 	out indices    u32x2         outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
 	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
-	PayloadMeshlet meshlet = payload.meshlet[gid];
+	u32 meshletId = payload.meshletIds[gid];
+	AxGpuMeshlet meshlet = axGpuMeshlet[meshletId];
+
 	SetMeshOutputCounts(meshlet.primCount * 2, meshlet.primCount);
 
 	if (gtid < meshlet.primCount) {
@@ -43,19 +45,18 @@ void ms_main(
 		VS_Input i;
 
 		AxGpuMeshletVert mv = axGpuMeshletVert[meshlet.vertOffset + gtid];
-		i.pos    = Vec4f(mv.pos, 1);
+		i.pos    = Vec4f(mv.pos + ax_debug_lod_offset(meshlet.lod), 1);
 		i.normal = mv.normal;
+		i.color0 = float4(1,1,1,1);
 
 		VS_Output o;
-		o.worldPos = axObjectToWorldPos(i.pos);
 		o.sv_pos   = axObjectToClipPos(i.pos);
-		o.normal   = axObjectToClipNormal(i.normal);
 		o.color0   = i.color0;
 
 		outVert[gtid * 2] = o;
+		i.pos.xyz += axObjectToWorldNormal(i.normal) * axDebug.drawNormalLength;
+		o.sv_pos = axObjectToClipPos(i.pos);
 
-		float normalLength = axDebug.drawNormalLength;
-		o.sv_pos   = axObjectToClipPos(i.pos + Vec4f(i.normal * normalLength, 0));
 		outVert[gtid * 2 + 1] = o;
 	}
 }
