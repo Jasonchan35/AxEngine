@@ -90,7 +90,7 @@ void RenderRequest_Dx12::onDrawWorld() {
 		auto& cmd = drawArgs[i];
 		cmd.setGroupCount(1,1,1);
 		cmd.rootConst.worldMatrix = Mat4f::s_translate(static_cast<f32>(i) * 2, 0, -8);
-		cmd.rootConst.meshLodGroupId = 6 + i;
+		cmd.rootConst.meshObjectId = 6 + i;
 	}
 
 	//	auto* mtl = rttiCastCheck<Material_Dx12>(mgr->indirectDrawMaterial());
@@ -98,7 +98,7 @@ void RenderRequest_Dx12::onDrawWorld() {
 	
 	AxMeshShaderDraw draw = {};
 	mtl->getPass(0)->onBindMaterial(this, draw, nullptr);
-	auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(drawArgsBuffer.buffer->getUploadedGpuBuffer(this));
+	auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(drawArgsBuffer.getUploadedGpuBuffer(this));
 
 	_graphCmdList_dx12->ExecuteIndirect(_indirectMeshShaderDraw._commandSignature,
 										ax_safe_cast_from(drawArgs.size()),

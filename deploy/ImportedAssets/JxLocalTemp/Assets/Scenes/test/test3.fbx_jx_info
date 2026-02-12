@@ -4,9 +4,9 @@
   "export_opt_axis_up": "Y",
   "export_collection": "JX_EXPORT",
   "opt_reset_object_transform": false,
-  "sourceFile": "W:/Jason/github/AxEngine/deploy/Assets/Scenes/test/test2.blend",
+  "sourceFile": "W:/Jason/github/AxEngine/deploy/Assets/Scenes/test/test3.blend",
   "objects": {
-    "Plane": {
+    "Suzanne": {
       "type": "MESH",
       "parent": "",
       "world_location": [

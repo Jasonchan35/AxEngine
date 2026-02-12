@@ -47,7 +47,7 @@ public:
 	Quat4 rotation { Quat4::s_identity() };
 	T     distance = 100;
 
-	T     verticalFieldOfView = T(50.0);
+	T     fieldOfView = T(50.0); // vertical
 	T     nearClip = T(0.1);
 	T     farClip  = T(10000.0);
 	
@@ -92,7 +92,7 @@ Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos, const ProjectionDesc& desc) 
 
 template<class T> inline
 Mat4_<T> Camera3_<T>::projMatrix(const ProjectionDesc& desc) const {
-	return Mat4::s_perspective(radians(verticalFieldOfView),
+	return Mat4::s_perspective(radians(fieldOfView),
 	                           viewport.w, viewport.h, nearClip, farClip,
 	                           desc);
 }

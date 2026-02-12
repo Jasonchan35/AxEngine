@@ -73,11 +73,11 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_backBufferRenderPass = backBufferRenderPass;
 	_uptime               = _renderSystem_backend->getCurrentUptime().seconds_f64();
 	_objectManager        = RenderObjectManager_Backend::s_instance();
-	_updateGlobalCommonMaterial();
 	onFrameBegin();
 }
 
 void RenderRequest_Backend::frameEnd() {
+	_updateGlobalCommonMaterial();
 	renderContext_backend()->imgui.onEndRender();
 	RenderObjectManager_Backend::s_instance()->onFrameEnd(this);
 	onFrameEnd();
@@ -120,16 +120,19 @@ void RenderRequest_Backend::setScissorRect_backend(const Rect2f& rect) {
 }
 
 void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
-	_cameraData.worldPos          = camera.eye();
-	_cameraData.viewportMin       = camera.viewport.min();
-	_cameraData.viewportMax       = camera.viewport.max();
-	
-	_cameraData.projMatrix        = camera.projMatrix(_projectionDesc);
-	_cameraData.projMatrixInv     = _cameraData.projMatrix.inverse();
-	_cameraData.viewMatrix        = camera.viewMatrix(_projectionDesc);
-	_cameraData.viewMatrixInv     = _cameraData.viewMatrix.inverse();
-	_cameraData.viewProjMatrix    = camera.viewProjMatrix(_projectionDesc);
-	_cameraData.viewProjMatrixInv = _cameraData.viewProjMatrix.inverse();
+	_cameraData.maxMeshletErrorThreshold = maxMeshletErrorThreshold;
+	_cameraData.fieldOfView              = camera.fieldOfView;
+	_cameraData.nearClip                 = camera.nearClip;
+	_cameraData.farClip                  = camera.farClip;
+	_cameraData.worldPos                 = camera.eye();
+	_cameraData.viewportMin              = camera.viewport.min();
+	_cameraData.viewportMax              = camera.viewport.max();
+	_cameraData.projMatrix               = camera.projMatrix(_projectionDesc);
+	_cameraData.projMatrixInv            = _cameraData.projMatrix.inverse();
+	_cameraData.viewMatrix               = camera.viewMatrix(_projectionDesc);
+	_cameraData.viewMatrixInv            = _cameraData.viewMatrix.inverse();
+	_cameraData.viewProjMatrix           = camera.viewProjMatrix(_projectionDesc);
+	_cameraData.viewProjMatrixInv        = _cameraData.viewProjMatrix.inverse();
 	
 	auto* matPass = MaterialPass_Backend::s_globalCommonMaterialPass();
 	if (!matPass) { AX_ASSERT(false); return; }
@@ -138,17 +141,8 @@ void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
 	
 	auto* cb = paramSpace->constBuffer_camera();
 	if (!cb) { AX_ASSERT(false); return; }
-	
-	cb->setVariable(AX_NAMEID("worldPos"         ), _cameraData.worldPos         );
-	cb->setVariable(AX_NAMEID("viewportMin"      ), _cameraData.viewportMin      ); 
-	cb->setVariable(AX_NAMEID("viewportMax"      ), _cameraData.viewportMax      ); 
-	cb->setVariable(AX_NAMEID("projMatrix"       ), _cameraData.projMatrix       ); 
-	cb->setVariable(AX_NAMEID("projMatrixInv"    ), _cameraData.projMatrixInv    ); 
-	cb->setVariable(AX_NAMEID("viewMatrix"       ), _cameraData.viewMatrix       ); 
-	cb->setVariable(AX_NAMEID("viewMatrixInv"    ), _cameraData.viewMatrixInv    ); 
-	cb->setVariable(AX_NAMEID("viewProjMatrix"   ), _cameraData.viewProjMatrix   ); 
-	cb->setVariable(AX_NAMEID("viewProjMatrixInv"), _cameraData.viewProjMatrixInv);
-	
+
+	cb->setData(_cameraData);
 	// force update to GPU
 	cb->getUploadedGpuBuffer(this);
 }
@@ -224,11 +218,11 @@ void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
 	auto* matPass = material->getPass(draw.materialPassIndex);
 	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
 	
-	auto lodGroupSpan = meshObject->meshLodGroup.readData();
-	
 	AxMeshShaderDrawRootConst rootConst;
-	rootConst.worldMatrix    = draw.objectToWorld;
-	rootConst.meshLodGroupId = ax_safe_cast_from(draw.lodGroupId + meshObject->meshLodGroup.buffer->gpuBufferIndex());
+	rootConst.worldMatrix        = draw.objectToWorld;
+	rootConst.meshObjectId       = ax_safe_cast_from(meshObject->objectSlot.slotId());
+	rootConst.meshletGroupOffset = ax_safe_cast_from(meshObject->meshletGroupBuffer.gpuBufferIndex());
+	rootConst.meshletGroupCount  = ax_safe_cast_from(meshObject->meshletGroupBuffer.count());
 	matPass->onBindMaterial(this, draw, &rootConst);
 	
 	if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");

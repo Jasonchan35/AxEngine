@@ -21,10 +21,10 @@ public:
 	void createFromEditableMesh(const EditableMesh& srcMesh);
 	void create(Span<AxGpuMeshletVert> vertices, Span<u32> indices);
 
-	StructuredGpuBuffer_<AxGpuMeshLodGroup> meshLodGroup;
-	StructuredGpuBuffer_<AxGpuMeshlet>      meshlet;
-	StructuredGpuBuffer_<AxGpuMeshletVert>  meshletVert;
-	StructuredGpuBuffer_<AxGpuMeshletPrim>  meshletPrim;
+	StructuredGpuBuffer_<AxGpuMeshletGroup> meshletGroupBuffer;
+	StructuredGpuBuffer_<AxGpuMeshlet>      meshletBuffer;
+	StructuredGpuBuffer_<AxGpuMeshletVert>  meshletVertBuffer;
+	StructuredGpuBuffer_<AxGpuMeshletPrim>  meshletPrimBuffer;
 		
 	void createBuffers();
 

@@ -115,7 +115,7 @@ void RenderObjectManager_Backend::_postCreate() {
 		}
 	};
 	
-	createPoolParam(_structBufferPools.axMeshLodGroup, "axGpuMeshLodGroup", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axMeshletGroup, "axGpuMeshletGroup", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshlet     , "axGpuMeshlet"     , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshletVert , "axGpuMeshletVert" , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axMeshletPrim , "axGpuMeshletPrim" , 1 * Math::GigaBytes, 4 * Math::MegaBytes);

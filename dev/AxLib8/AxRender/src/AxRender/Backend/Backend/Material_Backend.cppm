@@ -81,6 +81,9 @@ public:
 		
 		template<class V> bool setVariable(const VarInfo* varInfo, const V& value);
 		template<class V> bool setVariable(NameId name, const V& value);
+		
+		template<class T> void setData(const T& v) { _dynamicGpuBuffer.setData(Span(v).toByteSpan()); }
+		
 	private:
 		const ShaderParamSpace_Backend::ConstBufferParam* _shaderParam = nullptr;
 		DynamicGpuBuffer _dynamicGpuBuffer;

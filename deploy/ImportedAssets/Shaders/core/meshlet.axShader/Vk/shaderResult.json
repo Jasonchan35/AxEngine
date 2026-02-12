@@ -82,7 +82,7 @@
               "offset": 0, 
               "sizeInBytes": 64
             }, {
-              "name": "meshLodGroupId", 
+              "name": "meshObjectId", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -90,7 +90,7 @@
               "offset": 64, 
               "sizeInBytes": 4
             }, {
-              "name": "meshRendererId", 
+              "name": "meshletGroupOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -98,7 +98,7 @@
               "offset": 68, 
               "sizeInBytes": 4
             }, {
-              "name": "_padding0", 
+              "name": "meshletGroupCount", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -106,7 +106,7 @@
               "offset": 72, 
               "sizeInBytes": 4
             }, {
-              "name": "_padding1", 
+              "name": "meshRendererId", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0

@@ -10,9 +10,11 @@ import :ClusterGenerator;
 
 namespace ax {
 
-int ClusterGenerator::measureComponents(std::vector<int>& parents,
+int ClusterGenerator::measureComponents(
+	std::vector<int>& parents,
 	const std::vector<unsigned int>& indices,
-	const std::vector<unsigned int>& remap) {
+	const std::vector<unsigned int>& remap
+) {
 	assert(parents.size() == remap.size());
 
 	for (size_t i = 0; i < indices.size(); ++i)
@@ -292,16 +294,6 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 	float fovy = 60.f;
 	float znear = 1e-2f;
 	float proj = 1.f / tanf(fovy * 3.1415926f / 180.f * 0.5f);
-	
-	AxGpuMeshLodGroup outLodGroup = {};
-	Int lastLodGroup = 0;
-	
-	auto addLodGroup = [&]() -> void {
-		AX_LOG("addLodGroup outMesh={} meshletOffset={}, meshletCount={}", (void*)&outMesh, outLodGroup.meshletOffset, outLodGroup.meshletCount);
-		outMesh.meshLodGroup.appendValues(outLodGroup);
-		outLodGroup.meshletOffset += outLodGroup.meshletCount;
-		outLodGroup.meshletCount  = 0;
-	};
 
 	clodBuild(config, mesh, [&](clodGroup group, const clodCluster* clusters, size_t cluster_count) -> int { // clang-format!
 		if (stats.size() <= size_t(group.depth))
@@ -347,25 +339,20 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 								getLocalVertIndex(srcIndices[2]));
 			}
 
-			if (lastLodGroup != group.depth) {
-				lastLodGroup = group.depth;
-				addLodGroup();
-			}
-			
 			AxGpuMeshlet outMeshlet;
-			outMeshlet.draw.meshObjectId = outMesh.objectSlot.slotId();
-			outMeshlet.draw.lod          = group.depth;
-			outMeshlet.draw.refined      = cluster.refined;
+			outMeshlet.meshObjectId   = outMesh.objectSlot.slotId();
+			outMeshlet.groupId        = ax_safe_cast_from(groups.size());
+			outMeshlet.refinedGroupId = cluster.refined;
+			outMeshlet.lod            = group.depth;
 			
-			outMeshlet.draw.primOffset   = ax_safe_cast_from(outMesh.meshletPrim.count());
-			outMeshlet.draw.vertOffset   = ax_safe_cast_from(outMesh.meshletVert.count());
-			outMeshlet.draw.primCount    = ax_safe_cast_from(outPrimArray.size());
-			outMeshlet.draw.vertCount    = ax_safe_cast_from(outVertArray.size());
+			outMeshlet.primOffset     = ax_safe_cast_from(outMesh.meshletPrimBuffer.count());
+			outMeshlet.vertOffset     = ax_safe_cast_from(outMesh.meshletVertBuffer.count());
+			outMeshlet.primCount      = ax_safe_cast_from(outPrimArray.size());
+			outMeshlet.vertCount      = ax_safe_cast_from(outVertArray.size());
 			
-			outMesh.meshletPrim.appendValues(outPrimArray);
-			outMesh.meshletVert.appendValues(outVertArray);
-			outMesh.meshlet.appendValues(outMeshlet);
-			outLodGroup.meshletCount++;
+			outMesh.meshletPrimBuffer.appendValues(outPrimArray);
+			outMesh.meshletVertBuffer.appendValues(outVertArray);
+			outMesh.meshletBuffer.appendValues(outMeshlet);
 
 //-------------
 			level.triangles += cluster.index_count / 3;
@@ -391,11 +378,17 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 
 		level.indices.push_back(std::vector<unsigned int>()); // mark end of group for measureBoundary
 
+		{
+			AxGpuMeshletGroup dst = {};
+			dst.center = Vec3f(group.simplified.center[0], group.simplified.center[1], group.simplified.center[2]);
+			dst.clusterError = group.simplified.error;
+			dst.radius       = group.simplified.radius;
+			outMesh.meshletGroupBuffer.appendValues(dst);
+		}
+		
 		groups.push_back(group.simplified);
 		return int(groups.size() - 1);
 	});
-
-	addLodGroup();
 	
 	// for cluster connectivity analysis and boundary statistics, we need a position-only remap that maps vertices with the same position to the same index
 	std::vector<unsigned int> remap(vertices.size());

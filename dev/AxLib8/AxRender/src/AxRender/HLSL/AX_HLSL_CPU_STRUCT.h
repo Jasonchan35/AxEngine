@@ -3,35 +3,61 @@
 
 // HLSL alignment is 16
 
+struct AxRenderGpuData_World {
+	float	time;
+	float	deltaTime;
+	Vec4f	timeSin;
+	Vec4f	timeSlowSin;
+};
+
+struct AxRenderGpuData_Light {
+	Color4f	color;
+};
+
+struct AxRenderGpuData_Object {
+	Mat4f	worldMatrix;
+	Vec2f	aabbMin;
+	Vec2f	aabbMax;
+};
+
+struct AxRenderGpuData_Camera {
+	float   fieldOfView; // vertical
+	float   maxMeshletErrorThreshold;
+	float   nearClip;
+	float   farClip;
+	Vec3f	worldPos;
+	Vec2f	viewportMin;
+	Vec2f	viewportMax;
+	Mat4f	projMatrix;
+	Mat4f	projMatrixInv;
+	Mat4f	viewMatrix;
+	Mat4f	viewMatrixInv;
+	Mat4f	viewProjMatrix;
+	Mat4f	viewProjMatrixInv;
+};
+
 struct AxVertexShaderDrawRootConst {
 	Mat4f worldMatrix;
 };
 
 struct AxMeshShaderDrawRootConst {
 	Mat4f worldMatrix;
-	u32   meshLodGroupId;
+	u32   meshObjectId;
+	u32   meshletGroupOffset;
+	u32   meshletGroupCount;
 	u32   meshRendererId;
-	u32   _padding0;
-	u32   _padding1;
 };
 
-struct AxGpuMeshletDraw {
+struct AxGpuMeshlet {
 	u32 vertOffset;
 	u32 vertCount;
 	u32 primOffset;
 	u32 primCount;
 	
-	// TODO move to AxGpuMeshlet
 	u32 meshObjectId;
+	u32 groupId;
+	u32 refinedGroupId;
 	u32 lod;
-	u32 refined;
-	u32 _padding2;
-	
-};
-
-struct AxGpuMeshlet {
-	AxGpuMeshletDraw draw;
-	// AABB
 };
 
 struct AxGpuMeshletVert {
@@ -50,23 +76,26 @@ struct AxGpuMeshletPrim {
 	u32 	_padding;
 };
 
-struct AxGpuMeshLodGroup {
+struct AxGpuMeshletGroup {
 	u32 meshletOffset;
 	u32 meshletCount;
-	u32 totalVertCount;
-	u32 totalPrimCount;
+	float  clusterError;
+	float  radius;
+	Vec3f  center;
+	u32    _padding0;
 };
 
 struct AxGpuMeshObject {
 	BBox3f bounds;
-	u32 vertOffset;
-	u32 primOffset;
+
+	u32 meshletGroupOffset;
+	u32 meshletGroupCount;
 	
 	u32 meshletOffset;
 	u32 meshletCount;
 	
-	u32 lodGroupOffset;
-	u32 lodGroupCount;
+	u32 vertOffset;
+	u32 primOffset;
 };
 
 struct AxGpuMeshObjectRenderer {

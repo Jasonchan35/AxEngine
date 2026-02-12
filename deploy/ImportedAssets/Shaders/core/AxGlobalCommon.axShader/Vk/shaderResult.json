@@ -86,14 +86,46 @@
           "bindSpace": "World", 
           "bindPoint": 101, 
           "bindCount": 1, 
-          "stride": 416, 
+          "stride": 432, 
           "variables": [{
+              "name": "fieldOfView", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 0, 
+              "sizeInBytes": 4
+            }, {
+              "name": "maxMeshletErrorThreshold", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 4, 
+              "sizeInBytes": 4
+            }, {
+              "name": "nearClip", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 8, 
+              "sizeInBytes": 4
+            }, {
+              "name": "farClip", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 12, 
+              "sizeInBytes": 4
+            }, {
               "name": "worldPos", 
               "varType": {
                 "dataType": "f32x3", 
                 "elementCount": 0
               }, 
-              "offset": 0, 
+              "offset": 16, 
               "sizeInBytes": 12
             }, {
               "name": "viewportMin", 
@@ -101,7 +133,7 @@
                 "dataType": "f32x2", 
                 "elementCount": 0
               }, 
-              "offset": 16, 
+              "offset": 32, 
               "sizeInBytes": 8
             }, {
               "name": "viewportMax", 
@@ -109,7 +141,7 @@
                 "dataType": "f32x2", 
                 "elementCount": 0
               }, 
-              "offset": 24, 
+              "offset": 40, 
               "sizeInBytes": 8
             }, {
               "name": "projMatrix", 
@@ -117,7 +149,7 @@
                 "dataType": "Mat4f", 
                 "elementCount": 0
               }, 
-              "offset": 32, 
+              "offset": 48, 
               "sizeInBytes": 64
             }, {
               "name": "projMatrixInv", 
@@ -125,7 +157,7 @@
                 "dataType": "Mat4f", 
                 "elementCount": 0
               }, 
-              "offset": 96, 
+              "offset": 112, 
               "sizeInBytes": 64
             }, {
               "name": "viewMatrix", 
@@ -133,7 +165,7 @@
                 "dataType": "Mat4f", 
                 "elementCount": 0
               }, 
-              "offset": 160, 
+              "offset": 176, 
               "sizeInBytes": 64
             }, {
               "name": "viewMatrixInv", 
@@ -141,7 +173,7 @@
                 "dataType": "Mat4f", 
                 "elementCount": 0
               }, 
-              "offset": 224, 
+              "offset": 240, 
               "sizeInBytes": 64
             }, {
               "name": "viewProjMatrix", 
@@ -149,7 +181,7 @@
                 "dataType": "Mat4f", 
                 "elementCount": 0
               }, 
-              "offset": 288, 
+              "offset": 304, 
               "sizeInBytes": 64
             }, {
               "name": "viewProjMatrixInv", 
@@ -157,7 +189,7 @@
                 "dataType": "Mat4f", 
                 "elementCount": 0
               }, 
-              "offset": 352, 
+              "offset": 368, 
               "sizeInBytes": 64
             }]
         }, {
@@ -342,22 +374,78 @@
           "bindCount": 1, 
           "stride": 32, 
           "variables": [{
-              "name": "draw", 
+              "name": "vertOffset", 
               "varType": {
-                "dataType": "Struct", 
+                "dataType": "u32", 
                 "elementCount": 0
               }, 
               "offset": 0, 
-              "sizeInBytes": 32
+              "sizeInBytes": 4
+            }, {
+              "name": "vertCount", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 4, 
+              "sizeInBytes": 4
+            }, {
+              "name": "primOffset", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 8, 
+              "sizeInBytes": 4
+            }, {
+              "name": "primCount", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 12, 
+              "sizeInBytes": 4
+            }, {
+              "name": "meshObjectId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 16, 
+              "sizeInBytes": 4
+            }, {
+              "name": "groupId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 20, 
+              "sizeInBytes": 4
+            }, {
+              "name": "refinedGroupId", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 24, 
+              "sizeInBytes": 4
+            }, {
+              "name": "lod", 
+              "varType": {
+                "dataType": "u32", 
+                "elementCount": 0
+              }, 
+              "offset": 28, 
+              "sizeInBytes": 4
             }]
         }, {
-          "name": "axGpuMeshLodGroup", 
+          "name": "axGpuMeshletGroup", 
           "dataType": "StructuredBuffer", 
           "stageFlags": "Vertex | Pixel | Mesh | Amplification", 
           "bindSpace": "World", 
           "bindPoint": 20204, 
           "bindCount": 1, 
-          "stride": 16, 
+          "stride": 32, 
           "variables": [{
               "name": "meshletOffset", 
               "varType": {
@@ -375,20 +463,36 @@
               "offset": 4, 
               "sizeInBytes": 4
             }, {
-              "name": "totalVertCount", 
+              "name": "clusterError", 
               "varType": {
-                "dataType": "u32", 
+                "dataType": "f32", 
                 "elementCount": 0
               }, 
               "offset": 8, 
               "sizeInBytes": 4
             }, {
-              "name": "totalPrimCount", 
+              "name": "radius", 
+              "varType": {
+                "dataType": "f32", 
+                "elementCount": 0
+              }, 
+              "offset": 12, 
+              "sizeInBytes": 4
+            }, {
+              "name": "center", 
+              "varType": {
+                "dataType": "f32x3", 
+                "elementCount": 0
+              }, 
+              "offset": 16, 
+              "sizeInBytes": 12
+            }, {
+              "name": "_padding0", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
               }, 
-              "offset": 12, 
+              "offset": 28, 
               "sizeInBytes": 4
             }]
         }, {
@@ -408,7 +512,7 @@
               "offset": 0, 
               "sizeInBytes": 32
             }, {
-              "name": "vertOffset", 
+              "name": "meshletGroupOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -416,7 +520,7 @@
               "offset": 32, 
               "sizeInBytes": 4
             }, {
-              "name": "primOffset", 
+              "name": "meshletGroupCount", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -440,7 +544,7 @@
               "offset": 44, 
               "sizeInBytes": 4
             }, {
-              "name": "lodGroupOffset", 
+              "name": "vertOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0
@@ -448,7 +552,7 @@
               "offset": 48, 
               "sizeInBytes": 4
             }, {
-              "name": "lodGroupCount", 
+              "name": "primOffset", 
               "varType": {
                 "dataType": "u32", 
                 "elementCount": 0

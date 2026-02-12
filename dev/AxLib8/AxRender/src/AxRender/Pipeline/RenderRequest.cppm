@@ -27,18 +27,6 @@ private:
 	Rect2f         _rect = TagZero;
 };
 
-struct AxRenderGpuData_Camera {
-	Vec3f	worldPos;
-	Vec2f	viewportMin;
-	Vec2f	viewportMax;
-	Mat4f	projMatrix;
-	Mat4f	projMatrixInv;
-	Mat4f	viewMatrix;
-	Mat4f	viewMatrixInv;
-	Mat4f	viewProjMatrix;
-	Mat4f	viewProjMatrixInv;
-};
-
 class RenderRequest : public RenderRequestBase {
 	AX_RTTI_INFO(RenderRequest, RenderRequestBase)
 public:
@@ -91,6 +79,7 @@ public:
 	const AxRenderGpuData_Camera&	cameraData() const { return _cameraData; }
 
 	Int lodBias = 0;
+	float maxMeshletErrorThreshold = 1;
 	
 protected:
 	RenderSystem*       _renderSystem       = nullptr;

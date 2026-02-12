@@ -42,7 +42,7 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 			}
 		} break;
 		case UIMouseEventType::Wheel: {
-			cam.dolly(ev.wheelDelta.y * -0.025f);
+			cam.dolly(ev.wheelDelta.y * -0.015f);
 		} break;
 		default: break;
 	}
@@ -123,6 +123,8 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
+		ImUIDragFloat("maxMeshletErrorThreshold", &_maxMeshletErrorThreshold, 0.01f, 0, 100);
+		req->maxMeshletErrorThreshold = _maxMeshletErrorThreshold;
 		ImUIDragInt("LodBias", &_lodBias, 0.1f, -10, 10);
 		req->lodBias = _lodBias;
 	}

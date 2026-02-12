@@ -331,22 +331,26 @@ public:
 	}
 
 	void create(const MemAllocRequest& req, GpuBufferType bufferType, InNameId name, Pool& pool) {
-		buffer = StructuredGpuBuffer::s_new<T>(req, bufferType, name, pool.pool);
+		_buffer = StructuredGpuBuffer::s_new<T>(req, bufferType, name, pool.pool);
 	}
 	
 	Span<T>    readData() const						{ return readData(0, count()); }
-	Span<T>    readData(Int offset, Int size) const	{ return buffer->readData<T>(offset, size); }
-	MutSpan<T> editData(Int offset, Int size)		{ return buffer->editData<T>(offset, size); }
-	MutSpan<T> extendsData(Int size)				{ return editData(buffer->count(), size); }
+	Span<T>    readData(Int offset, Int size) const	{ return _buffer->readData<T>(offset, size); }
+	MutSpan<T> editData(Int offset, Int size)		{ return _buffer->editData<T>(offset, size); }
+	MutSpan<T> extendsData(Int size)				{ return editData(_buffer->count(), size); }
 	
-	void setValue(Int index, const T& v)			{ return buffer->setValue(index, Span(v)); }
-	void setValues(Int index, Span<T> span)			{ return buffer->setValues(index, span); }
+	void setValue(Int index, const T& v)			{ return _buffer->setValue(index, Span(v)); }
+	void setValues(Int index, Span<T> span)			{ return _buffer->setValues(index, span); }
 	
 	void appendValues(Span<T> span) { extendsData(span.size()).copyValues(span); }
 
-	Int count() const { return buffer ? buffer->count() : 0; }
+	Int count() const { return _buffer ? _buffer->count() : 0; }
 	
-	SPtr<StructuredGpuBuffer> buffer;
+	Int gpuBufferIndex() const { return _buffer ? _buffer->gpuBufferIndex() : 0; }
+	const GpuBuffer* getUploadedGpuBuffer(RenderRequest* req) const { return _buffer ? _buffer->getUploadedGpuBuffer(req) : nullptr; }
+	
+private:
+	SPtr<StructuredGpuBuffer> _buffer;
 };
 
 

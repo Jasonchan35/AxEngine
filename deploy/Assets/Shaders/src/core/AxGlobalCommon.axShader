@@ -39,10 +39,10 @@ Sampler_Texture3D(foo_tex3d);
 
 float dummy_func() {
 	return foo
-		+ axGpuMeshLodGroup[0].meshletOffset
+		+ axGpuMeshletGroup[0].meshletOffset
 		+ axGpuMeshObject[0].meshletOffset
 		+ axGpuMeshObjectRenderer[0].worldMatrix[0][0]
-		+ axGpuMeshlet[0].draw.vertOffset
+		+ axGpuMeshlet[0].vertOffset
 		+ axGpuMeshletVert[0].pos.x
 		+ axGpuMeshletPrim[0].tri.x
 		+ axWorld.deltaTime

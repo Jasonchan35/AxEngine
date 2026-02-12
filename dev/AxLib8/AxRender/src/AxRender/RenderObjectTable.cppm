@@ -237,7 +237,7 @@ void RenderObjectTable<T>::onFrameEnd(RenderRequest* req) {
 		if constexpr (kHasGpuData) {
 			if (auto* data = obj->onGetGpuData(req)) {
 				_gpuBuffer.setValue(obj->objectSlot.slotId(), *data);
-				_gpuBuffer.buffer->getUploadedGpuBuffer(req);
+				_gpuBuffer.getUploadedGpuBuffer(req);
 			}
 		}
 	}
