@@ -61,6 +61,7 @@ public:
 	template <class R, VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr static This s_cast(const Quat4_<R, R_SIMD>& vec) { return SimdData::s_cast(vec._simd); }
 	template<class CH> constexpr void onFormat(Format_<CH> & fmt) const { return _simd.onFormat(fmt); }
+	template<class SE> constexpr void onJsonIO_Value(SE& se) { se.io_fixed_span(fixedSpan()); }
 	
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { x=x_; y=y_; z=z_; w=w_; }
 
@@ -126,6 +127,19 @@ public:
 	AX_NODISCARD constexpr Vec3 operator*(const Vec3& v) const;
 	
 	template<class V> AX_INLINE void castFrom(const V& v) { *this = s_cast(v); }
+	
+	using MSpan      =      MutSpan<T>;
+	using CSpan      =         Span<T>;
+	using CFixedSpan =    FixedSpan<T, kElementCount>;
+	using MFixedSpan = MutFixedSpan<T, kElementCount>;
+
+	AX_INLINE constexpr       T* data()       { return _simd.data(); }
+	AX_INLINE constexpr const T* data() const { return _simd.data(); }
+
+	AX_INLINE constexpr CFixedSpan fixedSpan() const { return CFixedSpan(_simd.data()); }
+	AX_INLINE constexpr MFixedSpan fixedSpan()       { return MFixedSpan(_simd.data()); }
+	AX_INLINE constexpr CSpan span() const	{ return fixedSpan(); }
+	AX_INLINE constexpr MSpan span()		{ return fixedSpan(); }	
 };
 
 template<class T, VecSimd SIMD> inline Vec3_<T> operator* (Vec3_<T,SIMD>& v, const Quat4_<T,SIMD>& quat) { return quat * v; }

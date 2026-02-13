@@ -7,22 +7,22 @@ module AxEngine;
 import :SceneEntity;
 
 AxEngine::SceneComponent::MutRttiInit::MutRttiInit() {
-	ownFields.ensureCapacity(0);
+	name = NameId::s_make("SceneComponent");
 }; 
 
 AxEngine::SceneEntity::MutRttiInit::MutRttiInit() {
-	ownFields.ensureCapacity(0);
+	name = NameId::s_make("SceneEntity");
 }; 
 
 AxEngine::SceneWorld::MutRttiInit::MutRttiInit() {
-	ownFields.ensureCapacity(0);
+	name = NameId::s_make("SceneWorld");
 }; 
 
 AxEngine::MeshRendererComponent::MutRttiInit::MutRttiInit() {
-	ownFields.ensureCapacity(0);
+	name = NameId::s_make("MeshRendererComponent");
 }; 
 
 AxEngine::MeshRendererSystem::MutRttiInit::MutRttiInit() {
-	ownFields.ensureCapacity(0);
+	name = NameId::s_make("MeshRendererSystem");
 }; 
 

@@ -31,7 +31,7 @@ public:
 	using Type = JsonValueType;
 
 	JsonValue() = default;
-	explicit JsonValue(JsonValue && r) noexcept { operator=(std::move(r)); }
+	JsonValue(JsonValue && r) noexcept { operator=(std::move(r)); }
 
 	template<class V> explicit JsonValue(const V& v) { setValue(v); }
 
@@ -72,6 +72,9 @@ public:
 	template<class R, Int N>
 	bool operator==(const R (&sz)[N]) const { return operator==(StrView(sz)); }
 
+	static JsonValue s_null()   { JsonValue v; v.setNull();     return v; }
+	static JsonValue s_object() { JsonValue v; v.setToObject(); return v; }
+	
 //---------
 	void setUndefined();
 	void setNull();

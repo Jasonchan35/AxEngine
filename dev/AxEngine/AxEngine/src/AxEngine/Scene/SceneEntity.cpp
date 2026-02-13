@@ -30,6 +30,23 @@ SceneEntity::SceneEntity(const CreateDesc& desc)
 	}
 }
 
+template<class T> concept CON_HasMutRttiInit2 = requires(T::MutRttiInit2 obj)
+{
+	[](const T::MutRttiInit2&){}(obj); 
+};
+
+template<class SE>
+void SceneComponent::_onJsonIO(SE& se) {
+	if constexpr (se.isReader()) {
+			
+	} else {
+		auto componentType = rtti()->name;
+		AX_JSON_IO(se, componentType);
+	}
+}	
+
+void SceneComponent::onJsonIO(JsonIO_Writer& se) { _onJsonIO(se); }; 
+
 SPtr<SceneEntity> SceneEntity::s_new(const MemAllocRequest& allocReq,
                                      SceneWorld*            world,
                                      SceneEntity*           parent,
@@ -39,6 +56,13 @@ SPtr<SceneEntity> SceneEntity::s_new(const MemAllocRequest& allocReq,
 	desc.parent = parent;
 	desc.world  = world;
 	return SPtr_new<This>(allocReq, desc);
+}
+
+void SceneWorld::writeToFile(StrView filename) {
+	TempString      outJson;
+	JsonIO_Writer wr(outJson);
+	wr.io(*this);
+	File::writeFile(filename, outJson);
 }
 
 SceneWorld::SceneWorld() {

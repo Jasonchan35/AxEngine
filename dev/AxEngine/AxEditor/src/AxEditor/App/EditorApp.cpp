@@ -98,7 +98,11 @@ void EditorApp::_testLoadOpenUsd() {
 
 void EditorApp::_testLoadFbx() {
 	AxAssimp assimp;
-	auto world = assimp.openFile("ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx");
+	String filename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
+	auto world = assimp.openFile(filename);
+	
+	world->writeToFile(Fmt("{}.axWorld", filename));
+	
 	_engine.setWorld(world);
 }
 

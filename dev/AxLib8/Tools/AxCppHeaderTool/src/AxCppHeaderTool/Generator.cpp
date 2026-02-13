@@ -52,18 +52,26 @@ void Generator::gen_type(StrView srcFilename, TypeInfo& type) {
 	_outHeader.appendFormat("\n//--- Type {} ----------\n", type.fullname);
 	_outHeader.appendFormat("#define AX_GENERATED_BODY_LINE{}() \\\n", type.lineNumber_AX_GENERATED_BODY);
 	_outHeader.appendFormat("\t""AX_RTTI_INFO({}, {}) \\\n", type.name, type.baseName);
+	_outHeader.appendFormat("public:\\\n");
 	_outHeader.appendFormat("\t""struct MutRttiInit : public MutRtti {{ \\\n");
 	_outHeader.appendFormat("\t\t""MutRttiInit();\\\n");
 	_outHeader.appendFormat("\t""}}; \\\n");
+	_outHeader.appendFormat("private:\\\n");
 	_outHeader.appendFormat("//------\n\n");
 	
 //	_outCpp.appendFormat("{}\n", type.openNamespaceScope);
+	_outCpp.appendFormat("{}::MutRttiInit::MutRttiInit() {{\n", type.fullname);
+	{
+		_outCpp.appendFormat("\t" "name = NameId::s_make(\"{}\");\n", type.name);
 	
-	_outCpp.appendFormat("""{}::MutRttiInit::MutRttiInit() {{\n", type.fullname);
-	_outCpp.appendFormat("\t""ownFields.ensureCapacity({});\n", type.props.size());
-	for (auto &prop : type.props.values()) {
-		_outCpp.appendFormat("\t""addField(\"{}\", &This::{});\n",
-		                     prop.name, prop.name);
+		if (type.props.size() > 0) {
+			_outCpp.appendFormat("\t" "ownFields.ensureCapacity({});\n", type.props.size());
+		}
+	
+		for (auto &prop : type.props.values()) {
+			_outCpp.appendFormat("\t" "addField(\"{}\", &This::{});\n",
+								 prop.name, prop.name);
+		}
 	}
 	_outCpp.appendFormat("}}; \n\n");
 	

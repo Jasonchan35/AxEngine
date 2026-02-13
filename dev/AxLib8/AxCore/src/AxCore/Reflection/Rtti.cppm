@@ -65,12 +65,12 @@ using RttiField = const MutRttiField;
 #pragma mark ---------------- Rtti -------------------
 #endif
 
-template<class T> struct MutRttiInit_OutOfClass_;
 template<class T> struct MutRttiInit_FromMetaType_;
 
-// template<class T> concept CON_HasRttiInfo = requires { { T::s_rtti() } -> std::same_as<Rtti*>; };
-template<class T> concept CON_HasRttiInit = requires { typename T::RttiInit; };
-template<class T> concept CON_HasMutRttiInit_OutOfClass = requires { MutRttiInit_OutOfClass_<T>(); };
+template<class T> 
+concept CON_HasMutRttiInit = requires(T::MutRttiInit obj) {
+	[](const T::MutRttiInit&) {}(obj);
+};
 
 template<class RTTI_INIT> struct RttiInit_Make : public RTTI_INIT {
 	RttiInit_Make() {
@@ -91,12 +91,11 @@ struct Rtti_Handler_ {
 		static_assert(!std::is_const_v<T>);
 		static_assert(!std::is_reference_v<T>);
 		static_assert(!std::is_pointer_v<T>);
-		if constexpr(CON_HasRttiInit<T>) {
+		
+		if constexpr(CON_HasMutRttiInit<T>) {
 			static RttiInit_Make<typename T::MutRttiInit> s;
 			return &s;
-		} else if constexpr (CON_HasMutRttiInit_OutOfClass<T>) {
-			static RttiInit_Make<MutRttiInit_OutOfClass_<T>> s;
-			return &s;
+
 		} else {
 			static RttiInit_Make<MutRttiInit_FromMetaType_<T>> s;
 			return &s;
