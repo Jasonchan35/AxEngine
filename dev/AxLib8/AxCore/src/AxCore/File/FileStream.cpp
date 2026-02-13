@@ -433,16 +433,28 @@ void	FileStream::setFileSize		( FileSize newSize ) {
 void FileStream::readBytes(MutByteSpan buf) {
 	_check_fd();
 
-	if (buf.size() <= 0 ) return;
-	DWORD	n = ax_safe_cast_from(buf.size());
-	DWORD	result = 0;
-	BOOL ret = ::ReadFile( _fd, buf.data(), n, &result, nullptr );
-	if( !ret ) {
-		const DWORD e = GetLastError();
-//		ax_log_win32_error("FileStream read file", e);
-		switch (e) {
-			case ERROR_LOCK_VIOLATION:	throw Error_Undefined();
-			default:					throw Error_Undefined();
+	constexpr DWORD kBatchSize = 1 * Math::GigaBytes;
+	Int remain = buf.sizeInBytes();
+	
+	while (remain > 0) {
+		DWORD bytesToRead;
+		if (remain > kBatchSize) {
+			bytesToRead = kBatchSize;
+			remain -= kBatchSize;
+		} else {
+			bytesToRead = static_cast<DWORD>(remain);
+			remain = 0;
+		}
+		
+		DWORD result = 0;
+		BOOL ret = ::ReadFile( _fd, buf.data(), bytesToRead, &result, nullptr);
+		if( !ret ) {
+			const DWORD e = GetLastError();
+			//		ax_log_win32_error("FileStream read file", e);
+			switch (e) {
+				case ERROR_LOCK_VIOLATION:	throw Error_Undefined();
+				default:					throw Error_Undefined();
+			}
 		}
 	}
 }
@@ -450,13 +462,23 @@ void FileStream::readBytes(MutByteSpan buf) {
 void FileStream::writeBytes(ByteSpan buf) {
 	_check_fd();
 
-	if( buf.size() <= 0 ) return;
-
-	DWORD	n = ax_safe_cast_from(buf.sizeInBytes());
-	DWORD	result = 0;
-	BOOL ret = ::WriteFile( _fd, buf.data(), n, &result, nullptr );
-	if( !ret ) {
-		throw Error_Undefined();
+	constexpr DWORD kBatchSize = 1 * Math::GigaBytes;
+	Int remain = buf.sizeInBytes();
+	while (remain > 0) {
+		DWORD bytesToWrite;
+		if (remain > kBatchSize) {
+			bytesToWrite = kBatchSize;
+			remain -= kBatchSize;
+		} else {
+			bytesToWrite = static_cast<DWORD>(remain);
+			remain = 0;
+		}
+		
+		DWORD result = 0;
+		BOOL ret = ::WriteFile( _fd, buf.data(), bytesToWrite, &result, nullptr );
+		if( !ret ) {
+			throw Error_Undefined();
+		}
 	}
 }
 
