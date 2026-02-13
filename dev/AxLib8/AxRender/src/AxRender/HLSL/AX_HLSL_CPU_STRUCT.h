@@ -85,8 +85,7 @@ struct AxGpuMeshletVert {
 };
 
 struct AxGpuMeshletPrim {
-	u32x3 	tri;
-	u32 	_padding;
+	u32 	packedTriIndices;
 };
 
 struct AxGpuMeshletGroup {

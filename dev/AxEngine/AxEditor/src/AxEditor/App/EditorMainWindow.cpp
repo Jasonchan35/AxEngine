@@ -46,7 +46,8 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 					cam.move(ev.deltaPos * 0.01f * _mouseSpeed);
 					
 				} else if (ev.pressedButtons == UIMouseEventButton::Right) {
-					cam.dolly(ev.deltaPos.y * 0.015f * _mouseSpeed);
+					// cam.dolly(ev.deltaPos.y * 0.015f * _mouseSpeed);
+					cam.move(Vec3f(0,0, ev.deltaPos.y * -0.02f * _mouseSpeed));
 				}
 			}
 		} break;
@@ -143,7 +144,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	
 	{
 		ImUIPanel	panel("Gizmo");
-		ImUIDragFloat("mouseSpeed", &_mouseSpeed, 0.1f, 0.1f, 30.0f);
+		ImUIDragFloat("mouseSpeed", &_mouseSpeed, 0.1f, 0.1f, 50.0f);
 		
 		{
 			if (ImUIRadioButton("Local", _opSpace == ImUIGizmoSpace::Local)) {

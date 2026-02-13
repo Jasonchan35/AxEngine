@@ -7,6 +7,7 @@ module;
 
 module AxRender;
 import :ClusterGenerator;
+import :RenderMath;
 
 namespace ax {
 
@@ -341,9 +342,9 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			for (Int j = 0; j < primCount; ++j) {
 				auto* srcIndices = cluster.indices + j * 3;
 				auto& outPrim = outPrimArray.emplaceBack();
-				outPrim.tri.set(getLocalVertIndex(srcIndices[0]),
-								getLocalVertIndex(srcIndices[1]),
-								getLocalVertIndex(srcIndices[2]));
+				outPrim.packedTriIndices = ax_pack_tri_indices(	getLocalVertIndex(srcIndices[0]),
+																getLocalVertIndex(srcIndices[1]),
+																getLocalVertIndex(srcIndices[2]));
 			}
 
 			AxGpuMeshletCluster outCluster;
