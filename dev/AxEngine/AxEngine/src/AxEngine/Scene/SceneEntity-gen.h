@@ -23,7 +23,7 @@
 
 
 //--- Type AxEngine::SceneWorld ----------
-#define AX_GENERATED_BODY_LINE116() \
+#define AX_GENERATED_BODY_LINE128() \
 	AX_RTTI_INFO(SceneWorld, Object) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
@@ -32,7 +32,7 @@
 
 
 //--- Type AxEngine::MeshRendererComponent ----------
-#define AX_GENERATED_BODY_LINE137() \
+#define AX_GENERATED_BODY_LINE149() \
 	AX_RTTI_INFO(MeshRendererComponent, SceneComponent) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\
@@ -41,7 +41,7 @@
 
 
 //--- Type AxEngine::MeshRendererSystem ----------
-#define AX_GENERATED_BODY_LINE151() \
+#define AX_GENERATED_BODY_LINE163() \
 	AX_RTTI_INFO(MeshRendererSystem, Object) \
 	struct MutRttiInit : public MutRtti { \
 		MutRttiInit();\

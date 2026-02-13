@@ -72,23 +72,28 @@ public:
 
 	Int componentCount() const { return _components.size(); }
 	SceneComponent* componentAt(Int index) { return _components[index].ptr(); }
-
-	Vec3f  position = Vec3f::s_zero();
-	Quat4f rotation = Quat4f::s_identity();
-	Vec3f  scale    = Vec3f::s_one();
+	
+	const Vec3f&  position() const { return _position; }
+	const Quat4f& rotation() const { return _rotation; }
+	const Vec3f&  scale() const { return _scale; }
+	
+	void setPosition(const Vec3f&  pos  ) { _position = pos;   markLocalMatrixDirty(); }
+	void setRotation(const Quat4f& rot  ) { _rotation = rot;   markLocalMatrixDirty(); }
+	void setScale   (const Vec3f&  scale) { _scale    = scale; markLocalMatrixDirty(); }
 
 	void setTRS(const Vec3f& position_, const Quat4f& rotation_, const Vec3f& scale_) {
-		position = position_;
-		rotation = rotation_;
-		scale    = scale_;
+		_position = position_;
+		_rotation = rotation_;
+		_scale    = scale_;
+		markLocalMatrixDirty();
 	};
-		
-	void setLocalMatrix(const Mat4f& mat) { mat.getTRS(position, rotation, scale); }
 	
-	const Mat4f& localMatrix() {
-		_localMatrix.setTRS(position, rotation, scale);
-		return _localMatrix;
-	}
+	void markWorldMatrixDirty();
+	void markLocalMatrixDirty();
+
+	void setLocalMatrix(const Mat4f& mat);
+
+	const Mat4f& localMatrix();
 
 	void setWorldMatrix(const Mat4f& mat);
 	const Mat4f& worldMatrix();
@@ -100,13 +105,20 @@ public:
 	
 protected:
 	friend class SceneWorld;
-	
+
 	Array<SPtr<SceneComponent>> _components;
-	Array<SPtr<SceneEntity>> _children;
-	SceneWorld*  _world = nullptr;
-	SceneEntity* _parent = nullptr;
-	Mat4f _worldMatrix;
-	Mat4f _localMatrix;
+	Array<SPtr<SceneEntity>>    _children;
+
+	SceneWorld*  _world    = nullptr;
+	SceneEntity* _parent   = nullptr;
+	Vec3f        _position = Vec3f::s_zero();
+	Quat4f       _rotation = Quat4f::s_identity();
+	Vec3f        _scale    = Vec3f::s_one();
+	Mat4f        _worldMatrix;
+	Mat4f        _localMatrix;
+	
+	bool _localMatrixDirty : 1;
+	bool _worldMatrixDirty : 1;
 };
 
 class MeshRendererSystem;

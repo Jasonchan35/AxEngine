@@ -17,10 +17,13 @@ void InspectorUIPanel::render(RenderRequest* req) {
 	ImUILabelText("name", obj->name());
 
 	if (auto* entity = rttiCast<SceneEntity>(obj.ptr())) {
-		ImUIInputFloat3("Position", entity->position);
-		ImUIInputFloat3("Rotation", entity->rotation);
-		ImUIInputFloat4("Quat"    , entity->rotation);
-		ImUIInputFloat3("Scale"   , entity->scale);
+		auto pos   = entity->position();
+		auto rot   = entity->rotation();
+		auto scale = entity->scale();
+		ImUIInputFloat3("Position", pos);
+		ImUIInputFloat3("Rotation", rot);
+		ImUIInputFloat4("Quat"    , rot);
+		ImUIInputFloat3("Scale"   , scale);
 
 		if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
 			if (auto* mesh = meshRenderer->mesh.ptr()) {

@@ -182,6 +182,13 @@ public:
 
 	AX_NODISCARD constexpr static This s_shear	(const Vec3 & v);
 
+	struct TRS {
+		Vec3  position = Vec3::s_zero();
+		Quat4 rotation = Quat4::s_identity();
+		Vec3  scale    = Vec3::s_one();
+	};
+	
+	AX_NODISCARD constexpr static This s_TRS		(const TRS& v);
 	AX_NODISCARD constexpr static This s_TRS		(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
 	AX_NODISCARD constexpr static This s_TRS_rad	(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale);
 	AX_NODISCARD constexpr static This s_TRS_deg	(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale) {
@@ -248,8 +255,9 @@ public:
 	AX_NODISCARD constexpr Vec3  scale() const;
 	AX_NODISCARD constexpr Quat4 rotation() const;
 
-	constexpr void getTRS(Vec3& outPos, Quat4& outQuat, Vec3& outScale) const;
-	constexpr void setTRS(const Vec3& pos, const Quat4& quat, const Vec3& scale) { *this = s_TRS(pos, quat, scale); } 
+	constexpr TRS  getTRS() const;
+	constexpr void setTRS(const TRS& trs) { *this = s_TRS(trs); }
+	constexpr void setTRS(const Vec3& pos, const Quat4& quat, const Vec3& scale) { *this = s_TRS(pos, quat, scale); }
 };
 
 template<class T, VecSimd SIMD>
@@ -345,17 +353,19 @@ constexpr typename Mat_<4, 4, T, SIMD>::Quat4 Mat_<4, 4, T, SIMD>::rotation() co
 }
 
 template<class T, VecSimd SIMD>
-constexpr void Mat_<4, 4, T, SIMD>::getTRS(Vec3& outPos, Quat4& outQuat, Vec3& outScale) const {
-	outPos = cw.xyz();
-	outScale = scale();
-	if (determinant() < 0) { outScale = -outScale; }
+constexpr typename Mat_<4, 4, T, SIMD>::TRS Mat_<4, 4, T, SIMD>::getTRS() const {
+	TRS o;
+	o.position = cw.xyz();
+	o.scale    = scale();
+	if (determinant() < 0) { o.scale = -o.scale; }
 	
 	// remove scale
-	Mat4 mat(Math::safeDiv(cx.xyz0(), outScale.x),
-			 Math::safeDiv(cy.xyz0(), outScale.y),
-			 Math::safeDiv(cz.xyz0(), outScale.z),
+	Mat4 mat(Math::safeDiv(cx.xyz0(), o.scale.x),
+			 Math::safeDiv(cy.xyz0(), o.scale.y),
+			 Math::safeDiv(cz.xyz0(), o.scale.z),
 			 Vec4(0,0,0,1));
-	outQuat = mat.toQuat();
+	o.rotation = mat.toQuat();
+	return o;
 }
 
 template<class T, VecSimd SIMD>
@@ -779,6 +789,11 @@ auto Mat_<4,4,T,SIMD>::s_translateAndScale(const Vec3 & translate, const Vec3 & 
 				 translate.x, translate.y, translate.z, 1);
 }
 
+
+template<class T, VecSimd SIMD>
+constexpr typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_TRS(const TRS& v) {
+	return s_TRS(v.pos, v.rot, v.scale);
+}
 
 template<class T, VecSimd SIMD>
 constexpr typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_TRS(const Vec3& translate, const Quat4& rotate, const Vec3& scale) {

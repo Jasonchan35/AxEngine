@@ -346,13 +346,16 @@ public:
 		importMetaData(entity->metadata.setToObject(), srcNode->mMetaData);
 //		AX_LOG("import node [{}] metadata: {}", entity->name(), entity->metadata);
 		
-		auto localMat = toMat4f(srcNode->mTransformation);
-		entity->setLocalMatrix(localMat);
+		auto trs = toMat4f(srcNode->mTransformation).getTRS();
 		if (!parent) {
-			entity->rotation *= _constAxisRot;
+			entity->setPosition(trs.position);
+			entity->setRotation(trs.rotation * _constAxisRot);
+			
 		} else {
-			entity->position = toLengthVec3f(entity->position);
+			entity->setPosition(toLengthVec3f(trs.position));
+			entity->setRotation(trs.rotation);
 		}
+		entity->setScale(trs.scale);
 
 //		AX_LOG("AxAssimp: importNode {} {}", entity->name(), entity->transform.rotation.eulerDeg());
 		

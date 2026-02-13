@@ -79,7 +79,7 @@ void EditorApp::_createDemoScene() {
 	
 	for (Int i = 0; i < 5; ++i) {
 		auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("test_{}", i));
-		entity->position = Vec3f(static_cast<f32>(i) * 2.0f, 0, 0);
+		entity->setPosition(Vec3f(static_cast<f32>(i) * 2.0f, 0, 0));
 
 		auto* comp     = entity->addComponent<MeshRendererComponent>(AX_NEW);
 		comp->mesh     = stockObjs->meshes->Cube;

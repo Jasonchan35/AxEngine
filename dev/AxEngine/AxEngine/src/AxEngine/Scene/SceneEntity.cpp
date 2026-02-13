@@ -7,7 +7,10 @@ SPtr<SceneWorld> SceneWorld::s_new(const MemAllocRequest& allocReq) {
 	return new(allocReq) SceneWorld();
 } 
 
-SceneEntity::SceneEntity(const CreateDesc& desc) {
+SceneEntity::SceneEntity(const CreateDesc& desc)
+: _localMatrixDirty(false)
+, _worldMatrixDirty(false)
+{
 	setName(desc.name);
 	_world  = desc.world;
 	_parent = desc.parent;
@@ -74,6 +77,36 @@ void MeshRendererSystem::onRender(RenderRequest* req) {
 	}
 }
 
+void SceneEntity::markWorldMatrixDirty() {
+	if (_worldMatrixDirty) return;
+	_worldMatrixDirty = true;
+	for (auto& child : _children) {
+		child->markWorldMatrixDirty();
+	}
+}
+
+void SceneEntity::markLocalMatrixDirty() {
+	if (_localMatrixDirty) return;
+	_localMatrixDirty = true;
+	markWorldMatrixDirty();
+}
+
+void SceneEntity::setLocalMatrix(const Mat4f& mat) {
+	auto trs = mat.getTRS();
+	_position = trs.position;
+	_rotation = trs.rotation;
+	_scale    = trs.scale;
+	markLocalMatrixDirty();
+}
+
+const Mat4f& SceneEntity::localMatrix() {
+	if (_localMatrixDirty) {
+		_localMatrixDirty = false;
+		_localMatrix.setTRS(_position, _rotation, _scale);
+	}
+	return _localMatrix;
+}
+
 void SceneEntity::setWorldMatrix(const Mat4f& mat) {
 	if (_parent) {
 		setLocalMatrix(_parent->worldMatrix().inverse() * mat);
@@ -83,8 +116,10 @@ void SceneEntity::setWorldMatrix(const Mat4f& mat) {
 }
 
 const Mat4f& SceneEntity::worldMatrix() {
-	// TODO dirty _worldMatrix
-	_worldMatrix = _parent ? _parent->worldMatrix() * localMatrix() : localMatrix();
+	if (_worldMatrixDirty) {
+		_worldMatrixDirty = false;
+		_worldMatrix = _parent ? _parent->worldMatrix() * localMatrix() : localMatrix();
+	}
 	return _worldMatrix;
 }
 

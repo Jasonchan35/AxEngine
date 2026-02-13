@@ -204,15 +204,11 @@ public:
 				Vec3  scale(4,5,6);
 				mat_TRS = Mat4::s_TRS(pos, rot, scale);
 				
-				Vec3  resultPos;
-				Quat4 resultRot;
-				Vec3  resultScale;
-				
-				mat_TRS.getTRS(resultPos, resultRot, resultScale);
+				auto result = mat_TRS.getTRS();
 
-				AX_TEST_ALMOST_EQ_EPSILON(pos,   resultPos  , T(0.1));
-				AX_TEST_ALMOST_EQ_EPSILON(rot,   resultRot  , T(0.1));
-				AX_TEST_ALMOST_EQ_EPSILON(scale, resultScale, T(0.1));
+				AX_TEST_ALMOST_EQ_EPSILON(pos,   result.position, T(0.1));
+				AX_TEST_ALMOST_EQ_EPSILON(rot,   result.rotation, T(0.1));
+				AX_TEST_ALMOST_EQ_EPSILON(scale, result.scale   , T(0.1));
 			}			
 			
 		}
