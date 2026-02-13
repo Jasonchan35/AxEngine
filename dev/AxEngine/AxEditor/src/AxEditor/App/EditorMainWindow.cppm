@@ -57,7 +57,7 @@ protected:
 	Mat4f _gizmoStartWorldMatrix;
 	
 	float _maxMeshletErrorInPixels = 2.0f;
-	
+	float _mouseSpeed = 1.0;
 	AxRenderGpuData_Debug _gpuDebugData;
 };
 

@@ -11,7 +11,6 @@ namespace AxEditor {
 
 class AxAssimp_Importer : public NonCopyable {
 public:
-	Array<SPtr<MeshObject>> _meshes;
 	Array<UPtr<EditableMesh>> _editableMeshes;
 	SPtr<SceneWorld> _world;
 	
@@ -86,7 +85,7 @@ public:
 		_constAxisRot = convAxisMat.toQuat();
 		
 		_editableMeshes.ensureCapacity(scene->mNumMeshes);
-		_meshes.ensureCapacity(scene->mNumMeshes);
+		_world->_meshObjects.ensureCapacity(scene->mNumMeshes);
 		
 		for (u32 i = 0; i < scene->mNumMeshes; ++i) {
 			importMesh(scene->mMeshes[i]);
@@ -233,16 +232,15 @@ public:
 	
 	void importMesh(aiMesh* srcMesh) {
 		auto meshObject = MeshObject::s_new(AX_NEW);
-		_meshes.emplaceBack(meshObject);
 		_world->_meshObjects.emplaceBack(meshObject);
 		
-		// importRenderMesh(srcMesh, meshObject->renderMesh, Vertex_PosColorUv2Normal::s_layout());
-		importRenderMeshByEditableMesh(srcMesh, meshObject);
+//		importRenderMesh(srcMesh, meshObject->renderMesh, Vertex_PosColorUv2Normal::s_layout());
+//		importRenderMeshByEditableMesh(srcMesh, meshObject);
 		importMeshlet(srcMesh, meshObject);
 	}
 
 	void importMeshlet(aiMesh* srcMesh, MeshObject* dstMesh) {
-		dstMesh->setName(toStrView(srcMesh->mName));
+		dstMesh->setName(Fmt("{}{}", toStrView(srcMesh->mName), _world->_meshObjects.size()));
 
 		Int numVertices = srcMesh->mNumVertices;
 		auto srcVertices = Span(srcMesh->mVertices, numVertices);
@@ -356,7 +354,7 @@ public:
 		auto* stockObjs = RenderStockObjects::s_instance();
 		
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
-			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
+			if (auto meshObj = _world->_meshObjects.tryGetElement(srcMeshIndex)) {
 				auto* meshRenderer = entity->addComponent<MeshRendererComponent>(AX_NEW);
 				meshRenderer->mesh = *meshObj;
 				meshRenderer->material	= stockObjs->materials->Simple3D_Blinn_Color; 

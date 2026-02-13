@@ -81,7 +81,7 @@ void Camera3_<T>::move(const Vec3& delta) {
 
 template<class T> inline
 void Camera3_<T>::dolly(T delta) {
-	distance += delta;
+	distance = Math::max(T(0.001), distance + delta);
 }
 
 template<class T> inline

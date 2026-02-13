@@ -43,16 +43,16 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 					cam.orbit(ev.deltaPos.yx() * Vec2f(1,-1) * 0.005f);
 					
 				} else if (ev.pressedButtons == UIMouseEventButton::Middle) {
-					cam.move(ev.deltaPos * 0.01f);
+					cam.move(ev.deltaPos * 0.01f * _mouseSpeed);
 					
 				} else if (ev.pressedButtons == UIMouseEventButton::Right) {
-					cam.dolly(ev.deltaPos.y * 0.015f);
+					cam.dolly(ev.deltaPos.y * 0.015f * _mouseSpeed);
 				}
 			}
 		} break;
 			
 		case UIMouseEventType::Wheel: {
-			cam.dolly(ev.wheelDelta.y * -0.015f);
+			cam.dolly(ev.wheelDelta.y * -0.015f * _mouseSpeed);
 		} break;
 		default: break;
 	}
@@ -143,8 +143,9 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	
 	{
 		ImUIPanel	panel("Gizmo");
+		ImUIDragFloat("mouseSpeed", &_mouseSpeed, 0.1f, 0.1f, 30.0f);
+		
 		{
-			ImUISameLine();
 			if (ImUIRadioButton("Local", _opSpace == ImUIGizmoSpace::Local)) {
 				_opSpace = ImUIGizmoSpace::Local;
 			}
@@ -155,7 +156,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUIDragFloat("maxMeshletErrorInPixels", &_maxMeshletErrorInPixels, 0.2f, 0, 10);
+		ImUIDragFloat("maxMeshletErrorInPixels", &_maxMeshletErrorInPixels, 0.1f, 0, 20);
 		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
 		{
 			ImUICheckBoxArray_Item<i32> list_[] = {
