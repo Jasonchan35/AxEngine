@@ -1,10 +1,10 @@
 ﻿module;
 
-
 export module AxCore.File;
 export import AxCore.Formatter;
 export import AxCore.Delegate;
 export import AxCore.FilePath;
+export import AxCore.TimeStamp;
 
 export namespace ax {
 
@@ -42,6 +42,9 @@ struct File {
 	static Opt<FileAttributes>	getAttrs(StrView filename);
 	
 	static bool 	exists 					(StrView filename);
+	static bool		isNewerThan				(StrView filenameA, StrView filenameB);
+
+	static Opt<UtcTime>	lastWriteTime			(StrView filename);
 
 	static void		rename					(StrView src_name, StrView dst_name);
 

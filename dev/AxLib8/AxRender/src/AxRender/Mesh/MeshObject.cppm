@@ -19,6 +19,9 @@ public:
 	const GpuData* onGetGpuData(MeshObject* meshObj, RenderRequest* req);
 	
 	void createBuffers();
+	void writeToFile(MeshObject* meshObj, StrView filename);
+	void readFromFile(MeshObject* meshObj, StrView filename);
+	
 	GpuData _gpuData = {};
 };
 
@@ -34,6 +37,8 @@ public:
 	MeshObject_Meshlet	meshlet;
 	
 	void createMeshlet(Span<AxGpuMeshletVert> vertices, Span<u32> indices);
+	void writeMeshletToFile(StrView filename) { meshlet.writeToFile(this, filename); }
+	void readMeshletFromFile(StrView filename) { meshlet.readFromFile(this, filename); }
 
 	void setBounds(const BBox3f& v) { _bounds = v; objectSlot.markDirty(); }
 	const BBox3f& bounds() const { return _bounds; }

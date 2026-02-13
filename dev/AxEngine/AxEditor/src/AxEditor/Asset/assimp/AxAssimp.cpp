@@ -17,6 +17,8 @@ public:
 	JsonValue _metadata;
 	Quat4f _constAxisRot;
 	
+	String _filename;
+	
 	static constexpr float kLengthScale = 1.0f;
 	
 	static StrView toStrView(const aiString&     s) { return StrView(s.data, s.length); }
@@ -40,6 +42,7 @@ public:
 		
 
 	void openFile(StrView filename) {
+		_filename = filename;
 		Assimp::Importer importer;
 //		importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, 256); // mesh shader max 256 vertices
 //		importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, 256);  // mesh shader max 256 triangles
@@ -82,9 +85,16 @@ public:
 		_editableMeshes.ensureCapacity(scene->mNumMeshes);
 		_meshes.ensureCapacity(scene->mNumMeshes);
 		
-		for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
-			aiMesh* srcMesh = scene->mMeshes[i];
-			importMesh(srcMesh);
+		for (u32 i = 0; i < scene->mNumMeshes; ++i) {
+			importMesh(scene->mMeshes[i]);
+		}
+		
+		for (u32 i = 0; i < scene->mNumLights; ++i) {
+			importLight(scene->mLights[i]);
+		}
+		
+		for (u32 i = 0; i < scene->mNumCameras; ++i) {
+			importCamera(scene->mCameras[i]);
 		}
 		
 		// importNode(scene->mRootNode, nullptr);
@@ -208,15 +218,32 @@ public:
 		}		
 	}
 
+	void importLight(aiLight* srcLight) {
+		
+	}
+	
+	void importCamera(aiCamera* srcCamera) {
+		
+	}
+	
 	void importMesh(aiMesh* srcMesh) {
 		auto meshObject = MeshObject::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
 		// importRenderMesh(srcMesh, meshObject->renderMesh, Vertex_PosColorUv2Normal::s_layout());
-		importEditableMesh(srcMesh, meshObject);
+		importRenderMeshByEditableMesh(srcMesh, meshObject);
 		importMeshlet(srcMesh, meshObject);
 	}
 
 	void importMeshlet(aiMesh* srcMesh, MeshObject* dstMesh) {
+		dstMesh->setName(toStrView(srcMesh->mName));
+		
+		auto cacheFilename = Fmt("{}-{}.axMeshlet-cache", _filename, dstMesh->name());
+		
+		if (File::isNewerThan(cacheFilename, _filename)) {
+			dstMesh->readMeshletFromFile(cacheFilename);
+			return;
+		}
+		
 		Int numVertices = srcMesh->mNumVertices;
 		auto srcVertices = Span(srcMesh->mVertices, numVertices);
 		auto srcNormals  = Span(srcMesh->mNormals,  numVertices);
@@ -244,9 +271,10 @@ public:
 		}
 		
 		dstMesh->createMeshlet(vertices, indices);
+		dstMesh->writeMeshletToFile(cacheFilename);
 	}
 	
-	void importEditableMesh(aiMesh* srcMesh, MeshObject* meshObject) {
+	void importRenderMeshByEditableMesh(aiMesh* srcMesh, MeshObject* meshObject) {
 		auto& dstMesh = _editableMeshes.emplaceNewObject(AX_NEW);
 		
 		Int numVertices = srcMesh->mNumVertices;
@@ -310,6 +338,11 @@ public:
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {
 		auto entity = SceneEntity::s_new(AX_NEW, parent, toStrView(srcNode->mName));
+		
+		JsonValue metadata;
+		importMetaData(metadata.setToObject(), srcNode->mMetaData);
+		AX_LOG("import node [{}] metadata: {}", entity->name(), metadata);
+		
 		auto localMat = toMat4f(srcNode->mTransformation);
 		entity->setLocalMatrix(localMat);
 		if (!parent) {

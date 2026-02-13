@@ -222,6 +222,24 @@ bool File::exists ( StrView filename ) {
 	return false;
 }
 
+bool File::isNewerThan(StrView filenameA, StrView filenameB) {
+	auto timeA = lastWriteTime(filenameA);
+	if (!timeA) return false;
+
+	auto timeB = lastWriteTime(filenameB);
+	if (!timeB) return true;
+	
+	return timeA > timeB;
+}
+
+Opt<UtcTime> File::lastWriteTime(StrView filename) {
+	if (!exists(filename)) return std::nullopt;
+	
+	FileStream fs;
+	fs.openRead(filename);
+	return fs.lastWriteTime();
+}
+
 void File::rename	( StrView src_name, StrView dst_name ) {
 	TempStringW src;
 	src.setUtf(src_name);

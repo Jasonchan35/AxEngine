@@ -70,6 +70,33 @@ void MeshObject_Meshlet::createBuffers() {
 	   primBuffer.create(AX_NEW, "axGpuMeshletPrim"   , objMgr->_structBufferPools.axMeshletPrim);
 }
 
+void MeshObject_Meshlet::writeToFile(MeshObject* meshObj, StrView filename) {
+	FileStream fs;
+	fs.openWrite(filename, true);
+	fs.writeBytes(Span(meshObj->_bounds).toByteSpan());
+	
+	groupBuffer.writeToFile(fs);
+	clusterBuffer.writeToFile(fs);
+	vertBuffer.writeToFile(fs);
+	primBuffer.writeToFile(fs);
+}
+
+void MeshObject_Meshlet::readFromFile(MeshObject* meshObj, StrView filename) {
+	createBuffers();
+	
+	FileStream fs;
+	fs.openRead(filename);
+	
+	BBox3f bounds;
+	fs.readBytes(MutSpan(bounds).toMutByteSpan());
+	meshObj->setBounds(bounds);
+	
+	groupBuffer.readFromFile(fs);
+	clusterBuffer.readFromFile(fs);
+	vertBuffer.readFromFile(fs);
+	primBuffer.readFromFile(fs);
+}
+
 void MeshObject::createMeshlet(Span<AxGpuMeshletVert> vertices, Span<u32> indices) {
 	meshlet.createBuffers();
 	ClusterGenerator gen;

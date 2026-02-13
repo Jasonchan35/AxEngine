@@ -372,6 +372,18 @@ public:
 
 	AX_INLINE Int uploadAndGetOffset(RenderRequest* req) const { return _buffer ? _buffer->uploadAndGetOffset(req) : 0;  }
 	
+	void writeToFile(FileStream& fs) {
+		Int count_ = count();
+		fs.writeBytes(Span(count_).toByteSpan());
+		fs.writeBytes(readData().toByteSpan());
+	}
+	
+	void readFromFile(FileStream& fs) {
+		Int count_ = 0;
+		fs.readBytes(MutSpan(count_).toMutByteSpan());
+		fs.readBytes(editData(0, count_).toMutByteSpan());
+	}
+	
 private:
 	SPtr<StructuredGpuBuffer> _buffer;
 };

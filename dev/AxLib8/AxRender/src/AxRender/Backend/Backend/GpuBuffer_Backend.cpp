@@ -3,7 +3,7 @@ module AxRender;
 import :GpuBuffer_Backend;
 import :RenderSystem_Backend;
 
-namespace ax /*::AxRender*/ {
+namespace ax {
 
 SPtr<GpuBufferPool_Backend> GpuBufferPool_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
 	return SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newGpuBufferPool(req, desc));
