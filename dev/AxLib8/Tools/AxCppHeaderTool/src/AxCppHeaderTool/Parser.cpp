@@ -63,6 +63,10 @@ void Parser::parseNamespace() {
 	do {
 		if (_token.isOp("}")) break;
 		if (_token.isNewline()) return;
+		
+		if (_token.isOp("{")) {
+			skipBlock();
+		}
 
 		if (matchIdentifier("using")) {
 			parseUsing();
@@ -169,7 +173,7 @@ void Parser::parseClass() {
 
 // class Body
 	readExpectOp("{");
-	while (!_token.isOp("}")) {
+	while (!matchOp("}")) {
 		if (matchIdentifier("AX_GENERATED_BODY")) {
 			parseGeneratedBody(outType);
 			continue;
@@ -437,7 +441,7 @@ void Parser::readDefaultValue(IString & s, StrView msg) {
 
 bool Parser::nextToken() {
 	if (!_nextToken()) return false;
-//	AX_DUMP(_token);
+//	AX_LOG("--> token={} file={}:{}", _token, _source.filename(), _source.lineNumber());
 	return true;
 }
 

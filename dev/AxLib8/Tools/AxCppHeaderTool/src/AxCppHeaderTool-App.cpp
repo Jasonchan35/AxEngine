@@ -55,7 +55,7 @@ int App::onRun() {
 	String _outGenHeader;
 	String _outGenTypes("void registerTypes() {\n"
 						"\t""auto* mgr = AxEngine::ObjectManager::s_instance();\n"
-						"\t""AX_UNUSED(mgr);");
+						"\t""AX_UNUSED(mgr);\n");
 
 	Array<String> inputFiles;
 	File::glob(searchFile, [&inputFiles](FileEntry & entry) {
