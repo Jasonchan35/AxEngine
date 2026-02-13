@@ -27,9 +27,9 @@ public:
 		Member,
 	};
 
-	JsonReader(StrView json, StrView filenameForErrorMessage);
+	JsonReader(StrView json, StrView filename);
 
-	void readJson(StrView json, StrView filenameForErrorMessage);
+	void readJson(StrView json, StrView filename);
 
 	ValueType valueType() { return _valueType; }
 
@@ -130,6 +130,8 @@ public:
 	bool skipUnhandledMember(bool showWarning);
 	bool onUnhandledMember();
 
+	ZStrView filename() const { return _source.filename(); }
+	
 private:
 	template<class V> void _readNumericValue(V&	outValue);
 

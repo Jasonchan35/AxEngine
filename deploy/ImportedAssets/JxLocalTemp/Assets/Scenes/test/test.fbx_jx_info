@@ -6,53 +6,13 @@
   "opt_reset_object_transform": false,
   "sourceFile": "W:/Jason/github/AxEngine/deploy/Assets/Scenes/test/test.blend",
   "objects": {
-    "Cube": {
-      "type": "MESH",
-      "parent": "",
-      "world_location": [
-        0.0,
-        3.768798828125,
-        0.0
-      ],
-      "world_rotation": [
-        0.0,
-        -0.0,
-        0.0
-      ],
-      "world_scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "materialSlots": []
-    },
     "Point": {
       "type": "LIGHT",
       "parent": "",
       "world_location": [
         0.0,
-        0.0,
-        0.9032146334648132
-      ],
-      "world_rotation": [
-        0.0,
-        -0.0,
-        0.0
-      ],
-      "world_scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "materialSlots": []
-    },
-    "Sphere": {
-      "type": "MESH",
-      "parent": "",
-      "world_location": [
-        2.788360595703125,
-        0.0,
-        0.0
+        0.21013475954532623,
+        1.515310525894165
       ],
       "world_rotation": [
         0.0,
@@ -98,6 +58,66 @@
         0.0,
         -0.0,
         0.0
+      ],
+      "world_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "materialSlots": []
+    },
+    "Cube": {
+      "type": "MESH",
+      "parent": "",
+      "world_location": [
+        0.0,
+        3.768798828125,
+        0.0
+      ],
+      "world_rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "world_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "materialSlots": []
+    },
+    "Sphere": {
+      "type": "MESH",
+      "parent": "",
+      "world_location": [
+        2.788360595703125,
+        0.0,
+        0.0
+      ],
+      "world_rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "world_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "materialSlots": []
+    },
+    "Camera": {
+      "type": "CAMERA",
+      "parent": "",
+      "world_location": [
+        4.8256049156188965,
+        -13.03799057006836,
+        5.862910747528076
+      ],
+      "world_rotation": [
+        1.1599481105804443,
+        3.095220222348871e-07,
+        0.400897741317749
       ],
       "world_scale": [
         1.0,

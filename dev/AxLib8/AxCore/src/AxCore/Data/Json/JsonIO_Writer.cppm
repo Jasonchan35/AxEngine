@@ -13,7 +13,7 @@ public:
 	static constexpr bool isReader() { return false; }
 	static constexpr bool isWriter() { return true;  }
 
-	JsonIO_Writer(IString& outJson) : writer(outJson) {}
+	JsonIO_Writer(IString& outJson, StrView filename) : writer(outJson, filename) {}
 
 	void io(bool&		value) { writer.writeValue(value); }
 
@@ -49,22 +49,22 @@ public:
 	void io(T& value) { JsonIO_Handler<T>::onJsonIO(*this, value); }
 
 	template<class T> AX_INLINE
-	void named_io(StrView name, T& value) {
+	void member_io(StrView name, T& value) {
 		writer.writeMemberName(name);
 		io(value);
 	}
 
-	template<class T> void named_ioEnumAsInt(StrView name, T& value) {
+	template<class T> void member_ioEnumAsInt(StrView name, T& value) {
 		static_assert(std::is_enum_v<T>);
 		auto tmp = ax_enum_int(value);
-		named_io(name, tmp);
+		member_io(name, tmp);
 	}
 
 	template<class T>
 	struct ReflectionHandler {
 		template<Int index, class FIELD>
 		static void onEach(JsonIO_Writer& se, T& obj) {
-			se.named_io(FIELD::s_name(), FIELD::s_value(&obj));
+			se.member_io(FIELD::s_name(), FIELD::s_value(&obj));
 		}
 	};
 
@@ -84,7 +84,7 @@ public:
 template<class T> inline
 void ax_dump_json_impl(T& value, const SrcLoc& loc = SrcLoc::s_current()) {
 	TempStringA json;
-	JsonIO_Writer se(json);
+	JsonIO_Writer se(json, "");
 	se.io(value);
 	AX_LOG("AX_DUMP_JSON: {}", json);
 }
@@ -121,9 +121,8 @@ struct JsonIO_Writer_Handler {
 		if constexpr (CON_onJsonIO_Value<T, JsonIO_Writer>) {
 			value.onJsonIO_Value(se);
 		} else {
-			se.writer.writeObject([&](){
-				value.onJsonIO(se);
-			});
+			auto scope = se.writer.objectScope();
+			value.onJsonIO(se);
 		}
 	}
 };

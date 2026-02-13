@@ -3,8 +3,9 @@ module AxCore.JsonWriter;
 
 namespace ax {
 
-JsonWriter::JsonWriter(IString & outJson) {
+JsonWriter::JsonWriter(IString & outJson, StrView filename ) {
 	_json = &outJson;
+	_filename = filename;
 }
 
 JsonWriter::~JsonWriter() {
@@ -13,7 +14,7 @@ JsonWriter::~JsonWriter() {
 	}
 }
 
-void JsonWriter::beginObject(StrView name) {
+void JsonWriter::beginMemberObject(StrView name) {
 	writeMemberName(name);
 	beginObject();
 }
@@ -39,7 +40,7 @@ void JsonWriter::endObject() {
 	_level.decSize(1);
 }
 
-void JsonWriter::beginArray(StrView name) {
+void JsonWriter::beginMemberArray(StrView name) {
 	writeMemberName(name);
 	beginArray();
 }

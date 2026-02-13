@@ -334,9 +334,9 @@
 
 #define AX_DUMP(v0)					do{ AX_LOG("AX_DUMP: {}=[{}]", AX_STR(#v0), (v0)); } while(false)
 
-#define AX_JSON_IO(SE, V)				do { SE.named_io(#V, V); } while(false);
-#define AX_JSON_IO_NON_EMPTY(SE, V)		do { if (SE.isReader() || bool(V)) { SE.named_io(#V, V); } } while(false);
-#define AX_JSON_IO_ENUM_AS_INT(SE, V)	do { SE.named_ioEnumAsInt(#V, V); } while(false);
+#define AX_JSON_IO(SE, V)				do { SE.member_io(#V, V); } while(false);
+#define AX_JSON_IO_NON_EMPTY(SE, V)		do { if (SE.isReader() || bool(V)) { SE.member_io(#V, V); } } while(false);
+#define AX_JSON_IO_ENUM_AS_INT(SE, V)	do { SE.member_ioEnumAsInt(#V, V); } while(false);
 
 #define AX_NON_COPYABLE(T) \
 	constexpr T(const T& s) = delete; \

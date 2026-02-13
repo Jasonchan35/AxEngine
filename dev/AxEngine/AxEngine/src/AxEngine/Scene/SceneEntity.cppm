@@ -19,7 +19,8 @@ public:
 
 	SceneWorld* world() const;
 	
-	void onJsonIO(JsonIO_Writer& se);
+	virtual void onJsonIO(JsonIO_Reader& se);
+	virtual void onJsonIO(JsonIO_Writer& se);
 
 protected:
 	template<class SE> void _onJsonIO(SE& se);
@@ -107,25 +108,12 @@ public:
 	
 	JsonValue metadata = JsonValue::s_null();
 	
-	template<class SE>
-	void onJsonIO(SE& se) {
-		AX_JSON_IO(se, _name);
-		// AX_JSON_IO(se, metadata);
-		
-		AX_JSON_IO(se, _position);
-		AX_JSON_IO(se, _rotation);
-		AX_JSON_IO(se, _scale);
-		
-		if constexpr (se.isReader()) {
-			
-		} else {
-			markLocalMatrixDirty();
-			AX_JSON_IO(se, _components);
-		}
-		AX_JSON_IO(se, _children);
-	}
-	
+	void onJsonIO(JsonIO_Reader& se);
+	void onJsonIO(JsonIO_Writer& se);
+
 protected:
+	template<class SE> void _onJsonIO(SE& se);
+
 	friend class SceneWorld;
 
 	Array<SPtr<SceneComponent>> _components;
@@ -155,14 +143,17 @@ public:
 	
 	MeshRendererSystem* meshRendererSystem() { return _meshRendererSystem.ptr(); }
 	
-	void writeToFile(StrView filename);
+	void readFromFile(StrView folder);
+	void writeToFile(StrView folder);
 	
-	template<class SE>
-	void onJsonIO(SE& se) {
-		AX_JSON_IO(se, _root);
-	}
+	void onJsonIO(JsonIO_Reader& se);
+	void onJsonIO(JsonIO_Writer& se);
+	
+	Array<SPtr<MeshObject>> _meshObjects;
 	
 protected:
+	template<class SE> void _onJsonIO(SE& se);
+	
 	friend class SceneEntity;
 	
 	SceneWorld();
@@ -184,18 +175,12 @@ public:
 	SPtr<MeshObject> mesh;
 	SPtr<Material>   material;
 	
-	template<class SE>
-	void onJsonIO(SE& se) {
-		Base::onJsonIO(se);
-		
-		if constexpr (se.isReader()) {
-			
-		} else {
-			if (mesh) se.io(mesh->name());
-		}
-	}	
+	virtual void onJsonIO(JsonIO_Reader& se) override;
+	virtual void onJsonIO(JsonIO_Writer& se) override;
 	
 private:
+	template<class SE> void _onJsonIO(SE& se);
+	
 	Int _systemSlotId = 0;
 };
 

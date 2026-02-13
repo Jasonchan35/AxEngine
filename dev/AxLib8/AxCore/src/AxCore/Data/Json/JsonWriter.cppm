@@ -9,7 +9,7 @@ export namespace ax {
 
 class JsonWriter : public NonCopyable {
 public:
-	JsonWriter(IString & outJson);
+	JsonWriter(IString & outJson, StrView filename);
 	~JsonWriter();
 
 	class ObjectScope : public NonCopyable {
@@ -31,23 +31,23 @@ public:
 		JsonWriter* _p;
 	};
 
-	AX_NODISCARD ObjectScope objectScope(StrView name)		{ beginObject(name); return ObjectScope(this); }
-	AX_NODISCARD ObjectScope objectScope()					{ beginObject();	 return ObjectScope(this); }
+	AX_NODISCARD ObjectScope memberObjectScope(StrView name)		{ beginMemberObject(name);	return ObjectScope(this); }
+	AX_NODISCARD ArrayScope	 memberArrayScope(StrView name)			{ beginMemberArray(name);	return ArrayScope(this);  }
+	
+	AX_NODISCARD ObjectScope objectScope()							{ beginObject();			return ObjectScope(this); }
+	AX_NODISCARD ArrayScope	 arrayScope()							{ beginArray();				return ArrayScope(this);  }
 
-	template<class FUNC> void writeObject(FUNC func)				{ auto scope = objectScope();		func(); }
-	template<class FUNC> void writeObject(StrView name, FUNC func)	{ auto scope = objectScope(name);	func(); }
+	template<class FUNC> void writeObject(FUNC func)						{ auto scope = objectScope();			func(); }
+	template<class FUNC> void writeArray(FUNC func)							{ auto scope = arrayScope();			func(); }
 
-	ArrayScope	arrayScope(StrView name)			{ beginArray(name); return ArrayScope(this); }
-	ArrayScope	arrayScope()						{ beginArray();		return ArrayScope(this); }
+	template<class FUNC> void writeMemberObject(StrView name, FUNC func)	{ auto scope = memberObjectScope(name);	func(); }
+	template<class FUNC> void writeMemberArray(StrView name, FUNC func)		{ auto scope = memberArrayScope(name);	func(); }
 
-	template<class FUNC>	void writeArray(FUNC func)					{ auto scope = arrayScope(); func(); }
-	template<class FUNC>	void writeArray(StrView name, FUNC func)	{ auto scope = arrayScope(name); func(); }
-
-	void beginObject(StrView name);
+	void beginMemberObject(StrView name);
 	void beginObject();
 	void endObject();
 
-	void beginArray(StrView name);
+	void beginMemberArray(StrView name);
 	void beginArray();
 	void endArray();
 
@@ -102,6 +102,8 @@ public:
 
 	void preWriteValue();
 	void newline(Int offset = 0);
+	
+	ZStrView filename() const { return _filename; }
 
 private:
 	void _writeQuoteString(StrViewA  v);
@@ -121,6 +123,7 @@ private:
 	};
 
 	IStringA*	_json;
+	String		_filename;
 	Array<LevelType, 16> _level;
 
 	bool _commaNeeded	{false};

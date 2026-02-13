@@ -97,12 +97,20 @@ void EditorApp::_testLoadOpenUsd() {
 }
 
 void EditorApp::_testLoadFbx() {
-	AxAssimp assimp;
-	String filename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
-	auto world = assimp.openFile(filename);
+	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
 	
-	world->writeToFile(Fmt("{}.axWorld", filename));
-	
+	String cacheFolder = Fmt("{}.axWorld", inFilename);
+	String cacheRootFile = Fmt("{}/_root.axWorld", cacheFolder);
+
+	SPtr<SceneWorld> world;
+	if (File::isNewerThan(cacheRootFile, inFilename)) {
+		world = SceneWorld::s_new(AX_NEW);
+		world->readFromFile(cacheFolder);
+	} else {
+		AxAssimp assimp;
+		world = assimp.openFile(inFilename);
+		world->writeToFile(cacheFolder);
+	}
 	_engine.setWorld(world);
 }
 

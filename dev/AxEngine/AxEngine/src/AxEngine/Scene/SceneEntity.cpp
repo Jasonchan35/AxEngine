@@ -36,16 +36,72 @@ template<class T> concept CON_HasMutRttiInit2 = requires(T::MutRttiInit2 obj)
 };
 
 template<class SE>
+void SceneEntity::_onJsonIO(SE& se) {
+	AX_JSON_IO(se, _name);
+	// AX_JSON_IO(se, metadata);
+	AX_JSON_IO(se, _position);
+	AX_JSON_IO(se, _rotation);
+	AX_JSON_IO(se, _scale);
+}
+
+void SceneEntity::onJsonIO(JsonIO_Reader& se) { 
+	markLocalMatrixDirty();
+	_onJsonIO(se); 
+
+	se.reader.readMemberArray("components", [&]() -> void {
+		se.reader.beginObject();
+		NameId compType;
+		SceneComponent* comp = nullptr;
+		while (!se.reader.endObject()) {
+			if (se.reader.isMember("compType")) {
+				se.io(compType);
+				if (compType == MeshRendererComponent::s_rtti()->name) {
+					comp = addComponent<MeshRendererComponent>(AX_NEW);
+				}
+				
+				if (comp) {
+					comp->onJsonIO(se);
+				}
+			}
+		}
+	});
+	
+	se.reader.readMemberArray("children", [&]() -> void {
+		auto child = SceneEntity::s_new(AX_NEW, nullptr, this, "");
+		se.io(*child);
+	});
+}
+
+void SceneEntity::onJsonIO(JsonIO_Writer& se) { 
+	_onJsonIO(se); 
+	{
+		auto compScope = se.writer.memberArrayScope("components");
+		for (auto& comp : _components) {
+			se.io(comp);
+		}
+	}
+	{
+		auto childScope = se.writer.memberArrayScope("children");
+		for (auto& child : _children) {
+			se.io(child);
+		}
+	}
+}
+
+template<class SE>
 void SceneComponent::_onJsonIO(SE& se) {
 	if constexpr (se.isReader()) {
-			
 	} else {
-		auto componentType = rtti()->name;
-		AX_JSON_IO(se, componentType);
 	}
-}	
-
-void SceneComponent::onJsonIO(JsonIO_Writer& se) { _onJsonIO(se); }; 
+}
+void SceneComponent::onJsonIO(JsonIO_Reader& se) {
+	_onJsonIO(se);
+}; 
+void SceneComponent::onJsonIO(JsonIO_Writer& se) {
+	auto compType = rtti()->name;
+	se.member_io("compType", compType);
+	_onJsonIO(se);
+}; 
 
 SPtr<SceneEntity> SceneEntity::s_new(const MemAllocRequest& allocReq,
                                      SceneWorld*            world,
@@ -58,11 +114,52 @@ SPtr<SceneEntity> SceneEntity::s_new(const MemAllocRequest& allocReq,
 	return SPtr_new<This>(allocReq, desc);
 }
 
-void SceneWorld::writeToFile(StrView filename) {
-	TempString      outJson;
-	JsonIO_Writer wr(outJson);
-	wr.io(*this);
-	File::writeFile(filename, outJson);
+void SceneWorld::readFromFile(StrView folder) {
+	JsonIO::readFile(Fmt("{}/_root.axWorld", folder), *this);
+}
+
+void SceneWorld::writeToFile(StrView folder) {
+	FileDir::create(folder);
+	JsonIO::writeFile(Fmt("{}/_root.axWorld", folder), *this);
+}
+
+template<class SE> inline
+void SceneWorld::_onJsonIO(SE& se) {
+
+}
+
+void SceneWorld::onJsonIO(JsonIO_Reader& se) {
+	_onJsonIO(se);
+	
+	se.reader.readMemberArray("meshes", [&]() -> void {
+		NameId meshName;
+		se.io(meshName);
+		auto newMesh = MeshObject::s_new(AX_NEW);
+		newMesh->setName(meshName);
+		_meshObjects.emplaceBack(newMesh);
+		
+		auto dir = Fmt("{}/meshes", FilePath::dirname(se.reader.filename()));
+		newMesh->readMeshletFromFile(Fmt("{}/{}.axMeshlet", dir, meshName));
+	});
+
+	se.member_io("root", *_root);
+}
+void SceneWorld::onJsonIO(JsonIO_Writer& se) {
+	_onJsonIO(se);
+
+	se.writer.writeMemberArray("meshes", [&]() -> void {
+		for (auto& mesh : _meshObjects) {
+			if (!mesh) continue;
+			auto dir = Fmt("{}/meshes", FilePath::dirname(se.writer.filename()));
+			FileDir::create(dir);
+			
+			auto meshName = mesh->name();
+			mesh->writeMeshletToFile(Fmt("{}/{}.axMeshlet", dir, meshName));
+			se.io(meshName);
+		}
+	});
+	
+	se.member_io("root", *_root);
 }
 
 SceneWorld::SceneWorld() {
@@ -88,6 +185,32 @@ MeshRendererComponent::~MeshRendererComponent() {
 		AX_ASSERT(slot == this);
 		sys->_componentList.eraseAt_Unordered(_systemSlotId);
 		slot->_systemSlotId = _systemSlotId;
+	}
+}
+
+template<class SE> inline
+void MeshRendererComponent::_onJsonIO(SE& se) {
+	Base::onJsonIO(se);
+}
+
+void MeshRendererComponent::onJsonIO(JsonIO_Reader& se) {
+	_onJsonIO(se);
+	NameId meshName;
+	if (se.member_io("mesh", meshName)) {
+		for (auto& p : world()->_meshObjects) {
+			if (p && p->name() == meshName) {
+				this->mesh = p;
+				this->material = RenderStockObjects::s_instance()->materials->meshlet; // TODO
+				break;
+			}
+		}
+	}
+}
+void MeshRendererComponent::onJsonIO(JsonIO_Writer& se) {
+	_onJsonIO(se);
+	if (mesh) {
+		auto meshName = mesh->name();
+		se.member_io("mesh", meshName);
 	}
 }
 

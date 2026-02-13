@@ -234,6 +234,8 @@ public:
 	void importMesh(aiMesh* srcMesh) {
 		auto meshObject = MeshObject::s_new(AX_NEW);
 		_meshes.emplaceBack(meshObject);
+		_world->_meshObjects.emplaceBack(meshObject);
+		
 		// importRenderMesh(srcMesh, meshObject->renderMesh, Vertex_PosColorUv2Normal::s_layout());
 		importRenderMeshByEditableMesh(srcMesh, meshObject);
 		importMeshlet(srcMesh, meshObject);
@@ -241,14 +243,7 @@ public:
 
 	void importMeshlet(aiMesh* srcMesh, MeshObject* dstMesh) {
 		dstMesh->setName(toStrView(srcMesh->mName));
-		
-		auto cacheFilename = Fmt("{}-{}.axMeshlet-cache", _filename, dstMesh->name());
-		
-		if (File::isNewerThan(cacheFilename, _filename)) {
-			dstMesh->readMeshletFromFile(cacheFilename);
-			return;
-		}
-		
+
 		Int numVertices = srcMesh->mNumVertices;
 		auto srcVertices = Span(srcMesh->mVertices, numVertices);
 		auto srcNormals  = Span(srcMesh->mNormals,  numVertices);
@@ -276,7 +271,6 @@ public:
 		}
 		
 		dstMesh->createMeshlet(vertices, indices);
-		dstMesh->writeMeshletToFile(cacheFilename);
 	}
 	
 	void importRenderMeshByEditableMesh(aiMesh* srcMesh, MeshObject* meshObject) {

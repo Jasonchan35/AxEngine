@@ -32,7 +32,7 @@ void JsonIO::readFile(StrView filename, T& obj) {
 template<class T> inline
 void JsonIO::writeFile(StrView filename, T& obj, const File_WriteOpt& opt) {
 	TempString json;
-	JsonIO_Writer wr(json);
+	JsonIO_Writer wr(json, filename);
 	wr.io(obj);
 	File::writeFile(filename, json, opt);
 }
@@ -40,7 +40,7 @@ void JsonIO::writeFile(StrView filename, T& obj, const File_WriteOpt& opt) {
 template<class T> inline
 void JsonIO::writeFileIfChanged(StrView filename, T& obj, const File_WriteOpt& opt) {
 	TempString json;
-	JsonIO_Writer wr(json);
+	JsonIO_Writer wr(json, filename);
 	wr.io(obj);
 	File::writeFileIfChanged(filename, json, opt);
 }

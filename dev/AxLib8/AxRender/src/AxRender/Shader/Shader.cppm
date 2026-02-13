@@ -217,18 +217,18 @@ struct ShaderPropInfo : public NonCopyable {
 
 		switch (propType) {
 		#define E(T, ...) \
-			case ShaderPropType::T:	se.named_io("defaultValue",  defaultValue.v_##T);	break; \
+			case ShaderPropType::T:	se.member_io("defaultValue",  defaultValue.v_##T);	break; \
 		//---
 			AX_ShaderPropType_Numbers_EnumList(E)
 		#undef E
 		//---
-			case ShaderPropType::Color3f:	se.named_io("defaultValue",  defaultValue.v_Color3f);	break;
-			case ShaderPropType::Color4f:	se.named_io("defaultValue",  defaultValue.v_Color4f);	break;
+			case ShaderPropType::Color3f:	se.member_io("defaultValue",  defaultValue.v_Color3f);	break;
+			case ShaderPropType::Color4f:	se.member_io("defaultValue",  defaultValue.v_Color4f);	break;
 
 			case ShaderPropType::Texture2D:
 			case ShaderPropType::Texture3D:
 			case ShaderPropType::TextureCube: {
-				se.named_io("defaultValue",  defaultValue.v_stockTextureId);
+				se.member_io("defaultValue",  defaultValue.v_stockTextureId);
 
 				AX_JSON_IO(se, samplerState);
 			} break;

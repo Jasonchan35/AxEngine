@@ -39,8 +39,8 @@ public:
 	static constexpr bool isReader() { return true; }
 	static constexpr bool isWriter() { return false;  }
 
-	JsonIO_Reader(StrViewA json, StrView filenameForErrorMessage = StrView())
-		: reader(json, filenameForErrorMessage) 
+	JsonIO_Reader(StrViewA json, StrView filename)
+		: reader(json, filename) 
 	{
 	}
 
@@ -66,20 +66,20 @@ public:
 	void io(T& value) { JsonIO_Handler<T>::onJsonIO(*this, value); }
 
 	template<class T>
-	bool named_io(StrView name, T& value) {
+	bool member_io(StrView name, T& value) {
 		if (!reader.isMember(name)) return false;
 		io(value);
 		return true;
 	}
 
-	template<class T> void named_ioEnumAsInt(StrView name, T& value) {
+	template<class T> void member_ioEnumAsInt(StrView name, T& value) {
 		static_assert(std::is_enum_v<T>);
 		auto tmp = ax_enum_int(value);
-		named_io(name, tmp);
+		member_io(name, tmp);
 		ax_enum_set_int(value, tmp);
 	}
 
-	template<class T> void named_io_fixed(StrView name, T& value) { named_io(name, value); }
+	template<class T> void member_io_fixed(StrView name, T& value) { member_io(name, value); }
 
 	template<class T, Int N> void io_fixed_span(MutFixedSpan<T, N> value);
 //	template<class T> void io_span(MutSpan<T> value);
@@ -90,7 +90,7 @@ public:
 	struct ReflectionHandler {
 		template<Int index, class FIELD>
 		static void onEach(JsonIO_Reader& se, T& obj) {
-			se.named_io(FIELD::s_name(), FIELD::s_value(&obj));
+			se.member_io(FIELD::s_name(), FIELD::s_value(&obj));
 		}
 	};
 

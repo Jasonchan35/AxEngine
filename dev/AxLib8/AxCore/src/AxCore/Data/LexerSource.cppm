@@ -36,7 +36,7 @@ public:
 	CH readOctal(Int n);
 
 	void setFilename(StrView filename) { _filename = filename; }
-	StrView filename() const	{ return _filename; }
+	ZStrView filename() const	{ return _filename; }
 
 	Int		lineNumber() const	{ return _lineNumber; }
 	Int		column() const		{ return _column; }
@@ -50,7 +50,7 @@ public:
 	CH& chRef() { return _ch; }
 	
 private:
-	StrView      _filename;
+	String       _filename;
 	Int          _lineNumber = 1;
 	Int          _column     = 1;
 	StrView_<CH> _source;

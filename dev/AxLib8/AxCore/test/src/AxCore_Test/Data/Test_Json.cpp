@@ -9,14 +9,14 @@ class Test_Json : public UnitTestClass {
 public:
 	void test_case1() {
 		String json;
-		JsonWriter wr(json);
+		JsonWriter wr(json, "");
 		{
 			wr.writeObject([&]{
 				wr.writeMemberName("aa");
 				wr.writeValue("123");
 				wr.writeMember("bb", 456);
 
-				wr.writeArray("arr", [&] {
+				wr.writeMemberArray("arr", [&] {
 					for (int i = 0; i < 5; i++) {
 						wr.writeValue(i);
 					}
@@ -150,8 +150,8 @@ public:
 
 		template<class SE>
 		void onJsonIO(SE& se) {
-			se.named_io("i", i);
-			se.named_io("s", s);
+			se.member_io("i", i);
+			se.member_io("s", s);
 		}
 	};
 

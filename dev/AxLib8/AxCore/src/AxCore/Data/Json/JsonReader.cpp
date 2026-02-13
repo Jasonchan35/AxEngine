@@ -4,8 +4,8 @@ module AxCore.JsonReader;
 
 namespace ax {
 
-JsonReader::JsonReader(StrView json, StrView filenameForErrorMessage) {
-	readJson(json, filenameForErrorMessage);
+JsonReader::JsonReader(StrView json, StrView filename) {
+	readJson(json, filename);
 }
 
 void JsonReader::reset() {
@@ -13,9 +13,9 @@ void JsonReader::reset() {
 	_valueType = ValueType::Invalid;
 }
 
-void JsonReader::readJson(StrView json, StrView filenameForErrorMessage) {
+void JsonReader::readJson(StrView json, StrView filename) {
 	reset();
-	_source.init(json, filenameForErrorMessage);
+	_source.init(json, filename);
 	next();
 }
 
