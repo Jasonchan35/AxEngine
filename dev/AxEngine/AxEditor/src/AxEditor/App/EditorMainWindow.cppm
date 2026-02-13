@@ -35,7 +35,6 @@ protected:
 	InspectorUIPanel _inspectorUIPanel;
 	
 	SPtr<MyRenderGraph>	_renderGraph;
-	SceneWorld	_sceneWorld;
 
 	void _cameraDebugPanel(RenderRequest* req);
 	void _drawGizmo(RenderRequest* req);

@@ -23,6 +23,12 @@ Engine::~Engine() {
 
 void Engine::create(const CreateDesc& desc) {
 	_inEditor = desc.inEditor;
+	createWorld();
+}
+
+void Engine::createWorld() {
+	auto world = SceneWorld::s_new(AX_NEW);
+	setWorld(world);
 }
 
 } //namespace

@@ -39,8 +39,8 @@ public:
 	void onFileChanged(FileDirWatcher_Result& result);
 	void hotReloadFile(StrView filename);
 
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<  Sampler*>& list) {}
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D*>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler  >>& list) {}
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D>>& list) {}
 
 #if AX_RENDER_BINDLESS
 	struct Bindless {

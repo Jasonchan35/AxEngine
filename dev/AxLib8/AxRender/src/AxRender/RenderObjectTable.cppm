@@ -77,7 +77,7 @@ protected:
 	friend class RenderObjectManager_Backend;
 	Array<T*>                 _slots;
 	Array<RenderObjectSlotId> _freeSlots;
-	Array<T*>                 _dirtyObjects;
+	Array<SPtr<T>>            _dirtyObjects;
 	Dict<ResourceKey, T*>     _keyDict;
 	
 	using GpuData = typename T::GpuData;

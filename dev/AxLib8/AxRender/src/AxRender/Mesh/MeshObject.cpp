@@ -25,6 +25,9 @@ MeshObject::MeshObject(const CreateDesc& desc)
 {
 }
 
+MeshObject::~MeshObject() {
+}
+
 auto MeshObject_Meshlet::onGetGpuData(MeshObject* meshObj, RenderRequest* req) -> const GpuData* {
 	_gpuData.boundsMin = meshObj->_bounds.min;
 	_gpuData.boundsMax = meshObj->_bounds.max;

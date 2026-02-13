@@ -35,7 +35,7 @@ void EditorMainWindow::onWindowCloseButton() {
 }
 
 void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
-	auto& cam = _renderGraph->_viewportCamera;
+	auto& cam = _renderGraph->viewportCamera();
 	switch (ev.type) {
 		case UIMouseEventType::Move: {
 			if (ax_bit_has(ev.modifier, UIEventModifierKey::Atl)) {
@@ -78,7 +78,7 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 	_owner->_cameraDebugPanel(req);
 	_owner->_statisticsPanel(req);
 	_owner->_drawGizmo(req);
-	_owner->_sceneOutlinerUIPanel.render(req);
+	_owner->_sceneOutlinerUIPanel.render(Engine::s_instance()->world(), req);
 	_owner->_inspectorUIPanel.render(req);
 }
 
@@ -104,7 +104,7 @@ void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
 void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
 	ProjectionDesc projDesc = _renderGraph->projectionDesc();
 	
-	auto& cam = _renderGraph->_viewportCamera;
+	auto& cam = _renderGraph->viewportCamera();
 	ImUIPanel	panel("camera");
 	ImUIDragFloat("fieldOfView"   , &cam.fieldOfView, 0.1f, 5, 180);
 	ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
@@ -204,7 +204,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 
 	BBox3f bounds = BBox3f::s_empty();
 	if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
-		if (auto* mesh = meshRenderer->renderer.mesh.ptr()) {
+		if (auto* mesh = meshRenderer->mesh.ptr()) {
 			bounds = mesh->bounds();
 		}
 	}

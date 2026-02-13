@@ -104,8 +104,8 @@ void MemUtil::rawCopy(void* dst, const void* src, Int n) {
 	auto c = n / w;
 	auto r = n % w;
 	auto j = c * w;
-	_copyLoop( static_cast<Block*>(dst),  static_cast<const Block*>(src),  c);
-	_copyLoop( static_cast<Byte*>(dst)+j, static_cast<const Byte*>(src)+j, r);
+	_copyLoop( static_cast<Block*>(dst),   static_cast<const Block*>(src),  c);
+	_copyLoop( static_cast<Byte *>(dst)+j, static_cast<const Byte *>(src)+j, r);
 }
 
 template <class A, class B> AX_INLINE constexpr

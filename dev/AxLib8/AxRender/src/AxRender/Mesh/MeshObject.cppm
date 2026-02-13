@@ -33,6 +33,8 @@ public:
 	static SPtr<MeshObject>	s_new(const MemAllocRequest& req);
 	static SPtr<MeshObject>	s_new(const MemAllocRequest& req, const CreateDesc& desc);
 
+	~MeshObject() override;
+
 	RenderMesh			renderMesh;
 	MeshObject_Meshlet	meshlet;
 	
@@ -61,34 +63,6 @@ protected:
 public:
 	using ObjectSlot = RenderObjectSlot<This>; 
 	ObjectSlot      objectSlot;
-};
-
-class MeshObjectRenderer_CreateDesc {};
-
-class MeshObjectRenderer : public RttiObject {
-	AX_RTTI_INFO(MeshObjectRenderer, NoBaseClass)
-public:
-	using ResourceKey = TagNoInit_T;
-
-	SPtr<MeshObject>	mesh;
-	SPtr<Material>		material;
-
-	MeshObjectRenderer() : objectSlot(this) {}
-	
-	static constexpr Int s_gpuBufferMaxSize()  { return RenderObject::s_gpuBufferMaxSize(); }
-	static constexpr Int s_gpuBufferPageSize() { return RenderObject::s_gpuBufferPageSize(); }
-	static NameId s_gpuBufferName() { return AX_NAMEID("axGpuMeshObjectRenderer"); }
-	
-	using GpuData = AxGpuMeshObjectRenderer;
-	GpuData _gpuData = {};
-	const GpuData* onGetGpuData(RenderRequest* req) {
-		_gpuData.meshObjectId = mesh ? mesh->objectSlot.slotId() : 0;
-		return &_gpuData;
-	}
-	
-public:
-	using ObjectSlot = RenderObjectSlot<This>;
-	ObjectSlot objectSlot;
 };
 
 } // namespace

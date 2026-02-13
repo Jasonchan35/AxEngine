@@ -1,14 +1,14 @@
 ﻿module;
 
-#include "SceneEntity.gen.h"
+#include "SceneEntity-gen.h"
 
 export module AxEngine:SceneEntity;
 export import :Object;
 
 export namespace AxEngine {
 
-class SceneWorld;
 class SceneEntity;
+class SceneWorld;
 
 AX_CLASS()
 class SceneComponent : public Object {
@@ -17,33 +17,41 @@ public:
 	      SceneEntity* entity()       { return _entity; }
 	const SceneEntity* entity() const { return _entity; }
 
+	SceneWorld* world() const;
+
 protected:
 	friend class SceneEntity;
+	
+	void _init(SceneEntity* entity) { _entity = entity; onInit(); }
+	virtual void onInit() {}
+	
 	SceneEntity* _entity = nullptr;
+};
+
+class SceneEntity_CreateDesc {
+public:
+	SceneWorld*  world  = nullptr;
+	SceneEntity* parent = nullptr;
+	StrView name;
 };
 
 AX_CLASS()
 class SceneEntity : public Object {
 	AX_GENERATED_BODY()
 public:
-	struct CreateDesc {
-		CreateDesc(SceneEntity* parent_, StrView name_) 
-		: parent(parent_)
-		, name(name_) {}
-		
-		SceneEntity* parent = nullptr;
-		StrView name;
-	};
-	
+	using CreateDesc = SceneEntity_CreateDesc;
 	SceneEntity(const CreateDesc& desc);
 
-	static SPtr<SceneEntity> s_new(const MemAllocRequest& allocReq, SceneEntity* parent, StrView name);
+	static SPtr<SceneEntity> s_new(const MemAllocRequest& allocReq,
+	                               SceneWorld*            world,
+	                               SceneEntity*           parent,
+	                               StrView                name);
 
 	template<class COMP>
 	COMP* addComponent(const MemAllocRequest& allocReq) {
 		auto comp = SPtr_new<COMP>(allocReq);
 		_components.emplaceBack(comp);
-		comp->_entity = this;
+		comp->_init(this);
 		return comp;
 	}
 	
@@ -56,7 +64,7 @@ public:
 		return nullptr;
 	}
 	
-	SceneWorld* world() { return _world; }
+	SceneWorld* world() const { return _world; }
 	
 	Int childCount() const { return _children.size(); }
 	SceneEntity* childAt(Int index) { return _children[index].ptr(); }
@@ -88,13 +96,14 @@ public:
 	SceneEntity* parent()       { return _parent; }
 	const SceneEntity* parent() const { return _parent; }
 	
+	JsonValue metadata;
+	
 protected:
 	friend class SceneWorld;
-	SceneWorld* _world = nullptr;
 	
-private:
 	Array<SPtr<SceneComponent>> _components;
 	Array<SPtr<SceneEntity>> _children;
+	SceneWorld*  _world = nullptr;
 	SceneEntity* _parent = nullptr;
 	Mat4f _worldMatrix;
 	Mat4f _localMatrix;
@@ -106,12 +115,18 @@ AX_CLASS()
 class SceneWorld : public Object {
 	AX_GENERATED_BODY()
 public:
-	static SceneWorld* s_instance();
+	static SPtr<SceneWorld> s_new(const MemAllocRequest& allocReq);
+
+	SceneEntity* root() { return _root.ptr(); }
+	
+	MeshRendererSystem* meshRendererSystem() { return _meshRendererSystem.ptr(); }
+protected:
+	friend class SceneEntity;
 	
 	SceneWorld();
-	SceneEntity* root() { return _root.ptr(); }
-
-	UPtr<MeshRendererSystem> _meshRendererSystem;
+	SPtr<MeshRendererSystem> _meshRendererSystem;
+	
+	void _onAddEntity(SceneEntity* entity);
 	
 private:
 	SPtr<SceneEntity> _root;
@@ -121,10 +136,13 @@ AX_CLASS()
 class MeshRendererComponent : public SceneComponent {
 	AX_GENERATED_BODY()
 public:	
-	MeshRendererComponent();
+	virtual void onInit() override;
 	virtual ~MeshRendererComponent() override;
 
-	MeshObjectRenderer renderer;
+	SPtr<MeshObject> mesh;
+	SPtr<Material>   material;
+	
+private:
 	Int _systemSlotId = 0;
 };
 
@@ -132,13 +150,13 @@ AX_CLASS()
 class MeshRendererSystem : public Object {
 	AX_GENERATED_BODY()
 public:
-	static MeshRendererSystem* s_instance(bool createIfNone);
-	
 	void onRender(RenderRequest* req);
 	
 protected:
 	friend class MeshRendererComponent;
 	Array<MeshRendererComponent*> _componentList;
 };
+
+inline SceneWorld* SceneComponent::world() const { return _entity->world(); }; 
 
 } // namespace

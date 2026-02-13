@@ -90,8 +90,8 @@ public:
 	StructuredGpuBufferPool_<AxMeshShaderIndirectDrawArgs_Dx12> _meshShaderIndirectDrawArgsBufferPool;
 
 #if AX_RENDER_BINDLESS
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler*>& list) override;
-	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D*>& list) override;
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler  >>& list) override;
+	virtual void onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D>>& list) override;
 	
 	struct BindlessDescriptors : public NonCopyable {
 		Dx12DescriptorHandle	CBV_SRV_UAV;

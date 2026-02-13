@@ -9,21 +9,21 @@ namespace ax {
 
 template<class T, class T_BASE>
 struct RenderObjectManager_Dx12_onUpdateDescriptors {
-	static void run(RenderRequest_Backend* req_, Array<T_BASE*>& list) {
+	static void run(RenderRequest_Backend* req_, Array<SPtr<T_BASE>>& list) {
 		auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 		for (auto& obj_ : list) {
-			auto* obj = rttiCastCheck<T>(obj_);
+			auto* obj = rttiCastCheck<T>(obj_.ptr());
 			if (!obj) continue;
 			obj->_getUpdatedDescriptor(req);
 		}
 	}
 };
 
-void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Sampler*>& list) {
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Sampler>>& list) {
 	RenderObjectManager_Dx12_onUpdateDescriptors<Sampler_Dx12, Sampler>::run(req, list);
 }
 
-void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<Texture2D*>& list) {
+void RenderObjectManager_Dx12::onUpdateDescriptors(RenderRequest_Backend* req, Array<SPtr<Texture2D>>& list) {
 	RenderObjectManager_Dx12_onUpdateDescriptors<Texture2D_Dx12, Texture2D>::run(req, list);
 }
 

@@ -13,6 +13,7 @@ class AxAssimp_Importer : public NonCopyable {
 public:
 	Array<SPtr<MeshObject>> _meshes;
 	Array<UPtr<EditableMesh>> _editableMeshes;
+	SPtr<SceneWorld> _world;
 	
 	JsonValue _metadata;
 	Quat4f _constAxisRot;
@@ -41,7 +42,9 @@ public:
 	static Vec3d   toLengthVec3d(const Vec3f& v) { return Vec3d::s_cast(toLengthVec3f(v)); }
 		
 
-	void openFile(StrView filename) {
+	SPtr<SceneWorld> openFile(StrView filename) {
+		_world = SceneWorld::s_new(AX_NEW);
+		
 		_filename = filename;
 		Assimp::Importer importer;
 //		importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, 256); // mesh shader max 256 vertices
@@ -101,7 +104,9 @@ public:
 		
 		for (auto* srcChild : Span(scene->mRootNode->mChildren, scene->mRootNode->mNumChildren)) {
 			importNode(srcChild, nullptr);
-		}		
+		}
+		
+		return _world;
 	}
 	
 	static void importMetaData(JsonObject* jsonObj, const aiMetadata* srcData) {
@@ -337,11 +342,9 @@ public:
 	}
 
 	void importNode(const aiNode* srcNode, SceneEntity* parent) {
-		auto entity = SceneEntity::s_new(AX_NEW, parent, toStrView(srcNode->mName));
-		
-		JsonValue metadata;
-		importMetaData(metadata.setToObject(), srcNode->mMetaData);
-		AX_LOG("import node [{}] metadata: {}", entity->name(), metadata);
+		auto entity = SceneEntity::s_new(AX_NEW, _world, parent, toStrView(srcNode->mName));
+		importMetaData(entity->metadata.setToObject(), srcNode->mMetaData);
+//		AX_LOG("import node [{}] metadata: {}", entity->name(), entity->metadata);
 		
 		auto localMat = toMat4f(srcNode->mTransformation);
 		entity->setLocalMatrix(localMat);
@@ -358,8 +361,8 @@ public:
 		for (auto& srcMeshIndex : Span(srcNode->mMeshes, srcNode->mNumMeshes)) {
 			if (auto meshObj = _meshes.tryGetElement(srcMeshIndex)) {
 				auto* meshRenderer = entity->addComponent<MeshRendererComponent>(AX_NEW);
-				meshRenderer->renderer.mesh = *meshObj;
-				meshRenderer->renderer.material	= stockObjs->materials->Simple3D_Blinn_Color; 
+				meshRenderer->mesh = *meshObj;
+				meshRenderer->material	= stockObjs->materials->Simple3D_Blinn_Color; 
 			}
 		}
 
@@ -370,9 +373,9 @@ public:
 	}
 };
 
-void AxAssimp::openFile(StrView filename) {
+SPtr<SceneWorld> AxAssimp::openFile(StrView filename) {
 	AxAssimp_Importer importer;
-	importer.openFile(filename);
+	return importer.openFile(filename);
 }
 
 } // namespace

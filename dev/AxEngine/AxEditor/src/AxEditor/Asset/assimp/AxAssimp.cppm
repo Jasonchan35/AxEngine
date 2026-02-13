@@ -7,7 +7,7 @@ export namespace AxEditor {
 
 class AxAssimp : public NonCopyable {
 public:
-	void openFile(StrView filename);
+	SPtr<SceneWorld> openFile(StrView filename);
 };
 
 } // namespace

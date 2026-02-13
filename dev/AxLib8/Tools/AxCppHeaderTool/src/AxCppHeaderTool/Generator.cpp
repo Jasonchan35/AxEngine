@@ -32,12 +32,15 @@ void Generator::gen(CmdOptions& opt, StrView srcFilename) {
 		gen_type(srcFilename, type);
 	}
 
-	// auto basename = FilePath::basename(filename, true);
-	// TempString outFilename(opt.outPath, "/", basename, ".gen.h");
-	auto outHeaderFilename = FilePath::changeExtension(srcFilename, "gen.h");
+	auto basename = FilePath::basename(srcFilename, true);
+	auto outTest = Fmt("{}-gen.h", basename);
+	AX_LOG("-----------> outTest = {}", outTest);
+	
+	auto srcFilenameWithoutExt = FilePath::changeExtension(srcFilename, "");
+	auto outHeaderFilename = Fmt("{}-gen.h", srcFilenameWithoutExt);
 	File::writeFileIfChanged(outHeaderFilename, _outHeader, opt.writeFileOpt);
 	
-	auto outCppFilename = FilePath::changeExtension(srcFilename, "gen.cpp");
+	auto outCppFilename = Fmt("{}-gen.cpp", srcFilenameWithoutExt);
 	File::writeFileIfChanged(outCppFilename, _outCpp, opt.writeFileOpt);
 }
 

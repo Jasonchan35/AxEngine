@@ -5,10 +5,8 @@ import :SceneOutlinerUIPanel;
 
 namespace AxEditor {
 
-void SceneOutlinerUIPanel::render(RenderRequest* req) {
+void SceneOutlinerUIPanel::render(SceneWorld* world, RenderRequest* req) {
 	ImUIPanel	outliner("Scene Outliner");
-	
-	auto* world = SceneWorld::s_instance();
 	if (!world) return;
 	_addNode(world->root());
 }

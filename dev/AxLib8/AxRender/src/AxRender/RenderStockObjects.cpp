@@ -55,21 +55,26 @@ RenderStockObjects::Samplers::FilterSet::FilterSet(SamplerFilter filter) {
 
 RenderStockObjects::Meshes::Meshes() {
 	Axis = MeshObject::s_new(AX_NEW);
+	Axis->setName("StockObj-Axis");
 	RenderMeshEdit(Axis->renderMesh).createAxis(Vertex_PosColor::s_layout());
 
 	//----
 	auto layout = Vertex_PosColorUvNormal::s_layout();
 
 	Cube = MeshObject::s_new(AX_NEW);
+	Cube->setName("StockObj-Cube");
 	RenderMeshEdit(Cube->renderMesh).createCube(layout, Vec3f::s_zero(), Vec3f::s_one(), Color4f::kWhite());
 	
 	Sphere = MeshObject::s_new(AX_NEW);
+	Sphere->setName("StockObj-Sphere");
 	RenderMeshEdit(Sphere->renderMesh).createSphere(layout, 1, 32, 32);
 	
 	Cone = MeshObject::s_new(AX_NEW);
+	Cone->setName("StockObj-Cone");
 	RenderMeshEdit(Cone->renderMesh).createCone(layout, 1, 1, 2, 32, true);
 	
 	Cylinder = MeshObject::s_new(AX_NEW);
+	Cylinder->setName("StockObj-Cylinder");
 	RenderMeshEdit(Cylinder->renderMesh).createCylinder(layout, 1, 1, 2, 32, true, true);
 }
 

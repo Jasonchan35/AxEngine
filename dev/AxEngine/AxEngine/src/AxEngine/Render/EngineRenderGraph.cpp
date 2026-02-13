@@ -24,9 +24,8 @@ void EngineRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs)
 	Base::onBackBufferPass(req, inputs);
 	req->drawMesh(_grid, _matSimple3D_Unlit_Color, 0);
 	req->drawMesh(_axis->renderMesh, _matSimple3D_Unlit_Color, 0, Mat4f::s_translate(0, 0.01f, 0));
-	
-	if (auto* world = SceneWorld::s_instance()) {
-		if (auto* meshRenderer = world->_meshRendererSystem.ptr()) {
+	if (auto* world = Engine::s_instance()->world()) {
+		if (auto* meshRenderer = world->meshRendererSystem()) {
 			meshRenderer->onRender(req);
 		}
 	}
