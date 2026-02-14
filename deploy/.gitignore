@@ -1,8 +1,9 @@
+/**/McGuire
+
 /build_bin
 /ImportedAssets/Shaders
 
-/ImportedAssets/**/*.axWorld
-
+/**/*.axWorld
 
 /**/build.ninja
 /**/.ninja_log
