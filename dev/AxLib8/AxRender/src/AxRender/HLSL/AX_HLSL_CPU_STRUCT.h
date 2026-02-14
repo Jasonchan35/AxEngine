@@ -75,13 +75,10 @@ struct AxGpuMeshletCluster {
 
 struct AxGpuMeshletVert {
 	Vec3f   pos;
-	u32     rawColor;
-
-	Vec3f   normal;
-	u32     _padding;
-
-	Vec2f   uv0;
-	Vec2f   uv1;
+	u32     color_packed;
+	Vec2f   normal_octahedral;
+	u32     uv0_packed;
+	u32     uv1_packed;
 };
 
 struct AxGpuMeshletPrim {

@@ -247,7 +247,7 @@ public:
 		auto srcNormals  = Span(srcMesh->mNormals,  numVertices);
 		auto srcFaces    = Span(srcMesh->mFaces,    srcMesh->mNumFaces);
 		
-		Array<AxGpuMeshletVert> vertices;
+		Array<AxGpuMeshletVert_Unpacked> vertices;
 		vertices.ensureCapacity(numVertices);
 		for (Int i = 0; i < numVertices; ++i) {
 			auto& dst = vertices.emplaceBack();

@@ -9,6 +9,7 @@ namespace AxEditor {
 EditorMainWindow::EditorMainWindow() {
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
+//	_gpuDebugData.drawNormalLength = 0.25f;
 	
 	auto* renderSystem = RenderSystem::s_instance();
 	auto  title    = Fmt("AxEditor - {}{}, MT: {}, VSync: {}",
@@ -170,6 +171,15 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			};
 			auto list = Span(list_);
 			ImUICheckBoxArray("debugColorCode", _gpuDebugData.debugColorCode, list);
+			
+			if (_gpuDebugData.debugColorCode == AxGpuDebugColorCode_MeshletLod) {
+				ImUIText("LoD-0"); ImUISameLine(); ImUIColorButton("LoD-0", Color4f(1,0,0,1));
+				ImUIText("LoD-1"); ImUISameLine(); ImUIColorButton("LoD-1", Color4f(0,1,0,1));
+				ImUIText("LoD-2"); ImUISameLine(); ImUIColorButton("LoD-2", Color4f(1,1,0,1));
+				ImUIText("LoD-3"); ImUISameLine(); ImUIColorButton("LoD-3", Color4f(0,0,1,1));
+				ImUIText("LoD-4"); ImUISameLine(); ImUIColorButton("LoD-4", Color4f(1,0,1,1));
+				ImUIText("LoD-5"); ImUISameLine(); ImUIColorButton("LoD-5", Color4f(0,1,1,1));
+			}
 		}
 		
 		ImUIDragFloat("showAllLodDistance", &_gpuDebugData.showAllLodDistance, 0.1f, 0, 10);

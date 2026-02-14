@@ -12,6 +12,10 @@ namespace ax::ImUI {
 
 namespace ax {
 
+void ImUISeparator() {
+	ImGui::Separator();
+}
+
 void ImUISameLine() {
 	ImGui::SameLine();
 }
@@ -72,6 +76,11 @@ bool ImUIButton(ZStrView label, Vec2f size) {
 
 bool ImUIRadioButton(ZStrView label, bool active) {
 	return ::ImGui::RadioButton(label.c_str(), active);
+}
+
+bool ImUIColorButton(ZStrView label, const Color4f& color) {
+	auto c = ImVec4(color.r, color.g, color.b, color.a);
+	return ::ImGui::ColorButton(label.c_str(), c, ImGuiColorEditFlags_None);
 }
 
 bool ImUICheckBox(ZStrView label, bool& v) {

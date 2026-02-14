@@ -38,6 +38,8 @@ struct VS_Input {
 	SEM_pos(float4);
 	SEM_color0(float4);
 	SEM_normal(float3);
+	SEM_uv0(float2);
+	SEM_uv1(float2);
 };
 
 struct VS_Output {
@@ -46,6 +48,7 @@ struct VS_Output {
 	SEM_normal(float3);
 	SEM_worldPos(float3);
 	SEM_uv0(float2);
+	SEM_uv1(float2);
 };
 
 struct VS_PrimId_Out {
@@ -127,7 +130,7 @@ void axMeshlet_MeshMain(
 	SetMeshOutputCounts(cluster.vertCount, cluster.primCount);
 
 	if (gtid < cluster.primCount) {
-		outPrim[gtid] = axGpuMeshletPrim[cluster.primOffset + gtid].tri;
+		outPrim[gtid] = ax_unpack_tri_indices(axGpuMeshletPrim[cluster.primOffset + gtid].packedTriIndices);
 		outPrimId[gtid].primitiveId = gtid;
 	}
 
@@ -142,7 +145,9 @@ void axMeshlet_MeshMain(
 		}
 
 		i.color0 = float4(1,1,1,1);
-		i.normal = mv.normal;
+		i.normal = ax_unpack_normal_octahedral(mv.normal_octahedral);
+		i.uv0    = ax_unpack_uv_u32(mv.uv0_packed);
+		i.uv1    = ax_unpack_uv_u32(mv.uv1_packed);
 
 		switch (axDebug.debugColorCode) {
 			case AxGpuDebugColorCode_MeshletCluster:      i.color0 = ax_debug_color(clusterId             ); break;
@@ -156,7 +161,8 @@ void axMeshlet_MeshMain(
 		o.sv_pos   = axObjectToClipPos(i.pos);
 		o.normal   = axObjectToClipNormal(i.normal);
 		o.color0   = i.color0;
-
+		o.uv0      = i.uv0;
+		o.uv1      = i.uv1;
 		outVert[gtid] = o;
 	}
 }

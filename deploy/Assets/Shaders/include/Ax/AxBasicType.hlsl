@@ -234,10 +234,11 @@ float4 ax_u32_to_Color4f(uint packed) {
 	return float4(ri, gi, bi, ai) / 255.0;
 }
 
-float3 ax_unpack_normal_xy(float2 packedNormal) {
-    float2 xy = packedNormal * 2.0 - 1.0;
-    float z = sqrt(saturate(1.0 - dot(xy, xy)));
-    return float3(xy, z);
+float2 ax_unpack_uv_u32(u32 packed) {
+	const float kMax = 4.0f;
+	float x = (packed >> 16   ) / (65535.0 / kMax);
+	float y = (packed & 0xffff) / (65535.0 / kMax);
+	return float2(x,y);
 }
 
 uint ax_align_div_to(uint value, uint alignment) {
@@ -248,7 +249,47 @@ uint ax_align_to(uint value, uint alignment) {
 	return (value + (alignment - 1)) / alignment * alignment;
 }
 
+	
+u32x3 ax_unpack_tri_indices(u32 packed) {
+	return u32x3((packed >> 16) & 0xFF,
+				 (packed >> 8 ) & 0xFF,
+				 (packed      ) & 0xFF);
+}
+	
+u32 ax_pack_tri_indices(u32 v0, u32 v1, u32 v2) {
+	return (v0 << 16) | (v1 << 8) | v2;
+}
 
+float2 ax_sign_not_zero(float2 v) {
+	return float2(	v.x >= 0 ? 1 : -1,
+					v.y >= 0 ? 1 : -1);
+}
+
+float3 ax_unpack_normal_xy(float2 packedNormal) {
+    float2 xy = packedNormal * 2.0 - 1.0;
+    float z = sqrt(saturate(1.0 - dot(xy, xy)));
+    return float3(xy, z);
+}
+
+float2 ax_octahedral_wrap(float2 v) {
+    return (1.0 - abs(v.yx)) * ax_sign_not_zero(v.xy);
+}
+ 
+float2 ax_pack_normal_octahedral(float3 n) {
+    n /= (abs(n.x) + abs(n.y) + abs(n.z));
+    n.xy = n.z >= 0.0 ? n.xy : ax_octahedral_wrap(n.xy);
+    n.xy = n.xy * 0.5 + 0.5;
+    return n.xy;
+}
+ 
+float3 ax_unpack_normal_octahedral(float2 f) {
+    f = f * 2.0 - 1.0;
+    // https://twitter.com/Stubbesaurus/status/937994790553227264
+    float3 n = float3(f.x, f.y, 1.0 - abs(f.x) - abs(f.y));
+    float t = saturate(-n.z);
+    n.xy += ax_sign_not_zero(n.xy) * t;
+    return normalize(n);
+}
 
 
 #endif // __AxBasicType_HLSL__

@@ -75,7 +75,7 @@ template<class T> AX_NODISCARD AX_INLINE constexpr T	max_1	( const T& a )	{ retu
 
 //! x clamped to the range [a,b]
 template<class T> AX_NODISCARD AX_INLINE constexpr T	clamp	( const T& x, const T& a, const T& b )	{ return min(max(x, a), b); }
-template<class T> AX_NODISCARD AX_INLINE constexpr T	clamp_01( const T& x )							{ return clamp(x, zero_<T>(), one_<T>()); }
+template<class T> AX_NODISCARD AX_INLINE constexpr T	clamp01( const T& x )							{ return clamp(x, zero_<T>(), one_<T>()); }
 
 //--------------
 template<class T> AX_INLINE constexpr void min_itself		(T& x, const T& a ) { x = min<T>(x, a); }

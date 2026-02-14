@@ -173,6 +173,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); } 
 
+	AX_INLINE constexpr This abs() const { return _simd.abs(); }
+	
 	template<VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE constexpr bool almostEqual(const Vec_<N, T, R_SIMD>& vec, T epsilon = Math::epsilon_<T>) const { 
 		return _simd.almostEqual(vec._simd, epsilon); 
@@ -306,6 +308,7 @@ public:
 	AX_INLINE constexpr void operator/=(const T& t) { _simd /= t; }
 	
 	AX_INLINE constexpr T dot(const This& r) const { return _simd.dot(r); }
+	AX_INLINE constexpr This abs() const { return _simd.abs(); }
 	
 	AX_INLINE constexpr This rotateLeft90() const  { return This( y,-x); }
 	AX_INLINE constexpr This rotateRight90()const  { return This(-y, x); }
@@ -404,6 +407,7 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); }
 
 	AX_NODISCARD AX_INLINE constexpr Vec2 xy() const { return Vec2(x,y); }
+	AX_NODISCARD AX_INLINE constexpr Vec2 yx() const { return Vec2(y,x); }
 	
 	AX_NODISCARD AX_INLINE constexpr Vec4 xyz0() const { return Vec4(x,y,z,0); }
 	AX_NODISCARD AX_INLINE constexpr Vec4 xyz1() const { return Vec4(x,y,z,1); }
@@ -442,6 +446,7 @@ public:
 
 	AX_INLINE constexpr T dot(const This& v) const { return _simd.dot(v._simd); }
 	AX_INLINE constexpr This cross(const This& v) const { return This(y*v.z - z*v.y, z*v.x - x*v.z,x*v.y - y*v.x); }
+	AX_INLINE constexpr This abs() const { return _simd.abs(); }
 
 	AX_NODISCARD AX_INLINE	constexpr bool isParallel(const This& r) const { return cross(r).almostZero(); }
 
@@ -545,6 +550,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_zero() { return SimdData::s_zero(); } 
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); }
 
+	AX_INLINE constexpr This abs() const { return _simd.abs(); }
+	
 	AX_INLINE constexpr Vec3	xyz() const	{ return Vec3(x,y,z); }
 	AX_INLINE constexpr Vec3	xyz_div_w() const	{ return (*this / w).xyz(); } // de-homogenize
 	AX_INLINE constexpr Vec4	xyz0() const	{ return Vec4(x,y,z,0); }

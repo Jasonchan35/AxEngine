@@ -331,7 +331,7 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 				auto& newVi = outVertIndexDict.add(index);
 				auto& srcVert = vertices[index];
 				newVi = ax_safe_cast_from(outVertArray.size());
-				outVertArray.emplaceBack(srcVert);
+				outVertArray.emplaceBack(srcVert.pack());
 				
 				meshBounds.includePoint(srcVert.pos);
 				return newVi;

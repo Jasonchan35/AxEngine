@@ -100,7 +100,7 @@ void MeshObject_Meshlet::readFromFile(MeshObject* meshObj, StrView filename) {
 	primBuffer.readFromFile(fs);
 }
 
-void MeshObject::createMeshlet(Span<AxGpuMeshletVert> vertices, Span<u32> indices) {
+void MeshObject::createMeshlet(Span<AxGpuMeshletVert_Unpacked> vertices, Span<u32> indices) {
 	meshlet.createBuffers();
 	ClusterGenerator gen;
 	gen.nanite(*this, vertices, indices);

@@ -12,8 +12,7 @@ export namespace ax {
 class ClusterGenerator {
 public:
 	using Box = BBox3f;
-
-	using Vertex = AxGpuMeshletVert;
+	using Vertex = AxGpuMeshletVert_Unpacked;
 
 	struct Mesh
 	{

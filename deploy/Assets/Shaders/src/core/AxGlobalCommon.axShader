@@ -43,8 +43,8 @@ float dummy_func() {
 		+ axGpuMeshletGroup[0].clusterOffset
 		+ axGpuMeshletCluster[0].vertOffset
 		+ axGpuMeshletVert[0].pos.x
-		+ axGpuMeshletPrim[0].tri.x
-		
+		+ axGpuMeshletPrim[0].packedTriIndices
+
 		+ axGpuMeshObjectRenderer[0].worldMatrix[0][0]
 		+ axWorld.deltaTime
 		+ axCamera.viewMatrix[0][0]

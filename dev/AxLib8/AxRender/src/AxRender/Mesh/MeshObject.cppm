@@ -2,6 +2,7 @@ module;
 
 export module AxRender:MeshObject;
 export import :RenderMesh;
+export import :RenderMath;
 export import :Material;
 
 export namespace ax {
@@ -25,6 +26,24 @@ public:
 	GpuData _gpuData = {};
 };
 
+struct AxGpuMeshletVert_Unpacked {
+	Vec3f   pos;
+	Color4b color;
+	Vec3f   normal;
+	Vec2f   uv0;
+	Vec2f   uv1;
+	
+	AxGpuMeshletVert pack() const {
+		AxGpuMeshletVert o;
+		o.pos               = pos;
+		o.color_packed      = ax_pack_color_u32(color);
+		o.normal_octahedral = ax_pack_normal_octahedral(normal);
+		o.uv0_packed        = ax_pack_uv_u32(uv0);
+		o.uv1_packed        = ax_pack_uv_u32(uv1);
+		return o;
+	}
+};
+
 class MeshObject : public RenderObject {
 	AX_RTTI_INFO(MeshObject, RenderObject)
 public:
@@ -38,7 +57,7 @@ public:
 	RenderMesh			renderMesh;
 	MeshObject_Meshlet	meshlet;
 	
-	void createMeshlet(Span<AxGpuMeshletVert> vertices, Span<u32> indices);
+	void createMeshlet(Span<AxGpuMeshletVert_Unpacked> vertices, Span<u32> indices);
 	void writeMeshletToFile(StrView filename) { meshlet.writeToFile(this, filename); }
 	void readMeshletFromFile(StrView filename) { meshlet.readFromFile(this, filename); }
 

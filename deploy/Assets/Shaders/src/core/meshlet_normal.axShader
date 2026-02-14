@@ -34,7 +34,7 @@ void ms_main(
 	SetMeshOutputCounts(cluster.primCount * 2, cluster.primCount);
 
 	if (gtid < cluster.primCount) {
-		u32x3 tri = axGpuMeshletPrim[cluster.primOffset + gtid].tri;
+		u32x3 tri = ax_unpack_tri_indices(axGpuMeshletPrim[cluster.primOffset + gtid].packedTriIndices);
 		
 		u32 vi = gtid * 2;
 
@@ -46,7 +46,7 @@ void ms_main(
 
 		AxGpuMeshletVert mv = axGpuMeshletVert[cluster.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos + ax_debug_lod_offset(cluster.lod), 1);
-		i.normal = mv.normal;
+		i.normal = ax_unpack_normal_octahedral(mv.normal_octahedral);
 		i.color0 = float4(1,1,1,1);
 
 		VS_Output o;

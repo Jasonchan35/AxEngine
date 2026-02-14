@@ -119,6 +119,10 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static Vec s_zero() { return VecSimd_Data_(TagZero); }
 	AX_NODISCARD AX_INLINE constexpr static Vec s_one () { return s_all(1); }
 
+	AX_NODISCARD AX_INLINE Vec abs() const {
+		return unroll([](T t){ return Math::abs(t); });
+	}
+	
 	template<VecSimd R_SIMD>
 	AX_NODISCARD AX_INLINE bool almostEqual(VecSimd_Data_<N, T, R_SIMD> vec, T epsilon) const {
 		for (Int i = 0; i < N; ++i) {

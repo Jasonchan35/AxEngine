@@ -43,6 +43,7 @@ enum class ImUIGizmoOperation {
 };
 enum class ImUIGizmoSpace { Local, World };
 
+void ImUISeparator();
 void ImUISameLine();
 void ImUINewLine();
 
@@ -58,6 +59,8 @@ void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);
 
 bool ImUIButton(ZStrView label, Vec2f size);
 bool ImUIRadioButton(ZStrView label, bool active);
+
+bool ImUIColorButton(ZStrView label, const Color4f& color);
 
 bool ImUICheckBox(ZStrView label, bool& b);
 
