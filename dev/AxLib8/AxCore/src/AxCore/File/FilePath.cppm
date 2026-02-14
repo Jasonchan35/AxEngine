@@ -57,9 +57,9 @@ struct FilePath {
 	// e.g. changeExtension( "a.txt", ".doc" );
 	AX_NODISCARD	static	constexpr FilePathString	changeExtension	(StrView path, StrView ext);
 
-	AX_NODISCARD	static	constexpr StrView 			dirname_sv	(StrView path);
-	AX_NODISCARD	static	constexpr StrView 			basename_sv	(StrView path, bool withExtension);
-	AX_NODISCARD	static	constexpr StrView 			extension_sv(StrView path);
+	AX_NODISCARD	static	constexpr StrView 			dirname_sv	(StrView path AX_LIFETIME_BOUND);
+	AX_NODISCARD	static	constexpr StrView 			basename_sv	(StrView path AX_LIFETIME_BOUND, bool withExtension);
+	AX_NODISCARD	static	constexpr StrView 			extension_sv(StrView path AX_LIFETIME_BOUND);
 	
 	AX_NODISCARD	static	constexpr FilePathString	dirname		(StrView path)						{ return dirname_sv(path); }
 	AX_NODISCARD	static	constexpr FilePathString	basename	(StrView path, bool withExtension)	{ return basename_sv(path, withExtension); }
@@ -143,12 +143,12 @@ constexpr FilePath::SplitResult FilePath::split(StrView path) {
 	return o;
 }
 
-constexpr StrView FilePath::dirname_sv(StrView path) {
+constexpr StrView FilePath::dirname_sv(StrView path AX_LIFETIME_BOUND) {
 	auto s = path.splitByCharBack_(isPathSeparator);
 	return s.second ? s.first : StrView();
 }
 
-constexpr StrView FilePath::basename_sv(StrView path, bool withExtension) {
+constexpr StrView FilePath::basename_sv(StrView path AX_LIFETIME_BOUND, bool withExtension) {
 	auto s = path.splitByCharBack_(isPathSeparator);
 	auto f = s.second ? s.second : s.first;
 	if (withExtension) {
@@ -159,7 +159,7 @@ constexpr StrView FilePath::basename_sv(StrView path, bool withExtension) {
 	}
 }
 
-constexpr StrView FilePath::extension_sv(StrView path) {
+constexpr StrView FilePath::extension_sv(StrView path AX_LIFETIME_BOUND) {
 	//	remove dir first to avoid corner case like: "/aaa/bbb/ccc.here/eee"
 	//	while should return "" instead or "here/eee"
 	auto s = path.splitByCharBack_(isPathSeparator);

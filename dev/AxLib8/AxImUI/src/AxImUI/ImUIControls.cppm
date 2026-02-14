@@ -85,7 +85,7 @@ bool ImUIDragFloat(
 		float v_min = f32_min,
 		float v_max = f32_max);
 
-template<class T> requires !std::is_same_v<T, f32> 
+template<class T> requires(!std::is_same_v<T, f32>) 
 inline bool ImUIDragFloat(ZStrView label, T* v, float v_speed, T v_min, T v_max) {
 	f32 tmpV   = ax_safe_cast_from(*v);
 	f32 tmpMin = ax_safe_cast_from(v_min);
@@ -106,7 +106,7 @@ bool ImUIDragInt(
 		i32 v_min = i32_min,
 		i32 v_max = i32_max);
 
-template<class T> requires !std::is_same_v<T, i32> 
+template<class T> requires(!std::is_same_v<T, i32>) 
 inline bool ImUIDragInt(ZStrView label, T* v, float v_speed, T v_min, T v_max) {
 	int tmpV   = ax_safe_cast_from(*v);
 	int tmpMin = ax_safe_cast_from(v_min);

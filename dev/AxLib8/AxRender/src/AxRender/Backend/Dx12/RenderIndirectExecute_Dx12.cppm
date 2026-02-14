@@ -6,7 +6,7 @@ export import :Shader_Backend;
 namespace ax {
 
 class RenderIndirectExecute_Backend : public RenderObject {
-	AX_RTTI_INFO(RenderIndirectExecute_Backend, RenderObject);
+	AX_RTTI_INFO(RenderIndirectExecute_Backend, RenderObject)
 public:
 	using BindPoint = ShaderParamBindPoint;
 	using BindCount = ShaderParamBindCount;

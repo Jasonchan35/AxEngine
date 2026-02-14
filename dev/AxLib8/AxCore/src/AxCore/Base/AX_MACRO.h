@@ -21,6 +21,12 @@
 #define AX_FILE		__FILE__
 #define AX_LINE		static_cast<::ax::Int>(__LINE__)
 
+#if AX_COMPILER_CLANG
+	#define AX_LIFETIME_BOUND	[[clang::lifetimebound]]
+#else
+	#define AX_LIFETIME_BOUND
+#endif
+
 #if AX_COMPILER_GCC | AX_COMPILER_CLANG
 	#define AX_GCC_PRAGMA(x)						_Pragma(#x)
 	#define AX_GCC_WARNING_PUSH()					AX_GCC_PRAGMA(GCC diagnostic push)

@@ -193,7 +193,6 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	auto* entity = rttiCast<SceneEntity>(obj.ptr());
 	if (!entity) return;
 
-	Mat4f deltaMatrix = Mat4f::s_identity();
 	Mat4f worldMatrix = entity->worldMatrix();
 
 	{

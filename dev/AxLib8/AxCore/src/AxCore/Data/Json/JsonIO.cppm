@@ -13,10 +13,10 @@ struct JsonIO  {
 	JsonIO() = delete;
 	
 	template<class T> static void readFile			(StrView filename, T& obj);
-	template<class T> static void readJson			(StrView  json, T& obj, StrView filenameForErrorMessage = StrView());
+	template<class T> static void readJson			(StrView  json, T& obj, StrView filename = StrView());
 
 	template<class T> static void writeFile			(StrView filename, T& obj, const File_WriteOpt& opt = {});
-	template<class T> static void writeJson			(IString& json, T& obj);
+	template<class T> static void writeJson			(IString& json, T& obj, StrView filename = StrView());
 
 	template<class T> static void writeFileIfChanged(StrView filename, T& obj, const File_WriteOpt& opt = {});
 };
@@ -46,14 +46,14 @@ void JsonIO::writeFileIfChanged(StrView filename, T& obj, const File_WriteOpt& o
 }
 
 template<class T> inline
-void JsonIO::writeJson(IString& outJson, T& obj) {
-	JsonIO_Writer wr(outJson);
+void JsonIO::writeJson(IString& outJson, T& obj, StrView filename) {
+	JsonIO_Writer wr(outJson, filename);
 	wr.io(obj);
 }
 
 template<class T> inline
-void JsonIO::readJson(StrView json, T& obj, StrView filenameForErrorMessage) {
-	JsonIO_Reader rd(json, filenameForErrorMessage);
+void JsonIO::readJson(StrView json, T& obj, StrView filename) {
+	JsonIO_Reader rd(json, filename);
 	rd.io(obj);
 }
 
