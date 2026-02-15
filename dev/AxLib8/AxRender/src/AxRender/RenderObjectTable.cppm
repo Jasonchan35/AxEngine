@@ -28,7 +28,7 @@ public:
 	
 	void _internalResetDirty() { _dirty = false; }
 protected:
-	friend class Table;
+	friend class RenderObjectTable<T>;
 	RenderObjectSlotId _slotId = RenderObjectSlotId_None;
 	bool _dirty = false;
 private:

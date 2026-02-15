@@ -34,7 +34,6 @@ void Generator::gen(CmdOptions& opt, StrView srcFilename) {
 
 	auto basename = FilePath::basename(srcFilename, true);
 	auto outTest = Fmt("{}-gen.h", basename);
-	AX_LOG("-----------> outTest = {}", outTest);
 	
 	auto srcFilenameWithoutExt = FilePath::changeExtension(srcFilename, "");
 	auto outHeaderFilename = Fmt("{}-gen.h", srcFilenameWithoutExt);
