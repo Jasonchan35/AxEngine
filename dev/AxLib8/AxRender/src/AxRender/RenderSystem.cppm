@@ -119,9 +119,11 @@ protected:
 
 	RenderSystemInfo		_info;
 
+#if AX_RENDER_DEBUG_LAYER
 	bool _enableDebugReport : 1;
 	bool _enableDebugUtils  : 1;
 	bool _enableDebugMarker : 1;
+#endif
 };
 
 

@@ -19,4 +19,6 @@
 #define AxGpuDebugColorCode_MeshletRefinedGroup 4
 #define AxGpuDebugColorCode_MeshletLod          5
 
+#define AX_HLSL_MAX_ACTIVE_LIGHTS 32
+
 #endif // __AX_HLSL_CPU_COMMON_h__

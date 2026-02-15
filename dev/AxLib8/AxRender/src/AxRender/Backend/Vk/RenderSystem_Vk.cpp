@@ -101,9 +101,11 @@ void RenderSystem_Vk::_createVkInstance() {
 	info.logInfo();
 
 	// extensions
+#if AX_RENDER_DEBUG_LAYER
 	_enableDebugReport = info.tryEnableExtension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 	_enableDebugUtils  = info.tryEnableExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	_enableDebugMarker = info.tryEnableExtension(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
+#endif
 	
 //---- surface
 	info.enableExtension(VK_KHR_SURFACE_EXTENSION_NAME);

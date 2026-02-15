@@ -164,6 +164,8 @@ void SceneWorld::onJsonIO(JsonIO_Writer& se) {
 
 SceneWorld::SceneWorld() {
 	_root.ref(SceneEntity::s_new(AX_NEW, this, nullptr, "root"));
+	auto* mgr = RenderObjectManager::s_instance();
+	_tileLightingBuffer.create(AX_NEW, "axGpuData_TileLighting", mgr->_structBufferPools.axGpuData_TileLighting);
 }
 
 void SceneWorld::_onAddEntity(SceneEntity* entity) {
@@ -218,18 +220,27 @@ void LightComponent::onInit() {
 	world->_lightComponents.add(this);
 }
 
-void LightComponent::onRender(RenderRequest* req) {
-	if (!_lightObj) return;
-	_lightObj->setWorldPos(entity()->worldPosition());
-} 
-
 void SceneWorld::onRender(RenderRequest* req) {
 	req->drawWorld(); // indirect draw
 	
-	for (auto* comp : _lightComponents) {
-		if (!comp) continue;
-		comp->onRender(req);
-	}
+	auto tileLigthingSpan = _tileLightingBuffer.editData(0, 1);
+	AxGpuData_TileLighting& tileLigthing = tileLigthingSpan[0];
+	AX_UNUSED(tileLigthing);
+	
+//	for (auto* comp : _lightComponents) {
+//		if (!comp) continue;
+//		auto* light = comp->_lightObj.ptr();
+//		if (!light) return;
+//		light->setWorldPos(comp->entity()->worldPosition());
+
+//		if (tileLigthing.lightCount >= AX_HLSL_MAX_ACTIVE_LIGHTS) {
+//			break; // TODO select most important light
+//		}
+//		
+//		tileLigthing.lights[tileLigthing.lightCount] = light->objectSlot.slotId();
+//		tileLigthing.lightCount++;
+//	}
+//	_tileLightingBuffer.uploadAndGetOffset(req);
 	
 	for (auto* comp : _meshRendererComponents) {
 		if (!comp) continue;

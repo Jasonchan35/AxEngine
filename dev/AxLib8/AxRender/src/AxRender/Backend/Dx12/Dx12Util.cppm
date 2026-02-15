@@ -21,9 +21,9 @@ using AX_ID3D12Resource            = ID3D12Resource2;
 using AX_ID3D12GraphicsCommandList = ID3D12GraphicsCommandList6;
 using AX_ID3D12CommandAllocator    = ID3D12CommandAllocator;
 
-#if _DEBUG
-using AX_IDXGIDebug  = IDXGIDebug1;
-using AX_ID3D12Debug = ID3D12Debug6;
+#if AX_RENDER_DEBUG_LAYER
+	using AX_IDXGIDebug  = IDXGIDebug1;
+	using AX_ID3D12Debug = ID3D12Debug6;
 #endif
 
 struct Dx12Util {

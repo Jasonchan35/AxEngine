@@ -30,7 +30,7 @@ void RenderSystem_Dx12::_createDevice() {
 	HRESULT hr;
 	UINT dxgiFactoryFlags = 0;
 
-#if defined(_DEBUG)
+#if AX_RENDER_DEBUG_LAYER
 	hr = DXGIGetDebugInterface1(0, IID_PPV_ARGS(_dxgiDebug.ptrForInit()));
 	Dx12Util::throwIfError(hr);
 

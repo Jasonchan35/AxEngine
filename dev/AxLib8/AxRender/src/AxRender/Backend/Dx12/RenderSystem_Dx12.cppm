@@ -22,7 +22,7 @@ public:
 	AX_IDXGIFactory*		dxgiFactory	()	{ return _dxgiFactory; }
 	D3D12MA::Allocator*		d3dAllocator() { return _d3dAllocator; }
 
-#if _DEBUG
+#if AX_RENDER_DEBUG_LAYER
 	AX_IDXGIDebug*		dxgiDebug	()	{ return _dxgiDebug; }
 #endif
 
@@ -38,13 +38,13 @@ private:
 	void _getHardwareAdapter();
 
 	D3D_FEATURE_LEVEL			_d3dFeatureLevel = static_cast<D3D_FEATURE_LEVEL>(0);
-	ComPtr<AX_IDXGIFactory>	_dxgiFactory;
-	ComPtr<AX_ID3D12Device>	_d3dDevice;
-	ComPtr<AX_IDXGIAdapter>	_dxgiAdapter;
+	ComPtr<AX_IDXGIFactory>		_dxgiFactory;
+	ComPtr<AX_ID3D12Device>		_d3dDevice;
+	ComPtr<AX_IDXGIAdapter>		_dxgiAdapter;
 
-#if _DEBUG
+#if AX_RENDER_DEBUG_LAYER
 	ComPtr<AX_IDXGIDebug>		_dxgiDebug;
-	ComPtr<AX_ID3D12Debug>	_d3dDebug;
+	ComPtr<AX_ID3D12Debug>		_d3dDebug;
 #endif
 	
 	ComPtr<D3D12MA::Allocator>	_d3dAllocator;

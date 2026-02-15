@@ -6,6 +6,7 @@ export import :Material_Backend;
 export import :GpuBuffer_Backend;
 export import :RenderObjectTable;
 export import :MeshObject;
+export import :RenderObjectManager;
 
 export namespace ax /*::AxRender*/ {
 
@@ -19,13 +20,13 @@ class RenderObjectManager_CreateDesc {
 public:
 };
 
-class RenderObjectManager_Backend : public RenderObject {
-	AX_RTTI_INFO(RenderObjectManager_Backend, RenderObject)
+class RenderObjectManager_Backend : public RenderObjectManager {
+	AX_RTTI_INFO(RenderObjectManager_Backend, RenderObjectManager)
 public:
+	AX_DOWNCAST_GET_INSTANCE();
 	using CreateDesc = RenderObjectManager_CreateDesc;
 	RenderObjectManager_Backend(const CreateDesc& desc);
 
-	static RenderObjectManager_Backend* s_instance();
 	static void s_create(const MemAllocRequest& req);
 	static void s_destroy();
 
@@ -70,21 +71,6 @@ public:
 		}		
 	} _bufferPools;
 
-	struct StructBufferPools {
-		StructuredGpuBufferPool_<AxGpuData_MeshletGroup>	axGpuData_MeshletGroup;
-		StructuredGpuBufferPool_<AxGpuData_MeshletCluster>	axGpuData_MeshletCluster;
-		StructuredGpuBufferPool_<AxGpuData_MeshletVert>		axGpuData_MeshletVert;
-		StructuredGpuBufferPool_<AxGpuData_MeshletPrim>		axGpuData_MeshletPrim;
-
-		template<class FUNC>
-		void visitPools(FUNC func) {
-			func(axGpuData_MeshletGroup);
-			func(axGpuData_MeshletCluster);
-			func(axGpuData_MeshletVert);
-			func(axGpuData_MeshletPrim);
-		}		
-	} _structBufferPools;
-	
 	Material_Backend* globalCommonMaterial() { return _globalCommonMaterial.ptr(); }
 	Material_Backend* indirectDrawMaterial() { return _indirectDrawMaterial.ptr(); }
 	

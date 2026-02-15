@@ -67,7 +67,7 @@ GpuBuffer_Dx12::GpuBuffer_Dx12(const CreateDesc& desc): Base(desc) {
 	} else {
 		_resourceWithoutPool.create(_type, _size, false);
 		_resourceWithoutPool.setName(desc.name);
-		_size = _resourceWithoutPool.bufferSize(); // size may change casued by alignment
+		_size = _resourceWithoutPool.bufferSize(); // size may change caused by alignment
 		_d3dResource.ref(_resourceWithoutPool.d3dResource());
 		_gpuAddress = _resourceWithoutPool.gpuAddress();
 	}

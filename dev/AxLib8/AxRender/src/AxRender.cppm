@@ -8,3 +8,4 @@ export import :RenderRequest;
 export import :DemoRenderGraph;
 export import :RenderMeshEdit;
 export import :LightObject;
+export import :RenderObjectManager;

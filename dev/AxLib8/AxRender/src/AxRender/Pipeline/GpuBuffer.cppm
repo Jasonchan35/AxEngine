@@ -356,12 +356,12 @@ public:
 	}
 	
 	Span<T>    readData() const						{ return readData(0, count()); }
-	Span<T>    readData(Int offset, Int size) const	{ return _buffer->readData<T>(offset, size); }
-	MutSpan<T> editData(Int offset, Int size)		{ return _buffer->editData<T>(offset, size); }
+	Span<T>    readData(Int offset, Int size) const	{ AX_ASSERT(_buffer); return _buffer->readData<T>(offset, size); }
+	MutSpan<T> editData(Int offset, Int size)		{ AX_ASSERT(_buffer); return _buffer->editData<T>(offset, size); }
 	MutSpan<T> extendsData(Int size)				{ return editData(_buffer->count(), size); }
 	
-	void setValue(Int index, const T& v)			{ return _buffer->setValue(index, Span(v)); }
-	void setValues(Int index, Span<T> span)			{ return _buffer->setValues(index, span); }
+	void setValue(Int index, const T& v)			{ AX_ASSERT(_buffer); return _buffer->setValue(index, Span(v)); }
+	void setValues(Int index, Span<T> span)			{ AX_ASSERT(_buffer); return _buffer->setValues(index, span); }
 	
 	void appendValues(Span<T> span) { extendsData(span.size()).copyValues(span); }
 

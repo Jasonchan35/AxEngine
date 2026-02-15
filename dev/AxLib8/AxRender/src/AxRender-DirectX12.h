@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "AxRender-Common.h"
+
 #if AX_RENDER_DX12
 
 #define D3D12MA_USING_DIRECTX_HEADERS 1
@@ -15,7 +17,7 @@
 
 	#include <dxgi1_6.h>
 
-	#if _DEBUG
+	#if AX_RENDER_DEBUG_LAYER
 		#include <dxgidebug.h>
 	#endif
 

@@ -97,8 +97,15 @@ endfunction()
 function(ax_set_warning_level target_name)
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		# message("ax_set_warning_level MSVC")
-		# target_compile_options(${target_name} PRIVATE /Bt)	 	# show Build Timing
 
+ 		# DynamicDebugging
+		if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+			target_link_options(${target_name} PRIVATE /dynamicdeopt)
+			target_link_options(${target_name} PRIVATE /INCREMENTAL:NO)
+		endif()		
+
+
+		# target_compile_options(${target_name} PRIVATE /Bt)	 	# show Build Timing
 		target_compile_options(${target_name} PRIVATE /utf-8) 	# execution_character_set - otherwise std::format wouldn't check format in compile time for "char"
 		target_compile_options(${target_name} PRIVATE /WX)    	#warning treated as error
 		target_compile_options(${target_name} PRIVATE /W4)   	#warning level 4

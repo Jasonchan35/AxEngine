@@ -5,7 +5,7 @@
 
 
 //--- Type AxEngine::SceneComponent ----------
-#define AX_GENERATED_BODY_LINE63() \
+#define AX_GENERATED_BODY_LINE60() \
 	AX_RTTI_INFO(SceneComponent, Object) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -16,7 +16,7 @@ private:\
 
 
 //--- Type AxEngine::SceneEntity ----------
-#define AX_GENERATED_BODY_LINE93() \
+#define AX_GENERATED_BODY_LINE90() \
 	AX_RTTI_INFO(SceneEntity, Object) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -27,7 +27,7 @@ private:\
 
 
 //--- Type AxEngine::MeshRendererComponent ----------
-#define AX_GENERATED_BODY_LINE188() \
+#define AX_GENERATED_BODY_LINE185() \
 	AX_RTTI_INFO(MeshRendererComponent, SceneComponent) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -38,7 +38,7 @@ private:\
 
 
 //--- Type AxEngine::LightComponent ----------
-#define AX_GENERATED_BODY_LINE211() \
+#define AX_GENERATED_BODY_LINE208() \
 	AX_RTTI_INFO(LightComponent, SceneComponent) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -49,7 +49,7 @@ private:\
 
 
 //--- Type AxEngine::SceneWorld ----------
-#define AX_GENERATED_BODY_LINE226() \
+#define AX_GENERATED_BODY_LINE223() \
 	AX_RTTI_INFO(SceneWorld, Object) \
 public:\
 	struct MutRttiInit : public MutRtti { \

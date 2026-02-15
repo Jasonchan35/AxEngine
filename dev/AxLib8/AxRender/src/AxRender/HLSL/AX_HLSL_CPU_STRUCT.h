@@ -14,11 +14,19 @@ struct AxGpuData_Debug {
 struct AxGpuData_World {
 	Vec4f	timeSin;
 	Vec4f	timeSlowSin;
+	
 	float	time;
 	float	deltaTime;
-	
-	u32		activeLightOffset;
-	u32		activeLightCount;
+	u32		_padding0;
+	u32		_padding1;
+};
+
+struct AxGpuData_TileLighting {
+	u32 camera;
+	u32 _padding0;
+	u32 _padding1;
+	u32 lightCount;
+	u32 lights[AX_HLSL_MAX_ACTIVE_LIGHTS];
 };
 
 struct AxGpuData_LightObject {

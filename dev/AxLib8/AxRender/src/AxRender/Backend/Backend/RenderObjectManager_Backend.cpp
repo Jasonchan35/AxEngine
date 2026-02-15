@@ -5,23 +5,23 @@ import :RenderSystem_Backend;
 
 namespace ax /*::AxRender*/ {
 
-static UPtr<RenderObjectManager_Backend> RenderObjectManager_Backend_instance;
+static UPtr<RenderObjectManager_Backend> RenderObjectManager_instance;
 
-RenderObjectManager_Backend* RenderObjectManager_Backend::s_instance() {
-	return RenderObjectManager_Backend_instance;
+RenderObjectManager* RenderObjectManager::s_instance() {
+	return RenderObjectManager_instance;
 }
 
 void RenderObjectManager_Backend::s_create(const MemAllocRequest& req) {
-	AX_ASSERT(RenderObjectManager_Backend_instance == nullptr);
+	AX_ASSERT(RenderObjectManager_instance == nullptr);
 	RenderObjectManager_CreateDesc desc;
 	auto p = RenderSystem_Backend::s_instance()->newRenderObjectManager(req, desc);
-	RenderObjectManager_Backend_instance = std::move(p);
-	RenderObjectManager_Backend_instance->_postCreate();
+	RenderObjectManager_instance = std::move(p);
+	RenderObjectManager_instance->_postCreate();
 }
 
 void RenderObjectManager_Backend::s_destroy() {
-	AX_ASSERT(RenderObjectManager_Backend_instance);
-	RenderObjectManager_Backend_instance.unref();
+	AX_ASSERT(RenderObjectManager_instance);
+	RenderObjectManager_instance.unref();
 }
 
 RenderObjectManager_Backend::RenderObjectManager_Backend(const CreateDesc& desc) {
@@ -120,6 +120,7 @@ void RenderObjectManager_Backend::_postCreate() {
 	createPoolParam(_structBufferPools.axGpuData_MeshletVert   , "axGpuData_MeshletVert"   , 3 * Math::GigaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axGpuData_MeshletPrim   , "axGpuData_MeshletPrim"   , 2 * Math::GigaBytes, 4 * Math::MegaBytes);
 
+	createPoolParam(_structBufferPools.axGpuData_TileLighting  , "axGpuData_TileLighting"  ,   16 * Math::MegaBytes,  4 * Math::MegaBytes);
 	
 #if AX_RENDER_BINDLESS
 	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();

@@ -13,5 +13,9 @@
 
 #define AX_RENDER_BINDLESS		1
 
+#if AX_BUILD_CONFIG_Debug || AX_BUILD_CONFIG_RelWithDebInfo
+	#define AX_RENDER_DEBUG_LAYER	1
+#endif
+
 #include "AxRender/AxRender_MACRO.h"
 #include "AxRender/HLSL/AX_HLSL_CPU_MACRO.h"

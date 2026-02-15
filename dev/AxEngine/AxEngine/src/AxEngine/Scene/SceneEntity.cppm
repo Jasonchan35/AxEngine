@@ -52,9 +52,6 @@ private:
 	Array<Int>	_freeSlots;
 };
 
-
-
-
 class SceneEntity;
 class SceneWorld;
 
@@ -213,10 +210,10 @@ public:
 	~LightComponent();
 
 	virtual void onInit() override;
-	void         onRender(RenderRequest* req);
 	
 	ObjectTableSlot<This> _slot;
-private:
+protected:
+	friend SceneWorld;
 	SPtr<LightObject> _lightObj;
 };
 
@@ -251,6 +248,8 @@ protected:
 	
 	ObjectTable<LightComponent, &LightComponent::_slot> _lightComponents;
 	ObjectTable<MeshRendererComponent, &MeshRendererComponent::_slot> _meshRendererComponents;
+	
+	StructuredGpuBuffer_<AxGpuData_TileLighting>   _tileLightingBuffer;
 
 	SPtr<SceneEntity> _root;
 };
