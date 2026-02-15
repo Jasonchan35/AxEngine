@@ -7,6 +7,8 @@ import :EditorApp;
 namespace AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
+	_gizmoOp = ImUIGizmoOperation::Translate;
+	
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
 //	_gpuDebugData.drawNormalLength = 0.25f;
@@ -64,13 +66,13 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 	if (ev.type == UIKeyEventType::Down) {
 		using Op = ImUIGizmoOperation;
 		switch (ev.key) {
-			case UIKeyCode::Q: _opMode = Op::None;      break;
-			case UIKeyCode::W: _opMode = Op::Translate; break;
-			case UIKeyCode::E: _opMode = Op::Rotate;    break;
+			case UIKeyCode::Q: _gizmoOp = Op::None;      break;
+			case UIKeyCode::W: _gizmoOp = Op::Translate; break;
+			case UIKeyCode::E: _gizmoOp = Op::Rotate;    break;
 			case UIKeyCode::R: {
-				_opMode = _opMode == Op::Scale ? Op::Bounds : Op::Scale;
+				_gizmoOp = _gizmoOp == Op::Scale ? Op::Bounds : Op::Scale;
 			} break;
-			case UIKeyCode::T: _opMode = Op::Universal; break;
+			case UIKeyCode::T: _gizmoOp = Op::Universal; break;
 		}
 	}
 }
@@ -148,13 +150,13 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		ImUIDragFloat("mouseSpeed", &_mouseSpeed, 0.1f, 0.1f, 50.0f);
 		
 		{
-			if (ImUIRadioButton("Local", _opSpace == ImUIGizmoSpace::Local)) {
-				_opSpace = ImUIGizmoSpace::Local;
+			if (ImUIRadioButton("Local", _gizmoSpace == ImUIGizmoSpace::Local)) {
+				_gizmoSpace = ImUIGizmoSpace::Local;
 			}
 			
 			ImUISameLine();
-			if (ImUIRadioButton("World", _opSpace == ImUIGizmoSpace::World)) {
-				_opSpace = ImUIGizmoSpace::World;
+			if (ImUIRadioButton("World", _gizmoSpace == ImUIGizmoSpace::World)) {
+				_gizmoSpace = ImUIGizmoSpace::World;
 			}
 		}
 		
@@ -206,7 +208,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	}
 	
 	Vec3f* snap = nullptr;
-	switch (_opMode) {
+	switch (_gizmoOp) {
 		case ImUIGizmoOperation::Translate: if (_enableTranslateSnap) { snap = &_translateSnap; } break;
 		case ImUIGizmoOperation::Rotate   : if (_enableRotateSnap   ) { snap = &_rotateSnap;    } break;
 		case ImUIGizmoOperation::Scale    : if (_enableScaleSnap    ) { snap = &_scaleSnap;     } break;
@@ -221,7 +223,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	}
 	
 	
-	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _opMode, _opSpace, snap, bounds, worldMatrix)) {
+	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {
 	#if 1
 		entity->setWorldMatrix(worldMatrix);
 	#else
@@ -237,7 +239,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		
 		rotation = rotation.normalize();
 		
-		switch (_opMode) {
+		switch (_gizmoOp) {
 			case ImUIGizmoOperation::Translate: entity->position = Vec3f::s_cast(position);  break;
 			case ImUIGizmoOperation::Rotate   : entity->rotation = Quat4f::s_cast(rotation); break;
 			case ImUIGizmoOperation::Bounds: AX_FALLTHROUGH

@@ -7,3 +7,4 @@ export import :RenderContext;
 export import :RenderRequest;
 export import :DemoRenderGraph;
 export import :RenderMeshEdit;
+export import :LightObject;

@@ -200,7 +200,9 @@ public:
 
 	const MaterialPass_Backend* materialPass() const { return _materialPass; };
 
-	ConstBufferParam* constBuffer_globals() { return _constBuffer_globals; }
+	ConstBufferParam* constBuffer_globalVariables() { return _constBuffer_globalVariables; }
+	
+	ConstBufferParam* constBuffer_world  () { return _constBuffer_world  ; }
 	ConstBufferParam* constBuffer_camera () { return _constBuffer_camera ; }
 	ConstBufferParam* constBuffer_debug  () { return _constBuffer_debug  ; }
 	
@@ -209,7 +211,8 @@ protected:
 	MaterialPass_Backend* _materialPass = nullptr;
 	SPtr<const ShaderParamSpace_Backend> _shaderParamSpace;
 	
-	ConstBufferParam* _constBuffer_globals = nullptr;
+	ConstBufferParam* _constBuffer_globalVariables = nullptr;
+	ConstBufferParam* _constBuffer_world   = nullptr;
 	ConstBufferParam* _constBuffer_camera  = nullptr;
 	ConstBufferParam* _constBuffer_debug   = nullptr;
 

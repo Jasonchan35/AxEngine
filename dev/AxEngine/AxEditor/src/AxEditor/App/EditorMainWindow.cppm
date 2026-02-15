@@ -51,8 +51,8 @@ protected:
 	bool _enableRotateSnap = false;
 	bool _enableScaleSnap = false;
 	
-	ImUIGizmoOperation	_opMode  = ImUIGizmoOperation::Universal;
-	ImUIGizmoSpace		_opSpace = ImUIGizmoSpace::Local;
+	ImUIGizmoOperation	_gizmoOp    = ImUIGizmoOperation::None;
+	ImUIGizmoSpace		_gizmoSpace = ImUIGizmoSpace::Local;
 	bool _gizmoIsUsing = false;
 	Mat4f _gizmoStartWorldMatrix;
 	

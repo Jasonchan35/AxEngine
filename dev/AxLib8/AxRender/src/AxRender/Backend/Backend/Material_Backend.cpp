@@ -45,10 +45,11 @@ MaterialParamSpace_Backend::MaterialParamSpace_Backend(const CreateDesc& desc)
 	MaterialParamSpace_Backend_cloneParams(_structuredBufferParams  , _shaderParamSpace->_structuredBufferParams);
 	MaterialParamSpace_Backend_cloneParams(_samplerParams           , _shaderParamSpace->_samplerParams         );
 	MaterialParamSpace_Backend_cloneParams(_textureParams           , _shaderParamSpace->_textureParams         );
-	
-	_constBuffer_globals = findConstBufferParam(AX_NAMEID("$Globals"));
-	_constBuffer_camera  = findConstBufferParam(AX_NAMEID("axCamera"));
-	_constBuffer_debug   = findConstBufferParam(AX_NAMEID("axDebug"));
+
+	_constBuffer_globalVariables = findConstBufferParam(AX_NAMEID("$Globals"));
+	_constBuffer_world           = findConstBufferParam(AX_NAMEID("axWorld"));
+	_constBuffer_camera          = findConstBufferParam(AX_NAMEID("axCamera"));
+	_constBuffer_debug           = findConstBufferParam(AX_NAMEID("axDebug"));
 }
 
 void MaterialParamSpace_Backend::ConstBufferParam::create(const ShaderParamSpace_Backend::ConstBufferParam& shaderParam) {

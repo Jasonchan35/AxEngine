@@ -7,7 +7,8 @@ import :MeshObject;
 namespace ax /*::AxRender*/ {
 
 RenderRequest::RenderRequest() 
-: _cameraData({})
+: _worldData({})
+, _cameraData({})
 , _debugData({}) 
 {}
 

@@ -108,9 +108,10 @@ protected:
 	RenderObjectManager_Backend* _objectManager        = nullptr;
 	Material_Backend*            _globalCommonMaterial       = nullptr;
 	MaterialPass_Backend*        _globalCommonMaterialPass   = nullptr;
+	MaterialParamSpace_Backend*  _globalCommonMaterialWorldParamSpace = nullptr;
 
 private:
-	void _updateGlobalCommonMaterial();
+	void _updateWorldData();
 	
 	Int _index = 0;
 	SPtr<RenderPass_Backend>	_backBufferRenderPass;

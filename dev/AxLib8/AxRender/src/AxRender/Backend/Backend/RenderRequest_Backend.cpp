@@ -38,29 +38,12 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 	_inlineUpload.reset();
 }
 
-void RenderRequest_Backend::_updateGlobalCommonMaterial() {
-	using namespace Math;
-	_globalCommonMaterial     = Material_Backend::s_globalCommonMaterial();
-	_globalCommonMaterialPass = _globalCommonMaterial->getPass(0);
-	resourcesToKeep.add(_globalCommonMaterial);
-	
-	f32 t = static_cast<f32>(_uptime);
-	Vec4f timeSin		(sin(t),   sin(t*4), sin(t*9), sin(t*16));
-	Vec4f timeSlowSin   (sin(t/2), sin(t/4), sin(t/9), sin(t/16));
-
-	auto setParam = [&](BindSpace space, NameId name, auto& value) {
-		if (!_globalCommonMaterial->setParam(space, name, value)) {
-			_globalCommonMaterial->logWarningOnce(Fmt("Material: failure to setParam({}, {})", space, name));
-		}
-	};
-
-	setParam(BindSpace::World, AX_NAMEID("ax_g_time"       ), t);
-	setParam(BindSpace::World, AX_NAMEID("ax_g_timeSin"    ), timeSin);
-	setParam(BindSpace::World, AX_NAMEID("ax_g_timeSlowSin"), timeSlowSin);
-}
-
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
 	//	AX_LOG("---- FrameBegin {} -----", _renderSeqId);
+	_globalCommonMaterial                = Material_Backend::s_globalCommonMaterial();
+	_globalCommonMaterialPass            = _globalCommonMaterial->getPass(0);
+	_globalCommonMaterialWorldParamSpace = _globalCommonMaterialPass->getOwnParamSpace(BindSpace::World);
+	resourcesToKeep.add(_globalCommonMaterial);
 
 	// TODO: move to frame update, to enable draw ui in update loop as well
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
@@ -83,12 +66,30 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 }
 
 void RenderRequest_Backend::frameEnd() {
-	_updateGlobalCommonMaterial();
+	_updateWorldData();
 	renderContext_backend()->imgui.onEndRender();
 	RenderObjectManager_Backend::s_instance()->onFrameEnd(this);
 	onFrameEnd();
 //	AX_LOG("---- FrameEnd {} -----", _renderSeqId);
 }
+
+void RenderRequest_Backend::_updateWorldData() {
+	using namespace Math;
+	
+	f32 t = static_cast<f32>(_uptime);
+	_worldData.timeSin     = Vec4f(sin(t),   sin(t*4), sin(t*9), sin(t*16));
+	_worldData.timeSlowSin = Vec4f(sin(t/2), sin(t/4), sin(t/9), sin(t/16));
+	_worldData.time = t;
+	// _worldData.deltaTime = _deltaTime;
+	
+	auto* cb = _globalCommonMaterialWorldParamSpace->constBuffer_world();
+	if (!cb) { AX_ASSERT(false); return; }
+
+	cb->setData(_worldData);
+	// force update to GPU
+	cb->getUploadedGpuBuffer(this);
+}
+
 
 void RenderRequest_Backend::renderPassBegin(RenderPass_Backend* pass) {
 	_currentRenderPass = pass;
@@ -241,8 +242,8 @@ void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
 	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
 	
 	AxMeshShaderDraw_RootConst rootConst;
-	rootConst.worldMatrix        = draw.objectToWorld;
-	rootConst.meshObjectId       = ax_safe_cast_from(meshObject->objectSlot.slotId());
+	rootConst.worldMatrix  = draw.objectToWorld;
+	rootConst.meshObjectId = ax_safe_cast_from(meshObject->objectSlot.slotId());
 	matPass->onBindMaterial(this, draw, &rootConst);
 	
 	if (!matPass->isMeshShader()) throw Error_Undefined("expect mesh shader to draw mesh object");

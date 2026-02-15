@@ -118,6 +118,15 @@ void EditorApp::_testLoadFbx() {
 		world->writeToFile(cacheFolder);
 	}
 	_engine.setWorld(world);
+	
+	{
+		for (Int i = 0; i < 4; ++i) {
+			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Light_{}", i));
+			entity->setPosition(Vec3f(static_cast<f32>(i) * 2.0f, 2, -2));
+			entity->addComponent<LightComponent>(AX_NEW);
+		}
+	}
+	
 }
 
 } //namespace

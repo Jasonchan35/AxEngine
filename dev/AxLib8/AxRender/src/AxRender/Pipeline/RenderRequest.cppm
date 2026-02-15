@@ -80,6 +80,8 @@ public:
 
 	RenderStockObjects* stockObjects() const { return _stockObjects; }
 	
+	const AxGpuData_World& world() { return _worldData; }
+	
 	void setCamera(const Math::Camera3f& camera);
 	const AxGpuData_Camera&	cameraData() const { return _cameraData; }
 
@@ -101,6 +103,7 @@ protected:
 	Rect2f              _scissorRect{0, 0, 0, 0};
 	Rect2f              _viewportRect{0, 0, 0, 0};
 
+	AxGpuData_World  _worldData;
 	AxGpuData_Camera _cameraData;
 	AxGpuData_Debug  _debugData;
 };

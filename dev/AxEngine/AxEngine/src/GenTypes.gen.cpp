@@ -8,8 +8,8 @@ void registerTypes() {
 	AX_UNUSED(mgr);
 	mgr->addType<AxEngine::SceneComponent                >();
 	mgr->addType<AxEngine::SceneEntity                   >();
-	mgr->addType<AxEngine::SceneWorld                    >();
 	mgr->addType<AxEngine::MeshRendererComponent         >();
-	mgr->addType<AxEngine::MeshRendererSystem            >();
+	mgr->addType<AxEngine::LightComponent                >();
+	mgr->addType<AxEngine::SceneWorld                    >();
 }
 

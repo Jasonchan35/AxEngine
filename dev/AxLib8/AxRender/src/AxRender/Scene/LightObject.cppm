@@ -4,7 +4,7 @@ export module AxRender:LightObject;
 export import :RenderDataType;
 export import :RenderObjectTable;
 
-export namespace ax::AxRender {
+export namespace ax {
 
 class LightObject : public RenderObject {
 	AX_RTTI_INFO(LightObject, RenderObject)
@@ -18,6 +18,8 @@ public:
 	using GpuData = AxGpuData_LightObject;
 	const GpuData* onGetGpuData(RenderRequest* req) { return &_gpuData; }
 	
+	void setWorldPos(const Vec3f& v);
+
 protected:
 	LightObject() : objectSlot(this) {}
 	GpuData    _gpuData = {};
@@ -26,5 +28,11 @@ public:
 	using ObjectSlot = RenderObjectSlot<This>;
 	ObjectSlot objectSlot;
 };
+
+void LightObject::setWorldPos(const Vec3f& v) {
+	if (_gpuData.worldPos == v) return;
+	_gpuData.worldPos = v; 
+	objectSlot.markDirty();
+}
 
 } // namespace

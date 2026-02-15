@@ -12,10 +12,13 @@ struct AxGpuData_Debug {
 };
 
 struct AxGpuData_World {
-	float	time;
-	float	deltaTime;
 	Vec4f	timeSin;
 	Vec4f	timeSlowSin;
+	float	time;
+	float	deltaTime;
+	
+	u32		activeLightOffset;
+	u32		activeLightCount;
 };
 
 struct AxGpuData_LightObject {

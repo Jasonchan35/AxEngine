@@ -14,15 +14,15 @@ AxEngine::SceneEntity::MutRttiInit::MutRttiInit() {
 	name = NameId::s_make("SceneEntity");
 }; 
 
-AxEngine::SceneWorld::MutRttiInit::MutRttiInit() {
-	name = NameId::s_make("SceneWorld");
-}; 
-
 AxEngine::MeshRendererComponent::MutRttiInit::MutRttiInit() {
 	name = NameId::s_make("MeshRendererComponent");
 }; 
 
-AxEngine::MeshRendererSystem::MutRttiInit::MutRttiInit() {
-	name = NameId::s_make("MeshRendererSystem");
+AxEngine::LightComponent::MutRttiInit::MutRttiInit() {
+	name = NameId::s_make("LightComponent");
+}; 
+
+AxEngine::SceneWorld::MutRttiInit::MutRttiInit() {
+	name = NameId::s_make("SceneWorld");
 }; 
 

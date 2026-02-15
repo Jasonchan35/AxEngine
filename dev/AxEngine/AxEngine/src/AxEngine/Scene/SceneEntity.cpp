@@ -20,7 +20,7 @@ SceneEntity::SceneEntity(const CreateDesc& desc)
 			throw Error_Undefined("missing world and parant in SceneEntity_CreateDesc");
 		}
 		
-		_world = _parent->world();
+		_world = _parent->getWorld();
 	}
 
 	_world->_onAddEntity(this);
@@ -163,7 +163,6 @@ void SceneWorld::onJsonIO(JsonIO_Writer& se) {
 }
 
 SceneWorld::SceneWorld() {
-	_meshRendererSystem = SPtr_new<MeshRendererSystem>(AX_NEW);
 	_root.ref(SceneEntity::s_new(AX_NEW, this, nullptr, "root"));
 }
 
@@ -174,18 +173,13 @@ void SceneWorld::_onAddEntity(SceneEntity* entity) {
 }
 
 void MeshRendererComponent::onInit() {
-	auto* sys = world()->meshRendererSystem();
-	_systemSlotId = sys->_componentList.size();
-	sys->_componentList.emplaceBack(this);
+	auto* world = getWorld();
+	world->_meshRendererComponents.add(this);
 }
 
 MeshRendererComponent::~MeshRendererComponent() {
-	if (auto* sys = world()->meshRendererSystem()) {
-		auto& slot = sys->_componentList[_systemSlotId];
-		AX_ASSERT(slot == this);
-		sys->_componentList.eraseAt_Unordered(_systemSlotId);
-		slot->_systemSlotId = _systemSlotId;
-	}
+	auto* world = getWorld();
+	world->_meshRendererComponents.remove(this);
 }
 
 template<class SE> inline
@@ -197,7 +191,7 @@ void MeshRendererComponent::onJsonIO(JsonIO_Reader& se) {
 	_onJsonIO(se);
 	NameId meshName;
 	if (se.member_io("mesh", meshName)) {
-		for (auto& p : world()->_meshObjects) {
+		for (auto& p : getWorld()->_meshObjects) {
 			if (p && p->name() == meshName) {
 				this->mesh = p;
 				this->material = RenderStockObjects::s_instance()->materials->meshlet; // TODO
@@ -214,13 +208,33 @@ void MeshRendererComponent::onJsonIO(JsonIO_Writer& se) {
 	}
 }
 
-void MeshRendererSystem::onRender(RenderRequest* req) {
+LightComponent::~LightComponent() {
+	auto* world = getWorld();
+	world->_lightComponents.remove(this);
+}
+
+void LightComponent::onInit() {
+	auto* world = getWorld();
+	world->_lightComponents.add(this);
+}
+
+void LightComponent::onRender(RenderRequest* req) {
+	if (!_lightObj) return;
+	_lightObj->setWorldPos(entity()->worldPosition());
+} 
+
+void SceneWorld::onRender(RenderRequest* req) {
 	req->drawWorld(); // indirect draw
 	
-	for (auto* comp : _componentList) {
+	for (auto* comp : _lightComponents) {
 		if (!comp) continue;
-		auto& objectToWorld = comp->entity()->worldMatrix();
-		req->drawMesh(comp->mesh, comp->material, 0, objectToWorld);
+		comp->onRender(req);
+	}
+	
+	for (auto* comp : _meshRendererComponents) {
+		if (!comp) continue;
+		auto& worldMatrix = comp->entity()->worldMatrix();
+		req->drawMesh(comp->mesh, comp->material, 0, worldMatrix);
 	}
 }
 
@@ -246,7 +260,7 @@ void SceneEntity::setLocalMatrix(const Mat4f& mat) {
 	markLocalMatrixDirty();
 }
 
-const Mat4f& SceneEntity::localMatrix() {
+const Mat4f& SceneEntity::localMatrix() const {
 	if (_localMatrixDirty) {
 		_localMatrixDirty = false;
 		_localMatrix.setTRS(_position, _rotation, _scale);
@@ -262,7 +276,7 @@ void SceneEntity::setWorldMatrix(const Mat4f& mat) {
 	}
 }
 
-const Mat4f& SceneEntity::worldMatrix() {
+const Mat4f& SceneEntity::worldMatrix() const {
 	if (_worldMatrixDirty) {
 		_worldMatrixDirty = false;
 		_worldMatrix = _parent ? _parent->worldMatrix() * localMatrix() : localMatrix();
