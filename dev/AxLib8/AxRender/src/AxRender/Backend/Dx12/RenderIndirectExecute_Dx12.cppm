@@ -14,7 +14,7 @@ public:
 };
 
 struct AxMeshShaderIndirectDrawArgs_Dx12 {
-	AxMeshShaderDrawRootConst 	rootConst;
+	AxMeshShaderDraw_RootConst 	rootConst;
 	D3D12_DISPATCH_ARGUMENTS	args;
 	
 	void setGroupCount(UINT x, UINT y, UINT z) {

@@ -3,17 +3,16 @@
 
 #include "AxMeshlet.hlsl"
 
-ConstantBuffer<AxRenderGpuData_World > axWorld  : register(b100, AX_BindSpace_World);
-ConstantBuffer<AxRenderGpuData_Camera> axCamera : register(b101, AX_BindSpace_World);
-ConstantBuffer<AxRenderGpuData_Debug > axDebug  : register(b102, AX_BindSpace_World);
+ConstantBuffer<AxGpuData_World > axWorld  : register(b100, AX_BindSpace_World);
+ConstantBuffer<AxGpuData_Camera> axCamera : register(b101, AX_BindSpace_World);
+ConstantBuffer<AxGpuData_Debug > axDebug  : register(b102, AX_BindSpace_World);
 
-StructuredBuffer<AxRenderGpuData_Light > axLights  : register(t100, AX_BindSpace_World);
-StructuredBuffer<AxRenderGpuData_Object> axObjects : register(t101, AX_BindSpace_World);
+StructuredBuffer<AxGpuData_LightObject > axGpuData_LightObject  : register(t100, AX_BindSpace_World);
 
 Vec3f ax_debug_lod_offset(uint lod) { return Vec3f(lod * axDebug.showAllLodDistance, 0, 0); }
 
 Color3f axLight_Blinn(
-	AxRenderGpuData_Light light,
+	AxGpuData_LightObject light,
 	Vec3f worldPos, Vec3f worldNormal,
 	Color3f ambient,
 	Color3f diffuse,

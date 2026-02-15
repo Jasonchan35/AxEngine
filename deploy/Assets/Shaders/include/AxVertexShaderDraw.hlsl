@@ -3,8 +3,8 @@
 
 #include "Ax/AxWorld.hlsl"
 
-AX_ROOT_CONST_STRUCT(AxVertexShaderDrawRootConst, axVertexShaderDrawRootConst) 
-#define AX_MATRIX_M			axVertexShaderDrawRootConst.worldMatrix
+AX_ROOT_CONST_STRUCT(AxVertexShaderDraw_RootConst, axVertexShaderDraw_RootConst) 
+#define AX_MATRIX_M			axVertexShaderDraw_RootConst.worldMatrix
 #define AX_MATRIX_VP		axCamera.viewProjMatrix
 
 Vec3f axObjectToWorldPos(Vec4f inPos) { return mul(AX_MATRIX_M,  inPos).xyz; }

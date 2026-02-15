@@ -3,7 +3,7 @@
 
 // HLSL alignment is 16
 
-struct AxRenderGpuData_Debug {
+struct AxGpuData_Debug {
 	float drawNormalLength;
 	i32   debugColorCode; // AxGpuDebugColorCode_None
 	float showAllLodDistance;
@@ -11,25 +11,19 @@ struct AxRenderGpuData_Debug {
 	float _padding1;
 };
 
-struct AxRenderGpuData_World {
+struct AxGpuData_World {
 	float	time;
 	float	deltaTime;
 	Vec4f	timeSin;
 	Vec4f	timeSlowSin;
 };
 
-struct AxRenderGpuData_Light {
+struct AxGpuData_LightObject {
 	Color3f	color;
 	Vec3f   worldPos;
 };
 
-struct AxRenderGpuData_Object {
-	Mat4f	worldMatrix;
-	Vec2f	aabbMin;
-	Vec2f	aabbMax;
-};
-
-struct AxRenderGpuData_Camera {
+struct AxGpuData_Camera {
 	Vec3f	worldPos;
 	float   fieldOfView; // vertical
 
@@ -49,11 +43,11 @@ struct AxRenderGpuData_Camera {
 	Mat4f	viewProjMatrixInv;
 };
 
-struct AxVertexShaderDrawRootConst {
+struct AxVertexShaderDraw_RootConst {
 	Mat4f worldMatrix;
 };
 
-struct AxMeshShaderDrawRootConst {
+struct AxMeshShaderDraw_RootConst {
 	Mat4f worldMatrix;
 	u32   meshObjectId;
 	u32   meshRendererId;
@@ -61,7 +55,7 @@ struct AxMeshShaderDrawRootConst {
 	u32   _padding1;
 };
 
-struct AxGpuMeshletCluster {
+struct AxGpuData_MeshletCluster {
 	u32 vertOffset;
 	u32 vertCount;
 	u32 primOffset;
@@ -73,7 +67,7 @@ struct AxGpuMeshletCluster {
 	u32 lod;  // debug
 };
 
-struct AxGpuMeshletVert {
+struct AxGpuData_MeshletVert {
 	Vec3f   pos;
 	u32     color_packed;
 	Vec2f   normal_octahedral;
@@ -81,11 +75,11 @@ struct AxGpuMeshletVert {
 	u32     uv1_packed;
 };
 
-struct AxGpuMeshletPrim {
+struct AxGpuData_MeshletPrim {
 	u32 	packedTriIndices;
 };
 
-struct AxGpuMeshletGroup {
+struct AxGpuData_MeshletGroup {
 	u32   clusterOffset;
 	u32   clusterCount;
 	float clusterError;
@@ -94,7 +88,7 @@ struct AxGpuMeshletGroup {
 	u32   meshObjectId; // debug
 };
 
-struct AxGpuMeshObject {
+struct AxGpuData_MeshObject {
 	Vec3f boundsMin;
 	u32   vertOffset;
 	Vec3f boundsMax;
@@ -106,7 +100,7 @@ struct AxGpuMeshObject {
 	u32   meshletClusterCount;
 };
 
-struct AxGpuMeshObjectRenderer {
+struct AxGpuData_MeshObjectRenderer {
 	Mat4f worldMatrix;
 	u32   meshObjectId;
 	u32   materialId;

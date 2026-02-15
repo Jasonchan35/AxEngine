@@ -317,8 +317,8 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 		{
 			const clodCluster& cluster = clusters[i];
 
-			Array<AxGpuMeshletVert> outVertArray;
-			Array<AxGpuMeshletPrim> outPrimArray;
+			Array<AxGpuData_MeshletVert> outVertArray;
+			Array<AxGpuData_MeshletPrim> outPrimArray;
 			
 			Dict<u32, u32> outVertIndexDict;
 			
@@ -347,7 +347,7 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 																getLocalVertIndex(srcIndices[2]));
 			}
 
-			AxGpuMeshletCluster outCluster;
+			AxGpuData_MeshletCluster outCluster;
 			outCluster.meshObjectId   = outMesh.objectSlot.slotId();
 			outCluster.groupId        = ax_safe_cast_from(groups.size());
 			outCluster.refinedGroupId = cluster.refined;
@@ -387,7 +387,7 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 		level.indices.push_back(std::vector<unsigned int>()); // mark end of group for measureBoundary
 
 		{
-			AxGpuMeshletGroup dst = {};
+			AxGpuData_MeshletGroup dst = {};
 			dst.center = Vec3f(group.simplified.center[0], group.simplified.center[1], group.simplified.center[2]);
 			dst.clusterError = group.simplified.error;
 			dst.radius       = group.simplified.radius;

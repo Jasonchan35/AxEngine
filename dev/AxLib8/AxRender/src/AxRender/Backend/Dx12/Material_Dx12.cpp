@@ -125,7 +125,7 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 	return _perFrameData;
 }
 
-bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) {
+bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& draw, AxVertexShaderDraw_RootConst* rootConst) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 
 	auto* shdPass = shaderPass_dx12();
@@ -138,7 +138,7 @@ bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& 
 	return _onBindMaterial(req, rootConstData);
 }
 
-bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) {
+bool MaterialPass_Dx12::onBindMaterial(RenderRequest* req_, AxMeshShaderDraw  & draw, AxMeshShaderDraw_RootConst  * rootConst) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 
 	auto* shdPass = shaderPass_dx12();

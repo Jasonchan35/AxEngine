@@ -97,7 +97,7 @@ public:
 	void setScissorRect_backend(const Rect2f& rect);
 
 	void setCamera_backend(const Math::Camera3f& camera);
-	void setDebugData_backend(const AxRenderGpuData_Debug& debugData);
+	void setDebugData_backend(const AxGpuData_Debug& debugData);
 	
 	MaterialPass_Backend*	globalCommonMaterialPass()	{ return _globalCommonMaterialPass; };
 

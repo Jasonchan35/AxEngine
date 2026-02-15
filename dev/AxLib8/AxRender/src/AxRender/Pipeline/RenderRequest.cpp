@@ -80,7 +80,7 @@ void RenderRequest::setCamera(const Math::Camera3f& camera) {
 	static_cast<RenderRequest_Backend*>(this)->setCamera_backend(camera);
 }
 
-void RenderRequest::setDebugData(const AxRenderGpuData_Debug& debugData) {
+void RenderRequest::setDebugData(const AxGpuData_Debug& debugData) {
 	static_cast<RenderRequest_Backend*>(this)->setDebugData_backend(debugData);
 }
 

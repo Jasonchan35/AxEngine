@@ -286,8 +286,8 @@ public:
 	const ShaderPass_Backend*	shaderPass() const { return _shaderPass; }
 	const Shader_Backend*		shader() const;
 
-	virtual bool onBindMaterial(RenderRequest* req, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) = 0;
-	virtual bool onBindMaterial(RenderRequest* req, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) = 0;
+	virtual bool onBindMaterial(RenderRequest* req, AxVertexShaderDraw& draw, AxVertexShaderDraw_RootConst* rootConst) = 0;
+	virtual bool onBindMaterial(RenderRequest* req, AxMeshShaderDraw  & draw, AxMeshShaderDraw_RootConst  * rootConst) = 0;
 
 	bool isOwnParamSpace(BindSpace s) const { return _shaderPass->isOwnParamSpace(s); }
 	bool isMeshShader() const { return _shaderPass->isMeshShader(); }

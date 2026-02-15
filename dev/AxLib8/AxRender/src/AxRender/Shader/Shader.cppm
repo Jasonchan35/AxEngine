@@ -280,7 +280,7 @@ public:
 	using CreateDesc = Shader_CreateDesc;
 	using ResourceKey = String;
 
-	const ResourceKey& resourceKey() const { return _assetPath; }
+	const ResourceKey* resourceKey() const { return _assetPath ? &_assetPath : nullptr; }
 
 	Shader(const CreateDesc& desc);
 

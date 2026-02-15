@@ -37,7 +37,7 @@ struct D3D12_DRAW_INDEXED_ARGUMENTS {
 
 struct Dx12_IndirectDrawArgument {
 	D3D12_DRAW_INDEXED_ARGUMENTS	drawIndexed;
-	AxMeshShaderDrawRootConst 		rootConst;
+	AxMeshShaderDraw_RootConst		rootConst;
 };
 RWStructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS> outDrawArgument : register(u0);
 
@@ -55,7 +55,7 @@ struct VkDrawIndexedIndirectCommand {
 
 struct AX_VkIndirectDrawArgment {
 	VkDrawIndexedIndirectCommand	drawIndexed;
-	AxMeshShaderDrawRootConst 		rootConst;
+	AxMeshShaderDraw_RootConst 		rootConst;
 };
 RWStructuredBuffer<AX_VkIndirectDrawArgment> outDrawArgument : register(u0);
 

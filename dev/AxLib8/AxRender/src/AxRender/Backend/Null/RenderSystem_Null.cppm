@@ -141,8 +141,8 @@ class MaterialPass_Null : public MaterialPass_Backend {
 	AX_RTTI_INFO(MaterialPass_Null, MaterialPass_Backend)
 public:
 	MaterialPass_Null(const CreateDesc& desc) : Base(desc) {}
-	virtual bool onBindMaterial(RenderRequest* req, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) override { return false; }
-	virtual bool onBindMaterial(RenderRequest* req, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) override { return false; }
+	virtual bool onBindMaterial(RenderRequest* req, AxVertexShaderDraw& draw, AxVertexShaderDraw_RootConst* rootConst) override { return false; }
+	virtual bool onBindMaterial(RenderRequest* req, AxMeshShaderDraw  & draw, AxMeshShaderDraw_RootConst  * rootConst) override { return false; }
 };
 
 class Material_Null : public Material_Backend {

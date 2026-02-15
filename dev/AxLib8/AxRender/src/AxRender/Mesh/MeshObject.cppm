@@ -11,12 +11,12 @@ class EditableMesh;
 
 class MeshObject_Meshlet {
 public:
-	StructuredGpuBuffer_<AxGpuMeshletGroup>   groupBuffer;
-	StructuredGpuBuffer_<AxGpuMeshletCluster> clusterBuffer;
-	StructuredGpuBuffer_<AxGpuMeshletVert>    vertBuffer;
-	StructuredGpuBuffer_<AxGpuMeshletPrim>    primBuffer;
+	StructuredGpuBuffer_<AxGpuData_MeshletGroup>   groupBuffer;
+	StructuredGpuBuffer_<AxGpuData_MeshletCluster> clusterBuffer;
+	StructuredGpuBuffer_<AxGpuData_MeshletVert>    vertBuffer;
+	StructuredGpuBuffer_<AxGpuData_MeshletPrim>    primBuffer;
 		
-	using GpuData = AxGpuMeshObject;
+	using GpuData = AxGpuData_MeshObject;
 	const GpuData* onGetGpuData(MeshObject* meshObj, RenderRequest* req);
 	
 	void createBuffers();
@@ -33,8 +33,8 @@ struct AxGpuMeshletVert_Unpacked {
 	Vec2f   uv0;
 	Vec2f   uv1;
 	
-	AxGpuMeshletVert pack() const {
-		AxGpuMeshletVert o;
+	AxGpuData_MeshletVert pack() const {
+		AxGpuData_MeshletVert o;
 		o.pos               = pos;
 		o.color_packed      = ax_pack_color_u32(color);
 		o.normal_octahedral = ax_pack_normal_octahedral(normal);
@@ -65,9 +65,9 @@ public:
 	const BBox3f& bounds() const { return _bounds; }
 	
 	using ResourceKey = String;
-	const ResourceKey& resourceKey() const { return _assetPath; }
+	const ResourceKey* resourceKey() const { return _assetPath ? &_assetPath : nullptr; }
 
-	static NameId s_gpuBufferName() { return AX_NAMEID("axGpuMeshObject"); }
+	static NameId s_gpuBufferName() { return AX_NAMEID("axGpuData_MeshObject"); }
 	using GpuData = MeshObject_Meshlet::GpuData;
 	const GpuData* onGetGpuData(RenderRequest* req) { return meshlet.onGetGpuData(this, req); }
 	

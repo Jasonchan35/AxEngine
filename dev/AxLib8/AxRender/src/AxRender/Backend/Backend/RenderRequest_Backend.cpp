@@ -75,10 +75,10 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_objectManager        = RenderObjectManager_Backend::s_instance();
 
 	auto& pools = _objectManager->_structBufferPools;
-	statistics.meshletCluster = pools.axMeshletCluster.getStatistics();
-	statistics.meshletGroup   = pools.axMeshletGroup.getStatistics();
-	statistics.meshletPrim    = pools.axMeshletPrim.getStatistics();
-	statistics.meshletVert    = pools.axMeshletVert.getStatistics(); 
+	statistics.meshletCluster = pools.axGpuData_MeshletCluster.getStatistics();
+	statistics.meshletGroup   = pools.axGpuData_MeshletGroup.getStatistics();
+	statistics.meshletPrim    = pools.axGpuData_MeshletPrim.getStatistics();
+	statistics.meshletVert    = pools.axGpuData_MeshletVert.getStatistics(); 
 	onFrameBegin();
 }
 
@@ -153,7 +153,7 @@ void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
 	cb->getUploadedGpuBuffer(this);
 }
 
-void RenderRequest_Backend::setDebugData_backend(const AxRenderGpuData_Debug& debugData) {
+void RenderRequest_Backend::setDebugData_backend(const AxGpuData_Debug& debugData) {
 	_debugData = debugData;
 	
 	auto* matPass = MaterialPass_Backend::s_globalCommonMaterialPass();
@@ -222,7 +222,7 @@ void RenderRequest_Backend::vertexShaderDraw_backend(AxVertexShaderDraw& draw) {
 	auto* matPass = material->getPass(draw.materialPassIndex);
 	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
 	
-	AxVertexShaderDrawRootConst rootConst;
+	AxVertexShaderDraw_RootConst rootConst;
 	rootConst.worldMatrix = draw.objectToWorld;
 	matPass->onBindMaterial(this, draw, &rootConst);
 	
@@ -240,7 +240,7 @@ void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
 	auto* matPass = material->getPass(draw.materialPassIndex);
 	if (!matPass) { AX_ASSERT(false); return; } // TODO use dummy shader instead
 	
-	AxMeshShaderDrawRootConst rootConst;
+	AxMeshShaderDraw_RootConst rootConst;
 	rootConst.worldMatrix        = draw.objectToWorld;
 	rootConst.meshObjectId       = ax_safe_cast_from(meshObject->objectSlot.slotId());
 	matPass->onBindMaterial(this, draw, &rootConst);

@@ -64,7 +64,7 @@ float4 ps_main(
 	VS_Output i,
 	SEM_sv_primitiveId(uint)
 ) : SV_Target {
-	AxRenderGpuData_Light light;
+	AxGpuData_LightObject light;
 	light.worldPos = Vec3f(10, 10, -10);
 	light.color    = Color3f(1,1,1);
 

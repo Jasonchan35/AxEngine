@@ -43,7 +43,7 @@ auto MeshObject_Meshlet::onGetGpuData(MeshObject* meshObj, RenderRequest* req) -
 	u32  newPrimOffset = ax_safe_cast_from(primBuffer.uploadAndGetOffset(req));
 	u32  oldPrimOffset = _gpuData.primOffset;
 	
-	for (AxGpuMeshletCluster& dst : clusterBuffer.editData(0, _gpuData.meshletClusterCount)) {
+	for (AxGpuData_MeshletCluster& dst : clusterBuffer.editData(0, _gpuData.meshletClusterCount)) {
 		dst.vertOffset += newVertOffset - oldVertOffset;
 		dst.primOffset += newPrimOffset - oldPrimOffset;
 	}
@@ -53,7 +53,7 @@ auto MeshObject_Meshlet::onGetGpuData(MeshObject* meshObj, RenderRequest* req) -
 	u32 newMeshletOffset = ax_safe_cast_from(clusterBuffer.uploadAndGetOffset(req));
 	u32 oldMeshletOffset = _gpuData.meshletClusterOffset;
 	
-	for (AxGpuMeshletGroup& dst : groupBuffer.editData(0, _gpuData.meshletGroupCount)) {
+	for (AxGpuData_MeshletGroup& dst : groupBuffer.editData(0, _gpuData.meshletGroupCount)) {
 		dst.clusterOffset += newMeshletOffset - oldMeshletOffset;
 	}
 	_gpuData.meshletClusterOffset = newMeshletOffset;
@@ -67,10 +67,10 @@ void MeshObject_Meshlet::createBuffers() {
 	_gpuData = {};
 	
 	auto* objMgr = RenderObjectManager_Backend::s_instance();
-	  groupBuffer.create(AX_NEW, "axGpuMeshletGroup"  , objMgr->_structBufferPools.axMeshletGroup);
-	clusterBuffer.create(AX_NEW, "axGpuMeshletCluster", objMgr->_structBufferPools.axMeshletCluster);
-	   vertBuffer.create(AX_NEW, "axGpuMeshletVert"   , objMgr->_structBufferPools.axMeshletVert);
-	   primBuffer.create(AX_NEW, "axGpuMeshletPrim"   , objMgr->_structBufferPools.axMeshletPrim);
+	  groupBuffer.create(AX_NEW, "axGpuData_MeshletGroup"  , objMgr->_structBufferPools.axGpuData_MeshletGroup);
+	clusterBuffer.create(AX_NEW, "axGpuData_MeshletCluster", objMgr->_structBufferPools.axGpuData_MeshletCluster);
+	   vertBuffer.create(AX_NEW, "axGpuData_MeshletVert"   , objMgr->_structBufferPools.axGpuData_MeshletVert);
+	   primBuffer.create(AX_NEW, "axGpuData_MeshletPrim"   , objMgr->_structBufferPools.axGpuData_MeshletPrim);
 }
 
 void MeshObject_Meshlet::writeToFile(MeshObject* meshObj, StrView filename) {

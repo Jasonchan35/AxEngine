@@ -3,9 +3,9 @@
 
 #include "Ax/AxWorld.hlsl"
 
-AX_ROOT_CONST_STRUCT(AxMeshShaderDrawRootConst, axMeshShaderDrawRootConst) 
-#define AX_MATRIX_M				axMeshShaderDrawRootConst.worldMatrix
-#define AX_MESH_OBJECT_ID		axMeshShaderDrawRootConst.meshObjectId
+AX_ROOT_CONST_STRUCT(AxMeshShaderDraw_RootConst, axMeshShaderDraw_RootConst) 
+#define AX_MATRIX_M				axMeshShaderDraw_RootConst.worldMatrix
+#define AX_MESH_OBJECT_ID		axMeshShaderDraw_RootConst.meshObjectId
 #define AX_MATRIX_VP			axCamera.viewProjMatrix
 
 Vec3f axObjectToWorldPos(Vec4f inPos) { return mul(AX_MATRIX_M,  inPos).xyz; }
@@ -55,7 +55,7 @@ struct VS_PrimId_Out {
 	uint primitiveId : SV_PrimitiveID;
 };
 
-static float boundsError(AxGpuMeshletGroup group) {
+static float boundsError(AxGpuData_MeshletGroup group) {
 	float camProj = 1.f / tan( radians(axCamera.fieldOfView * 0.5));
 	float camDistance = distance(axObjectToWorldPos(group.center), axCamera.worldPos);
 	float d = camDistance - group.radius;
@@ -69,7 +69,7 @@ void axMeshlet_AmplificationMain(
 	SEM_gtid(u32),
 	SEM_dtid(u32)
 ) {
-	AxGpuMeshObject meshObject = axGpuMeshObject[AX_MESH_OBJECT_ID];
+	AxGpuData_MeshObject meshObject = axGpuData_MeshObject[AX_MESH_OBJECT_ID];
 
 	if (gtid == 0) {
 		s_payload.meshObjectId = AX_MESH_OBJECT_ID;
@@ -83,15 +83,15 @@ void axMeshlet_AmplificationMain(
 
 	if (dtid < clusterCount) {
 		u32 clusterId = clusterOffset + dtid;
-		AxGpuMeshletCluster cluster = axGpuMeshletCluster[clusterId];
+		AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[clusterId];
 
 		Vec3f camPos           = axCamera.worldPos;
 		float camTanFov        = tan(radians(axCamera.fieldOfView * 0.5)) * 2.0;
 		float maxErrorInPixels = axCamera.maxMeshletErrorInPixels;
 
 		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
-		bool lodMatch = (cluster.refinedGroupId < 0 || boundsError(axGpuMeshletGroup[groupOffset + cluster.refinedGroupId]) <= maxErrorInPixels) 
-					 && (                              boundsError(axGpuMeshletGroup[groupOffset + cluster.groupId       ]) >  maxErrorInPixels);
+		bool lodMatch = (cluster.refinedGroupId < 0 || boundsError(axGpuData_MeshletGroup[groupOffset + cluster.refinedGroupId]) <= maxErrorInPixels) 
+					 && (                              boundsError(axGpuData_MeshletGroup[groupOffset + cluster.groupId       ]) >  maxErrorInPixels);
 
 		bool insideFrustum = true;
 		bool coneCulling   = true; 
@@ -125,19 +125,19 @@ void axMeshlet_MeshMain(
 	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
 	u32 clusterId = payload.meshletIds[gid];
-	AxGpuMeshletCluster cluster = axGpuMeshletCluster[clusterId];
+	AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[clusterId];
 
 	SetMeshOutputCounts(cluster.vertCount, cluster.primCount);
 
 	if (gtid < cluster.primCount) {
-		outPrim[gtid] = ax_unpack_tri_indices(axGpuMeshletPrim[cluster.primOffset + gtid].packedTriIndices);
+		outPrim[gtid] = ax_unpack_tri_indices(axGpuData_MeshletPrim[cluster.primOffset + gtid].packedTriIndices);
 		outPrimId[gtid].primitiveId = gtid;
 	}
 
 	if (gtid < cluster.vertCount) {
 		VS_Input i;
 
-		AxGpuMeshletVert mv = axGpuMeshletVert[cluster.vertOffset + gtid];
+		AxGpuData_MeshletVert mv = axGpuData_MeshletVert[cluster.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos, 1);
 
 		if (axDebug.showAllLodDistance > 0) {

@@ -13,6 +13,7 @@ RenderObjectSlotId RenderObjectSlotId_None = u32_max;
 template<class T>
 class RenderObjectSlot : public NonCopyable {
 public:
+	using Object = T;
 	using Table = RenderObjectTable<T>;
 	using ResourceKey = typename T::ResourceKey;
 
@@ -25,8 +26,9 @@ public:
 	~RenderObjectSlot();
 	void markDirty();
 	
-	friend class RenderObjectTable<T>;
+	void _internalResetDirty() { _dirty = false; }
 protected:
+	friend class Table;
 	RenderObjectSlotId _slotId = RenderObjectSlotId_None;
 	bool _dirty = false;
 private:
@@ -50,11 +52,13 @@ template<class T>
 class RenderObjectTable : public RenderObjectTableBase {
 	AX_RTTI_INFO(RenderObjectTable, RenderObjectTableBase)
 public:
+	static_assert(std::is_same_v<T, typename decltype(T::objectSlot)::Object>);
+	
 	static This* s_instance();
 
 	using Handle = RenderObjectSlot<T>;
 	using ResourceKey = typename T::ResourceKey;
-	static constexpr bool kHasResourceKey = !Type_IsSame<ResourceKey, TagNoInit_T>;
+	static constexpr bool kHasResourceKey = !Type_IsSame<ResourceKey, nullptr_t>;
 
 	void add(T* obj, bool isFallbackDefault);
 	void remove(T* obj);
@@ -149,11 +153,14 @@ void RenderObjectTable<T>::add(T* obj, bool isFallbackDefault) {
 	if (!obj) return;
 
 	if constexpr (kHasResourceKey) {
-		if (auto& key = obj->resourceKey()) { _keyDict.add(key, obj); }
+		if (auto* key = obj->resourceKey()) {
+			AX_ASSERT(_keyDict.find(*key) == nullptr); // already added
+			_keyDict.add(*key, obj);
+		}
 	}
 
-	auto& handle = obj->objectSlot;
-	if (handle) {
+	auto& slot = obj->objectSlot;
+	if (slot) {
 		AX_ASSERT(false); // added already ?
 		return;
 	}
@@ -176,7 +183,7 @@ void RenderObjectTable<T>::add(T* obj, bool isFallbackDefault) {
 		}
 	}
 
-	handle._slotId = slotId;
+	slot._slotId = slotId;
 	markDirty(obj);
 }
 
@@ -197,9 +204,9 @@ void RenderObjectTable<T>::remove(T* obj) {
 	if (!obj) return;
 
 	if constexpr (kHasResourceKey) {
-		if (auto& key = obj->resourceKey()) {
-			AX_ASSERT(obj == *_keyDict.find(key));
-			_keyDict.erase(key);
+		if (auto* key = obj->resourceKey()) {
+			AX_ASSERT(obj == *_keyDict.find(*key));
+			_keyDict.erase(*key);
 		}
 	}
 
@@ -232,7 +239,7 @@ void RenderObjectTable<T>::onFrameEnd(RenderRequest* req) {
 	
 	for (auto& obj : _dirtyObjects) {
 		if (!obj) { AX_ASSERT(false); continue; }
-		obj->objectSlot._dirty = false;
+		obj->objectSlot._internalResetDirty();
 		
 		if constexpr (kHasGpuData) {
 			if (auto* data = obj->onGetGpuData(req)) {

@@ -71,17 +71,17 @@ public:
 	} _bufferPools;
 
 	struct StructBufferPools {
-		StructuredGpuBufferPool_<AxGpuMeshletGroup>		axMeshletGroup;
-		StructuredGpuBufferPool_<AxGpuMeshletCluster>	axMeshletCluster;
-		StructuredGpuBufferPool_<AxGpuMeshletVert>		axMeshletVert;
-		StructuredGpuBufferPool_<AxGpuMeshletPrim>		axMeshletPrim;
+		StructuredGpuBufferPool_<AxGpuData_MeshletGroup>	axGpuData_MeshletGroup;
+		StructuredGpuBufferPool_<AxGpuData_MeshletCluster>	axGpuData_MeshletCluster;
+		StructuredGpuBufferPool_<AxGpuData_MeshletVert>		axGpuData_MeshletVert;
+		StructuredGpuBufferPool_<AxGpuData_MeshletPrim>		axGpuData_MeshletPrim;
 
 		template<class FUNC>
 		void visitPools(FUNC func) {
-			func(axMeshletGroup);
-			func(axMeshletCluster);
-			func(axMeshletVert);
-			func(axMeshletPrim);
+			func(axGpuData_MeshletGroup);
+			func(axGpuData_MeshletCluster);
+			func(axGpuData_MeshletVert);
+			func(axGpuData_MeshletPrim);
 		}		
 	} _structBufferPools;
 	
@@ -119,7 +119,7 @@ bool RenderObjectManager_Backend::getOrNewObject(SPtr<T>&                 sp,
                                                    const RESOURCE_KEY&    key
 ) {
 	if (key) {
-		auto table = T::ObjectSlot::Table::s_instance();
+		auto table = decltype(T::objectSlot)::Table::s_instance();
 		if (auto* p = table->findObject(key)) {
 			sp = rttiCastCheck<T>(p);
 			return false; // return exists one

@@ -98,7 +98,7 @@ void MaterialParamSpace_Vk::onUpdatePerFrameData(Int                    currentI
 	writeDescSetHelper.updateToDevice(dev);
 }
 
-bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& draw, AxVertexShaderDrawRootConst* rootConst) {
+bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& draw, AxVertexShaderDraw_RootConst* rootConst) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	auto* shdPass = shaderPass_vk();
 	if (!shdPass) { AX_ASSERT(false); return false; }
@@ -108,7 +108,7 @@ bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxVertexShaderDraw& dr
 	return _onBindMaterial(req, rootConstData);
 }
 
-bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxMeshShaderDraw  & draw, AxMeshShaderDrawRootConst  * rootConst) {
+bool MaterialPass_Vk::onBindMaterial(RenderRequest* req_, AxMeshShaderDraw  & draw, AxMeshShaderDraw_RootConst  * rootConst) {
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);
 	auto* shdPass = shaderPass_vk();
 	if (!shdPass) { AX_ASSERT(false); return false; }

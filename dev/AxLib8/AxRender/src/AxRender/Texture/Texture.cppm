@@ -72,20 +72,25 @@ class SamplerState {
 	using This = SamplerState;
 public:
 	SamplerState() {
-		filter	= SamplerFilter::Bilinear;
-		wrap	= {TagAll, SamplerWrap::Repeat};
+		filter   = SamplerFilter::Bilinear;
+		wrap     = {TagAll, SamplerWrap::Repeat};
+		minLOD   = 0;
+		maxLOD   = Math::infinity();
+		_padding = 0;
 	}
 
 	union {
 		struct {
-			SamplerFilter	filter;
-			SamplerWrapUVW	wrap;
+			SamplerFilter  filter;
+			SamplerWrapUVW wrap;
+			float          minLOD;
+			float          maxLOD;
+			u32            _padding;
 		};
-		u32 _packed;
+		
+		u64 _packed[2];
 	};
 	
-	float	minLOD	= 0;
-	float	maxLOD	= Math::infinity();
 
 	template<class SE>
 	void onJsonIO(SE& se) {
@@ -96,15 +101,13 @@ public:
 	}
 
 	HashInt onHashInt() const {
-		static_assert(AX_SIZEOF(_packed) == AX_SIZEOF(filter) + AX_SIZEOF(wrap));
-		u64 u = static_cast<u64>(_packed) ^ ax_bit_cast<u32>(minLOD) ^ ax_bit_cast<u32>(minLOD);
-		return HashInt::s_make(u);
+		static_assert(AX_SIZEOF(_packed) == AX_SIZEOF(filter) + AX_SIZEOF(wrap) + AX_SIZEOF(minLOD) + AX_SIZEOF(maxLOD) + AX_SIZEOF(_padding));
+		return HashInt::s_make(_packed[0] ^ _packed[1]);
 	}
 
 	bool operator==(const This& r) const {
-		return _packed == r._packed 
-			&& Math::exactlyEqual(minLOD, r.minLOD)
-			&& Math::exactlyEqual(maxLOD, r.maxLOD);
+		return _packed[0] == r._packed[0]
+			&& _packed[1] == r._packed[1];
 	}
 
 	explicit operator bool() const { return filter != SamplerFilter::None; }
@@ -121,7 +124,7 @@ class Sampler : public RenderObject {
 public:
 	using CreateDesc = Sampler_CreateDesc;
 	using ResourceKey = SamplerState;
-	const ResourceKey& resourceKey() const { return _samplerState; }
+	const ResourceKey* resourceKey() const { return _samplerState ? &_samplerState : nullptr; }
 
 	static SPtr<Sampler> s_new(const MemAllocRequest& req, const CreateDesc& desc);
 	static SPtr<Sampler> s_new(const MemAllocRequest& req, SamplerFilter filter, SamplerWrapUVW wrap) {
@@ -137,8 +140,7 @@ protected:
 	SamplerState	_samplerState;
 	
 public:
-	using ObjectSlot = RenderObjectSlot<This>; 
-	ObjectSlot	objectSlot;
+	RenderObjectSlot<This>	objectSlot;
 };
 
 class Texture : public RenderObject {
@@ -147,7 +149,7 @@ public:
 	RenderDataType type() const { return _textureType; }
 
 	using ResourceKey = String;
-	const ResourceKey& resourceKey() const { return _assetPath; }
+	const ResourceKey* resourceKey() const { return _assetPath ? &_assetPath : nullptr; }
 
 protected:
 	Texture(RenderDataType type) : _textureType(type) {}

@@ -81,9 +81,9 @@ public:
 	RenderStockObjects* stockObjects() const { return _stockObjects; }
 	
 	void setCamera(const Math::Camera3f& camera);
-	const AxRenderGpuData_Camera&	cameraData() const { return _cameraData; }
+	const AxGpuData_Camera&	cameraData() const { return _cameraData; }
 
-	void setDebugData(const AxRenderGpuData_Debug& debugData);
+	void setDebugData(const AxGpuData_Debug& debugData);
 	
 	float maxMeshletErrorInPixels = 1;
 	
@@ -101,8 +101,8 @@ protected:
 	Rect2f              _scissorRect{0, 0, 0, 0};
 	Rect2f              _viewportRect{0, 0, 0, 0};
 
-	AxRenderGpuData_Camera _cameraData;
-	AxRenderGpuData_Debug  _debugData;
+	AxGpuData_Camera _cameraData;
+	AxGpuData_Debug  _debugData;
 };
 
 inline
