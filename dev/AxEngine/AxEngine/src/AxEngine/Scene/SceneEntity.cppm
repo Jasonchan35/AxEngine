@@ -207,12 +207,15 @@ AX_CLASS()
 class LightComponent : public SceneComponent {
 	AX_GENERATED_BODY()
 public:
+	LightComponent();
 	~LightComponent();
 
 	virtual void onInit() override;
 	
 	ObjectTableSlot<This> _slot;
+	
 protected:
+	
 	friend SceneWorld;
 	SPtr<LightObject> _lightObj;
 };

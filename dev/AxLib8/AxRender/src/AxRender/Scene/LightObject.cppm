@@ -19,9 +19,10 @@ public:
 	const GpuData* onGetGpuData(RenderRequest* req) { return &_gpuData; }
 	
 	void setWorldPos(const Vec3f& v);
+	void setColor(const Color3f& color);
 
 protected:
-	LightObject() : objectSlot(this) {}
+	LightObject();
 	GpuData    _gpuData = {};
 	
 public:
@@ -33,6 +34,17 @@ void LightObject::setWorldPos(const Vec3f& v) {
 	if (_gpuData.worldPos == v) return;
 	_gpuData.worldPos = v; 
 	objectSlot.markDirty();
+}
+
+void LightObject::setColor(const Color3f& color) {
+	if (_gpuData.color == color) return;
+	_gpuData.color = color;
+	objectSlot.markDirty();
+}
+
+LightObject::LightObject()
+: objectSlot(this) {
+	setColor(Color3f(1,1,1));
 }
 
 } // namespace

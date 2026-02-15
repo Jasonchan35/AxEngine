@@ -49,7 +49,7 @@ private:\
 
 
 //--- Type AxEngine::SceneWorld ----------
-#define AX_GENERATED_BODY_LINE223() \
+#define AX_GENERATED_BODY_LINE226() \
 	AX_RTTI_INFO(SceneWorld, Object) \
 public:\
 	struct MutRttiInit : public MutRtti { \
