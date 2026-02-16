@@ -3,7 +3,7 @@
 export module AxRender:RenderDataType;
 export import :Common;
 
-export namespace ax /*::AxRender*/ {
+export namespace ax {
 
 using RenderSeqId = i64;
 
@@ -319,6 +319,16 @@ template<class T> struct RenderDataType_get_Struct;
 
 // C++ Type -> RenderDataType
 template<class T> constexpr RenderDataType RenderDataType_get = RenderDataType_get_Struct<T>::value;
+
+Int RenderDataType_getSize(RenderDataType t) {
+	switch (t) {
+		#define MACRO_OP(T,...) case RenderDataType::T: return AX_SIZEOF(T);
+			AX_RenderDataType_Basic_ENUM_LIST(MACRO_OP)
+		#undef MACRO_OP
+		default: AX_ASSERT(false); return 0;
+	}
+}
+
 
 // RenderDataType -> C++ Type
 template<RenderDataType T> struct RenderDataType_Type_;

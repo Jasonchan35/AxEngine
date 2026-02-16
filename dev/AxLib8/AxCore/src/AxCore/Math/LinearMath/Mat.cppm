@@ -23,7 +23,7 @@ using Mat3d_SSE		= Mat3_<f64, VecSimd::SSE>;
 using Mat3d_Basic	= Mat3_<f64, VecSimd::Basic>;
 
 template<class MAT, class T>
-struct Mat4_NumLimit {
+struct Mat_NumLimit {
 	using T_NumLimit = NumLimit<T>;
 
 	static constexpr bool isExact       =  T_NumLimit::isExact;
@@ -39,6 +39,43 @@ struct Mat4_NumLimit {
 
 // column major matrix
 template<class T, VecSimd SIMD>
+class Mat_<3,3,T,SIMD> {
+	using This = Mat_;
+	static constexpr bool _use_SSE			= SIMD == VecSimd::SSE;
+	static constexpr bool _is_f32			= Type_IsSame<T, f32>;
+	static constexpr bool _is_f64			= Type_IsSame<T, f64>;
+	static constexpr bool _use_SSE_m128_ps	= _use_SSE && _is_f32;
+	static constexpr bool _use_SSE_m256_pd	= _use_SSE && _is_f64;
+public:
+	using _NumLimit = Mat_NumLimit<This, T>;
+	
+	using Vec1		= Vec1_< T, SIMD>;
+	using Vec2		= Vec2_< T, SIMD>;
+	using Vec3		= Vec3_< T, SIMD>;
+	using Vec4		= Vec4_< T, SIMD>;
+	using Mat3		= Mat3_< T, SIMD>;
+	using Mat4		= Mat4_< T, SIMD>;
+	using Rect2		= Rect2_<T, SIMD>;
+	using Quat4		= Quat4_<T, SIMD>;
+
+	static constexpr Int kRowCount = 3;
+	static constexpr Int kColCount = 3;
+	static constexpr Int kElementCount = kRowCount * kColCount;
+
+	union {
+		struct { Vec3 cx, cy, cz; };
+		struct {
+			T xx, xy, xz;
+			T yx, yy, yz;
+			T zx, zy, zz;
+		};
+		T e[kElementCount];
+	};
+		
+};
+
+// column major matrix
+template<class T, VecSimd SIMD>
 class Mat_<4,4,T,SIMD> {
 	using This = Mat_;
 	
@@ -48,12 +85,13 @@ class Mat_<4,4,T,SIMD> {
 	static constexpr bool _use_SSE_m128_ps	= _use_SSE && _is_f32;
 	static constexpr bool _use_SSE_m256_pd	= _use_SSE && _is_f64;
 public:
-	using _NumLimit = Mat4_NumLimit<This, T>;
+	using _NumLimit = Mat_NumLimit<This, T>;
 	
 	using Vec1		= Vec1_< T, SIMD>;
 	using Vec2		= Vec2_< T, SIMD>;
 	using Vec3		= Vec3_< T, SIMD>;
 	using Vec4		= Vec4_< T, SIMD>;
+	using Mat3		= Mat3_< T, SIMD>;
 	using Mat4		= Mat4_< T, SIMD>;
 	using Rect2		= Rect2_<T, SIMD>;
 	using Quat4		= Quat4_<T, SIMD>;

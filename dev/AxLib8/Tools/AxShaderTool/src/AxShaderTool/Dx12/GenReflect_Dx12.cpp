@@ -530,10 +530,14 @@ void GenReflect_Dx12::_compileReflect_BufferBase(ShaderStageInfo::BufferBase& ou
 				auto& outVar  = outInfo.variables.emplaceBack();
 				outVar.name   = StrView_c_str(memberName);
 				outVar.offset = ax_safe_cast_from(memberTypeDesc.Offset);
-				
 				outVar.varType = _getShaderVariableType(memberTypeDesc);
 				if (outVar.varType.dataType == RenderDataType::None) {
 					throw Error_Undefined();
+				}
+				
+				outVar.sizeInBytes = RenderDataType_getSize(outVar.varType.dataType);
+				if (outVar.varType.elementCount > 0) {
+					outVar.sizeInBytes *= outVar.varType.elementCount;
 				}
 			}
 			return;
