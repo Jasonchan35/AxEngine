@@ -1,7 +1,6 @@
 module;
 
 export module AxRender:LightObject;
-export import :RenderDataType;
 export import :RenderObjectTable;
 
 export namespace ax {
@@ -9,7 +8,7 @@ export namespace ax {
 class LightObject : public RenderObject {
 	AX_RTTI_INFO(LightObject, RenderObject)
 public:
-	static SPtr<LightObject> s_new(const MemAllocRequest& req) { return SPtr<LightObject>(new(req) LightObject()); }
+	static SPtr<This> s_new(const MemAllocRequest& req) { return SPtr<This>(new(req) This()); }
 	
 	using ResourceKey = Int;
 	const ResourceKey* resourceKey() const { return nullptr; }

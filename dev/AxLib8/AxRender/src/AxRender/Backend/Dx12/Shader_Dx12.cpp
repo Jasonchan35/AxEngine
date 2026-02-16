@@ -78,21 +78,21 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 		
 		if (bindSpace != BindSpace::RootConst) {
 			for (auto& param : ownParamSpace->_constBufferParams) {
-				addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
+				addDescriptor(ownParamSpace, ownParamSpace->descTable_CBV_SRV_UAV, param, D3D12_DESCRIPTOR_RANGE_TYPE_CBV);
 			}
 		}
 		
 		for (auto& param : ownParamSpace->_structuredBufferParams) {
-			addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+			addDescriptor(ownParamSpace, ownParamSpace->descTable_CBV_SRV_UAV, param, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}
 
 		for (auto& param : ownParamSpace->_textureParams) {
-			addDescriptor(ownParamSpace, ownParamSpace->_CBV_SRV_UAV_DescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+			addDescriptor(ownParamSpace, ownParamSpace->descTable_CBV_SRV_UAV, param, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
 		}
 
 		for (auto& param : ownParamSpace->_samplerParams) {
 			if (param.dynamicSampler()) {
-				addDescriptor(ownParamSpace, ownParamSpace->_samplerDescTable, param, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+				addDescriptor(ownParamSpace, ownParamSpace->descTable_Sampler, param, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
 			} else {
 				//addRootStaticSampler();
 				AX_ASSERT_TODO();
@@ -117,8 +117,8 @@ ShaderPass_Dx12::ShaderPass_Dx12(const CreateDesc& desc)
 			}
 		}
 		
-		addRootDescTable(paramSpace, paramSpace->_CBV_SRV_UAV_DescTable, Dx12RootParamType::DescTable_CBV_SRV_UAV);
-		addRootDescTable(paramSpace, paramSpace->_samplerDescTable     , Dx12RootParamType::DescTable_Sampler);
+		addRootDescTable(paramSpace, paramSpace->descTable_CBV_SRV_UAV, Dx12RootParamType::DescTable_CBV_SRV_UAV);
+		addRootDescTable(paramSpace, paramSpace->descTable_Sampler     , Dx12RootParamType::DescTable_Sampler);
 	}
 
 	auto loadStage = [&](Stage& stage, ShaderStageFlags stageFlags) {

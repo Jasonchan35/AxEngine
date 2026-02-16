@@ -44,6 +44,8 @@ public:
 		return _perFrameData;
 	}
 private:
+	template<class HEAP_CHUNK> struct DescTableBuilder;
+	
 	PerFrameData&    _updatedPerFrameData(RenderRequest_Dx12* req);
 	RenderSeqIdGraud _renderSeqIdGraud;
 	PerFrameData     _perFrameData;

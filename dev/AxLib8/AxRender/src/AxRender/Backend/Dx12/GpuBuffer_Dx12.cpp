@@ -83,7 +83,6 @@ void GpuBuffer_Dx12::onCopyFromGpuBuffer(RenderRequest* req, GpuBuffer* src, Int
 
 	auto* req_dx12   = rttiCastCheck<RenderRequest_Dx12>(req);
 	auto& cmdList_dx = req_dx12->_uploadCmdList_dx12._cmdList_dx12;
-//	auto& cmdList_dx = req_dx12->_graphCmdList_dx12._cmdList_dx12;
 
 	auto* srcRes = src_dx12->resource_dx12();
 	auto* dstRes = dst_dx12->resource_dx12();

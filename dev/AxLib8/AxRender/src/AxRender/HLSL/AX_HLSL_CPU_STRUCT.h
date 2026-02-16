@@ -22,22 +22,21 @@ struct AxGpuData_World {
 };
 
 struct AxGpuData_TileLighting {
-	u32 camera;
+	u32 cameraId;
 	u32 _padding0;
 	u32 _padding1;
 	u32 lightCount;
-	u32 lights[AX_HLSL_MAX_ACTIVE_LIGHTS];
+	u32 lightIds[AX_HLSL_MAX_ACTIVE_LIGHTS];
 };
 
 struct AxGpuData_LightObject {
 	Color3f	color;
-	u32 _padding0;
-	
-	Vec3f   worldPos;
-	u32 _padding1;
+	u32		_padding0;
+	Vec3f	worldPos;
+	u32		_padding1;
 };
 
-struct AxGpuData_Camera {
+struct AxGpuData_CameraObject {
 	Vec3f	worldPos;
 	float   fieldOfView; // vertical
 
@@ -55,6 +54,27 @@ struct AxGpuData_Camera {
 	Mat4f	viewMatrixInv;
 	Mat4f	viewProjMatrix;
 	Mat4f	viewProjMatrixInv;
+};
+
+struct AxGpuData_Camera {
+	//TODO - remove this struct
+	Vec3f	worldPos;
+	float   fieldOfView; // vertical
+
+	float   nearClip;
+	float   farClip;
+	float   maxMeshletErrorInPixels;
+	float   _padding0;
+	
+	Vec2f	viewportMin;
+	Vec2f	viewportMax;
+	
+	Mat4f	projMatrix;
+	Mat4f	projMatrixInv;
+	Mat4f	viewMatrix;
+	Mat4f	viewMatrixInv;
+	Mat4f	viewProjMatrix;
+	Mat4f	viewProjMatrixInv;	
 };
 
 struct AxVertexShaderDraw_RootConst {
@@ -114,7 +134,7 @@ struct AxGpuData_MeshObject {
 	u32   meshletClusterCount;
 };
 
-struct AxGpuData_MeshObjectRenderer {
+struct AxGpuData_MeshRenderer {
 	Mat4f worldMatrix;
 	u32   meshObjectId;
 	u32   materialId;

@@ -40,15 +40,10 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
 	//	AX_LOG("---- FrameBegin {} -----", _renderSeqId);
-	_globalCommonMaterial                = Material_Backend::s_globalCommonMaterial();
-	_globalCommonMaterialPass            = _globalCommonMaterial->getPass(0);
-	_globalCommonMaterialWorldParamSpace = _globalCommonMaterialPass->getOwnParamSpace(BindSpace::World);
-	resourcesToKeep.add(_globalCommonMaterial);
-
 	// TODO: move to frame update, to enable draw ui in update loop as well
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
 	RenderObjectManager_Backend::s_instance()->onFrameBegin(this);
-
+	
 	_renderContext        = renderContext;
 	_renderGraph          = renderContext->renderGraph();
 	_projectionDesc       = _renderGraph->projectionDesc();
@@ -61,35 +56,47 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	statistics.meshletCluster = pools.axGpuData_MeshletCluster.getStatistics();
 	statistics.meshletGroup   = pools.axGpuData_MeshletGroup.getStatistics();
 	statistics.meshletPrim    = pools.axGpuData_MeshletPrim.getStatistics();
-	statistics.meshletVert    = pools.axGpuData_MeshletVert.getStatistics(); 
+	statistics.meshletVert    = pools.axGpuData_MeshletVert.getStatistics();
+	
 	onFrameBegin();
+	_updateGlobalCommonParams();
 }
 
 void RenderRequest_Backend::frameEnd() {
-	_updateWorldData();
 	renderContext_backend()->imgui.onEndRender();
 	RenderObjectManager_Backend::s_instance()->onFrameEnd(this);
 	onFrameEnd();
 //	AX_LOG("---- FrameEnd {} -----", _renderSeqId);
 }
 
-void RenderRequest_Backend::_updateWorldData() {
+void RenderRequest_Backend::_updateGlobalCommonParams() {
+	_globalCommonMaterial                = Material_Backend::s_globalCommonMaterial();
+	_globalCommonMaterialPass            = _globalCommonMaterial->getPass(0);
+	_globalCommonMaterialWorldParamSpace = _globalCommonMaterialPass->getOwnParamSpace(BindSpace::World);
+	resourcesToKeep.add(_globalCommonMaterial);
+	
 	using namespace Math;
-	
+
 	f32 t = static_cast<f32>(_uptime);
-	_worldData.timeSin     = Vec4f(sin(t),   sin(t*4), sin(t*9), sin(t*16));
-	_worldData.timeSlowSin = Vec4f(sin(t/2), sin(t/4), sin(t/9), sin(t/16));
-	_worldData.time = t;
+
+	_worldData.timeSin     = Vec4f(sin(t), sin(t * 4), sin(t * 9), sin(t * 16));
+	_worldData.timeSlowSin = Vec4f(sin(t / 2), sin(t / 4), sin(t / 9), sin(t / 16));
+	_worldData.time        = t;
 	// _worldData.deltaTime = _deltaTime;
+
+	auto func = [this](MaterialParamSpace_Backend::ConstBufferParam* cb, auto& data) -> void {
+		if (!cb) { AX_ASSERT(false); return; }
+
+		cb->setData(data);
+		// force update to GPU
+		cb->getUploadedGpuBuffer(this);
+	};
 	
-	auto* cb = _globalCommonMaterialWorldParamSpace->constBuffer_world();
-	if (!cb) { AX_ASSERT(false); return; }
-
-	cb->setData(_worldData);
-	// force update to GPU
-	cb->getUploadedGpuBuffer(this);
+	auto* worldParamSpace = _globalCommonMaterialWorldParamSpace; 
+	func(worldParamSpace->constBuffer_world() , _worldData);
+	func(worldParamSpace->constBuffer_debug() , _debugData);
+	func(worldParamSpace->constBuffer_camera(), _cameraData);
 }
-
 
 void RenderRequest_Backend::renderPassBegin(RenderPass_Backend* pass) {
 	_currentRenderPass = pass;
@@ -140,34 +147,10 @@ void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera) {
 	_cameraData.viewMatrixInv            = _cameraData.viewMatrix.inverse();
 	_cameraData.viewProjMatrix           = camera.viewProjMatrix(_projectionDesc);
 	_cameraData.viewProjMatrixInv        = _cameraData.viewProjMatrix.inverse();
-	
-	auto* matPass = MaterialPass_Backend::s_globalCommonMaterialPass();
-	if (!matPass) { AX_ASSERT(false); return; }
-	auto* paramSpace = matPass->getOwnParamSpace(BindSpace::World);
-	if (!paramSpace) { AX_ASSERT(false); return; }
-	
-	auto* cb = paramSpace->constBuffer_camera();
-	if (!cb) { AX_ASSERT(false); return; }
-
-	cb->setData(_cameraData);
-	// force update to GPU
-	cb->getUploadedGpuBuffer(this);
 }
 
 void RenderRequest_Backend::setDebugData_backend(const AxGpuData_Debug& debugData) {
 	_debugData = debugData;
-	
-	auto* matPass = MaterialPass_Backend::s_globalCommonMaterialPass();
-	if (!matPass) { AX_ASSERT(false); return; }
-	auto* paramSpace = matPass->getOwnParamSpace(BindSpace::World);
-	if (!paramSpace) { AX_ASSERT(false); return; }
-	
-	auto* cb = paramSpace->constBuffer_debug();
-	if (!cb) { AX_ASSERT(false); return; }
-
-	cb->setData(_debugData);
-	// force update to GPU
-	cb->getUploadedGpuBuffer(this);
 }
 
 void RenderRequest_Backend::copyDataToGpuBuffer_StagingBuffer(GpuBuffer* dst, ByteSpan data, Int dstOffset) {

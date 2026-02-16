@@ -46,6 +46,49 @@ import :RenderObjectManager_Dx12;
 //                        +--------------------------------+
 namespace ax {
 
+template<class HEAP_CHUNK>
+struct MaterialParamSpace_Dx12::DescTableBuilder {
+	BindSpace                  bindSpace = BindSpace::Invalid;
+	const Dx12DescriptorTable& descTable;
+	HEAP_CHUNK&                heapChunk;
+	Int                        start          = 0;
+	Int                        nextDescIndex  = 0;
+	Int                        totalBindCount = 0;
+	
+	DescTableBuilder(
+		BindSpace bindSpace_,
+		const Dx12DescriptorTable& descTable_,
+		HEAP_CHUNK& heapChunk_,
+		HeapStartHandle& heapStartHandle)
+	: bindSpace(bindSpace_)
+	, descTable(descTable_)
+	, heapChunk(heapChunk_) 
+	{
+		heapStartHandle.update(heapChunk);
+		start = heapChunk.used();
+	}
+	
+	template<class PARAM>
+	HEAP_CHUNK& add(D3D12_DESCRIPTOR_RANGE_TYPE type, const PARAM& param) {
+		auto* p = descTable.descriptorRanges.tryGetElement(nextDescIndex);
+		if (!p) throw Error_Undefined();
+		nextDescIndex++;
+		
+		if (p->RangeType          != type) throw Error_Undefined();
+		if (p->NumDescriptors     != param.bindCount()) throw Error_Undefined();
+		if (p->BaseShaderRegister != Dx12Util::castUINT(ax_enum_int(param.bindPoint()))) throw Error_Undefined();
+		if (p->RegisterSpace      != Dx12Util::castUINT(ax_enum_int(bindSpace))) throw Error_Undefined();
+
+		totalBindCount += param.bindCount();
+		return heapChunk;
+	}
+	
+	void validate() const {
+		if (descTable.totalBindCount() != totalBindCount) throw Error_Undefined();
+		if (descTable.size()           != nextDescIndex ) throw Error_Undefined();
+	}
+};
+
 auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> PerFrameData& {
 //	AX_LOG("MaterialParamSpace_Dx12::_updatedPerFrameData {} ", debugName());
 	
@@ -57,9 +100,20 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		return _perFrameData;
 	}
 #endif
-	
-	_perFrameData.heapStart_CBV_SRV_UAV.update(req->_dynamicDescriptors.CBV_SRV_UAV);
-	_perFrameData.heapStart_Sampler.update(req->_dynamicDescriptors.Sampler);
+	if (bindSpace() == BindSpace::RootConst) return _perFrameData;
+
+	auto* shaderParamSpace = shaderParamSpace_dx12();
+	auto builder_CBV_SRV_UAV = DescTableBuilder(
+									bindSpace(),
+									shaderParamSpace->descTable_CBV_SRV_UAV,
+									req->_dynamicDescriptors.CBV_SRV_UAV,
+									_perFrameData.heapStart_CBV_SRV_UAV);
+
+	auto builder_Sampler = DescTableBuilder(
+									bindSpace(),
+									shaderParamSpace->descTable_Sampler,
+									req->_dynamicDescriptors.Sampler,
+									_perFrameData.heapStart_Sampler);
 	
 	auto& cmdList = req->_graphCmdList_dx12;
 	
@@ -68,15 +122,20 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		if (!gpuBuf) throw Error_Undefined();
 		gpuBuf->updateResourceBarrier(cmdList);
 		auto* resource_dx12 = gpuBuf->resource_dx12();
-		// AX_LOG("-- addCBV");
-		req->_dynamicDescriptors.CBV_SRV_UAV.addCBV(*resource_dx12, gpuBuf->bufferRange());
+		
+		builder_CBV_SRV_UAV
+			.add(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, param)
+			.addCBV(*resource_dx12, gpuBuf->bufferRange());
 	}
 	
 	for (auto& param : _structuredBufferParams) {
 		if (auto* pool = rttiCastCheck<GpuBufferPool_Dx12>(ax_const_cast(param.bufferPool()))) {
 			auto& resource_dx12 = pool->_resource_dx12;
 			Int count = pool->maxSize() / param.stride();
-			req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(resource_dx12, 0, count, param.stride());
+			
+			builder_CBV_SRV_UAV
+				.add(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, param)
+				.addSRV(resource_dx12, 0, count, param.stride());
 			
 		} else if (auto* gpuBuf = rttiCastCheck<GpuBuffer_Dx12>(ax_const_cast(param.getUploadedGpuBuffer(req)))) {
 			// AX_LOG("-- add StructuredBuffer");
@@ -84,10 +143,13 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 			auto* resource_dx12 = gpuBuf->resource_dx12();
 			gpuBuf->updateResourceBarrier(cmdList);
 			AX_ASSERT(param.stride() == structBuf->stride());
-			req->_dynamicDescriptors.CBV_SRV_UAV.addSRV(*resource_dx12, structBuf->gpuBufferOffset(), structBuf->count(), structBuf->stride());
+			
+			builder_CBV_SRV_UAV
+				.add(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, param)
+				.addSRV(*resource_dx12, structBuf->gpuBufferOffset(), structBuf->count(), structBuf->stride());
 			
 		} else {
-			// AX_ASSERT(false); // missing param
+			throw Error_Undefined(Fmt("missing material parameter [{}] - {}", param.name(), debugName()));
 		}
 	}
 
@@ -102,7 +164,10 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 				if (!tex_dx12) throw Error_Undefined();
 				
 				auto srcDesc = ax_const_cast(tex_dx12)->_getUpdatedDescriptor(req);
-				req->_dynamicDescriptors.CBV_SRV_UAV.addDescriptor(srcDesc);
+				
+				builder_CBV_SRV_UAV
+					.add(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, texParam)
+					.addDescriptor(srcDesc);
 			} break;
 			default: throw Error_Undefined();
 		}
@@ -118,10 +183,16 @@ auto MaterialParamSpace_Dx12::_updatedPerFrameData(RenderRequest_Dx12* req) -> P
 		
 		auto& ss = sampler_dx12->samplerState();
 //		AX_LOG("-- addSampler");
-		req->_dynamicDescriptors.Sampler.addSampler(ss);
+		builder_Sampler
+			.add(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, samplerParam)
+			.addSampler(ss);
 	}
 
 #endif
+	
+	builder_CBV_SRV_UAV.validate();
+	builder_Sampler.validate();
+
 	return _perFrameData;
 }
 

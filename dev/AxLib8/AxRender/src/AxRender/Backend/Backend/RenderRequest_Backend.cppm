@@ -111,7 +111,7 @@ protected:
 	MaterialParamSpace_Backend*  _globalCommonMaterialWorldParamSpace = nullptr;
 
 private:
-	void _updateWorldData();
+	void _updateGlobalCommonParams();
 	
 	Int _index = 0;
 	SPtr<RenderPass_Backend>	_backBufferRenderPass;

@@ -225,33 +225,35 @@ LightComponent::LightComponent() {
 }
 
 void SceneWorld::onRender(RenderRequest* req) {
-	req->drawWorld(); // indirect draw
-
 	auto tileLightingSpan = _tileLightingBuffer.editData(0, 1);
 	AxGpuData_TileLighting& tileLighting = tileLightingSpan[0];
 	tileLighting = {};
 	
 	for (auto* comp : _lightComponents) {
 		if (!comp) continue;
+
 		auto* light = comp->_lightObj.ptr();
 		if (!light) continue;
-		
+
 		light->setWorldPos(comp->entity()->worldPosition());
 
 		if (tileLighting.lightCount >= AX_HLSL_MAX_ACTIVE_LIGHTS) {
 			break; // TODO select most important light
 		}
 		
-		tileLighting.lights[tileLighting.lightCount] = light->objectSlot.slotId();
+		tileLighting.lightIds[tileLighting.lightCount] = light->objectSlot.slotId();
 		tileLighting.lightCount++;
 	}
 	_tileLightingBuffer.uploadAndGetOffset(req);
-	
+
+// ---- 	
 	for (auto* comp : _meshRendererComponents) {
 		if (!comp) continue;
 		auto& worldMatrix = comp->entity()->worldMatrix();
 		req->drawMesh(comp->mesh, comp->material, 0, worldMatrix);
 	}
+	
+//	req->drawWorld(); // indirect draw
 }
 
 void SceneEntity::markWorldMatrixDirty() {

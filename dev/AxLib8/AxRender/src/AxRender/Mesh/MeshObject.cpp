@@ -9,6 +9,10 @@ import :ClusterGenerator;
 namespace ax {
 
 SPtr<MeshObject> MeshObject::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
+//	auto* p = ObjectSlot::Table::s_instance()->findObject(desc.assetPath);
+//	if (p) return p;
+//	return new(req) MeshObject(desc);
+	
 	SPtr<MeshObject_Backend> o;
 	RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.assetPath);
 	return o;

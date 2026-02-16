@@ -211,7 +211,7 @@ struct Dx12DescriptorTable : public NonCopyable {
 	using BindPoint = ShaderParamBindPoint;
 	using BindSpace = ShaderParamBindSpace;
 
-	Array<D3D12_DESCRIPTOR_RANGE, 8>	descriptorRanges;
+	Array<D3D12_DESCRIPTOR_RANGE, 16>	descriptorRanges;
 
 	Int size() const { return descriptorRanges.size(); }
 

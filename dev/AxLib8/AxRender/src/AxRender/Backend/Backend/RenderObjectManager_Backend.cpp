@@ -115,12 +115,11 @@ void RenderObjectManager_Backend::_postCreate() {
 		}
 	};
 	
-	createPoolParam(_structBufferPools.axGpuData_MeshletGroup  , "axGpuData_MeshletGroup"  , 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axGpuData_MeshletCluster, "axGpuData_MeshletCluster", 1 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axGpuData_MeshletVert   , "axGpuData_MeshletVert"   , 3 * Math::GigaBytes, 4 * Math::MegaBytes);
-	createPoolParam(_structBufferPools.axGpuData_MeshletPrim   , "axGpuData_MeshletPrim"   , 2 * Math::GigaBytes, 4 * Math::MegaBytes);
-
-	createPoolParam(_structBufferPools.axGpuData_TileLighting  , "axGpuData_TileLighting"  ,   16 * Math::MegaBytes,  4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axGpuData_MeshletGroup  , "axGpuData_MeshletGroup"  ,  256 * Math::MegaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axGpuData_MeshletCluster, "axGpuData_MeshletCluster",  512 * Math::MegaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axGpuData_MeshletVert   , "axGpuData_MeshletVert"   , 2048 * Math::MegaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axGpuData_MeshletPrim   , "axGpuData_MeshletPrim"   , 2048 * Math::MegaBytes, 4 * Math::MegaBytes);
+	createPoolParam(_structBufferPools.axGpuData_TileLighting  , "axGpuData_TileLighting"  ,   16 * Math::MegaBytes, 4 * Math::MegaBytes);
 	
 #if AX_RENDER_BINDLESS
 	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();

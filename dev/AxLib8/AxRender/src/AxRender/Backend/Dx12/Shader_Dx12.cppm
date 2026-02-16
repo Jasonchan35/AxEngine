@@ -40,8 +40,8 @@ class ShaderParamSpace_Dx12 : public ShaderParamSpace_Backend {
 public:
 	ShaderParamSpace_Dx12(const CreateDesc& desc);
 	
-	Dx12DescriptorTable         _CBV_SRV_UAV_DescTable;
-	Dx12DescriptorTable         _samplerDescTable;
+	Dx12DescriptorTable         descTable_CBV_SRV_UAV;
+	Dx12DescriptorTable         descTable_Sampler;
 };
 
 class ShaderPass_Dx12 : public ShaderPass_Backend {

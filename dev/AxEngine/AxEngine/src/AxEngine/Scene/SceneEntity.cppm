@@ -249,7 +249,7 @@ protected:
 	SceneWorld();
 	void _onAddEntity(SceneEntity* entity);
 	
-	ObjectTable<LightComponent, &LightComponent::_slot> _lightComponents;
+	ObjectTable<LightComponent,        &LightComponent::_slot       > _lightComponents;
 	ObjectTable<MeshRendererComponent, &MeshRendererComponent::_slot> _meshRendererComponents;
 	
 	StructuredGpuBuffer_<AxGpuData_TileLighting>   _tileLightingBuffer;
