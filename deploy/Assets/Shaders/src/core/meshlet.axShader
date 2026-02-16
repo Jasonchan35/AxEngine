@@ -27,14 +27,11 @@ float4 ps_main(
 	SEM_sv_primitiveId(uint)
 ) : SV_Target {
 
-#if 0
-	AxGpuData_LightObject light;
-	light.worldPos = Vec3f(10, 10, -10);
-	light.color    = Color3f(1,1,1);
-
 	Vec3f worldPos    = i.worldPos;
 	Vec3f worldNormal = normalize(i.normal); 
 
+#if 0
+	AxGpuData_LightObject light = axGpuData_LightObject[0];
 	Color3f lightResult = axLight_Blinn(light, worldPos, worldNormal,
 										ambient, diffuse, specular, shininess);
 #else
@@ -43,13 +40,6 @@ float4 ps_main(
 	AxGpuData_TileLighting tile = axGpuData_TileLighting[0];
 	for (int j = 0; j < tile.lightCount; ++j) {
 		AxGpuData_LightObject light = axGpuData_LightObject[tile.lightIds[j]];
-
-		light.worldPos = Vec3f(10, 10, -10);
-		light.color    = Color3f(1,1,1);
-
-		Vec3f worldPos    = i.worldPos;
-		Vec3f worldNormal = normalize(i.normal); 
-
 		lightResult += axLight_Blinn(light, worldPos, worldNormal, ambient, diffuse, specular, shininess);
 	}
 #endif
