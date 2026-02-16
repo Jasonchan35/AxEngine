@@ -250,6 +250,11 @@ void RenderObjectTable<T>::onFrameEnd(RenderRequest* req) {
 	}
 
 	_dirtyObjects.clear();
+	
+	if (_gpuBufferPool) {
+		_gpuBufferPool->onGpuUpdatePages(req);
+	}
+	
 }
 
 

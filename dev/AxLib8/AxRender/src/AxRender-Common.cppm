@@ -16,7 +16,8 @@ struct AxRenderConfig {
 
 } // namespace
 
-export namespace ax /*::AxRender*/ {
+export namespace ax {
+	class MeshObject;
+
 	AX_RenderObject_LIST(AX_RenderObject_ForwardDeclare, AX_EMPTY, AX_EMPTY);
-	AX_RenderObject_BackendOnly_LIST(AX_RenderObject_ForwardDeclare, AX_EMPTY, AX_EMPTY);
 }

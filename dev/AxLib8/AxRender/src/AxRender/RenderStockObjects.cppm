@@ -4,7 +4,7 @@ export import :Texture;
 export import :Font;
 export import :RenderMesh;
 
-export namespace ax /*::AxRender*/ {
+export namespace ax {
 
 #define AX_RenderStockTextureId_ENUM_LIST(E) \
 	E(None,) \

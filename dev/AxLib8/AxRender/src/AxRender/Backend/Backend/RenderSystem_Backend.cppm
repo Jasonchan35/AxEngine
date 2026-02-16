@@ -10,7 +10,6 @@ export namespace ax /*::AxRender*/ {
 //---
 
 AX_RenderObject_LIST(AX_RenderObject_ForwardDeclareBackend, AX_EMPTY, AX_EMPTY);
-AX_RenderObject_BackendOnly_LIST(AX_RenderObject_ForwardDeclareBackend, AX_EMPTY, AX_EMPTY);
 
 template<class T> class BindlessTable;
 
@@ -23,7 +22,6 @@ public:
 	virtual ~RenderSystem_Backend() override;
 
 	AX_RenderObject_LIST(AX_RenderSystem_NewObject, AX_EMPTY, =0)
-	AX_RenderObject_BackendOnly_LIST(AX_RenderSystem_NewObject, AX_EMPTY, AX_EMPTY)
 
 	RenderRequest_Backend*		nextRenderRequest();
 	

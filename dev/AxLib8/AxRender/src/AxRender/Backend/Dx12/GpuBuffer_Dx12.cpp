@@ -13,7 +13,7 @@ GpuBufferPool_Dx12::GpuBufferPool_Dx12(const CreateDesc& desc): Base(desc) {
 	_pagePool.create(desc);
 }
 
-void GpuBufferPool_Dx12::onGpuUpdatePages(RenderRequest_Backend* req_) {
+void GpuBufferPool_Dx12::onGpuUpdatePages(RenderRequest* req_) {
 	auto* req = rttiCastCheck<RenderRequest_Dx12>(req_);
 	
 	auto& cmdList = req->uploadCmdList_dx12();

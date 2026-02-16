@@ -20,9 +20,6 @@ public:
 	{
 		return s_new(mem, CreateDesc(name, bufferType, maxSize, pageSize, blockAlignment));
 	}
-	
-	
-	virtual void onGpuUpdatePages(RenderRequest_Backend* req) {}
 
 	void _allocateBlock(GpuBuffer* buf);
 	void _freeBlock(GpuBuffer* buf);

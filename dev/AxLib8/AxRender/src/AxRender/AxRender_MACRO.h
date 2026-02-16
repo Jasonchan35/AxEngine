@@ -63,10 +63,6 @@
 /*	E(TextureCube				, API, SUFFIX) */ \
 //----
 
-#define AX_RenderObject_BackendOnly_LIST(E, API, SUFFIX) \
-	E(MeshObject				, API, SUFFIX) \
-//----
-
 #define AX_RenderObject_ForwardDeclare(OBJ, ...)	\
 	class OBJ; \
 	class OBJ ## _CreateDesc; \

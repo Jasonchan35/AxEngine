@@ -28,7 +28,7 @@ public:
 			func(axGpuData_MeshletPrim);
 			func(axGpuData_TileLighting);
 		}		
-	} _structBufferPools;	
+	} _structBufferPools;
 	
 };
 

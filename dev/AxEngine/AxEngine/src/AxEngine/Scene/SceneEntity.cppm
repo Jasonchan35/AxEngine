@@ -252,7 +252,7 @@ protected:
 	ObjectTable<LightComponent,        &LightComponent::_slot       > _lightComponents;
 	ObjectTable<MeshRendererComponent, &MeshRendererComponent::_slot> _meshRendererComponents;
 	
-	StructuredGpuBuffer_<AxGpuData_TileLighting>   _tileLightingBuffer;
+	StructuredGpuBuffer_<AxGpuData_TileLighting>		_tileLightingBuffer;
 
 	SPtr<SceneEntity> _root;
 };

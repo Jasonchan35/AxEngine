@@ -78,6 +78,8 @@ public:
 	
 	virtual Statistics getStatistics() const { return {}; }
 
+	virtual void onGpuUpdatePages(RenderRequest* req) {}
+	
 protected:
 	GpuBufferPool(const CreateDesc& desc);
 	

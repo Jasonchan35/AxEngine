@@ -19,7 +19,7 @@ GpuBufferPool_Vk::GpuBufferPool_Vk(const CreateDesc& desc): Base(desc) {
 	_pagePool.create(desc);
 }
 
-void GpuBufferPool_Vk::onGpuUpdatePages(RenderRequest_Backend* req_) {
+void GpuBufferPool_Vk::onGpuUpdatePages(RenderRequest* req_) {
 	if (_pagePool._pendingCommitPages.size() <= 0) return;
 	
 	auto* req = rttiCastCheck<RenderRequest_Vk>(req_);

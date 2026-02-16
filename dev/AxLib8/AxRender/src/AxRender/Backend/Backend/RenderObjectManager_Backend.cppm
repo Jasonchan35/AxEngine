@@ -10,12 +10,6 @@ export import :RenderObjectManager;
 
 export namespace ax /*::AxRender*/ {
 
-class MeshObject_Backend : public MeshObject {
-	AX_RTTI_INFO(MeshObject_Backend, MeshObject)
-public:
-	MeshObject_Backend(const CreateDesc& desc) : Base(desc) {}
-};
-
 class RenderObjectManager_CreateDesc {
 public:
 };
@@ -34,9 +28,6 @@ public:
 
 	void onFrameEnd(RenderRequest_Backend* req);
 
-	template<class T, class CREATE_DESC = typename T::CreateDesc, class RESOURCE_KEY = typename T::ResourceKey>
-	bool getOrNewObject(SPtr<T> & sp, const MemAllocRequest& req, const CREATE_DESC& desc, const RESOURCE_KEY& key);
-
 	void onFileChanged(FileDirWatcher_Result& result);
 	void hotReloadFile(StrView filename);
 
@@ -50,13 +41,6 @@ public:
 		const ShaderParamSpace_Backend::TextureParam*	AxBindless_Texture2D = nullptr;
 	} bindless;
 #endif
-	
-	struct StructuredBufferPoolParam {
-		SPtr<GpuBufferPool_Backend>	pool;
-		void onGpuUpdatePages(RenderRequest_Backend* req) {
-			if (pool) pool->onGpuUpdatePages(req);
-		}
-	};
 	
 	struct BufferPools {
 		SPtr<GpuBufferPool_Backend>	vertex;
@@ -97,26 +81,5 @@ protected:
 	SPtr<Material_Backend>	_globalCommonMaterial;
 	SPtr<Material_Backend>	_indirectDrawMaterial;
 };
-
-template<class T, class CREATE_DESC, class RESOURCE_KEY>
-bool RenderObjectManager_Backend::getOrNewObject(SPtr<T>&                 sp,
-                                                   const MemAllocRequest& req,
-                                                   const CREATE_DESC&     desc,
-                                                   const RESOURCE_KEY&    key
-) {
-	if (key) {
-		auto table = decltype(T::objectSlot)::Table::s_instance();
-		if (auto* p = table->findObject(key)) {
-			sp = rttiCastCheck<T>(p);
-			return false; // return exists one
-		}
-	}
-
-	UPtr<T> u;
-	RenderSystem_Backend::s_instance()->_newObject(u, req, desc);
-	sp = SPtr_fromUPtr(std::move(u));
-	return true; // return new one
-}
- 
 
 } // namespace

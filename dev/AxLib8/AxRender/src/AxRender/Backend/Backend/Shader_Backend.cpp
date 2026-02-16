@@ -276,10 +276,13 @@ void ShaderPass_Backend::_createParamSpaces() {
 #endif
 
 SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	SPtr<Shader_Backend> o;
-	if (RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.assetPath))
-		o->_create(desc);
-	return o;
+	if (auto* p = ObjectSlot::Table::s_instance()->findObject(desc.assetPath)) {
+		return rttiCastCheck<This>(p);
+	}
+
+	auto sp = SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newShader(req, desc));
+	sp->_create(desc);
+	return sp;
 }
 
 SPtr<Shader_Backend> Shader_Backend::s_new(const MemAllocRequest& req, StrView assetPath) {

@@ -140,7 +140,8 @@ protected:
 	SamplerState	_samplerState;
 	
 public:
-	RenderObjectSlot<This>	objectSlot;
+	using ObjectSlot = RenderObjectSlot<This>;
+	ObjectSlot objectSlot;
 };
 
 class Texture : public RenderObject {

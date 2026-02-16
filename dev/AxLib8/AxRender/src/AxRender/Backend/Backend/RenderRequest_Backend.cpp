@@ -214,7 +214,7 @@ void RenderRequest_Backend::vertexShaderDraw_backend(AxVertexShaderDraw& draw) {
 }
 
 void RenderRequest_Backend::meshShaderDraw_backend(AxMeshShaderDraw& draw) {
-	auto* meshObject = rttiCastCheck<MeshObject_Backend>(draw.meshObject);
+	auto* meshObject = draw.meshObject;
 	resourcesToKeep.add(meshObject);
 	
 	auto* material = rttiCastCheck<Material_Backend>(draw.material);

@@ -21,7 +21,7 @@ public:
 	virtual void onAllocateBlock(GpuBuffer* buf) override { _pagePool.onAllocateBlock(buf, _pageSize); }
 	virtual void onFreeBlock(GpuBuffer* buf) override { _pagePool.onFreeBlock(buf, _pageSize); }
 	
-	virtual void onGpuUpdatePages(RenderRequest_Backend* req_) override;
+	virtual void onGpuUpdatePages(RenderRequest* req_) override;
 
 	VkDescriptorBufferInfo _getUpdatedDescriptorInfo(RenderRequest_Vk* req) const {
 		VkDescriptorBufferInfo info = {};

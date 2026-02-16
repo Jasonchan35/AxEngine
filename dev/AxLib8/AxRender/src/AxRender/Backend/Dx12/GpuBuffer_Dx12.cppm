@@ -23,7 +23,7 @@ public:
 	virtual void onAllocateBlock(GpuBuffer* buf) override { _pagePool.onAllocateBlock(buf, _pageSize); }
 	virtual void onFreeBlock(GpuBuffer* buf) override { _pagePool.onFreeBlock(buf, _pageSize); }
 	
-	virtual void onGpuUpdatePages(RenderRequest_Backend* req_) override;
+	virtual void onGpuUpdatePages(RenderRequest* req_) override;
 
 	PagePool_<Page_Dx12>   _pagePool;
 	Dx12Resource_GpuBuffer _resource_dx12;

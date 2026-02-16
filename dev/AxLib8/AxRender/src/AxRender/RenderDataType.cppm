@@ -15,8 +15,8 @@ public:
 	void setName(InNameId name) { _name = name; onSetName(name); }
 
 	using GpuData = nullptr_t;
-	static constexpr Int s_gpuBufferMaxSize () { return 1 * Math::GigaBytes; }
-	static constexpr Int s_gpuBufferPageSize() { return 4 * Math::MegaBytes; }
+	static constexpr Int s_gpuBufferMaxSize () { return 64 * Math::MegaBytes; }
+	static constexpr Int s_gpuBufferPageSize() { return  4 * Math::MegaBytes; }
 protected:
 	virtual void onSetName(NameId name) {};
 	

@@ -7,6 +7,8 @@ export import :RenderObjectManager_Backend;
 export import :RenderPass_Backend;
 export import :GpuBuffer_Backend;
 export import :Material_Backend;
+export import :LightObject;
+export import :CameraObject;
 
 export namespace ax /*::AxRender*/ {
 
@@ -48,7 +50,9 @@ public:
 		void add(const  Texture2D_Backend* p) { _add(p); }
 		void add(const   Material_Backend* p) { _add(p); }
 		void add(const  GpuBuffer_Backend* p) { _add(p); }
-		void add(const MeshObject_Backend* p) { _add(p); }
+		void add(const MeshObject*   p) { _add(p); }
+		void add(const LightObject*  p) { _add(p); }
+		void add(const CameraObject* p) { _add(p); }
 
 		void clear() {
 			visit([](auto& list) { list.clear(); });
@@ -73,7 +77,9 @@ public:
 			Array< SPtr<const RenderPass_Backend> >,
 			Array< SPtr<const    Sampler_Backend> >,
 			Array< SPtr<const  Texture2D_Backend> >,
-			Array< SPtr<const MeshObject_Backend> >
+			Array< SPtr<const MeshObject  > >,
+			Array< SPtr<const CameraObject> >,
+			Array< SPtr<const LightObject > >
 		>;
 		All_List _all_list;
 	};

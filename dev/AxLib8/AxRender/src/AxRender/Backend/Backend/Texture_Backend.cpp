@@ -6,17 +6,23 @@ import :RenderObjectManager_Backend;
 namespace ax /*::AxRender*/ {
 
 SPtr<Sampler> Sampler_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	SPtr<Sampler_Backend> o;
-	if (RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.samplerState))
-		o->_create(desc);
-	return o;
+	if (auto* p = ObjectSlot::Table::s_instance()->findObject(desc.samplerState)) {
+		return p;
+	}
+	
+	auto sp = SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newSampler(req, desc));
+	sp->_create(desc);
+	return sp;
 }
 
 SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, const CreateDesc& desc) {
-	SPtr<Texture2D_Backend> o;
-	if (RenderObjectManager_Backend::s_instance()->getOrNewObject(o, req, desc, desc.assetPath))
-		o->_create(desc);
-	return o;
+	if (auto* p = ObjectSlot::Table::s_instance()->findObject(desc.assetPath)) {
+		return rttiCastCheck<Texture2D_Backend>(p);
+	}
+
+	auto sp = SPtr_fromUPtr(RenderSystem_Backend::s_instance()->newTexture2D(req, desc));
+	sp->_create(desc);
+	return sp;
 }
 
 SPtr<Texture2D_Backend> Texture2D_Backend::s_new(const MemAllocRequest& req, StrView assetPath) {
