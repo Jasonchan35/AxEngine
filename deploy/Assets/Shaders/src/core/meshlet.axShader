@@ -26,6 +26,7 @@ float4 ps_main(
 	VS_Output i,
 	SEM_sv_primitiveId(uint)
 ) : SV_Target {
+	
 	AxGpuData_LightObject light;
 	light.worldPos = Vec3f(10, 10, -10);
 	light.color    = Color3f(1,1,1);
@@ -36,9 +37,26 @@ float4 ps_main(
 	Color3f lightResult = axLight_Blinn(light, worldPos, worldNormal,
 										ambient, diffuse, specular, shininess);
 
+/*
+	Color3f lightResult = Color3f(0,0,0);
+
+	AxGpuData_TileLighting tile = axGpuData_TileLighting[0];
+	for (int j = 0; j < tile.lightCount; ++j) {
+		AxGpuData_LightObject light = axGpuData_LightObject[tile.lightIds[j]];
+
+		light.worldPos = Vec3f(10, 10, -10);
+		light.color    = Color3f(1,1,1);
+
+		Vec3f worldPos    = i.worldPos;
+		Vec3f worldNormal = normalize(i.normal); 
+
+		lightResult += axLight_Blinn(light, worldPos, worldNormal, ambient, diffuse, specular, shininess);
+	}
+*/
 	if (axDebug.debugColorCode == AxGpuDebugColorCode_Tri) {
 		i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
 	}
+
 	return i.color0 * Color4f(lightResult, 1);
 }
 

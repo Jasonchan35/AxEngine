@@ -7,7 +7,8 @@ ConstantBuffer<AxGpuData_World > axWorld  : register(b100, AX_BindSpace_World);
 ConstantBuffer<AxGpuData_Camera> axCamera : register(b101, AX_BindSpace_World);
 ConstantBuffer<AxGpuData_Debug > axDebug  : register(b102, AX_BindSpace_World);
 
-StructuredBuffer<AxGpuData_LightObject > axGpuData_LightObject  : register(t100, AX_BindSpace_World);
+StructuredBuffer<AxGpuData_LightObject >	axGpuData_LightObject  : register(t100, AX_BindSpace_World);
+StructuredBuffer<AxGpuData_TileLighting>	axGpuData_TileLighting : register(t101, AX_BindSpace_World);
 
 Vec3f ax_debug_lod_offset(uint lod) { return Vec3f(lod * axDebug.showAllLodDistance, 0, 0); }
 
