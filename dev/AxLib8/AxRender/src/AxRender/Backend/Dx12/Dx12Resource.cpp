@@ -67,7 +67,7 @@ D3D12_RESOURCE_STATES Dx12Resource_GpuBuffer::s_defaultResourceState(GpuBufferTy
 		case GpuBufferType::IndirectArgument		: return D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT;
 		case GpuBufferType::StagingToCpu			: return D3D12_RESOURCE_STATE_COMMON;
 		case GpuBufferType::StagingToGpu			: return D3D12_RESOURCE_STATE_GENERIC_READ;
-		case GpuBufferType::Structured				: return D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+		case GpuBufferType::Structured				: return D3D12_RESOURCE_STATE_COMMON; // | D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 		case GpuBufferType::RayTracingShaderRecord	: return D3D12_RESOURCE_STATE_COMMON;
 		case GpuBufferType::RayTracingInstanceDesc	: return D3D12_RESOURCE_STATE_COMMON;
 		case GpuBufferType::RayTracingScratch		: return D3D12_RESOURCE_STATE_UNORDERED_ACCESS;

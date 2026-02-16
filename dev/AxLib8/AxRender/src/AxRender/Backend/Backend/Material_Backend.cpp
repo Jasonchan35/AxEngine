@@ -93,16 +93,17 @@ bool MaterialParamSpace_Backend::setParam(NameId name, StructuredGpuBuffer* v) {
 }
 
 bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {
+	if (!tex) {
+		tex = RenderStockObjects::s_instance()->fallback->texture2D.ptr(); 
+	}
+	if (!tex) throw Error_Undefined();
+	
 #if AX_RENDER_BINDLESS
 	if (!_shaderParamSpace) return false;
 	auto bindlessName = _shaderParamSpace->getTexture2DName(name);
 	if (!bindlessName) return false;
 
-	auto slot = RenderObjectSlotId_None;
-	if (auto* tex_ = rttiCastCheck<Texture2D_Backend>(tex)) {
-		slot = tex_->objectSlot.slotId();
-	}
-	return setParam(bindlessName, slot);
+	return setParam(bindlessName, tex->objectSlot.slotId());
 
 #else
 	auto f = _findParam(_textureParams, name);
@@ -113,16 +114,17 @@ bool MaterialParamSpace_Backend::setParam(NameId name, Texture2D* tex) {
 }
 
 bool MaterialParamSpace_Backend::setParam(NameId name, Sampler* sampler) {
+	if (!sampler) {
+		sampler = RenderStockObjects::s_instance()->fallback->sampler.ptr(); 
+	}
+	if (!sampler) throw Error_Undefined();
+	
 #if AX_RENDER_BINDLESS
 	if (!_shaderParamSpace) return false;
 	auto bindlessName = _shaderParamSpace->getSamplerName(name);
 	if (!bindlessName) return false;
 
-	auto slot = RenderObjectSlotId_None;
-	if (auto* sampler_ = rttiCastCheck<Sampler_Backend>(sampler)) {
-		slot = sampler_->objectSlot.slotId();
-	}
-	return setParam(bindlessName, slot);
+	return setParam(bindlessName, sampler->objectSlot.slotId());
 
 #else
 	auto samplerName = _shaderParamSpace->getSamplerName(name);

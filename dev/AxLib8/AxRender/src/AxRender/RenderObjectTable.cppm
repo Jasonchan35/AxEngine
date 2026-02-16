@@ -22,7 +22,7 @@ public:
 	AX_INLINE RenderObjectSlotId slotId() const { return _slotId; }
 	AX_INLINE T*	 owner() { return _owner; }
 
-	RenderObjectSlot(T* owner, bool isFallbackDefault = false);
+	RenderObjectSlot(T* owner);
 	~RenderObjectSlot();
 	void markDirty();
 	
@@ -60,7 +60,7 @@ public:
 	using ResourceKey = typename T::ResourceKey;
 	static constexpr bool kHasResourceKey = !Type_IsSame<ResourceKey, nullptr_t>;
 
-	void add(T* obj, bool isFallbackDefault);
+	void add(T* obj);
 	void remove(T* obj);
 	void markDirty(T* obj);
 
@@ -118,7 +118,6 @@ RenderObjectTable<T>::RenderObjectTable() {
 	auto frameCount = RenderSystem::s_instance()->renderRequestCount();
 	if (frameCount < 1) throw Error_Undefined();
 	_frames.resize(frameCount);
-	_slots.emplaceBack(nullptr); // slot 0 for fallback when error
 	
 	if constexpr (kHasGpuData) {
 		// TODO - get maxSize and pageSize from config file
@@ -131,9 +130,9 @@ RenderObjectTable<T>::RenderObjectTable() {
 }
 
 template<class T>
-RenderObjectSlot<T>::RenderObjectSlot(T* owner, bool isFallbackDefault): _owner(owner) {
+RenderObjectSlot<T>::RenderObjectSlot(T* owner): _owner(owner) {
 	auto* table = Table::s_instance();
-	table->add(_owner, isFallbackDefault);
+	table->add(_owner);
 }
 
 template<class T>
@@ -149,7 +148,7 @@ void RenderObjectSlot<T>::markDirty() {
 }
 
 template<class T>
-void RenderObjectTable<T>::add(T* obj, bool isFallbackDefault) {
+void RenderObjectTable<T>::add(T* obj) {
 	if (!obj) return;
 
 	if constexpr (kHasResourceKey) {
@@ -165,25 +164,13 @@ void RenderObjectTable<T>::add(T* obj, bool isFallbackDefault) {
 		return;
 	}
 
-	auto slotId = RenderObjectSlotId_None;
-	if (isFallbackDefault) {
-		slotId = 0;
-		if (_slots[slotId]) {
-			AX_ASSERT(false); // added already ?
-			return;
-		}
-		_slots[slotId] = obj;
-
+	if (_freeSlots.size()) {
+		slot._slotId = _freeSlots.popBack();
 	} else {
-		if (_freeSlots.size()) {
-			slotId = _freeSlots.popBack();
-		} else {
-			slotId = ax_safe_cast_from(_slots.size());
-			_slots.emplaceBack(obj);
-		}
+		slot._slotId = ax_safe_cast_from(_slots.size());
+		_slots.emplaceBack(obj);
 	}
 
-	slot._slotId = slotId;
 	markDirty(obj);
 }
 

@@ -70,6 +70,8 @@ struct MaterialParamSpace_Dx12::DescTableBuilder {
 	
 	template<class PARAM>
 	HEAP_CHUNK& add(D3D12_DESCRIPTOR_RANGE_TYPE type, const PARAM& param) {
+//		AX_LOG("--- add {} {} name={} bindPoint={}", type, heapChunk.used(), param.name(), param.bindPoint());
+		
 		auto* p = descTable.descriptorRanges.tryGetElement(nextDescIndex);
 		if (!p) throw Error_Undefined();
 		nextDescIndex++;
@@ -263,10 +265,6 @@ bool MaterialPass_Dx12::_onBindMaterial(RenderRequest_Dx12* req, ByteSpan rootCo
 		}
 		rootParamIndex++;
 	}
-
-	//----- return Block remain ----
-	// req->_heap_CBV_SRV_UAV.returnBlockRemain(cbvHeapBlock);
-	// req->_heap_Sampler.returnBlockRemain(samplerHeapBlock);
 
 	if (rootParamIndex != shaderPass_dx12()->_pipelineRootParamList.parameters.size())
 		throw Error_Undefined();
