@@ -22,6 +22,10 @@ AxEngine::LightComponent::MutRttiInit::MutRttiInit() {
 	name = NameId::s_make("LightComponent");
 }; 
 
+AxEngine::CameraComponent::MutRttiInit::MutRttiInit() {
+	name = NameId::s_make("CameraComponent");
+}; 
+
 AxEngine::SceneWorld::MutRttiInit::MutRttiInit() {
 	name = NameId::s_make("SceneWorld");
 }; 

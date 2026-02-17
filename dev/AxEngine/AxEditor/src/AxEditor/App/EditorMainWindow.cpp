@@ -257,33 +257,12 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		}
 	}
 	
+	if (auto* comp = entity->getComponent<CameraComponent>()) {
+		ImUIGizmoCamera(req->viewport(), viewMatrix, projMatrix, comp->cameraObj->camera, req->projectionDesc());
+	}
 	
 	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {
-	#if 1
 		entity->setWorldMatrix(worldMatrix);
-	#else
-		auto* parent = entity->parent();
-		auto wm = Mat4d::s_cast(worldMatrix);
-		
-		auto localMatrix = parent ? Mat4d::s_cast(parent->worldMatrix()).inverse() * wm : wm;
-		
-		Vec3d  position;
-		Quat4d rotation;
-		Vec3d  scale;
-		localMatrix.getTRS(position, rotation, scale);
-		
-		rotation = rotation.normalize();
-		
-		switch (_gizmoOp) {
-			case ImUIGizmoOperation::Translate: entity->position = Vec3f::s_cast(position);  break;
-			case ImUIGizmoOperation::Rotate   : entity->rotation = Quat4f::s_cast(rotation); break;
-			case ImUIGizmoOperation::Bounds: AX_FALLTHROUGH
-			case ImUIGizmoOperation::Scale: {
-				entity->scale    = Vec3f::s_cast(scale);
-			} break;
-			default: break;
-		}		
-#endif	
 	}
 }
 

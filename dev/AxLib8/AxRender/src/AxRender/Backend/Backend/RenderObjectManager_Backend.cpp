@@ -121,6 +121,10 @@ void RenderObjectManager_Backend::_postCreate() {
 	createPoolParam(_structBufferPools.axGpuData_MeshletPrim   , "axGpuData_MeshletPrim"   , 2048 * Math::MegaBytes, 4 * Math::MegaBytes);
 	createPoolParam(_structBufferPools.axGpuData_TileLighting  , "axGpuData_TileLighting"  ,   16 * Math::MegaBytes, 4 * Math::MegaBytes);
 	
+	RenderObjectTable<CameraObject>::s_instance();
+	RenderObjectTable<LightObject>::s_instance();
+	RenderObjectTable<MeshObject>::s_instance();
+	
 #if AX_RENDER_BINDLESS
 	auto* commonShaderPass = ShaderPass_Backend::s_globalCommonShaderPass();
 	auto* bindlessSpace    = commonShaderPass->getParamSpace(ShaderParamBindSpace::Bindless);

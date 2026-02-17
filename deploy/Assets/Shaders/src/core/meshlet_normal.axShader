@@ -17,6 +17,10 @@ Pass "Pass0" {
 
 #include "AxMeshShaderDraw.hlsl"
 
+struct VS_Output {
+	SEM_sv_pos(float4);
+};
+
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("line")]
 void ms_main(
@@ -25,8 +29,7 @@ void ms_main(
 	SEM_dtid(u32),
 	in payload Payload payload,
 	out vertices   VS_Output     outVert[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT * 2],
-	out indices    u32x2         outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
-	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
+	out indices    u32x2         outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
 	u32 meshletId = payload.meshletIds[gid];
 	AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[meshletId];
@@ -39,19 +42,16 @@ void ms_main(
 		u32 vi = gtid * 2;
 
 		outPrim[gtid] = u32x2(vi, vi + 1);
-		outPrimId[gtid].primitiveId = gtid;
 
 	// vertex	
-		VS_Input i;
+		MeshletVS_Input i;
 
 		AxGpuData_MeshletVert mv = axGpuData_MeshletVert[cluster.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos + ax_debug_lod_offset(cluster.lod), 1);
 		i.normal = ax_unpack_normal_octahedral(mv.normal_octahedral);
-		i.color0 = float4(1,1,1,1);
 
 		VS_Output o;
 		o.sv_pos   = axObjectToClipPos(i.pos);
-		o.color0   = i.color0;
 
 		outVert[gtid * 2] = o;
 		i.pos.xyz += axObjectToWorldNormal(i.normal) * axDebug.drawNormalLength;
@@ -62,10 +62,7 @@ void ms_main(
 }
 
 
-float4 ps_main(
-	VS_Output i,
-	SEM_sv_primitiveId(uint)
-) : SV_Target {
+float4 ps_main(VS_Output i) : SV_Target {
 	return float4(0,1,0,1);
 }
 

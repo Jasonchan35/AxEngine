@@ -4,6 +4,7 @@ module AxRender;
 import :ImGui_Backend;
 import :RenderSystem;
 import :RenderContext;
+import AxRender.ImGui;
 
 namespace ax /*::AxRender*/ {
 
@@ -76,7 +77,7 @@ void ImGui_Backend::destroy() {
 void ImGui_Backend::onBeginRender(Vec2i frameSize) {
 	ImGuiIO& io = ImGui::GetIO();
 
-	io.DisplaySize = ImVec2_make(frameSize);
+	io.DisplaySize = ImVec2_make(Vec2f::s_cast(frameSize));
 	io.DeltaTime = 1.0f / 60.0f;
 
 	if (!_fontTex) {

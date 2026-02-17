@@ -23,7 +23,7 @@ uniform Color3f specular;
 uniform float   shininess;
 
 float4 ps_main(
-	VS_Output i,
+	MeshletVS_Output i,
 	SEM_sv_primitiveId(uint)
 ) : SV_Target {
 

@@ -122,9 +122,15 @@ void EditorApp::_testLoadFbx() {
 	{ // create lights
 		for (Int i = 0; i < 1; ++i) {
 			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Light_{}", i));
-			entity->setPosition(Vec3f(static_cast<f32>(i) * 2.0f, 2, -2));
+			entity->setPosition(static_cast<f32>(i) * 2.0f, 2, -2);
 			entity->addComponent<LightComponent>(AX_NEW);
 		}
+	}
+	
+	{
+		auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Camera"));
+		entity->setPosition(2.0f, 2, 2);
+		entity->addComponent<CameraComponent>(AX_NEW);
 	}
 	
 }

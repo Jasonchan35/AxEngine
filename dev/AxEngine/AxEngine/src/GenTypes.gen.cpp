@@ -10,6 +10,7 @@ void registerTypes() {
 	mgr->addType<AxEngine::SceneEntity                   >();
 	mgr->addType<AxEngine::MeshRendererComponent         >();
 	mgr->addType<AxEngine::LightComponent                >();
+	mgr->addType<AxEngine::CameraComponent               >();
 	mgr->addType<AxEngine::SceneWorld                    >();
 }
 

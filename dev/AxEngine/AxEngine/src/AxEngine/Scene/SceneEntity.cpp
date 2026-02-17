@@ -211,17 +211,23 @@ void MeshRendererComponent::onJsonIO(JsonIO_Writer& se) {
 }
 
 LightComponent::~LightComponent() {
-	auto* world = getWorld();
-	world->_lightComponents.remove(this);
+	getWorld()->_lightComponents.remove(this);
 }
 
 void LightComponent::onInit() {
-	auto* world = getWorld();
-	world->_lightComponents.add(this);
+	Base::onInit();
+	_lightObj = LightObject::s_new(AX_NEW);
+	getWorld()->_lightComponents.add(this);
 }
 
-LightComponent::LightComponent() {
-	_lightObj = LightObject::s_new(AX_NEW);
+CameraComponent::~CameraComponent() {
+	getWorld()->_cameraComponents.remove(this);
+}
+
+void CameraComponent::onInit() {
+	Base::onInit();
+	cameraObj = CameraObject::s_new(AX_NEW);
+	getWorld()->_cameraComponents.add(this);
 }
 
 void SceneWorld::onRender(RenderRequest* req) {

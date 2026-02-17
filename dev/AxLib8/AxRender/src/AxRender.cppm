@@ -1,11 +1,12 @@
 ﻿module;
 export module AxRender;
+export import AxRender.ImGui;
 export import :Common;
-
 export import :RenderSystem;
 export import :RenderContext;
 export import :RenderRequest;
 export import :DemoRenderGraph;
 export import :RenderMeshEdit;
 export import :LightObject;
+export import :CameraObject;
 export import :RenderObjectManager;

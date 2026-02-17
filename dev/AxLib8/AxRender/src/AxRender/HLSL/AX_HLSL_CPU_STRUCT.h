@@ -84,7 +84,7 @@ struct AxVertexShaderDraw_RootConst {
 struct AxMeshShaderDraw_RootConst {
 	Mat4f worldMatrix;
 	u32   meshObjectId;
-	u32   meshRendererId;
+	u32   cameraId;
 	u32   _padding0;
 	u32   _padding1;
 };

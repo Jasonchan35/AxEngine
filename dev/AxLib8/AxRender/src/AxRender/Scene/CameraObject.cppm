@@ -17,6 +17,8 @@ public:
 	using GpuData = AxGpuData_CameraObject;
 	const GpuData* onGetGpuData(RenderRequest* req) { return &_gpuData; }
 
+	Math::Camera3f camera;
+	
 protected:
 	CameraObject();
 	GpuData    _gpuData = {};

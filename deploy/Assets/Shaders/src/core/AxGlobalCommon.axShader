@@ -46,8 +46,7 @@ float dummy_func() {
 		+ axGpuData_MeshObject[0].meshletClusterOffset
 		+ axGpuData_TileLighting[0].lightCount
 		+ axGpuData_LightObject[0].worldPos.x
-//		+ axGpuData_MeshRenderer[0].worldMatrix[0][0]
-//		+ axGpuData_CameraObject[0].worldPos.x
+		+ axGpuData_CameraObject[0].worldPos.x
 
 		+ axGpuData_MeshletGroup[0].clusterOffset
 		+ axGpuData_MeshletCluster[0].vertOffset

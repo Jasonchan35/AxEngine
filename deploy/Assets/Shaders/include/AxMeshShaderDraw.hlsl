@@ -4,9 +4,9 @@
 #include "Ax/AxWorld.hlsl"
 
 AX_ROOT_CONST_STRUCT(AxMeshShaderDraw_RootConst, axMeshShaderDraw_RootConst) 
-#define AX_MATRIX_M				axMeshShaderDraw_RootConst.worldMatrix
-#define AX_MESH_OBJECT_ID		axMeshShaderDraw_RootConst.meshObjectId
-#define AX_MATRIX_VP			axCamera.viewProjMatrix
+#define AX_MATRIX_M			axMeshShaderDraw_RootConst.worldMatrix
+#define AX_MESH_OBJECT_ID	axMeshShaderDraw_RootConst.meshObjectId
+#define AX_MATRIX_VP		axCamera.viewProjMatrix
 
 Vec3f axObjectToWorldPos(Vec4f inPos) { return mul(AX_MATRIX_M,  inPos).xyz; }
 Vec4f axWorldToClipPos  (Vec4f inPos) { return mul(AX_MATRIX_VP, inPos); }
@@ -34,7 +34,7 @@ groupshared Payload s_payload;
 #define MAX(x, y) (x > y ? x : y)
 #define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))
 
-struct VS_Input {
+struct MeshletVS_Input {
 	SEM_pos(float4);
 	SEM_color0(float4);
 	SEM_normal(float3);
@@ -42,7 +42,7 @@ struct VS_Input {
 	SEM_uv1(float2);
 };
 
-struct VS_Output {
+struct MeshletVS_Output {
 	SEM_sv_pos(float4);
 	SEM_color0(float4);
 	SEM_normal(float3);
@@ -51,7 +51,7 @@ struct VS_Output {
 	SEM_uv1(float2);
 };
 
-struct VS_PrimId_Out {
+struct MeshletVS_PrimId_Out {
 	uint primitiveId : SV_PrimitiveID;
 };
 
@@ -120,9 +120,9 @@ void axMeshlet_MeshMain(
 	SEM_gtid(u32),
 	SEM_dtid(u32),
 	in payload Payload payload,
-	out vertices   VS_Output     outVert[AX_HLSL_MESH_SHADER_MAX_VERT_COUNT],
-	out indices    u32x3         outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
-	out primitives VS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
+	out vertices   MeshletVS_Output     outVert[AX_HLSL_MESH_SHADER_MAX_VERT_COUNT],
+	out primitives MeshletVS_PrimId_Out outPrimId[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT],
+	out indices    u32x3                outPrim[AX_HLSL_MESH_SHADER_MAX_PRIM_COUNT]
 ) {
 	u32 clusterId = payload.meshletIds[gid];
 	AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[clusterId];
@@ -135,7 +135,7 @@ void axMeshlet_MeshMain(
 	}
 
 	if (gtid < cluster.vertCount) {
-		VS_Input i;
+		MeshletVS_Input i;
 
 		AxGpuData_MeshletVert mv = axGpuData_MeshletVert[cluster.vertOffset + gtid];
 		i.pos    = Vec4f(mv.pos, 1);
@@ -156,7 +156,7 @@ void axMeshlet_MeshMain(
 			case AxGpuDebugColorCode_MeshletLod:          i.color0 = ax_debug_color(cluster.lod           ); break;
 		}
 
-		VS_Output o;
+		MeshletVS_Output o;
 		o.worldPos = axObjectToWorldPos(i.pos);
 		o.sv_pos   = axObjectToClipPos(i.pos);
 		o.normal   = axObjectToClipNormal(i.normal);

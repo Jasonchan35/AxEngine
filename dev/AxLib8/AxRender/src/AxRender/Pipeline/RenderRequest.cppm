@@ -72,6 +72,8 @@ public:
 		GpuBufferPool::Statistics  meshletGroup;
 	};
 	Statistics statistics;
+	
+	const ProjectionDesc& projectionDesc() const { return _projectionDesc; }
 
 	void setViewport(const Rect2f& rect, float minDepth, float maxDepth);
 	AX_INLINE const Rect2f& viewport() { return _viewportRect; }

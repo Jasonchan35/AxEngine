@@ -128,8 +128,13 @@ public:
 	const Vec3f&  scale() const { return _scale; }
 	
 	void setPosition(const Vec3f&  pos  ) { _position = pos;   markLocalMatrixDirty(); }
+	void setPosition(float x, float y, float z) { setPosition(Vec3f(x,y,z)); }
+	
 	void setRotation(const Quat4f& rot  ) { _rotation = rot;   markLocalMatrixDirty(); }
+	void setRotation(float x, float y, float z) { setRotation(Quat4f::s_eulerDeg(x,y,z)); }
+	
 	void setScale   (const Vec3f&  scale) { _scale    = scale; markLocalMatrixDirty(); }
+	void setScale   (float x, float y, float z) { setScale(Vec3f(x,y,z)); }
 
 	void setTRS(const Vec3f& position_, const Quat4f& rotation_, const Vec3f& scale_) {
 		_position = position_;
@@ -207,17 +212,30 @@ AX_CLASS()
 class LightComponent : public SceneComponent {
 	AX_GENERATED_BODY()
 public:
-	LightComponent();
 	~LightComponent();
 
-	virtual void onInit() override;
-	
 	ObjectTableSlot<This> _slot;
 	
 protected:
+	virtual void onInit() override;
 	
 	friend SceneWorld;
 	SPtr<LightObject> _lightObj;
+};
+
+AX_CLASS()
+class CameraComponent : public SceneComponent {
+	AX_GENERATED_BODY()
+public:
+	~CameraComponent();
+
+	ObjectTableSlot<This> _slot;
+	
+	SPtr<CameraObject> cameraObj;
+
+protected:
+	virtual void onInit() override;
+	
 };
 
 
@@ -243,12 +261,14 @@ protected:
 	friend class SceneEntity;
 	friend class MeshRendererComponent;
 	friend class LightComponent;
+	friend class CameraComponent;
 	
 	template<class SE> void _onJsonIO(SE& se);
 	
 	SceneWorld();
 	void _onAddEntity(SceneEntity* entity);
 	
+	ObjectTable<CameraComponent,       &CameraComponent::_slot      > _cameraComponents;
 	ObjectTable<LightComponent,        &LightComponent::_slot       > _lightComponents;
 	ObjectTable<MeshRendererComponent, &MeshRendererComponent::_slot> _meshRendererComponents;
 	
