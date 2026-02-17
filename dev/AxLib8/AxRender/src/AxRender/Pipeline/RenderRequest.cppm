@@ -54,6 +54,7 @@ public:
 	void meshShaderDraw(AxMeshShaderDraw& draw);
 
 	f64	uptime() const { return _uptime; }
+	f32 deltaTime() const { return _deltaTime; }
 
 	struct Statistics {
 		bool show                     = false;
@@ -92,13 +93,14 @@ public:
 protected:
 	RenderRequest();
 	
-	RenderSystem*       _renderSystem       = nullptr;
-	RenderContext*      _renderContext      = nullptr;
-	const RenderGraph*  _renderGraph        = nullptr;
-	RenderStockObjects* _stockObjects       = nullptr;
-	RenderPass*         _currentRenderPass  = nullptr;
+	RenderSystem*       _renderSystem      = nullptr;
+	RenderContext*      _renderContext     = nullptr;
+	const RenderGraph*  _renderGraph       = nullptr;
+	RenderStockObjects* _stockObjects      = nullptr;
+	RenderPass*         _currentRenderPass = nullptr;
 	ProjectionDesc      _projectionDesc;
-	f64                 _uptime             = 0;
+	f64                 _uptime    = 0;
+	f32                 _deltaTime = 0;
 	Vec2i               _frameSize{0, 0};
 	Rect2f              _scissorRect{0, 0, 0, 0};
 	Rect2f              _viewportRect{0, 0, 0, 0};

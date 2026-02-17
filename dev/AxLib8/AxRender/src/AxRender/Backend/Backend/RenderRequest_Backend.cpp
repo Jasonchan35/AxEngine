@@ -49,8 +49,12 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_projectionDesc       = _renderGraph->projectionDesc();
 	_frameSize            = backBufferRenderPass->frameSize();
 	_backBufferRenderPass = backBufferRenderPass;
-	_uptime               = _renderSystem_backend->getCurrentUptime().seconds_f64();
 	_objectManager        = RenderObjectManager_Backend::s_instance();
+	
+	auto newUptime = _renderSystem_backend->getCurrentUptime().seconds_f64();
+	if (_uptime == 0) { _uptime = newUptime; }
+	_deltaTime = ax_safe_cast_from(newUptime - _uptime);
+	_uptime    = newUptime;
 
 	auto& pools = _objectManager->_structBufferPools;
 	statistics.meshletCluster = pools.axGpuData_MeshletCluster.getStatistics();
@@ -75,14 +79,14 @@ void RenderRequest_Backend::_updateGlobalCommonParams() {
 	_globalCommonMaterialWorldParamSpace = _globalCommonMaterialPass->getOwnParamSpace(BindSpace::World);
 	resourcesToKeep.add(_globalCommonMaterial);
 	
-	using namespace Math;
-
-	f32 t = static_cast<f32>(_uptime);
-
-	_worldData.timeSin     = Vec4f(sin(t), sin(t * 4), sin(t * 9), sin(t * 16));
-	_worldData.timeSlowSin = Vec4f(sin(t / 2), sin(t / 4), sin(t / 9), sin(t / 16));
-	_worldData.time        = t;
-	// _worldData.deltaTime = _deltaTime;
+	{
+		using namespace Math;
+		f32 uptime = static_cast<f32>(_uptime);
+		_worldData.timeSin     = Vec4f(sin(uptime), sin(uptime * 4), sin(uptime * 9), sin(uptime * 16));
+		_worldData.timeSlowSin = Vec4f(sin(uptime / 2), sin(uptime / 4), sin(uptime / 9), sin(uptime / 16));
+		_worldData.time        = uptime;
+		_worldData.deltaTime   = _deltaTime;
+	}
 
 	auto func = [this](MaterialParamSpace_Backend::ConstBufferParam* cb, auto& data) -> void {
 		if (!cb) { AX_ASSERT(false); return; }

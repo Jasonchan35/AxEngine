@@ -51,6 +51,16 @@ protected:
 	bool _enableRotateSnap = false;
 	bool _enableScaleSnap = false;
 	
+	enum class InputMode {
+		None,
+		Camera,
+		FlyingCamera,
+	};
+	
+	InputMode _inputMode = InputMode::None;
+	Vec3f _flyingCameraMoveVector = Vec3f::s_zero();
+	float _flyingCameraSpeed = 5.0f;
+	
 	ImUIGizmoOperation	_gizmoOp    = ImUIGizmoOperation::None;
 	ImUIGizmoSpace		_gizmoSpace = ImUIGizmoSpace::Local;
 	bool _gizmoIsUsing = false;

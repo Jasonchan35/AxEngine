@@ -9,8 +9,8 @@ namespace  ax {
 //	template class  Mat_<4,4,f32, VecSimd::Basic>;
 //
 //	template class  Mat_<4,4,f64, VecSimd_Default>;
-//	template class  Mat_<4,4,f64, VecSimd_Default>;
-//	template class  Mat_<4,4,f64, VecSimd_Default>;
+//	template class  Mat_<4,4,f64, VecSimd::SSE>;
+//	template class  Mat_<4,4,f64, VecSimd::Basic>;
 } // namespace
  
 namespace ax::Math {

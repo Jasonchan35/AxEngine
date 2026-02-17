@@ -273,6 +273,9 @@ public:
 
 	AX_NODISCARD AX_INLINE constexpr Vec3 xy0 () const { return Vec3(x,y,0); }
 	AX_NODISCARD AX_INLINE constexpr Vec3 yx0 () const { return Vec3(y,x,0); }
+
+	AX_NODISCARD AX_INLINE constexpr Vec3 x0y () const { return Vec3(x,0,y); }
+	AX_NODISCARD AX_INLINE constexpr Vec3 y0x () const { return Vec3(y,0,x); }
 	
 	AX_NODISCARD AX_INLINE constexpr Vec4 xy01() const { return Vec4(x,y,0,1); }
 	AX_NODISCARD AX_INLINE constexpr Vec4 xy00() const { return Vec4(x,y,0,0); }

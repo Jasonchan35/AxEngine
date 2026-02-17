@@ -232,6 +232,11 @@ public:
 						type, button, worldPos, modifier, time);
 	}
 
+	bool hasAtlKey () const { return ax_bit_has(modifier, ModifierKey::Atl ); }
+	bool hasCmdKey () const { return ax_bit_has(modifier, ModifierKey::Cmd ); }
+	bool hasCtrlKey() const { return ax_bit_has(modifier, ModifierKey::Ctrl); }
+	bool hasFnKey  () const { return ax_bit_has(modifier, ModifierKey::Fn  ); }
+
 	Type			type = Type::None;
 	Button			button = Button::None;
 	Button			pressedButtons = Button::None;
