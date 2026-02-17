@@ -92,6 +92,8 @@ public:
 	
 	float maxMeshletErrorInPixels = 1;
 	
+	ImDrawList* _getImDrawList() { return _imDrawList; }
+	
 protected:
 	RenderRequest();
 	
@@ -107,6 +109,8 @@ protected:
 	Rect2f              _scissorRect{0, 0, 0, 0};
 	Rect2f              _viewportRect{0, 0, 0, 0};
 
+	ImDrawList*		 _imDrawList = nullptr;
+	
 	AxGpuData_World  _worldData;
 	AxGpuData_Camera _cameraData;
 	AxGpuData_Debug  _debugData;

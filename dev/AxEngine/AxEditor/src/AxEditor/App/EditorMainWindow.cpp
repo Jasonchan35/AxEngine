@@ -97,6 +97,8 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	Base::onBackBufferPass(req, inputs);
 	
+	ImUIGetWindowDrawList();
+	
 	_owner->_cameraDebugPanel(req);
 	_owner->_statisticsPanel(req);
 	_owner->_drawGizmo(req);
@@ -258,7 +260,12 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	}
 	
 	if (auto* comp = entity->getComponent<CameraComponent>()) {
-		ImUIGizmoCamera(req->viewport(), viewMatrix, projMatrix, comp->cameraObj->camera, req->projectionDesc());
+		ImUIGizmoCamera(req->_getImDrawList(),
+		                req->viewport(),
+		                viewMatrix,
+		                projMatrix,
+		                comp->cameraObj->camera,
+		                req->projectionDesc());
 	}
 	
 	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {

@@ -57,8 +57,9 @@ bool ImUIGizmoManipulate(	const Mat4f& viewMatrix, const Mat4f& projMatrix,
 
 void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);
 
-void ImUIGizmoCamera(const Rect2f& viewport,
-					 const Mat4f&          viewMatrix,
+void ImUIGizmoCamera(ImDrawList*           drawList,
+                     const Rect2f&         viewport,
+                     const Mat4f&          viewMatrix,
                      const Mat4f&          projMatrix,
                      Math::Camera3f&       camera,
                      const ProjectionDesc& projDesc);
@@ -75,6 +76,8 @@ struct ImUICheckBoxArray_Item {
 	ZStrView name;
 	T value;
 };
+
+ImDrawList* ImUIGetWindowDrawList();
 
 void ImUIText(ZStrView text);
 

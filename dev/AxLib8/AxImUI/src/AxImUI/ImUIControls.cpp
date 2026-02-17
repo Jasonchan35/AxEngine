@@ -66,14 +66,14 @@ void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect) {
 	ImGuizmo::ViewManipulate(viewMatrix.e, distance, pos, size, bgColor);
 }
 
-void ImUIGizmoCamera(const Rect2f&         viewport,
+void ImUIGizmoCamera(ImDrawList*           drawList,
+                     const Rect2f&         viewport,
                      const Mat4f&          viewMatrix,
                      const Mat4f&          projMatrix,
                      Math::Camera3f&       camera,
                      const ProjectionDesc& projDesc) 
 {
 	auto matMVP = projMatrix * viewMatrix;
-	auto* drawList = ImGui::GetWindowDrawList();
 	
 	FixedArray<ImVec2, 8> screenPoints;
 	auto worldPoints = camera.getFrustumPoints(projDesc);
@@ -84,6 +84,8 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 	
 	ImU32 color = 0xffffffff;
 	constexpr float thickness = -1;
+
+//	drawList->AddLine(ImVec2(100, 100), ImVec2(300, 300), color, thickness);
 	
 	drawList->AddLine(screenPoints[0], screenPoints[1], color, thickness);
 	drawList->AddLine(screenPoints[1], screenPoints[2], color, thickness);
@@ -120,6 +122,10 @@ bool ImUIColorButton(ZStrView label, const Color4f& color) {
 
 bool ImUICheckBox(ZStrView label, bool& v) {
 	return ::ImGui::Checkbox(label.c_str(), &v);
+}
+
+ImDrawList* ImUIGetWindowDrawList() {
+	return ImGui::GetWindowDrawList();
 }
 
 void ImUIText(ZStrView text) {

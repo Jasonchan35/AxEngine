@@ -41,7 +41,10 @@ void RenderRequest_Backend::waitCompletedAndReset(RenderSeqId newRenderSeqId) {
 void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, RenderPass_Backend* backBufferRenderPass) {
 	//	AX_LOG("---- FrameBegin {} -----", _renderSeqId);
 	// TODO: move to frame update, to enable draw ui in update loop as well
+
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
+	_imDrawList = ImGui::GetWindowDrawList();
+	
 	RenderObjectManager_Backend::s_instance()->onFrameBegin(this);
 	
 	_renderContext        = renderContext;
