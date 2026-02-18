@@ -20,10 +20,10 @@ void InspectorUIPanel::render(RenderRequest* req) {
 		auto pos   = entity->position();
 		auto rot   = entity->rotation();
 		auto scale = entity->scale();
-		ImUIInputFloat3("Position", pos);
-		ImUIInputFloat3("Rotation", rot);
-		ImUIInputFloat4("Quat"    , rot);
-		ImUIInputFloat3("Scale"   , scale);
+		ImUIInputFloat3  ("Position", pos);
+		ImUIInputEulerDeg("Rotation", rot);
+		ImUIInputQuat4   ("Quat"    , rot);
+		ImUIInputFloat3  ("Scale"   , scale);
 
 		if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
 			if (auto* mesh = meshRenderer->mesh.ptr()) {

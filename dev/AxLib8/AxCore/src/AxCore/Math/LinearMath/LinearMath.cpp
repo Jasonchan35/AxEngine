@@ -4,6 +4,7 @@ import :Quat;
 import :Mat;
 
 namespace  ax {
+
 //	template class  Mat_<4,4,f32, VecSimd_Default>;
 //	template class  Mat_<4,4,f32, VecSimd::SSE>;
 //	template class  Mat_<4,4,f32, VecSimd::Basic>;

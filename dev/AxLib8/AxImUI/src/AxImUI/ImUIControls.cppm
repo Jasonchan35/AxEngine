@@ -85,9 +85,14 @@ void ImUIText(ZStrView text);
 
 void ImUILabelText(ZStrView label, ZStrView text);
 
+bool ImUIInputFloat2(ZStrView label, Vec2f& value);
 bool ImUIInputFloat3(ZStrView label, Vec3f& value);
-bool ImUIInputFloat3(ZStrView label, Quat4f& value);
-bool ImUIInputFloat4(ZStrView label, Quat4f& value);
+bool ImUIInputFloat4(ZStrView label, Vec4f& value);
+
+bool ImUIInputEulerDeg(ZStrView label, Quat4f& value);
+bool ImUIInputQuat4(ZStrView label, Quat4f& value);
+
+bool ImUIInputMat4(ZStrView label, Mat4f& value);
 
 bool ImUIDragFloat(
 		ZStrView label, 

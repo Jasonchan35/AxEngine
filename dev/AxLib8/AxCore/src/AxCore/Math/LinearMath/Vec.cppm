@@ -554,7 +554,8 @@ public:
 	AX_NODISCARD AX_INLINE constexpr static This s_one () { return SimdData::s_one(); }
 
 	AX_INLINE constexpr This abs() const { return _simd.abs(); }
-	
+
+	AX_INLINE constexpr Vec2	xy() const	{ return Vec2(x,y); }
 	AX_INLINE constexpr Vec3	xyz() const	{ return Vec3(x,y,z); }
 	AX_INLINE constexpr Vec3	xyz_div_w() const	{ return (*this / w).xyz(); } // de-homogenize
 	AX_INLINE constexpr Vec4	xyz0() const	{ return Vec4(x,y,z,0); }

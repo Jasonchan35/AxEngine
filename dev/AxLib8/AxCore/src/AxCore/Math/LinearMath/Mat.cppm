@@ -452,6 +452,7 @@ auto Mat_<4,4,T,SIMD>::transpose() const -> This {
 
 template<class T, VecSimd SIMD> constexpr 
 auto Mat_<4, 4, T, SIMD>::mulMatrix(const This& m) const -> This {
+	/*
 	if constexpr (_use_SSE_m128_ps) {
 		This o;
 		for (int i = 0; i < 4; i++) {
@@ -475,87 +476,70 @@ auto Mat_<4, 4, T, SIMD>::mulMatrix(const This& m) const -> This {
 		}
 		return o;
 	}
-	
+*/
 	This o;
-	T e0, e1, e2, e3;
-
-	e0 = xx, e1 = yx, e2 = zx, e3 = wx;
-	o.xx = e0 * m.xx + e1 * m.xy + e2 * m.xz + e3 * m.xw;
-	o.yx = e0 * m.yx + e1 * m.yy + e2 * m.yz + e3 * m.yw;
-	o.zx = e0 * m.zx + e1 * m.zy + e2 * m.zz + e3 * m.zw;
-	o.wx = e0 * m.wx + e1 * m.wy + e2 * m.wz + e3 * m.ww;
-
-	e0 = xy, e1 = yy, e2 = zy, e3 = wy;
-	o.xy = e0 * m.xx + e1 * m.xy + e2 * m.xz + e3 * m.xw;
-	o.yy = e0 * m.yx + e1 * m.yy + e2 * m.yz + e3 * m.yw;
-	o.zy = e0 * m.zx + e1 * m.zy + e2 * m.zz + e3 * m.zw;
-	o.wy = e0 * m.wx + e1 * m.wy + e2 * m.wz + e3 * m.ww;
-
-	e0 = xz, e1 = yz, e2 = zz, e3 = wz;
-	o.xz = e0 * m.xx + e1 * m.xy + e2 * m.xz + e3 * m.xw;
-	o.yz = e0 * m.yx + e1 * m.yy + e2 * m.yz + e3 * m.yw;
-	o.zz = e0 * m.zx + e1 * m.zy + e2 * m.zz + e3 * m.zw;
-	o.wz = e0 * m.wx + e1 * m.wy + e2 * m.wz + e3 * m.ww;
-
-	e0 = xw, e1 = yw, e2 = zw, e3 = ww;
-	o.xw = e0 * m.xx + e1 * m.xy + e2 * m.xz + e3 * m.xw;
-	o.yw = e0 * m.yx + e1 * m.yy + e2 * m.yz + e3 * m.yw;
-	o.zw = e0 * m.zx + e1 * m.zy + e2 * m.zz + e3 * m.zw;
-	o.ww = e0 * m.wx + e1 * m.wy + e2 * m.wz + e3 * m.ww;
-
+	o.cx = cx * m.cx.x + cy * m.cx.y + cz * m.cx.z + cw * m.cx.w;
+	o.cy = cx * m.cy.x + cy * m.cy.y + cz * m.cy.z + cw * m.cy.w;
+	o.cz = cx * m.cz.x + cy * m.cz.y + cz * m.cz.z + cw * m.cz.w;
+	o.cw = cx * m.cw.x + cy * m.cw.y + cz * m.cw.z + cw * m.cw.w;
 	return o;
 }
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4,4,T,SIMD>::inverse() const -> This {
-	T subFactor00 = zz * ww - wz * zw;
-	T subFactor01 = zy * ww - wy * zw;
-	T subFactor02 = zy * wz - wy * zz;
-	T subFactor03 = zx * ww - wx * zw;
-	T subFactor04 = zx * wz - wx * zz;
-	T subFactor05 = zx * wy - wx * zy;
-	T subFactor06 = yz * ww - wz * yw;
-	T subFactor07 = yy * ww - wy * yw;
-	T subFactor08 = yy * wz - wy * yz;
-	T subFactor09 = yx * ww - wx * yw;
-	T subFactor10 = yx * wz - wx * yz;
-	T subFactor11 = yx * wy - wx * yy;
-	T subFactor12 = yz * zw - zz * yw;
-	T subFactor13 = yy * zw - zy * yw;
-	T subFactor14 = yy * zz - zy * yz;
-	T subFactor15 = yx * zw - zx * yw;
-	T subFactor16 = yx * zz - zx * yz;
-	T subFactor17 = yx * zy - zx * yy;
+	T Coef00 = cz.z * cw.w - cw.z * cz.w;
+	T Coef02 = cy.z * cw.w - cw.z * cy.w;
+	T Coef03 = cy.z * cz.w - cz.z * cy.w;
 
-	This o;
-	o.xx = + (yy * subFactor00 - yz * subFactor01 + yw * subFactor02);
-	o.xy = - (yx * subFactor00 - yz * subFactor03 + yw * subFactor04);
-	o.xz = + (yx * subFactor01 - yy * subFactor03 + yw * subFactor05);
-	o.xw = - (yx * subFactor02 - yy * subFactor04 + yz * subFactor05);
+	T Coef04 = cz.y * cw.w - cw.y * cz.w;
+	T Coef06 = cy.y * cw.w - cw.y * cy.w;
+	T Coef07 = cy.y * cz.w - cz.y * cy.w;
 
-	o.yx = - (xy * subFactor00 - xz * subFactor01 + xw * subFactor02);
-	o.yy = + (xx * subFactor00 - xz * subFactor03 + xw * subFactor04);
-	o.yz = - (xx * subFactor01 - xy * subFactor03 + xw * subFactor05);
-	o.yw = + (xx * subFactor02 - xy * subFactor04 + xz * subFactor05);
+	T Coef08 = cz.y * cw.z - cw.y * cz.z;
+	T Coef10 = cy.y * cw.z - cw.y * cy.z;
+	T Coef11 = cy.y * cz.z - cz.y * cy.z;
 
-	o.zx = + (xy * subFactor06 - xz * subFactor07 + xw * subFactor08);
-	o.zy = - (xx * subFactor06 - xz * subFactor09 + xw * subFactor10);
-	o.zz = + (xx * subFactor07 - xy * subFactor09 + xw * subFactor11);
-	o.zw = - (xx * subFactor08 - xy * subFactor10 + xz * subFactor11);
+	T Coef12 = cz.x * cw.w - cw.x * cz.w;
+	T Coef14 = cy.x * cw.w - cw.x * cy.w;
+	T Coef15 = cy.x * cz.w - cz.x * cy.w;
 
-	o.wx = - (xy * subFactor12 - xz * subFactor13 + xw * subFactor14);
-	o.wy = + (xx * subFactor12 - xz * subFactor15 + xw * subFactor16);
-	o.wz = - (xx * subFactor13 - xy * subFactor15 + xw * subFactor17);
-	o.ww = + (xx * subFactor14 - xy * subFactor16 + xz * subFactor17);
+	T Coef16 = cz.x * cw.z - cw.x * cz.z;
+	T Coef18 = cy.x * cw.z - cw.x * cy.z;
+	T Coef19 = cy.x * cz.z - cz.x * cy.z;
 
-	// determinant
-	T det	= xx * o.xx
-			+ xy * o.xy
-			+ xz * o.xz
-			+ xw * o.xw;
+	T Coef20 = cz.x * cw.y - cw.x * cz.y;
+	T Coef22 = cy.x * cw.y - cw.x * cy.y;
+	T Coef23 = cy.x * cz.y - cz.x * cy.y;
 
-	o /= det;
-	return o;
+	Vec4 Fac0(Coef00, Coef00, Coef02, Coef03);
+	Vec4 Fac1(Coef04, Coef04, Coef06, Coef07);
+	Vec4 Fac2(Coef08, Coef08, Coef10, Coef11);
+	Vec4 Fac3(Coef12, Coef12, Coef14, Coef15);
+	Vec4 Fac4(Coef16, Coef16, Coef18, Coef19);
+	Vec4 Fac5(Coef20, Coef20, Coef22, Coef23);
+
+	Vec4 Vec0(cy.x, cx.x, cx.x, cx.x);
+	Vec4 Vec1(cy.y, cx.y, cx.y, cx.y);
+	Vec4 Vec2(cy.z, cx.z, cx.z, cx.z);
+	Vec4 Vec3(cy.w, cx.w, cx.w, cx.w);
+
+	Vec4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+	Vec4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+	Vec4 Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+	Vec4 Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+	Vec4 SignA(+1, -1, +1, -1);
+	Vec4 SignB(-1, +1, -1, +1);
+	Mat4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
+
+	Vec4 Row0(Inverse.cx.x, Inverse.cy.x, Inverse.cz.x, Inverse.cw.x);
+
+	Vec4 Dot0(cx * Row0);
+	T Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
+
+	T OneOverDeterminant = static_cast<T>(1) / Dot1;
+
+	return Inverse * OneOverDeterminant;
 }
 
 template<class T, VecSimd SIMD> constexpr

@@ -8,8 +8,8 @@ SPtr<SceneWorld> SceneWorld::s_new(const MemAllocRequest& allocReq) {
 } 
 
 SceneEntity::SceneEntity(const CreateDesc& desc)
-: _localMatrixDirty(false)
-, _worldMatrixDirty(false)
+: _localMatrixDirty(true)
+, _worldMatrixDirty(true)
 {
 	setName(desc.name);
 	_world  = desc.world;

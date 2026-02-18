@@ -129,8 +129,12 @@ void EditorApp::_testLoadFbx() {
 	
 	{
 		auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Camera"));
-		entity->setPosition(2.0f, 2, 2);
-		entity->addComponent<CameraComponent>(AX_NEW);
+		// entity->setPosition(2, 2, 2);
+		auto* comp = entity->addComponent<CameraComponent>(AX_NEW);
+		comp->cameraObj->camera.aim.set(0,0,10);
+		comp->cameraObj->camera.setEye({0,0,0});
+		comp->cameraObj->camera.nearClip = 0.1f;
+		comp->cameraObj->camera.farClip  = 10.0f;		
 	}
 	
 }

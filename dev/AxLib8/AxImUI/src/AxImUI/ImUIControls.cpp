@@ -77,27 +77,65 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
                      const Mat4f&          cameraWorldMatrix,
                      const ProjectionDesc& projDesc) 
 {
-	auto matMVP = viewMatrix * projMatrix * cameraWorldMatrix;
 	ImDrawList* drawList = ImUIGetDrawList();
 	
-	camera.aim.set(0,0,10);
-	camera.setEye({0,0,0});
-	camera.nearClip = 0.1f;
-	camera.farClip  = 10.0f;
+	FixedArray<Vec3f, 8> points;
+	
+	float zNear = projDesc.isReverseZ ? 1.0f : 0.0f;
+	float zFar  = projDesc.isReverseZ ? 0.0f : 1.0f;
+	
+	points[0].set(-1,-1, zNear);
+	points[1].set( 1,-1, zNear);
+	points[2].set( 1, 1, zNear);
+	points[3].set(-1, 1, zNear);
+
+	points[4].set(-1,-1, zFar);
+	points[5].set( 1,-1, zFar);
+	points[6].set( 1, 1, zFar);
+	points[7].set(-1, 1, zFar);
+
+	auto invProjMat = camera.projMatrix(projDesc).inverse();
+	auto invViewMat = camera.viewMatrix(projDesc).inverse();
+	auto matMVP = projMatrix * viewMatrix * cameraWorldMatrix;
+	
+//	auto worldPoints = camera.getFrustumPoints(projDesc);
+	
+//	worldPoints[0].set(0,0,0);
+//	worldPoints[1].set(1,0,0);
+//	worldPoints[2].set(0,1,0);
+//	worldPoints[3].set(0,0,1);
 	
 	FixedArray<ImVec2, 8> screenPoints;
 	
-	auto worldPoints = camera.getFrustumPoints(projDesc);
-	
-//	worldPoints[0] = Vec3f(0,0,0);
-//	worldPoints[1] = Vec3f(5,5,5);
+	ImUIPanel	panel("Camera Gizmo Debug");
+	auto m = camera.projMatrix(projDesc);
+	auto im = m.inverse();
+	ImUIInputMat4("projMatrix", m);
+	ImUIInputMat4("invProjMat", im);
+
+	auto testMat = im * m;
+	ImUIInputMat4("testMat", testMat);
 	
 	for (Int i = 0; i < 8; i++) {
-		auto clipSpace = matMVP.mulPoint(Vec4f(worldPoints[i], 1)).xyz_div_w();
-		auto pt = (clipSpace.xy() * Vec2f(0.5f, -0.5f) + 0.5f) * viewport.size - viewport.pos;
+		auto unproj     = invProjMat.mulPoint(Vec4f(points[i],1));
+		auto worldSpace = invViewMat.mulPoint(unproj).xyz_div_w();
+		
+		auto clipSpace  = matMVP.mulPoint(worldSpace);
+		auto pt = clipSpace.xy() * Vec2f(0.5f, -0.5f) + 0.5f;
+		pt = pt * viewport.size - viewport.pos;
 		screenPoints[i] = ImVec2_make(pt);
+		
+		ImUIInputFloat3(Fmt("points[{}]", i), points[i]);
+		ImUIInputFloat4(Fmt("unproj[{}]", i), unproj);
+		ImUIInputFloat3(Fmt("worldSpace[{}]", i), worldSpace);
+		ImUISeparator();
 	}
 
+	for (Int i = 0; i < 8; i++) {
+		auto v = Vec2f_make(screenPoints[i]);
+		ImUIInputFloat2(Fmt("screenPoints[{}]", i), v);
+	}
+	
 	ImU32 color = 0xffffffff;
 	constexpr float thickness = -1;
 
@@ -115,6 +153,7 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 	drawList->AddLine(screenPoints[1], screenPoints[5], color, thickness);
 	drawList->AddLine(screenPoints[2], screenPoints[6], color, thickness);
 	drawList->AddLine(screenPoints[3], screenPoints[7], color, thickness);
+
 }
 
 bool ImUIGizmoIsUsing() {
@@ -150,11 +189,19 @@ void ImUILabelText(ZStrView label, ZStrView text) {
 	return ::ImGui::LabelText(label.c_str(), "%s", text.c_str());
 }
 
+bool ImUIInputFloat2(ZStrView label, Vec2f& value) {
+	return ImGui::InputFloat2(label.c_str(), value.e, "%g", ImGuiInputTextFlags_None);
+}
+
 bool ImUIInputFloat3(ZStrView label, Vec3f& value) {
 	return ImGui::InputFloat3(label.c_str(), value.e, "%g", ImGuiInputTextFlags_None);
 }
 
-bool ImUIInputFloat3(ZStrView label, Quat4f& value) {
+bool ImUIInputFloat4(ZStrView label, Vec4f& value) {
+	return ImGui::InputFloat4(label.c_str(), value.e, "%g", ImGuiInputTextFlags_None);
+}
+
+bool ImUIInputEulerDeg(ZStrView label, Quat4f& value) {
 	Vec3f euler = value.eulerDeg();
 	if (ImUIInputFloat3(label, euler)) {
 		value.setEulerDeg(euler);
@@ -163,8 +210,18 @@ bool ImUIInputFloat3(ZStrView label, Quat4f& value) {
 	return false;
 }
 
-bool ImUIInputFloat4(ZStrView label, Quat4f& value) {
+bool ImUIInputQuat4(ZStrView label, Quat4f& value) {
 	return ImGui::InputFloat4(label.c_str(), value.e, "%g", ImGuiInputTextFlags_None);
+}
+
+bool ImUIInputMat4(ZStrView label, Mat4f& value) {
+	ImUIText(label);
+	bool b = false;
+	b |= ImUIInputFloat4("", value.cx);
+	b |= ImUIInputFloat4("", value.cy);
+	b |= ImUIInputFloat4("", value.cw);
+	b |= ImUIInputFloat4("", value.cz);
+	return b;
 }
 
 bool ImUIDragFloat(ZStrView label, float* v, float v_speed, float v_min, float v_max) {

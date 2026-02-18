@@ -9,7 +9,7 @@
 	https://msdn.microsoft.com/en-us/library/windows/hardware/dn936815(v=vs.85).aspx
 -->
 	<Type Name="ax::RenderObject">
-		<DisplayString>debugName={_debugName} name={_name}</DisplayString>
+		<DisplayString>name={_name}</DisplayString>
 		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
@@ -19,7 +19,7 @@
 	</Type>
 
 	<Type Name="ax::Texture2D_Backend">
-		<DisplayString>debugName={_debugName} name={_name} assetPath={_assetPath}</DisplayString>
+		<DisplayString>name={_name} assetPath={_assetPath}</DisplayString>
 		<!--
 		<Expand>
 			<Item Name="name">_name</Item>
