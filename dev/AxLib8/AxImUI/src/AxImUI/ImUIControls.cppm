@@ -57,11 +57,13 @@ bool ImUIGizmoManipulate(	const Mat4f& viewMatrix, const Mat4f& projMatrix,
 
 void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);
 
-void ImUIGizmoCamera(ImDrawList*           drawList,
-                     const Rect2f&         viewport,
+ImDrawList* ImUIGetDrawList();
+
+void ImUIGizmoCamera(const Rect2f&         viewport,
                      const Mat4f&          viewMatrix,
                      const Mat4f&          projMatrix,
                      Math::Camera3f&       camera,
+                     const Mat4f&          cameraWorldMatrix,
                      const ProjectionDesc& projDesc);
 
 bool ImUIButton(ZStrView label, Vec2f size);

@@ -43,8 +43,6 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	// TODO: move to frame update, to enable draw ui in update loop as well
 
 	renderContext->imgui.onBeginRender(backBufferRenderPass->frameSize());
-	_imDrawList = ImGui::GetWindowDrawList();
-	
 	RenderObjectManager_Backend::s_instance()->onFrameBegin(this);
 	
 	_renderContext        = renderContext;

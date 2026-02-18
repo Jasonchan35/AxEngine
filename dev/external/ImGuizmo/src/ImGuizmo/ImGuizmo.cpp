@@ -2657,6 +2657,8 @@ namespace IMGUIZMO_NAMESPACE
       return radius < pixelRadius;
    }
 
+	ImDrawList* _AxImUIGetDrawList() { return gContext.mDrawList; }
+
    bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)
    {
       gContext.mDrawList->PushClipRect (ImVec2 (gContext.mX, gContext.mY), ImVec2 (gContext.mX + gContext.mWidth, gContext.mY + gContext.mHeight), false);

@@ -260,11 +260,12 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	}
 	
 	if (auto* comp = entity->getComponent<CameraComponent>()) {
-		ImUIGizmoCamera(req->_getImDrawList(),
-		                req->viewport(),
+		ImUIGizmoCamera(req->viewport(),
 		                viewMatrix,
 		                projMatrix,
 		                comp->cameraObj->camera,
+		                // _renderGraph->viewportCamera(),
+		                entity->worldMatrix(),
 		                req->projectionDesc());
 	}
 	

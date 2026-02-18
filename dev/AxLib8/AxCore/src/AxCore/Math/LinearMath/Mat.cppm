@@ -267,12 +267,13 @@ public:
 	AX_NODISCARD constexpr This operator-	(const T& s) const { return This(cx - s, cy - s, cz - s, cw - s); }
 	AX_NODISCARD constexpr This operator*	(const T& s) const { return This(cx * s, cy * s, cz * s, cw * s); }
 	AX_NODISCARD constexpr This operator/	(const T& s) const { return This(cx / s, cy / s, cz / s, cw / s); }
-	AX_NODISCARD constexpr This operator*	(const This& m) const { return mulMatrix(m); }
 
 				 constexpr void operator+=	(const T& s) { cx += s; cy += s; cz += s; cw += s; }
 				 constexpr void operator-=	(const T& s) { cx -= s; cy -= s; cz -= s; cw -= s; }
 				 constexpr void operator*=	(const T& s) { cx *= s; cy *= s; cz *= s; cw *= s; }
 				 constexpr void operator/=	(const T& s) { cx /= s; cy /= s; cz /= s; cw /= s; }
+	
+	AX_NODISCARD constexpr This operator*	(const This& m) const { return mulMatrix(m); }
 				 constexpr void operator*=	(const This& m) { *this = mulMatrix(m); }
 	
 	AX_NODISCARD constexpr This mulMatrix	(const This& m) const;
@@ -438,7 +439,7 @@ constexpr auto Mat_<4, 4, T, SIMD>::toQuat() const -> Quat4 {
 		quat.z = T(0.25) * s;
 		quat.w = (yx - xy) / s;
 	}
-	return quat;
+	return quat.normalize();
 }
 
 template<class T, VecSimd SIMD> constexpr
@@ -507,207 +508,54 @@ auto Mat_<4, 4, T, SIMD>::mulMatrix(const This& m) const -> This {
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4,4,T,SIMD>::inverse() const -> This {
-#if 0
-	T wtmp[4][8];
-	T m0, m1, m2, m3, s;
-	T *r0, *r1, *r2, *r3;
+	T subFactor00 = zz * ww - wz * zw;
+	T subFactor01 = zy * ww - wy * zw;
+	T subFactor02 = zy * wz - wy * zz;
+	T subFactor03 = zx * ww - wx * zw;
+	T subFactor04 = zx * wz - wx * zz;
+	T subFactor05 = zx * wy - wx * zy;
+	T subFactor06 = yz * ww - wz * yw;
+	T subFactor07 = yy * ww - wy * yw;
+	T subFactor08 = yy * wz - wy * yz;
+	T subFactor09 = yx * ww - wx * yw;
+	T subFactor10 = yx * wz - wx * yz;
+	T subFactor11 = yx * wy - wx * yy;
+	T subFactor12 = yz * zw - zz * yw;
+	T subFactor13 = yy * zw - zy * yw;
+	T subFactor14 = yy * zz - zy * yz;
+	T subFactor15 = yx * zw - zx * yw;
+	T subFactor16 = yx * zz - zx * yz;
+	T subFactor17 = yx * zy - zx * yy;
 
-	r0 = wtmp[0], r1 = wtmp[1], r2 = wtmp[2], r3 = wtmp[3];
+	This o;
+	o.xx = + (yy * subFactor00 - yz * subFactor01 + yw * subFactor02);
+	o.xy = - (yx * subFactor00 - yz * subFactor03 + yw * subFactor04);
+	o.xz = + (yx * subFactor01 - yy * subFactor03 + yw * subFactor05);
+	o.xw = - (yx * subFactor02 - yy * subFactor04 + yz * subFactor05);
 
-	r0[0] = cx.x;
-	r0[1] = cx.y;
-	r0[2] = cx.z;
-	r0[3] = cx.w;
-	r0[4] = T(1);
-	r0[5] = r0[6] = r0[7] = T(0);
+	o.yx = - (xy * subFactor00 - xz * subFactor01 + xw * subFactor02);
+	o.yy = + (xx * subFactor00 - xz * subFactor03 + xw * subFactor04);
+	o.yz = - (xx * subFactor01 - xy * subFactor03 + xw * subFactor05);
+	o.yw = + (xx * subFactor02 - xy * subFactor04 + xz * subFactor05);
 
-	r1[0] = cy.x;
-	r1[1] = cy.y;
-	r1[2] = cy.z;
-	r1[3] = cy.w;
-	r1[5] = T(1);
-	r1[4] = r1[6] = r1[7] = T(0);
+	o.zx = + (xy * subFactor06 - xz * subFactor07 + xw * subFactor08);
+	o.zy = - (xx * subFactor06 - xz * subFactor09 + xw * subFactor10);
+	o.zz = + (xx * subFactor07 - xy * subFactor09 + xw * subFactor11);
+	o.zw = - (xx * subFactor08 - xy * subFactor10 + xz * subFactor11);
 
-	r2[0] = cz.x;
-	r2[1] = cz.y;
-	r2[2] = cz.z;
-	r2[3] = cz.w;
-	r2[6] = T(1);
-	r2[4] = r2[5] = r2[7] = T(0);
+	o.wx = - (xy * subFactor12 - xz * subFactor13 + xw * subFactor14);
+	o.wy = + (xx * subFactor12 - xz * subFactor15 + xw * subFactor16);
+	o.wz = - (xx * subFactor13 - xy * subFactor15 + xw * subFactor17);
+	o.ww = + (xx * subFactor14 - xy * subFactor16 + xz * subFactor17);
 
-	r3[0] = cw.x;
-	r3[1] = cw.y;
-	r3[2] = cw.z;
-	r3[3] = cw.w;
-	r3[7] = T(1);
-	r3[4] = r3[5] = r3[6] = T(0);
+	// determinant
+	T det	= xx * o.xx
+			+ xy * o.xy
+			+ xz * o.xz
+			+ xw * o.xw;
 
-	// choose pivot - or die
-	if (ax_abs(r3[0]) > ax_abs(r2[0])) ax_swap(r3, r2);
-	if (ax_abs(r2[0]) > ax_abs(r1[0])) ax_swap(r2, r1);
-	if (ax_abs(r1[0]) > ax_abs(r0[0])) ax_swap(r1, r0);
-	if (T(0) == r0[0]) return makeIdentity();
-
-	// eliminate first variable
-	m1 = r1[0] / r0[0];
-	m2 = r2[0] / r0[0];
-	m3 = r3[0] / r0[0];
-
-	s = r0[1]; r1[1] -= m1 * s; r2[1] -= m2 * s; r3[1] -= m3 * s;
-	s = r0[2]; r1[2] -= m1 * s; r2[2] -= m2 * s; r3[2] -= m3 * s;
-	s = r0[3]; r1[3] -= m1 * s; r2[3] -= m2 * s; r3[3] -= m3 * s;
-	s = r0[4]; if (s != T(0)) { r1[4] -= m1 * s; r2[4] -= m2 * s; r3[4] -= m3 * s; }
-	s = r0[5]; if (s != T(0)) { r1[5] -= m1 * s; r2[5] -= m2 * s; r3[5] -= m3 * s; }
-	s = r0[6]; if (s != T(0)) { r1[6] -= m1 * s; r2[6] -= m2 * s; r3[6] -= m3 * s; }
-	s = r0[7]; if (s != T(0)) { r1[7] -= m1 * s; r2[7] -= m2 * s; r3[7] -= m3 * s; }
-
-	// choose pivot - or die
-	if (ax_abs(r3[1]) > ax_abs(r2[1])) ax_swap(r3, r2);
-	if (ax_abs(r2[1]) > ax_abs(r1[1])) ax_swap(r2, r1);
-	if (T(0) == r1[1]) {
-		AX_ASSERT(false);
-		return makeIdentity();
-	}
-
-	// eliminate second variable
-	m2 = r2[1] / r1[1];
-	m3 = r3[1] / r1[1];
-	r2[2] -= m2 * r1[2];
-	r3[2] -= m3 * r1[2];
-	r2[3] -= m2 * r1[3];
-	r3[3] -= m3 * r1[3];
-
-	s = r1[4]; if (T(0) != s) { r2[4] -= m2 * s; r3[4] -= m3 * s; }
-	s = r1[5]; if (T(0) != s) { r2[5] -= m2 * s; r3[5] -= m3 * s; }
-	s = r1[6]; if (T(0) != s) { r2[6] -= m2 * s; r3[6] -= m3 * s; }
-	s = r1[7]; if (T(0) != s) { r2[7] -= m2 * s; r3[7] -= m3 * s; }
-
-	// choose pivot - or die
-	if (ax_abs(r3[2]) > ax_abs(r2[2])) ax_swap(r3, r2);
-	if (T(0) == r2[2]) {
-		AX_ASSERT(false);
-		return makeIdentity();
-	}
-
-	// eliminate third variable
-	m3 = r3[2] / r2[2];
-	r3[3] -= m3 * r2[3];
-	r3[4] -= m3 * r2[4],
-	r3[5] -= m3 * r2[5];
-	r3[6] -= m3 * r2[6],
-	r3[7] -= m3 * r2[7];
-
-	// last check
-	if (T(0) == r3[3]) {
-		AX_ASSERT(false);
-		return makeIdentity();
-	}
-
-	s = T(1) / r3[3];    // now back substitute row 3
-	r3[4] *= s;
-	r3[5] *= s;
-	r3[6] *= s;
-	r3[7] *= s;
-
-	m2 = r2[3];          // now back substitute row 2
-	s = T(1) / r2[2];
-	r2[4] = s * (r2[4] - r3[4] * m2);
-	r2[5] = s * (r2[5] - r3[5] * m2);
-	r2[6] = s * (r2[6] - r3[6] * m2);
-	r2[7] = s * (r2[7] - r3[7] * m2);
-
-	m1 = r1[3];
-	r1[4] -= r3[4] * m1;
-	r1[5] -= r3[5] * m1;
-	r1[6] -= r3[6] * m1;
-	r1[7] -= r3[7] * m1;
-
-	m0 = r0[3];
-	r0[4] -= r3[4] * m0;
-	r0[5] -= r3[5] * m0;
-	r0[6] -= r3[6] * m0;
-	r0[7] -= r3[7] * m0;
-
-	m1 = r1[2];                 // now back substitute row 1
-	s = T(1) / r1[1];
-	r1[4] = s * (r1[4] - r2[4] * m1);
-	r1[5] = s * (r1[5] - r2[5] * m1);
-	r1[6] = s * (r1[6] - r2[6] * m1);
-	r1[7] = s * (r1[7] - r2[7] * m1);
-
-	m0 = r0[2];
-	r0[4] -= r2[4] * m0;
-	r0[5] -= r2[5] * m0;
-	r0[6] -= r2[6] * m0;
-	r0[7] -= r2[7] * m0;
-
-	m0 = r0[1];                 // now back substitute row 0
-	s = T(1) / r0[0];
-	r0[4] = s * (r0[4] - r1[4] * m0);
-	r0[5] = s * (r0[5] - r1[5] * m0);
-	r0[6] = s * (r0[6] - r1[6] * m0);
-	r0[7] = s * (r0[7] - r1[7] * m0);
-
-	return This(r0[4], r0[5], r0[6], r0[7],
-				r1[4], r1[5], r1[6], r1[7],
-				r2[4], r2[5], r2[6], r2[7],
-				r3[4], r3[5], r3[6], r3[7]);
-#else
-	T coef00 = zz * ww - wz * zw;
-	T coef02 = yz * ww - wz * yw;
-	T coef03 = yz * zw - zz * yw;
-
-	T coef04 = zy * ww - wy * zw;
-	T coef06 = yy * ww - wy * yw;
-	T coef07 = yy * zw - zy * yw;
-
-	T coef08 = zy * wz - wy * zz;
-	T coef10 = yy * wz - wy * yz;
-	T coef11 = yy * zz - zy * yz;
-
-	T coef12 = zx * ww - wx * zw;
-	T coef14 = yx * ww - wx * yw;
-	T coef15 = yx * zw - zx * yw;
-
-	T coef16 = zx * wz - wx * zz;
-	T coef18 = yx * wz - wx * yz;
-	T coef19 = yx * zz - zx * yz;
-
-	T coef20 = zx * wy - wx * zy;
-	T coef22 = yx * wy - wx * yy;
-	T coef23 = yx * zy - zx * yy;
-
-	Vec4 fac0(coef00, coef00, coef02, coef03);
-	Vec4 fac1(coef04, coef04, coef06, coef07);
-	Vec4 fac2(coef08, coef08, coef10, coef11);
-	Vec4 fac3(coef12, coef12, coef14, coef15);
-	Vec4 fac4(coef16, coef16, coef18, coef19);
-	Vec4 fac5(coef20, coef20, coef22, coef23);
-
-	Vec4 v0(yx, xx, xx, xx);
-	Vec4 v1(yy, xy, xy, xy);
-	Vec4 v2(yz, xz, xz, xz);
-	Vec4 v3(yw, xw, xw, xw);
-
-	Vec4 signA(+1, -1, +1, -1);
-	Vec4 signB(-1, +1, -1, +1);
-
-	Vec4 inv0(v1 * fac0 - v2 * fac1 + v3 * fac2);
-	Vec4 inv1(v0 * fac0 - v2 * fac3 + v3 * fac4);
-	Vec4 inv2(v0 * fac1 - v1 * fac3 + v3 * fac5);
-	Vec4 inv3(v0 * fac2 - v1 * fac4 + v2 * fac5);
-
-	Mat4 inv(inv0 * signA,
-			 inv1 * signB,
-			 inv2 * signA,
-			 inv3 * signB);
-
-	Vec4 dot0(cx * inv.row(0));
-	T dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w);
-	T oneOverDeterminant = T(1) / dot1;
-
-	return inv * oneOverDeterminant;
-#endif
+	o /= det;
+	return o;
 }
 
 template<class T, VecSimd SIMD> constexpr
@@ -1041,7 +889,6 @@ auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3&
 	);
 }
 
-
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4,4,T,SIMD>::unprojectPointFromInverseMatrix(const Vec3& screenPos, const Rect2& viewport) const -> Vec3 {
 	auto  tmp = Vec4(screenPos, 1);
@@ -1049,7 +896,6 @@ auto Mat_<4,4,T,SIMD>::unprojectPointFromInverseMatrix(const Vec3& screenPos, co
 
 	tmp.x = (tmp.x - viewport.x) / viewport.size.x * 2 - 1;
 	tmp.y = (tmp.y - viewport.y) / viewport.size.y * 2 - 1;
-
 	return mulPoint(tmp).xyz_div_w();
 }
 

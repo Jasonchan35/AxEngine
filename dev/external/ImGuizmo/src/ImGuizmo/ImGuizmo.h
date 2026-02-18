@@ -212,6 +212,8 @@ namespace IMGUIZMO_NAMESPACE
       WORLD
    };
 
+	IMGUI_API ImDrawList* _AxImUIGetDrawList();
+
    IMGUI_API bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix = NULL, const float* snap = NULL, const float* localBounds = NULL, const float* boundsSnap = NULL);
    //
    // Please note that this cubeview is patented by Autodesk : https://patents.google.com/patent/US7782319B2/en

@@ -98,24 +98,6 @@ Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos, const ProjectionDesc& desc) 
 	return Ray3::s_unprojectFromInverseMatrix(screenPos, viewProjMatrix(desc).inverse(), viewport);
 }
 
-template<class T>
-auto Camera3_<T>::getFrustumPoints(const ProjectionDesc& desc) const -> FixedArray<Vec3, 8> {
-	auto invMat = viewProjMatrix(desc).inverse();
-
-	FixedArray<Vec3, 8> o;
-	o[0] = invMat.unprojectPointFromInverseMatrix(Vec3(-1,-1, 0), viewport);
-	o[1] = invMat.unprojectPointFromInverseMatrix(Vec3( 1,-1, 0), viewport);
-	o[2] = invMat.unprojectPointFromInverseMatrix(Vec3( 1, 1, 0), viewport);
-	o[3] = invMat.unprojectPointFromInverseMatrix(Vec3(-1, 1, 0), viewport);
-
-	o[4] = invMat.unprojectPointFromInverseMatrix(Vec3(-1,-1, 1), viewport);
-	o[5] = invMat.unprojectPointFromInverseMatrix(Vec3( 1,-1, 1), viewport);
-	o[6] = invMat.unprojectPointFromInverseMatrix(Vec3( 1, 1, 1), viewport);
-	o[7] = invMat.unprojectPointFromInverseMatrix(Vec3(-1, 1, 1), viewport);
-	
-	return o;
-}
-
 template<class T> inline
 Mat4_<T> Camera3_<T>::projMatrix(const ProjectionDesc& desc) const {
 	return Mat4::s_perspective(radians(fieldOfView),

@@ -66,27 +66,41 @@ void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect) {
 	ImGuizmo::ViewManipulate(viewMatrix.e, distance, pos, size, bgColor);
 }
 
-void ImUIGizmoCamera(ImDrawList*           drawList,
-                     const Rect2f&         viewport,
+ImDrawList* ImUIGetDrawList() {
+	return ImGuizmo::_AxImUIGetDrawList();
+}
+
+void ImUIGizmoCamera(const Rect2f&         viewport,
                      const Mat4f&          viewMatrix,
                      const Mat4f&          projMatrix,
                      Math::Camera3f&       camera,
+                     const Mat4f&          cameraWorldMatrix,
                      const ProjectionDesc& projDesc) 
 {
-	auto matMVP = projMatrix * viewMatrix;
+	auto matMVP = viewMatrix * projMatrix * cameraWorldMatrix;
+	ImDrawList* drawList = ImUIGetDrawList();
+	
+	camera.aim.set(0,0,10);
+	camera.setEye({0,0,0});
+	camera.nearClip = 0.1f;
+	camera.farClip  = 10.0f;
 	
 	FixedArray<ImVec2, 8> screenPoints;
+	
 	auto worldPoints = camera.getFrustumPoints(projDesc);
+	
+//	worldPoints[0] = Vec3f(0,0,0);
+//	worldPoints[1] = Vec3f(5,5,5);
+	
 	for (Int i = 0; i < 8; i++) {
-		auto pt = matMVP.mulPoint(worldPoints[i]).xy() + 0.5f * 0.5f * viewport.size - viewport.pos;
+		auto clipSpace = matMVP.mulPoint(Vec4f(worldPoints[i], 1)).xyz_div_w();
+		auto pt = (clipSpace.xy() * Vec2f(0.5f, -0.5f) + 0.5f) * viewport.size - viewport.pos;
 		screenPoints[i] = ImVec2_make(pt);
 	}
-	
+
 	ImU32 color = 0xffffffff;
 	constexpr float thickness = -1;
 
-//	drawList->AddLine(ImVec2(100, 100), ImVec2(300, 300), color, thickness);
-	
 	drawList->AddLine(screenPoints[0], screenPoints[1], color, thickness);
 	drawList->AddLine(screenPoints[1], screenPoints[2], color, thickness);
 	drawList->AddLine(screenPoints[2], screenPoints[3], color, thickness);

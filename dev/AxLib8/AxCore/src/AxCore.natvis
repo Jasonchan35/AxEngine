@@ -308,6 +308,75 @@
 	<!-- ax::Range_<*> -->
 	<Type Name="ax::Range_&lt; * &gt;">
 		<DisplayString>[start={_start} stop={_stop} size={_stop - _start}]</DisplayString>
-	</Type>	
+	</Type>
 
+	<!-- ax::Vec_<1,*,*> -->
+	<Type Name="ax::Vec_&lt; 1,*,* &gt;">
+		<DisplayString>{x}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::Vec_<2,*,*> -->
+	<Type Name="ax::Vec_&lt; 2,*,* &gt;">
+		<DisplayString>{x}, {y}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::Vec_<3,*,*> -->
+	<Type Name="ax::Vec_&lt; 3,*,* &gt;">
+		<DisplayString>{x}, {y}, {z}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::Vec_<4,*,*> -->
+	<Type Name="ax::Vec_&lt; 4,*,* &gt;">
+		<DisplayString>{x}, {y}, {z}, {w}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+			<Item Name="w">w</Item>
+		</Expand>
+	</Type>
+
+	<!-- ax::Quat_<4,*,*> -->
+	<Type Name="ax::Quat_&lt;4, *,* &gt;">
+		<DisplayString>{x}, {y}, {z}, {w}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+			<Item Name="w">w</Item>
+		</Expand>
+	</Type>
+	
+	<!-- ax::Mat_<4,4,*,*> -->
+	<Type Name="ax::Mat_&lt; 4,4,* &gt;">
+		<DisplayString></DisplayString>
+		<Expand>
+			<Item Name="cx">cx</Item>
+			<Item Name="cy">cy</Item>
+			<Item Name="cz">cz</Item>
+			<Item Name="cw">cw</Item>
+		</Expand>
+	</Type>
+
+
+	<!-- ax::Rect2_<*,*> -->
+	<Type Name="ax::Rect2_&lt; *,* &gt;">
+		<DisplayString>pos=({pos}), size({size})</DisplayString>
+		<Expand>
+			<Item Name="pos">pos</Item>
+			<Item Name="size">size</Item>
+		</Expand>
+	</Type>
 </AutoVisualizer>
