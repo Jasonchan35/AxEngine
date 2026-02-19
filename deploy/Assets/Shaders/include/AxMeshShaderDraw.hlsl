@@ -55,12 +55,27 @@ struct MeshletVS_PrimId_Out {
 	uint primitiveId : SV_PrimitiveID;
 };
 
-static float boundsError(AxGpuData_MeshletGroup group) {
+static float axMeshlet_boundsError(AxGpuData_MeshletGroup group) {
 	float camProj = 1.f / tan( radians(axCamera.fieldOfView * 0.5));
 	float camDistance = distance(axObjectToWorldPos(group.center), axCamera.worldPos);
 	float d = camDistance - group.radius;
 	float viewportH = axCamera.viewportMax.y - axCamera.viewportMin.y;
-	return viewportH * group.clusterError / (d > axCamera.nearClip ? d : axCamera.nearClip) * (camProj * 0.5f);
+	return viewportH * group.error / (d > axCamera.nearClip ? d : axCamera.nearClip) * (camProj * 0.5f);
+}
+
+static bool axMeshlet_insideFrustum(Vec3f center, float radius) {
+	if (ax_bit_has(axDebug.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling))
+		return true;
+
+	for (int i = 0; i < 6; i++) {
+		Vec4f plane = axCamera.cullingPlanes[i];
+		Vec4f center4 = Vec4f(axObjectToWorldPos(center), 1);
+
+		if (dot(center4, plane) < radius) {
+			return false;
+		}
+	}
+	return true;
 }
 
 [numthreads(AS_GROUP_SIZE, 1, 1)]
@@ -89,11 +104,15 @@ void axMeshlet_AmplificationMain(
 		float camTanFov        = tan(radians(axCamera.fieldOfView * 0.5)) * 2.0;
 		float maxErrorInPixels = axCamera.maxMeshletErrorInPixels;
 
-		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
-		bool lodMatch = (cluster.refinedGroupId < 0 || boundsError(axGpuData_MeshletGroup[groupOffset + cluster.refinedGroupId]) <= maxErrorInPixels) 
-					 && (                              boundsError(axGpuData_MeshletGroup[groupOffset + cluster.groupId       ]) >  maxErrorInPixels);
+		AxGpuData_MeshletGroup group       = axGpuData_MeshletGroup[groupOffset + cluster.groupId];
+		AxGpuData_MeshletGroup refineGroup = axGpuData_MeshletGroup[groupOffset + cluster.refinedGroupId];
 
-		bool insideFrustum = true;
+		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
+		bool lodMatch 
+		=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(group      ) <= maxErrorInPixels) 
+		&& (                              axMeshlet_boundsError(refineGroup) >  maxErrorInPixels);
+
+		bool insideFrustum = axMeshlet_insideFrustum(cluster.center,  cluster.radius);
 		bool coneCulling   = true; 
 
 		visibleResult = lodMatch && coneCulling && insideFrustum;

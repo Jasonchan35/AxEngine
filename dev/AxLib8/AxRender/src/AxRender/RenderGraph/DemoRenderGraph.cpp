@@ -88,7 +88,7 @@ void DemoRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 		req->draw(cmd);
 	}
 #endif
-	req->setCamera(_camera);
+	req->setCamera(_camera, _camera.viewMatrix(req->projectionDesc()));
 
 	// if (_testMeshMaterial) {
 	// 	req->drawMesh(_testMesh, _testMeshMaterial, 0);

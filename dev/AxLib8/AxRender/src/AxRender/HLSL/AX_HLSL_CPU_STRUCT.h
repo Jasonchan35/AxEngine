@@ -7,6 +7,7 @@ struct AxGpuData_Debug {
 	float drawNormalLength;
 	i32   debugColorCode; // AxGpuDebugColorCode_None
 	float showAllLodDistance;
+	u32   flags;
 	float _padding0;
 	float _padding1;
 };
@@ -74,7 +75,9 @@ struct AxGpuData_Camera {
 	Mat4f	viewMatrix;
 	Mat4f	viewMatrixInv;
 	Mat4f	viewProjMatrix;
-	Mat4f	viewProjMatrixInv;	
+	Mat4f	viewProjMatrixInv;
+
+	Vec4f	cullingPlanes[6]; // xyz is normal, w is distance
 };
 
 struct AxVertexShaderDraw_RootConst {
@@ -95,10 +98,13 @@ struct AxGpuData_MeshletCluster {
 	u32 primOffset;
 	u32 primCount;
 
-	u32 groupId;
-	i32 refinedGroupId;
-	u32 meshObjectId; // debug
-	u32 lod;  // debug
+	Vec3f center;
+	f32   radius;
+
+	u32   groupId;
+	i32   refinedGroupId;
+	u32   meshObjectId; // debug
+	u32   lod;  // debug
 };
 
 struct AxGpuData_MeshletVert {
@@ -116,7 +122,7 @@ struct AxGpuData_MeshletPrim {
 struct AxGpuData_MeshletGroup {
 	u32   clusterOffset;
 	u32   clusterCount;
-	float clusterError;
+	float error;
 	float radius;
 	Vec3f center;
 	u32   meshObjectId; // debug

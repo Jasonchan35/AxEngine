@@ -321,6 +321,7 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			Array<AxGpuData_MeshletPrim> outPrimArray;
 			
 			Dict<u32, u32> outVertIndexDict;
+			BBox3f clusterBBox = BBox3f::s_empty();
 			
 			auto getLocalVertIndex = [&](u32 index) {
 				if (auto* vi = outVertIndexDict.find(index)) {
@@ -334,6 +335,7 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 				outVertArray.emplaceBack(srcVert.pack());
 				
 				meshBounds.includePoint(srcVert.pos);
+				clusterBBox.includePoint(srcVert.pos);
 				return newVi;
 			};
 			
@@ -348,6 +350,9 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			}
 
 			AxGpuData_MeshletCluster outCluster;
+			outCluster.center         = clusterBBox.center();
+			outCluster.radius         = clusterBBox.radius();
+			
 			outCluster.meshObjectId   = outMesh.objectSlot.slotId();
 			outCluster.groupId        = ax_safe_cast_from(groups.size());
 			outCluster.refinedGroupId = cluster.refined;
@@ -388,8 +393,8 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 
 		{
 			AxGpuData_MeshletGroup dst = {};
-			dst.center = Vec3f(group.simplified.center[0], group.simplified.center[1], group.simplified.center[2]);
-			dst.clusterError = group.simplified.error;
+			dst.center       = Vec3f(group.simplified.center[0], group.simplified.center[1], group.simplified.center[2]);
+			dst.error        = group.simplified.error;
 			dst.radius       = group.simplified.radius;
 			dst.clusterCount = ax_safe_cast_from(cluster_count);
 			dst.meshObjectId = outMesh.objectSlot.slotId();

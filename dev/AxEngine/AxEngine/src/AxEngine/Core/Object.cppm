@@ -26,13 +26,13 @@ public:
 		bool treeNodeIsOpen : 1;
 	} editor;
 	
-	const String& name() const { return _name; }
-	void setName(const String& name) { _name = name; }
+	NameId name() const { return _name; }
+	void setName(NameId name) { _name = name; }
 	
 protected:
 //	Object(const CreateDesc& desc) {}
 	ObjectId	_objectId = 0;
-	String _name;
+	NameId		_name;
 };
 
 class ObjectManager : public NonCopyable {

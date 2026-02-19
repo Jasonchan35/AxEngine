@@ -61,6 +61,8 @@ public:
 	}
 	
 	constexpr Vec size() const { return max - min; }
+	constexpr Vec center() const { return isValid() ? (min + max) * T(0.5) : Vec::s_zero(); };
+	constexpr T   radius() const { return isValid() ? size().length() * T(0.5) : T(0); }
 
 	constexpr void getCornerPoints(FixedArray<Vec, Math::pow_<N>(2)>& outPoints) const;
 };

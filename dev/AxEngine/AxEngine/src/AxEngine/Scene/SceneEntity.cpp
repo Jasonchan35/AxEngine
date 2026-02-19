@@ -106,12 +106,25 @@ void SceneComponent::onJsonIO(JsonIO_Writer& se) {
 SPtr<SceneEntity> SceneEntity::s_new(const MemAllocRequest& allocReq,
                                      SceneWorld*            world,
                                      SceneEntity*           parent,
-                                     StrView                name) {
+                                     InNameId               name) {
 	CreateDesc desc;
 	desc.name   = name;
 	desc.parent = parent;
 	desc.world  = world;
 	return SPtr_new<This>(allocReq, desc);
+}
+
+SceneEntity* SceneEntity::findChild(NameId name, bool recursive) {
+	auto* p = _children.find_([&name](auto& e) -> bool { return e && e->name() == name; });
+	if (p) return p->ptr();
+	if (recursive) {
+		for (auto& child : _children) {
+			if (auto cp = child->findChild(name, recursive)) {
+				return cp;
+			}
+		}
+	}
+	return nullptr;
 }
 
 void SceneWorld::readFromFile(StrView folder) {

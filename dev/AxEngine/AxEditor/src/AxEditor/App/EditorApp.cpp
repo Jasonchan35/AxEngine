@@ -128,13 +128,13 @@ void EditorApp::_testLoadFbx() {
 	}
 	
 	{
-		auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Camera"));
+		auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("CullingCamera"));
 		// entity->setPosition(2, 2, 2);
 		auto* comp = entity->addComponent<CameraComponent>(AX_NEW);
-		comp->cameraObj->camera.aim.set(0,0,10);
-		comp->cameraObj->camera.setEye({0,0,0});
+		entity->setPosition(0, 0, -10);
+		entity->setRotation(30, 80, 0);
 		comp->cameraObj->camera.nearClip = 0.1f;
-		comp->cameraObj->camera.farClip  = 10.0f;		
+		comp->cameraObj->camera.farClip  = 15.0f;
 	}
 	
 }

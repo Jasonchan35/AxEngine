@@ -82,7 +82,7 @@ class SceneEntity_CreateDesc {
 public:
 	SceneWorld*  world  = nullptr;
 	SceneEntity* parent = nullptr;
-	StrView name;
+	NameId name;
 };
 
 AX_CLASS()
@@ -95,7 +95,7 @@ public:
 	static SPtr<SceneEntity> s_new(const MemAllocRequest& allocReq,
 	                               SceneWorld*            world,
 	                               SceneEntity*           parent,
-	                               StrView                name);
+	                               InNameId               name);
 
 	template<class COMP>
 	COMP* addComponent(const MemAllocRequest& allocReq) {
@@ -123,6 +123,8 @@ public:
 	Int componentCount() const { return _components.size(); }
 	SceneComponent* componentAt(Int index) { return _components[index].ptr(); }
 	
+	SceneEntity* findChild(NameId name, bool recursive);
+
 	const Vec3f&  position() const { return _position; }
 	const Quat4f& rotation() const { return _rotation; }
 	const Vec3f&  scale() const { return _scale; }

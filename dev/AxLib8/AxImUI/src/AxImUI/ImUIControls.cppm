@@ -73,6 +73,17 @@ bool ImUIColorButton(ZStrView label, const Color4f& color);
 
 bool ImUICheckBox(ZStrView label, bool& b);
 
+template<class FLAG> inline
+bool ImUICheckBoxFlag(ZStrView label, FLAG& value, FLAG mask) {
+	bool b = ax_bit_has(value, mask);
+	if (ImUICheckBox(label, b)) {
+		value = ax_bit_set(value, mask, b);
+		return true;
+	}
+	return false;
+}
+
+
 template<class T>
 struct ImUICheckBoxArray_Item {
 	ZStrView name;

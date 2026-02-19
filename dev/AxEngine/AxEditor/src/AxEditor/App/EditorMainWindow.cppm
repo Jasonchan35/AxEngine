@@ -69,6 +69,7 @@ protected:
 	float _maxMeshletErrorInPixels = 2.0f;
 	float _mouseSpeed = 1.0;
 	AxGpuData_Debug _gpuDebugData;
+	bool _showCullingCamera = false;
 };
 
 

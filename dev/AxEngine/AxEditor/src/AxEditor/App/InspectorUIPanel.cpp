@@ -14,7 +14,7 @@ void InspectorUIPanel::render(RenderRequest* req) {
 		return;
 	}
 	
-	ImUILabelText("name", obj->name());
+	ImUILabelText("name", obj->name().toString());
 
 	if (auto* entity = rttiCast<SceneEntity>(obj.ptr())) {
 		auto pos   = entity->position();

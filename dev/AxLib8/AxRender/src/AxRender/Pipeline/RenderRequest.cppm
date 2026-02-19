@@ -85,7 +85,9 @@ public:
 	
 	const AxGpuData_World& world() { return _worldData; }
 	
-	void setCamera(const Math::Camera3f& camera);
+	void setCamera(const Math::Camera3f& camera, const Mat4f& worldMatrix);
+	void setCullingCamera(const Math::Camera3f& camera, const Mat4f& worldMatrix);
+	
 	const AxGpuData_Camera&	cameraData() const { return _cameraData; }
 
 	void setDebugData(const AxGpuData_Debug& debugData);

@@ -102,7 +102,9 @@ public:
 	void setViewport_backend(const Rect2f& rect, float minDepth, float maxDepth);
 	void setScissorRect_backend(const Rect2f& rect);
 
-	void setCamera_backend(const Math::Camera3f& camera);
+	void setCamera_backend(const Math::Camera3f& camera, const Mat4f& worldMatrix);
+	void setCullingCamera_backend(const Math::Camera3f& camera, const Mat4f& worldMatrix);
+	
 	void setDebugData_backend(const AxGpuData_Debug& debugData);
 	
 	MaterialPass_Backend*	globalCommonMaterialPass()	{ return _globalCommonMaterialPass; };

@@ -32,7 +32,7 @@ public:
 	virtual void onGBufferPass		(RenderRequest* req, Span<Input> inputs);
 	virtual void onLightingPass		(RenderRequest* req, Span<Input> inputs);
 
-	Math::Camera3f		_camera;
+	Math::BoomCamera3f	_camera;
 private:
 	SPtr<Material>		_testMaterial;
 	SPtr<Material>		_testMeshMaterial;

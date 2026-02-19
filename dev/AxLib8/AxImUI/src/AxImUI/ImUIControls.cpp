@@ -95,45 +95,23 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 	points[7].set(-1, 1, zFar);
 
 	auto invProjMat = camera.projMatrix(projDesc).inverse();
-	auto invViewMat = camera.viewMatrix(projDesc).inverse();
 	auto matMVP = projMatrix * viewMatrix * cameraWorldMatrix;
-	
-//	auto worldPoints = camera.getFrustumPoints(projDesc);
-	
-//	worldPoints[0].set(0,0,0);
-//	worldPoints[1].set(1,0,0);
-//	worldPoints[2].set(0,1,0);
-//	worldPoints[3].set(0,0,1);
 	
 	FixedArray<ImVec2, 8> screenPoints;
 	
-	ImUIPanel	panel("Camera Gizmo Debug");
 	auto m = camera.projMatrix(projDesc);
 	auto im = m.inverse();
-	ImUIInputMat4("projMatrix", m);
-	ImUIInputMat4("invProjMat", im);
-
-	auto testMat = im * m;
-	ImUIInputMat4("testMat", testMat);
 	
 	for (Int i = 0; i < 8; i++) {
 		auto unproj     = invProjMat.mulPoint(Vec4f(points[i],1));
-		auto worldSpace = invViewMat.mulPoint(unproj).xyz_div_w();
-		
-		auto clipSpace  = matMVP.mulPoint(worldSpace);
+		auto clipSpace  = matMVP.mulPoint(unproj);
 		auto pt = clipSpace.xy() * Vec2f(0.5f, -0.5f) + 0.5f;
 		pt = pt * viewport.size - viewport.pos;
 		screenPoints[i] = ImVec2_make(pt);
-		
-		ImUIInputFloat3(Fmt("points[{}]", i), points[i]);
-		ImUIInputFloat4(Fmt("unproj[{}]", i), unproj);
-		ImUIInputFloat3(Fmt("worldSpace[{}]", i), worldSpace);
-		ImUISeparator();
 	}
 
 	for (Int i = 0; i < 8; i++) {
 		auto v = Vec2f_make(screenPoints[i]);
-		ImUIInputFloat2(Fmt("screenPoints[{}]", i), v);
 	}
 	
 	ImU32 color = 0xffffffff;
@@ -153,7 +131,6 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 	drawList->AddLine(screenPoints[1], screenPoints[5], color, thickness);
 	drawList->AddLine(screenPoints[2], screenPoints[6], color, thickness);
 	drawList->AddLine(screenPoints[3], screenPoints[7], color, thickness);
-
 }
 
 bool ImUIGizmoIsUsing() {

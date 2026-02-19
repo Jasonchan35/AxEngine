@@ -17,7 +17,7 @@ EngineRenderGraph::EngineRenderGraph() {
 
 void EngineRenderGraph::onUpdate(RenderRequest* req) {
 	_viewportCamera.viewport = Rect2f(Vec2f(0,0), Vec2f::s_cast(req->frameSize()));
-	req->setCamera(_viewportCamera);
+	req->setCamera(_viewportCamera, _viewportCamera.worldMatrix(req->projectionDesc()));
 }
 
 void EngineRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {

@@ -25,7 +25,7 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	AxMeshShaderDraw draw;
 	draw.material = stockObjs->materials->meshlet;
 	draw.materialPassIndex = materialPass;
-	draw.objectToWorld = objectToWorld * Mat4f::s_translate(0, 3, 0);
+	draw.objectToWorld = objectToWorld; // * Mat4f::s_translate(0, 3, 0);
 	draw.meshObject = mesh;
 	
 	u32 dispatchGroupCount  = Math::alignDivTo(clusterCount, AX_HLSL_THREADS_PER_WAVE);
@@ -77,8 +77,12 @@ void RenderRequest::setScissorRect(const Rect2f& rect) {
 	static_cast<RenderRequest_Backend*>(this)->setScissorRect_backend(rect);
 }
 
-void RenderRequest::setCamera(const Math::Camera3f& camera) {
-	static_cast<RenderRequest_Backend*>(this)->setCamera_backend(camera);
+void RenderRequest::setCamera(const Math::Camera3f& camera, const Mat4f& worldMatrix) {
+	static_cast<RenderRequest_Backend*>(this)->setCamera_backend(camera, worldMatrix);
+}
+
+void RenderRequest::setCullingCamera(const Math::Camera3f& camera, const Mat4f& worldMatrix) {
+	static_cast<RenderRequest_Backend*>(this)->setCullingCamera_backend(camera, worldMatrix);
 }
 
 void RenderRequest::setDebugData(const AxGpuData_Debug& debugData) {

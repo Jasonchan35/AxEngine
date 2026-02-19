@@ -44,6 +44,7 @@ public:
 template<class T>
 class Plane3_ {
 	using Vec3 = Vec3_<T>;
+	using Vec4 = Vec4_<T>;
 public:
 	constexpr Plane3_() = default;
 	constexpr Plane3_(const Vec3& normal_, T distance_)
@@ -64,6 +65,8 @@ public:
 	template<class CH>
 	void onFormat(Format_<CH>& f) const;
 
+	Vec4 toVec4() const { return Vec4(normal, distance); }
+	
 	Vec3	normal;
 	T		distance; // distance from origin
 };

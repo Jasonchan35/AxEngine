@@ -249,6 +249,11 @@ uint ax_align_to(uint value, uint alignment) {
 	return (value + (alignment - 1)) / alignment * alignment;
 }
 
+bool ax_bit_has		(u32 value, u32 bits) { return (value & bits) != 0; }
+bool ax_bit_has_all	(u32 value, u32 bits) { return (value & bits) == bits; }
+u32  ax_bit_set		(u32 value, u32 bits) { return value |  bits; }
+u32  ax_bit_unset	(u32 value, u32 bits) { return value & ~bits; }
+u32  ax_bit_toggle	(u32 value, u32 bits) { return value ^  bits; }
 	
 u32x3 ax_unpack_tri_indices(u32 packed) {
 	return u32x3((packed >> 16) & 0xFF,
