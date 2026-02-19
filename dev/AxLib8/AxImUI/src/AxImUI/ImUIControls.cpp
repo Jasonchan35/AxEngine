@@ -80,31 +80,16 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 	ImDrawList* drawList = ImUIGetDrawList();
 	
 	FixedArray<Vec3f, 8> points;
+	points = camera.getFrustumPoints(projDesc);
 	
-	float zNear = projDesc.isReverseZ ? 1.0f : 0.0f;
-	float zFar  = projDesc.isReverseZ ? 0.0f : 1.0f;
-	
-	points[0].set(-1,-1, zNear);
-	points[1].set( 1,-1, zNear);
-	points[2].set( 1, 1, zNear);
-	points[3].set(-1, 1, zNear);
-
-	points[4].set(-1,-1, zFar);
-	points[5].set( 1,-1, zFar);
-	points[6].set( 1, 1, zFar);
-	points[7].set(-1, 1, zFar);
-
-	auto invProjMat = camera.projMatrix(projDesc).inverse();
 	auto matMVP = projMatrix * viewMatrix * cameraWorldMatrix;
-	
 	FixedArray<ImVec2, 8> screenPoints;
 	
 	auto m = camera.projMatrix(projDesc);
 	auto im = m.inverse();
 	
 	for (Int i = 0; i < 8; i++) {
-		auto unproj     = invProjMat.mulPoint(Vec4f(points[i],1));
-		auto clipSpace  = matMVP.mulPoint(unproj);
+		auto clipSpace  = matMVP.mulPoint(points[i]);
 		auto pt = clipSpace.xy() * Vec2f(0.5f, -0.5f) + 0.5f;
 		pt = pt * viewport.size - viewport.pos;
 		screenPoints[i] = ImVec2_make(pt);

@@ -275,7 +275,6 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		                viewMatrix,
 		                projMatrix,
 		                comp->cameraObj->camera,
-		                // _renderGraph->viewportCamera(),
 		                entity->worldMatrix(),
 		                req->projectionDesc());
 	}
@@ -289,7 +288,6 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 								viewMatrix,
 								projMatrix,
 								cullingCameraComp->cameraObj->camera,
-								// _renderGraph->viewportCamera(),
 								cullingCameraEntity->worldMatrix(),
 								req->projectionDesc());
 				

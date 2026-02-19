@@ -3,6 +3,8 @@ import :Camera;
 import :Quat;
 import :Mat;
 
+import AxCore.Logger;
+
 namespace ax::Math {
 
 template<class T>
