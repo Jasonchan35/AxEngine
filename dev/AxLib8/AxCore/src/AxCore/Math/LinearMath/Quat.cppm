@@ -83,7 +83,7 @@ public:
 	AX_NODISCARD static	constexpr This s_euler(const Vec3& r)	{ return s_euler_Radians(Math::radians(r)); }
 	AX_NODISCARD static	constexpr This s_euler(T x, T y, T z)	{ return s_euler(Vec3(x,y,z)); }
 	
-	AX_NODISCARD static	constexpr This s_euler_Radians(const Vec3& r)	{ return s_eulerYXZ_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_euler_Radians(const Vec3& r)	{ return s_eulerYXZ_Radians(r); }
 	AX_NODISCARD static	constexpr This s_euler_Radians(T x, T y, T z)	{ return s_euler_Radians(Vec3(x,y,z)); }
 	
 	AX_NODISCARD static	constexpr This s_eulerXYZ(const Vec3& r)	{ return s_eulerXYZ_Radians(Math::radians(r)); }
@@ -253,28 +253,28 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 	return Vec3(x, y, z) * Math::rsqrt_fast(a);
 }
 
-template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerYXZ_Radians(const Vec3& r) {
+template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr 
+auto Quat_<4, T, SIMD>::s_eulerXYZ_Radians(const Vec3& r) -> This {
 	Vec3_<T, SIMD> s, c;
 	Math::sincos(r * T(0.5), s, c);
-	return This(s.x * c.y * c.z - c.x * s.y * s.z,
-				c.x * s.y * c.z + s.x * c.y * s.z,
+	return This(s.x * c.y * c.z + c.x * s.y * s.z,
+				c.x * s.y * c.z - s.x * c.y * s.z,
 				c.x * c.y * s.z + s.x * s.y * c.z,
-				c.x * c.y * c.z - s.x * s.y * s.z);
+				c.x * c.y * c.z - s.x * s.y * s.z); 
 }
 
 template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerYZX_Radians(const Vec3& r) {
+constexpr auto Quat_<4, T, SIMD>::s_eulerXZY_Radians(const Vec3& r) -> This {
 	Vec3_<T, SIMD> s, c;
 	Math::sincos(r * T(0.5), s, c);
 	return This(s.x * c.y * c.z - c.x * s.y * s.z,
 				c.x * s.y * c.z - s.x * c.y * s.z,
 				c.x * c.y * s.z + s.x * s.y * c.z,
-				c.x * c.y * c.z + s.x * s.y * s.z);	
+				c.x * c.y * c.z + s.x * s.y * s.z);
 }
 
 template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerZXY_Radians(const Vec3& r) {
+constexpr auto Quat_<4, T, SIMD>::s_eulerYXZ_Radians(const Vec3& r) -> This  {
 	Vec3_<T, SIMD> s, c;
 	Math::sincos(r * T(0.5), s, c);
 	return This(s.x * c.y * c.z + c.x * s.y * s.z,
@@ -284,27 +284,7 @@ constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerZXY_Radians
 }
 
 template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerZYX_Radians(const Vec3& r) {
-	Vec3_<T, SIMD> s, c;
-	Math::sincos(r * T(0.5), s, c);
-	return This(s.x * c.y * c.z + c.x * s.y * s.z,
-				c.x * s.y * c.z - s.x * c.y * s.z,
-				c.x * c.y * s.z + s.x * s.y * c.z,
-				c.x * c.y * c.z - s.x * s.y * s.z); 
-}
-
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr 
-auto Quat_<4, T, SIMD>::s_eulerXYZ_Radians(const Vec3& r) -> This {
-	Vec3_<T, SIMD> s, c;
-	Math::sincos(r * T(0.5), s, c);
-	return This(s.x * c.y * c.z - c.x * s.y * s.z,
-	            c.x * s.y * c.z + s.x * c.y * s.z,
-	            c.x * c.y * s.z - s.x * s.y * c.z,
-	            c.x * c.y * c.z + s.x * s.y * s.z);
-}
-
-template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerXZY_Radians(const Vec3& r) {
+constexpr auto Quat_<4, T, SIMD>::s_eulerYZX_Radians(const Vec3& r)  -> This {
 	Vec3_<T, SIMD> s, c;
 	Math::sincos(r * T(0.5), s, c);
 	return This(s.x * c.y * c.z + c.x * s.y * s.z,
@@ -314,49 +294,41 @@ constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerXZY_Radians
 }
 
 template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerXYZ_Radians() const {
+constexpr auto Quat_<4, T, SIMD>::s_eulerZXY_Radians(const Vec3& r)  -> This {
+	Vec3_<T, SIMD> s, c;
+	Math::sincos(r * T(0.5), s, c);
+	return This(s.x * c.y * c.z - c.x * s.y * s.z,
+				c.x * s.y * c.z + s.x * c.y * s.z,
+				c.x * c.y * s.z + s.x * s.y * c.z,
+				c.x * c.y * c.z - s.x * s.y * s.z);
+}
+
+template<class T, VecSimd SIMD>
+constexpr auto Quat_<4, T, SIMD>::s_eulerZYX_Radians(const Vec3& r)  -> This {
+	Vec3_<T, SIMD> s, c;
+	Math::sincos(r * T(0.5), s, c);
+	return This(s.x * c.y * c.z - c.x * s.y * s.z,
+				c.x * s.y * c.z + s.x * c.y * s.z,
+				c.x * c.y * s.z - s.x * s.y * c.z,
+				c.x * c.y * c.z + s.x * s.y * s.z);
+}
+
+template<class T, VecSimd SIMD>
+constexpr auto Quat_<4, T, SIMD>::eulerXYZ_Radians() const -> Vec3 {
 	T x2 = x * x;
 	T y2 = y * y;
 	T z2 = z * z;
 	T w2 = w * w;
-	T d = T(-2) * (x * z - w * y) / (x2 + y2 + z2 + w2);
+	T d = T(2) * (w * y + z * x) / (w2 + x2 + y2 + z2);
 	Vec3 o;
-	o.x = Math::atan2(T(2) * (w * x + y * z), w2 - x2 - y2 + z2);
+	o.x = Math::atan2(T(2) * (w * x - y * z), w2 - x2 - y2 + z2);
 	o.y = Math::asin(Math::clamp(d, T(-1), T(1)));
-	o.z = Math::atan2(T(2) * (w * z + x * y), w2 + x2 - y2 - z2);
+	o.z = Math::atan2(T(2) * (w * z - x * y), w2 + x2 - y2 - z2);
 	return o;
 }
 
 template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerXZY_Radians() const {
-	T x2 = x * x;
-	T y2 = y * y;
-	T z2 = z * z;
-	T w2 = w * w;
-	T d = T(2) * (w * z + x * y) / (x2 + y2 + z2 + w2);
-	Vec3 o;
-	o.x = Math::atan2(T(2) * (w * x - y * z), w2 - x2 + y2 - z2);
-	o.y = Math::atan2(T(2) * (w * y - x * z), w2 + x2 - y2 - z2);
-	o.z = Math::asin(std::clamp(d, T(-1), T(1)));
-	return o;
-}
-
-template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerYXZ_Radians() const {
-	T x2 = x * x;
-	T y2 = y * y;
-	T z2 = z * z;
-	T w2 = w * w;
-	T d = T(2) * (w * x + y * z) / (w2 + x2 + y2 + z2);
-	Vec3 o;
-	o.x = Math::asin(Math::clamp(d, T(-1), T(1)));
-	o.y = Math::atan2(T(2) * (w * y - x * z), w2 - x2 - y2 + z2);
-	o.z = Math::atan2(T(2) * (w * z - x * y), w2 - x2 + y2 - z2);
-	return o;
-}
-
-template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerYZX_Radians() const {
+constexpr auto Quat_<4, T, SIMD>::eulerXZY_Radians() const -> Vec3 {
 	T x2 = x * x;
 	T y2 = y * y;
 	T z2 = z * z;
@@ -370,7 +342,7 @@ constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerYZX_Radians()
 }
 
 template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerZXY_Radians() const {
+constexpr auto Quat_<4, T, SIMD>::eulerYXZ_Radians() const -> Vec3 {
 	T x2 = x * x;
 	T y2 = y * y;
 	T z2 = z * z;
@@ -384,16 +356,44 @@ constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerZXY_Radians()
 }
 
 template<class T, VecSimd SIMD>
-constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerZYX_Radians() const {
+constexpr auto Quat_<4, T, SIMD>::eulerYZX_Radians() const -> Vec3 {
 	T x2 = x * x;
 	T y2 = y * y;
 	T z2 = z * z;
 	T w2 = w * w;
-	T d = T(2) * (w * y + z * x) / (w2 + x2 + y2 + z2);
+	T d = T(2) * (w * z + x * y) / (x2 + y2 + z2 + w2);
 	Vec3 o;
-	o.x = Math::atan2(T(2) * (w * x - y * z), w2 - x2 - y2 + z2);
+	o.x = Math::atan2(T(2) * (w * x - y * z), w2 - x2 + y2 - z2);
+	o.y = Math::atan2(T(2) * (w * y - x * z), w2 + x2 - y2 - z2);
+	o.z = Math::asin(std::clamp(d, T(-1), T(1)));
+	return o;
+}
+
+template<class T, VecSimd SIMD>
+constexpr auto Quat_<4, T, SIMD>::eulerZXY_Radians() const -> Vec3 {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(2) * (w * x + y * z) / (w2 + x2 + y2 + z2);
+	Vec3 o;
+	o.x = Math::asin(Math::clamp(d, T(-1), T(1)));
+	o.y = Math::atan2(T(2) * (w * y - x * z), w2 - x2 - y2 + z2);
+	o.z = Math::atan2(T(2) * (w * z - x * y), w2 - x2 + y2 - z2);
+	return o;
+}
+
+template<class T, VecSimd SIMD>
+constexpr auto Quat_<4, T, SIMD>::eulerZYX_Radians() const -> Vec3 {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(-2) * (x * z - w * y) / (x2 + y2 + z2 + w2);
+	Vec3 o;
+	o.x = Math::atan2(T(2) * (w * x + y * z), w2 - x2 - y2 + z2);
 	o.y = Math::asin(Math::clamp(d, T(-1), T(1)));
-	o.z = Math::atan2(T(2) * (w * z - x * y), w2 + x2 - y2 - z2);
+	o.z = Math::atan2(T(2) * (w * z + x * y), w2 + x2 - y2 - z2);
 	return o;
 }
 
@@ -420,9 +420,9 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const This& q) const -> This {
-	return This(x * q.w + w * q.x + z * q.y - y * q.z,
-				y * q.w + w * q.y + x * q.z - z * q.x,
-				z * q.w + w * q.z + y * q.x - x * q.y,
+	return This(w * q.x + x * q.w + y * q.z - z * q.y,
+				w * q.y + y * q.w + z * q.x - x * q.z,
+				w * q.z + z * q.w + x * q.y - y * q.x,
 				w * q.w - x * q.x - y * q.y - z * q.z);
 }
 

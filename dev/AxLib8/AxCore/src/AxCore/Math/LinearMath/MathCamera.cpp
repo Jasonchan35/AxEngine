@@ -7,44 +7,6 @@ import AxCore.Logger;
 
 namespace ax::Math {
 
-template<class T>
-void ViewportCamera3_<T>::pan(Vec2 delta) {
-	auto pivot = eye();
-
-	auto e = rotation.euler();
-	e.x = 0;
-	auto q = Quat4::s_euler(e);
-	rotation *= q.inverse() * Quat4::s_eulerX(delta.x) * q;
-	rotation *= Quat4::s_eulerY(delta.y);
-	aim = pivot + rotation * Vec3(0, 0, distance);
-}
-
-template<class T>
-void ViewportCamera3_<T>::orbit(Vec2 delta) {
-	auto e = rotation.euler();
-	e.x = 0;
-	auto q = Quat4::s_euler(e);
-	rotation *= q.inverse() * Quat4::s_eulerX(delta.x) * q;
-	rotation *= Quat4::s_eulerY(delta.y);
-}
-
-template<class T>
-void ViewportCamera3_<T>::setEye(const Vec3& eye) {
-	auto dir = eye - aim;
-	distance = Math::max(dir.length(), T(0.001));
-	rotation = Quat4::s_lookAt(dir / distance, up());
-}
-
-template<class T> inline
-void ViewportCamera3_<T>::move(const Vec3& delta) {
-	aim += rotation * delta;
-}
-
-template<class T> inline
-void ViewportCamera3_<T>::dolly(T delta) {
-	distance = Math::max(T(0.001), distance + delta);
-}
-
 template<class T> inline
 Ray3_<T> Camera3_<T>::getRay(const Vec2& screenPos, const ProjectionDesc& desc) const {
 	return Ray3::s_unprojectFromInverseMatrix(screenPos, projMatrix(desc).inverse(), viewport);
@@ -56,17 +18,6 @@ Mat4_<T> Camera3_<T>::projMatrix(const ProjectionDesc& desc) const {
 							   viewport.w, viewport.h, nearClip, farClip,
 							   desc);
 }
-
-template<class T>
-Mat4_<T> ViewportCamera3_<T>::worldMatrix(const ProjectionDesc& desc) const {
-	return viewMatrix(desc).inverse();
-}
-
-template<class T> inline
-Mat4_<T> ViewportCamera3_<T>::viewMatrix(const ProjectionDesc& desc) const {
-	return Mat4::s_lookAt(eye(), aim, up(), desc);
-}
-
 
 template<class T>
 auto Camera3_<T>::getFrustumPoints(const ProjectionDesc& desc) const -> FixedArray<Vec3, 8> {
@@ -116,6 +67,51 @@ auto Camera3_<T>::getFrustumPlanes(const ProjectionDesc& desc) const -> FixedArr
 	o[4] = func(points[0], points[4], points[5]); // top
 	o[5] = func(points[2], points[3], points[7]); // bottom
 	return o;
+}
+
+
+template<class T>
+void ViewportCamera3_<T>::pan(Vec2 delta) {
+	auto pivot = eye();
+	rotation = Quat4::s_eulerY(delta.y) * Quat4::s_angleAxis(delta.x, right()) * rotation;
+	aim = pivot + rotation * Vec3(0, 0, distance);
+}
+
+template<class T>
+void ViewportCamera3_<T>::orbit(Vec2 delta) {
+	rotation = Quat4::s_eulerY(delta.y) * Quat4::s_angleAxis(delta.x, right()) * rotation;
+}
+
+template<class T>
+void ViewportCamera3_<T>::roll(T delta) {
+	rotation = Quat4::s_angleAxis(delta, forward()) * rotation;
+}
+
+template<class T>
+void ViewportCamera3_<T>::setEye(const Vec3& eye) {
+	auto dir = eye - aim;
+	distance = Math::max(dir.length(), T(0.001));
+	rotation = Quat4::s_lookAt(dir / distance, up());
+}
+
+template<class T> inline
+void ViewportCamera3_<T>::move(const Vec3& delta) {
+	aim += rotation * delta;
+}
+
+template<class T> inline
+void ViewportCamera3_<T>::dolly(T delta) {
+	distance = Math::max(T(0.001), distance + delta);
+}
+
+template<class T>
+Mat4_<T> ViewportCamera3_<T>::worldMatrix(const ProjectionDesc& desc) const {
+	return viewMatrix(desc).inverse();
+}
+
+template<class T> inline
+Mat4_<T> ViewportCamera3_<T>::viewMatrix(const ProjectionDesc& desc) const {
+	return Mat4::s_lookAt(eye(), aim, up(), desc);
 }
 
 // ---- explicit instantiation --- 

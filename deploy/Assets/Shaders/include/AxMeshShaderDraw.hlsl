@@ -112,7 +112,7 @@ void axMeshlet_AmplificationMain(
 		=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(group      ) <= maxErrorInPixels) 
 		&& (                              axMeshlet_boundsError(refineGroup) >  maxErrorInPixels);
 
-		bool insideFrustum = axMeshlet_insideFrustum(cluster.center,  cluster.radius);
+		bool insideFrustum = true; // axMeshlet_insideFrustum(cluster.center,  cluster.radius);
 		bool coneCulling   = true; 
 
 		visibleResult = lodMatch && coneCulling && insideFrustum;

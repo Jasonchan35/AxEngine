@@ -59,10 +59,11 @@ public:
 
 	void pan	(Vec2 delta);
 	void orbit	(Vec2 delta);
-	void move	(const Vec2& delta) { move(Vec3(delta, 0)); }
-	void move	(const Vec3& delta);
+	void roll   (T delta);
 
 	void dolly	(T delta);
+	void move	(const Vec2& delta) { move(Vec3(delta, 0)); }
+	void move	(const Vec3& delta);
 	
 	Mat4 worldMatrix(const ProjectionDesc& desc) const;
 	Mat4 viewMatrix(const ProjectionDesc& desc) const;

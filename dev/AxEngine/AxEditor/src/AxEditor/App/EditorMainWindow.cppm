@@ -70,6 +70,8 @@ protected:
 	float _mouseSpeed = 1.0;
 	AxGpuData_Debug _gpuDebugData;
 	bool _showCullingCamera = false;
+	
+	Vec3f _testEuler = {0,0,0};
 };
 
 

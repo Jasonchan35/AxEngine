@@ -14,6 +14,7 @@ EditorMainWindow::EditorMainWindow() {
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
 //	_gpuDebugData.drawNormalLength = 0.25f;
+	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 	
 	auto* renderSystem = RenderSystem::s_instance();
 	auto  title    = Fmt("AxEditor - {}{}, MT: {}, VSync: {}",
@@ -148,6 +149,10 @@ void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
 	}	
 	
 	ImUIPanel	panel("camera");
+	
+	ImUIDragFloat3("_testEuler", _testEuler);
+	_renderGraph->_testRot.setEuler(_testEuler);
+	
 	ImUIDragFloat("fieldOfView"   , &cam.fieldOfView, 0.1f, 5, 180);
 	ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
 	ImUILabelText("rotation"      , Fmt("{}", cam.rotation.euler()));
