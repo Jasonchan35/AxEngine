@@ -133,7 +133,7 @@ public:
 	void setPosition(float x, float y, float z) { setPosition(Vec3f(x,y,z)); }
 	
 	void setRotation(const Quat4f& rot  ) { _rotation = rot;   markLocalMatrixDirty(); }
-	void setRotation(float x, float y, float z) { setRotation(Quat4f::s_eulerDeg(x,y,z)); }
+	void setRotation(float x, float y, float z) { setRotation(Quat4f::s_euler(x,y,z)); }
 	
 	void setScale   (const Vec3f&  scale) { _scale    = scale; markLocalMatrixDirty(); }
 	void setScale   (float x, float y, float z) { setScale(Vec3f(x,y,z)); }

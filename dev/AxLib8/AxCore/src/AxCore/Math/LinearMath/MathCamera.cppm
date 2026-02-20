@@ -50,7 +50,7 @@ public:
 	Vec3 eye() const { return aim + rotation * Vec3(0, 0, -distance); }
 	void setEye(const Vec3& eye);
 
-	void setRotation(const Vec3& v) { rotation.setEulerDeg(v); }
+	void setRotation(const Vec3& v) { rotation.setEuler(v); }
 	void setRotation(const T& x, const T& y, const T& z = 0) { setRotation(Vec3(x, y, z)); }
 
 	Vec3 right() const		{ return rotation * Vec3(1, 0, 0); }

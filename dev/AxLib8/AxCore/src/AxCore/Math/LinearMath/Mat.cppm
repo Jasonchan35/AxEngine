@@ -452,7 +452,6 @@ auto Mat_<4,4,T,SIMD>::transpose() const -> This {
 
 template<class T, VecSimd SIMD> constexpr 
 auto Mat_<4, 4, T, SIMD>::mulMatrix(const This& m) const -> This {
-	/*
 	if constexpr (_use_SSE_m128_ps) {
 		This o;
 		for (int i = 0; i < 4; i++) {
@@ -476,7 +475,7 @@ auto Mat_<4, 4, T, SIMD>::mulMatrix(const This& m) const -> This {
 		}
 		return o;
 	}
-*/
+
 	This o;
 	o.cx = cx * m.cx.x + cy * m.cx.y + cz * m.cx.z + cw * m.cx.w;
 	o.cy = cx * m.cy.x + cy * m.cy.y + cz * m.cy.z + cw * m.cy.w;

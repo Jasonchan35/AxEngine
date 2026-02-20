@@ -150,7 +150,7 @@ void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
 	ImUIPanel	panel("camera");
 	ImUIDragFloat("fieldOfView"   , &cam.fieldOfView, 0.1f, 5, 180);
 	ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
-	ImUILabelText("rotation"      , Fmt("{}", cam.rotation.eulerDeg()));
+	ImUILabelText("rotation"      , Fmt("{}", cam.rotation.euler()));
 	ImUILabelText("distance"      , Fmt("{}", cam.distance));
 	ImUILabelText("eye"           , Fmt("{}", cam.eye()));
 	ImUILabelText("aim"           , Fmt("{}", cam.aim));

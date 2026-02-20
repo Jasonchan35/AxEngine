@@ -164,9 +164,9 @@ bool ImUIInputFloat4(ZStrView label, Vec4f& value) {
 }
 
 bool ImUIInputEulerDeg(ZStrView label, Quat4f& value) {
-	Vec3f euler = value.eulerDeg();
+	Vec3f euler = value.euler();
 	if (ImUIInputFloat3(label, euler)) {
-		value.setEulerDeg(euler);
+		value.setEuler(euler);
 		return true;
 	}
 	return false;
@@ -194,6 +194,19 @@ bool ImUIDragFloat(ZStrView label, float* v, float v_speed, float v_min, float v
 	                          v_max,
 	                          ImUI::showMixedValue ? ImUI::mixedValueFormat : ImUI::floatFormat, 
 	                          ImGuiSliderFlags_AlwaysClamp);
+}
+
+bool ImUIDragFloat3(ZStrView label, Vec3f& value, float v_speed, float v_min, float v_max) {
+	return ImGui::DragFloat3(label.c_str(), value.e, v_speed, v_min, v_max);
+}
+
+bool ImUIDragEuler(ZStrView label, Quat4f& value, float v_speed, float v_min, float v_max) {
+	auto e = value.euler();
+	if (ImUIDragFloat3(label, e, v_speed, v_min, v_max)) {
+		value.setEuler(e);
+		return true;
+	}
+	return false;
 }
 
 bool ImUIDragInt(ZStrView label, i32* v, float v_speed, i32 v_min, i32 v_max) {

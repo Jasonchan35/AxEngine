@@ -126,16 +126,18 @@ void EditorApp::_testLoadFbx() {
 			entity->addComponent<LightComponent>(AX_NEW);
 		}
 	}
-	
+		
 	{
 		auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("CullingCamera"));
 		// entity->setPosition(2, 2, 2);
 		auto* comp = entity->addComponent<CameraComponent>(AX_NEW);
-		entity->setRotation(30, 30, 0);
+		// entity->setRotation(-20, 45, 0);
+		entity->setRotation(-20, 45, 10);
 		entity->setPosition(0, 0, -10);
 		
 		comp->cameraObj->camera.nearClip = 0.1f;
 		comp->cameraObj->camera.farClip  = 15.0f;
+		comp->cameraObj->camera.fieldOfView = 20.0f;
 	}
 	
 }

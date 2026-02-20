@@ -11,21 +11,21 @@ template<class T>
 void ViewportCamera3_<T>::pan(Vec2 delta) {
 	auto pivot = eye();
 
-	auto e = rotation.eulerDeg();
+	auto e = rotation.euler();
 	e.x = 0;
-	auto q = Quat4::s_eulerDeg(e);
-	rotation *= q.inverse() * Quat4::s_eulerDegX(delta.x) * q;
-	rotation *= Quat4::s_eulerDegY(delta.y);
+	auto q = Quat4::s_euler(e);
+	rotation *= q.inverse() * Quat4::s_eulerX(delta.x) * q;
+	rotation *= Quat4::s_eulerY(delta.y);
 	aim = pivot + rotation * Vec3(0, 0, distance);
 }
 
 template<class T>
 void ViewportCamera3_<T>::orbit(Vec2 delta) {
-	auto e = rotation.eulerDeg();
+	auto e = rotation.euler();
 	e.x = 0;
-	auto q = Quat4::s_eulerDeg(e);
-	rotation *= q.inverse() * Quat4::s_eulerDegX(delta.x) * q;
-	rotation *= Quat4::s_eulerDegY(delta.y);
+	auto q = Quat4::s_euler(e);
+	rotation *= q.inverse() * Quat4::s_eulerX(delta.x) * q;
+	rotation *= Quat4::s_eulerY(delta.y);
 }
 
 template<class T>

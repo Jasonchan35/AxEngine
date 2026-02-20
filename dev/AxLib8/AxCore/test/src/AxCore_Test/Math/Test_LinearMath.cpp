@@ -200,7 +200,7 @@ public:
 		
 			{
 				Vec3  pos(1,2,3);
-				Quat4 rot = Quat4::s_eulerDeg({10, 20, 30});
+				Quat4 rot = Quat4::s_euler(10, 20, 30);
 				Vec3  scale(4,5,6);
 				mat_TRS = Mat4::s_TRS(pos, rot, scale);
 				
@@ -225,6 +225,54 @@ public:
 		AX_TEST_ALMOST_EQ(basic.mat_TRS,        sse.mat_TRS);
 	}
 	
+	template<class T>
+	void testQuat() {
+		using Vec3  = Vec3_<T>;
+		using Quat4 = Quat4_<T>;
+		
+		T x = 10;
+		T y = 20;
+		T z = 30;
+		
+		Vec3 euler(x,y,z);
+
+		auto xyz = Quat4::s_eulerX(x) * Quat4::s_eulerY(y) * Quat4::s_eulerZ(z);
+		auto xzy = Quat4::s_eulerX(x) * Quat4::s_eulerZ(z) * Quat4::s_eulerY(y);
+		auto yxz = Quat4::s_eulerY(y) * Quat4::s_eulerX(x) * Quat4::s_eulerZ(z);
+		auto yzx = Quat4::s_eulerY(y) * Quat4::s_eulerZ(z) * Quat4::s_eulerX(x);
+		auto zyx = Quat4::s_eulerZ(z) * Quat4::s_eulerY(y) * Quat4::s_eulerX(x);
+		auto zxy = Quat4::s_eulerZ(z) * Quat4::s_eulerX(x) * Quat4::s_eulerY(y);
+		
+		{
+			auto q_xyz = Quat4::s_eulerXYZ(x, y, z);
+			auto q_xzy = Quat4::s_eulerXZY(x, y, z);
+			auto q_yxz = Quat4::s_eulerYXZ(x, y, z);
+			auto q_yzx = Quat4::s_eulerYZX(x, y, z);
+			auto q_zyx = Quat4::s_eulerZYX(x, y, z);
+			auto q_zxy = Quat4::s_eulerZXY(x, y, z);
+			
+			AX_TEST_ALMOST_EQ(q_xyz, xyz);
+			AX_TEST_ALMOST_EQ(q_xzy, xzy);
+			AX_TEST_ALMOST_EQ(q_yxz, yxz);
+			AX_TEST_ALMOST_EQ(q_yzx, yzx);
+			AX_TEST_ALMOST_EQ(q_zyx, zyx);
+			AX_TEST_ALMOST_EQ(q_zxy, zxy);
+			
+			auto e_xyz = q_xyz.eulerXYZ();
+			auto e_xzy = q_xzy.eulerXZY();
+			auto e_yxz = q_yxz.eulerYXZ();
+			auto e_yzx = q_yzx.eulerYZX();
+			auto e_zyx = q_zyx.eulerZYX();
+			auto e_zxy = q_zxy.eulerZXY();
+			
+			AX_TEST_ALMOST_EQ_EPSILON(e_xyz, euler, 0.01f);
+			AX_TEST_ALMOST_EQ_EPSILON(e_xzy, euler, 0.01f);
+			AX_TEST_ALMOST_EQ_EPSILON(e_yxz, euler, 0.01f);
+			AX_TEST_ALMOST_EQ_EPSILON(e_yzx, euler, 0.01f);
+			AX_TEST_ALMOST_EQ_EPSILON(e_zyx, euler, 0.01f);
+			AX_TEST_ALMOST_EQ_EPSILON(e_zxy, euler, 0.01f);
+		}
+	}
 };
 
 void Test_LinearMath_Func() {
@@ -249,6 +297,9 @@ void Test_LinearMath_Func() {
 //	AX_TEST_RUN_CASE(Test_LinearMath::testMat_SSE<f16>)
 	AX_TEST_RUN_CASE(Test_LinearMath::testMat_SSE<f32>)
 	AX_TEST_RUN_CASE(Test_LinearMath::testMat_SSE<f64>)
+	
+	AX_TEST_RUN_CASE(Test_LinearMath::testQuat<f32>)
+	AX_TEST_RUN_CASE(Test_LinearMath::testQuat<f64>)
 }
 
 template class Vec_<4, f32, VecSimd::Basic>;

@@ -125,6 +125,18 @@ inline bool ImUIDragFloat(ZStrView label, T* v, float v_speed, T v_min, T v_max)
 	return false;
 }
 
+bool ImUIDragFloat3(ZStrView label,
+                    Vec3f&   value,
+                    float    v_speed = 0.1f,
+                    float    v_min   = -1000.0f,
+                    float    v_max   = +1000.0f);
+
+bool ImUIDragEuler(ZStrView label,
+					Quat4f&   value,
+					float    v_speed = 0.1f,
+					float    v_min   = -1000.0f,
+					float    v_max   = +1000.0f);
+
 
 bool ImUIDragInt(
 		ZStrView label, 

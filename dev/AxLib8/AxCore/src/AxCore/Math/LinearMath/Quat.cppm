@@ -65,11 +65,14 @@ public:
 	
 	AX_INLINE constexpr void set(const T& x_, const T& y_, const T& z_, const T& w_) { x=x_; y=y_; z=z_; w=w_; }
 
-	AX_NODISCARD AX_INLINE static constexpr This   s_identity ()	{ return This(T(0), T(0), T(0), T(1)); }
-						AX_INLINE constexpr void setIdentity() { *this = s_identity; }
+	AX_NODISCARD AX_INLINE static constexpr This  s_identity()	{ return This(T(0), T(0), T(0), T(1)); }
+						AX_INLINE constexpr void setIdentity()	{ *this = s_identity; }
 
-	AX_NODISCARD AX_INLINE static constexpr This   s_angleAxis(T rad, const Vec3& axis);
-						AX_INLINE constexpr void setAngleAxis(T rad, const Vec3& axis) { *this = s_angleAxis(rad, axis); }
+	AX_NODISCARD AX_INLINE static constexpr This  s_angleAxis(T deg, const Vec3& axis) { return s_angleAxis_Radians(Math::radians(deg), axis); }
+	AX_NODISCARD AX_INLINE static constexpr This  s_angleAxis_Radians(T rad, const Vec3& axis);
+	
+						AX_INLINE constexpr void setAngleAxis(T deg, const Vec3& axis)			{ *this = s_angleAxis_Radians(Math::radians(deg), axis);  }
+						AX_INLINE constexpr void setAngleAxis_Radians(T rad, const Vec3& axis)	{ *this = s_angleAxis(rad, axis); }
 	
 	AX_NODISCARD AX_INLINE static constexpr This   s_fromDirToDir(const Vec3& from, const Vec3& to);
 	AX_NODISCARD AX_INLINE static constexpr This   s_lookAt(const Vec3& direction, const Vec3& up);
@@ -77,39 +80,102 @@ public:
 	AX_NODISCARD constexpr T	angle() const { return Math::acos(w) * T(2); }
 	AX_NODISCARD constexpr Vec3	axis () const;
 
-	AX_NODISCARD static	constexpr This s_eulerRad(const Vec3& r);
-	AX_NODISCARD static	constexpr This s_eulerRad(T x, T y, T z)	{ return s_eulerRad(Vec3(x,y,z)); }
-	AX_NODISCARD static	constexpr This s_eulerRadX(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(s,0,0,c); }
-	AX_NODISCARD static	constexpr This s_eulerRadY(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,s,0,c); }
-	AX_NODISCARD static	constexpr This s_eulerRadZ(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
-
-	AX_NODISCARD static	constexpr This s_eulerDeg(const Vec3& r)	{ return s_eulerRad(Math::radians(r)); }
-	AX_NODISCARD static	constexpr This s_eulerDeg(T x, T y, T z)	{ return s_eulerRad(Math::radians(Vec3(x,y,z))); }
-	AX_NODISCARD static	constexpr This s_eulerDegX(T deg)			{ return s_eulerRadX(Math::radians(deg)); }
-	AX_NODISCARD static	constexpr This s_eulerDegY(T deg)			{ return s_eulerRadY(Math::radians(deg)); }
-	AX_NODISCARD static	constexpr This s_eulerDegZ(T deg)			{ return s_eulerRadZ(Math::radians(deg)); }
-
-	constexpr void 	setEulerRad(const Vec3& r)	{ *this = s_eulerRad(r); }
-	constexpr void 	setEulerRad(T x, T y, T z)  { setEulerRad(Vec3(x,y,z)); }
-	constexpr void 	setEulerRadX(T rad) { *this = s_eulerRadX(rad); }
-	constexpr void 	setEulerRadY(T rad) { *this = s_eulerRadY(rad); }
-	constexpr void 	setEulerRadZ(T rad) { *this = s_eulerRadZ(rad); }
+	AX_NODISCARD static	constexpr This s_euler(const Vec3& r)	{ return s_euler_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_euler(T x, T y, T z)	{ return s_euler(Vec3(x,y,z)); }
 	
-	constexpr void 	setEulerDeg(const Vec3& r)	{ *this = s_eulerDeg(r); }
-	constexpr void 	setEulerDeg(T x, T y, T z)  { setEulerDeg(Vec3(x,y,z)); }
-	constexpr void 	setEulerDegX(T deg) { *this = s_eulerDegX(deg); }
-	constexpr void 	setEulerDegY(T deg) { *this = s_eulerDegY(deg); }
-	constexpr void 	setEulerDegZ(T deg) { *this = s_eulerDegZ(deg); }
+	AX_NODISCARD static	constexpr This s_euler_Radians(const Vec3& r)	{ return s_eulerYXZ_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_euler_Radians(T x, T y, T z)	{ return s_euler_Radians(Vec3(x,y,z)); }
+	
+	AX_NODISCARD static	constexpr This s_eulerXYZ(const Vec3& r)	{ return s_eulerXYZ_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_eulerXZY(const Vec3& r)	{ return s_eulerXZY_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_eulerYXZ(const Vec3& r)	{ return s_eulerYXZ_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_eulerYZX(const Vec3& r)	{ return s_eulerYZX_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_eulerZXY(const Vec3& r)	{ return s_eulerZXY_Radians(Math::radians(r)); }
+	AX_NODISCARD static	constexpr This s_eulerZYX(const Vec3& r)	{ return s_eulerZYX_Radians(Math::radians(r)); }
+	
+	AX_NODISCARD static	constexpr This s_eulerXYZ(T x, T y, T z)	{ return s_eulerXYZ(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerXZY(T x, T y, T z)	{ return s_eulerXZY(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerYXZ(T x, T y, T z)	{ return s_eulerYXZ(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerYZX(T x, T y, T z)	{ return s_eulerYZX(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerZXY(T x, T y, T z)	{ return s_eulerZXY(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerZYX(T x, T y, T z)	{ return s_eulerZYX(Vec3(x,y,z)); }
+	
+	AX_NODISCARD static	constexpr This s_eulerXYZ_Radians(const Vec3& r);
+	AX_NODISCARD static	constexpr This s_eulerXZY_Radians(const Vec3& r);
+	AX_NODISCARD static	constexpr This s_eulerYXZ_Radians(const Vec3& r);
+	AX_NODISCARD static	constexpr This s_eulerYZX_Radians(const Vec3& r);
+	AX_NODISCARD static	constexpr This s_eulerZXY_Radians(const Vec3& r);
+	AX_NODISCARD static	constexpr This s_eulerZYX_Radians(const Vec3& r);
+	
+	AX_NODISCARD static	constexpr This s_eulerXYZ_Radians(T x, T y, T z)	{ return s_eulerXYZ_Radians(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerXZY_Radians(T x, T y, T z)	{ return s_eulerXZY_Radians(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerYXZ_Radians(T x, T y, T z)	{ return s_eulerYXZ_Radians(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerYZX_Radians(T x, T y, T z)	{ return s_eulerYZX_Radians(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerZXY_Radians(T x, T y, T z)	{ return s_eulerZXY_Radians(Vec3(x,y,z)); }
+	AX_NODISCARD static	constexpr This s_eulerZYX_Radians(T x, T y, T z)	{ return s_eulerZYX_Radians(Vec3(x,y,z)); }
 
-	AX_NODISCARD constexpr Vec3	eulerRad() const	{ return Vec3(eulerRadX(), eulerRadY(), eulerRadZ()); }
-	AX_NODISCARD constexpr T	eulerRadX() const;
-	AX_NODISCARD constexpr T	eulerRadY() const;
-	AX_NODISCARD constexpr T	eulerRadZ() const;
+	AX_NODISCARD static	constexpr This s_eulerX(T deg)		{ return s_eulerX_Radians(Math::radians(deg)); }
+	AX_NODISCARD static	constexpr This s_eulerY(T deg)		{ return s_eulerY_Radians(Math::radians(deg)); }
+	AX_NODISCARD static	constexpr This s_eulerZ(T deg)		{ return s_eulerZ_Radians(Math::radians(deg)); }
 
-	AX_NODISCARD constexpr Vec3	eulerDeg() const	{ return Vec3(eulerDegX(), eulerDegY(), eulerDegZ()); }
-	AX_NODISCARD constexpr T	eulerDegX() const	{ return Math::degrees(eulerRadX()); }
-	AX_NODISCARD constexpr T	eulerDegY() const	{ return Math::degrees(eulerRadY()); }
-	AX_NODISCARD constexpr T	eulerDegZ() const	{ return Math::degrees(eulerRadZ()); }
+	AX_NODISCARD static	constexpr This s_eulerX_Radians(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(s,0,0,c); }
+	AX_NODISCARD static	constexpr This s_eulerY_Radians(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,s,0,c); }
+	AX_NODISCARD static	constexpr This s_eulerZ_Radians(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
+
+	constexpr void  setEuler(const Vec3& r) { *this = s_euler(r); }
+	constexpr void 	setEulerX(T deg) { *this = s_eulerX(deg); }
+	constexpr void 	setEulerY(T deg) { *this = s_eulerY(deg); }
+	constexpr void 	setEulerZ(T deg) { *this = s_eulerZ(deg); }
+
+	constexpr void  setEuler_Radians(const Vec3& r) { *this = s_euler_Radians(r); }
+	constexpr void 	setEulerX_Radians(T rad) { *this = s_eulerX_Radians(rad); }
+	constexpr void 	setEulerY_Radians(T rad) { *this = s_eulerY_Radians(rad); }
+	constexpr void 	setEulerZ_Radians(T rad) { *this = s_eulerZ_Radians(rad); }
+	
+	constexpr void 	setEulerXYZ(const Vec3& r)	{ *this = s_eulerXYZ(r); }
+	constexpr void 	setEulerXZY(const Vec3& r)	{ *this = s_eulerXZY(r); }
+	constexpr void 	setEulerYXZ(const Vec3& r)	{ *this = s_eulerYXZ(r); }
+	constexpr void 	setEulerYZX(const Vec3& r)	{ *this = s_eulerYZX(r); }
+	constexpr void 	setEulerZXY(const Vec3& r)	{ *this = s_eulerZXY(r); }
+	constexpr void 	setEulerZYX(const Vec3& r)	{ *this = s_eulerZYX(r); }
+	
+	constexpr void 	setEulerXYZ(T x, T y, T z)	{ setEulerXYZ(Vec3(x,y,z)); }
+	constexpr void 	setEulerXZY(T x, T y, T z)	{ setEulerXZY(Vec3(x,y,z)); }
+	constexpr void 	setEulerYXZ(T x, T y, T z)	{ setEulerYXZ(Vec3(x,y,z)); }
+	constexpr void 	setEulerYZX(T x, T y, T z)	{ setEulerYZX(Vec3(x,y,z)); }
+	constexpr void 	setEulerZXY(T x, T y, T z)	{ setEulerZXY(Vec3(x,y,z)); }
+	constexpr void 	setEulerZYX(T x, T y, T z)	{ setEulerZYX(Vec3(x,y,z)); }
+	
+	constexpr void 	setEulerXYZ_Radians(const Vec3& r)	{ *this = s_eulerXYZ_Radians(r); }
+	constexpr void 	setEulerXZY_Radians(const Vec3& r)	{ *this = s_eulerXZY_Radians(r); }
+	constexpr void 	setEulerYXZ_Radians(const Vec3& r)	{ *this = s_eulerYXZ_Radians(r); }
+	constexpr void 	setEulerYZX_Radians(const Vec3& r)	{ *this = s_eulerYZX_Radians(r); }
+	constexpr void 	setEulerZXY_Radians(const Vec3& r)	{ *this = s_eulerZXY_Radians(r); }
+	constexpr void 	setEulerZYX_Radians(const Vec3& r)	{ *this = s_eulerZYX_Radians(r); }
+	
+	constexpr void 	setEulerXYZ_Radians(T x, T y, T z)	{ setEulerXYZ_Radians(Vec3(x,y,z)); }
+	constexpr void 	setEulerXZY_Radians(T x, T y, T z)	{ setEulerXZY_Radians(Vec3(x,y,z)); }
+	constexpr void 	setEulerYXZ_Radians(T x, T y, T z)	{ setEulerYXZ_Radians(Vec3(x,y,z)); }
+	constexpr void 	setEulerYZX_Radians(T x, T y, T z)	{ setEulerYZX_Radians(Vec3(x,y,z)); }
+	constexpr void 	setEulerZXY_Radians(T x, T y, T z)	{ setEulerZXY_Radians(Vec3(x,y,z)); }
+	constexpr void 	setEulerZYX_Radians(T x, T y, T z)	{ setEulerZYX_Radians(Vec3(x,y,z)); }
+
+	AX_NODISCARD constexpr Vec3	euler() const	 { return Math::degrees(euler_Radians()); }
+	AX_NODISCARD constexpr Vec3	euler_Radians() const { return eulerYXZ_Radians(); }
+	
+	AX_NODISCARD constexpr Vec3	eulerXYZ() const { return Math::degrees(eulerXYZ_Radians()); }
+	AX_NODISCARD constexpr Vec3	eulerXZY() const { return Math::degrees(eulerXZY_Radians()); }
+	AX_NODISCARD constexpr Vec3	eulerYXZ() const { return Math::degrees(eulerYXZ_Radians()); }
+	AX_NODISCARD constexpr Vec3	eulerYZX() const { return Math::degrees(eulerYZX_Radians()); }
+	AX_NODISCARD constexpr Vec3	eulerZXY() const { return Math::degrees(eulerZXY_Radians()); }
+	AX_NODISCARD constexpr Vec3	eulerZYX() const { return Math::degrees(eulerZYX_Radians()); }
+	
+	AX_NODISCARD constexpr Vec3	eulerXYZ_Radians() const;
+	AX_NODISCARD constexpr Vec3	eulerXZY_Radians() const;
+	AX_NODISCARD constexpr Vec3	eulerYXZ_Radians() const;
+	AX_NODISCARD constexpr Vec3	eulerYZX_Radians() const;
+	AX_NODISCARD constexpr Vec3	eulerZXY_Radians() const;
+	AX_NODISCARD constexpr Vec3	eulerZYX_Radians() const;
 	
 	AX_NODISCARD constexpr This normalize() const;
 	AX_NODISCARD constexpr This conjugate() const { return This(-x, -y, -z, w); }
@@ -187,13 +253,148 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 	return Vec3(x, y, z) * Math::rsqrt_fast(a);
 }
 
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::s_eulerRad(const Vec3& r) -> This {
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerYXZ_Radians(const Vec3& r) {
+	Vec3_<T, SIMD> s, c;
+	Math::sincos(r * T(0.5), s, c);
+	return This(s.x * c.y * c.z - c.x * s.y * s.z,
+				c.x * s.y * c.z + s.x * c.y * s.z,
+				c.x * c.y * s.z + s.x * s.y * c.z,
+				c.x * c.y * c.z - s.x * s.y * s.z);
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerYZX_Radians(const Vec3& r) {
+	Vec3_<T, SIMD> s, c;
+	Math::sincos(r * T(0.5), s, c);
+	return This(s.x * c.y * c.z - c.x * s.y * s.z,
+				c.x * s.y * c.z - s.x * c.y * s.z,
+				c.x * c.y * s.z + s.x * s.y * c.z,
+				c.x * c.y * c.z + s.x * s.y * s.z);	
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerZXY_Radians(const Vec3& r) {
+	Vec3_<T, SIMD> s, c;
+	Math::sincos(r * T(0.5), s, c);
+	return This(s.x * c.y * c.z + c.x * s.y * s.z,
+				c.x * s.y * c.z - s.x * c.y * s.z,
+				c.x * c.y * s.z - s.x * s.y * c.z,
+				c.x * c.y * c.z + s.x * s.y * s.z);
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerZYX_Radians(const Vec3& r) {
+	Vec3_<T, SIMD> s, c;
+	Math::sincos(r * T(0.5), s, c);
+	return This(s.x * c.y * c.z + c.x * s.y * s.z,
+				c.x * s.y * c.z - s.x * c.y * s.z,
+				c.x * c.y * s.z + s.x * s.y * c.z,
+				c.x * c.y * c.z - s.x * s.y * s.z); 
+}
+
+template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr 
+auto Quat_<4, T, SIMD>::s_eulerXYZ_Radians(const Vec3& r) -> This {
 	Vec3_<T, SIMD> s, c;
 	Math::sincos(r * T(0.5), s, c);
 	return This(s.x * c.y * c.z - c.x * s.y * s.z,
 	            c.x * s.y * c.z + s.x * c.y * s.z,
 	            c.x * c.y * s.z - s.x * s.y * c.z,
 	            c.x * c.y * c.z + s.x * s.y * s.z);
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::This Quat_<4, T, SIMD>::s_eulerXZY_Radians(const Vec3& r) {
+	Vec3_<T, SIMD> s, c;
+	Math::sincos(r * T(0.5), s, c);
+	return This(s.x * c.y * c.z + c.x * s.y * s.z,
+				c.x * s.y * c.z + s.x * c.y * s.z,
+				c.x * c.y * s.z - s.x * s.y * c.z,
+				c.x * c.y * c.z - s.x * s.y * s.z);
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerXYZ_Radians() const {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(-2) * (x * z - w * y) / (x2 + y2 + z2 + w2);
+	Vec3 o;
+	o.x = Math::atan2(T(2) * (w * x + y * z), w2 - x2 - y2 + z2);
+	o.y = Math::asin(Math::clamp(d, T(-1), T(1)));
+	o.z = Math::atan2(T(2) * (w * z + x * y), w2 + x2 - y2 - z2);
+	return o;
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerXZY_Radians() const {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(2) * (w * z + x * y) / (x2 + y2 + z2 + w2);
+	Vec3 o;
+	o.x = Math::atan2(T(2) * (w * x - y * z), w2 - x2 + y2 - z2);
+	o.y = Math::atan2(T(2) * (w * y - x * z), w2 + x2 - y2 - z2);
+	o.z = Math::asin(std::clamp(d, T(-1), T(1)));
+	return o;
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerYXZ_Radians() const {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(2) * (w * x + y * z) / (w2 + x2 + y2 + z2);
+	Vec3 o;
+	o.x = Math::asin(Math::clamp(d, T(-1), T(1)));
+	o.y = Math::atan2(T(2) * (w * y - x * z), w2 - x2 - y2 + z2);
+	o.z = Math::atan2(T(2) * (w * z - x * y), w2 - x2 + y2 - z2);
+	return o;
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerYZX_Radians() const {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(2) * (w * z - x * y) / (w2 + x2 + y2 + z2);
+	Vec3 o;
+	o.x = Math::atan2(T(2) * (w * x + y * z) ,  w2 - x2 + y2 - z2);
+	o.y = Math::atan2(T(2) * (w * y + x * z) ,  w2 + x2 - y2 - z2);
+	o.z = Math::asin(Math::clamp(d, T(-1), T(1)));
+	return o;
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerZXY_Radians() const {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(2) * (w * x - y * z) / (w2 + x2 + y2 + z2);
+	Vec3 o;
+	o.x = Math::asin(Math::clamp(d, T(-1), T(1)));
+	o.y = Math::atan2(T(2) * (w * y + x * z), w2 - x2 - y2 + z2);
+	o.z = Math::atan2(T(2) * (w * z + x * y), w2 - x2 + y2 - z2);
+	return o;
+}
+
+template<class T, VecSimd SIMD>
+constexpr typename Quat_<4, T, SIMD>::Vec3 Quat_<4, T, SIMD>::eulerZYX_Radians() const {
+	T x2 = x * x;
+	T y2 = y * y;
+	T z2 = z * z;
+	T w2 = w * w;
+	T d = T(2) * (w * y + z * x) / (w2 + x2 + y2 + z2);
+	Vec3 o;
+	o.x = Math::atan2(T(2) * (w * x - y * z), w2 - x2 - y2 + z2);
+	o.y = Math::asin(Math::clamp(d, T(-1), T(1)));
+	o.z = Math::atan2(T(2) * (w * z - x * y), w2 + x2 - y2 - z2);
+	return o;
 }
 
 template<class T, VecSimd SIMD> constexpr 
@@ -205,24 +406,6 @@ auto Quat_<4, T, SIMD>::normalize() const -> This {
 		T invMag = Math::rsqrt_fast(magSq);
 		return _simd * invMag;
 	}
-}
-
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerRadX() const -> T {
-	auto a = T(2) * (y * z + w * x);
-	auto b = w * w - x * x - y * y + z * z;
-	return Math::atan2(a, b);
-}
-
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerRadY() const -> T {
-	auto v = T(-2) * (x * z - w * y);
-	auto a = Math::clamp(v, T(-1), T(1));
-	return Math::asin(a);
-}
-
-template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::eulerRadZ() const -> T {
-	auto a = T(2) * (x * y + w * z);
-	auto b = w * w + x * x - y * y - z * z;
-	return Math::atan2(a, b);
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::inverse() const -> This {
@@ -237,13 +420,13 @@ template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T
 }
 
 template<class T, VecSimd SIMD> AX_NODISCARD AX_INLINE constexpr auto Quat_<4, T, SIMD>::operator*(const This& q) const -> This {
-	return This(x * q.w +  w * q.x + z * q.y - y * q.z,
-				y * q.w +  w * q.y + x * q.z - z * q.x,
-				z * q.w +  w * q.z + y * q.x - x * q.y,
-				w * q.w -  x * q.x - y * q.y - z * q.z);
+	return This(x * q.w + w * q.x + z * q.y - y * q.z,
+				y * q.w + w * q.y + x * q.z - z * q.x,
+				z * q.w + w * q.z + y * q.x - x * q.y,
+				w * q.w - x * q.x - y * q.y - z * q.z);
 }
 
-template<class T, VecSimd SIMD> constexpr AX_INLINE auto Quat_<4, T, SIMD>::s_angleAxis(T rad, const Vec3& axis) -> This {
+template<class T, VecSimd SIMD> constexpr AX_INLINE auto Quat_<4, T, SIMD>::s_angleAxis_Radians(T rad, const Vec3& axis) -> This {
 	T s, c;
 	Math::sincos(rad * T(0.5), s, c);
 	return This(axis.x * s, axis.y * s, axis.z * s, c);
