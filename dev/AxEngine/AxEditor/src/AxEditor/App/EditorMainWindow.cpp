@@ -219,7 +219,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	{
 		ImUIPanel	panel("Gizmo");
 		ImUIDragFloat("mouseSpeed", _mouseSpeed, 0.1f, 0.1f, 50.0f);
-		ImUIDragFloat("flyingCameraSpeed", _flyingCameraSpeed, 0.1f, 0.1f, 250.0f);
+		ImUIDragFloat("flyingCameraSpeed", _flyingCameraSpeed, 0.1f, 0.1f, 500.0f);
 		
 		{
 			if (ImUIRadioButton("Local", _gizmoSpace == ImUIGizmoSpace::Local)) {

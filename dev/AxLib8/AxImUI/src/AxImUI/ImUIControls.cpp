@@ -92,10 +92,6 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 		screenPoints[i] = ImVec2_make(pt);
 	}
 
-	for (Int i = 0; i < 8; i++) {
-		auto v = Vec2f_make(screenPoints[i]);
-	}
-	
 	ImU32 color = 0xffffffff;
 	constexpr float thickness = -1;
 

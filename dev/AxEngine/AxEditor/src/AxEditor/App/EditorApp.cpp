@@ -139,13 +139,13 @@ void EditorApp::_testLoadFbx() {
 //		entity->setPosition(0, 0, -10);
 		
 		comp->cameraObj->camera.nearClip = 0.1f;
-		comp->cameraObj->camera.farClip  = 10.0f;
-		comp->cameraObj->camera.fieldOfView = 25.0f;
+		comp->cameraObj->camera.farClip  = 20.0f;
+		comp->cameraObj->camera.fieldOfView = 35.0f;
 		
 		_mainWin->_cullingCameraComp = comp;
 	}
 	
-	_cloneEntities("sportsCar", 50,  10, Vec3f(3, 0, -5));
+	_cloneEntities("sportsCar", 50,  10, Vec3f(5, 0, -6));
 	_cloneEntities("Suzanne",   400, 20, Vec3f(3, 0, -3));
 }
 
