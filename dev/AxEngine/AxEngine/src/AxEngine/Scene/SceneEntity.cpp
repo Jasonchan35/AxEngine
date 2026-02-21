@@ -238,7 +238,7 @@ LightComponent::~LightComponent() {
 
 void LightComponent::onInit() {
 	Base::onInit();
-	_lightObj = LightObject::s_new(AX_NEW);
+	lightObj = LightObject::s_new(AX_NEW);
 	getWorld()->_lightComponents.add(this);
 }
 
@@ -260,7 +260,7 @@ void SceneWorld::onRender(RenderRequest* req) {
 	for (auto* comp : _lightComponents) {
 		if (!comp) continue;
 
-		auto* light = comp->_lightObj.ptr();
+		auto* light = comp->lightObj.ptr();
 		if (!light) continue;
 
 		light->setWorldPos(comp->entity()->worldPosition());
@@ -271,6 +271,7 @@ void SceneWorld::onRender(RenderRequest* req) {
 		
 		tileLighting.lightIds[tileLighting.lightCount] = light->objectSlot.slotId();
 		tileLighting.lightCount++;
+		
 	}
 	_tileLightingBuffer.uploadAndGetOffset(req);
 

@@ -64,17 +64,10 @@ float4 ps_main(
 	VS_Output i,
 	SEM_sv_primitiveId(uint)
 ) : SV_Target {
-	AxGpuData_LightObject light;
-	light.worldPos = Vec3f(10, 10, -10);
-	light.color    = Color3f(1,1,1);
-
 	Vec3f worldPos    = i.worldPos;
 	Vec3f worldNormal = normalize(i.normal); 
 
-	Color3f lightResult = axLight_Blinn(light, worldPos, worldNormal,
-										ambient, diffuse, specular, shininess);
-
-//	i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
+	Color3f lightResult = axTileLight_Blinn(worldPos, worldNormal);
 	return i.color0 * Color4f(lightResult, 1);
 }
 

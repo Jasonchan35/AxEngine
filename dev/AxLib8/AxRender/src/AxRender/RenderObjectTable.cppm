@@ -225,6 +225,8 @@ void RenderObjectTable<T>::onFrameEnd(RenderRequest* req) {
 	curFrame.pendingFreeSlots.clear();
 
 	if (_dirtyObjects.size() <= 0) return;
+
+	bool needUpload = false;
 	
 	for (auto& obj : _dirtyObjects) {
 		if (!obj) { AX_ASSERT(false); continue; }
@@ -233,11 +235,13 @@ void RenderObjectTable<T>::onFrameEnd(RenderRequest* req) {
 		if constexpr (kHasGpuData) {
 			if (auto* data = obj->onGetGpuData(req)) {
 				_gpuBuffer.setValue(obj->objectSlot.slotId(), *data);
-				_gpuBuffer.getUploadedGpuBuffer(req);
+				needUpload = true;
 			}
 		}
 	}
 
+	if (needUpload) { _gpuBuffer.getUploadedGpuBuffer(req); }
+	
 	_dirtyObjects.clear();
 	
 	if (_gpuBufferPool) {

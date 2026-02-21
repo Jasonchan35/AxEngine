@@ -22,29 +22,50 @@ Vec3f ax_debug_lod_offset(uint lod) { return Vec3f(lod * axDebug.showAllLodDista
 
 Color3f axLight_Blinn(
 	AxGpuData_LightObject light,
-	Vec3f worldPos, Vec3f worldNormal,
-	Color3f ambient,
-	Color3f diffuse,
-	Color3f specular,
-	float   shininess
+	Vec3f worldPos, Vec3f worldNormal
 ) {
-	Vec3f lightDir = normalize(light.worldPos    - worldPos);
+	Color4f color     = Color4f(1, 1, 1, 1);
+    Color3f ambient   = Color3f(0.2, 0.2, 0.2);
+    Color3f diffuse   = Color3f(0.8, 0.8, 0.8);
+    Color3f specular  = Color3f(1, 1, 1);
+    float   shininess = 32;
+
+	Vec3f lightVec = light.worldPos - worldPos;
+	float lightDis = length(lightVec);
+	Vec3f lightDir = lightVec / lightDis;
+
 	Vec3f viewDir  = normalize(axCamera.worldPos - worldPos);
 
+	Color3f lightColor = light.color.rgb;
+
+	float factor    = lightDis / light.range;
+	float intensity = 1 - factor * factor;
+
 	// ambient
-	Color3f outAmbient = light.color * ambient;
+	Color3f outAmbient = lightColor * ambient;
 
 	// diffuse 
-	Vec3f norm       = worldNormal;
-	float diff       = max(dot(norm, lightDir), 0.0);
-	Color3f outDiffuse = light.color * (diff * diffuse);
+	float diff       = max(dot(worldNormal, lightDir), 0.0);
+	Color3f outDiffuse = lightColor * (diff * diffuse);
 
 	// specular
-	Vec3f reflectDir  = reflect(-lightDir, norm);  
+	Vec3f reflectDir  = reflect(-lightDir, worldNormal);  
 	float spec        = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	Color3f outSpecular = light.color * (specular * spec);
+	Color3f outSpecular = lightColor * (specular * spec);
 		
 	Color3f lightResult = outAmbient + outDiffuse + outSpecular;
+	return lightResult * intensity;
+}
+
+Color3f axTileLight_Blinn(Vec3f worldPos, Vec3f worldNormal) {
+	Color3f lightResult = Color3f(0,0,0);
+
+	AxGpuData_TileLighting tile = axGpuData_TileLighting[0];
+	for (int j = 0; j < tile.lightCount; ++j) {
+		AxGpuData_LightObject light = axGpuData_LightObject[tile.lightIds[j]];
+		lightResult += axLight_Blinn(light, worldPos, worldNormal);
+	}
+
 	return lightResult;
 }
 

@@ -31,10 +31,10 @@ struct AxGpuData_TileLighting {
 };
 
 struct AxGpuData_LightObject {
+	Vec3f	worldPos;
+	float	range;
 	Color3f	color;
 	u32		_padding0;
-	Vec3f	worldPos;
-	u32		_padding1;
 };
 
 struct AxGpuData_CameraObject {

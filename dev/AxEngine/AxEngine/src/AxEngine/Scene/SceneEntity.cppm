@@ -217,12 +217,11 @@ public:
 	~LightComponent();
 
 	ObjectTableSlot<This> _slot;
+
+	SPtr<LightObject> lightObj;
 	
 protected:
 	virtual void onInit() override;
-	
-	friend SceneWorld;
-	SPtr<LightObject> _lightObj;
 };
 
 AX_CLASS()

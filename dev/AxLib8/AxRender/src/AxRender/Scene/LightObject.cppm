@@ -19,6 +19,7 @@ public:
 	
 	void setWorldPos(const Vec3f& v);
 	void setColor(const Color3f& color);
+	void setRange(float v);
 
 protected:
 	LightObject();
@@ -41,9 +42,17 @@ void LightObject::setColor(const Color3f& color) {
 	objectSlot.markDirty();
 }
 
+void LightObject::setRange(float v) {
+	if (_gpuData.range == v) return;
+	_gpuData.range = v;
+	objectSlot.markDirty();
+}
+
 LightObject::LightObject()
 : objectSlot(this) {
 	setColor(Color3f(1,1,1));
+	setRange(10.0f);
+	_gpuData.worldPos = Vec3f(0,0,0);
 }
 
 } // namespace

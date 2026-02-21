@@ -124,10 +124,16 @@ void EditorApp::_testLoadFbx() {
 	_engine.setWorld(world);
 	
 	{ // create lights
-		for (Int i = 0; i < 1; ++i) {
+		for (Int i = 0; i < 5; ++i) {
 			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Light_{}", i));
-			entity->setPosition(static_cast<f32>(i) * 2.0f, 2, -2);
-			entity->addComponent<LightComponent>(AX_NEW);
+			entity->setPosition(static_cast<f32>(i) * 5.0f, 3, -2);
+			auto* comp = entity->addComponent<LightComponent>(AX_NEW);
+			
+			switch (i) {
+				case 1: comp->lightObj->setColor(Color3f(1,0,0)); break;
+				case 2: comp->lightObj->setColor(Color3f(0,0,1)); break;
+				default: break;
+			}
 		}
 	}
 		

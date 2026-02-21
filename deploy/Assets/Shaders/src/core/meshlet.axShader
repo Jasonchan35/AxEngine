@@ -1,13 +1,5 @@
 #if AX_SHADER_INFO
 
-Properties {
-	Color4f color     = [1, 1, 1, 1]
-    Color3f ambient   = [0.2, 0.2, 0.2]
-    Color3f diffuse   = [0.8, 0.8, 0.8]
-    Color3f specular  = [1, 1, 1]
-    float   shininess = 32	
-}
-
 Pass "Pass0" {
 	AmplificationFunc = axMeshlet_AmplificationMain
 	MeshFunc          = axMeshlet_MeshMain
@@ -17,11 +9,6 @@ Pass "Pass0" {
 
 #include "AxMeshShaderDraw.hlsl"
 
-uniform Color3f ambient;
-uniform Color3f diffuse;
-uniform Color3f specular;
-uniform float   shininess;
-
 float4 ps_main(
 	MeshletVS_Output i,
 	SEM_sv_primitiveId(uint)
@@ -30,24 +17,11 @@ float4 ps_main(
 	Vec3f worldPos    = i.worldPos;
 	Vec3f worldNormal = normalize(i.normal); 
 
-#if 0
-	AxGpuData_LightObject light = axGpuData_LightObject[0];
-	Color3f lightResult = axLight_Blinn(light, worldPos, worldNormal,
-										ambient, diffuse, specular, shininess);
-#else
-	Color3f lightResult = Color3f(0,0,0);
-
-	AxGpuData_TileLighting tile = axGpuData_TileLighting[0];
-	for (int j = 0; j < tile.lightCount; ++j) {
-		AxGpuData_LightObject light = axGpuData_LightObject[tile.lightIds[j]];
-		lightResult += axLight_Blinn(light, worldPos, worldNormal, ambient, diffuse, specular, shininess);
-	}
-#endif
-
 	if (axDebug.debugColorCode == AxGpuDebugColorCode_Tri) {
 		i.color0 = ax_debug_color(sv_primitiveId); // debug triangles
 	}
 
+	Color3f lightResult = axTileLight_Blinn(worldPos, worldNormal);
 	return i.color0 * Color4f(lightResult, 1);
 }
 

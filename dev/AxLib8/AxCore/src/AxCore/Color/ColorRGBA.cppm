@@ -128,7 +128,7 @@ public:
 	
 	AX_INLINE constexpr 	  T* data()			{ return _simd.data(); }
 	AX_INLINE constexpr const T* data() const	{ return _simd.data(); }
-
+	
 	using CSpan =    Span<T>;
 	using MSpan = MutSpan<T>;
 
@@ -320,6 +320,9 @@ public:
 	AX_INLINE constexpr 	  T* data()			{ return _simd.data(); }
 	AX_INLINE constexpr const T* data() const	{ return _simd.data(); }
 
+	ColorRGB rg() const  { return ColorRG(r,g); }
+	ColorRGB rgb() const { return ColorRGB(r,g,b); }
+	
 	using CSpan =    Span<T>;
 	using MSpan = MutSpan<T>;
 

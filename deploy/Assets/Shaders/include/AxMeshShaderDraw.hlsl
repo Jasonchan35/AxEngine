@@ -67,12 +67,11 @@ static bool axMeshlet_insideFrustum(Vec3f center, float radius) {
 	if (ax_bit_has(axDebug.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling))
 		return true;
 
+	Vec4f worldCenter = Vec4f(axObjectToWorldPos(center), 1);
+
 	for (int i = 0; i < 6; i++) {
 		Vec4f plane = axCamera.cullingPlanes[i];
 		plane.w = -plane.w;
-
-		Vec4f worldCenter = Vec4f(axObjectToWorldPos(center), 1);
-
 		if (dot(worldCenter, plane) > radius) {
 			return false;
 		}
