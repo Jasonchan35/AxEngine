@@ -112,8 +112,11 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 
 void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
 	ImUIPanel	panel("statistics");
-	ImUIText("Meshlet:");
 	
+	_fpsCount.update(req->deltaTime());
+	ImUIText(Fmt("FPS {:4.2}, {:4.2f}ms", _fpsCount.fps(), _fpsCount.averageTime / 1000.0));
+	
+	ImUIText("Meshlet:");
 	auto func = [](StrView name, const GpuBufferPool::Statistics& src)-> void {
 		ImUIText(Fmt("  {} ({:8} / {:2} / {:4}MB)",
 		             name,
@@ -127,6 +130,16 @@ void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
 	func("Group  ", stat.meshletGroup);
 	func("Vert   ", stat.meshletVert);
 	func("Prim   ", stat.meshletPrim);
+}
+
+void EditorMainWindow::FpsCount::update(double deltaTime) {
+	_time += deltaTime;
+	_frames++;
+	if (_time > 0.5) {
+		averageTime = _time / static_cast<double>(_frames);
+		_time   = 0;
+		_frames = 0;
+	}
 }
 
 void EditorMainWindow::_viewportCameraPanel(RenderRequest* req) {

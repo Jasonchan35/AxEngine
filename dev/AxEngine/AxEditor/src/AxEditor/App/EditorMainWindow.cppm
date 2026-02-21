@@ -74,6 +74,17 @@ protected:
 	
 	AxGpuData_Debug _gpuDebugData;
 	bool _useCullingCamera = false;
+	
+	struct FpsCount {
+		double averageTime = 0;
+		double fps() const { return 1.0 / averageTime; }
+		
+		void update(double deltaTime);
+	private:
+		double _time = 0;
+		Int    _frames = 0;
+	};
+	FpsCount _fpsCount;
 };
 
 
