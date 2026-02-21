@@ -10,14 +10,14 @@ EngineRenderGraph::EngineRenderGraph() {
 	
 	auto* stockObjs = RenderStockObjects::s_instance();
 	
-	RenderMeshEdit(_grid).createGrid(Vertex_PosColor::s_layout(), Vec3f(1,0,0), Vec3f(0,0,1), 1, 50);
+	RenderMeshEdit(_grid).createGrid(Vertex_PosColor::s_layout(), Vec3f(1,0,0), Vec3f(0,0,1), 1, 100);
 	_matSimple3D_Unlit_Color = stockObjs->materials->Simple3D_Unlit_Color;
 	_axis = stockObjs->meshes->Axis;
 }
 
 void EngineRenderGraph::onUpdate(RenderRequest* req) {
 	_viewportCamera.viewport = Rect2f(Vec2f(0,0), Vec2f::s_cast(req->frameSize()));
-	req->setCamera(_viewportCamera, _viewportCamera.worldMatrix(req->projectionDesc()));
+	req->setCamera(_viewportCamera, _viewportCamera.worldMatrix());
 }
 
 void EngineRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {

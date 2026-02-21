@@ -99,9 +99,9 @@ void EditorApp::_testLoadOpenUsd() {
 void EditorApp::_testLoadFbx() {
 	bool enableCache = true;
 	
-	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
+//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test2.fbx";
-//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
+	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/sportsCar/sportsCar.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/Exterior/exterior.fbx";
 
@@ -141,8 +141,41 @@ void EditorApp::_testLoadFbx() {
 		comp->cameraObj->camera.nearClip = 0.1f;
 		comp->cameraObj->camera.farClip  = 10.0f;
 		comp->cameraObj->camera.fieldOfView = 25.0f;
+		
+		_mainWin->_cullingCameraComp = comp;
 	}
 	
+	_cloneEntities("sportsCar", 50,  10, Vec3f(3, 0, -5));
+	_cloneEntities("Suzanne",   400, 20, Vec3f(3, 0, -3));
+}
+
+void EditorApp::_cloneEntities(InNameId name, Int count, Int row, const Vec3f& distance) {
+	auto* world = _engine.world();
+	if (!world) return;
+	
+	auto* srcEntity = world->root()->findChild(name, false);
+	if (srcEntity) {
+		for (Int i = 0; i < count; ++i) {
+			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("clone_{}", i));
+			
+			auto id = Vec3i(i % row, 0, i / row);
+			
+			entity->setPosition(Vec3f::s_cast(id) * distance);
+			entity->setRotation(srcEntity->rotation());
+
+			auto compCount = srcEntity->componentCount();
+			for (Int c = 0; c < compCount; ++c) {
+				auto* srcComp = srcEntity->componentAt(c);
+				
+				if (auto* srcMr = rttiCastCheck<MeshRendererComponent>(srcComp)) {
+					auto dstMr = entity->addComponent<MeshRendererComponent>(AX_NEW);
+					dstMr->mesh = srcMr->mesh;
+					dstMr->material = srcMr->material;
+				}
+			}
+			
+		}
+	}
 }
 
 } //namespace

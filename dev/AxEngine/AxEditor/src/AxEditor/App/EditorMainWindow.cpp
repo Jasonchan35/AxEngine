@@ -8,8 +8,6 @@ namespace AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
 	_gizmoOp = ImUIGizmoOperation::Translate;
-	_useCullingCamera = true;
-	
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
 //	_gpuDebugData.drawNormalLength = 0.25f;
@@ -206,7 +204,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	{
 		ImUIPanel	panel("Gizmo");
 		ImUIDragFloat("mouseSpeed", _mouseSpeed, 0.1f, 0.1f, 50.0f);
-		ImUIDragFloat("flyingCameraSpeed", _flyingCameraSpeed, 0.1f, 0.1f, 50.0f);
+		ImUIDragFloat("flyingCameraSpeed", _flyingCameraSpeed, 0.1f, 0.1f, 250.0f);
 		
 		{
 			if (ImUIRadioButton("Local", _gizmoSpace == ImUIGizmoSpace::Local)) {
@@ -219,10 +217,14 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUICheckBox("useCullingCamera",      _useCullingCamera);
+		ImUICheckBox("useCullingCamera", _useCullingCamera);
 		ImUISameLine();
-		ImUICheckBox("viewFromCullingCamera", _viewFromCullingCamera);
-		
+		if (ImUIButton("Align to View", {160, 25})) {
+			if (_cullingCameraComp) {
+				_cullingCameraComp->entity()->setWorldMatrix(_renderGraph->viewportCamera().worldMatrix());
+			}
+		}
+
 		ImUIDragFloat("maxMeshletErrorInPixels", _maxMeshletErrorInPixels, 0.1f, 0, 20);
 		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
 		{
@@ -249,35 +251,22 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		
 		ImUIDragFloat("showAllLodDistance", _gpuDebugData.showAllLodDistance, 0.1f, 0, 10);
 		ImUIDragFloat("Normal Length",      _gpuDebugData.drawNormalLength, 0.01f, 0, 4);
-		
 		ImUICheckBoxFlag("Disable Frustum Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 	}
 
 	req->setDebugData(_gpuDebugData);
 
-	{
-		auto* sceneRoot = Engine::s_instance()->world()->root();
-		auto* cullingCameraEntity = sceneRoot->findChild(AX_NAMEID("CullingCamera"), true);
-		if (cullingCameraEntity) {
-			if (auto* cullingCameraComp = cullingCameraEntity->getComponent<CameraComponent>()) {
-				ImUIGizmoCamera(req->viewport(),
-								viewMatrix,
-								projMatrix,
-								cullingCameraComp->cameraObj->camera,
-								cullingCameraEntity->worldMatrix(),
-								req->projectionDesc());
-				
-				if (_viewFromCullingCamera) {
-					req->setCamera(cullingCameraComp->cameraObj->camera, cullingCameraEntity->worldMatrix());
-				} else if (_useCullingCamera) {
-					req->setCullingCamera(cullingCameraComp->cameraObj->camera, cullingCameraEntity->worldMatrix());
-				}
-			}
-		}
-	}	
-	
-	
-	
+	if (_useCullingCamera && _cullingCameraComp) {
+		ImUIGizmoCamera(req->viewport(),
+						viewMatrix,
+						projMatrix,
+						_cullingCameraComp->cameraObj->camera,
+						_cullingCameraComp->entity()->worldMatrix(),
+						req->projectionDesc());
+		
+		req->setCullingCamera(_cullingCameraComp->cameraObj->camera, _cullingCameraComp->entity()->worldMatrix());
+	}
+
 	auto selectedObject = ObjectManager::s_instance()->selection.lastSelectedObject();
 	if (!selectedObject) return;
 	auto* selectdEntity = rttiCast<SceneEntity>(selectedObject.ptr());

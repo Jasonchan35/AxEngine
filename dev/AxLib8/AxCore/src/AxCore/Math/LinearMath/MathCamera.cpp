@@ -104,8 +104,7 @@ void ViewportCamera3_<T>::dolly(T delta) {
 }
 
 template<class T>
-Mat4_<T> ViewportCamera3_<T>::worldMatrix(const ProjectionDesc& desc) const {
-	// return viewMatrix(desc).inverse();
+Mat4_<T> ViewportCamera3_<T>::worldMatrix() const {
 	return Mat4::s_TRS(eye(), rotation, Vec3::s_one());
 }
 

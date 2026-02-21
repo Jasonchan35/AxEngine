@@ -65,7 +65,7 @@ public:
 	void move	(const Vec2& delta) { move(Vec3(delta, 0)); }
 	void move	(const Vec3& delta);
 	
-	Mat4 worldMatrix(const ProjectionDesc& desc) const;
+	Mat4 worldMatrix() const;
 	Mat4 viewMatrix(const ProjectionDesc& desc) const;
 	Mat4 viewProjMatrix(const ProjectionDesc& desc) const { return Base::projMatrix(desc) * viewMatrix(desc); }
 };

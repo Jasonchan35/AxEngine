@@ -23,6 +23,7 @@ private:
 	void _createDemoScene();
 	void _testLoadOpenUsd();
 	void _testLoadFbx();
+	void _cloneEntities(InNameId name, Int count, Int row, const Vec3f& distance);
 
 	AxEngine::Engine		_engine;
 	UPtr<EditorMainWindow>	_mainWin;
