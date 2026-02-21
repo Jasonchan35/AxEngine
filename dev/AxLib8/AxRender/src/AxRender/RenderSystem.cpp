@@ -37,9 +37,11 @@ UPtr<RenderSystem> RenderSystem::s_create(const CreateDesc& desc) {
 
 RenderSystem::RenderSystem(const CreateDesc& desc)
 : _info(desc.info)
+#if AX_RENDER_DEBUG_LAYER
 , _enableDebugReport(desc.info.enableDebugReport)
 , _enableDebugUtils(desc.info.enableDebugUtils)
 , _enableDebugMarker(desc.info.enableDebugMarker)
+#endif
 {
 	AX_ASSERT(RenderSystem_instance == nullptr);
 	RenderSystem_instance = this;
