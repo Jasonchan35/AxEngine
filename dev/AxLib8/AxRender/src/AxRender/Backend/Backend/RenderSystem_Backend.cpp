@@ -74,4 +74,12 @@ RenderRequest_Backend* RenderSystem_Backend::getRenderRequest(Int i) {
 	return _privateData->renderRequests[i];
 }
 
+void RenderSystem_Backend::getNewFrameTime(f64& uptime, f32& deltaTime) {
+	uptime = getCurrentUptime().seconds_f64();
+	if (_lastRenderTime < 0) { _lastRenderTime = uptime; }
+	
+	deltaTime = static_cast<f32>(uptime - _lastRenderTime);
+	_lastRenderTime = uptime;
+}
+
 } // namespace ax /*::AxRender*/

@@ -29,12 +29,16 @@ public:
 
 	RenderRequest_Backend* getRenderRequest(Int i);
 
+	void getNewFrameTime(f64& uptime, f32& deltaTime);
+
 protected:
 	virtual void onCreate() override;
 	virtual void onDestroy() override;
 	virtual void onFileChanged(FileDirWatcher_Result& result) override;
 
 private:
+	f64 _lastRenderTime = -1;
+	
 	struct PrivateData;
 	UPtr<PrivateData>	_privateData;
 };

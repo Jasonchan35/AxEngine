@@ -52,10 +52,7 @@ void RenderRequest_Backend::frameBegin(RenderContext_Backend* renderContext, Ren
 	_backBufferRenderPass = backBufferRenderPass;
 	_objectManager        = RenderObjectManager_Backend::s_instance();
 	
-	auto newUptime = _renderSystem_backend->getCurrentUptime().seconds_f64();
-	if (_uptime == 0) { _uptime = newUptime; }
-	_deltaTime = ax_safe_cast_from(newUptime - _uptime);
-	_uptime    = newUptime;
+	_renderSystem_backend->getNewFrameTime(_uptime, _deltaTime);
 
 	auto& pools = _objectManager->_structBufferPools;
 	statistics.meshletCluster = pools.axGpuData_MeshletCluster.getStatistics();
@@ -83,7 +80,7 @@ void RenderRequest_Backend::_updateGlobalCommonParams() {
 	{
 		using namespace Math;
 		f32 uptime = static_cast<f32>(_uptime);
-		_worldData.timeSin     = Vec4f(sin(uptime), sin(uptime * 4), sin(uptime * 9), sin(uptime * 16));
+		_worldData.timeSin     = Vec4f(sin(uptime),     sin(uptime * 4), sin(uptime * 9), sin(uptime * 16));
 		_worldData.timeSlowSin = Vec4f(sin(uptime / 2), sin(uptime / 4), sin(uptime / 9), sin(uptime / 16));
 		_worldData.time        = uptime;
 		_worldData.deltaTime   = _deltaTime;

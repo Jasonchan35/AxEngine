@@ -16,8 +16,8 @@ struct AxGpuData_World {
 	Vec4f	timeSin;
 	Vec4f	timeSlowSin;
 	
-	float	time;
-	float	deltaTime;
+	f32		time;
+	f32		deltaTime;
 	u32		_padding0;
 	u32		_padding1;
 };
