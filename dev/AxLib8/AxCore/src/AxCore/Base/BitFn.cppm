@@ -27,6 +27,7 @@ template<class T> AX_NODISCARD AX_INLINE constexpr T    ax_bit_set		(const T& va
 	return b ? ax_bit_set(value, bits) : ax_bit_unset(value, bits);
 }
 
+//! TODO: Problem: Left-shifting a signed integer that results in overflow is undefined behavior in C++. For signed types (i8, i16, i32, i64), this causes unpredictable results.
 template<class T> AX_NODISCARD AX_INLINE constexpr Int	ax_bit_count1	(const T& value) {
 	Int result = 0;
 	Int n = AX_SIZEOF(T) * 8;
@@ -83,7 +84,7 @@ template<class T> AX_NODISCARD AX_INLINE constexpr Int	ax_bit_lowest	(const T& v
 	Int result = -1;
 	Int n = AX_SIZEOF(T) * 8;
 	T mask = T(1 << (n-1));
-	for (Int i = n-1; i > 0; --i) {
+	for (Int i = n-1; i >= 0; --i) {
 		if (value  & mask) result = i;
 		mask >>= 1;
 	}

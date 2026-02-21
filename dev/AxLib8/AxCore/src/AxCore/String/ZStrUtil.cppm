@@ -216,7 +216,7 @@ bool _ZStrUtil_T_Impl<char>::parse( const char* sz, u8    &v ) {
 	u32 tmp = 0;
 //	if( 1 != sscanf(sz, "%u", &tmp ) ) return false;
 	if( 1 != sscanf_s(sz, "%u", &tmp ) ) return false;
-	tmp = ax_safe_cast_from(v);
+	v = ax_safe_cast_from(tmp);
 	return true;
 }
 
