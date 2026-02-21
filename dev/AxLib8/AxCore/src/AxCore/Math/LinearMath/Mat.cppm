@@ -64,11 +64,6 @@ public:
 
 	union {
 		struct { Vec3 cx, cy, cz; };
-		struct {
-			T xx, xy, xz;
-			T yx, yy, yz;
-			T zx, zy, zz;
-		};
 		T e[kElementCount];
 	};
 		
@@ -102,12 +97,6 @@ public:
 
 	union {
 		struct { Vec4 cx, cy, cz, cw; };
-		struct {
-			T xx, xy, xz, xw;
-			T yx, yy, yz, yw;
-			T zx, zy, zz, zw;
-			T wx, wy, wz, ww;
-		};
 		T e[kElementCount];
 	};
 	
@@ -199,17 +188,17 @@ public:
 		return s_translateAndScale(translate, Vec3(scale));
 	}
 	
-	AX_NODISCARD constexpr static This s_rotateRad	(const Vec3 & v);
-	AX_NODISCARD constexpr static This s_rotateRad	(T x, T y, T z)		{ return s_rotateRad(Vec3(x,y,z)); }
-	AX_NODISCARD constexpr static This s_rotateRadX	(T rad);
-	AX_NODISCARD constexpr static This s_rotateRadY	(T rad);
-	AX_NODISCARD constexpr static This s_rotateRadZ	(T rad);
+	AX_NODISCARD constexpr static This s_rotate_radians	(const Vec3 & v);
+	AX_NODISCARD constexpr static This s_rotate_radians	(T x, T y, T z)		{ return s_rotate_radians(Vec3(x,y,z)); }
+	AX_NODISCARD constexpr static This s_rotateX_radians(T rad);
+	AX_NODISCARD constexpr static This s_rotateY_radians(T rad);
+	AX_NODISCARD constexpr static This s_rotateZ_radians(T rad);
 
-	AX_NODISCARD constexpr static This s_rotateDeg	(const Vec3 & v)	{ return s_rotateRad(radians(v)); }
-	AX_NODISCARD constexpr static This s_rotateDeg	(T x, T y, T z)		{ return s_rotateRad(radians(Vec3(x,y,z))); }
-	AX_NODISCARD constexpr static This s_rotateDegX	(T deg)				{ return s_rotateRadX(radians(deg)); }
-	AX_NODISCARD constexpr static This s_rotateDegY	(T deg)				{ return s_rotateRadY(radians(deg)); }
-	AX_NODISCARD constexpr static This s_rotateDegZ	(T deg)				{ return s_rotateRadZ(radians(deg)); }
+	AX_NODISCARD constexpr static This s_rotate		(const Vec3 & v)	{ return s_rotate_radians(radians(v)); }
+	AX_NODISCARD constexpr static This s_rotate		(T x, T y, T z)		{ return s_rotate_radians(radians(Vec3(x,y,z))); }
+	AX_NODISCARD constexpr static This s_rotateX	(T deg)				{ return s_rotateX_radians(radians(deg)); }
+	AX_NODISCARD constexpr static This s_rotateY	(T deg)				{ return s_rotateY_radians(radians(deg)); }
+	AX_NODISCARD constexpr static This s_rotateZ	(T deg)				{ return s_rotateZ_radians(radians(deg)); }
 
 	AX_NODISCARD constexpr static This s_quat		(const Quat4& q);
 
@@ -226,12 +215,12 @@ public:
 		Vec3  scale    = Vec3::s_one();
 	};
 	
-	AX_NODISCARD constexpr static This s_TRS		(const TRS& v);
-	AX_NODISCARD constexpr static This s_TRS		(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static This s_TRS_rad	(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static This s_TRS_deg	(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale) {
-		return s_TRS_rad(translate, Math::radians(rotate), scale);
+	AX_NODISCARD constexpr static This s_TRS(const TRS& v);
+	AX_NODISCARD constexpr static This s_TRS(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
+	AX_NODISCARD constexpr static This s_TRS(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale) {
+		return s_TRS_radians(translate, Math::radians(rotate), scale);
 	}
+	AX_NODISCARD constexpr static This s_TRS_radians(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale);
 
 	AX_NODISCARD constexpr static This s_directionAndTranslate(const Vec3& dirX, const Vec3& dirY, const Vec3& dirZ,
 																const Vec3& translate) {
@@ -410,44 +399,44 @@ constexpr typename Mat_<4, 4, T, SIMD>::TRS Mat_<4, 4, T, SIMD>::getTRS() const 
 template<class T, VecSimd SIMD>
 constexpr auto Mat_<4, 4, T, SIMD>::toQuat() const -> Quat4 {
 	Quat4 quat; 
-	T t = xx + yy + zz;
+	T t = cx.x + cy.y + cz.z;
 	if( t > T(0)) {
 		T s = std::sqrt(1 + t) * T(2.0);
-		quat.x = (zy - yz) / s;
-		quat.y = (xz - zx) / s;
-		quat.z = (yx - xy) / s;
+		quat.x = (cy.z - cz.y) / s;
+		quat.y = (cz.x - cx.z) / s;
+		quat.z = (cx.y - cy.x) / s;
 		quat.w = T(0.25) * s;
 		
-	} else if( xx > yy && xx > zz ) {
-		T s = std::sqrt(T(1) + xx - yy - zz) * T(2);
+	} else if( cx.x > cy.y && cx.x > cz.z ) {
+		T s = std::sqrt(T(1) + cx.x - cy.y - cz.z) * T(2);
 		quat.x = T(0.25) * s;
-		quat.y = (yx + xy) / s;
-		quat.z = (xz + zx) / s;
-		quat.w = (zy - yz) / s;
+		quat.y = (cx.y + cy.x) / s;
+		quat.z = (cz.x + cy.z) / s;
+		quat.w = (cy.z - cy.y) / s;
 		
-	} else if( yy > zz) {
-		T s = std::sqrt(T(1) + yy - xx - zz) * T(2);
-		quat.x = (yx + xy) / s;
+	} else if( cy.y > cz.z) {
+		T s = std::sqrt(T(1) + cy.y - cx.x - cz.z) * T(2);
+		quat.x = (cy.x + cx.y) / s;
 		quat.y = T(0.25) * s;
-		quat.z = (zy + yz) / s;
-		quat.w = (xz - zx) / s;
+		quat.z = (cz.y + cy.z) / s;
+		quat.w = (cz.x - cx.z) / s;
 		
 	} else {
-		T s = std::sqrt(T(1) + zz - xx - yy) * T(2);
-		quat.x = (xz + zx) / s;
-		quat.y = (zy + yz) / s;
+		T s = std::sqrt(T(1) + cz.z - cx.x - cy.y) * T(2);
+		quat.x = (cx.z + cz.x) / s;
+		quat.y = (cz.y + cy.z) / s;
 		quat.z = T(0.25) * s;
-		quat.w = (yx - xy) / s;
+		quat.w = (cy.x - cx.y) / s;
 	}
 	return quat.normalize();
 }
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4,4,T,SIMD>::transpose() const -> This {
-	return This(xx, yx, zx, wx,
-				xy, yy, zy, wy,
-				xz, yz, zz, wz,
-				xw, yw, zw, ww);
+	return This(cx.x, cy.x, cz.x, cw.x,
+				cx.y, cy.y, cz.y, cw.y,
+				cx.z, cy.z, cz.z, cw.z,
+				cx.w, cy.w, cz.w, cw.w);
 }
 
 template<class T, VecSimd SIMD> constexpr 
@@ -544,22 +533,22 @@ auto Mat_<4,4,T,SIMD>::inverse() const -> This {
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::inverse3x3() const -> This {
 	T oneOverDeterminant = T(1) / (
-		+ xx * (yy * zz - zy * yz)
-		- yx * (xy * zz - zy * xz)
-		+ zx * (xy * yz - yy * xz));
+		+ cx.x * (cy.y * cz.z - cz.y * cy.z)
+		- cy.x * (cx.y * cz.z - cz.y * cx.z)
+		+ cz.x * (cx.y * cy.z - cy.y * cx.z));
 
 	return This(
-		(yy * zz - zy * yz) *  oneOverDeterminant, // xx
-		(xy * zz - zy * xz) * -oneOverDeterminant, // xy
-		(xy * yz - yy * xz) *  oneOverDeterminant, // xz
+		(cy.y * cz.z - cz.y * cy.z) *  oneOverDeterminant, // xx
+		(cx.y * cz.z - cz.y * cx.z) * -oneOverDeterminant, // xy
+		(cx.y * cy.z - cy.y * cx.z) *  oneOverDeterminant, // xz
 		0,
-		(yx * zz - zx * yz) * -oneOverDeterminant, // yx
-		(xx * zz - zx * xz) *  oneOverDeterminant, // yy
-		(xx * yz - yx * xz) * -oneOverDeterminant, // yz
+		(cy.x * cz.z - cz.x * cy.z) * -oneOverDeterminant, // yx
+		(cx.x * cz.z - cz.x * cx.z) *  oneOverDeterminant, // yy
+		(cx.x * cy.z - cy.x * cx.z) * -oneOverDeterminant, // yz
 		0,
-		(yx * zy - zx * yy) *  oneOverDeterminant, // zx
-		(xx * zy - zx * xy) * -oneOverDeterminant, // zy
-		(xx * yy - yx * xy) *  oneOverDeterminant, // zz
+		(cy.x * cz.y - cz.x * cy.y) *  oneOverDeterminant, // zx
+		(cx.x * cz.y - cz.x * cx.y) * -oneOverDeterminant, // zy
+		(cx.x * cz.y - cy.x * cx.y) *  oneOverDeterminant, // zz
 		0,
 		0,0,0,1);
 }
@@ -567,55 +556,52 @@ auto Mat_<4, 4, T, SIMD>::inverse3x3() const -> This {
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::inverse3x3Transpose() const -> This {
 	T oneOverDeterminant = T(1) / (
-		+ xx * (yy * zz - zy * yz)
-		- yx * (xy * zz - zy * xz)
-		+ zx * (xy * yz - yy * xz));
+		+ cx.x * (cy.y * cz.z - cz.y * cy.z)
+		- cy.x * (cx.y * cz.z - cz.y * cx.z)
+		+ cz.x * (cx.y * cy.z - cy.y * cx.z));
 
 	return This(
-		(yy * zz - zy * yz) *  oneOverDeterminant, // xx
-		(yx * zz - zx * yz) * -oneOverDeterminant, // yx
-		(yx * zy - zx * yy) *  oneOverDeterminant, // zx
+		(cy.y * cz.z - cz.y * cy.z) *  oneOverDeterminant, // xx
+		(cy.x * cz.z - cz.x * cy.z) * -oneOverDeterminant, // yx
+		(cy.x * cz.y - cz.x * cy.y) *  oneOverDeterminant, // zx
 		0,
-		(xy * zz - zy * xz) * -oneOverDeterminant, // xy
-		(xx * zz - zx * xz) *  oneOverDeterminant, // yy
-		(xx * zy - zx * xy) * -oneOverDeterminant, // zy
+		(cx.y * cz.z - cz.y * cx.z) * -oneOverDeterminant, // xy
+		(cx.x * cz.z - cz.x * cx.z) *  oneOverDeterminant, // yy
+		(cx.x * cz.y - cz.x * cx.y) * -oneOverDeterminant, // zy
 		0,
-		(xy * yz - yy * xz) *  oneOverDeterminant, // xz
-		(xx * yz - yx * xz) * -oneOverDeterminant, // yz
-		(xx * yy - yx * xy) *  oneOverDeterminant, // zz
+		(cx.y * cy.z - cy.y * cx.z) *  oneOverDeterminant, // xz
+		(cx.x * cy.z - cy.x * cx.z) * -oneOverDeterminant, // yz
+		(cx.x * cy.y - cy.x * cx.y) *  oneOverDeterminant, // zz
 		0,
 		0,0,0,1);
 }
 
 template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::determinant() const -> T {
-	return (xx * yy * zz * ww) - (xx * yy * zw * wz) + (xx * yz * zw * wy) - (xx * yz * zy * ww)
-		 + (xx * yw * zy * wz) - (xx * yw * zz * wy) - (xy * yz * zw * wx) + (xy * yz * zx * ww)
-		 - (xy * yw * zx * wz) + (xy * yw * zz * wx) - (xy * yx * zz * ww) + (xy * yx * zw * wz)
-		 + (xz * yw * zx * wy) - (xz * yw * zy * wx) + (xz * yx * zy * ww) - (xz * yx * zw * wy)
-		 + (xz * yy * zw * wx) - (xz * yy * zx * ww) - (xw * yx * zy * wz) + (xw * yx * zz * wy)
-		 - (xw * yy * zz * wx) + (xw * yy * zx * wz) - (xw * yz * zx * wy) + (xw * yz * zy * wx); 
+	return (cx.x * cy.y * cz.z * cw.w) - (cx.x * cy.y * cz.w * cw.z) 
+		 + (cx.x * cy.z * cz.w * cw.y) - (cx.x * cy.z * cz.y * cw.w)
+		 + (cx.x * cy.w * cz.y * cw.z) - (cx.x * cy.w * cz.z * cw.y)
+	
+		 - (cx.y * cy.z * cz.w * cw.x) + (cx.y * cy.z * cz.x * cw.w)
+		 - (cx.y * cy.w * cz.x * cw.z) + (cx.y * cy.w * cz.z * cw.x)
+		 - (cx.y * cy.x * cz.z * cw.w) + (cx.y * cy.x * cz.w * cw.z)
+	
+		 + (cx.z * cy.w * cz.x * cw.y) - (cx.z * cy.w * cz.y * cw.x)
+		 + (cx.z * cy.x * cz.y * cw.w) - (cx.z * cy.x * cz.w * cw.y)
+		 + (cx.z * cy.y * cz.w * cw.x) - (cx.z * cy.y * cz.x * cw.w)
+	
+		 - (cx.w * cy.x * cz.y * cw.z) + (cx.w * cy.x * cz.z * cw.y)
+		 - (cx.w * cy.y * cz.z * cw.x) + (cx.w * cy.y * cz.x * cw.z)
+		 - (cx.w * cy.z * cz.x * cw.y) + (cx.w * cy.z * cz.y * cw.x); 
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4, 4, T, SIMD>::s_rotateRad(const Vec3& rad) -> This {
-	if (Math::almostZero(rad)) return s_identity();
-
-	Vec3 s, c;
-	sincos(rad.x, s.x, c.x);
-	sincos(rad.y, s.y, c.y);
-	sincos(rad.z, s.z, c.z);
-
-	return This(
-		(c.y * c.z), (s.x * s.y * c.z - c.x * s.z), (s.x * s.z + c.x * s.y * c.z), 0,
-		(c.y * s.z), (c.x * c.z + s.x * s.y * s.z), (c.x * s.y * s.z - s.x * c.z), 0,
-		(-s.y),      (s.x * c.y),                   (c.x * c.y),                   0,
-		0,           0,                             0,                             1
-	);
+auto Mat_<4, 4, T, SIMD>::s_rotate_radians(const Vec3& rad) -> This {
+	return s_quat(Quat4::s_euler_Radians(rad));
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4, 4, T, SIMD>::s_rotateRadX(T rad) -> This {
+auto Mat_<4, 4, T, SIMD>::s_rotateX_radians(T rad) -> This {
 	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
@@ -627,7 +613,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotateRadX(T rad) -> This {
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4, 4, T, SIMD>::s_rotateRadY(T rad) -> This {
+auto Mat_<4, 4, T, SIMD>::s_rotateY_radians(T rad) -> This {
 	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
@@ -639,7 +625,7 @@ auto Mat_<4, 4, T, SIMD>::s_rotateRadY(T rad) -> This {
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4,4,T,SIMD>::s_rotateRadZ(T rad) -> This {
+auto Mat_<4,4,T,SIMD>::s_rotateZ_radians(T rad) -> This {
 	if (Math::almostZero(rad)) return s_identity();
 
 	T s, c;
@@ -666,80 +652,47 @@ constexpr typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_TRS(const TR
 
 template<class T, VecSimd SIMD>
 constexpr typename Mat_<4, 4, T, SIMD>::This Mat_<4, 4, T, SIMD>::s_TRS(const Vec3& translate, const Quat4& rotate, const Vec3& scale) {
-	T x = rotate.x;
-	T y = rotate.y;
-	T z = rotate.z;
-	T w = rotate.w;
-	
-	Mat4 mat;
-	mat.cx.x = scale.x * (T(1) - T(2) * (y * y + z * z));
-	mat.cx.y = scale.x * (T(2) * (x * y - z * w));
-	mat.cx.z = scale.x * (T(2) * (x * z + y * w));
-	mat.cx.w = 0;
-
-	mat.cy.x = scale.y * (T(2) * (x * y + z * w));
-	mat.cy.y = scale.y * (T(1) - T(2) * (x * x + z * z));
-	mat.cy.z = scale.y * (T(2) * (y * z - x * w));
-	mat.cy.w = 0;
-
-	mat.cz.x = scale.z * (T(2) * (x * z - y * w));
-	mat.cz.y = scale.z * (T(2) * (y * z + x * w));
-	mat.cz.z = scale.z * (T(1) - T(2) * (x * x + y * y));
-	mat.cz.w = 0;
-
+	Mat4 mat = s_quat(rotate);
+	mat.cx *= scale.x;
+	mat.cy *= scale.y;
+	mat.cz *= scale.z;
 	mat.cw = translate.xyz1();
 	return mat;	
 }
 
 template<class T, VecSimd SIMD> constexpr
-auto Mat_<4,4,T,SIMD>::s_TRS_rad(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) -> This {
-	Vec3 s, c;
-	Math::sincos(rotate.x, s.x, c.x);
-	Math::sincos(rotate.y, s.y, c.y);
-	Math::sincos(rotate.z, s.z, c.z);
-
-	Mat4 mat;
-	mat.cx.x = scale.x * (c.y * c.z);
-	mat.cx.y = scale.x * (c.y * s.z);
-	mat.cx.z = scale.x * (-s.y);
-	mat.cx.w = 0;
-
-	mat.cy.x = scale.y * (s.x * s.y * c.z - c.x * s.z);
-	mat.cy.y = scale.y * (c.x * c.z + s.x * s.y * s.z);
-	mat.cy.z = scale.y * (s.x * c.y);
-	mat.cy.w = 0;
-
-	mat.cz.x = scale.z * (s.x * s.z + c.x * s.y * c.z);
-	mat.cz.y = scale.z * (c.x * s.y * s.z - s.x * c.z);
-	mat.cz.z = scale.z * (c.x * c.y);
-	mat.cz.w = 0;
-
-	mat.cw = translate.xyz1();
-	return mat;
+auto Mat_<4,4,T,SIMD>::s_TRS_radians(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale) -> This {
+	return s_TRS(translate, Quat4::s_euler_Radians(rotate), scale);
 }
 
-
 template<class T, VecSimd SIMD> constexpr 
-auto Mat_<4,4,T,SIMD>::s_quat(const Quat4& quat) -> This  {
-	T x = quat.x;
-	T y = quat.y;
-	T z = quat.z;
-	T w = quat.w;
+auto Mat_<4,4,T,SIMD>::s_quat(const Quat4& q) -> This  {
+	T q_xy = q.x * q.y;
+	T q_xz = q.x * q.z;
+	T q_yz = q.y * q.z;
+
+	T q_xw = q.x * q.w;
+	T q_yw = q.y * q.w;
+	T q_zw = q.z * q.w;
+	
+	T q_x2 = q.x * q.x;
+	T q_y2 = q.y * q.y;
+	T q_z2 = q.z * q.z;
 	
 	Mat4 mat;
-	mat.cx.x = (T(1) - T(2) * (y * y + z * z));
-	mat.cx.y = (T(2) * (x * y - z * w));
-	mat.cx.z = (T(2) * (x * z + y * w));
+	mat.cx.x = T(1) - T(2) * (q_y2 + q_z2);
+	mat.cx.y = T(2) * (q_xy + q_zw);
+	mat.cx.z = T(2) * (q_xz - q_yw);
 	mat.cx.w = 0;
 
-	mat.cy.x = (T(2) * (x * y + z * w));
-	mat.cy.y = (T(1) - T(2) * (x * x + z * z));
-	mat.cy.z = (T(2) * (y * z - x * w));
+	mat.cy.x = T(2) * (q_xy - q_zw);
+	mat.cy.y = T(1) - T(2) * (q_x2 + q_z2);
+	mat.cy.z = T(2) * (q_yz + q_xw);
 	mat.cy.w = 0;
 
-	mat.cz.x = (T(2) * (x * z - y * w));
-	mat.cz.y = (T(2) * (y * z + x * w));
-	mat.cz.z = (T(1) - T(2) * (x * x + y * y));
+	mat.cz.x = T(2) * (q_xz + q_yw);
+	mat.cz.y = T(2) * (q_yz - q_xw);
+	mat.cz.z = T(1) - T(2) * (q_x2 + q_y2);
 	mat.cz.w = 0;
 
 	mat.cw = Vec4(0,0,0,1);

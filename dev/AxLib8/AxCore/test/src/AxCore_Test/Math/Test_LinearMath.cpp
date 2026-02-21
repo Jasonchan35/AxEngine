@@ -244,12 +244,12 @@ public:
 		auto zxy = Quat4::s_eulerZ(z) * Quat4::s_eulerX(x) * Quat4::s_eulerY(y);
 		
 		{
-			auto q_xyz = Quat4::s_eulerXYZ(x, y, z);
-			auto q_xzy = Quat4::s_eulerXZY(x, y, z);
-			auto q_yxz = Quat4::s_eulerYXZ(x, y, z);
-			auto q_yzx = Quat4::s_eulerYZX(x, y, z);
-			auto q_zyx = Quat4::s_eulerZYX(x, y, z);
-			auto q_zxy = Quat4::s_eulerZXY(x, y, z);
+			auto q_xyz = Quat4::s_eulerXYZ({x, y, z});
+			auto q_xzy = Quat4::s_eulerXZY({x, y, z});
+			auto q_yxz = Quat4::s_eulerYXZ({x, y, z});
+			auto q_yzx = Quat4::s_eulerYZX({x, y, z});
+			auto q_zyx = Quat4::s_eulerZYX({x, y, z});
+			auto q_zxy = Quat4::s_eulerZXY({x, y, z});
 			
 			AX_TEST_ALMOST_EQ(q_xyz, xyz);
 			AX_TEST_ALMOST_EQ(q_xzy, xzy);

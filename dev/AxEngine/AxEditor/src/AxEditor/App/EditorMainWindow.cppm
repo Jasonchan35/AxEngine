@@ -71,7 +71,7 @@ protected:
 	AxGpuData_Debug _gpuDebugData;
 	bool _showCullingCamera = false;
 	
-	Vec3f _testEuler = {0,0,0};
+	Vec3f _testEuler = {-20,45,10};
 };
 
 

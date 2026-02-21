@@ -8,6 +8,8 @@ EngineRenderGraph::EngineRenderGraph() {
 //	_viewportCamera.setRotation(0, 0);
 	_viewportCamera.distance = 20;
 	
+	_testRot.setEuler({-20, 45, 10});
+	
 	auto* stockObjs = RenderStockObjects::s_instance();
 	
 	RenderMeshEdit(_grid).createGrid(Vertex_PosColor::s_layout(), Vec3f(1,0,0), Vec3f(0,0,1), 1, 50);
@@ -24,21 +26,32 @@ void EngineRenderGraph::onUpdate(RenderRequest* req) {
 void EngineRenderGraph::test_createAxis() {
 	_testMesh.clear();
 	
+	auto mat = Mat4f::s_quat(_testRot);
+	
 	auto edit = _testMesh.editNewVertices(
 		RenderPrimitiveType::Lines, 
 		Vertex_PosColor::s_layout(), 
-		VertexIndexType::None, 6);
+		VertexIndexType::None, 12);
 	
 	if (auto enumerator = edit.tryEditPosition()) {
 		auto dstPos = enumerator->begin();
 		*dstPos = Vec3f(0,0,0); ++dstPos;
 		*dstPos = _testRot * Vec3f(1,0,0); ++dstPos;
+
+		*dstPos = Vec3f(0,0,0); ++dstPos;
+		*dstPos = mat.mulPoint(Vec3f(1,0,0)); ++dstPos;
 		
 		*dstPos = Vec3f(0,0,0); ++dstPos;
 		*dstPos = _testRot * Vec3f(0,1,0); ++dstPos;
+
+		*dstPos = Vec3f(0,0,0); ++dstPos;
+		*dstPos = mat.mulPoint(Vec3f(0,1,0)); ++dstPos;
 		
 		*dstPos = Vec3f(0,0,0); ++dstPos;
 		*dstPos = _testRot * Vec3f(0,0,1); ++dstPos;
+
+		*dstPos = Vec3f(0,0,0); ++dstPos;
+		*dstPos = mat.mulPoint(Vec3f(0,0,1)); ++dstPos;
 		
 		if (dstPos != enumerator->end()) throw Error_Undefined();
 	}
@@ -47,10 +60,16 @@ void EngineRenderGraph::test_createAxis() {
 		auto dstCol = enumerator->begin();
 		*dstCol = Color4b::kRed();   ++dstCol;
 		*dstCol = Color4b::kRed();   ++dstCol;
+		*dstCol = Color4b::kRed();   ++dstCol;
+		*dstCol = Color4b::kRed();   ++dstCol;
 
 		*dstCol = Color4b::kGreen(); ++dstCol;
 		*dstCol = Color4b::kGreen(); ++dstCol;
+		*dstCol = Color4b::kGreen(); ++dstCol;
+		*dstCol = Color4b::kGreen(); ++dstCol;
 
+		*dstCol = Color4b::kBlue();  ++dstCol;
+		*dstCol = Color4b::kBlue();  ++dstCol;
 		*dstCol = Color4b::kBlue();  ++dstCol;
 		*dstCol = Color4b::kBlue();  ++dstCol;
 		
