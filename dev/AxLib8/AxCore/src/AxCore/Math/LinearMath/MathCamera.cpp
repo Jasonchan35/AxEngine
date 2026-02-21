@@ -20,40 +20,39 @@ Mat4_<T> Camera3_<T>::projMatrix(const ProjectionDesc& desc) const {
 }
 
 template<class T>
-auto Camera3_<T>::getFrustumPoints(const ProjectionDesc& desc) const -> FixedArray<Vec3, 8> {
+auto Camera3_<T>::getFrustumPoints(const ProjectionDesc& desc, const Mat4& worldMatrix) const -> FixedArray<Vec3, 8> {
 	//     4-------5
 	//    /|      /|
 	//   0-------1 |
 	//   | 7-----|-6
 	//   |/      |/
 	//   3-------2
-	
+
 	auto invMat = projMatrix(desc).inverse();
-	
 	T zNear = desc.isReverseZ ? T(1) : T(0);
 	T zFar  = desc.isReverseZ ? T(0) : T(1);
 
-	auto func = [&](const Vec4& s) -> Vec3 {
-		return invMat.mulPoint(s).xyz_div_w();
+	auto func = [&](const Vec3& s) -> Vec3 {
+		return worldMatrix.mulPoint4x3(-invMat.mulPoint(s));
 	};
 	
 	FixedArray<Vec3, 8> o;
-	o[0] = func(Vec4(-1,-1, zNear, 1));
-	o[1] = func(Vec4( 1,-1, zNear, 1));
-	o[2] = func(Vec4( 1, 1, zNear, 1));
-	o[3] = func(Vec4(-1, 1, zNear, 1));
+	o[0] = func(Vec3(-1,-1, zNear));
+	o[1] = func(Vec3( 1,-1, zNear));
+	o[2] = func(Vec3( 1, 1, zNear));
+	o[3] = func(Vec3(-1, 1, zNear));
 
-	o[4] = func(Vec4(-1,-1, zFar, 1));
-	o[5] = func(Vec4( 1,-1, zFar, 1));
-	o[6] = func(Vec4( 1, 1, zFar, 1));
-	o[7] = func(Vec4(-1, 1, zFar, 1));
+	o[4] = func(Vec3(-1,-1, zFar));
+	o[5] = func(Vec3( 1,-1, zFar));
+	o[6] = func(Vec3( 1, 1, zFar));
+	o[7] = func(Vec3(-1, 1, zFar));
 	
 	return o;
 }
 
 template<class T>
-auto Camera3_<T>::getFrustumPlanes(const ProjectionDesc& desc) const -> FixedArray<Plane3, 6> {
-	auto points = getFrustumPoints(desc);
+auto Camera3_<T>::getFrustumPlanes(const ProjectionDesc& desc, const Mat4& worldMatrix) const -> FixedArray<Plane3, 6> {
+	auto points = getFrustumPoints(desc, worldMatrix);
 	FixedArray<Plane3, 6> o;
 	
 	auto func = [&](const Vec3& v0, const Vec3& v1, const Vec3& v2) -> Plane3 {
@@ -65,7 +64,7 @@ auto Camera3_<T>::getFrustumPlanes(const ProjectionDesc& desc) const -> FixedArr
 	o[2] = func(points[0], points[3], points[7]); // left
 	o[3] = func(points[1], points[5], points[6]); // right
 	o[4] = func(points[0], points[4], points[5]); // top
-	o[5] = func(points[2], points[3], points[7]); // bottom
+	o[5] = func(points[2], points[6], points[7]); // bottom
 	return o;
 }
 
@@ -106,7 +105,8 @@ void ViewportCamera3_<T>::dolly(T delta) {
 
 template<class T>
 Mat4_<T> ViewportCamera3_<T>::worldMatrix(const ProjectionDesc& desc) const {
-	return viewMatrix(desc).inverse();
+	// return viewMatrix(desc).inverse();
+	return Mat4::s_TRS(eye(), rotation, Vec3::s_one());
 }
 
 template<class T> inline

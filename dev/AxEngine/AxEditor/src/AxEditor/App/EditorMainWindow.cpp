@@ -8,8 +8,7 @@ namespace AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
 	_gizmoOp = ImUIGizmoOperation::Translate;
-	
-	_showCullingCamera = true;
+	_useCullingCamera = true;
 	
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
@@ -97,17 +96,20 @@ void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 	}
 }
 
+void EditorMainWindow::MyRenderGraph::onUpdate(RenderRequest* req) {
+	Base::onUpdate(req);
+}
+
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	Base::onBackBufferPass(req, inputs);
 	
 	ImUIGetWindowDrawList();
 	
-	_owner->_viewportCameraPanel(req);
-	_owner->_statisticsPanel(req);
 	_owner->_drawGizmo(req);
+	_owner->_viewportCameraPanel(req);
 	_owner->_sceneOutlinerUIPanel.render(Engine::s_instance()->world(), req);
 	_owner->_inspectorUIPanel.render(req);
-	
+	_owner->_statisticsPanel(req);
 }
 
 void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
@@ -169,9 +171,22 @@ void EditorMainWindow::_viewportCameraPanel(RenderRequest* req) {
 	ImUILabelText("eye"           , Fmt("{}", cam.eye()));
 	ImUILabelText("aim"           , Fmt("{}", cam.aim));
 	ImUILabelText("up"            , Fmt("{}", cam.up()));
-	ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix(projDesc)));
-	ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix(projDesc)));
-	ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix(projDesc)));
+	
+//	ImUILabelText("worldMatrix"   , Fmt("{}", cam.worldMatrix(projDesc)));
+//	ImUILabelText("worldMatrixInv", Fmt("{}", cam.worldMatrix(projDesc).inverse()));
+//	ImUILabelText("viewMatrix (lookAt)", Fmt("{}", cam.viewMatrix(projDesc)));
+	
+	auto& camData = req->cameraData();
+	ImUILabelText("viewMatrix"   , Fmt("{}", camData.viewMatrix));
+	ImUILabelText("projMatrix"   , Fmt("{}", camData.projMatrix));
+	
+	ImUIText("CullingPlane");
+	ImUILabelText("[0] near  ", Fmt("{}", camData.cullingPlanes[0]));
+	ImUILabelText("[1] far   ", Fmt("{}", camData.cullingPlanes[1]));
+	ImUILabelText("[2] left  ", Fmt("{}", camData.cullingPlanes[2]));
+	ImUILabelText("[3] right ", Fmt("{}", camData.cullingPlanes[3]));
+	ImUILabelText("[4] top   ", Fmt("{}", camData.cullingPlanes[4]));
+	ImUILabelText("[5] bottom", Fmt("{}", camData.cullingPlanes[5]));
 }
 
 void EditorMainWindow::_drawGizmo(RenderRequest* req) {
@@ -204,7 +219,9 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUICheckBox("showCullingCamera", _showCullingCamera);
+		ImUICheckBox("useCullingCamera",      _useCullingCamera);
+		ImUISameLine();
+		ImUICheckBox("viewFromCullingCamera", _viewFromCullingCamera);
 		
 		ImUIDragFloat("maxMeshletErrorInPixels", _maxMeshletErrorInPixels, 0.1f, 0, 20);
 		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
@@ -237,13 +254,36 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	}
 
 	req->setDebugData(_gpuDebugData);
-	
-	auto obj = ObjectManager::s_instance()->selection.lastSelectedObject();
-	if (!obj) return;
-	auto* entity = rttiCast<SceneEntity>(obj.ptr());
-	if (!entity) return;
 
-	Mat4f worldMatrix = entity->worldMatrix();
+	{
+		auto* sceneRoot = Engine::s_instance()->world()->root();
+		auto* cullingCameraEntity = sceneRoot->findChild(AX_NAMEID("CullingCamera"), true);
+		if (cullingCameraEntity) {
+			if (auto* cullingCameraComp = cullingCameraEntity->getComponent<CameraComponent>()) {
+				ImUIGizmoCamera(req->viewport(),
+								viewMatrix,
+								projMatrix,
+								cullingCameraComp->cameraObj->camera,
+								cullingCameraEntity->worldMatrix(),
+								req->projectionDesc());
+				
+				if (_viewFromCullingCamera) {
+					req->setCamera(cullingCameraComp->cameraObj->camera, cullingCameraEntity->worldMatrix());
+				} else if (_useCullingCamera) {
+					req->setCullingCamera(cullingCameraComp->cameraObj->camera, cullingCameraEntity->worldMatrix());
+				}
+			}
+		}
+	}	
+	
+	
+	
+	auto selectedObject = ObjectManager::s_instance()->selection.lastSelectedObject();
+	if (!selectedObject) return;
+	auto* selectdEntity = rttiCast<SceneEntity>(selectedObject.ptr());
+	if (!selectdEntity) return;
+
+	Mat4f worldMatrix = selectdEntity->worldMatrix();
 
 	{
 		bool b =  ImUIGizmoIsUsing();
@@ -264,40 +304,23 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	}
 
 	BBox3f bounds = BBox3f::s_empty();
-	if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
+	if (auto* meshRenderer = selectdEntity->getComponent<MeshRendererComponent>()) {
 		if (auto* mesh = meshRenderer->mesh.ptr()) {
 			bounds = mesh->bounds();
 		}
 	}
 
 	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {
-		entity->setWorldMatrix(worldMatrix);
+		selectdEntity->setWorldMatrix(worldMatrix);
 	}
 	
-	if (auto* comp = entity->getComponent<CameraComponent>()) {
+	if (auto* comp = selectdEntity->getComponent<CameraComponent>()) {
 		ImUIGizmoCamera(req->viewport(),
 		                viewMatrix,
 		                projMatrix,
 		                comp->cameraObj->camera,
-		                entity->worldMatrix(),
+		                selectdEntity->worldMatrix(),
 		                req->projectionDesc());
-	}
-	
-	if (_showCullingCamera) {
-		auto* sceneRoot = Engine::s_instance()->world()->root();
-		auto* cullingCameraEntity = sceneRoot->findChild(AX_NAMEID("CullingCamera"), true);
-		if (cullingCameraEntity) {
-			if (auto* cullingCameraComp = cullingCameraEntity->getComponent<CameraComponent>()) {
-				ImUIGizmoCamera(req->viewport(),
-								viewMatrix,
-								projMatrix,
-								cullingCameraComp->cameraObj->camera,
-								cullingCameraEntity->worldMatrix(),
-								req->projectionDesc());
-				
-				req->setCullingCamera(cullingCameraComp->cameraObj->camera, cullingCameraEntity->worldMatrix());
-			}
-		}
 	}
 }
 

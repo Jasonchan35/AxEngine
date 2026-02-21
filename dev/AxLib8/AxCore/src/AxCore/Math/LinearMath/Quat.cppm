@@ -109,13 +109,13 @@ public:
 	AX_NODISCARD static	constexpr This s_eulerZ_radians(T rad)	{ T s, c; Math::sincos(rad * T(0.5), s, c); return This(0,0,s,c); }
 
 	constexpr void  setEuler(const Vec3& r) { *this = s_euler(r); }
-	constexpr void  setEuler(T x, T y, T z) { *this = s_euler(Vec3(x,y,z)); }
+	constexpr void  setEuler(T x_, T y_, T z_) { *this = s_euler(Vec3(x_,y_,z_)); }
 	constexpr void 	setEulerX(T deg) { *this = s_eulerX(deg); }
 	constexpr void 	setEulerY(T deg) { *this = s_eulerY(deg); }
 	constexpr void 	setEulerZ(T deg) { *this = s_eulerZ(deg); }
 
 	constexpr void  setEuler_radians(const Vec3& r) { *this = s_euler_radians(r); }
-	constexpr void  setEuler_radians(T x, T y, T z) { *this = s_euler_radians(Vec3(x,y,z)); }
+	constexpr void  setEuler_radians(T x_, T y_, T z_) { *this = s_euler_radians(Vec3(x_,y_,z_)); }
 	constexpr void 	setEulerX_radians(T rad) { *this = s_eulerX_radians(rad); }
 	constexpr void 	setEulerY_radians(T rad) { *this = s_eulerY_radians(rad); }
 	constexpr void 	setEulerZ_radians(T rad) { *this = s_eulerZ_radians(rad); }

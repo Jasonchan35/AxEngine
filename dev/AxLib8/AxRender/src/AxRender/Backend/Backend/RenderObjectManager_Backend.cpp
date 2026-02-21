@@ -80,7 +80,7 @@ void RenderObjectManager_Backend::hotReloadFile(StrView filename) {
 		auto shaderAssetPath = FilePath::dirname_sv(FilePath::dirname_sv(filename));
 		auto table = Shader::ObjectSlot::Table::s_instance();
 		if (auto* shader = table->findObject(shaderAssetPath)) {
-			AX_LOG("Hot reload shader {}", shaderAssetPath);
+//			AX_LOG("Hot reload shader {}", shaderAssetPath);
 			rttiCastCheck<Shader_Backend>(shader)->hotReloadFile();
 		}
 		return;

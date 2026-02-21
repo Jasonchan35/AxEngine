@@ -148,15 +148,22 @@ void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera, cons
 	_cameraData.viewportMax              = camera.viewport.max();
 	_cameraData.projMatrix               = camera.projMatrix(_projectionDesc);
 	_cameraData.projMatrixInv            = _cameraData.projMatrix.inverse();
-	_cameraData.viewMatrixInv            = worldMatrix; // viewMatrix is worldMatrix.inverse()
-	_cameraData.viewMatrix               = _cameraData.viewMatrixInv.inverse();
-	_cameraData.viewProjMatrix           = camera.projMatrix(_projectionDesc) * _cameraData.viewMatrix;
+	_cameraData.viewMatrix               = Mat4f::s_worldToViewMatrix(worldMatrix, _projectionDesc);
+	_cameraData.viewMatrixInv            = _cameraData.viewMatrix.inverse();
+	_cameraData.viewProjMatrix           = _cameraData.projMatrix * _cameraData.viewMatrix;
 	_cameraData.viewProjMatrixInv        = _cameraData.viewProjMatrix.inverse();
-//	MutSpan(_cameraData.cullingPlanes)   = camera.getFrustumPlanes(_projectionDesc);
+	
+	auto planes = camera.getFrustumPlanes(_projectionDesc, worldMatrix);
+	for (Int i = 0; i < 6; i++) {
+		_cameraData.cullingPlanes[i] = planes[i].toVec4();
+	}
 }
 
 void RenderRequest_Backend::setCullingCamera_backend(const Math::Camera3f& camera, const Mat4f& worldMatrix) {
-//	MutSpan(_cameraData.cullingPlanes)   = camera.getFrustumPlanes(_projectionDesc);
+	auto planes = camera.getFrustumPlanes(_projectionDesc, worldMatrix);
+	for (Int i = 0; i < 6; i++) {
+		_cameraData.cullingPlanes[i] = planes[i].toVec4();
+	}
 }
 
 void RenderRequest_Backend::setDebugData_backend(const AxGpuData_Debug& debugData) {

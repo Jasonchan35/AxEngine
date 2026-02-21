@@ -80,13 +80,10 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 	ImDrawList* drawList = ImUIGetDrawList();
 	
 	FixedArray<Vec3f, 8> points;
-	points = camera.getFrustumPoints(projDesc);
+	points = camera.getFrustumPoints(projDesc, cameraWorldMatrix);
 	
-	auto matMVP = projMatrix * viewMatrix * cameraWorldMatrix;
+	auto matMVP = projMatrix * viewMatrix;
 	FixedArray<ImVec2, 8> screenPoints;
-	
-	auto m = camera.projMatrix(projDesc);
-	auto im = m.inverse();
 	
 	for (Int i = 0; i < 8; i++) {
 		auto clipSpace  = matMVP.mulPoint(points[i]);

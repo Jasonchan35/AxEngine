@@ -25,8 +25,8 @@ public:
 	
 	Ray3 getRay(const Vec2& screenPos, const ProjectionDesc& desc) const;
 	
-	FixedArray<Vec3,   8> getFrustumPoints(const ProjectionDesc& desc) const;
-	FixedArray<Plane3, 6> getFrustumPlanes(const ProjectionDesc& desc) const;
+	FixedArray<Vec3,   8> getFrustumPoints(const ProjectionDesc& desc, const Mat4& worldMatrix) const;
+	FixedArray<Plane3, 6> getFrustumPlanes(const ProjectionDesc& desc, const Mat4& worldMatrix) const;
 
 	Mat4 projMatrix(const ProjectionDesc& desc) const;
 };
@@ -43,11 +43,11 @@ class ViewportCamera3_: public Camera3_<T> {
 	using Ray3	= Ray3_<T>;
 public:
 	Vec3  aim {0, 0, 0};
-	Quat4 rotation { Quat4::s_identity() };
+	Quat4 rotation = Quat4::s_identity();
 	T     distance = 100;
 	
 
-	Vec3 eye() const { return aim + rotation * Vec3(0, 0, -distance); }
+	Vec3 eye() const { return aim - rotation * Vec3(0, 0, distance); }
 	void setEye(const Vec3& eye);
 
 	void setRotation(const Vec3& v) { rotation.setEuler(v); }

@@ -99,9 +99,9 @@ void EditorApp::_testLoadOpenUsd() {
 void EditorApp::_testLoadFbx() {
 	bool enableCache = true;
 	
-//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
+	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test2.fbx";
-	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
+//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/sportsCar/sportsCar.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/Exterior/exterior.fbx";
 
@@ -136,12 +136,11 @@ void EditorApp::_testLoadFbx() {
 		// entity->setPosition(2, 2, 2);
 		auto* comp = entity->addComponent<CameraComponent>(AX_NEW);
 		// entity->setRotation(-20, 45, 0);
-		entity->setRotation(-20, 45, 10);
-		entity->setPosition(0, 0, -10);
+//		entity->setPosition(0, 0, -10);
 		
 		comp->cameraObj->camera.nearClip = 0.1f;
-		comp->cameraObj->camera.farClip  = 15.0f;
-		comp->cameraObj->camera.fieldOfView = 20.0f;
+		comp->cameraObj->camera.farClip  = 10.0f;
+		comp->cameraObj->camera.fieldOfView = 25.0f;
 	}
 	
 }

@@ -180,6 +180,8 @@ public:
 	AX_NODISCARD constexpr static This s_lookAt	(const Vec3 & eye, const Vec3 & aim, const Vec3 & up, 
 													 const ProjectionDesc& desc);
 	
+	AX_NODISCARD constexpr static This s_worldToViewMatrix(const Mat4& m, const ProjectionDesc& desc);
+	
 	AX_NODISCARD constexpr static This s_translate	(const Vec3& v);
 	AX_NODISCARD constexpr static This s_translate	(const Vec2& v)		{ return s_translate(Vec3(v, 0)); }
 	AX_NODISCARD constexpr static This s_translate	(T x, T y, T z)		{ return s_translate(Vec3(x,y,z)); }
@@ -216,8 +218,8 @@ public:
 	};
 	
 	AX_NODISCARD constexpr static This s_TRS(const TRS& v);
-	AX_NODISCARD constexpr static This s_TRS(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale);
-	AX_NODISCARD constexpr static This s_TRS(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale) {
+	AX_NODISCARD constexpr static This s_TRS(const Vec3 & translate, const Quat4 & rotate, const Vec3 & scale = Vec3::s_one());
+	AX_NODISCARD constexpr static This s_TRS(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale = Vec3::s_one()) {
 		return s_TRS_radians(translate, Math::radians(rotate), scale);
 	}
 	AX_NODISCARD constexpr static This s_TRS_radians(const Vec3 & translate, const Vec3  & rotate, const Vec3 & scale);
@@ -518,7 +520,10 @@ auto Mat_<4,4,T,SIMD>::inverse() const -> This {
 
 	Vec4 SignA(+1, -1, +1, -1);
 	Vec4 SignB(-1, +1, -1, +1);
-	Mat4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
+	Mat4 Inverse(Inv0 * SignA, 
+				 Inv1 * SignB, 
+				 Inv2 * SignA, 
+				 Inv3 * SignB);
 
 	Vec4 Row0(Inverse.cx.x, Inverse.cy.x, Inverse.cz.x, Inverse.cw.x);
 
@@ -740,7 +745,7 @@ auto Mat_<4, 4, T, SIMD>::s_perspective(T verticalFieldOfViewInRadians,
 		zFar  = farClip;
 	}
 	
-	T dz = zFar - zNear;
+	T zDelta = zFar - zNear;
 	T sinFov, cosFov;
 	Math::sincos(verticalFieldOfViewInRadians * T(0.5), sinFov, cosFov);
 	T invTanFov = cosFov / sinFov;
@@ -763,8 +768,8 @@ auto Mat_<4, 4, T, SIMD>::s_perspective(T verticalFieldOfViewInRadians,
 
 	return This(aspect * invTanFov, 0        , 0                          , 0,
 				0                 , invTanFov, 0                          , 0,
-				0                 , 0        ,  forwardSign  * zRange / dz, forwardSign,
-				0                 , 0        , -zFar * zNear * zScale / dz, 0);
+				0                 , 0        ,  forwardSign  * zRange / zDelta, forwardSign,
+				0                 , 0        , -zFar * zNear * zScale / zDelta, 0);
 }
 
 template<class T, VecSimd SIMD> constexpr
@@ -809,20 +814,33 @@ template<class T, VecSimd SIMD> constexpr
 auto Mat_<4, 4, T, SIMD>::s_lookAt(const Vec3& eye, const Vec3& aim, const Vec3& up,
                                    const ProjectionDesc& desc) -> This 
 {
-	auto f = (aim - eye).normalize(); // forward
-	if (!desc.isRightHanded) f = -f;
-	
+	auto f = (eye - aim).normalize(); // forward
 	auto s = f.cross(up).normalize(); // side
 	auto u = s.cross(f);              // up
 
-	return This(
-		s.x, u.x, -f.x, 0,
-		s.y, u.y, -f.y, 0,
-		s.z, u.z, -f.z, 0,
-		-s.dot(eye), 
-		-u.dot(eye), 
-		 f.dot(eye), 1
+	if (desc.isRightHanded) {
+		f = -f;
+		s = -s;
+	}
+	
+	return This(s.x, u.x, -f.x, 0,
+				s.y, u.y, -f.y, 0,
+				s.z, u.z, -f.z, 0,
+				-s.dot(eye), -u.dot(eye), f.dot(eye), 1
 	);
+}
+
+template<class T, VecSimd SIMD>
+constexpr auto Mat_<4, 4, T, SIMD>::s_worldToViewMatrix(const Mat4& m, const ProjectionDesc& desc) -> This {
+	Mat4 o = m.inverse();
+	if (desc.isRightHanded) {
+		auto rev = Vec4(-1, 1, -1, 1);
+		o.cx *= rev;
+		o.cy *= rev;
+		o.cz *= rev;
+		o.cw *= rev;
+	}
+	return o;
 }
 
 template<class T, VecSimd SIMD> constexpr

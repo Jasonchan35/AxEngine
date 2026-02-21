@@ -58,7 +58,9 @@ public:
 	{}
 
 	constexpr Plane3_(const Triangle3_<T>&  tri) {
-		normal = (tri.v1 - tri.v0).cross(tri.v2 - tri.v0).normalize();
+		auto edge1 = tri.v1 - tri.v0;
+		auto edge2 = tri.v2 - tri.v0;
+		normal = edge2.cross(edge1).normalize();
 		distance = normal.dot(tri.v0);
 	}
 

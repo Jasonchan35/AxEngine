@@ -69,9 +69,11 @@ static bool axMeshlet_insideFrustum(Vec3f center, float radius) {
 
 	for (int i = 0; i < 6; i++) {
 		Vec4f plane = axCamera.cullingPlanes[i];
-		Vec4f center4 = Vec4f(axObjectToWorldPos(center), 1);
+		plane.w = -plane.w;
 
-		if (dot(center4, plane) < radius) {
+		Vec4f worldCenter = Vec4f(axObjectToWorldPos(center), 1);
+
+		if (dot(worldCenter, plane) > radius) {
 			return false;
 		}
 	}
@@ -112,7 +114,7 @@ void axMeshlet_AmplificationMain(
 		=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(refineGroup) <= maxErrorInPixels) 
 		&& (                              axMeshlet_boundsError(group      ) >  maxErrorInPixels);
 
-		bool insideFrustum = true; // axMeshlet_insideFrustum(cluster.center,  cluster.radius);
+		bool insideFrustum = axMeshlet_insideFrustum(cluster.center,  cluster.radius);
 		bool coneCulling   = true; 
 
 		visibleResult = lodMatch && coneCulling && insideFrustum;
