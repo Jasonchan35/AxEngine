@@ -17,6 +17,8 @@ class EditorMainWindow : public EditorWindow {
 public:
 	EditorMainWindow();
 
+	SPtr<CameraComponent> _cullingCameraComp;
+	
 protected:
 	virtual void onWindowCloseButton() override;
 	virtual	void onUIMouseEvent(UIMouseEvent& ev) override;
@@ -29,7 +31,6 @@ protected:
 
 		virtual void onUpdate(RenderRequest* req) override;
 		virtual void onBackBufferPass(RenderRequest* req, Span<Input> inputs) override;
-		
 	};
 
 	SceneOutlinerUIPanel _sceneOutlinerUIPanel;
@@ -70,9 +71,20 @@ protected:
 	
 	float _maxMeshletErrorInPixels = 2.0f;
 	float _mouseSpeed = 1.0;
+	
 	AxGpuData_Debug _gpuDebugData;
 	bool _useCullingCamera = false;
-	bool _viewFromCullingCamera = false;
+	
+	struct FpsCount {
+		double averageTime = 0;
+		double fps() const { return 1.0 / averageTime; }
+		
+		void update(double deltaTime);
+	private:
+		double _time = 0;
+		Int    _frames = 0;
+	};
+	FpsCount _fpsCount;
 };
 
 
