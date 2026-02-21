@@ -342,8 +342,16 @@ void Shader_Backend::onDestroy() {
 void Shader_Backend::hotReloadFile() {
 	RenderSystem_Backend::s_instance()->waitAllRenderCompleted();
 	onLoadFile();
-
-	// TODO: Reload Material
+	
+	auto* matTable = RenderObjectTable<Material>::s_instance();
+	if (!matTable) return;
+	
+	for (auto* slot : matTable->slots()) {
+		if (!slot) continue;
+		if (slot->shader() == this) {
+			rttiCastCheck<Material_Backend>(slot)->setShader_backend(this, true);
+		}
+	}
 }
 
 TempString Shader_Backend::debugName() const {

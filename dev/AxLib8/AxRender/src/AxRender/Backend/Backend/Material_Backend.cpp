@@ -210,10 +210,11 @@ void Material_Backend::onSetShader() {
 	}
 }
 
-void Material_Backend::setShader_backend(Shader* shader_) {
+void Material_Backend::setShader_backend(Shader* shader_, bool hotReload) {
 	auto* shader = rttiCastCheck<Shader_Backend>(shader_);
 
-	if (_shader_backend == shader) return;
+	if (!hotReload && _shader_backend == shader) return;
+	
 	_shader_backend = shader;
 	_passes.clear();
 	Int passCount = shader->passCount();

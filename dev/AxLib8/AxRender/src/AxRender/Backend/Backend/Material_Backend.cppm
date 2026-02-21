@@ -346,7 +346,7 @@ public:
 	static SPtr<This> s_new(const MemAllocRequest& req, Shader* shader = nullptr);
 	static SPtr<This> s_new(const MemAllocRequest& req, StrView shaderAssetPath);
 
-	void setShader_backend(Shader* shader);
+	void setShader_backend(Shader* shader, bool hotReload);
 	Shader_Backend* shader_backend() { return _shader_backend; }
 
 	template<class V> AX_INLINE
@@ -372,6 +372,8 @@ public:
 	Int maxFrameDataCount() const { return _maxFrameDataCount; }
 
 	TempString debugName() const { return _shader_backend ? _shader_backend->debugName() : ""; }
+	
+	virtual void onHotReloadShader() {}
 	
 protected:
 	friend class MaterialPass_Backend;
@@ -411,10 +413,8 @@ T* MaterialPass_Backend::_findParam(IArray<T>& arr, NameId name) {
 
 AX_INLINE
 MaterialPass_Backend* Material_Backend::getPass(Int index) {
-	if (index >= _passes.size()) {
-		AX_ASSERT(false);
+	if (index >= _passes.size()) 
 		return nullptr;
-	}
 	return _passes[index].get();
 }
 

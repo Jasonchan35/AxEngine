@@ -13,14 +13,16 @@ SPtr<Material> Material::s_new(const MemAllocRequest& req, StrView shaderAssetPa
 }
 
 void Material::setShader(Shader* shader) {
-	rttiCastCheck<Material_Backend>(this)->setShader_backend(shader);
+	rttiCastCheck<Material_Backend>(this)->setShader_backend(shader, false);
 }
 
 Shader* Material::shader() {
 	return rttiCastCheck<Material_Backend>(this)->shader_backend();
 }
 
-Material::Material(const CreateDesc& desc) {
+Material::Material(const CreateDesc& desc) 
+: objectSlot(this)
+{
 }
 
 template<class V> AX_INLINE

@@ -77,6 +77,8 @@ public:
 
 	virtual GpuBufferPool* onGetGpuBufferPool() override { return _gpuBufferPool; }
 	
+	MutSpan<T*>	slots() { return _slots; }
+	
 protected:
 	friend class RenderObjectManager_Backend;
 	Array<T*>                 _slots;

@@ -53,8 +53,16 @@ public:
 	
 	bool setParam(NameId name, StructuredGpuBuffer* structBuf);
 
+	using ResourceKey = String;
+	const ResourceKey* resourceKey() const { return _assetPath ? &_assetPath : nullptr; }
+	const String& assetPath() const { return _assetPath; }
 protected:
+	String		_assetPath;
 	Material(const CreateDesc& desc);
+	
+public:
+	using ObjectSlot = RenderObjectSlot<This>; 
+	ObjectSlot objectSlot;
 };
 
 } // namespace
