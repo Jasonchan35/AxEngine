@@ -114,7 +114,7 @@ void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
 	ImUIPanel	panel("statistics");
 	
 	_fpsCount.update(req->deltaTime());
-	ImUIText(Fmt("FPS {:4.2}, {:4.2f}ms", _fpsCount.fps(), _fpsCount.averageTime / 1000.0));
+	ImUIText(Fmt("Frame {}, FPS {:3.2}, {:3.2f}ms", req->renderSeqId(), _fpsCount.fps(), _fpsCount.averageTime * 1000));
 	
 	ImUIText("Meshlet:");
 	auto func = [](StrView name, const GpuBufferPool::Statistics& src)-> void {
