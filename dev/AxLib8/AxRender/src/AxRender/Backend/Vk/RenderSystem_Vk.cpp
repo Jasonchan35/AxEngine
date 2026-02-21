@@ -22,10 +22,11 @@ RenderSystem_Vk::RenderSystem_Vk(const CreateDesc& desc)
 	_createVkInstance();
 
 	AX_VkExtProcList::s_create(_vkInst);
-
+	#if AX_RENDER_DEBUG_LAYER
 	if (_enableDebugReport) {
 		_debugReportCallbackExt.create(_vkInst, s_debugReport);
 	}
+	#endif
 
 	_physicalDeviceList.create(_vkInst);
 	auto* phyDev = _physicalDeviceList.defaultDevice();

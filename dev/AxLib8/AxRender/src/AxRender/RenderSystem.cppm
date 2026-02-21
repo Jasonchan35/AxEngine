@@ -92,7 +92,13 @@ public:
 	using MemoryInfo = RenderMemoryInfo;
 	void getMemoryInfo(MemoryInfo& info) { onGetMemoryInfo(info); }
 
-	bool enableDebugReport() const { return _enableDebugReport; }
+	bool enableDebugReport() const { 
+		#if AX_RENDER_DEBUG_LAYER
+			return _enableDebugReport; 
+		#else
+			return false;
+		#endif		
+	}
 
 //	AX_INLINE RenderSeqId	renderSeqId() const { return _renderSeqId; }
 	AX_INLINE const RenderSystemInfo&	info() const { return _info; }
