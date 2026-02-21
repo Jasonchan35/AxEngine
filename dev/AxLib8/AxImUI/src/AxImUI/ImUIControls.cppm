@@ -107,18 +107,18 @@ bool ImUIInputMat4(ZStrView label, Mat4f& value);
 
 bool ImUIDragFloat(
 		ZStrView label, 
-		float* v, 
+		float& v, 
 		float v_speed = 0.1f, 
 		float v_min = f32_min,
 		float v_max = f32_max);
 
 template<class T> requires(!std::is_same_v<T, f32>) 
-inline bool ImUIDragFloat(ZStrView label, T* v, float v_speed, T v_min, T v_max) {
+inline bool ImUIDragFloat(ZStrView label, T& v, float v_speed, T v_min, T v_max) {
 	f32 tmpV   = ax_safe_cast_from(*v);
 	f32 tmpMin = ax_safe_cast_from(v_min);
 	f32 tmpMax = ax_safe_cast_from(v_max);
 	
-	if (ImUIDragFloat(label, &tmpV, v_speed, tmpMin, tmpMax)) {
+	if (ImUIDragFloat(label, tmpV, v_speed, tmpMin, tmpMax)) {
 		*v = tmpV;
 		return true;
 	}
@@ -140,25 +140,25 @@ bool ImUIDragEuler(ZStrView label,
 
 bool ImUIDragInt(
 		ZStrView label, 
-		i32* v, 
+		i32& v, 
 		float v_speed = 0.1f, 
 		i32 v_min = i32_min,
 		i32 v_max = i32_max);
 
 template<class T> requires(!std::is_same_v<T, i32>) 
-inline bool ImUIDragInt(ZStrView label, T* v, float v_speed, T v_min, T v_max) {
+inline bool ImUIDragInt(ZStrView label, T& v, float v_speed, T v_min, T v_max) {
 	int tmpV   = ax_safe_cast_from(*v);
 	int tmpMin = ax_safe_cast_from(v_min);
 	int tmpMax = ax_safe_cast_from(v_max);
 	
-	if (ImUIDragInt(label, &tmpV, v_speed, tmpMin, tmpMax)) {
-		*v = tmpV;
+	if (ImUIDragInt(label, tmpV, v_speed, tmpMin, tmpMax)) {
+		v = tmpV;
 		return true;
 	}
 	return false;
 }
 
-float ImUIInputFloat(ZStrView label, float* v);
+float ImUIInputFloat(ZStrView label, float& v);
 
 template<class T> inline
 bool ImUICheckBoxArray(ZStrView label, T& value, Span<ImUICheckBoxArray_Item<T>> list) {

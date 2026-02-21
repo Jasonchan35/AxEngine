@@ -102,7 +102,7 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 	
 	ImUIGetWindowDrawList();
 	
-	_owner->_cameraDebugPanel(req);
+	_owner->_viewportCameraPanel(req);
 	_owner->_statisticsPanel(req);
 	_owner->_drawGizmo(req);
 	_owner->_sceneOutlinerUIPanel.render(Engine::s_instance()->world(), req);
@@ -129,7 +129,7 @@ void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
 	func("Prim   ", stat.meshletPrim);
 }
 
-void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
+void EditorMainWindow::_viewportCameraPanel(RenderRequest* req) {
 	ProjectionDesc projDesc = _renderGraph->projectionDesc();
 	
 	auto& cam = _renderGraph->viewportCamera();
@@ -150,29 +150,28 @@ void EditorMainWindow::_cameraDebugPanel(RenderRequest* req) {
 	
 	ImUIPanel	panel("camera");
 	
-	ImUIDragFloat3("_testEuler", _testEuler);
-	_renderGraph->_testRot.setEuler(_testEuler);
+	ImUIDragFloat("fieldOfView"   , cam.fieldOfView, 0.1f, 5, 180);
+	ImUIDragEuler("rotation"      , cam.rotation);
+	ImUIDragFloat("distance"      , cam.distance);
 	
-	ImUIDragFloat("fieldOfView"   , &cam.fieldOfView, 0.1f, 5, 180);
+	if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
+		AX_TOGGLE_BOOL(projDesc.isReverseZ);
+		_renderGraph->setProjectionDesc(projDesc);
+	}
+	
+	ImUISameLine();
+	if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {160, 40})) {
+		AX_TOGGLE_BOOL(projDesc.isRightHanded);
+		_renderGraph->setProjectionDesc(projDesc);
+	}
+	
 	ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
-	ImUILabelText("rotation"      , Fmt("{}", cam.rotation.euler()));
-	ImUILabelText("distance"      , Fmt("{}", cam.distance));
 	ImUILabelText("eye"           , Fmt("{}", cam.eye()));
 	ImUILabelText("aim"           , Fmt("{}", cam.aim));
 	ImUILabelText("up"            , Fmt("{}", cam.up()));
 	ImUILabelText("viewMatrix"    , Fmt("{}", cam.viewMatrix(projDesc)));
 	ImUILabelText("projMatrix"    , Fmt("{}", cam.projMatrix(projDesc)));
 	ImUILabelText("viewProjMatrix", Fmt("{}", cam.viewProjMatrix(projDesc)));
-
-	if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
-		AX_TOGGLE_BOOL(projDesc.isReverseZ);
-		_renderGraph->setProjectionDesc(projDesc);
-	}
-	
-	if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {160, 40})) {
-		AX_TOGGLE_BOOL(projDesc.isRightHanded);
-		_renderGraph->setProjectionDesc(projDesc);
-	}
 }
 
 void EditorMainWindow::_drawGizmo(RenderRequest* req) {
@@ -191,8 +190,8 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	
 	{
 		ImUIPanel	panel("Gizmo");
-		ImUIDragFloat("mouseSpeed", &_mouseSpeed, 0.1f, 0.1f, 50.0f);
-		ImUIDragFloat("flyingCameraSpeed", &_flyingCameraSpeed, 0.1f, 0.1f, 50.0f);
+		ImUIDragFloat("mouseSpeed", _mouseSpeed, 0.1f, 0.1f, 50.0f);
+		ImUIDragFloat("flyingCameraSpeed", _flyingCameraSpeed, 0.1f, 0.1f, 50.0f);
 		
 		{
 			if (ImUIRadioButton("Local", _gizmoSpace == ImUIGizmoSpace::Local)) {
@@ -207,7 +206,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		
 		ImUICheckBox("showCullingCamera", _showCullingCamera);
 		
-		ImUIDragFloat("maxMeshletErrorInPixels", &_maxMeshletErrorInPixels, 0.1f, 0, 20);
+		ImUIDragFloat("maxMeshletErrorInPixels", _maxMeshletErrorInPixels, 0.1f, 0, 20);
 		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
 		{
 			ImUICheckBoxArray_Item<i32> list_[] = {
@@ -231,8 +230,8 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUIDragFloat("showAllLodDistance", &_gpuDebugData.showAllLodDistance, 0.1f, 0, 10);
-		ImUIDragFloat("Normal Length",      &_gpuDebugData.drawNormalLength, 0.01f, 0, 4);
+		ImUIDragFloat("showAllLodDistance", _gpuDebugData.showAllLodDistance, 0.1f, 0, 10);
+		ImUIDragFloat("Normal Length",      _gpuDebugData.drawNormalLength, 0.01f, 0, 4);
 		
 		ImUICheckBoxFlag("Disable Frustum Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 	}

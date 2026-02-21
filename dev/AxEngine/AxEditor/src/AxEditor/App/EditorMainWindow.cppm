@@ -36,7 +36,7 @@ protected:
 	
 	SPtr<MyRenderGraph>	_renderGraph;
 
-	void _cameraDebugPanel(RenderRequest* req);
+	void _viewportCameraPanel(RenderRequest* req);
 	void _drawGizmo(RenderRequest* req);
 	void _statisticsPanel(RenderRequest* req);
 	
@@ -70,8 +70,6 @@ protected:
 	float _mouseSpeed = 1.0;
 	AxGpuData_Debug _gpuDebugData;
 	bool _showCullingCamera = false;
-	
-	Vec3f _testEuler = {-20,45,10};
 };
 
 

@@ -16,11 +16,6 @@ public:
 	
 	Math::BoomCamera3f& viewportCamera() { return _viewportCamera; }
 	
-	Quat4f _testRot = Quat4f::s_identity();
-	RenderMesh _testMesh;
-	
-	void test_createAxis();
-	
 private:
 	Math::BoomCamera3f	_viewportCamera;
 	SPtr<MeshObject>	_axis;
