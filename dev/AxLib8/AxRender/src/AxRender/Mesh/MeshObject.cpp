@@ -76,6 +76,7 @@ void MeshObject_Meshlet::createBuffers() {
 void MeshObject_Meshlet::writeToFile(MeshObject* meshObj, StrView filename) {
 	FileStream fs;
 	fs.openWrite(filename, true);
+	
 	fs.writeBytes(Span(meshObj->_bounds).toByteSpan());
 	
 	groupBuffer.writeToFile(fs);

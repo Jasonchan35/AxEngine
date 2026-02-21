@@ -129,15 +129,13 @@ struct AxGpuData_MeshletGroup {
 };
 
 struct AxGpuData_MeshObject {
-	Vec3f boundsMin;
-	u32   vertOffset;
-	Vec3f boundsMax;
-	u32   primOffset;
-
 	u32   meshletGroupOffset;
 	u32   meshletGroupCount;
 	u32   meshletClusterOffset;
 	u32   meshletClusterCount;
+
+	Vec3f boundsMin;	u32 vertOffset;
+	Vec3f boundsMax;	u32 primOffset;
 };
 
 struct AxGpuData_MeshRenderer {

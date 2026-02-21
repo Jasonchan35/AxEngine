@@ -99,9 +99,9 @@ void EditorApp::_testLoadOpenUsd() {
 void EditorApp::_testLoadFbx() {
 	bool enableCache = true;
 	
-	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
+//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test2.fbx";
-//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
+	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/sportsCar/sportsCar.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/Exterior/exterior.fbx";
 
@@ -110,9 +110,13 @@ void EditorApp::_testLoadFbx() {
 
 	SPtr<SceneWorld> world;
 	if (enableCache && File::isNewerThan(cacheRootFile, inFilename)) {
-		world = SceneWorld::s_new(AX_NEW);
-		world->readFromFile(cacheFolder);
-	} else {
+		auto cacheWorld = SceneWorld::s_new(AX_NEW);
+		if (cacheWorld->readFromFile(cacheFolder)) {
+			world = cacheWorld;
+		}
+	}
+
+	if (!world) {
 		AxAssimp assimp;
 		world = assimp.openFile(inFilename);
 		world->writeToFile(cacheFolder);

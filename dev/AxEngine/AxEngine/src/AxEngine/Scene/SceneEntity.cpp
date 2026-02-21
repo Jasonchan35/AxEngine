@@ -35,6 +35,10 @@ template<class T> concept CON_HasMutRttiInit2 = requires(T::MutRttiInit2 obj)
 	[](const T::MutRttiInit2&){}(obj); 
 };
 
+u32 SceneWorld::s_fileVersion() {
+	return 2;
+}
+
 template<class SE>
 void SceneEntity::_onJsonIO(SE& se) {
 	AX_JSON_IO(se, _name);
@@ -127,8 +131,10 @@ SceneEntity* SceneEntity::findChild(NameId name, bool recursive) {
 	return nullptr;
 }
 
-void SceneWorld::readFromFile(StrView folder) {
+bool SceneWorld::readFromFile(StrView folder) {
 	JsonIO::readFile(Fmt("{}/_root.axWorld", folder), *this);
+	if (_fileVersion != s_fileVersion()) return false;
+	return true;
 }
 
 void SceneWorld::writeToFile(StrView folder) {
@@ -138,11 +144,12 @@ void SceneWorld::writeToFile(StrView folder) {
 
 template<class SE> inline
 void SceneWorld::_onJsonIO(SE& se) {
-
+	AX_JSON_IO(se, _fileVersion);
 }
 
 void SceneWorld::onJsonIO(JsonIO_Reader& se) {
 	_onJsonIO(se);
+	if (_fileVersion != s_fileVersion()) return;
 	
 	se.reader.readMemberArray("meshes", [&]() -> void {
 		NameId meshName;
@@ -157,7 +164,9 @@ void SceneWorld::onJsonIO(JsonIO_Reader& se) {
 
 	se.member_io("root", *_root);
 }
+
 void SceneWorld::onJsonIO(JsonIO_Writer& se) {
+	_fileVersion = s_fileVersion();
 	_onJsonIO(se);
 
 	se.writer.writeMemberArray("meshes", [&]() -> void {

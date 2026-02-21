@@ -249,7 +249,7 @@ public:
 
 	SceneEntity* root() { return _root.ptr(); }
 	
-	void readFromFile(StrView folder);
+	bool readFromFile(StrView folder);
 	void writeToFile(StrView folder);
 	
 	void onJsonIO(JsonIO_Reader& se);
@@ -276,6 +276,9 @@ protected:
 	
 	StructuredGpuBuffer_<AxGpuData_TileLighting>		_tileLightingBuffer;
 
+	static u32 s_fileVersion();
+	u32 _fileVersion = 0;
+	
 	SPtr<SceneEntity> _root;
 };
 

@@ -109,8 +109,8 @@ void axMeshlet_AmplificationMain(
 
 		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
 		bool lodMatch 
-		=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(group      ) <= maxErrorInPixels) 
-		&& (                              axMeshlet_boundsError(refineGroup) >  maxErrorInPixels);
+		=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(refineGroup) <= maxErrorInPixels) 
+		&& (                              axMeshlet_boundsError(group      ) >  maxErrorInPixels);
 
 		bool insideFrustum = true; // axMeshlet_insideFrustum(cluster.center,  cluster.radius);
 		bool coneCulling   = true; 
@@ -128,6 +128,7 @@ void axMeshlet_AmplificationMain(
 	}
 
 	uint visibleResultCount = WaveActiveCountBits(visibleResult);
+	s_payload.clusterCount = clusterCount;
 	DispatchMesh(visibleResultCount, 1, 1, s_payload);
 }
 
