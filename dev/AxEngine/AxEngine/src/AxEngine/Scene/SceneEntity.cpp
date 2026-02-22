@@ -257,11 +257,11 @@ void LightComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
 
 void LightComponent::onInspector(ImUI_InspectorRequest* req) {
 	auto intensity = lightObj->intensity();
-	if (ImUI_DragFloat("Intensity", intensity, 0.1f, 0.0f, 5.0f)) {
+	if (ImUI_DragFloat("Intensity", intensity, 0.1f, 0.0f, 100.0f)) {
 		lightObj->setIntensity(intensity);
 	}
 	auto radius = lightObj->radius(); 
-	if (ImUI_DragFloat("Radius", radius, 0.1f, 0.0f, 100.0f)) {
+	if (ImUI_DragFloat("Radius", radius, 0.1f, 0.0f, 10000.0f)) {
 		lightObj->setRadius(radius);
 	}
 	

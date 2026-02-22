@@ -85,7 +85,7 @@ static bool axMeshlet_ClusterCulling(AxGpuData_MeshletCluster cluster) {
 		Vec3f viewDir  = normalize(worldCenter - axCamera.cullingCameraPos);
 
 		// coneAxis can be (0,0,0), but will equal cutoff(0)
-		if (dot(viewDir, cluster.coneAxis) >= cluster.coneCutoff)
+		if (dot(viewDir, cluster.coneAxis) >= cluster.coneCutoff + 0.02f)
 			return false;
 	}
 

@@ -101,9 +101,9 @@ void EditorApp::_testLoadFbx() {
 	
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test2.fbx";
-	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
+//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/sportsCar/sportsCar.fbx";
-//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/Exterior/exterior.fbx";
+	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/Exterior/exterior.fbx";
 
 	String cacheFolder = Fmt("{}.axWorld", inFilename);
 	String cacheRootFile = Fmt("{}/_root.axWorld", cacheFolder);
@@ -124,7 +124,7 @@ void EditorApp::_testLoadFbx() {
 	_engine.setWorld(world);
 	
 	{ // create lights
-		for (Int i = 0; i < 9; ++i) {
+		for (Int i = 0; i < 10; ++i) {
 			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Light_{}", i));
 			constexpr Int row = 3;
 			constexpr Vec3f distance(20, 0, -20);
@@ -132,7 +132,12 @@ void EditorApp::_testLoadFbx() {
 			entity->setPosition(Vec3f::s_cast(id) * distance + Vec3f(0,5,0));
 			
 			auto* comp = entity->addComponent<LightComponent>(AX_NEW);
-			comp->lightObj->setRadius(20);
+			
+			if (i == 0) {
+				comp->lightObj->setRadius(100000);
+			} else {
+				comp->lightObj->setRadius(20);
+			}
 			comp->lightObj->setIntensity(0.8f);
 		}
 	}
@@ -148,8 +153,8 @@ void EditorApp::_testLoadFbx() {
 		_mainWin->_cullingCameraComp = comp;
 	}
 	
-	_cloneEntities("sportsCar", 50,  10, Vec3f(5, 0, -6));
-	_cloneEntities("Suzanne",   400, 20, Vec3f(3, 0, -3));
+//	_cloneEntities("sportsCar", 50,  10, Vec3f(5, 0, -6));
+//	_cloneEntities("Suzanne",   400, 20, Vec3f(3, 0, -3));
 }
 
 void EditorApp::_cloneEntities(InNameId name, Int count, Int row, const Vec3f& distance) {

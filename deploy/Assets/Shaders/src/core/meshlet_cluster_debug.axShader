@@ -38,6 +38,7 @@ u32x2 SpherePointsIndex(u32 j) {
 struct VS_Output {
 	SEM_sv_pos(float4);
 	SEM_color0(float4);
+	SEM_normal(float3);
 };
 
 static const int OutVertCount = SpherePointCount + 2;
@@ -69,6 +70,8 @@ void ms_main(
 		o.sv_pos = axObjectToClipPos(pos);
 		o.color0 = float4(0.7, .7, 0, 1);
 
+		o.normal = cluster.coneAxis;
+
 		outVert[gtid] = o;
 
 	} else if (gtid < OutPrimCount) {
@@ -78,13 +81,16 @@ void ms_main(
 		pos += axMeshlet_clusterDebug(cluster);
 
 		VS_Output o;
+		o.normal = cluster.coneAxis;
+
 		o.sv_pos = axObjectToClipPos(pos);
 		o.color0 = float4(1,0,0,1);
 		outVert[gtid] = o;
 
 		Vec4f cone_axis_cutoff = ax_unpack_normal4_u32(cluster.cone_axis_cutoff);
-		pos += cone_axis_cutoff.xyz * 3;
-//		pos += cluster.coneAxis;
+//		pos += cone_axis_cutoff.xyz * 3;
+		pos += cluster.coneAxis * 3;
+
 
 		o.sv_pos = axObjectToClipPos(pos);
 		o.color0 = float4(0,1,0,1);
