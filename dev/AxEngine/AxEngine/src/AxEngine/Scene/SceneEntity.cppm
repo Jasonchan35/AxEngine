@@ -67,6 +67,8 @@ public:
 	virtual void onJsonIO(JsonIO_Reader& se);
 	virtual void onJsonIO(JsonIO_Writer& se);
 
+	virtual void onDrawGizmo(ImUIDrawGizmoRequest* req) {}
+	
 protected:
 	template<class SE> void _onJsonIO(SE& se);
 	
@@ -222,6 +224,7 @@ public:
 	
 protected:
 	virtual void onInit() override;
+	virtual void onDrawGizmo(ImUIDrawGizmoRequest* req) override;
 };
 
 AX_CLASS()

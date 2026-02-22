@@ -242,6 +242,12 @@ void LightComponent::onInit() {
 	getWorld()->_lightComponents.add(this);
 }
 
+void LightComponent::onDrawGizmo(ImUIDrawGizmoRequest* req) {
+	Base::onDrawGizmo(req);
+	auto worldMatrix = entity()->worldMatrix();
+	ImUIGizmoCubes(req, Span(worldMatrix));
+}
+
 CameraComponent::~CameraComponent() {
 	getWorld()->_cameraComponents.remove(this);
 }

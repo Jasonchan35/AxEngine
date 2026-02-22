@@ -17,39 +17,45 @@ void InspectorUIPanel::render(RenderRequest* req) {
 	ImUILabelText("name", obj->name().toString());
 
 	if (auto* entity = rttiCast<SceneEntity>(obj.ptr())) {
-		auto pos   = entity->position();
-		auto rot   = entity->rotation();
-		auto scale = entity->scale();
-		if (ImUIDragFloat3 ("Position", pos)) { entity->setPosition(pos); }
-		if (ImUIDragEuler  ("Rotation", rot)) { entity->setRotation(rot); }
-		if (ImUIDragFloat3 ("Scale"   , scale)) { entity->setScale(scale); }
-		
-		ImUIInputQuat4 ("Quat"    , rot);
+		_renderEntity(entity);
+	}
+}
 
-		if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
-			if (auto* mesh = meshRenderer->mesh.ptr()) {
-				auto bounds = mesh->bounds();
-				ImUIInputFloat3("Bounds min", bounds.min);
-				ImUIInputFloat3("Bounds max", bounds.max);
-			}
-		}
+void InspectorUIPanel::_renderEntity(SceneEntity* entity) {
+	auto pos   = entity->position();
+	auto rot   = entity->rotation();
+	auto scale = entity->scale();
+	if (ImUIDragFloat3 ("Position", pos)) { entity->setPosition(pos); }
+	if (ImUIDragEuler  ("Rotation", rot)) { entity->setRotation(rot); }
+	if (ImUIDragFloat3 ("Scale"   , scale)) { entity->setScale(scale); }
 		
-		Int componentCount = entity->componentCount();
-		{
-			ImUITreeNodeFlags flags;
-			flags.hasChild = componentCount > 0;
-			flags.open = true;
-			ImUITreeNode node("Components", flags);
+	ImUIInputQuat4 ("Quat"    , rot);
+
+	if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
+		if (auto* mesh = meshRenderer->mesh.ptr()) {
+			auto bounds = mesh->bounds();
+			ImUIInputFloat3("Bounds min", bounds.min);
+			ImUIInputFloat3("Bounds max", bounds.max);
 		}
+	}
+		
+	Int componentCount = entity->componentCount();
+	{
+		ImUITreeNodeFlags flags;
+		flags.hasChild = componentCount > 0;
+		flags.open = true;
+		ImUITreeNode node("Components", flags);
 		
 		for (Int i = 0; i < componentCount; ++i) {
 			auto* comp = entity->componentAt(i);
-			
-			ImUITreeNodeFlags flags;
-			ImUITreeNode node(Fmt("{}", comp->rtti()->name), flags);
+			_renderComponent(comp);
 		}
-		return;
-	}
+	}	
+}
+
+void InspectorUIPanel::_renderComponent(SceneComponent* comp) {
+	ImUITreeNodeFlags flags;
+	ImUITreeNode node(Fmt("{}", comp->rtti()->name), flags);
 }
 
 } // namespace

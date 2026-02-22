@@ -47,24 +47,31 @@ void ImUISeparator();
 void ImUISameLine();
 void ImUINewLine();
 
+ImDrawList* ImUIGetDrawList();
+
+struct ImUIDrawGizmoRequest : public NonCopyable {
+	Rect2f viewport;
+	Mat4f  viewMatrix;
+	Mat4f  projMatrix;
+};
+
 bool ImUIGizmoIsUsing();
 
-bool ImUIGizmoManipulate(	const Mat4f& viewMatrix, const Mat4f& projMatrix,
+bool ImUIGizmoManipulate(	ImUIDrawGizmoRequest* req,
 							ImUIGizmoOperation op, ImUIGizmoSpace space, const Vec3f* snap, 
 							const BBox3f& bounds,
 							Mat4f& objMatrix,
 							Mat4f* outDeltaMatrix = nullptr);
 
-void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect);
+void ImUIGizmoViewManipulate(ImUIDrawGizmoRequest* req, const Rect2f& rect);
 
-ImDrawList* ImUIGetDrawList();
 
-void ImUIGizmoCamera(const Rect2f&         viewport,
-                     const Mat4f&          viewMatrix,
-                     const Mat4f&          projMatrix,
+void ImUIGizmoCamera(ImUIDrawGizmoRequest* req,
                      Math::Camera3f&       camera,
                      const Mat4f&          cameraWorldMatrix,
                      const ProjectionDesc& projDesc);
+
+void ImUIGizmoCubes(ImUIDrawGizmoRequest* req, Span<Mat4f> cubeMatrixArray);
 
 bool ImUIButton(ZStrView label, Vec2f size);
 bool ImUIRadioButton(ZStrView label, bool active);

@@ -24,8 +24,7 @@ void ImUINewLine() {
 	ImGui::NewLine();
 }
 
-bool ImUIGizmoManipulate(const Mat4f&       viewMatrix,
-                         const Mat4f&       projMatrix,
+bool ImUIGizmoManipulate(ImUIDrawGizmoRequest* req,
                          ImUIGizmoOperation op,
                          ImUIGizmoSpace     space,
                          const Vec3f*       snap,
@@ -46,8 +45,8 @@ bool ImUIGizmoManipulate(const Mat4f&       viewMatrix,
 	
 	bool hasLocalBounds = opIsBounds && bounds.isValid();
 	
-	bool ret = ImGuizmo::Manipulate(viewMatrix.e,
-									projMatrix.e,
+	bool ret = ImGuizmo::Manipulate(req->viewMatrix.e,
+									req->projMatrix.e,
 									static_cast<ImGuizmo::OPERATION>(op),
 									static_cast<ImGuizmo::MODE>(space),
 									objMatrix.e,
@@ -58,21 +57,19 @@ bool ImUIGizmoManipulate(const Mat4f&       viewMatrix,
 	return ret;
 }
 
-void ImUIGizmoViewManipulate(Mat4f& viewMatrix, const Rect2f& rect) {
+void ImUIGizmoViewManipulate(ImUIDrawGizmoRequest* req, const Rect2f& rect) {
 	float distance = 50;
 	ImVec2 pos(rect.x, rect.y);
 	ImVec2 size(rect.w, rect.h);
 	ImU32 bgColor = 0x00000000;
-	ImGuizmo::ViewManipulate(viewMatrix.e, distance, pos, size, bgColor);
+	ImGuizmo::ViewManipulate(req->viewMatrix.e, distance, pos, size, bgColor);
 }
 
 ImDrawList* ImUIGetDrawList() {
 	return ImGuizmo::_AxImUIGetDrawList();
 }
 
-void ImUIGizmoCamera(const Rect2f&         viewport,
-                     const Mat4f&          viewMatrix,
-                     const Mat4f&          projMatrix,
+void ImUIGizmoCamera(ImUIDrawGizmoRequest* req,
                      Math::Camera3f&       camera,
                      const Mat4f&          cameraWorldMatrix,
                      const ProjectionDesc& projDesc) 
@@ -82,13 +79,13 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 	FixedArray<Vec3f, 8> points;
 	points = camera.getFrustumPoints(projDesc, cameraWorldMatrix);
 	
-	auto matMVP = projMatrix * viewMatrix;
+	auto matMVP = req->projMatrix * req->viewMatrix;
 	FixedArray<ImVec2, 8> screenPoints;
 	
 	for (Int i = 0; i < 8; i++) {
 		auto clipSpace  = matMVP.mulPoint(points[i]);
 		auto pt = clipSpace.xy() * Vec2f(0.5f, -0.5f) + 0.5f;
-		pt = pt * viewport.size - viewport.pos;
+		pt = pt * req->viewport.size - req->viewport.pos;
 		screenPoints[i] = ImVec2_make(pt);
 	}
 
@@ -113,6 +110,13 @@ void ImUIGizmoCamera(const Rect2f&         viewport,
 
 bool ImUIGizmoIsUsing() {
 	return ImGuizmo::IsUsing();
+}
+
+void ImUIGizmoCubes(ImUIDrawGizmoRequest* req, Span<Mat4f> cubeMatrixArray) {
+	ImGuizmo::DrawCubes(req->viewMatrix.e,
+	                    req->projMatrix.e,
+	                    cubeMatrixArray.data()->e,
+	                    ax_safe_cast_from(cubeMatrixArray.size()));
 }
 
 bool ImUIButton(ZStrView label, Vec2f size) {

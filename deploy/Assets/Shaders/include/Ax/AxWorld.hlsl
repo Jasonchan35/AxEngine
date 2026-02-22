@@ -36,10 +36,11 @@ Color3f axLight_Blinn(
 
 	Vec3f viewDir  = normalize(axCamera.worldPos - worldPos);
 
-	Color3f lightColor = light.color.rgb;
+	Color3f lightColor = light.color;
 
-	float factor    = lightDis / light.range;
-	float intensity = 1 - factor * factor;
+	float range       = max(0, lightDis / light.radius);
+	float attenuation = max(0, 1 - range * range);
+	float intensity   = light.intensity * attenuation;
 
 	// ambient
 	Color3f outAmbient = lightColor * ambient;

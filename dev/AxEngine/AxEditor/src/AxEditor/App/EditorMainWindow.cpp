@@ -13,6 +13,8 @@ EditorMainWindow::EditorMainWindow() {
 //	_gpuDebugData.drawNormalLength = 0.25f;
 //	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 	
+	_flyingCameraSpeed = 20.0f;
+	
 	auto* renderSystem = RenderSystem::s_instance();
 	auto  title    = Fmt("AxEditor - {}{}, MT: {}, VSync: {}",
 	                     renderSystem->api(),
@@ -205,12 +207,14 @@ void EditorMainWindow::_viewportCameraPanel(RenderRequest* req) {
 void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	auto& cam = req->cameraData();
 	
-	auto viewMatrix = cam.viewMatrix;
-	auto projMatrix = cam.projMatrix;
+	ImUIDrawGizmoRequest gizmoRequest;
+	gizmoRequest.viewMatrix = cam.viewMatrix;
+	gizmoRequest.projMatrix = cam.projMatrix;
+	
 	float ViewManipulateOffset = 20;
 	float ViewManipulateSize = 120;
 	
-	ImUIGizmoViewManipulate(viewMatrix,
+	ImUIGizmoViewManipulate(&gizmoRequest,
 	                        Rect2f(req->viewport().w - ViewManipulateSize - ViewManipulateOffset,
 	                               ViewManipulateOffset,
 	                               ViewManipulateSize,
@@ -272,9 +276,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	req->setDebugData(_gpuDebugData);
 
 	if (_useCullingCamera && _cullingCameraComp) {
-		ImUIGizmoCamera(req->viewport(),
-						viewMatrix,
-						projMatrix,
+		ImUIGizmoCamera(&gizmoRequest,
 						_cullingCameraComp->cameraObj->camera,
 						_cullingCameraComp->entity()->worldMatrix(),
 						req->projectionDesc());
@@ -314,14 +316,12 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		}
 	}
 
-	if (ImUIGizmoManipulate(viewMatrix, projMatrix, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {
+	if (ImUIGizmoManipulate(&gizmoRequest, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {
 		selectdEntity->setWorldMatrix(worldMatrix);
 	}
 	
 	if (auto* comp = selectdEntity->getComponent<CameraComponent>()) {
-		ImUIGizmoCamera(req->viewport(),
-		                viewMatrix,
-		                projMatrix,
+		ImUIGizmoCamera(&gizmoRequest,
 		                comp->cameraObj->camera,
 		                selectdEntity->worldMatrix(),
 		                req->projectionDesc());
