@@ -43,6 +43,21 @@ public:
 			AX_TEST_EQ(index, 10);
 		}
 	}
+
+	void test_insertAt_beginning() {
+		Array<Int> arr;
+		arr.append(10);
+		arr.append(20);
+		arr.append(30);
+		
+		auto& elem = arr.insertAt(0);
+		elem = 5;
+		
+		AX_TEST_EQ(arr.size(), 4);
+		AX_TEST_EQ(arr[0], 5);
+		AX_TEST_EQ(arr[1], 10);
+	}
+
 };
 
 } // namespace
@@ -51,5 +66,6 @@ void Test_Array() {
 	using namespace ax;
 	AX_TEST_RUN_CASE(Test_Array::test_case1)
 	AX_TEST_RUN_CASE(Test_Array::test_binarySearch)
+	AX_TEST_RUN_CASE(Test_Array::test_insertAt_beginning)
 }
 

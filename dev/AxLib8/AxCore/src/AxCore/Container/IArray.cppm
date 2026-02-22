@@ -274,28 +274,40 @@ constexpr void IArray<T>::appendRange(Span<R> src, FUNC func) {
 
 template <class T>
 constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
-	if (range.size() <= 0) return;
+	if (range.size() <= 0) return MutSpan<T>(data(), 0);
 	auto oldSize = size();
-	if (range.start() > oldSize) { AX_ASSERT(false); return; }
+	if (range.start() < 0 || range.start() > oldSize) { 
+		AX_ASSERT(false); 
+		return MutSpan<T>(data(), 0); 
+	}
 
 	auto newSize = oldSize + range.size();
 	resize(newSize);
 
 	auto* p = data();
 
-	auto* src = p + range.stop() - 1;
-	auto* end = p + oldSize - range.size();
-	auto* dst = end + range.size();
-	auto* tail = p + size();
-	if (end < p || end > tail
-	 || dst < p || dst > tail)
+	auto* src = p + range.start();
+	auto* dst = src + range.size();
+	
+	// Validate pointers
+	if (src < p || src > p + oldSize
+	 || dst < p || dst > p + newSize)
 	{
 		AX_ASSERT(false);
 		throw Error_IndexOutOfRange();
 	}
 
-	MemUtil::moveConstructor(dst, src, range.size());
-	return MutSpan<T>(p, range.size());
+	Int count = oldSize - range.start();
+	if (dst > src) {
+		for (Int i = count - 1; i >= 0; --i) {
+			dst[i] = std::move(src[i]);
+		}
+	} else {
+		MemUtil::moveConstructor(dst, src, count);
+	}
+
+
+	return MutSpan<T>(src, range.size());
 }
 
 template <class T>
