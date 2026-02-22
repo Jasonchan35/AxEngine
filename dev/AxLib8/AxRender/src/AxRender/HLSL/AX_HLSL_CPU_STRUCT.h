@@ -5,10 +5,10 @@
 
 struct AxGpuData_Debug {
 	float drawNormalLength;
-	i32   debugColorCode; // AxGpuDebugColorCode_None
+	float drawCluster;
 	float showAllLodDistance;
+	i32   debugColorCode; // AxGpuDebugColorCode_None
 	u32   flags;
-	float _padding0;
 	float _padding1;
 };
 
@@ -94,10 +94,11 @@ struct AxMeshShaderDraw_RootConst {
 
 struct AxGpuData_MeshletCluster {
 	u32 vertOffset;
-	u32 vertCount;
 	u32 primOffset;
-	u32 primCount;
 
+	u32 vert_prim_count;  // u8=vertCount u8=primCount
+	u32 cone_axis_cutoff; // packed axis=(s8x3), cutoff=s8:cos(angle/2) 
+	
 	Vec3f center;
 	f32   radius;
 

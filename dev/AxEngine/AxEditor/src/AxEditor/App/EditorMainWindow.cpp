@@ -10,6 +10,7 @@ EditorMainWindow::EditorMainWindow() {
 	_gizmoOp = ImGizmo_ManipulateType::Translate;
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
+	_gpuDebugData.drawCluster = 1.0f;
 //	_gpuDebugData.drawNormalLength = 0.25f;
 //	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 	
@@ -270,8 +271,9 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUI_DragFloat("showAllLodDistance", _gpuDebugData.showAllLodDistance, 0.1f, 0, 10);
-		ImUI_DragFloat("Normal Length",      _gpuDebugData.drawNormalLength, 0.01f, 0, 4);
+		ImUI_DragFloat("showAllLodDistance" , _gpuDebugData.showAllLodDistance , 0.1f, 0, 10);
+		ImUI_DragFloat("Debug Normal Length", _gpuDebugData.drawNormalLength   , 0.01f, 0, 4);
+		ImUI_DragFloat("Debug Cluster"      , _gpuDebugData.drawCluster        , 0.01f, 0, 4);
 		ImUI_CheckBoxFlag("Disable Frustum Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 	}
 

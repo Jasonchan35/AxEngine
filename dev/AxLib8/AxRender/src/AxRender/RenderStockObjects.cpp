@@ -85,6 +85,7 @@ RenderStockObjects::Materials::Materials() {
 	Simple3D_Blinn_Texture = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/Simple3D_Blinn_Texture.axShader");
 	meshlet                = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/meshlet.axShader");
 	meshlet_normal         = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/meshlet_normal.axShader");
+	meshlet_cluster_debug  = Material::s_new(AX_NEW, "ImportedAssets/Shaders/core/meshlet_cluster_debug.axShader");
 }
 
 RenderStockObjects* RenderStockObjects::s_instance() { return StockObjects_instance; }

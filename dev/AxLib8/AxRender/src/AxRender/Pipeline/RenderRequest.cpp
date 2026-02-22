@@ -38,6 +38,11 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 		draw.material = stockObjs->materials->meshlet_normal;
 		meshShaderDraw(draw);
 	}
+	
+	if (_debugData.drawCluster > 0) {
+		draw.material = stockObjs->materials->meshlet_cluster_debug;
+		meshShaderDraw(draw);
+	}
 }
 
 void RenderRequest::drawMesh(RenderMesh& mesh, Material* material, Int materialPass, const Mat4f& objectToWorld) {

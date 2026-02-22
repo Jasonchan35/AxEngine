@@ -36,7 +36,7 @@ template<class T> concept CON_HasMutRttiInit2 = requires(T::MutRttiInit2 obj)
 };
 
 u32 SceneWorld::s_fileVersion() {
-	return 2;
+	return 3;
 }
 
 template<class SE>
@@ -133,7 +133,10 @@ SceneEntity* SceneEntity::findChild(NameId name, bool recursive) {
 
 bool SceneWorld::readFromFile(StrView folder) {
 	JsonIO::readFile(Fmt("{}/_root.axWorld", folder), *this);
-	if (_fileVersion != s_fileVersion()) return false;
+	if (_fileVersion != s_fileVersion()) {
+		AX_LOG("SceneWorld::readFromFile - invalid file version, skip read cache file");
+		return false;
+	}
 	return true;
 }
 

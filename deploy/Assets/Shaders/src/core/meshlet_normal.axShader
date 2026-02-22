@@ -1,13 +1,5 @@
 #if AX_SHADER_INFO
 
-Properties {
-	Color4f color     = [1, 1, 1, 1]
-    Color3f ambient   = [0.2, 0.2, 0.2]
-    Color3f diffuse   = [0.8, 0.8, 0.8]
-    Color3f specular  = [1, 1, 1]
-    float   shininess = 32	
-}
-
 Pass "Pass0" {
 	AmplificationFunc = axMeshlet_AmplificationMain
 	MeshFunc          = ms_main
@@ -34,9 +26,13 @@ void ms_main(
 	u32 meshletId = payload.meshletIds[gid];
 	AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[meshletId];
 
-	SetMeshOutputCounts(cluster.primCount * 2, cluster.primCount);
+	uint4 vert_prim_count = ax_unpack_uint4_u32(cluster.vert_prim_count);
+	uint  vertCount = vert_prim_count.x;
+	uint  primCount = vert_prim_count.y;
 
-	if (gtid < cluster.primCount) {
+	SetMeshOutputCounts(primCount * 2, primCount);
+
+	if (gtid < primCount) {
 		u32x3 tri = ax_unpack_tri_indices(axGpuData_MeshletPrim[cluster.primOffset + gtid].packedTriIndices);
 		
 		u32 vi = gtid * 2;
@@ -47,7 +43,10 @@ void ms_main(
 		MeshletVS_Input i;
 
 		AxGpuData_MeshletVert mv = axGpuData_MeshletVert[cluster.vertOffset + gtid];
-		i.pos    = Vec4f(mv.pos + ax_debug_lod_offset(cluster.lod), 1);
+		i.pos = mv.pos;
+		i.pos += ax_debug_lod_offset(cluster.lod);
+		i.pos += axMeshlet_clusterDebug(cluster);
+
 		i.normal = ax_unpack_normal_octahedral(mv.normal_octahedral);
 
 		VS_Output o;

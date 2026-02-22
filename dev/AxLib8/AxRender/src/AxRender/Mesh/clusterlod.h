@@ -102,6 +102,11 @@ struct clodBounds
 
 	// combined simplification error, in mesh coordinate space
 	float error;
+	
+	/* normal cone, useful for backface culling */
+	float cone_apex[3];
+	float cone_axis[3];
+	float cone_cutoff; /* = cos(angle/2) */
 };
 
 struct clodCluster
@@ -206,6 +211,17 @@ static clodBounds boundsCompute(const clodMesh& mesh, const std::vector<unsigned
 	result.center[2] = bounds.center[2];
 	result.radius = bounds.radius;
 	result.error = error;
+	
+	result.cone_apex[0] = bounds.cone_apex[0];
+	result.cone_apex[1] = bounds.cone_apex[1];
+	result.cone_apex[2] = bounds.cone_apex[2];
+	
+	result.cone_axis[0] = bounds.cone_axis[0];
+	result.cone_axis[1] = bounds.cone_axis[1];
+	result.cone_axis[2] = bounds.cone_axis[2];
+
+	result.cone_cutoff  = bounds.cone_cutoff;
+
 	return result;
 }
 

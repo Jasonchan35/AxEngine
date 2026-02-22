@@ -35,7 +35,7 @@ groupshared Payload s_payload;
 #define ROUNDUP(x, y) ((x + y - 1) & ~(y - 1))
 
 struct MeshletVS_Input {
-	SEM_pos(float4);
+	SEM_pos(float3);
 	SEM_color0(float4);
 	SEM_normal(float3);
 	SEM_uv0(float2);
@@ -54,6 +54,13 @@ struct MeshletVS_Output {
 struct MeshletVS_PrimId_Out {
 	uint primitiveId : SV_PrimitiveID;
 };
+
+static Vec3f axMeshlet_clusterDebug(AxGpuData_MeshletCluster cluster) {
+	AxGpuData_MeshObject meshObject = axGpuData_MeshObject[cluster.meshObjectId];
+	Vec3f meshCenter = (meshObject.boundsMin + meshObject.boundsMax) / 2;
+	Vec3f clusterDir = normalize(cluster.center - meshCenter);
+	return clusterDir * axDebug.drawCluster;
+}
 
 static float axMeshlet_boundsError(AxGpuData_MeshletGroup group) {
 	float camProj = 1.f / tan( radians(axCamera.fieldOfView * 0.5));
@@ -148,22 +155,25 @@ void axMeshlet_MeshMain(
 	u32 clusterId = payload.meshletIds[gid];
 	AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[clusterId];
 
-	SetMeshOutputCounts(cluster.vertCount, cluster.primCount);
+	uint4 vert_prim_count = ax_unpack_uint4_u32(cluster.vert_prim_count);
+	uint  vertCount = vert_prim_count.x;
+	uint  primCount = vert_prim_count.y;
 
-	if (gtid < cluster.primCount) {
+	SetMeshOutputCounts(vertCount, primCount);
+
+	if (gtid < primCount) {
 		outPrim[gtid] = ax_unpack_tri_indices(axGpuData_MeshletPrim[cluster.primOffset + gtid].packedTriIndices);
 		outPrimId[gtid].primitiveId = gtid;
 	}
 
-	if (gtid < cluster.vertCount) {
+	if (gtid < vertCount) {
 		MeshletVS_Input i;
 
 		AxGpuData_MeshletVert mv = axGpuData_MeshletVert[cluster.vertOffset + gtid];
-		i.pos    = Vec4f(mv.pos, 1);
+		i.pos = mv.pos;
 
-		if (axDebug.showAllLodDistance > 0) {
-			i.pos = Vec4f(mv.pos + ax_debug_lod_offset(cluster.lod), 1); // debug
-		}
+		if (axDebug.showAllLodDistance > 0) { i.pos += ax_debug_lod_offset(cluster.lod); }
+		if (axDebug.drawCluster        > 0) { i.pos += axMeshlet_clusterDebug(cluster); }
 
 		i.color0 = float4(1,1,1,1);
 		i.normal = ax_unpack_normal_octahedral(mv.normal_octahedral);

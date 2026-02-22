@@ -1,0 +1,53 @@
+#if AX_SHADER_INFO
+
+Pass "Pass0" {
+	AmplificationFunc = axMeshlet_AmplificationMain
+	MeshFunc          = ms_main
+	PixelFunc         = ps_main
+}
+#endif
+
+#include "AxMeshShaderDraw.hlsl"
+
+#define CirclePointsCount 16
+static const float2 CirclePoints[CirclePointsCount] = {
+	float2( 1.0000,  0.0000), float2( 0.9239,  0.3827),	float2( 0.7071,  0.7071), float2( 0.3827,  0.9239),
+	float2( 0.0000,  1.0000), float2(-0.3827,  0.9239),	float2(-0.7071,  0.7071), float2(-0.9239,  0.3827),
+	float2(-1.0000,  0.0000), float2(-0.9239, -0.3827),	float2(-0.7071, -0.7071), float2(-0.3827, -0.9239),
+	float2( 0.0000, -1.0000), float2( 0.3827, -0.9239),	float2( 0.7071, -0.7071), float2( 0.9239, -0.3827)
+};
+
+struct VS_Output {
+	SEM_sv_pos(float4);
+};
+
+[numthreads(MS_GROUP_SIZE, 1, 1)]
+[outputtopology("line")]
+void ms_main(
+	SEM_gid(u32),
+	SEM_gtid(u32),
+	SEM_dtid(u32),
+	in payload Payload payload,
+	out vertices   VS_Output     outVert[CirclePointsCount],
+	out indices    u32x2         outPrim[CirclePointsCount]
+) {
+	u32 meshletId = payload.meshletIds[gid];
+	AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[meshletId];
+
+	SetMeshOutputCounts(CirclePointsCount, CirclePointsCount);
+
+	if (gtid < CirclePointsCount) {
+		outPrim[gtid] = u32x2(gtid, gtid % CirclePointsCount);
+
+		Vec3f pos = axMeshlet_clusterDebug(cluster);
+		pos += Vec3f(CirclePoints[gtid], 0) * cluster.radius;
+
+		outVert[gtid].sv_pos = axObjectToClipPos(pos);
+	}
+}
+
+float4 ps_main(VS_Output i) : SV_Target {
+	return float4(1,1,0,1);
+}
+
+

@@ -353,15 +353,24 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			outCluster.center         = clusterBBox.center();
 			outCluster.radius         = clusterBBox.radius();
 			
-			outCluster.meshObjectId   = outMesh.objectSlot.slotId();
-			outCluster.groupId        = ax_safe_cast_from(groups.size());
-			outCluster.refinedGroupId = cluster.refined;
-			outCluster.lod            = group.depth;
+			outCluster.meshObjectId     = outMesh.objectSlot.slotId();
+			outCluster.groupId          = ax_safe_cast_from(groups.size());
+			outCluster.refinedGroupId   = cluster.refined;
+			outCluster.lod              = group.depth;
 			
-			outCluster.primOffset     = ax_safe_cast_from(outMesh.meshlet.primBuffer.count());
-			outCluster.vertOffset     = ax_safe_cast_from(outMesh.meshlet.vertBuffer.count());
-			outCluster.primCount      = ax_safe_cast_from(outPrimArray.size());
-			outCluster.vertCount      = ax_safe_cast_from(outVertArray.size());
+			outCluster.primOffset       = ax_safe_cast_from(outMesh.meshlet.primBuffer.count());
+			outCluster.vertOffset       = ax_safe_cast_from(outMesh.meshlet.vertBuffer.count());
+			outCluster.vert_prim_count  = ax_pack_u8x4_u32(u8x4(
+				ax_safe_cast_from(outVertArray.size()),
+				ax_safe_cast_from(outPrimArray.size()),
+				0, 0));
+			
+			SNorm8x4 cone_axis_cutoff;
+			cone_axis_cutoff.x.setFloat(cluster.bounds.cone_axis[0]);
+			cone_axis_cutoff.y.setFloat(cluster.bounds.cone_axis[1]);
+			cone_axis_cutoff.z.setFloat(cluster.bounds.cone_axis[2]);
+			cone_axis_cutoff.w.setFloat(cluster.bounds.cone_cutoff);
+			outCluster.cone_axis_cutoff = ax_pack_snorm8x4_u32(cone_axis_cutoff);
 			
 			outMesh.meshlet.primBuffer.appendValues(outPrimArray);
 			outMesh.meshlet.vertBuffer.appendValues(outVertArray);

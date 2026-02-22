@@ -68,6 +68,7 @@ public:
 		SPtr<Material>	Simple3D_Blinn_Texture;
 		SPtr<Material>	meshlet;
 		SPtr<Material>	meshlet_normal;
+		SPtr<Material>	meshlet_cluster_debug;
 	};
 	UPtr<Materials>	materials;
 	

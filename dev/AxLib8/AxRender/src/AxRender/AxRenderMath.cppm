@@ -5,21 +5,44 @@ import :Common;
 
 export namespace ax {
 
+AX_INLINE constexpr
 u32x3 ax_unpack_tri_indices(u32 packed) {
 	return u32x3((packed >> 16) & 0xFF,
 				 (packed >> 8 ) & 0xFF,
 				 (packed      ) & 0xFF);
 }
 	
+AX_INLINE constexpr
 u32 ax_pack_tri_indices(u32 v0, u32 v1, u32 v2) {
 	return (v0 << 16) | (v1 << 8) | v2;
 }
 
+AX_INLINE constexpr
+u32 ax_pack_u8x4_u32(const u8x4& v) {
+	return (static_cast<u32>(v.x) << 24)
+		 | (static_cast<u32>(v.y) << 16)
+		 | (static_cast<u32>(v.z) << 8 )
+		 | (static_cast<u32>(v.w)      );
+}
+
+AX_INLINE constexpr
+u32 ax_pack_i8x4_u32(const i8x4& v) {
+	return ax_pack_u8x4_u32(u8x4::s_cast(v));
+}
+
+AX_INLINE constexpr
 u32 ax_pack_color_u32(const Color4b& v) {
-	return (static_cast<u32>(v.r.v_int) << 24)
-		 | (static_cast<u32>(v.g.v_int) << 16)
-		 | (static_cast<u32>(v.b.v_int) << 8 )
-		 | (static_cast<u32>(v.a.v_int)      );
+	return ax_pack_u8x4_u32(u8x4(v.r.v_int, v.g.v_int, v.b.v_int, v.a.v_int));
+}
+
+AX_INLINE constexpr
+u32 ax_pack_snorm8x4_u32(const SNorm8x4& v) {
+	return ax_pack_i8x4_u32(i8x4(v.x.v_int, v.y.v_int, v.z.v_int, v.w.v_int));
+}
+
+AX_INLINE constexpr
+u32 ax_pack_unorm8x4_u32(const UNorm8x4& v) {
+	return ax_pack_u8x4_u32(u8x4(v.x.v_int, v.y.v_int, v.z.v_int, v.w.v_int));
 }
 
 u32 ax_pack_uv_u32(const Vec2f& v) {
