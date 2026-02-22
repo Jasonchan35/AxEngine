@@ -36,13 +36,9 @@ u32 ax_pack_color_u32(const Color4b& v) {
 }
 
 AX_INLINE constexpr
-u32 ax_pack_snorm8x4_u32(const SNorm8x4& v) {
-	return ax_pack_i8x4_u32(i8x4(v.x.v_int, v.y.v_int, v.z.v_int, v.w.v_int));
-}
-
-AX_INLINE constexpr
-u32 ax_pack_unorm8x4_u32(const UNorm8x4& v) {
-	return ax_pack_u8x4_u32(u8x4(v.x.v_int, v.y.v_int, v.z.v_int, v.w.v_int));
+u32 ax_pack_normal4_u32(const Vec4f& v) {
+	auto v01 = v * 0.5f + 0.5f;
+	return ax_pack_u8x4_u32(u8x4::s_cast(v01 * 255.0f));
 }
 
 u32 ax_pack_uv_u32(const Vec2f& v) {

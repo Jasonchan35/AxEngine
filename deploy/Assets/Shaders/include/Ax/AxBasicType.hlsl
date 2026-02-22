@@ -32,6 +32,10 @@ typedef int2		i32x2;
 typedef int3		i32x3;
 typedef int4		i32x4;
 
+typedef float2		f32x2;
+typedef float3		f32x3;
+typedef float4		f32x4;
+
 struct BBox3f {
 	Vec3f min;
 	Vec3f max;
@@ -261,11 +265,17 @@ u32x3 ax_unpack_tri_indices(u32 packed) {
 				 (packed      ) & 0xFF);
 }
 
-uint4 ax_unpack_uint4_u32(u32 packed) {
-	return int4((packed >> 24) & 0xFF,
-				(packed >> 16) & 0xFF,
-				(packed >> 8 ) & 0xFF,
-				(packed      ) & 0xFF);
+u32x4 ax_unpack_uint4_u32(u32 packed) {
+	return u32x4((packed >> 24) & 0xFF,
+				 (packed >> 16) & 0xFF,
+				 (packed >> 8 ) & 0xFF,
+				 (packed      ) & 0xFF);
+}
+
+f32x4 ax_unpack_normal4_u32(u32 packed) {
+	u32x4 i = ax_unpack_uint4_u32(packed);
+	f32x4 v01 = (f32x4)i / 255.0f;
+	return v01 * 2 - 1;
 }
 	
 u32 ax_pack_tri_indices(u32 v0, u32 v1, u32 v2) {

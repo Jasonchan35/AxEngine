@@ -21,6 +21,7 @@
 
 #define AX_HLSL_MAX_ACTIVE_LIGHTS 32
 
-#define AxGpuData_Debug_FLAG_DisableFrustumCulling	u32(1 << 0)
+#define AxGpuData_Debug_FLAG_DisableFrustumCulling		u32(1 << 0)
+#define AxGpuData_Debug_FLAG_DisableBackConeCulling		u32(1 << 1)
 
 #endif // __AX_HLSL_CPU_COMMON_h__

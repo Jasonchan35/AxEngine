@@ -364,13 +364,15 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 				ax_safe_cast_from(outVertArray.size()),
 				ax_safe_cast_from(outPrimArray.size()),
 				0, 0));
+
+			Vec4f cone_axis_cutoff(cluster.bounds.cone_axis[0],
+			                       cluster.bounds.cone_axis[1],
+			                       cluster.bounds.cone_axis[2],
+			                       cluster.bounds.cone_cutoff);
 			
-			SNorm8x4 cone_axis_cutoff;
-			cone_axis_cutoff.x.setFloat(cluster.bounds.cone_axis[0]);
-			cone_axis_cutoff.y.setFloat(cluster.bounds.cone_axis[1]);
-			cone_axis_cutoff.z.setFloat(cluster.bounds.cone_axis[2]);
-			cone_axis_cutoff.w.setFloat(cluster.bounds.cone_cutoff);
-			outCluster.cone_axis_cutoff = ax_pack_snorm8x4_u32(cone_axis_cutoff);
+			outCluster.cone_axis_cutoff = ax_pack_normal4_u32(cone_axis_cutoff);
+			outCluster.coneAxis   = cone_axis_cutoff.xyz();
+			outCluster.coneCutoff = cone_axis_cutoff.w;
 			
 			outMesh.meshlet.primBuffer.appendValues(outPrimArray);
 			outMesh.meshlet.vertBuffer.appendValues(outVertArray);

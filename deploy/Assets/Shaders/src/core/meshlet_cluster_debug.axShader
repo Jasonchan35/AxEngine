@@ -9,17 +9,39 @@ Pass "Pass0" {
 
 #include "AxMeshShaderDraw.hlsl"
 
-#define CirclePointsCount 16
-static const float2 CirclePoints[CirclePointsCount] = {
-	float2( 1.0000,  0.0000), float2( 0.9239,  0.3827),	float2( 0.7071,  0.7071), float2( 0.3827,  0.9239),
-	float2( 0.0000,  1.0000), float2(-0.3827,  0.9239),	float2(-0.7071,  0.7071), float2(-0.9239,  0.3827),
-	float2(-1.0000,  0.0000), float2(-0.9239, -0.3827),	float2(-0.7071, -0.7071), float2(-0.3827, -0.9239),
-	float2( 0.0000, -1.0000), float2( 0.3827, -0.9239),	float2( 0.7071, -0.7071), float2( 0.9239, -0.3827)
+static const int CirclePointCount = 16;
+static const int SpherePointCount = CirclePointCount * 3;
+
+static const float3 SpherePoints[SpherePointCount] = {
+	// XY
+	float3( 1.0000,  0.0000, 0), float3( 0.9239,  0.3827, 0), float3( 0.7071,  0.7071, 0), float3( 0.3827,  0.9239, 0),
+	float3( 0.0000,  1.0000, 0), float3(-0.3827,  0.9239, 0), float3(-0.7071,  0.7071, 0), float3(-0.9239,  0.3827, 0),
+	float3(-1.0000,  0.0000, 0), float3(-0.9239, -0.3827, 0), float3(-0.7071, -0.7071, 0), float3(-0.3827, -0.9239, 0),
+	float3( 0.0000, -1.0000, 0), float3( 0.3827, -0.9239, 0), float3( 0.7071, -0.7071, 0), float3( 0.9239, -0.3827, 0),
+	// YZ
+	float3(0,  1.0000,  0.0000), float3(0,  0.9239,  0.3827), float3(0,  0.7071,  0.7071), float3(0,  0.3827,  0.9239),
+	float3(0,  0.0000,  1.0000), float3(0, -0.3827,  0.9239), float3(0, -0.7071,  0.7071), float3(0, -0.9239,  0.3827),
+	float3(0, -1.0000,  0.0000), float3(0, -0.9239, -0.3827), float3(0, -0.7071, -0.7071), float3(0, -0.3827, -0.9239),
+	float3(0,  0.0000, -1.0000), float3(0,  0.3827, -0.9239), float3(0,  0.7071, -0.7071), float3(0,  0.9239, -0.3827),
+	// XZ
+	float3( 1.0000, 0,  0.0000), float3( 0.9239, 0,  0.3827), float3( 0.7071, 0,  0.7071), float3( 0.3827, 0,  0.9239),
+	float3( 0.0000, 0,  1.0000), float3(-0.3827, 0,  0.9239), float3(-0.7071, 0,  0.7071), float3(-0.9239, 0,  0.3827),
+	float3(-1.0000, 0,  0.0000), float3(-0.9239, 0, -0.3827), float3(-0.7071, 0, -0.7071), float3(-0.3827, 0, -0.9239),
+	float3( 0.0000, 0, -1.0000), float3( 0.3827, 0, -0.9239), float3( 0.7071, 0, -0.7071), float3( 0.9239, 0, -0.3827)
 };
+
+u32x2 SpherePointsIndex(u32 j) {
+	u32 n = j / CirclePointCount;
+	return u32x2(j, j + 1) % CirclePointCount + (n * CirclePointCount);
+}
 
 struct VS_Output {
 	SEM_sv_pos(float4);
+	SEM_color0(float4);
 };
+
+static const int OutVertCount = SpherePointCount + 2;
+static const int OutPrimCount = SpherePointCount + 1; // +1 cone axis
 
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("line")]
@@ -28,26 +50,50 @@ void ms_main(
 	SEM_gtid(u32),
 	SEM_dtid(u32),
 	in payload Payload payload,
-	out vertices   VS_Output     outVert[CirclePointsCount],
-	out indices    u32x2         outPrim[CirclePointsCount]
+	out vertices   VS_Output     outVert[OutVertCount],
+	out indices    u32x2         outPrim[OutPrimCount]
 ) {
 	u32 meshletId = payload.meshletIds[gid];
 	AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[meshletId];
 
-	SetMeshOutputCounts(CirclePointsCount, CirclePointsCount);
+	SetMeshOutputCounts(OutVertCount, OutPrimCount);
 
-	if (gtid < CirclePointsCount) {
-		outPrim[gtid] = u32x2(gtid, gtid % CirclePointsCount);
+	if (gtid < SpherePointCount) {
+		outPrim[gtid] = SpherePointsIndex(gtid);
 
-		Vec3f pos = axMeshlet_clusterDebug(cluster);
-		pos += Vec3f(CirclePoints[gtid], 0) * cluster.radius;
+		Vec3f pos = cluster.center;
+		pos += axMeshlet_clusterDebug(cluster);
+		pos += SpherePoints[gtid] * cluster.radius;
 
-		outVert[gtid].sv_pos = axObjectToClipPos(pos);
+		VS_Output o;
+		o.sv_pos = axObjectToClipPos(pos);
+		o.color0 = float4(0.7, .7, 0, 1);
+
+		outVert[gtid] = o;
+
+	} else if (gtid < OutPrimCount) {
+		outPrim[gtid] = u32x2(gtid, gtid+1);
+
+		Vec3f pos = cluster.center;
+		pos += axMeshlet_clusterDebug(cluster);
+
+		VS_Output o;
+		o.sv_pos = axObjectToClipPos(pos);
+		o.color0 = float4(1,0,0,1);
+		outVert[gtid] = o;
+
+		Vec4f cone_axis_cutoff = ax_unpack_normal4_u32(cluster.cone_axis_cutoff);
+		pos += cone_axis_cutoff.xyz * 3;
+//		pos += cluster.coneAxis;
+
+		o.sv_pos = axObjectToClipPos(pos);
+		o.color0 = float4(0,1,0,1);
+		outVert[gtid+1] = o;
 	}
 }
 
 float4 ps_main(VS_Output i) : SV_Target {
-	return float4(1,1,0,1);
+	return i.color0;
 }
 
 

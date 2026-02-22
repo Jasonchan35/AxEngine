@@ -8,11 +8,15 @@ namespace AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
 	_gizmoOp = ImGizmo_ManipulateType::Translate;
+	
+//	_useCullingCamera = true;
+	
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
-	_gpuDebugData.drawCluster = 1.0f;
+//	_gpuDebugData.drawCluster = 1.0f;
 //	_gpuDebugData.drawNormalLength = 0.25f;
 //	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
+	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableBackConeCulling);
 	
 	_flyingCameraSpeed = 20.0f;
 	
@@ -274,7 +278,8 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		ImUI_DragFloat("showAllLodDistance" , _gpuDebugData.showAllLodDistance , 0.1f, 0, 10);
 		ImUI_DragFloat("Debug Normal Length", _gpuDebugData.drawNormalLength   , 0.01f, 0, 4);
 		ImUI_DragFloat("Debug Cluster"      , _gpuDebugData.drawCluster        , 0.01f, 0, 4);
-		ImUI_CheckBoxFlag("Disable Frustum Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
+		ImUI_CheckBoxFlag("Disable Frustum  Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
+		ImUI_CheckBoxFlag("Disable BackCone Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableBackConeCulling);
 	}
 
 	req->setDebugData(_gpuDebugData);

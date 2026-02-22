@@ -150,10 +150,7 @@ void RenderRequest_Backend::setCamera_backend(const Math::Camera3f& camera, cons
 	_cameraData.viewProjMatrix           = _cameraData.projMatrix * _cameraData.viewMatrix;
 	_cameraData.viewProjMatrixInv        = _cameraData.viewProjMatrix.inverse();
 	
-	auto planes = camera.getFrustumPlanes(_projectionDesc, worldMatrix);
-	for (Int i = 0; i < 6; i++) {
-		_cameraData.cullingPlanes[i] = planes[i].toVec4();
-	}
+	setCullingCamera_backend(camera, worldMatrix);
 }
 
 void RenderRequest_Backend::setCullingCamera_backend(const Math::Camera3f& camera, const Mat4f& worldMatrix) {
@@ -161,6 +158,7 @@ void RenderRequest_Backend::setCullingCamera_backend(const Math::Camera3f& camer
 	for (Int i = 0; i < 6; i++) {
 		_cameraData.cullingPlanes[i] = planes[i].toVec4();
 	}
+	_cameraData.cullingCameraPos = worldMatrix.position();
 }
 
 void RenderRequest_Backend::setDebugData_backend(const AxGpuData_Debug& debugData) {

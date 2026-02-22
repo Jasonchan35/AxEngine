@@ -70,19 +70,25 @@ static float axMeshlet_boundsError(AxGpuData_MeshletGroup group) {
 	return viewportH * group.error / (d > axCamera.nearClip ? d : axCamera.nearClip) * (camProj * 0.5f);
 }
 
-static bool axMeshlet_insideFrustum(Vec3f center, float radius) {
-	if (ax_bit_has(axDebug.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling))
-		return true;
+static bool axMeshlet_ClusterCulling(AxGpuData_MeshletCluster cluster) {
+	Vec3f worldCenter = axObjectToWorldPos(cluster.center);
 
-	Vec4f worldCenter = Vec4f(axObjectToWorldPos(center), 1);
-
-	for (int i = 0; i < 6; i++) {
-		Vec4f plane = axCamera.cullingPlanes[i];
-		plane.w = -plane.w;
-		if (dot(worldCenter, plane) > radius) {
-			return false;
+	if (!ax_bit_has(axDebug.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling)) {
+		for (int i = 0; i < 6; i++) {
+			Vec4f plane = axCamera.cullingPlanes[i];
+			if (dot(worldCenter, plane.xyz) - plane.w > cluster.radius)
+				return false;
 		}
 	}
+
+	if (!ax_bit_has(axDebug.flags, AxGpuData_Debug_FLAG_DisableBackConeCulling)) {
+		Vec3f viewDir  = normalize(worldCenter - axCamera.cullingCameraPos);
+
+		// coneAxis can be (0,0,0), but will equal cutoff(0)
+		if (dot(viewDir, cluster.coneAxis) >= cluster.coneCutoff)
+			return false;
+	}
+
 	return true;
 }
 
@@ -120,10 +126,9 @@ void axMeshlet_AmplificationMain(
 		=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(refineGroup) <= maxErrorInPixels) 
 		&& (                              axMeshlet_boundsError(group      ) >  maxErrorInPixels);
 
-		bool insideFrustum = axMeshlet_insideFrustum(cluster.center,  cluster.radius);
-		bool coneCulling   = true; 
+		bool culling = axMeshlet_ClusterCulling(cluster);
 
-		visibleResult = lodMatch && coneCulling && insideFrustum;
+		visibleResult = lodMatch && culling;
 
 		if (axDebug.showAllLodDistance > 0) {
 			visibleResult = true;

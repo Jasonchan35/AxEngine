@@ -77,6 +77,8 @@ struct AxGpuData_Camera {
 	Mat4f	viewProjMatrix;
 	Mat4f	viewProjMatrixInv;
 
+	Vec3f	cullingCameraPos;
+	float	_padding1;
 	Vec4f	cullingPlanes[6]; // xyz is normal, w is distance
 };
 
@@ -98,6 +100,9 @@ struct AxGpuData_MeshletCluster {
 
 	u32 vert_prim_count;  // u8=vertCount u8=primCount
 	u32 cone_axis_cutoff; // packed axis=(s8x3), cutoff=s8:cos(angle/2) 
+	
+	Vec3f coneAxis;
+	float coneCutoff;
 	
 	Vec3f center;
 	f32   radius;

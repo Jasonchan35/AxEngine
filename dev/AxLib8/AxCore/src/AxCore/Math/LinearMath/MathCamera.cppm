@@ -17,12 +17,15 @@ public:
 	using Ray3	= Ray3_<T>;
 	using Plane3 = Plane3_<T>;
 	
-	T     fieldOfView = T(50.0); // vertical
-	T     nearClip = T(0.1);
-	T     farClip  = T(10000.0);
+	T fieldOfView = T(50.0); // vertical
+	T nearClip = T(0.1);
+	T farClip  = T(10000.0);
 	
 	Rect2 viewport {0,0,1920,1080};
 	
+	T horizontalFOV() const { return T(2) * atan(tan(fieldOfView * T(0.5)) * aspectRatio()); }
+	T aspectRatio() const { return safeDiv(viewport.w, viewport.h); }
+
 	Ray3 getRay(const Vec2& screenPos, const ProjectionDesc& desc) const;
 	
 	FixedArray<Vec3,   8> getFrustumPoints(const ProjectionDesc& desc, const Mat4& worldMatrix) const;
