@@ -22,6 +22,10 @@ public:
 	void setRadius(float v);
 	void setIntensity(float v);
 
+	float intensity() const { return _gpuData.intensity; }
+	float radius() const { return _gpuData.radius; }
+	Color3f color() const { return _gpuData.color; } 
+	
 protected:
 	LightObject();
 	GpuData    _gpuData = {};

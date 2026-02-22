@@ -183,8 +183,24 @@ bool ImUI_DragFloat(ZStrView label, float& v, float v_speed, float v_min, float 
 	                          ImGuiSliderFlags_AlwaysClamp);
 }
 
+bool ImUI_DragColor(ZStrView label, Color3f& value, float v_speed, float v_min, float v_max) {
+	return ImGui::DragFloat3(label.c_str(), value.e, v_speed, v_min, v_max);
+}
+
+bool ImUI_DragColor(ZStrView label, Color4f& value, float v_speed, float v_min, float v_max) {
+	return ImGui::DragFloat4(label.c_str(), value.e, v_speed, v_min, v_max);
+}
+
+bool ImUI_DragFloat2(ZStrView label, Vec2f& value, float v_speed, float v_min, float v_max) {
+	return ImGui::DragFloat2(label.c_str(), value.e, v_speed, v_min, v_max);
+}
+
 bool ImUI_DragFloat3(ZStrView label, Vec3f& value, float v_speed, float v_min, float v_max) {
 	return ImGui::DragFloat3(label.c_str(), value.e, v_speed, v_min, v_max);
+}
+
+bool ImUI_DragFloat4(ZStrView label, Vec3f& value, float v_speed, float v_min, float v_max) {
+	return ImGui::DragFloat4(label.c_str(), value.e, v_speed, v_min, v_max);
 }
 
 bool ImUI_DragEuler(ZStrView label, Quat4f& value, float v_speed, float v_min, float v_max) {

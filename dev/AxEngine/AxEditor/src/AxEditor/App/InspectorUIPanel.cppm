@@ -8,9 +8,8 @@ namespace AxEditor {
 class InspectorUIPanel : public NonCopyable {
 public:
 	void render(RenderRequest* req);
-	
-	void _renderEntity(SceneEntity* entity);
-	void _renderComponent(SceneComponent* comp);
+	void _renderEntity(ImUI_InspectorRequest* req, SceneEntity* entity);
+	void _renderComponent(ImUI_InspectorRequest* req, SceneComponent* comp);
 };
 
 } // namespace 

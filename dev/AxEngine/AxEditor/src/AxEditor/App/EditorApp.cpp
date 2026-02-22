@@ -158,7 +158,7 @@ void EditorApp::_cloneEntities(InNameId name, Int count, Int row, const Vec3f& d
 	
 	auto* srcEntity = world->root()->findChild(name, false);
 	if (srcEntity) {
-		for (Int i = 0; i < count; ++i) {
+		for (Int i = 1; i < count; ++i) {
 			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("clone_{}", i));
 			auto id = Vec3i(i % row, 0, i / row);
 			entity->setPosition(Vec3f::s_cast(id) * distance);

@@ -6,6 +6,9 @@ import :InspectorUIPanel;
 namespace AxEditor {
 
 void InspectorUIPanel::render(RenderRequest* req) {
+	ImUI_InspectorRequest inspectorReq;
+	inspectorReq.renderRequest = req;
+	
 	ImUI_Panel	outliner("Inspector");
 	
 	auto obj = ObjectManager::s_instance()->selection.lastSelectedObject();
@@ -17,11 +20,11 @@ void InspectorUIPanel::render(RenderRequest* req) {
 	ImUI_LabelText("name", obj->name().toString());
 
 	if (auto* entity = rttiCast<SceneEntity>(obj.ptr())) {
-		_renderEntity(entity);
+		_renderEntity(&inspectorReq, entity);
 	}
 }
 
-void InspectorUIPanel::_renderEntity(SceneEntity* entity) {
+void InspectorUIPanel::_renderEntity(ImUI_InspectorRequest* req, SceneEntity* entity) {
 	auto pos   = entity->position();
 	auto rot   = entity->rotation();
 	auto scale = entity->scale();
@@ -31,6 +34,8 @@ void InspectorUIPanel::_renderEntity(SceneEntity* entity) {
 		
 	ImUI_InputQuat4 ("Quat"    , rot);
 
+	ImUI_Text(Fmt("WorldPos: {}", entity->worldPosition()));
+
 	if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
 		if (auto* mesh = meshRenderer->mesh.ptr()) {
 			auto bounds = mesh->bounds();
@@ -38,24 +43,21 @@ void InspectorUIPanel::_renderEntity(SceneEntity* entity) {
 			ImUI_InputFloat3("Bounds max", bounds.max);
 		}
 	}
-		
-	Int componentCount = entity->componentCount();
-	{
-		ImUI_TreeNodeFlags flags;
-		flags.hasChild = componentCount > 0;
-		flags.open = true;
-		ImUI_TreeNode node("Components", flags);
-		
-		for (Int i = 0; i < componentCount; ++i) {
-			auto* comp = entity->componentAt(i);
-			_renderComponent(comp);
-		}
-	}	
+	
+	for (auto& comp : entity->components()) {
+		if (!comp) continue;
+		_renderComponent(req, comp);
+	}
 }
 
-void InspectorUIPanel::_renderComponent(SceneComponent* comp) {
+void InspectorUIPanel::_renderComponent(ImUI_InspectorRequest* req, SceneComponent* comp) {
 	ImUI_TreeNodeFlags flags;
-	ImUI_TreeNode node(Fmt("{}", comp->rtti()->name), flags);
+	flags.hasChild = true;
+	flags.open = true;
+	ImUI_TreeNode node(Fmt("{} ({})", comp->name(), comp->rtti()->name), flags);
+	if (!node.isOpen()) return;
+	
+	comp->onInspector(req);
 }
 
 } // namespace

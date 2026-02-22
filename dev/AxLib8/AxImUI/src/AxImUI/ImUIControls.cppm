@@ -78,11 +78,35 @@ inline bool ImUI_DragFloat(ZStrView label, T& v, float v_speed, T v_min, T v_max
 	return false;
 }
 
+bool ImUI_DragColor(ZStrView label,
+					Color3f&   value,
+					float    v_speed = 0.1f,
+					float    v_min   = 0.0f,
+					float    v_max   = 1.0f);
+
+bool ImUI_DragColor(ZStrView label,
+					Color4f&   value,
+					float    v_speed = 0.1f,
+					float    v_min   = 0.0f,
+					float    v_max   = 1.0f);
+
+bool ImUI_DragFloat2(ZStrView label,
+					Vec2f&   value,
+					float    v_speed = 0.1f,
+					float    v_min   = -1000.0f,
+					float    v_max   = +1000.0f);
+
 bool ImUI_DragFloat3(ZStrView label,
                     Vec3f&   value,
                     float    v_speed = 0.1f,
                     float    v_min   = -1000.0f,
                     float    v_max   = +1000.0f);
+
+bool ImUI_DragFloat4(ZStrView label,
+					Vec3f&   value,
+					float    v_speed = 0.1f,
+					float    v_min   = -1000.0f,
+					float    v_max   = +1000.0f);
 
 bool ImUI_DragEuler(ZStrView label,
 					Quat4f&   value,

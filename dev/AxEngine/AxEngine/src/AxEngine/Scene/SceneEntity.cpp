@@ -234,8 +234,6 @@ void MeshRendererComponent::onJsonIO(JsonIO_Writer& se) {
 
 void MeshRendererComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
 	Base::onDrawGizmo(req);
-
-
 }
 
 LightComponent::~LightComponent() {
@@ -252,6 +250,22 @@ void LightComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
 	Base::onDrawGizmo(req);
 	auto worldMatrix = entity()->worldMatrix();
 	ImGizmo_Cubes(req, Span(worldMatrix));
+}
+
+void LightComponent::onInspector(ImUI_InspectorRequest* req) {
+	auto intensity = lightObj->intensity();
+	if (ImUI_DragFloat("Intensity", intensity, 0.1f, 0.0f, 5.0f)) {
+		lightObj->setIntensity(intensity);
+	}
+	auto radius = lightObj->radius(); 
+	if (ImUI_DragFloat("Radius", radius, 0.1f, 0.0f, 100.0f)) {
+		lightObj->setRadius(radius);
+	}
+	
+	auto color = lightObj->color();
+	if (ImUI_DragColor("Color", color, 0.1f, 0.0f, 1.0f)) {
+		lightObj->setColor(color);
+	}
 }
 
 CameraComponent::~CameraComponent() {
@@ -271,6 +285,15 @@ void CameraComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
 					cameraObj->camera,
 					entity()->worldMatrix(),
 					req->renderRequest->projectionDesc());
+}
+
+void CameraComponent::onInspector(ImUI_InspectorRequest* req) {
+	auto& cam = cameraObj->camera;
+	
+	ImUI_DragFloat("fieldOfView", cam.fieldOfView, 0.1f, 0.1f  , 180.0f);
+	ImUI_DragFloat("near clip"  , cam.nearClip   , 0.1f, 0.001f, 10.0f);
+	ImUI_DragFloat("far  clip"  , cam.farClip    , 0.1f, 0.1f  , 100000.0f);
+	
 }
 
 void SceneWorld::onRender(RenderRequest* req) {

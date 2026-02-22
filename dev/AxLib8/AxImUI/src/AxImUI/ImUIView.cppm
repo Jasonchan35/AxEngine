@@ -38,5 +38,9 @@ private:
 	bool      _worldPosDirty : 1;
 };
 
+struct ImUI_InspectorRequest : public NonCopyable {
+	RenderRequest* renderRequest = nullptr;
+};
+
 
 } // namespace
