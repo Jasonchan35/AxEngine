@@ -197,7 +197,7 @@ constexpr void MemUtil::moveConstructor(T* dst, T* src, Int n) {
 	}
 
 	if constexpr (Type_IsTriviallyCopyAssignable<T>) {
-		MemUtil::rawCopy(dst, src, n);
+		MemUtil::rawCopy(dst, src, n * AX_SIZEOF(T));
 	}else{
 		auto s = src;
 		auto e = src + n ;
