@@ -16,7 +16,7 @@ EditorMainWindow::EditorMainWindow() {
 //	_gpuDebugData.drawCluster = 1.0f;
 //	_gpuDebugData.drawNormalLength = 0.25f;
 //	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
-	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableBackConeCulling);
+//	_gpuDebugData.flags = ax_bit_set(_gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableBackConeCulling);
 	
 	_flyingCameraSpeed = 20.0f;
 	

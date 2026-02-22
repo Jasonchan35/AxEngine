@@ -37,6 +37,7 @@ struct AxGpuMeshletVert_Unpacked {
 		AxGpuData_MeshletVert o;
 		o.pos               = pos;
 		o.color_packed      = ax_pack_color_u32(color);
+		// o.normal            = normal;
 		o.normal_octahedral = ax_pack_normal_octahedral(normal);
 		o.uv0_packed        = ax_pack_uv_u32(uv0);
 		o.uv1_packed        = ax_pack_uv_u32(uv1);

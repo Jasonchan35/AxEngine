@@ -99,10 +99,9 @@ struct AxGpuData_MeshletCluster {
 	u32 primOffset;
 
 	u32 vert_prim_count;  // u8=vertCount u8=primCount
-	u32 cone_axis_cutoff; // packed axis=(s8x3), cutoff=s8:cos(angle/2) 
+	u32 cone_axis_cutoff_packed; // packed axis=(u8x3), cutoff=s8:cos(angle/2) 
 	
-	Vec3f coneAxis;
-	float coneCutoff;
+//	Vec4f cone_axis_cutoff;
 	
 	Vec3f center;
 	f32   radius;
@@ -116,6 +115,8 @@ struct AxGpuData_MeshletCluster {
 struct AxGpuData_MeshletVert {
 	Vec3f   pos;
 	u32     color_packed;
+//	Vec3f   normal;
+//	float   _padding0;
 	Vec2f   normal_octahedral;
 	u32     uv0_packed;
 	u32     uv1_packed;

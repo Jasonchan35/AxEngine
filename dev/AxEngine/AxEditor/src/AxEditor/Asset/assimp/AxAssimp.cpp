@@ -57,7 +57,9 @@ public:
 												 // | aiProcess_CalcTangentSpace
 												 // | aiProcessPreset_TargetRealtime_MaxQuality
 												 // | aiProcess_GlobalScale
-												 // | aiProcess_ForceGenNormals
+												 | aiProcess_GenNormals
+												 // | aiProcess_GenSmoothNormals
+												 | aiProcess_ForceGenNormals
 												 // | aiProcess_DropNormals
 												 //---
 												 // | aiProcess_ConvertToLeftHanded
@@ -68,7 +70,8 @@ public:
 												 | aiProcess_SortByPType // only one primitive type per mesh
 												 | aiProcess_PopulateArmatureData
 												 // | aiProcess_SplitLargeMeshes
-												 | aiProcess_JoinIdenticalVertices);
+												 // | aiProcess_JoinIdenticalVertices
+												 );
 
 		// Check for errors
 		if (!scene || AI_SCENE_FLAGS_INCOMPLETE == scene->mFlags || !scene->mRootNode) {

@@ -370,9 +370,8 @@ void ClusterGenerator::nanite(MeshObject& outMesh, Span<Vertex> vertices, Span<u
 			                       cluster.bounds.cone_axis[2],
 			                       cluster.bounds.cone_cutoff);
 			
-			outCluster.cone_axis_cutoff = ax_pack_normal4_u32(cone_axis_cutoff);
-			outCluster.coneAxis   = cone_axis_cutoff.xyz();
-			outCluster.coneCutoff = cone_axis_cutoff.w;
+			outCluster.cone_axis_cutoff_packed = ax_pack_normal4_u32(cone_axis_cutoff);
+			// outCluster.cone_axis_cutoff = cone_axis_cutoff;
 			
 			outMesh.meshlet.primBuffer.appendValues(outPrimArray);
 			outMesh.meshlet.vertBuffer.appendValues(outVertArray);

@@ -36,7 +36,7 @@ template<class T> concept CON_HasMutRttiInit2 = requires(T::MutRttiInit2 obj)
 };
 
 u32 SceneWorld::s_fileVersion() {
-	return 4;
+	return 6;
 }
 
 template<class SE>

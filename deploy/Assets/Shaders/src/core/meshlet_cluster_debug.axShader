@@ -38,11 +38,10 @@ u32x2 SpherePointsIndex(u32 j) {
 struct VS_Output {
 	SEM_sv_pos(float4);
 	SEM_color0(float4);
-	SEM_normal(float3);
 };
 
-static const int OutVertCount = SpherePointCount + 2;
-static const int OutPrimCount = SpherePointCount + 1; // +1 cone axis
+static const int OutVertCount = SpherePointCount;
+static const int OutPrimCount = SpherePointCount;
 
 [numthreads(MS_GROUP_SIZE, 1, 1)]
 [outputtopology("line")]
@@ -63,6 +62,7 @@ void ms_main(
 		outPrim[gtid] = SpherePointsIndex(gtid);
 
 		Vec3f pos = cluster.center;
+		pos += ax_debug_lod_offset(cluster.lod);
 		pos += axMeshlet_clusterDebug(cluster);
 		pos += SpherePoints[gtid] * cluster.radius;
 
@@ -70,31 +70,7 @@ void ms_main(
 		o.sv_pos = axObjectToClipPos(pos);
 		o.color0 = float4(0.7, .7, 0, 1);
 
-		o.normal = cluster.coneAxis;
-
 		outVert[gtid] = o;
-
-	} else if (gtid < OutPrimCount) {
-		outPrim[gtid] = u32x2(gtid, gtid+1);
-
-		Vec3f pos = cluster.center;
-		pos += axMeshlet_clusterDebug(cluster);
-
-		VS_Output o;
-		o.normal = cluster.coneAxis;
-
-		o.sv_pos = axObjectToClipPos(pos);
-		o.color0 = float4(1,0,0,1);
-		outVert[gtid] = o;
-
-		Vec4f cone_axis_cutoff = ax_unpack_normal4_u32(cluster.cone_axis_cutoff);
-//		pos += cone_axis_cutoff.xyz * 3;
-		pos += cluster.coneAxis * 3;
-
-
-		o.sv_pos = axObjectToClipPos(pos);
-		o.color0 = float4(0,1,0,1);
-		outVert[gtid+1] = o;
 	}
 }
 
