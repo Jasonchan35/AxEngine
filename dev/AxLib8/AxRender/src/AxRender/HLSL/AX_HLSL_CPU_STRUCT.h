@@ -32,9 +32,9 @@ struct AxGpuData_TileLighting {
 
 struct AxGpuData_LightObject {
 	Vec3f	worldPos;
-	float	range;
+	float	radius;
 	Color3f	color;
-	u32		_padding0;
+	float	intensity;
 };
 
 struct AxGpuData_CameraObject {

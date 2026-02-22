@@ -16,7 +16,7 @@ private:\
 
 
 //--- Type AxEngine::SceneEntity ----------
-#define AX_GENERATED_BODY_LINE90() \
+#define AX_GENERATED_BODY_LINE92() \
 	AX_RTTI_INFO(SceneEntity, Object) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -27,7 +27,7 @@ private:\
 
 
 //--- Type AxEngine::MeshRendererComponent ----------
-#define AX_GENERATED_BODY_LINE192() \
+#define AX_GENERATED_BODY_LINE196() \
 	AX_RTTI_INFO(MeshRendererComponent, SceneComponent) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -38,7 +38,7 @@ private:\
 
 
 //--- Type AxEngine::LightComponent ----------
-#define AX_GENERATED_BODY_LINE215() \
+#define AX_GENERATED_BODY_LINE222() \
 	AX_RTTI_INFO(LightComponent, SceneComponent) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -49,7 +49,7 @@ private:\
 
 
 //--- Type AxEngine::CameraComponent ----------
-#define AX_GENERATED_BODY_LINE229() \
+#define AX_GENERATED_BODY_LINE237() \
 	AX_RTTI_INFO(CameraComponent, SceneComponent) \
 public:\
 	struct MutRttiInit : public MutRtti { \
@@ -60,7 +60,7 @@ private:\
 
 
 //--- Type AxEngine::SceneWorld ----------
-#define AX_GENERATED_BODY_LINE245() \
+#define AX_GENERATED_BODY_LINE254() \
 	AX_RTTI_INFO(SceneWorld, Object) \
 public:\
 	struct MutRttiInit : public MutRtti { \

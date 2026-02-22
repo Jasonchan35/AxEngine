@@ -19,7 +19,8 @@ public:
 	
 	void setWorldPos(const Vec3f& v);
 	void setColor(const Color3f& color);
-	void setRange(float v);
+	void setRadius(float v);
+	void setIntensity(float v);
 
 protected:
 	LightObject();
@@ -42,16 +43,24 @@ void LightObject::setColor(const Color3f& color) {
 	objectSlot.markDirty();
 }
 
-void LightObject::setRange(float v) {
-	if (_gpuData.range == v) return;
-	_gpuData.range = v;
+void LightObject::setRadius(float v) {
+	if (_gpuData.radius == v) return;
+	_gpuData.radius = v;
+	objectSlot.markDirty();
+}
+
+void LightObject::setIntensity(float v) {
+	if (_gpuData.intensity == v) return;
+	_gpuData.intensity = v;
 	objectSlot.markDirty();
 }
 
 LightObject::LightObject()
 : objectSlot(this) {
 	setColor(Color3f(1,1,1));
-	setRange(10.0f);
+	setRadius(10.0f);
+	setIntensity(0.5f);
+	
 	_gpuData.worldPos = Vec3f(0,0,0);
 }
 

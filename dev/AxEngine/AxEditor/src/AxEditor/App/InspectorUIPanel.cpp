@@ -6,50 +6,56 @@ import :InspectorUIPanel;
 namespace AxEditor {
 
 void InspectorUIPanel::render(RenderRequest* req) {
-	ImUIPanel	outliner("Inspector");
+	ImUI_Panel	outliner("Inspector");
 	
 	auto obj = ObjectManager::s_instance()->selection.lastSelectedObject();
 	if (!obj) {
-		ImUILabelText("object", "-- no selection --");
+		ImUI_LabelText("object", "-- no selection --");
 		return;
 	}
 	
-	ImUILabelText("name", obj->name().toString());
+	ImUI_LabelText("name", obj->name().toString());
 
 	if (auto* entity = rttiCast<SceneEntity>(obj.ptr())) {
-		auto pos   = entity->position();
-		auto rot   = entity->rotation();
-		auto scale = entity->scale();
-		if (ImUIDragFloat3 ("Position", pos)) { entity->setPosition(pos); }
-		if (ImUIDragEuler  ("Rotation", rot)) { entity->setRotation(rot); }
-		if (ImUIDragFloat3 ("Scale"   , scale)) { entity->setScale(scale); }
-		
-		ImUIInputQuat4 ("Quat"    , rot);
+		_renderEntity(entity);
+	}
+}
 
-		if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
-			if (auto* mesh = meshRenderer->mesh.ptr()) {
-				auto bounds = mesh->bounds();
-				ImUIInputFloat3("Bounds min", bounds.min);
-				ImUIInputFloat3("Bounds max", bounds.max);
-			}
-		}
+void InspectorUIPanel::_renderEntity(SceneEntity* entity) {
+	auto pos   = entity->position();
+	auto rot   = entity->rotation();
+	auto scale = entity->scale();
+	if (ImUI_DragFloat3 ("Position", pos)) { entity->setPosition(pos); }
+	if (ImUI_DragEuler  ("Rotation", rot)) { entity->setRotation(rot); }
+	if (ImUI_DragFloat3 ("Scale"   , scale)) { entity->setScale(scale); }
 		
-		Int componentCount = entity->componentCount();
-		{
-			ImUITreeNodeFlags flags;
-			flags.hasChild = componentCount > 0;
-			flags.open = true;
-			ImUITreeNode node("Components", flags);
+	ImUI_InputQuat4 ("Quat"    , rot);
+
+	if (auto* meshRenderer = entity->getComponent<MeshRendererComponent>()) {
+		if (auto* mesh = meshRenderer->mesh.ptr()) {
+			auto bounds = mesh->bounds();
+			ImUI_InputFloat3("Bounds min", bounds.min);
+			ImUI_InputFloat3("Bounds max", bounds.max);
 		}
+	}
+		
+	Int componentCount = entity->componentCount();
+	{
+		ImUI_TreeNodeFlags flags;
+		flags.hasChild = componentCount > 0;
+		flags.open = true;
+		ImUI_TreeNode node("Components", flags);
 		
 		for (Int i = 0; i < componentCount; ++i) {
 			auto* comp = entity->componentAt(i);
-			
-			ImUITreeNodeFlags flags;
-			ImUITreeNode node(Fmt("{}", comp->rtti()->name), flags);
+			_renderComponent(comp);
 		}
-		return;
-	}
+	}	
+}
+
+void InspectorUIPanel::_renderComponent(SceneComponent* comp) {
+	ImUI_TreeNodeFlags flags;
+	ImUI_TreeNode node(Fmt("{}", comp->rtti()->name), flags);
 }
 
 } // namespace

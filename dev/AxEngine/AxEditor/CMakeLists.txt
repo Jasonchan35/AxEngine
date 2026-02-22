@@ -6,7 +6,7 @@ ax_add_library(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER "AxEngine")
 ax_cpp_header_tool(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC AxEngine AxImUI)
+target_link_libraries(${PROJECT_NAME} PUBLIC AxEngine)
 target_link_libraries(${PROJECT_NAME} PUBLIC assimp)
 # target_link_libraries(${PROJECT_NAME} PUBLIC OpenUSD-prebuilt)
 

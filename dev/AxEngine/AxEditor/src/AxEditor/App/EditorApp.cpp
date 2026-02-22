@@ -124,25 +124,22 @@ void EditorApp::_testLoadFbx() {
 	_engine.setWorld(world);
 	
 	{ // create lights
-		for (Int i = 0; i < 5; ++i) {
+		for (Int i = 0; i < 9; ++i) {
 			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("Light_{}", i));
-			entity->setPosition(static_cast<f32>(i) * 5.0f, 3, -2);
-			auto* comp = entity->addComponent<LightComponent>(AX_NEW);
+			constexpr Int row = 3;
+			constexpr Vec3f distance(20, 0, -20);
+			auto id = Vec3i(i % row, 0, i / row);
+			entity->setPosition(Vec3f::s_cast(id) * distance + Vec3f(0,5,0));
 			
-			switch (i) {
-				case 1: comp->lightObj->setColor(Color3f(1,0,0)); break;
-				case 2: comp->lightObj->setColor(Color3f(0,0,1)); break;
-				default: break;
-			}
+			auto* comp = entity->addComponent<LightComponent>(AX_NEW);
+			comp->lightObj->setRadius(20);
+			comp->lightObj->setIntensity(0.8f);
 		}
 	}
 		
 	{
 		auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("CullingCamera"));
-		// entity->setPosition(2, 2, 2);
 		auto* comp = entity->addComponent<CameraComponent>(AX_NEW);
-		// entity->setRotation(-20, 45, 0);
-//		entity->setPosition(0, 0, -10);
 		
 		comp->cameraObj->camera.nearClip = 0.1f;
 		comp->cameraObj->camera.farClip  = 20.0f;
@@ -163,9 +160,7 @@ void EditorApp::_cloneEntities(InNameId name, Int count, Int row, const Vec3f& d
 	if (srcEntity) {
 		for (Int i = 0; i < count; ++i) {
 			auto entity = SceneEntity::s_new(AX_NEW, world, nullptr, Fmt("clone_{}", i));
-			
 			auto id = Vec3i(i % row, 0, i / row);
-			
 			entity->setPosition(Vec3f::s_cast(id) * distance);
 			entity->setRotation(srcEntity->rotation());
 

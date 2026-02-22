@@ -232,6 +232,12 @@ void MeshRendererComponent::onJsonIO(JsonIO_Writer& se) {
 	}
 }
 
+void MeshRendererComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
+	Base::onDrawGizmo(req);
+
+
+}
+
 LightComponent::~LightComponent() {
 	getWorld()->_lightComponents.remove(this);
 }
@@ -242,6 +248,12 @@ void LightComponent::onInit() {
 	getWorld()->_lightComponents.add(this);
 }
 
+void LightComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
+	Base::onDrawGizmo(req);
+	auto worldMatrix = entity()->worldMatrix();
+	ImGizmo_Cubes(req, Span(worldMatrix));
+}
+
 CameraComponent::~CameraComponent() {
 	getWorld()->_cameraComponents.remove(this);
 }
@@ -250,6 +262,15 @@ void CameraComponent::onInit() {
 	Base::onInit();
 	cameraObj = CameraObject::s_new(AX_NEW);
 	getWorld()->_cameraComponents.add(this);
+}
+
+void CameraComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
+	Base::onDrawGizmo(req);
+	
+	ImGizmo_Camera(req,
+					cameraObj->camera,
+					entity()->worldMatrix(),
+					req->renderRequest->projectionDesc());
 }
 
 void SceneWorld::onRender(RenderRequest* req) {
