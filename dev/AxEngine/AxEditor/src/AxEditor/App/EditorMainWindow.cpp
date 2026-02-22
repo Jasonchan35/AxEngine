@@ -7,7 +7,7 @@ import :EditorApp;
 namespace AxEditor {
 
 EditorMainWindow::EditorMainWindow() {
-	_gizmoOp = ImUIGizmoOperation::Translate;
+	_gizmoOp = ImGizmo_ManipulateType::Translate;
 	_gpuDebugData = {};
 	_gpuDebugData.debugColorCode = AxGpuDebugColorCode_Tri;
 //	_gpuDebugData.drawNormalLength = 0.25f;
@@ -81,7 +81,7 @@ void EditorMainWindow::onUIMouseEvent(UIMouseEvent& ev) {
 void EditorMainWindow::onUIKeyEvent(UIKeyEvent& ev) {
 	if (_inputMode == InputMode::None) {
 		if (ev.type == UIKeyEventType::Down) {
-			using Op = ImUIGizmoOperation;
+			using Op = ImGizmo_ManipulateType;
 			switch (ev.key) {
 				case UIKeyCode::Q: _gizmoOp = Op::None;      break;
 				case UIKeyCode::W: _gizmoOp = Op::Translate; break;
@@ -103,7 +103,7 @@ void EditorMainWindow::MyRenderGraph::onUpdate(RenderRequest* req) {
 void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<Input> inputs) {
 	Base::onBackBufferPass(req, inputs);
 	
-	ImUIGetWindowDrawList();
+	ImUI_GetWindowDrawList();
 	
 	_owner->_drawGizmo(req);
 	_owner->_viewportCameraPanel(req);
@@ -113,16 +113,16 @@ void EditorMainWindow::MyRenderGraph::onBackBufferPass(RenderRequest* req, Span<
 }
 
 void EditorMainWindow::_statisticsPanel(RenderRequest* req) {
-	ImUIPanel	panel("statistics");
+	ImUI_Panel	panel("statistics");
 	
 	_fpsCount.update(req->deltaTime());
-	ImUIText(Fmt("Frame: {:<8} Uptime: {:<3.2f}\nFPS: {:<8.2f} ({:>8.3f}ms)",
+	ImUI_Text(Fmt("Frame: {:<8} Uptime: {:<3.2f}\nFPS: {:<8.2f} ({:>8.3f}ms)",
 	             req->renderSeqId(), req->uptime(),
 	             _fpsCount.fps(), _fpsCount.averageTime * 1000));
 	
-	ImUIText("Meshlet:");
+	ImUI_Text("Meshlet:");
 	auto func = [](StrView name, const GpuBufferPool::Statistics& src)-> void {
-		ImUIText(Fmt("  {} ({:8} / {:2} / {:4}MB)",
+		ImUI_Text(Fmt("  {} ({:8} / {:2} / {:4}MB)",
 		             name,
 		             src.elementCount,
 		             src.allocationCount,
@@ -165,89 +165,91 @@ void EditorMainWindow::_viewportCameraPanel(RenderRequest* req) {
 		cam.move(_flyingCameraMoveVector * (req->deltaTime() * _flyingCameraSpeed));
 	}	
 	
-	ImUIPanel	panel("camera");
+	ImUI_Panel	panel("camera");
 	
-	ImUIDragFloat("fieldOfView"   , cam.fieldOfView, 0.1f, 5, 180);
-	ImUIDragEuler("rotation"      , cam.rotation);
-	ImUIDragFloat("distance"      , cam.distance);
+	ImUI_DragFloat("fieldOfView"   , cam.fieldOfView, 0.1f, 5, 180);
+	ImUI_DragEuler("rotation"      , cam.rotation);
+	ImUI_DragFloat("distance"      , cam.distance);
 	
-	if (ImUIButton(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
+	if (ImUI_Button(projDesc.isReverseZ ? ZStrView("ReverseZ") : ZStrView("StandardZ"), {160, 40})) {
 		AX_TOGGLE_BOOL(projDesc.isReverseZ);
 		_renderGraph->setProjectionDesc(projDesc);
 	}
 	
-	ImUISameLine();
-	if (ImUIButton(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {160, 40})) {
+	ImUI_SameLine();
+	if (ImUI_Button(projDesc.isRightHanded ? ZStrView("RightHanded") : ZStrView("LeftHanded"), {160, 40})) {
 		AX_TOGGLE_BOOL(projDesc.isRightHanded);
 		_renderGraph->setProjectionDesc(projDesc);
 	}
 	
-	ImUILabelText("viewport"      , Fmt("{}", cam.viewport));
-	ImUILabelText("eye"           , Fmt("{}", cam.eye()));
-	ImUILabelText("aim"           , Fmt("{}", cam.aim));
-	ImUILabelText("up"            , Fmt("{}", cam.up()));
+	ImUI_LabelText("viewport"      , Fmt("{}", cam.viewport));
+	ImUI_LabelText("eye"           , Fmt("{}", cam.eye()));
+	ImUI_LabelText("aim"           , Fmt("{}", cam.aim));
+	ImUI_LabelText("up"            , Fmt("{}", cam.up()));
 	
 //	ImUILabelText("worldMatrix"   , Fmt("{}", cam.worldMatrix(projDesc)));
 //	ImUILabelText("worldMatrixInv", Fmt("{}", cam.worldMatrix(projDesc).inverse()));
 //	ImUILabelText("viewMatrix (lookAt)", Fmt("{}", cam.viewMatrix(projDesc)));
 	
 	auto& camData = req->cameraData();
-	ImUILabelText("viewMatrix"   , Fmt("{}", camData.viewMatrix));
-	ImUILabelText("projMatrix"   , Fmt("{}", camData.projMatrix));
+	ImUI_LabelText("viewMatrix"   , Fmt("{}", camData.viewMatrix));
+	ImUI_LabelText("projMatrix"   , Fmt("{}", camData.projMatrix));
 	
-	ImUIText("CullingPlane");
-	ImUILabelText("[0] near  ", Fmt("{}", camData.cullingPlanes[0]));
-	ImUILabelText("[1] far   ", Fmt("{}", camData.cullingPlanes[1]));
-	ImUILabelText("[2] left  ", Fmt("{}", camData.cullingPlanes[2]));
-	ImUILabelText("[3] right ", Fmt("{}", camData.cullingPlanes[3]));
-	ImUILabelText("[4] top   ", Fmt("{}", camData.cullingPlanes[4]));
-	ImUILabelText("[5] bottom", Fmt("{}", camData.cullingPlanes[5]));
+	ImUI_Text("CullingPlane");
+	ImUI_LabelText("[0] near  ", Fmt("{}", camData.cullingPlanes[0]));
+	ImUI_LabelText("[1] far   ", Fmt("{}", camData.cullingPlanes[1]));
+	ImUI_LabelText("[2] left  ", Fmt("{}", camData.cullingPlanes[2]));
+	ImUI_LabelText("[3] right ", Fmt("{}", camData.cullingPlanes[3]));
+	ImUI_LabelText("[4] top   ", Fmt("{}", camData.cullingPlanes[4]));
+	ImUI_LabelText("[5] bottom", Fmt("{}", camData.cullingPlanes[5]));
 }
 
 void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	auto& cam = req->cameraData();
 	
-	ImUIDrawGizmoRequest gizmoRequest;
+	ImGizmo_DrawRequest gizmoRequest;
+	gizmoRequest.renderRequest = req;
+	gizmoRequest.viewport   = req->viewport();
 	gizmoRequest.viewMatrix = cam.viewMatrix;
 	gizmoRequest.projMatrix = cam.projMatrix;
 	
 	float ViewManipulateOffset = 20;
 	float ViewManipulateSize = 120;
 	
-	ImUIGizmoViewManipulate(&gizmoRequest,
+	ImGizmo_ViewManipulate(&gizmoRequest,
 	                        Rect2f(req->viewport().w - ViewManipulateSize - ViewManipulateOffset,
 	                               ViewManipulateOffset,
 	                               ViewManipulateSize,
 	                               ViewManipulateSize));
 	
 	{
-		ImUIPanel	panel("Gizmo");
-		ImUIDragFloat("mouseSpeed", _mouseSpeed, 0.1f, 0.1f, 50.0f);
-		ImUIDragFloat("flyingCameraSpeed", _flyingCameraSpeed, 0.1f, 0.1f, 500.0f);
+		ImUI_Panel	panel("Gizmo");
+		ImUI_DragFloat("mouseSpeed", _mouseSpeed, 0.1f, 0.1f, 50.0f);
+		ImUI_DragFloat("flyingCameraSpeed", _flyingCameraSpeed, 0.1f, 0.1f, 500.0f);
 		
 		{
-			if (ImUIRadioButton("Local", _gizmoSpace == ImUIGizmoSpace::Local)) {
-				_gizmoSpace = ImUIGizmoSpace::Local;
+			if (ImUI_RadioButton("Local", _gizmoSpace == ImGizmo_Space::Local)) {
+				_gizmoSpace = ImGizmo_Space::Local;
 			}
 			
-			ImUISameLine();
-			if (ImUIRadioButton("World", _gizmoSpace == ImUIGizmoSpace::World)) {
-				_gizmoSpace = ImUIGizmoSpace::World;
+			ImUI_SameLine();
+			if (ImUI_RadioButton("World", _gizmoSpace == ImGizmo_Space::World)) {
+				_gizmoSpace = ImGizmo_Space::World;
 			}
 		}
 		
-		ImUICheckBox("useCullingCamera", _useCullingCamera);
-		ImUISameLine();
-		if (ImUIButton("Align to View", {160, 25})) {
+		ImUI_CheckBox("useCullingCamera", _useCullingCamera);
+		ImUI_SameLine();
+		if (ImUI_Button("Align to View", {160, 25})) {
 			if (_cullingCameraComp) {
 				_cullingCameraComp->entity()->setWorldMatrix(_renderGraph->viewportCamera().worldMatrix());
 			}
 		}
 
-		ImUIDragFloat("maxMeshletErrorInPixels", _maxMeshletErrorInPixels, 0.1f, 0, 20);
+		ImUI_DragFloat("maxMeshletErrorInPixels", _maxMeshletErrorInPixels, 0.1f, 0, 20);
 		req->maxMeshletErrorInPixels = _maxMeshletErrorInPixels;
 		{
-			ImUICheckBoxArray_Item<i32> list_[] = {
+			ImUI_CheckBoxArray_Item<i32> list_[] = {
 				{.name = "None"    , .value = AxGpuDebugColorCode_None               },
 				{.name = "Tri"     , .value = AxGpuDebugColorCode_Tri                },
 				{.name = "Cluster" , .value = AxGpuDebugColorCode_MeshletCluster     },
@@ -256,27 +258,27 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 				{.name = "Lod"     , .value = AxGpuDebugColorCode_MeshletLod         },
 			};
 			auto list = Span(list_);
-			ImUICheckBoxArray("debugColorCode", _gpuDebugData.debugColorCode, list);
+			ImUI_CheckBoxArray("debugColorCode", _gpuDebugData.debugColorCode, list);
 			
 			if (_gpuDebugData.debugColorCode == AxGpuDebugColorCode_MeshletLod) {
-				ImUIText("LoD-0"); ImUISameLine(); ImUIColorButton("LoD-0", Color4f(1,0,0,1));
-				ImUIText("LoD-1"); ImUISameLine(); ImUIColorButton("LoD-1", Color4f(0,1,0,1));
-				ImUIText("LoD-2"); ImUISameLine(); ImUIColorButton("LoD-2", Color4f(1,1,0,1));
-				ImUIText("LoD-3"); ImUISameLine(); ImUIColorButton("LoD-3", Color4f(0,0,1,1));
-				ImUIText("LoD-4"); ImUISameLine(); ImUIColorButton("LoD-4", Color4f(1,0,1,1));
-				ImUIText("LoD-5"); ImUISameLine(); ImUIColorButton("LoD-5", Color4f(0,1,1,1));
+				ImUI_Text("LoD-0"); ImUI_SameLine(); ImUI_ColorButton("LoD-0", Color4f(1,0,0,1));
+				ImUI_Text("LoD-1"); ImUI_SameLine(); ImUI_ColorButton("LoD-1", Color4f(0,1,0,1));
+				ImUI_Text("LoD-2"); ImUI_SameLine(); ImUI_ColorButton("LoD-2", Color4f(1,1,0,1));
+				ImUI_Text("LoD-3"); ImUI_SameLine(); ImUI_ColorButton("LoD-3", Color4f(0,0,1,1));
+				ImUI_Text("LoD-4"); ImUI_SameLine(); ImUI_ColorButton("LoD-4", Color4f(1,0,1,1));
+				ImUI_Text("LoD-5"); ImUI_SameLine(); ImUI_ColorButton("LoD-5", Color4f(0,1,1,1));
 			}
 		}
 		
-		ImUIDragFloat("showAllLodDistance", _gpuDebugData.showAllLodDistance, 0.1f, 0, 10);
-		ImUIDragFloat("Normal Length",      _gpuDebugData.drawNormalLength, 0.01f, 0, 4);
-		ImUICheckBoxFlag("Disable Frustum Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
+		ImUI_DragFloat("showAllLodDistance", _gpuDebugData.showAllLodDistance, 0.1f, 0, 10);
+		ImUI_DragFloat("Normal Length",      _gpuDebugData.drawNormalLength, 0.01f, 0, 4);
+		ImUI_CheckBoxFlag("Disable Frustum Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 	}
 
 	req->setDebugData(_gpuDebugData);
 
 	if (_useCullingCamera && _cullingCameraComp) {
-		ImUIGizmoCamera(&gizmoRequest,
+		ImGizmo_Camera(&gizmoRequest,
 						_cullingCameraComp->cameraObj->camera,
 						_cullingCameraComp->entity()->worldMatrix(),
 						req->projectionDesc());
@@ -292,7 +294,7 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	Mat4f worldMatrix = selectdEntity->worldMatrix();
 
 	{
-		bool b =  ImUIGizmoIsUsing();
+		bool b =  ImGizmo_IsUsing();
 		if (b != _gizmoIsUsing) {
 			if (!_gizmoIsUsing) {
 				_gizmoStartWorldMatrix = worldMatrix;
@@ -303,12 +305,16 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 	
 	Vec3f* snap = nullptr;
 	switch (_gizmoOp) {
-		case ImUIGizmoOperation::Translate: if (_enableTranslateSnap) { snap = &_translateSnap; } break;
-		case ImUIGizmoOperation::Rotate   : if (_enableRotateSnap   ) { snap = &_rotateSnap;    } break;
-		case ImUIGizmoOperation::Scale    : if (_enableScaleSnap    ) { snap = &_scaleSnap;     } break;
+		case ImGizmo_ManipulateType::Translate: if (_enableTranslateSnap) { snap = &_translateSnap; } break;
+		case ImGizmo_ManipulateType::Rotate   : if (_enableRotateSnap   ) { snap = &_rotateSnap;    } break;
+		case ImGizmo_ManipulateType::Scale    : if (_enableScaleSnap    ) { snap = &_scaleSnap;     } break;
 		default: break;
 	}
 
+	for (auto& comp : selectdEntity->components()) {
+		comp->onDrawGizmo(&gizmoRequest);
+	}
+	
 	BBox3f bounds = BBox3f::s_empty();
 	if (auto* meshRenderer = selectdEntity->getComponent<MeshRendererComponent>()) {
 		if (auto* mesh = meshRenderer->mesh.ptr()) {
@@ -316,15 +322,8 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 		}
 	}
 
-	if (ImUIGizmoManipulate(&gizmoRequest, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {
+	if (ImGizmo_Manipulate(&gizmoRequest, _gizmoOp, _gizmoSpace, snap, bounds, worldMatrix)) {
 		selectdEntity->setWorldMatrix(worldMatrix);
-	}
-	
-	if (auto* comp = selectdEntity->getComponent<CameraComponent>()) {
-		ImUIGizmoCamera(&gizmoRequest,
-		                comp->cameraObj->camera,
-		                selectdEntity->worldMatrix(),
-		                req->projectionDesc());
 	}
 }
 

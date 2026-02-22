@@ -67,7 +67,7 @@ public:
 	virtual void onJsonIO(JsonIO_Reader& se);
 	virtual void onJsonIO(JsonIO_Writer& se);
 
-	virtual void onDrawGizmo(ImUIDrawGizmoRequest* req) {}
+	virtual void onDrawGizmo(ImGizmo_DrawRequest* req) {}
 	
 protected:
 	template<class SE> void _onJsonIO(SE& se);
@@ -124,6 +124,8 @@ public:
 
 	Int componentCount() const { return _components.size(); }
 	SceneComponent* componentAt(Int index) { return _components[index].ptr(); }
+	
+	MutSpan<SPtr<SceneComponent>> components() { return _components; }
 	
 	SceneEntity* findChild(NameId name, bool recursive);
 
@@ -203,6 +205,9 @@ public:
 	virtual void onJsonIO(JsonIO_Writer& se) override;
 	
 	ObjectTableSlot<This> _slot;
+
+protected:
+	virtual void onDrawGizmo(ImGizmo_DrawRequest* req) override;
 	
 private:
 	template<class SE> void _onJsonIO(SE& se);
@@ -224,7 +229,7 @@ public:
 	
 protected:
 	virtual void onInit() override;
-	virtual void onDrawGizmo(ImUIDrawGizmoRequest* req) override;
+	virtual void onDrawGizmo(ImGizmo_DrawRequest* req) override;
 };
 
 AX_CLASS()
@@ -239,6 +244,7 @@ public:
 
 protected:
 	virtual void onInit() override;
+	virtual void onDrawGizmo(ImGizmo_DrawRequest* req) override;
 	
 };
 

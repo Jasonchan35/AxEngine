@@ -64,8 +64,8 @@ protected:
 	Vec3f _flyingCameraMoveVector = Vec3f::s_zero();
 	float _flyingCameraSpeed = 5.0f;
 	
-	ImUIGizmoOperation	_gizmoOp    = ImUIGizmoOperation::None;
-	ImUIGizmoSpace		_gizmoSpace = ImUIGizmoSpace::World;
+	ImGizmo_ManipulateType	_gizmoOp    = ImGizmo_ManipulateType::None;
+	ImGizmo_Space		_gizmoSpace = ImGizmo_Space::World;
 	bool _gizmoIsUsing = false;
 	Mat4f _gizmoStartWorldMatrix;
 	

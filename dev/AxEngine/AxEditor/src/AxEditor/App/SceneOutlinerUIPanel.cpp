@@ -6,7 +6,7 @@ import :SceneOutlinerUIPanel;
 namespace AxEditor {
 
 void SceneOutlinerUIPanel::render(SceneWorld* world, RenderRequest* req) {
-	ImUIPanel	outliner("Scene Outliner");
+	ImUI_Panel	outliner("Scene Outliner");
 	if (!world) return;
 	_addNode(world->root());
 }
@@ -16,13 +16,13 @@ void SceneOutlinerUIPanel::_addNode(SceneEntity* p) {
 
 	Int childCount = p->childCount();
 	
-	ImUITreeNodeFlags flags;
+	ImUI_TreeNodeFlags flags;
 	flags.open     = p->editor.treeNodeIsOpen;
 	flags.hasChild = childCount > 0;
 	flags.selected = p->editor.selected;
 	
-	ImUITreeNode node(p->name().toString(), flags);
-	if (ImUI::IsItemClicked()) {
+	ImUI_TreeNode node(p->name().toString(), flags);
+	if (ImUI_IsItemClicked()) {
 		ObjectManager::s_instance()->selection.select(p);
 	}
 	
