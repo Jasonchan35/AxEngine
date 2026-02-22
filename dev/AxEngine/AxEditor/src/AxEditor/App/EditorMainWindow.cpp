@@ -275,9 +275,13 @@ void EditorMainWindow::_drawGizmo(RenderRequest* req) {
 			}
 		}
 		
-		ImUI_DragFloat("showAllLodDistance" , _gpuDebugData.showAllLodDistance , 0.1f, 0, 10);
-		ImUI_DragFloat("Debug Normal Length", _gpuDebugData.drawNormalLength   , 0.01f, 0, 4);
-		ImUI_DragFloat("Debug Cluster"      , _gpuDebugData.drawCluster        , 0.01f, 0, 4);
+		ImUI_DragFloat("showAllLodDistance"   , _gpuDebugData.showAllLodDistance , 0.1f,  0, 10);
+		ImUI_DragFloat("Debug Normal Length"  , _gpuDebugData.drawNormalLength   , 0.01f, 0, 10);
+		
+		ImUI_DragFloat("Debug Cluster Axis"   , _gpuDebugData.drawClusterAxis    , 0.01f, 0, 10);
+		ImUI_DragFloat("Debug Cluster Offset" , _gpuDebugData.drawClusterOffset  , 0.01f, 0, 10);
+
+		ImUI_CheckBoxFlag("Draw Cluster Sphere",      _gpuDebugData.flags, AxGpuData_Debug_FLAG_DrawClusterSphere);
 		ImUI_CheckBoxFlag("Disable Frustum  Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableFrustumCulling);
 		ImUI_CheckBoxFlag("Disable BackCone Culling", _gpuDebugData.flags, AxGpuData_Debug_FLAG_DisableBackConeCulling);
 	}

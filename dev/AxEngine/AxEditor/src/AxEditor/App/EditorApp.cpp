@@ -154,7 +154,7 @@ void EditorApp::_testLoadFbx() {
 	}
 	
 //	_cloneEntities("sportsCar", 50,  10, Vec3f(5, 0, -6));
-//	_cloneEntities("Suzanne",   400, 20, Vec3f(3, 0, -3));
+	_cloneEntities("Suzanne",   400, 20, Vec3f(3, 0, -3));
 }
 
 void EditorApp::_cloneEntities(InNameId name, Int count, Int row, const Vec3f& distance) {

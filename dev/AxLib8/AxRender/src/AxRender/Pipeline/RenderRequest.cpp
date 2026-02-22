@@ -34,12 +34,12 @@ void RenderRequest::drawMesh(MeshObject* mesh, Material* material, Int materialP
 	
 	meshShaderDraw(draw);
 	
-	if (_debugData.drawNormalLength > 0) {
+	if (_debugData.drawNormalLength > 0 || _debugData.drawClusterAxis > 0) {
 		draw.material = stockObjs->materials->meshlet_normal;
 		meshShaderDraw(draw);
 	}
 	
-	if (_debugData.drawCluster > 0) {
+	if (ax_bit_has(_debugData.flags, AxGpuData_Debug_FLAG_DrawClusterSphere)) {
 		draw.material = stockObjs->materials->meshlet_cluster_debug;
 		meshShaderDraw(draw);
 	}

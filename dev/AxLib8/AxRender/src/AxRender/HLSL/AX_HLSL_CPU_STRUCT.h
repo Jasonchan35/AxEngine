@@ -5,7 +5,8 @@
 
 struct AxGpuData_Debug {
 	float drawNormalLength;
-	float drawCluster;
+	float drawClusterOffset;
+	float drawClusterAxis;
 	float showAllLodDistance;
 	i32   debugColorCode; // AxGpuDebugColorCode_None
 	u32   flags;

@@ -58,8 +58,10 @@ struct MeshletVS_PrimId_Out {
 static Vec3f axMeshlet_clusterDebug(AxGpuData_MeshletCluster cluster) {
 	AxGpuData_MeshObject meshObject = axGpuData_MeshObject[cluster.meshObjectId];
 	Vec3f meshCenter = (meshObject.boundsMin + meshObject.boundsMax) / 2;
-	Vec3f clusterDir = normalize(cluster.center - meshCenter);
-	return clusterDir * axDebug.drawCluster;
+	Vec3f clusterVec = cluster.center - meshCenter;
+	float dis = length(clusterVec);
+	Vec3f clusterDir = abs(dis) > 0.001f ? clusterVec / dis : Vec3f(0,0,0);
+	return clusterDir * axDebug.drawClusterOffset;
 }
 
 static float axMeshlet_boundsError(AxGpuData_MeshletGroup group) {
@@ -183,7 +185,7 @@ void axMeshlet_MeshMain(
 		i.pos = mv.pos;
 
 		if (axDebug.showAllLodDistance > 0) { i.pos += ax_debug_lod_offset(cluster.lod); }
-		if (axDebug.drawCluster        > 0) { i.pos += axMeshlet_clusterDebug(cluster); }
+		if (axDebug.drawClusterOffset  > 0) { i.pos += axMeshlet_clusterDebug(cluster); }
 
 		i.color0 = float4(1,1,1,1);
 		i.normal = ax_unpack_normal_octahedral(mv.normal_octahedral);

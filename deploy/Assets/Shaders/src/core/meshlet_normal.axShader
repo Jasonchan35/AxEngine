@@ -78,7 +78,7 @@ void ms_main(
 		Vec3f coneAxis   = cone_axis_cutoff.xyz;
 		float coneCutoff = cone_axis_cutoff.w;
 
-		pos = cluster.center + coneAxis * axDebug.drawNormalLength * 2;
+		pos = cluster.center + coneAxis * axDebug.drawClusterAxis;
 		pos += ax_debug_lod_offset(cluster.lod);
 		pos += axMeshlet_clusterDebug(cluster);
 
