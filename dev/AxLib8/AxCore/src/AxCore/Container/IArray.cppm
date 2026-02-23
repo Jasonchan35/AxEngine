@@ -298,29 +298,12 @@ constexpr typename IArray<T>::MSpan IArray<T>::insertAt(IntRange range) {
 	}
 
 	Int n = oldSize - range.start();
-	//Int nBytes = n * AX_SIZEOF(T);
 
 	if (MemUtil::isOverlapped(dst, n, src, n)) {
-		T* s = src + n-1;
-		T* d = dst + n-1;
-
-		for (Int i=0; i<n; i++, s--, d-- ) {
-			ax_call_constructor<T>(d, std::move(*s));
-		}	
+		MemUtil::moveConstructorBackward(dst, src, n);
 	}else {
 		MemUtil::moveConstructor(dst, src, n);
 	}
-
-	/*
-	Int count = oldSize - range.start();
-	if (dst > src) {
-		for (Int i = count - 1; i >= 0; --i) {
-			dst[i] = std::move(src[i]);
-		}
-	} else {
-		MemUtil::moveConstructor(dst, src, count);
-	}
-	*/
 
 	return MutSpan<T>(p + range.start(), range.size());
 }

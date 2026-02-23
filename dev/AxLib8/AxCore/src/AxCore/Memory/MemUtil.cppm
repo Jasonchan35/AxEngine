@@ -26,6 +26,7 @@ struct MemUtil {
 
 	template<class T> static constexpr void copyConstructor(T* dst, const T* src, Int n);
 	template<class T> static constexpr void moveConstructor(T* dst, T* src, Int n);
+	template<class T> static constexpr void moveConstructorBackward(T* dst, T* src, Int n);	
 	template<class T> static constexpr void moveConstructorAndDestructor(T* dst, T* src, Int n);
 
 	template<class T, class R, class FUNC>
@@ -205,6 +206,16 @@ constexpr void MemUtil::moveConstructor(T* dst, T* src, Int n) {
 			ax_call_constructor(dst, std::move(*s));
 		}
 	}
+}
+
+template <class T>
+constexpr void MemUtil::moveConstructorBackward(T* dst, T* src, Int n) {
+	if( n <= 0 || dst == src ) return;
+	auto d = dst + n-1;
+	auto s = src + n-1;	
+	for (Int i=0; i<n; i++, d--, s-- ) {
+		ax_call_constructor<T>(d, std::move(*s));
+	}	
 }
 
 template <class T> constexpr
