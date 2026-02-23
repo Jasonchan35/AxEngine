@@ -121,21 +121,15 @@ void axMeshlet_AmplificationMain(
 		u32 clusterId = clusterOffset + dtid;
 		AxGpuData_MeshletCluster cluster = axGpuData_MeshletCluster[clusterId];
 
-		Vec3f camPos           = axCamera.worldPos;
-		float camTanFov        = tan(radians(axCamera.fieldOfView * 0.5)) * 2.0;
 		float maxErrorInPixels = axCamera.maxMeshletErrorInPixels;
 
 		AxGpuData_MeshletGroup group       = axGpuData_MeshletGroup[groupOffset + cluster.groupId];
 		AxGpuData_MeshletGroup refineGroup = axGpuData_MeshletGroup[groupOffset + cluster.refinedGroupId];
 
 		// when requesting DAG cut from a viewpoint, we need to check if each cluster is the least detailed cluster that passes the error threshold
-		bool lodMatch 
-		=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(refineGroup) <= maxErrorInPixels) 
-		&& (                              axMeshlet_boundsError(group      ) >  maxErrorInPixels);
-
-		bool culling = axMeshlet_ClusterCulling(cluster);
-
-		visibleResult = lodMatch && culling;
+		visibleResult 	=  (cluster.refinedGroupId < 0 || axMeshlet_boundsError(refineGroup) <= maxErrorInPixels) 
+						&& (                              axMeshlet_boundsError(group      ) >  maxErrorInPixels)
+						&& axMeshlet_ClusterCulling(cluster);
 
 		if (axDebug.showAllLodDistance > 0) {
 			visibleResult = true;
