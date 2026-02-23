@@ -251,8 +251,8 @@ void LightComponent::onInit() {
 
 void LightComponent::onDrawGizmo(ImGizmo_DrawRequest* req) {
 	Base::onDrawGizmo(req);
-	auto worldMatrix = entity()->worldMatrix();
-	ImGizmo_Cubes(req, Span(worldMatrix));
+//	auto worldMatrix = entity()->worldMatrix();
+//	ImGizmo_Cubes(req, Span(worldMatrix));
 }
 
 void LightComponent::onInspector(ImUI_InspectorRequest* req) {

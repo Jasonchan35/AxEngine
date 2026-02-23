@@ -101,8 +101,8 @@ void EditorApp::_testLoadFbx() {
 	
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test2.fbx";
-	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
-//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/sportsCar/sportsCar.fbx";
+//	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/test3.fbx";
+	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/sportsCar/sportsCar.fbx";
 //	String inFilename = "ImportedAssets/JxLocalTemp/Assets/Scenes/test/McGuire/Exterior/exterior.fbx";
 
 	String cacheFolder = Fmt("{}.axWorld", inFilename);

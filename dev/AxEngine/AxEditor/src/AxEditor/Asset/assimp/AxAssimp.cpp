@@ -57,9 +57,9 @@ public:
 												 // | aiProcess_CalcTangentSpace
 												 // | aiProcessPreset_TargetRealtime_MaxQuality
 												 // | aiProcess_GlobalScale
-												 // | aiProcess_GenNormals
-												 | aiProcess_GenSmoothNormals
-												 | aiProcess_ForceGenNormals
+												 | aiProcess_GenNormals
+												 // | aiProcess_GenSmoothNormals
+												 // | aiProcess_ForceGenNormals
 												 // | aiProcess_DropNormals
 												 //---
 												 // | aiProcess_ConvertToLeftHanded
