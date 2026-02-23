@@ -94,7 +94,7 @@ template<class T> AX_NODISCARD AX_INLINE constexpr Int	ax_bit_lowest	(const T& v
 	
 	using U = std::make_unsigned_t<T>;
 	U u = static_cast<U>(value);
-	U mask = U(1 << (n-1));
+	U mask = U(U(1) << (n-1));
 	
 	for (Int i = n-1; i >= 0; --i) {
 		if (u  & mask) result = i;

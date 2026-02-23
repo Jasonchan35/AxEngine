@@ -50,12 +50,45 @@ public:
 		arr.append(20);
 		arr.append(30);
 		
-		auto& elem = arr.insertAt(0);
-		elem = 5;
+		auto& elem1 = arr.insertAt(0);
+		elem1 = 5;
 		
 		AX_TEST_EQ(arr.size(), 4);
 		AX_TEST_EQ(arr[0], 5);
 		AX_TEST_EQ(arr[1], 10);
+		AX_TEST_EQ(arr[2], 20);
+		AX_TEST_EQ(arr[3], 30);
+
+
+		auto& elem2 = arr.insertAt(1);
+		elem2 = 6;
+		AX_TEST_EQ(arr.size(), 5);
+		AX_TEST_EQ(arr[0], 5);
+		AX_TEST_EQ(arr[1], 6);
+		AX_TEST_EQ(arr[2], 10);
+		AX_TEST_EQ(arr[3], 20);
+		AX_TEST_EQ(arr[4], 30);
+
+	}
+
+	
+	void test_insertAt_range() {
+		Array<Int> arr;
+		arr.append(100);
+		arr.append(200);
+		arr.append(300);
+		arr.append(400);
+		arr.append(500);
+
+		arr.insertAt(IntRange_StartAndSize(3, 10));
+		AX_TEST_EQ(arr.size(), 15);
+		AX_TEST_EQ(arr[0], 100);
+		AX_TEST_EQ(arr[1], 200);
+		AX_TEST_EQ(arr[2], 300);
+		AX_TEST_EQ(arr[13], 400);
+		AX_TEST_EQ(arr[14], 500);
+
+		
 	}
 
 };
@@ -66,6 +99,8 @@ void Test_Array() {
 	using namespace ax;
 	AX_TEST_RUN_CASE(Test_Array::test_case1)
 	AX_TEST_RUN_CASE(Test_Array::test_binarySearch)
-	AX_TEST_RUN_CASE(Test_Array::test_insertAt_beginning)
+	AX_TEST_RUN_CASE(Test_Array::test_insertAt_range)
+
+	AX_TEST_RUN_CASE(Test_Array::test_insertAt_beginning)	
 }
 
