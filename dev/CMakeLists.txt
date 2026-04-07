@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)  # 3.26+ works, but 3.28+ has better module support
+cmake_minimum_required(VERSION 3.30)  # 3.26+ works, but 3.28+ has better module support
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/_vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 
 # Require C++20 (or C++23 for better module support)
@@ -6,12 +6,18 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# IMPORTANT: Enable experimental module support (CMake 3.28+)
+# IMPORTANT: Enable experimental module support
 set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "2182bf5c-ef0d-489a-91da-49dbc3090d2a")
 set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP ON)
 
+# This UUID may change in future versions of CMake.
+# Be sure to use the value documented here 
+# https://gitlab.kitware.com/cmake/cmake/-/blob/master/Help/dev/experimental.rst
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
+
 # Tell CMake where to put module files (.pcm, .ifc, etc.)
 set(CMAKE_CXX_MODULE_STD ON)  # Use standard module behavior when possible
+
 
 include(ax_common.cmake)
 
