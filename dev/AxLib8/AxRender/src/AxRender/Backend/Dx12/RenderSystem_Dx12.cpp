@@ -144,9 +144,13 @@ void RenderSystem_Dx12::onGetMemoryInfo(MemoryInfo& info) {
 }
 
 void RenderSystem_Dx12::_getHardwareAdapter() {
+	constexpr DXGI_GPU_PREFERENCE preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
+
 	for (UINT i = 0; ; ++i) {
 		ComPtr<IDXGIAdapter1> adapter;
-		auto hr =  _dxgiFactory->EnumAdapters1(i, adapter.ptrForInit());
+		// auto hr = _dxgiFactory->EnumAdapters1(i, adapter.ptrForInit());
+		auto hr = _dxgiFactory->EnumAdapterByGpuPreference(i, preference, IID_PPV_ARGS(adapter.ptrForInit()));
+		
 		if (DXGI_ERROR_NOT_FOUND == hr)
 			break;
 
